@@ -39,7 +39,7 @@ let promotion_probability : Int = 4 // 1 in 4 chance
 ///|
 /// A node in the skip list
 /// Each node contains forward pointers to the next node at each level
-struct SkipNode {
+priv struct SkipNode {
   key : Int
   value : Int
   // forward[i] points to the next node at level i
@@ -55,7 +55,7 @@ fn SkipNode::new(key : Int, value : Int, level : Int) -> SkipNode {
 
 ///|
 /// Skip List data structure
-struct SkipList {
+priv struct SkipList {
   // Header node (sentinel) - exists at all levels
   // header.key should be treated as -infinity
   header : SkipNode
@@ -598,6 +598,9 @@ fn SkipList::kth_element(self : SkipList, k : Int) -> (Int, Int)? {
 test "skip list basic operations" {
   let sl = SkipList::new()
 
+  // Empty list check
+  inspect(sl.is_empty(), content="true")
+
   // Test insert and search
   sl.insert(5, 50)
   sl.insert(3, 30)
@@ -751,7 +754,7 @@ test "skip list stress test" {
 ///|
 /// Skip List that allows duplicate keys
 /// Each key can have multiple values (stored as a list)
-struct MultiSkipNode {
+priv struct MultiSkipNode {
   key : Int
   values : Array[Int] // Multiple values for same key
   forward : Array[MultiSkipNode?]
@@ -763,7 +766,7 @@ fn MultiSkipNode::new(key : Int, value : Int, level : Int) -> MultiSkipNode {
 }
 
 ///|
-struct MultiSkipList {
+priv struct MultiSkipList {
   header : MultiSkipNode
   mut level : Int
   mut rand_state : Int
