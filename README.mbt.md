@@ -36,6 +36,11 @@ This repository demonstrates that:
 | `examples_matrix.mbt` | Matrix algorithms | Matrix exponentiation, Fast Fibonacci |
 | `examples_fenwick.mbt` | Tree structures | Fenwick Tree (BIT), 2D variants |
 | `examples_tarjan.mbt` | Graph connectivity | Tarjan's SCC, Articulation Points, Bridges |
+| `examples_segment_tree.mbt` | Segment Trees | Lazy propagation, Persistent, 2D queries |
+| `examples_two_pointers.mbt` | Two Pointers | Sliding window, Dutch flag, Partition |
+| `examples_dp.mbt` | Dynamic Programming | Knapsack, LIS, LCS, Matrix chain |
+| `examples_more_graph.mbt` | Advanced Graph | Bellman-Ford, Floyd-Warshall, MST |
+| `examples_bit_game.mbt` | Bits & Games | XOR tricks, Nim, Sprague-Grundy |
 
 ## Featured Insights
 
@@ -125,10 +130,15 @@ moon fmt
 |-----------|------|-------|---------------|
 | Binary Search | O(log n) | O(1) | Target in `arr[lo..hi]` if exists |
 | Fenwick Update/Query | O(log n) | O(n) | Prefix sum decomposition |
+| Segment Tree Range | O(log n) | O(n) | Node covers interval `[l, r)` |
 | Matrix Power | O(k³ log n) | O(k²) | `M^p ≡ result × base^remaining` |
 | Tarjan's SCC | O(V + E) | O(V) | Low-link = earliest reachable |
+| Floyd-Warshall | O(V³) | O(V²) | Uses vertices `{0..k}` as intermediates |
+| Bellman-Ford | O(VE) | O(V) | Shortest using at most k edges |
 | KMP Search | O(n + m) | O(m) | Failure function = proper prefix-suffix |
-| Manacher's | O(n) | O(n) | Palindrome radius at each center |
+| LIS (Binary Search) | O(n log n) | O(n) | tails[i] = smallest end of LIS length i |
+| Nim Game | O(n) | O(1) | XOR = 0 iff losing position |
+| Sprague-Grundy | O(n × moves) | O(n) | sg = mex of reachable positions |
 | Union-Find | O(α(n)) | O(n) | Path compression maintains roots |
 
 ## Contributing
