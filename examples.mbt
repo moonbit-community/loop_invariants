@@ -378,8 +378,7 @@ fn dutch_flag(arr : Array[Int], pivot : Int) -> Unit {
     ),
     invariant: hi - mid >= 0,
     reasoning: (
-      #|INVARIANT 2 (Termination): Unprocessed region shrinks.
-      #|
+      #|INVARIANT 2 (Termination + Partition Property):
       #|The unprocessed region is [mid, hi). Its size = hi - mid.
       #|
       #|Each case reduces this:
@@ -388,6 +387,25 @@ fn dutch_flag(arr : Array[Int], pivot : Int) -> Unit {
       #|  - arr[mid] == pivot: mid+1, hi → size decreases by 1
       #|
       #|Terminates when mid >= hi (size = 0).
+      #|
+      #|DEEPER INSIGHT (Complete Partition Invariant):
+      #|At any point during execution:
+      #|  ∀i ∈ [0, lo):    arr[i] < pivot
+      #|  ∀i ∈ [lo, mid):  arr[i] == pivot
+      #|  ∀i ∈ [mid, hi):  unprocessed
+      #|  ∀i ∈ [hi, n):    arr[i] > pivot
+      #|
+      #|This 4-region invariant fully specifies the algorithm state.
+      #|
+      #|WHY DIJKSTRA'S ALGORITHM IS ELEGANT:
+      #|1. Single scan: O(n) time with 3 pointers
+      #|2. In-place: O(1) extra space
+      #|3. Stable for == region (elements keep relative order)
+      #|
+      #|APPLICATION: QuickSort with many duplicates.
+      #|Standard quicksort degrades to O(n²) when many elements equal pivot.
+      #|3-way partition handles duplicates in O(n) per level, keeping
+      #|overall complexity at O(n log n) even for duplicate-heavy inputs.
     ),
   }
 }
@@ -482,6 +500,26 @@ fn kadane(arr : ArrayView[Int]) -> Int {
       #|Taking max gives global optimum for arr[0..i+1). ✓
       #|
       #|At termination (i = len), max_so_far is optimal for entire array.
+      #|
+      #|DEEPER INSIGHT (Optimal Substructure):
+      #|Kadane's algorithm works because of this key observation:
+      #|
+      #|Let MSS(i) = max subarray sum ending at position i.
+      #|Then MSS(i) = max(arr[i], MSS(i-1) + arr[i])
+      #|
+      #|This recurrence captures the decision: either start fresh at i,
+      #|or extend the best subarray ending at i-1.
+      #|
+      #|The global answer is max(MSS(0), MSS(1), ..., MSS(n-1)).
+      #|
+      #|WHY GREEDY WORKS HERE:
+      #|If MSS(i-1) < 0, extending it only makes things worse.
+      #|So the optimal decision at each position is LOCAL.
+      #|This transforms an O(n³) brute-force or O(n²) DP into O(n).
+      #|
+      #|HISTORICAL NOTE: This algorithm is often attributed to Kadane (1984),
+      #|but similar ideas appeared earlier. It's a beautiful example of
+      #|how the right invariant reveals the algorithm's essence.
     ),
   }
 }
