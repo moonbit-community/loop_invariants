@@ -45,6 +45,8 @@ This repository demonstrates that:
 | `examples_mos_algorithm.mbt` | Square Root Decomposition | Mo's Algorithm, LCA, Binary Lifting, Centroid |
 | `examples_convex_hull_trick.mbt` | DP Optimization | CHT, Li Chao Tree, Divide-Conquer DP, Knuth |
 | `examples_network_flow.mbt` | Network Flow | Edmonds-Karp, Dinic, MCMF, Hungarian |
+| `examples_fft.mbt` | Polynomial Multiplication | FFT, NTT, Convolution |
+| `examples_trie.mbt` | String Data Structures | Trie, Aho-Corasick, XOR Trie, Radix Tree |
 
 ## Featured Insights
 
@@ -183,6 +185,8 @@ moon fmt
 | Convex Hull Trick | O(n) / O(log n) | O(n) | Lines sorted by slope, query monotonic |
 | Dinic's Flow | O(V²E) | O(V + E) | Blocking flow on level graph |
 | Hungarian | O(n³) | O(n²) | Augmenting paths via potentials |
+| FFT Multiply | O(n log n) | O(n) | Butterfly operations double each level |
+| Aho-Corasick | O(n + m + z) | O(m) | Failure links to longest suffix-prefix |
 
 ## Contributing
 
