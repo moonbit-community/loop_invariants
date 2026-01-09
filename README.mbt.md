@@ -41,6 +41,10 @@ This repository demonstrates that:
 | `examples_dp.mbt` | Dynamic Programming | Knapsack, LIS, LCS, Matrix chain |
 | `examples_more_graph.mbt` | Advanced Graph | Bellman-Ford, Floyd-Warshall, MST |
 | `examples_bit_game.mbt` | Bits & Games | XOR tricks, Nim, Sprague-Grundy |
+| `examples_suffix_array.mbt` | Suffix Arrays | SA construction, LCP, BWT, Pattern search |
+| `examples_mos_algorithm.mbt` | Square Root Decomposition | Mo's Algorithm, LCA, Binary Lifting, Centroid |
+| `examples_convex_hull_trick.mbt` | DP Optimization | CHT, Li Chao Tree, Divide-Conquer DP, Knuth |
+| `examples_network_flow.mbt` | Network Flow | Edmonds-Karp, Dinic, MCMF, Hungarian |
 
 ## Featured Insights
 
@@ -84,9 +88,43 @@ For "next greater element" problems:
 **Invariant**: Stack maintains indices in decreasing order of their values.
 **Key insight**: Each element is pushed and popped at most once → O(n) amortized.
 
+### Suffix Array via Doubling
+
+The suffix array construction uses a clever doubling technique:
+
+```
+Round k: Sort suffixes by their first 2^k characters
+Using: (rank[i], rank[i + 2^(k-1)]) as comparison key
+```
+
+**Invariant**: After round k, `rank[i]` gives the relative order of suffix i among all suffixes when comparing only first 2^k characters.
+
+### Mo's Algorithm for Offline Queries
+
+Mo's Algorithm achieves O((n + q)√n) by reordering queries:
+
+```
+Sort queries by (left / √n, right)
+Process in order, extending/shrinking range incrementally
+```
+
+**Invariant**: Total pointer movement is O(n√n) because left pointer moves O(n) per block, right pointer moves O(n) total per block.
+
+### Network Flow Duality
+
+In max-flow problems, the key insight is flow conservation:
+
+```
+For each vertex v (except source/sink):
+  Σ(flow into v) = Σ(flow out of v)
+```
+
+**Invariant**: At each iteration, current flow is valid (respects capacities and conservation), and residual graph represents remaining capacity.
+
 ## MoonBit Loop Invariant Syntax
 
 ```moonbit
+///|
 fn algorithm(input : Array[Int]) -> Int {
   for i = 0, result = initial_value; i < n; i = i + 1, result = update(result) {
     // loop body
@@ -140,6 +178,11 @@ moon fmt
 | Nim Game | O(n) | O(1) | XOR = 0 iff losing position |
 | Sprague-Grundy | O(n × moves) | O(n) | sg = mex of reachable positions |
 | Union-Find | O(α(n)) | O(n) | Path compression maintains roots |
+| Suffix Array | O(n log n) | O(n) | Sorted suffixes by doubling |
+| Mo's Algorithm | O((n + q)√n) | O(n) | Query order minimizes pointer moves |
+| Convex Hull Trick | O(n) / O(log n) | O(n) | Lines sorted by slope, query monotonic |
+| Dinic's Flow | O(V²E) | O(V + E) | Blocking flow on level graph |
+| Hungarian | O(n³) | O(n²) | Augmenting paths via potentials |
 
 ## Contributing
 
