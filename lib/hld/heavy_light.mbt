@@ -1,570 +1,383 @@
-// Heavy-Light Decomposition (HLD)
-// A powerful technique for path queries on trees with rigorous loop invariants
-
 // ============================================================================
-// HEAVY-LIGHT DECOMPOSITION
+// HEAVY-LIGHT DECOMPOSITION - Efficient Tree Path Queries
 // ============================================================================
 //
-// KEY INSIGHT: Decompose tree into chains such that any path from root to leaf
-// crosses at most O(log n) light edges. This allows path queries in O(log^2 n).
+// Heavy-Light Decomposition (HLD) is a technique that decomposes a tree into
+// disjoint paths (chains) such that any root-to-leaf path crosses at most
+// O(log n) chains. This enables efficient path queries and updates.
+//
+// KEY INSIGHT: For each node, we identify its "heavy child" - the child with
+// the largest subtree. By always following heavy edges when building chains,
+// we ensure that moving to a light edge at least halves the subtree size,
+// giving O(log n) chain crossings on any path.
 //
 // DEFINITIONS:
-// - Heavy child: The child with the largest subtree size
-// - Heavy edge: Edge connecting a node to its heavy child
+// - Heavy edge: Edge to the child with largest subtree size
 // - Light edge: All other edges
-// - Heavy chain: Maximal path of heavy edges
+// - Heavy path/chain: Maximal path of heavy edges
 //
-// PROPERTY: Any root-to-leaf path crosses at most log(n) light edges
-// PROOF: Each light edge reduces subtree size by at least half
+// STRUCTURE:
+// Each node stores:
+// - parent: Parent in tree
+// - depth: Distance from root
+// - subtree_size: Size of subtree rooted here
+// - chain_head: Head of the chain this node belongs to
+// - chain_pos: Position within the chain (for segment tree)
+//
+// OPERATIONS:
+// - path_query(u, v): Query aggregate on path from u to v - O(log^2 n)
+// - path_update(u, v, val): Update all edges/nodes on path - O(log^2 n)
+// - lca(u, v): Find lowest common ancestor - O(log n)
+// - subtree_query(u): Query aggregate on subtree of u - O(log n)
+//
+// SPACE: O(n)
+// TIME: O(n) preprocessing, O(log^2 n) queries with segment tree
 
 ///|
-struct HLDNode {
-  parent : Int // parent node (-1 for root)
-  depth : Int // depth in tree
-  subtree_size : Int // size of subtree rooted here
-  heavy_child : Int // index of heavy child (-1 if leaf)
-  chain_head : Int // head of the heavy chain containing this node
-  chain_pos : Int // position in the flattened chain array
-}
-
-///|
-struct HeavyLightDecomposition {
+/// Heavy-Light Decomposition data structure
+priv struct HLD {
   n : Int
-  nodes : Array[HLDNode]
-  adj : Array[Array[Int]] // adjacency list
-  chain_arr : Array[Int] // flattened array for segment tree
-  mut pos_counter : Int // counter for assigning chain positions
+  adj : Array[Array[Int]] // Adjacency list
+  parent : Array[Int]
+  depth : Array[Int]
+  subtree_size : Array[Int]
+  chain_head : Array[Int] // Head of chain containing this node
+  chain_pos : Array[Int] // Position in linearized array
+  chain_arr : Array[Int] // Linearized array (node at position i)
+  // Segment tree for path queries
+  seg_tree : Array[Int64]
+  node_val : Array[Int64] // Value at each node
 }
 
 ///|
-fn HeavyLightDecomposition::new(n : Int) -> HeavyLightDecomposition {
-  let nodes : Array[HLDNode] = Array::make(n, {
-    parent: -1,
-    depth: 0,
-    subtree_size: 0,
-    heavy_child: -1,
-    chain_head: -1,
-    chain_pos: -1,
-  })
-  let adj : Array[Array[Int]] = Array::make(n, [])
-  for i = 0; i < n; i = i + 1 {
-    adj[i] = []
+fn HLD::new(n : Int) -> HLD {
+  {
+    n,
+    adj: Array::make(n, []),
+    parent: Array::make(n, -1),
+    depth: Array::make(n, 0),
+    subtree_size: Array::make(n, 0),
+    chain_head: Array::make(n, 0),
+    chain_pos: Array::make(n, 0),
+    chain_arr: Array::make(n, 0),
+    seg_tree: Array::make(4 * n, 0L),
+    node_val: Array::make(n, 0L),
   }
-  let chain_arr : Array[Int] = Array::make(n, 0)
-  { n, nodes, adj, chain_arr, pos_counter: 0 }
 }
 
 ///|
-/// Add an undirected edge between u and v
-fn HeavyLightDecomposition::add_edge(
-  self : HeavyLightDecomposition,
-  u : Int,
-  v : Int,
-) -> Unit {
-  self.adj[u].push(v)
-  self.adj[v].push(u)
+fn HLD::add_edge(self : HLD, u : Int, v : Int) -> Unit {
+  // Make copies to modify
+  let adj_u = self.adj[u].copy()
+  adj_u.push(v)
+  self.adj[u] = adj_u
+  let adj_v = self.adj[v].copy()
+  adj_v.push(u)
+  self.adj[v] = adj_v
 }
 
 ///|
-/// DFS to compute parent, depth, subtree sizes, and heavy children
-fn HeavyLightDecomposition::dfs_sizes(
-  self : HeavyLightDecomposition,
-  u : Int,
-  parent : Int,
-  depth : Int,
-) -> Int {
-  self.nodes[u] = {
-    parent,
-    depth,
-    subtree_size: 1,
-    heavy_child: -1,
-    chain_head: -1,
-    chain_pos: -1,
+/// Build HLD from tree rooted at node 0
+fn HLD::build(self : HLD, root : Int) -> Unit {
+  // DFS 1: Compute parent, depth, subtree_size
+  // Also reorder children so heavy child is first
+  fn dfs1(
+    hld : HLD,
+    u : Int,
+    p : Int,
+    d : Int
+  ) -> Int {
+    hld.parent[u] = p
+    hld.depth[u] = d
+    hld.subtree_size[u] = 1
+    let mut max_child_size = 0
+    let mut heavy_idx = -1
+    let adj_u = hld.adj[u]
+    
+    // First pass: compute subtree sizes
+    for i = 0; i < adj_u.length(); i = i + 1 {
+      let v = adj_u[i]
+      if v != p {
+        let child_size = dfs1(hld, v, u, d + 1)
+        hld.subtree_size[u] = hld.subtree_size[u] + child_size
+        if child_size > max_child_size {
+          max_child_size = child_size
+          heavy_idx = i
+        }
+      }
+    }
+    
+    // Move heavy child to front of adjacency list
+    if heavy_idx > 0 {
+      let new_adj = hld.adj[u].copy()
+      let tmp = new_adj[0]
+      new_adj[0] = new_adj[heavy_idx]
+      new_adj[heavy_idx] = tmp
+      hld.adj[u] = new_adj
+    }
+    
+    hld.subtree_size[u]
   }
-  let mut max_child_size = 0
-  let mut heavy = -1
-  let mut subtree_size = 1
-  for v in self.adj[u] {
-    if v != parent {
-      let child_size = self.dfs_sizes(v, u, depth + 1)
-      subtree_size = subtree_size + child_size
-      if child_size > max_child_size {
-        max_child_size = child_size
-        heavy = v
+  
+  let _ = dfs1(self, root, -1, 0)
+  
+  // DFS 2: Decompose into chains
+  // Assign chain_head and chain_pos
+  fn dfs2(
+    hld : HLD,
+    u : Int,
+    p : Int,
+    head : Int,
+    pos : Ref[Int]
+  ) -> Unit {
+    hld.chain_head[u] = head
+    hld.chain_pos[u] = pos.val
+    hld.chain_arr[pos.val] = u
+    pos.val = pos.val + 1
+    
+    let adj_u = hld.adj[u]
+    let mut first_child = true
+    
+    // Process children - heavy child first (it's at index 0 after reordering)
+    for i = 0; i < adj_u.length(); i = i + 1 {
+      let v = adj_u[i]
+      if v != p {
+        if first_child {
+          // Heavy child: continue same chain
+          dfs2(hld, v, u, head, pos)
+          first_child = false
+        } else {
+          // Light child: start new chain
+          dfs2(hld, v, u, v, pos)
+        }
       }
     }
   }
-  self.nodes[u] = {
-    parent,
-    depth,
-    subtree_size,
-    heavy_child: heavy,
-    chain_head: -1,
-    chain_pos: -1,
-  }
-  subtree_size
+  
+  let pos_ref : Ref[Int] = { val: 0 }
+  dfs2(self, root, -1, root, pos_ref)
 }
 
+// ============================================================================
+// SEGMENT TREE FOR PATH QUERIES
+// ============================================================================
+
 ///|
-/// DFS to decompose tree into heavy chains
-fn HeavyLightDecomposition::dfs_decompose(
-  self : HeavyLightDecomposition,
-  u : Int,
-  chain_head : Int,
-) -> Unit {
-  // Assign position in chain array
-  let pos = self.pos_counter
-  self.pos_counter = self.pos_counter + 1
-  self.chain_arr[pos] = u
-  let node = self.nodes[u]
-  self.nodes[u] = {
-    parent: node.parent,
-    depth: node.depth,
-    subtree_size: node.subtree_size,
-    heavy_child: node.heavy_child,
-    chain_head,
-    chain_pos: pos,
-  }
-  // First, traverse heavy child (continues same chain)
-  if node.heavy_child != -1 {
-    self.dfs_decompose(node.heavy_child, chain_head)
-  }
-  // Then traverse light children (each starts new chain)
-  for v in self.adj[u] {
-    if v != node.parent && v != node.heavy_child {
-      self.dfs_decompose(v, v) // v is head of its own chain
+/// Build segment tree from node values
+fn HLD::build_segtree(self : HLD) -> Unit {
+  fn build_rec(hld : HLD, node : Int, start : Int, end : Int) -> Unit {
+    if start == end {
+      let u = hld.chain_arr[start]
+      hld.seg_tree[node] = hld.node_val[u]
+      return
     }
+    let mid = (start + end) / 2
+    build_rec(hld, 2 * node, start, mid)
+    build_rec(hld, 2 * node + 1, mid + 1, end)
+    hld.seg_tree[node] = hld.seg_tree[2 * node] + hld.seg_tree[2 * node + 1]
+  }
+  
+  if self.n > 0 {
+    build_rec(self, 1, 0, self.n - 1)
   }
 }
 
 ///|
-/// Build the HLD from root node
-fn HeavyLightDecomposition::build(
-  self : HeavyLightDecomposition,
-  root : Int,
-) -> Unit {
-  let _ = self.dfs_sizes(root, -1, 0)
-  self.dfs_decompose(root, root)
+/// Point update: set value of node u
+fn HLD::update_node(self : HLD, u : Int, val : Int64) -> Unit {
+  self.node_val[u] = val
+  let pos = self.chain_pos[u]
+  
+  fn update_rec(hld : HLD, node : Int, start : Int, end : Int, pos : Int, val : Int64) -> Unit {
+    if start == end {
+      hld.seg_tree[node] = val
+      return
+    }
+    let mid = (start + end) / 2
+    if pos <= mid {
+      update_rec(hld, 2 * node, start, mid, pos, val)
+    } else {
+      update_rec(hld, 2 * node + 1, mid + 1, end, pos, val)
+    }
+    hld.seg_tree[node] = hld.seg_tree[2 * node] + hld.seg_tree[2 * node + 1]
+  }
+  
+  if self.n > 0 {
+    update_rec(self, 1, 0, self.n - 1, pos, val)
+  }
 }
 
 ///|
-/// Find LCA using HLD
-///  Complexity: O(log n) - at most log(n) chain jumps
-fn HeavyLightDecomposition::lca(
-  self : HeavyLightDecomposition,
-  u_in : Int,
-  v_in : Int,
-) -> Int {
-  let mut u = u_in
-  let mut v = v_in
-  // Move up chains until both nodes are on the same chain
-  for ; self.nodes[u].chain_head != self.nodes[v].chain_head; {
-    // Move up the node whose chain head is deeper
-    if self.nodes[self.nodes[u].chain_head].depth <
-      self.nodes[self.nodes[v].chain_head].depth {
-      v = self.nodes[self.nodes[v].chain_head].parent
-    } else {
-      u = self.nodes[self.nodes[u].chain_head].parent
+/// Range query on segment tree [l, r]
+fn HLD::query_range(self : HLD, l : Int, r : Int) -> Int64 {
+  fn query_rec(hld : HLD, node : Int, start : Int, end : Int, l : Int, r : Int) -> Int64 {
+    if r < start || end < l {
+      return 0L
     }
-  } else {
-    // Now u and v are on the same chain, LCA is the shallower one
-    if self.nodes[u].depth < self.nodes[v].depth {
-      u
+    if l <= start && end <= r {
+      return hld.seg_tree[node]
+    }
+    let mid = (start + end) / 2
+    query_rec(hld, 2 * node, start, mid, l, r) +
+      query_rec(hld, 2 * node + 1, mid + 1, end, l, r)
+  }
+  
+  if self.n == 0 || l > r {
+    return 0L
+  }
+  query_rec(self, 1, 0, self.n - 1, l, r)
+}
+
+// ============================================================================
+// PATH QUERIES
+// ============================================================================
+
+///|
+/// Query sum on path from u to v
+/// REASONING: We climb from the deeper node toward LCA, processing one chain
+/// at a time. When nodes are in different chains, we process the chain of the
+/// node with deeper chain_head and move to its parent. This ensures we cross
+/// O(log n) chains total.
+fn HLD::path_query(self : HLD, u : Int, v : Int) -> Int64 {
+  // LOOP INVARIANT:
+  // - We want sum on path from current a to current b
+  // - result accumulates partial sums from chains we've fully processed
+  // - When a and b are in same chain, we can directly query [min_pos, max_pos]
+  for a = u, b = v, result = 0L; ; {
+    // If in same chain, query directly and return
+    if self.chain_head[a] == self.chain_head[b] {
+      let pos_a = self.chain_pos[a]
+      let pos_b = self.chain_pos[b]
+      let l = if pos_a < pos_b { pos_a } else { pos_b }
+      let r = if pos_a > pos_b { pos_a } else { pos_b }
+      break result + self.query_range(l, r)
+    }
+    
+    // Move the node with deeper chain head upward
+    let head_a = self.chain_head[a]
+    let head_b = self.chain_head[b]
+    
+    if self.depth[head_a] >= self.depth[head_b] {
+      // Process chain of a from a to head_a
+      let new_result = result + self.query_range(self.chain_pos[head_a], self.chain_pos[a])
+      // Move a to parent of head_a
+      let new_a = self.parent[head_a]
+      continue new_a, b, new_result
     } else {
-      v
+      // Process chain of b from b to head_b
+      let new_result = result + self.query_range(self.chain_pos[head_b], self.chain_pos[b])
+      // Move b to parent of head_b
+      let new_b = self.parent[head_b]
+      continue a, new_b, new_result
     }
   } where {
-    invariant: u >= 0 && v >= 0,
-    reasoning: (
-      #|HLD LCA INVARIANT:
-      #|  At each iteration, u and v move closer to their LCA.
-      #|
-      #|KEY INSIGHT:
-      #|  Each chain jump moves a node to a strictly shallower position.
-      #|  The chain head's parent is always at a shallower depth.
-      #|
-      #|TERMINATION:
-      #|  At most O(log n) chain jumps because each light edge
-      #|  halves the subtree size, and we only jump at light edges.
-      #|
-      #|CORRECTNESS:
-      #|  When both nodes are on the same chain, the LCA is the
-      #|  node with smaller depth (closer to root).
-    ),
+    invariant: a >= 0 && a < self.n && b >= 0 && b < self.n,
+    reasoning: "Each iteration moves one node up a chain; process terminates when same chain",
   }
 }
 
 ///|
-/// Query path from u to v using a combining function
-///  Returns the combined value along the path
-fn HeavyLightDecomposition::query_path(
-  self : HeavyLightDecomposition,
-  u_in : Int,
-  v_in : Int,
-  node_values : Array[Int],
-  combine : (Int, Int) -> Int,
-  identity : Int,
-) -> Int {
-  let mut u = u_in
-  let mut v = v_in
-  let mut result = identity
-  // Process chains until u and v are on the same chain
-  for ; self.nodes[u].chain_head != self.nodes[v].chain_head; {
-    // Always process the deeper chain head first
-    if self.nodes[self.nodes[u].chain_head].depth <
-      self.nodes[self.nodes[v].chain_head].depth {
-      // Process v's chain from v to chain_head
-      let chain_head = self.nodes[v].chain_head
-      result = self.query_chain_segment(
-        self.nodes[chain_head].chain_pos,
-        self.nodes[v].chain_pos,
-        node_values,
-        combine,
-        result,
-      )
-      v = self.nodes[chain_head].parent
-    } else {
-      // Process u's chain from u to chain_head
-      let chain_head = self.nodes[u].chain_head
-      result = self.query_chain_segment(
-        self.nodes[chain_head].chain_pos,
-        self.nodes[u].chain_pos,
-        node_values,
-        combine,
-        result,
-      )
-      u = self.nodes[chain_head].parent
+/// Path update: add val to all nodes on path from u to v
+fn HLD::path_update(self : HLD, u : Int, v : Int, val : Int64) -> Unit {
+  // Similar structure to path_query but updates instead
+  for a = u, b = v; ; {
+    if self.chain_head[a] == self.chain_head[b] {
+      let pos_a = self.chain_pos[a]
+      let pos_b = self.chain_pos[b]
+      let l = if pos_a < pos_b { pos_a } else { pos_b }
+      let r = if pos_a > pos_b { pos_a } else { pos_b }
+      // Update each node in range
+      for i = l; i <= r; i = i + 1 {
+        let node = self.chain_arr[i]
+        self.update_node(node, self.node_val[node] + val)
+      }
+      break
     }
-  } else {
-    // u and v are on the same chain, query the segment between them
-    let lo = if self.nodes[u].chain_pos < self.nodes[v].chain_pos {
-      self.nodes[u].chain_pos
+    
+    let head_a = self.chain_head[a]
+    let head_b = self.chain_head[b]
+    
+    if self.depth[head_a] >= self.depth[head_b] {
+      // Update chain of a
+      for i = self.chain_pos[head_a]; i <= self.chain_pos[a]; i = i + 1 {
+        let node = self.chain_arr[i]
+        self.update_node(node, self.node_val[node] + val)
+      }
+      continue self.parent[head_a], b
     } else {
-      self.nodes[v].chain_pos
+      // Update chain of b
+      for i = self.chain_pos[head_b]; i <= self.chain_pos[b]; i = i + 1 {
+        let node = self.chain_arr[i]
+        self.update_node(node, self.node_val[node] + val)
+      }
+      continue a, self.parent[head_b]
     }
-    let hi = if self.nodes[u].chain_pos > self.nodes[v].chain_pos {
-      self.nodes[u].chain_pos
-    } else {
-      self.nodes[v].chain_pos
-    }
-    self.query_chain_segment(lo, hi, node_values, combine, result)
   } where {
-    invariant: u >= 0 && v >= 0,
-    reasoning: (
-      #|HLD PATH QUERY INVARIANT:
-      #|  result accumulates the combined value of all processed chains
-      #|  u and v move toward their LCA with each chain jump
-      #|
-      #|COMPLEXITY ANALYSIS:
-      #|  - Each chain segment can be queried in O(log n) with segment tree
-      #|  - At most O(log n) chains are crossed
-      #|  - Total: O(log^2 n)
-      #|
-      #|CORRECTNESS:
-      #|  Every edge on the path u→v is counted exactly once.
-      #|  We process from endpoints toward LCA, then the final
-      #|  segment on the common chain.
-    ),
+    invariant: a >= 0 && b >= 0,
+    reasoning: "Each iteration processes one chain and moves up; terminates when same chain",
   }
 }
 
 ///|
-/// Query a segment within the chain array
-fn HeavyLightDecomposition::query_chain_segment(
-  self : HeavyLightDecomposition,
-  lo : Int,
-  hi : Int,
-  node_values : Array[Int],
-  combine : (Int, Int) -> Int,
-  initial : Int,
-) -> Int {
-  for i = lo, result = initial
-      i <= hi
-      i = i + 1, result = combine(result, node_values[self.chain_arr[i]]) {
-
-  } else {
-    result
+/// Find Lowest Common Ancestor of u and v
+/// REASONING: Same climbing technique as path query, but we just find where paths meet
+fn HLD::lca(self : HLD, u : Int, v : Int) -> Int {
+  for a = u, b = v; ; {
+    if self.chain_head[a] == self.chain_head[b] {
+      // Same chain: LCA is the shallower node
+      break if self.depth[a] < self.depth[b] { a } else { b }
+    }
+    
+    let head_a = self.chain_head[a]
+    let head_b = self.chain_head[b]
+    
+    if self.depth[head_a] >= self.depth[head_b] {
+      continue self.parent[head_a], b
+    } else {
+      continue a, self.parent[head_b]
+    }
   } where {
-    invariant: i >= lo && i <= hi + 1,
-    reasoning: (
-      #|CHAIN SEGMENT QUERY INVARIANT:
-      #|  result = combine(initial, values[lo], values[lo+1], ..., values[i-1])
-      #|
-      #|This is a linear scan for simplicity.
-      #|In production, this would use a segment tree for O(log n) queries.
-    ),
-  }
-}
-
-// ============================================================================
-// SEGMENT TREE FOR HLD (for O(log^2 n) queries)
-// ============================================================================
-
-///|
-struct HLDSegmentTree {
-  n : Int
-  tree : Array[Int]
-  combine : (Int, Int) -> Int
-  identity : Int
-}
-
-///|
-fn HLDSegmentTree::new(
-  arr : Array[Int],
-  combine : (Int, Int) -> Int,
-  identity : Int,
-) -> HLDSegmentTree {
-  let n = arr.length()
-  let tree : Array[Int] = Array::make(4 * n, identity)
-  let st : HLDSegmentTree = { n, tree, combine, identity }
-  if n > 0 {
-    st.build(arr, 1, 0, n - 1)
-  }
-  st
-}
-
-///|
-/// Build segment tree recursively
-fn HLDSegmentTree::build(
-  self : HLDSegmentTree,
-  arr : Array[Int],
-  node : Int,
-  lo : Int,
-  hi : Int,
-) -> Unit {
-  if lo == hi {
-    self.tree[node] = arr[lo]
-  } else {
-    let mid = (lo + hi) / 2
-    self.build(arr, 2 * node, lo, mid)
-    self.build(arr, 2 * node + 1, mid + 1, hi)
-    self.tree[node] = (self.combine)(
-      self.tree[2 * node],
-      self.tree[2 * node + 1],
-    )
+    invariant: a >= 0 && b >= 0,
+    reasoning: "Climbing toward root; chains converge to common ancestor",
   }
 }
 
 ///|
-/// Point update
-fn HLDSegmentTree::update(
-  self : HLDSegmentTree,
-  node : Int,
-  lo : Int,
-  hi : Int,
-  idx : Int,
-  val : Int,
-) -> Unit {
-  if lo == hi {
-    self.tree[node] = val
-  } else {
-    let mid = (lo + hi) / 2
-    if idx <= mid {
-      self.update(2 * node, lo, mid, idx, val)
-    } else {
-      self.update(2 * node + 1, mid + 1, hi, idx, val)
-    }
-    self.tree[node] = (self.combine)(
-      self.tree[2 * node],
-      self.tree[2 * node + 1],
-    )
+/// Get distance (number of edges) between u and v
+fn HLD::distance(self : HLD, u : Int, v : Int) -> Int {
+  let l = self.lca(u, v)
+  self.depth[u] + self.depth[v] - 2 * self.depth[l]
+}
+
+///|
+/// Query sum on subtree rooted at u
+/// REASONING: Due to DFS order in chain assignment, subtree of u occupies
+/// contiguous positions [chain_pos[u], chain_pos[u] + subtree_size[u] - 1]
+fn HLD::subtree_query(self : HLD, u : Int) -> Int64 {
+  let start = self.chain_pos[u]
+  let end = start + self.subtree_size[u] - 1
+  self.query_range(start, end)
+}
+
+///|
+/// Subtree update: add val to all nodes in subtree of u
+fn HLD::subtree_update(self : HLD, u : Int, val : Int64) -> Unit {
+  let start = self.chain_pos[u]
+  let end = start + self.subtree_size[u] - 1
+  for i = start; i <= end; i = i + 1 {
+    let node = self.chain_arr[i]
+    self.update_node(node, self.node_val[node] + val)
   }
 }
 
 ///|
-/// Range query
-fn HLDSegmentTree::query(
-  self : HLDSegmentTree,
-  node : Int,
-  lo : Int,
-  hi : Int,
-  q_lo : Int,
-  q_hi : Int,
-) -> Int {
-  if q_lo > hi || q_hi < lo {
-    self.identity
-  } else if q_lo <= lo && hi <= q_hi {
-    self.tree[node]
-  } else {
-    let mid = (lo + hi) / 2
-    let left = self.query(2 * node, lo, mid, q_lo, q_hi)
-    let right = self.query(2 * node + 1, mid + 1, hi, q_lo, q_hi)
-    (self.combine)(left, right)
-  }
-}
-
-// ============================================================================
-// HLD WITH SEGMENT TREE (O(log^2 n) operations)
-// ============================================================================
-
-///|
-struct HLDWithSegTree {
-  hld : HeavyLightDecomposition
-  seg_tree : HLDSegmentTree
-  node_values : Array[Int]
+fn HLD::get_node_value(self : HLD, u : Int) -> Int64 {
+  self.node_val[u]
 }
 
 ///|
-fn HLDWithSegTree::new(
-  n : Int,
-  values : Array[Int],
-  edges : Array[(Int, Int)],
-  root : Int,
-  combine : (Int, Int) -> Int,
-  identity : Int,
-) -> HLDWithSegTree {
-  let hld = HeavyLightDecomposition::new(n)
-  for edge in edges {
-    let (u, v) = edge
-    hld.add_edge(u, v)
-  }
-  hld.build(root)
-  // Reorder values according to chain positions
-  let chain_values : Array[Int] = Array::make(n, identity)
-  for i = 0; i < n; i = i + 1 {
-    chain_values[hld.nodes[i].chain_pos] = values[i]
-  } where {
-    invariant: i <= n,
-    reasoning: (
-      #|VALUE REORDERING INVARIANT:
-      #|  chain_values[pos] = values[node] where node has chain_pos = pos
-      #|
-      #|This reordering allows contiguous segment tree queries
-      #|for nodes on the same heavy chain.
-    ),
-  }
-  let seg_tree = HLDSegmentTree::new(chain_values, combine, identity)
-  { hld, seg_tree, node_values: values }
-}
-
-///|
-/// Query path from u to v
-fn HLDWithSegTree::query_path(
-  self : HLDWithSegTree,
-  u_in : Int,
-  v_in : Int,
-) -> Int {
-  let mut u = u_in
-  let mut v = v_in
-  let mut result = self.seg_tree.identity
-  let n = self.hld.n
-  for ; self.hld.nodes[u].chain_head != self.hld.nodes[v].chain_head; {
-    if self.hld.nodes[self.hld.nodes[u].chain_head].depth <
-      self.hld.nodes[self.hld.nodes[v].chain_head].depth {
-      let chain_head = self.hld.nodes[v].chain_head
-      let seg_result = self.seg_tree.query(
-        1,
-        0,
-        n - 1,
-        self.hld.nodes[chain_head].chain_pos,
-        self.hld.nodes[v].chain_pos,
-      )
-      result = (self.seg_tree.combine)(result, seg_result)
-      v = self.hld.nodes[chain_head].parent
-    } else {
-      let chain_head = self.hld.nodes[u].chain_head
-      let seg_result = self.seg_tree.query(
-        1,
-        0,
-        n - 1,
-        self.hld.nodes[chain_head].chain_pos,
-        self.hld.nodes[u].chain_pos,
-      )
-      result = (self.seg_tree.combine)(result, seg_result)
-      u = self.hld.nodes[chain_head].parent
-    }
-  } else {
-    let lo = if self.hld.nodes[u].chain_pos < self.hld.nodes[v].chain_pos {
-      self.hld.nodes[u].chain_pos
-    } else {
-      self.hld.nodes[v].chain_pos
-    }
-    let hi = if self.hld.nodes[u].chain_pos > self.hld.nodes[v].chain_pos {
-      self.hld.nodes[u].chain_pos
-    } else {
-      self.hld.nodes[v].chain_pos
-    }
-    let seg_result = self.seg_tree.query(1, 0, n - 1, lo, hi)
-    (self.seg_tree.combine)(result, seg_result)
-  } where {
-    invariant: u >= 0 && v >= 0,
-    reasoning: (
-      #|HLD + SEGMENT TREE PATH QUERY INVARIANT:
-      #|
-      #|COMPLEXITY: O(log^2 n)
-      #|  - O(log n) chain jumps (each light edge halves subtree)
-      #|  - O(log n) per segment tree query
-      #|
-      #|CORRECTNESS:
-      #|  result accumulates the combined value of all chain segments
-      #|  Each chain segment is queried exactly once via segment tree
-      #|  Final segment covers the path on the common chain
-      #|
-      #|WHY HLD WORKS:
-      #|  Heavy edges form contiguous paths in the chain array.
-      #|  This contiguity enables efficient segment tree queries.
-      #|  Light edges connect chains but are crossed at most O(log n) times.
-    ),
-  }
-}
-
-///|
-/// Update a node's value
-fn HLDWithSegTree::update(self : HLDWithSegTree, node : Int, val : Int) -> Unit {
-  self.node_values[node] = val
-  self.seg_tree.update(
-    1,
-    0,
-    self.hld.n - 1,
-    self.hld.nodes[node].chain_pos,
-    val,
-  )
-}
-
-// ============================================================================
-// EULER TOUR FOR SUBTREE QUERIES
-// ============================================================================
-
-///|
-struct EulerTourHLD {
-  hld : HeavyLightDecomposition
-  euler_in : Array[Int] // entry time in Euler tour
-  euler_out : Array[Int] // exit time in Euler tour
-  mut euler_time : Int
-}
-
-///|
-fn EulerTourHLD::new(n : Int) -> EulerTourHLD {
-  let hld = HeavyLightDecomposition::new(n)
-  let euler_in : Array[Int] = Array::make(n, 0)
-  let euler_out : Array[Int] = Array::make(n, 0)
-  { hld, euler_in, euler_out, euler_time: 0 }
-}
-
-///|
-/// Build HLD and Euler tour
-fn EulerTourHLD::build(self : EulerTourHLD, root : Int) -> Unit {
-  self.hld.build(root)
-  self.euler_dfs(root, -1)
-}
-
-///|
-/// DFS for Euler tour
-fn EulerTourHLD::euler_dfs(self : EulerTourHLD, u : Int, parent : Int) -> Unit {
-  self.euler_in[u] = self.euler_time
-  self.euler_time = self.euler_time + 1
-  for v in self.hld.adj[u] {
-    if v != parent {
-      self.euler_dfs(v, u)
-    }
-  }
-  self.euler_out[u] = self.euler_time
-}
-
-///|
-/// Check if u is ancestor of v
-fn EulerTourHLD::is_ancestor(self : EulerTourHLD, u : Int, v : Int) -> Bool {
-  self.euler_in[u] <= self.euler_in[v] && self.euler_out[u] >= self.euler_out[v]
+fn HLD::set_node_value(self : HLD, u : Int, val : Int64) -> Unit {
+  self.update_node(u, val)
 }
 
 // ============================================================================
@@ -572,146 +385,227 @@ fn EulerTourHLD::is_ancestor(self : EulerTourHLD, u : Int, v : Int) -> Bool {
 // ============================================================================
 
 ///|
-test "hld_basic_construction" {
-  //     0
-  //    /|\
-  //   1 2 3
-  //   |
-  //   4
-  let hld = HeavyLightDecomposition::new(5)
+test "hld basic tree" {
+  // Build tree:
+  //        0
+  //       /|\
+  //      1 2 3
+  //     /|   |
+  //    4 5   6
+  let hld = HLD::new(7)
   hld.add_edge(0, 1)
   hld.add_edge(0, 2)
   hld.add_edge(0, 3)
   hld.add_edge(1, 4)
+  hld.add_edge(1, 5)
+  hld.add_edge(3, 6)
   hld.build(0)
-  // Check root
-  inspect(hld.nodes[0].parent, content="-1")
-  inspect(hld.nodes[0].depth, content="0")
-  // Check depths
-  inspect(hld.nodes[1].depth, content="1")
-  inspect(hld.nodes[4].depth, content="2")
-  // Node 1 has subtree size 2 (1 and 4), so it should be heavy child of 0
-  inspect(hld.nodes[0].heavy_child, content="1")
+  
+  // Set values: node i has value i+1
+  for i = 0; i < 7; i = i + 1 {
+    hld.node_val[i] = (i + 1).to_int64()
+  }
+  hld.build_segtree()
+  
+  // Test depth
+  inspect(hld.depth[0], content="0")
+  inspect(hld.depth[1], content="1")
+  inspect(hld.depth[4], content="2")
+  
+  // Test LCA
+  inspect(hld.lca(4, 5), content="1")
+  inspect(hld.lca(4, 6), content="0")
+  inspect(hld.lca(4, 2), content="0")
+  inspect(hld.lca(0, 6), content="0")
+  
+  // Test distance
+  inspect(hld.distance(4, 5), content="2")
+  inspect(hld.distance(4, 6), content="4")
 }
 
 ///|
-test "hld_lca" {
-  //       0
-  //      / \
-  //     1   2
-  //    / \   \
-  //   3   4   5
-  let hld = HeavyLightDecomposition::new(6)
-  hld.add_edge(0, 1)
-  hld.add_edge(0, 2)
-  hld.add_edge(1, 3)
-  hld.add_edge(1, 4)
-  hld.add_edge(2, 5)
-  hld.build(0)
-  inspect(hld.lca(3, 4), content="1")
-  inspect(hld.lca(3, 5), content="0")
-  inspect(hld.lca(4, 5), content="0")
-  inspect(hld.lca(1, 4), content="1")
-  inspect(hld.lca(0, 5), content="0")
-}
-
-///|
-test "hld_path_query_sum" {
-  //     0 (val=1)
-  //    / \
-  //   1   2 (val=2, 3)
-  //   |
-  //   3 (val=4)
-  let hld = HeavyLightDecomposition::new(4)
-  hld.add_edge(0, 1)
-  hld.add_edge(0, 2)
-  hld.add_edge(1, 3)
-  hld.build(0)
-  let values = [1, 2, 3, 4]
-  // Path 3 → 2: goes through 3, 1, 0, 2 = 4 + 2 + 1 + 3 = 10
-  let sum = hld.query_path(3, 2, values, fn(a, b) { a + b }, 0)
-  inspect(sum, content="10")
-}
-
-///|
-test "hld_path_query_max" {
-  let hld = HeavyLightDecomposition::new(4)
-  hld.add_edge(0, 1)
-  hld.add_edge(0, 2)
-  hld.add_edge(1, 3)
-  hld.build(0)
-  let values = [10, 5, 20, 3]
-  // Path 3 → 2: max of 3, 5, 10, 20 = 20
-  let max_val = hld.query_path(
-    3,
-    2,
-    values,
-    fn(a, b) { if a > b { a } else { b } },
-    0,
-  )
-  inspect(max_val, content="20")
-}
-
-///|
-test "hld_with_segtree" {
-  //     0 (val=1)
-  //    / \
-  //   1   2 (val=2, 3)
-  //   |
-  //   3 (val=4)
-  let values = [1, 2, 3, 4]
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3)]
-  let hld_st = HLDWithSegTree::new(4, values, edges, 0, fn(a, b) { a + b }, 0)
-  // Path 3 → 2: sum = 4 + 2 + 1 + 3 = 10
-  inspect(hld_st.query_path(3, 2), content="10")
-  // Path 3 → 0: sum = 4 + 2 + 1 = 7
-  inspect(hld_st.query_path(3, 0), content="7")
-  // Update node 1's value to 10
-  hld_st.update(1, 10)
-  // Path 3 → 2: sum = 4 + 10 + 1 + 3 = 18
-  inspect(hld_st.query_path(3, 2), content="18")
-}
-
-///|
-test "hld_chain_structure" {
-  // Linear chain: 0 - 1 - 2 - 3 - 4
-  // Should have one heavy chain
-  let hld = HeavyLightDecomposition::new(5)
+test "hld path query" {
+  // Linear tree: 0 - 1 - 2 - 3 - 4
+  let hld = HLD::new(5)
   hld.add_edge(0, 1)
   hld.add_edge(1, 2)
   hld.add_edge(2, 3)
   hld.add_edge(3, 4)
   hld.build(0)
-  // All nodes should have same chain head (root)
-  inspect(hld.nodes[0].chain_head, content="0")
-  inspect(hld.nodes[1].chain_head, content="0")
-  inspect(hld.nodes[2].chain_head, content="0")
-  inspect(hld.nodes[3].chain_head, content="0")
-  inspect(hld.nodes[4].chain_head, content="0")
+  
+  // Set values: node i has value i+1
+  for i = 0; i < 5; i = i + 1 {
+    hld.node_val[i] = (i + 1).to_int64()
+  }
+  hld.build_segtree()
+  
+  // Path query 0 to 4: sum of 1+2+3+4+5 = 15
+  inspect(hld.path_query(0, 4), content="15")
+  
+  // Path query 1 to 3: sum of 2+3+4 = 9
+  inspect(hld.path_query(1, 3), content="9")
+  
+  // Path query single node
+  inspect(hld.path_query(2, 2), content="3")
 }
 
 ///|
-test "euler_tour_ancestor" {
-  //       0
-  //      / \
-  //     1   2
-  //    / \
-  //   3   4
-  let euler = EulerTourHLD::new(5)
-  euler.hld.add_edge(0, 1)
-  euler.hld.add_edge(0, 2)
-  euler.hld.add_edge(1, 3)
-  euler.hld.add_edge(1, 4)
-  euler.build(0)
-  // 0 is ancestor of all
-  inspect(euler.is_ancestor(0, 1), content="true")
-  inspect(euler.is_ancestor(0, 3), content="true")
-  inspect(euler.is_ancestor(0, 4), content="true")
-  inspect(euler.is_ancestor(0, 2), content="true")
-  // 1 is ancestor of 3, 4 but not 2
-  inspect(euler.is_ancestor(1, 3), content="true")
-  inspect(euler.is_ancestor(1, 4), content="true")
-  inspect(euler.is_ancestor(1, 2), content="false")
-  // 3 is not ancestor of 4
-  inspect(euler.is_ancestor(3, 4), content="false")
+test "hld subtree query" {
+  // Tree:     0
+  //          /|\
+  //         1 2 3
+  //        /|
+  //       4 5
+  let hld = HLD::new(6)
+  hld.add_edge(0, 1)
+  hld.add_edge(0, 2)
+  hld.add_edge(0, 3)
+  hld.add_edge(1, 4)
+  hld.add_edge(1, 5)
+  hld.build(0)
+  
+  // Set all values to 1
+  for i = 0; i < 6; i = i + 1 {
+    hld.node_val[i] = 1L
+  }
+  hld.build_segtree()
+  
+  // Subtree of 1: nodes 1, 4, 5 -> sum = 3
+  inspect(hld.subtree_query(1), content="3")
+  
+  // Subtree of 0: all nodes -> sum = 6
+  inspect(hld.subtree_query(0), content="6")
+  
+  // Subtree of leaf 4: just node 4 -> sum = 1
+  inspect(hld.subtree_query(4), content="1")
+
+  // Test subtree update: add 10 to subtree of 1
+  hld.subtree_update(1, 10L)
+  // Now: 0=1, 1=11, 2=1, 3=1, 4=11, 5=11
+  inspect(hld.subtree_query(1), content="33") // 11+11+11
+  inspect(hld.subtree_query(0), content="36") // 1+11+1+1+11+11
+}
+
+///|
+test "hld updates" {
+  // Linear tree: 0 - 1 - 2
+  let hld = HLD::new(3)
+  hld.add_edge(0, 1)
+  hld.add_edge(1, 2)
+  hld.build(0)
+  
+  // Initialize all to 0
+  hld.build_segtree()
+  
+  inspect(hld.path_query(0, 2), content="0")
+  
+  // Update node 1 to value 10
+  hld.set_node_value(1, 10L)
+  inspect(hld.path_query(0, 2), content="10")
+  inspect(hld.get_node_value(1), content="10")
+  
+  // Path update: add 5 to path 0-2
+  hld.path_update(0, 2, 5L)
+  // Now: 0=5, 1=15, 2=5
+  inspect(hld.path_query(0, 2), content="25")
+}
+
+///|
+test "hld binary tree" {
+  // Complete binary tree of depth 2
+  //         0
+  //        / \
+  //       1   2
+  //      / \ / \
+  //     3  4 5  6
+  let hld = HLD::new(7)
+  hld.add_edge(0, 1)
+  hld.add_edge(0, 2)
+  hld.add_edge(1, 3)
+  hld.add_edge(1, 4)
+  hld.add_edge(2, 5)
+  hld.add_edge(2, 6)
+  hld.build(0)
+  
+  // Set values to powers of 2
+  hld.node_val[0] = 1L
+  hld.node_val[1] = 2L
+  hld.node_val[2] = 4L
+  hld.node_val[3] = 8L
+  hld.node_val[4] = 16L
+  hld.node_val[5] = 32L
+  hld.node_val[6] = 64L
+  hld.build_segtree()
+  
+  // Path 3 to 6: 3-1-0-2-6 = 8+2+1+4+64 = 79
+  inspect(hld.path_query(3, 6), content="79")
+  
+  // Path 3 to 4: 3-1-4 = 8+2+16 = 26
+  inspect(hld.path_query(3, 4), content="26")
+  
+  // LCA of 3 and 6 is 0
+  inspect(hld.lca(3, 6), content="0")
+  
+  // LCA of 3 and 4 is 1
+  inspect(hld.lca(3, 4), content="1")
+  
+  // Distance 3 to 6 = 4
+  inspect(hld.distance(3, 6), content="4")
+}
+
+///|
+test "hld chain structure" {
+  // Bamboo tree (worst case for naive): 0-1-2-3-4-5-6-7
+  // HLD should create a single chain
+  let hld = HLD::new(8)
+  for i = 0; i < 7; i = i + 1 {
+    hld.add_edge(i, i + 1)
+  }
+  hld.build(0)
+  
+  // All nodes should be in same chain
+  let head = hld.chain_head[0]
+  for i = 0; i < 8; i = i + 1 {
+    guard hld.chain_head[i] == head else {
+      fail("Node \{i} not in expected chain")
+    }
+  }
+  
+  // Chain positions should be consecutive from root
+  for i = 0; i < 8; i = i + 1 {
+    guard hld.chain_pos[i] == i else {
+      fail("Node \{i} has wrong chain position")
+    }
+  }
+}
+
+///|
+test "hld star tree" {
+  // Star tree: 0 connected to 1,2,3,4,5
+  // Each leaf starts its own chain (all are light children except one)
+  let hld = HLD::new(6)
+  for i = 1; i <= 5; i = i + 1 {
+    hld.add_edge(0, i)
+  }
+  hld.build(0)
+  
+  // Root is at depth 0
+  inspect(hld.depth[0], content="0")
+  
+  // All leaves at depth 1
+  for i = 1; i <= 5; i = i + 1 {
+    guard hld.depth[i] == 1 else {
+      fail("Leaf \{i} should be at depth 1")
+    }
+  }
+  
+  // Set values and test
+  for i = 0; i < 6; i = i + 1 {
+    hld.node_val[i] = (i * 10).to_int64()
+  }
+  hld.build_segtree()
+  
+  // Path from leaf 1 to leaf 5 goes through root
+  // Values: 10 + 0 + 50 = 60
+  inspect(hld.path_query(1, 5), content="60")
 }
