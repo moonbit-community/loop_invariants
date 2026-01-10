@@ -107,6 +107,12 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
       continue i + 1, sum + self.arr[i]
     } else {
       sum
+    } where {
+      invariant: i >= l && i <= r + 1,
+      reasoning: (
+        #|Scan the single block from l through r, accumulating the prefix sum.
+        #|Each iteration advances i by one within the query bounds.
+      ),
     }
     return result
   }
@@ -117,6 +123,11 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
     continue i + 1, sum + self.arr[i]
   } else {
     sum
+  } where {
+    invariant: i >= l && i <= left_block_end + 1,
+    reasoning: (
+      #|Accumulate the sum over the left partial block [l, left_block_end].
+    ),
   }
 
   // Sum complete middle blocks
@@ -125,6 +136,12 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
     continue b + 1, sum + self.blocks[b]
   } else {
     sum
+  } where {
+    invariant: b >= left_block + 1 && b <= right_block,
+    reasoning: (
+      #|Sum complete blocks between the two boundary blocks.
+      #|Each iteration adds one full block aggregate.
+    ),
   }
 
   // Sum right partial block
@@ -133,6 +150,11 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
     continue i + 1, sum + self.arr[i]
   } else {
     sum
+  } where {
+    invariant: i >= right_block_start && i <= r + 1,
+    reasoning: (
+      #|Accumulate the sum over the right partial block [right_block_start, r].
+    ),
   }
 
   left_sum + middle_sum + right_sum
@@ -219,6 +241,12 @@ fn SqrtMin::push_block(self : SqrtMin, block_idx : Int) -> Unit {
   // Apply lazy update to all elements
   for i = start; i < end; i = i + 1 {
     self.arr[i] = self.arr[i] + self.pending[block_idx]
+  } where {
+    invariant: i >= start && i <= end,
+    reasoning: (
+      #|Apply the pending delta to each element in the block range [start, end).
+      #|i advances one position at a time within the block.
+    ),
   }
   self.pending[block_idx] = 0
 }
@@ -238,6 +266,12 @@ fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int) -> Unit {
     }
   } else {
     m
+  } where {
+    invariant: i >= start && i <= end,
+    reasoning: (
+      #|m tracks the minimum of self.arr[start..i).
+      #|Each iteration considers one more element in the block.
+    ),
   }
   self.blocks[block_idx] = min
 }
@@ -264,6 +298,11 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
       }
     } else {
       m
+    } where {
+      invariant: i >= l && i <= r + 1,
+      reasoning: (
+        #|Scan the single block range [l, r] and track the minimum.
+      ),
     }
   }
 
@@ -279,6 +318,11 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     }
   } else {
     m
+  } where {
+    invariant: i >= l && i <= left_block_end + 1,
+    reasoning: (
+      #|Compute the minimum over the left partial block [l, left_block_end].
+    ),
   }
 
   // Minimum from complete middle blocks
@@ -291,6 +335,11 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     }
   } else {
     m
+  } where {
+    invariant: b >= left_block + 1 && b <= right_block,
+    reasoning: (
+      #|Aggregate the minimum across full blocks between the boundaries.
+    ),
   }
 
   // Minimum from right partial block
@@ -305,6 +354,11 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     }
   } else {
     m
+  } where {
+    invariant: i >= right_block_start && i <= r + 1,
+    reasoning: (
+      #|Compute the minimum over the right partial block [right_block_start, r].
+    ),
   }
 
   // Return overall minimum
@@ -329,6 +383,11 @@ fn SqrtMin::range_add(self : SqrtMin, l : Int, r : Int, val : Int) -> Unit {
     self.push_block(left_block)
     for i = l; i <= r; i = i + 1 {
       self.arr[i] = self.arr[i] + val
+    } where {
+      invariant: i >= l && i <= r + 1,
+      reasoning: (
+        #|Update each element in the single affected block.
+      ),
     }
     self.recompute_block(left_block)
     return
@@ -339,12 +398,22 @@ fn SqrtMin::range_add(self : SqrtMin, l : Int, r : Int, val : Int) -> Unit {
   let left_block_end = (left_block + 1) * self.block_size - 1
   for i = l; i <= left_block_end; i = i + 1 {
     self.arr[i] = self.arr[i] + val
+  } where {
+    invariant: i >= l && i <= left_block_end + 1,
+    reasoning: (
+      #|Update the left boundary block element-by-element after pushing lazy.
+    ),
   }
   self.recompute_block(left_block)
 
   // Complete middle blocks: just update lazy
   for b = left_block + 1; b < right_block; b = b + 1 {
     self.pending[b] = self.pending[b] + val
+  } where {
+    invariant: b >= left_block + 1 && b <= right_block,
+    reasoning: (
+      #|Apply lazy delta to each fully covered block.
+    ),
   }
 
   // Right partial block
@@ -352,6 +421,11 @@ fn SqrtMin::range_add(self : SqrtMin, l : Int, r : Int, val : Int) -> Unit {
   let right_block_start = right_block * self.block_size
   for i = right_block_start; i <= r; i = i + 1 {
     self.arr[i] = self.arr[i] + val
+  } where {
+    invariant: i >= right_block_start && i <= r + 1,
+    reasoning: (
+      #|Update the right boundary block element-by-element after pushing lazy.
+    ),
   }
   self.recompute_block(right_block)
 }
@@ -422,14 +496,19 @@ fn MoSolver::solve_distinct(
     }
   } else {
     m
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: (
+      #|Scan the array to compute the maximum value for sizing the count array.
+      #|m tracks the maximum over self.arr[0..i).
+    ),
   }
 
   // Create query objects with indices
-  let mo_queries : Array[MoQuery] = []
-  for i = 0; i < q; i = i + 1 {
+  let mo_queries = Array::makei(q, (i) => {
     let (l, r) = queries[i]
-    mo_queries.push({ l, r, idx: i })
-  }
+    { l, r, idx: i }
+  })
 
   // Sort queries by (l / block_size, r)
   // This is the key to Mo's algorithm efficiency
@@ -504,8 +583,19 @@ fn MoSolver::solve_distinct(
 
     results[query.idx] = distinct
   } where {
-    invariant: cur_l >= 0 && (cur_r < 0 || cur_r < n) && distinct >= 0,
-    reasoning: "Mo's algorithm maintains valid range; distinct count stays non-negative",
+    invariant: cur_l >= 0 && cur_l <= n,
+    reasoning: (
+      #|cur_l is always a valid left boundary within the array.
+    ),
+    invariant: cur_r >= -1 && cur_r < n,
+    reasoning: (
+      #|cur_r tracks the right boundary, starting at -1 for the empty range.
+    ),
+    invariant: distinct >= 0,
+    reasoning: (
+      #|distinct is the number of values with count[v] > 0 in the current range.
+      #|All updates keep counts non-negative, so distinct cannot go below zero.
+    ),
   }
 
   results
@@ -529,7 +619,7 @@ priv struct Interval {
   l : Int
   mut r : Int
   mut v : Int
-} derive(Show)
+}
 
 ///|
 /// Interval container for range assignment + range query problems
@@ -552,6 +642,16 @@ fn IntervalTree::new(arr : Array[Int]) -> IntervalTree {
       intervals.push({ l: start, r: i - 1, v: arr[start] })
       start = i
     }
+  } where {
+    invariant: i >= 1 && i <= arr.length() + 1,
+    reasoning: (
+      #|i scans the array plus one sentinel step at arr.length().
+      #|When the value changes (or at the end), we close the current interval.
+    ),
+    invariant: start >= 0 && start <= i,
+    reasoning: (
+      #|start marks the beginning of the current run of equal values.
+    ),
   }
   { intervals, }
 }
@@ -572,6 +672,16 @@ fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
     }
   } else {
     None
+  } where {
+    invariant: lo >= 0 && hi >= -1,
+    reasoning: (
+      #|Search range [lo, hi] is the remaining candidate interval indices.
+      #|Bounds allow an empty range when hi < lo.
+    ),
+    invariant: hi < self.intervals.length(),
+    reasoning: (
+      #|hi stays within the valid interval indices (or -1 when empty).
+    ),
   }
 }
 
@@ -617,6 +727,11 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
     continue i + 1
   } else {
     i - 1
+  } where {
+    invariant: i >= left_idx && i <= self.intervals.length() + 1,
+    reasoning: (
+      #|Advance i until intervals[i].l exceeds r; the last valid index is i-1.
+    ),
   }
 
   if right_idx >= left_idx {
@@ -626,6 +741,11 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
     let num_to_remove = right_idx - left_idx + 1
     for j = 0; j < num_to_remove; j = j + 1 {
       let _ = self.intervals.remove(left_idx)
+    } where {
+      invariant: j >= 0 && j <= num_to_remove,
+      reasoning: (
+        #|Remove exactly the intervals that overlap [l, r] before inserting the new one.
+      ),
     }
     self.intervals.insert(left_idx, { l, r, v })
   }
@@ -650,6 +770,12 @@ fn IntervalTree::query_sum(self : IntervalTree, l : Int, r : Int) -> Int {
     continue i + 1, s + cnt * interval.v
   } else {
     s
+  } where {
+    invariant: i >= 0 && i <= self.intervals.length(),
+    reasoning: (
+      #|Accumulate contributions of intervals that overlap [l, r].
+      #|s tracks the sum for intervals processed so far.
+    ),
   }
   sum
 }
@@ -671,6 +797,11 @@ fn IntervalTree::range_add(
 
   for i = left_idx; i < self.intervals.length() && self.intervals[i].l <= r; i = i + 1 {
     self.intervals[i].v = self.intervals[i].v + val
+  } where {
+    invariant: i >= left_idx && i <= self.intervals.length() + 1,
+    reasoning: (
+      #|Add val to all intervals that intersect [l, r] after splitting.
+    ),
   }
 }
 
@@ -869,10 +1000,7 @@ test "isqrt ceil" {
 ///|
 test "sqrt decomposition stress" {
   // Test with larger array
-  let arr : Array[Int] = Array::make(100, 0)
-  for i = 0; i < 100; i = i + 1 {
-    arr[i] = i + 1
-  }
+  let arr = Array::makei(100, (i) => i + 1)
 
   let sq = SqrtSum::build(arr)
 
