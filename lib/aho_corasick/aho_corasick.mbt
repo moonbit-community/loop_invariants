@@ -47,16 +47,14 @@ priv struct ACState {
   children : Array[Int] // Transitions for each character (size 256)
   mut failure : Int // Failure link (-1 for root)
   output : Array[Int] // Pattern indices that end at this state
-  depth : Int // Depth in trie (length of string reaching this state)
 }
 
 ///|
-fn ACState::new(depth : Int) -> ACState {
+fn ACState::new() -> ACState {
   {
     children: Array::make(256, -1),
     failure: -1,
     output: [],
-    depth,
   }
 }
 
@@ -70,7 +68,7 @@ priv struct AhoCorasick {
 ///|
 fn AhoCorasick::new() -> AhoCorasick {
   // Initialize with root state
-  let states : Array[ACState] = [ACState::new(0)]
+  let states : Array[ACState] = [ACState::new()]
   { states, patterns: [] }
 }
 
@@ -89,10 +87,13 @@ fn AhoCorasick::add_pattern(self : AhoCorasick, pattern : String) -> Unit {
     if self.states[state].children[c] < 0 {
       // Create new state for this character
       let new_state = self.states.length()
-      self.states.push(ACState::new(i + 1))
+      self.states.push(ACState::new())
       self.states[state].children[c] = new_state
     }
     state = self.states[state].children[c]
+  } where {
+    invariant: 0 <= i && i < pattern.length(),
+    reasoning: "Range loop enumerates valid code-unit indices of the pattern.",
   }
 
   // Mark this state as accepting for this pattern
@@ -115,6 +116,9 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
       self.states[child].failure = 0
       queue.push(child)
     }
+  } where {
+    invariant: 0 <= c && c < 256,
+    reasoning: "Iterates through all byte transitions from the root.",
   }
 
   // BFS to compute failure links
@@ -151,15 +155,26 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
           0
         }
       }
+      where {
+        invariant: f >= -1 && f < self.states.length(),
+        reasoning: (
+          #|Failure links always point to a valid state or -1 (root sentinel).
+          #|Each step follows a shorter suffix, so the chain must terminate.
+        ),
+      }
 
       self.states[child].failure = failure
 
       // Merge output: patterns ending at failure state also end here
       // (they are suffixes of current string)
       let failure_output = self.states[failure].output.copy()
-      for i = 0; i < failure_output.length(); i = i + 1 {
-        self.states[child].output.push(failure_output[i])
-      }
+      failure_output.each(fn(pattern_idx) {
+        self.states[child].output.push(pattern_idx)
+      })
+    }
+    where {
+      invariant: 0 <= c && c < 256,
+      reasoning: "Iterates through all byte transitions from the current state.",
     }
   } where {
     invariant: front >= 0 && front <= queue.length(),
@@ -194,12 +209,14 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[(Int, Int)] {
     // Report all patterns ending at current position
     // Output contains indices of all patterns that are suffixes of current match
     let outputs = self.states[state].output
-    for j = 0; j < outputs.length(); j = j + 1 {
-      let pattern_idx = outputs[j]
+    outputs.each(fn(pattern_idx) {
       let pattern_len = self.patterns[pattern_idx].length()
       let match_start = i - pattern_len + 1
       matches.push((match_start, pattern_idx))
-    }
+    })
+  } where {
+    invariant: 0 <= i && i < text.length(),
+    reasoning: "Range loop scans each text code unit once.",
   }
 
   matches
@@ -231,9 +248,7 @@ fn AhoCorasick::state_count(self : AhoCorasick) -> Int {
 /// Build automaton from array of patterns
 fn AhoCorasick::from_patterns(patterns : Array[String]) -> AhoCorasick {
   let ac = AhoCorasick::new()
-  for i = 0; i < patterns.length(); i = i + 1 {
-    ac.add_pattern(patterns[i])
-  }
+  patterns.each(fn(pattern) { ac.add_pattern(pattern) })
   ac.build()
   ac
 }
@@ -257,6 +272,9 @@ fn AhoCorasick::contains_any(self : AhoCorasick, text : String) -> Bool {
     if self.states[state].output.length() > 0 {
       return true
     }
+  } where {
+    invariant: 0 <= i && i < text.length(),
+    reasoning: "Range loop scans each text code unit once.",
   }
 
   false
@@ -278,12 +296,12 @@ fn AhoCorasick::find_all(
   let raw_matches = self.search(text)
   let result : Array[(Int, Int, String)] = []
 
-  for i = 0; i < raw_matches.length(); i = i + 1 {
-    let (start, pattern_idx) = raw_matches[i]
+  raw_matches.each(fn(m) {
+    let (start, pattern_idx) = m
     let pattern = self.patterns[pattern_idx]
     let end = start + pattern.length()
     result.push((start, end, pattern))
-  }
+  })
 
   result
 }
@@ -394,11 +412,11 @@ test "aho corasick prefix patterns" {
   inspect(matches.length(), content="4")
 
   // All should start at position 0
-  for i = 0; i < matches.length(); i = i + 1 {
-    guard matches[i].0 == 0 else {
+  matches.each(fn(m) {
+    guard m.0 == 0 else {
       fail("Expected all matches at position 0")
     }
-  }
+  })
 }
 
 ///|
