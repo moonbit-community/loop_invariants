@@ -160,6 +160,9 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
       (pts[i].y == pts[pivot_idx].y && pts[i].x < pts[pivot_idx].x) {
       pivot_idx = i
     }
+  } where {
+    invariant: i >= 1 && i <= n,
+    reasoning: "Scan remaining points to find the lowest (then leftmost) pivot.",
   }
 
   // Swap pivot to first position
@@ -174,6 +177,9 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
   let rest : Array[Point] = []
   for i = 1; i < n; i = i + 1 {
     rest.push(pts[i])
+  } where {
+    invariant: i >= 1 && i <= n,
+    reasoning: "Collect all points except the pivot into rest.",
   }
 
   rest.sort_by(fn(a, b) {
@@ -244,6 +250,9 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
       (points[i].x == points[leftmost].x && points[i].y < points[leftmost].y) {
       leftmost = i
     }
+  } where {
+    invariant: i >= 1 && i <= n,
+    reasoning: "Scan remaining points to find the leftmost start.",
   }
 
   let hull : Array[Point] = []
@@ -262,7 +271,7 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
 
     for i = 0; i < n; i = i + 1 {
       if i == current {
-        continue i + 1
+        continue
       }
       let cp = cross(points[current], points[next], points[i])
       if cp < 0L {
@@ -278,6 +287,9 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
           next = i
         }
       }
+    } where {
+      invariant: i >= 0 && i <= n,
+      reasoning: "Test each candidate point against current to choose next.",
     }
 
     current = next
@@ -286,6 +298,12 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
     if current == leftmost {
       break
     }
+  } where {
+    invariant: current >= 0 && current < n && hull.length() <= n,
+    reasoning: (
+      #|Each step adds one hull vertex and sets current to a valid point index.
+      #|We stop upon returning to leftmost, so the hull length never exceeds n.
+    ),
   }
 
   hull
@@ -307,13 +325,16 @@ pub fn polygon_area_2x(hull : Array[Point]) -> Int64 {
   // Shoelace formula
   // INVARIANT: area accumulates signed areas of triangles from origin
   // Shoelace formula sums cross products of adjacent edges; total equals 2x signed area
-  for i = 0, area = 0L; i < n; {
+  let mut area = 0L
+  for i = 0; i < n; i = i + 1 {
     let j = (i + 1) % n
     let delta = hull[i].x * hull[j].y - hull[j].x * hull[i].y
-    continue i + 1, area + delta
-  } else {
-    if area < 0L { -area } else { area }
+    area = area + delta
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: "Accumulate shoelace cross terms over all edges.",
   }
+  if area < 0L { -area } else { area }
 }
 
 ///|
@@ -343,6 +364,9 @@ pub fn point_in_hull(hull : Array[Point], p : Point) -> Int {
         on_boundary = true
       }
     }
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: "Check point p against each hull edge in order.",
   }
 
   if on_boundary { 0 } else { 1 }
@@ -381,6 +405,12 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
       } else {
         break
       }
+    } where {
+      invariant: curr_j >= 0 && curr_j < n,
+      reasoning: (
+        #|curr_j is always an index on the hull; we only advance it modulo n.
+        #|The loop stops once rotating further no longer increases the area.
+      ),
     }
 
     // Check distances from both endpoints of edge to antipodal point

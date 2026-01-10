@@ -87,10 +87,13 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   }
 
   // Create nodes
-  let nodes : Array[CartesianNode] = []
-  for i = 0; i < n; i = i + 1 {
-    nodes.push({ value: arr[i], index: i, left: -1, right: -1, parent: -1 })
-  }
+  let nodes = Array::makei(n, (i) => {
+    value: arr[i],
+    index: i,
+    left: -1,
+    right: -1,
+    parent: -1,
+  })
 
   // Build tree using monotonic stack
   // INVARIANT: Stack contains nodes on rightmost path, in increasing depth order
@@ -126,24 +129,22 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
     }
 
     stack.push(i)
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: (
+      #|Iterate through indices in order while maintaining the monotonic stack.
+      #|The loop variable advances one step per iteration within [0, n].
+    ),
   }
 
   // Find root (node with no parent)
-  let root = for i = 0, root = 0; i < n; i = i + 1 {
-    if nodes[i].parent == -1 {
-      continue i + 1, i
-    } else {
-      continue i + 1, root
-    }
-  } else {
-    root
+  let root = match nodes.search_by(fn(node) { node.parent == -1 }) {
+    Some(idx) => idx
+    None => 0
   }
 
   // Create index to node mapping (node i corresponds to array position i)
-  let index_to_node = Array::make(n, 0)
-  for i = 0; i < n; i = i + 1 {
-    index_to_node[nodes[i].index] = i
-  }
+  let index_to_node = Array::makei(n, (i) => nodes[i].index)
 
   // Compute depths using BFS
   let depth = Array::make(n, 0)
@@ -162,6 +163,12 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
       depth[right] = depth[v] + 1
       queue.push(right)
     }
+  } where {
+    invariant: head >= 0 && head <= queue.length(),
+    reasoning: (
+      #|Queue holds discovered nodes; head points to next node to process.
+      #|Pushing children only grows queue, so 0 <= head <= queue.length() stays true.
+    ),
   }
 
   // Compute log_n for binary lifting
@@ -173,11 +180,17 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   let ancestors : Array[Array[Int]] = []
   for j = 0; j < log_n; j = j + 1 {
     ancestors.push(Array::make(n, -1))
+  } where {
+    invariant: j >= 0 && j <= log_n,
+    reasoning: "Allocate one ancestor table per level 0..log_n-1.",
   }
 
   // Base case: 2^0 = 1st ancestor is parent
   for i = 0; i < n; i = i + 1 {
     ancestors[0][i] = nodes[i].parent
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: "Fill immediate parents for all nodes.",
   }
 
   // Build using dynamic programming
@@ -188,7 +201,13 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
       if mid != -1 {
         ancestors[k][v] = ancestors[k - 1][mid]
       }
+    } where {
+      invariant: v >= 0 && v <= n,
+      reasoning: "Use level k-1 ancestors to build level k for processed nodes.",
     }
+  } where {
+    invariant: k >= 1 && k <= log_n,
+    reasoning: "Build binary lifting levels from 1 to log_n-1.",
   }
 
   { nodes, root, index_to_node, depth, ancestors, n, log_n }
@@ -203,6 +222,12 @@ fn highest_bit(x : Int) -> Int {
     continue result + 1, val / 2
   } else {
     result
+  } where {
+    invariant: val > 0 && result >= 0,
+    reasoning: (
+      #|val starts positive and is halved each step, so it stays > 0.
+      #|result counts how many halving steps have been taken.
+    ),
   }
 }
 
@@ -232,6 +257,9 @@ fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
     if ((diff >> k) & 1) == 1 {
       u = self.ancestors[k][u]
     }
+  } where {
+    invariant: k >= 0 && k <= self.log_n,
+    reasoning: "Scan each bit position of diff to lift u upward.",
   }
 
   if u == v {
@@ -245,6 +273,9 @@ fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
       u = self.ancestors[k][u]
       v = self.ancestors[k][v]
     }
+  } where {
+    invariant: k >= 0 && k < self.log_n,
+    reasoning: "Lift both nodes from highest power of two downward.",
   }
 
   // Now u and v are children of LCA
@@ -325,6 +356,9 @@ fn CartesianTree::verify_inorder(self : CartesianTree, arr : Array[Int64]) -> Bo
     if result[i] != arr[i] {
       return false
     }
+  } where {
+    invariant: i >= 0 && i <= arr.length(),
+    reasoning: "Check each index against the inorder traversal.",
   }
   true
 }
@@ -406,6 +440,9 @@ fn nearest_smaller_left(arr : Array[Int64]) -> Array[Int] {
     }
 
     stack.push(i)
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: "Scan left-to-right while maintaining a monotonic stack.",
   }
 
   result
@@ -435,6 +472,9 @@ fn nearest_smaller_right(arr : Array[Int64]) -> Array[Int] {
     }
 
     stack.push(i)
+  } where {
+    invariant: i >= 0 && i < n,
+    reasoning: "Scan right-to-left while maintaining a monotonic stack.",
   }
 
   result
@@ -454,19 +494,20 @@ fn largest_rectangle_histogram(heights : Array[Int64]) -> Int64 {
 
   // For each position, width extends from left+1 to right-1
   // INVARIANT: max_area is the largest rectangle found so far
-  for i = 0, max_area = 0L; i < n; i = i + 1 {
+  let mut max_area = 0L
+  for i = 0; i < n; i = i + 1 {
     let l = if left[i] == -1 { 0 } else { left[i] + 1 }
     let r = if right[i] == -1 { n - 1 } else { right[i] - 1 }
     let width = (r - l + 1).to_int64()
     let area = heights[i] * width
     if area > max_area {
-      continue i + 1, area
-    } else {
-      continue i + 1, max_area
+      max_area = area
     }
-  } else {
-    max_area
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: "Track the maximum rectangle area seen so far.",
   }
+  max_area
 }
 
 // ============================================================================
@@ -488,11 +529,14 @@ fn CartesianTree::tree_number(self : CartesianTree) -> Int64 {
   encode_tree(self.nodes, self.root, bits)
 
   // Convert to number
-  for i = 0, result = 0L; i < bits.length(); i = i + 1 {
-    continue i + 1, result * 2L + bits[i].to_int64()
-  } else {
-    result
+  let mut result = 0L
+  for i = 0; i < bits.length(); i = i + 1 {
+    result = result * 2L + bits[i].to_int64()
+  } where {
+    invariant: i >= 0 && i <= bits.length(),
+    reasoning: "Accumulate the binary encoding left to right.",
   }
+  result
 }
 
 ///|
@@ -749,10 +793,7 @@ test "cartesian tree lca" {
 ///|
 test "cartesian tree large" {
   // Test with larger array
-  let arr : Array[Int64] = []
-  for i = 0; i < 100; i = i + 1 {
-    arr.push((i * 7 % 100).to_int64())
-  }
+  let arr = Array::makei(100, (i) => (i * 7 % 100).to_int64())
 
   let tree = CartesianTree::new(arr)
 
