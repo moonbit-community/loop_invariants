@@ -86,7 +86,7 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
     }
   } where {
     invariant: v >= 0 && v <= n,
-    reasoning: "Each vertex visited exactly once; DFS explores all reachable vertices; after loop all vertices assigned to SCCs",
+    reasoning: "I: disc[v] = -1 for all v; no vertices visited yet. M: For each v, if disc[v] == -1 (unvisited), call tarjan_dfs which visits all vertices reachable from v, computing their SCCs. tarjan_dfs sets disc[v] != -1 for all visited vertices, so we skip already-visited vertices. T: After v = n-1, all vertices have disc[v] != -1 and belong to exactly one SCC. The graph may be disconnected, so we must check all vertices as potential DFS roots. Total time O(V + E) since each vertex and edge is processed exactly once.",
   }
 
   // Build condensation graph (DAG of SCCs)
@@ -167,7 +167,7 @@ fn tarjan_dfs(
     // Cross edge to finished vertex - ignore
   } where {
     invariant: i >= 0 && i <= adj[v].length(),
-    reasoning: "low[v] tracks min disc[] reachable via back/tree edges; tree edges propagate low from children; back edges update to ancestor's disc",
+    reasoning: "I: disc[v] = low[v] = timer (just discovered); v is on stack. M: For each neighbor u: (1) If disc[u] == -1 (tree edge): recurse on u, then low[v] = min(low[v], low[u]). This propagates the lowest reachable disc from u's subtree. (2) If u is on_stack (back edge to ancestor): low[v] = min(low[v], disc[u]). This records that v can reach ancestor u. (3) If u is visited but not on stack (cross edge to finished SCC): ignore, as u is in a different SCC. T: After processing all neighbors, low[v] = minimum disc[] reachable from v's DFS subtree through back edges. If disc[v] == low[v], v is the root of its SCC (no back edge escapes this subtree).",
   }
 
   // If v is root of SCC (disc[v] == low[v])
@@ -220,7 +220,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
     }
   } where {
     invariant: v >= 0 && v <= n,
-    reasoning: "First pass computes finish times; vertices added to order when DFS completes; later finish = earlier in reverse order",
+    reasoning: "I: visited[v] = false for all v; order is empty. M: For each unvisited v, DFS visits all reachable vertices, adding each to order upon finishing (post-order). This ensures if u can reach w, u appears after w in order. T: After all DFS calls, order contains all vertices sorted by decreasing finish time. Key property: if SCC A can reach SCC B, all vertices of A have later finish times than all vertices of B. This enables the second pass to process SCCs in reverse topological order.",
   }
 
   // Transpose graph
@@ -250,7 +250,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
     }
   } where {
     invariant: i >= -1 && i <= n - 1,
-    reasoning: "Reverse finish order on transposed graph visits SCCs in topological order; each DFS on radj finds one complete SCC",
+    reasoning: "I: Process order in reverse (latest finish time first); component[v] = -1 for all v. M: For vertex v = order[i] with latest unprocessed finish time, if component[v] == -1, run DFS on transposed graph radj. This finds all vertices that can reach v in the original graph. Claim: these form exactly one SCC. Proof: By finish time ordering, any vertex u reachable from v (in original) that's in a different SCC was already processed. So DFS on radj from v visits only v's SCC members. T: After i = -1, each vertex has component[v] = its SCC ID. SCCs are discovered in reverse topological order of the condensation DAG.",
   }
 
   // Build condensation graph

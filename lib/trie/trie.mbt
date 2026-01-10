@@ -94,7 +94,7 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
     current.prefix_count = current.prefix_count + 1
   } where {
     invariant: i >= 0 && i <= word.length(),
-    reasoning: "current points to node for prefix word[0..i]; each iteration extends path by one char; prefix_count updated at each node",
+    reasoning: "I: current = root represents empty prefix word[0..0); root.prefix_count incremented to count this word. M: For character word[i], we navigate to children[c] where c = word[i] - 'a'. If child doesn't exist, create it (extending the trie). Move current to child and increment its prefix_count. After iteration i, current represents prefix word[0..i+1). T: After i = word.length()-1, current represents the full word. Setting is_end=true and incrementing count marks this as a complete word. prefix_count at each node correctly reflects how many words pass through it.",
   }
 
   current.is_end = true
@@ -156,7 +156,7 @@ fn Trie::find_node(self : Trie, s : String) -> TrieNode? {
     }
   } where {
     invariant: i >= 0 && i <= s.length(),
-    reasoning: "current is node for prefix s[0..i]; None returned early if char not found; if loop completes, current is node for full string",
+    reasoning: "I: current = root represents empty prefix s[0..0). M: For character s[i], compute index c = s[i] - 'a'. If children[c] is None, the prefix s[0..i+1) doesn't exist in the trie, so return None immediately. Otherwise, move current to children[c]. After iteration i, current represents prefix s[0..i+1). The early return ensures we never proceed past a missing character. T: If loop completes without returning None, current is the node for full string s. Return Some(current). Partial match failure returns None.",
   }
 
   Some(current)
@@ -188,7 +188,7 @@ fn Trie::delete(self : Trie, word : String) -> Bool {
     }
   } where {
     invariant: i >= 0 && i <= word.length(),
-    reasoning: "Mirrors insert path; decrements prefix_count at each node; word existence pre-verified so path exists",
+    reasoning: "I: Word existence verified by search(); current = root; root.prefix_count decremented. M: For each character word[i], navigate to children[c]. Since word exists (verified), children[c] is guaranteed non-None. Move to child and decrement its prefix_count. This exactly reverses the insert operation's prefix_count increments. T: After loop, current is the node for word. Decrement count; if count reaches 0, clear is_end. prefix_count at each ancestor correctly reflects the reduced word count. Note: nodes are not physically removed (lazy deletion), but counts are correct.",
   }
 
   current.count = current.count - 1
@@ -437,7 +437,7 @@ fn common_prefix_len(a : String, b : String) -> Int {
     }
   } where {
     invariant: i >= 0 && i <= min_len,
-    reasoning: "a[0..i] == b[0..i] at each iteration; first mismatch returns i; if no mismatch, min_len is common prefix length",
+    reasoning: "I: i=0; no characters compared yet; trivially a[0..0) == b[0..0). M: Compare a[i] and b[i]. If they differ, return i immediately (first mismatch position). If equal, increment i. After iteration i, we know a[0..i+1) == b[0..i+1). T: If loop completes without mismatch, a[0..min_len) == b[0..min_len), and min_len is the common prefix length. If one string is a prefix of the other, this correctly returns the shorter length.",
   }
   min_len
 }

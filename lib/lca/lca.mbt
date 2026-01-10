@@ -99,7 +99,7 @@ fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
     }
   } where {
     invariant: k >= 1 && k <= log_n,
-    reasoning: "After level k, up[v][k] = 2^k-th ancestor via up[v][k] = up[up[v][k-1]][k-1]",
+    reasoning: "I: After DFS, up[v][0] = parent[v] for all v (base case: 2^0 = 1st ancestor). M: For level k, up[v][k] = up[up[v][k-1]][k-1]. This computes the 2^k-th ancestor by jumping to the 2^(k-1)-th ancestor, then jumping another 2^(k-1) steps. Proof: 2^(k-1) + 2^(k-1) = 2^k. If either jump is invalid (-1), up[v][k] remains -1. T: After k=log_n-1, up[v][k] correctly stores 2^k-th ancestor for all k in [0, log_n), enabling O(log n) ancestor queries.",
   }
 
   { n, log_n, up, depth, adj }
@@ -158,7 +158,7 @@ fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
     }
   } where {
     invariant: k >= 0 && k <= self.log_n,
-    reasoning: "After bit k, u moved up by sum of 2^i for all set bits i <= k in diff",
+    reasoning: "I: diff = depth[u] - depth[v] > 0; curr_u is at original position. M: If bit k of diff is set, jump curr_u up by 2^k steps using up[curr_u][k]. The total jump distance equals the binary representation of diff: sum of 2^k for all set bits. T: After processing all bits, curr_u has moved up by exactly diff levels, so depth[curr_u] = depth[curr_v]. Both nodes are now at the same level, ready for LCA binary search.",
   }
 
   if curr_u == curr_v {
@@ -173,7 +173,7 @@ fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
     }
   } where {
     invariant: k >= -1 && k < self.log_n,
-    reasoning: "LCA is always ancestor of both; after k, curr_u and curr_v are at most 2^k below LCA",
+    reasoning: "I: curr_u != curr_v (otherwise we returned early); LCA is a proper ancestor of both; distance from curr_u to LCA is < 2^log_n. M: For each k from high to low, if up[curr_u][k] != up[curr_v][k], the LCA is strictly above the 2^k-th ancestors, so we can safely jump both nodes up by 2^k. If they're equal, jumping would overshoot or reach LCA, so we skip. After bit k, both nodes are within 2^k steps of LCA. T: After k=0, both nodes are exactly 1 step below LCA (their parents are equal but they differ). Return up[curr_u][0] = LCA.",
   }
 
   // Parent of final position is LCA

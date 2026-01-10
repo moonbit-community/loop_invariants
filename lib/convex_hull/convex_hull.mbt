@@ -106,7 +106,7 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
     hull.push(sorted[i])
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "Hull maintains convexity: each triple makes right turn; popping removes non-convex points; after processing sorted[i], hull[0..len] is convex chain",
+    reasoning: "I: hull is empty; sorted array is in left-to-right order by x-coordinate. M: For each point sorted[i], we pop points from hull while the last three points (second, top, sorted[i]) make a left turn or are collinear (cross product <= 0). This removes points that would violate convexity. Then we push sorted[i]. Key insight: if a point is removed, it lies inside or on the edge of the triangle formed by its neighbors, so it cannot be on the lower hull. T: After processing all points, hull contains the lower hull vertices in left-to-right order. Each consecutive triple makes a strict right turn (cross product > 0), guaranteeing convexity.",
   }
 
   // Build upper hull
@@ -125,7 +125,7 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
     hull.push(sorted[i])
   } where {
     invariant: i >= -1 && i <= n - 2,
-    reasoning: "Upper hull is built right-to-left; cross product test ensures convexity; combined with lower hull forms complete convex boundary",
+    reasoning: "I: hull[0..lower_len] contains completed lower hull; upper hull construction starts from rightmost point. M: Processing right-to-left, for each sorted[i], we pop points from hull[lower_len:] while they violate convexity (cross product <= 0). This mirrors lower hull construction but on the upper boundary. The separation at lower_len ensures we don't corrupt the lower hull. T: After i=-1, hull[lower_len:] contains upper hull in right-to-left order. Combined with lower hull, we have a complete convex polygon. Final pop removes duplicate endpoint.",
   }
 
   // Remove last point (duplicate of first)
@@ -208,7 +208,7 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
     hull.push(rest[i])
   } where {
     invariant: i >= 0 && i <= rest.length(),
-    reasoning: "Points processed in polar angle order from pivot; cross product removes right turns; maintains CCW convex chain from pivot",
+    reasoning: "I: hull = [pivot]; rest is sorted by polar angle from pivot. M: For each rest[i], while the last three points make a right turn or are collinear, pop the middle point. This maintains the convex hull property: all turns are left turns (CCW). Since points are processed in polar angle order, adding rest[i] extends the boundary; any removed point is interior. T: After processing all points, hull is the convex hull in CCW order. Correctness: polar angle ordering ensures each new point extends the boundary; cross product test ensures only convex vertices remain.",
   }
 
   hull
@@ -402,7 +402,7 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
     continue i + 1, curr_j
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "Rotating calipers: j tracks antipodal vertex for edge (i,i+1); j only advances (amortized O(n)); max_dist tracks maximum pairwise distance seen",
+    reasoning: "I: j=1 is a valid starting antipodal candidate for edge (0,1). M: For edge (i,i+1), we advance j while cross(hull[i], hull[i+1], hull[j+1]) > cross(hull[i], hull[i+1], hull[j]), finding the vertex farthest from the edge (maximum perpendicular distance = maximum cross product). Key insight: as we rotate the edge (i→i+1), the antipodal point j only moves forward (never backward) due to convexity. We compute distances from both edge endpoints to j and update max_dist. T: After processing all edges, max_dist is the squared diameter. O(n) time because j advances at most n times total across all iterations of i.",
   }
 
   max_dist

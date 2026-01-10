@@ -223,13 +223,13 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
           }
         } where {
           invariant: i >= 0 && i <= graph.adj[u].length(),
-          reasoning: "Relaxation: if dist[u] + w < dist[v], update dist[v]; greedy choice is optimal for non-negative weights",
+          reasoning: "I: dist[u] is finalized (u just settled). M: For each edge (u,v) with weight w, if dist[u]+w < dist[v], we improve dist[v]. This is safe because dist[u] is optimal (greedy property: u had minimum tentative distance among unvisited, and all edges are non-negative, so no future path through unvisited vertices can improve it). T: All edges from u are relaxed; dist[v] for each neighbor is updated if improvable via u.",
         }
       }
     }
   } where {
     invariant: true,
-    reasoning: "For visited v, dist[v] = true shortest path; PQ selects min-dist unvisited vertex",
+    reasoning: "I: dist[source]=0 is optimal; all other dist[v]=INF. M: Each iteration selects the unvisited vertex u with minimum dist[u], marks it visited, and relaxes its edges. Claim: dist[u] is the true shortest path. Proof: Suppose a shorter path P exists. P must pass through some unvisited vertex w before reaching u. But dist[w] >= dist[u] (since u was selected as minimum), and the subpath to w has length >= dist[w] >= dist[u], contradiction since edge weights are non-negative. T: When PQ is empty, all reachable vertices are visited with optimal distances.",
   }
 
   { dist, parent }
