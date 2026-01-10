@@ -58,25 +58,21 @@ fn BellmanFord::add_edge(
 /// Run Bellman-Ford from source vertex
 fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
   // Initialize distances
-  for i = 0; i < self.n; i = i + 1 {
-    self.dist[i] = BF_INF
-    self.parent[i] = -1
-  }
+  self.dist.fill(BF_INF)
+  self.parent.fill(-1)
   self.dist[source] = 0L
-
-  let mut has_negative_cycle = false
 
   // Relax all edges V-1 times
   for iter = 0; iter < self.n - 1; iter = iter + 1 {
     let mut any_relaxed = false
-    for j = 0; j < self.edges.length(); j = j + 1 {
-      let (u, v, w) = self.edges[j]
+    self.edges.each(fn(edge) {
+      let (u, v, w) = edge
       if self.dist[u] < BF_INF && self.dist[u] + w < self.dist[v] {
         self.dist[v] = self.dist[u] + w
         self.parent[v] = u
         any_relaxed = true
       }
-    }
+    })
     // Early termination if no relaxation happened
     if not(any_relaxed) {
       break
@@ -87,16 +83,10 @@ fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
   }
 
   // Check for negative cycles
-  for j = 0; j < self.edges.length(); j = j + 1 {
-    let (u, v, w) = self.edges[j]
-    if self.dist[u] < BF_INF && self.dist[u] + w < self.dist[v] {
-      has_negative_cycle = true
-      break
-    }
-  } where {
-    invariant: j >= 0 && j <= self.edges.length(),
-    reasoning: "I: After V-1 iterations, all shortest paths found if no negative cycle. M: If any edge can still be relaxed, there's a negative cycle (shorter path exists via cycle). T: After checking all edges, negative cycle status determined.",
-  }
+  let has_negative_cycle = self.edges.any(fn(edge) {
+    let (u, v, w) = edge
+    self.dist[u] < BF_INF && self.dist[u] + w < self.dist[v]
+  })
 
   {
     n: self.n,
@@ -136,11 +126,8 @@ fn BellmanFord::get_path(self : BellmanFord, target : Int) -> Array[Int]? {
   }
 
   // Reverse path
-  let result : Array[Int] = []
-  for i = path.length() - 1; i >= 0; i = i - 1 {
-    result.push(path[i])
-  }
-  Some(result)
+  path.rev_in_place()
+  Some(path)
 }
 
 // ============================================================================
@@ -158,10 +145,7 @@ priv struct SPFA {
 
 ///|
 fn SPFA::new(n : Int) -> SPFA {
-  let adj = Array::make(n, [])
-  for i = 0; i < n; i = i + 1 {
-    adj[i] = []
-  }
+  let adj : Array[Array[(Int, Int64)]] = Array::makei(n, fn(_) { [] })
   {
     n,
     adj,
@@ -179,11 +163,9 @@ fn SPFA::add_edge(self : SPFA, from : Int, to : Int, weight : Int64) -> Unit {
 ///|
 /// Returns None if negative cycle detected, Some(distances) otherwise
 fn SPFA::compute(self : SPFA, source : Int) -> Array[Int64]? {
-  for i = 0; i < self.n; i = i + 1 {
-    self.dist[i] = BF_INF
-    self.in_queue[i] = false
-    self.count[i] = 0
-  }
+  self.dist.fill(BF_INF)
+  self.in_queue.fill(false)
+  self.count.fill(0)
 
   self.dist[source] = 0L
   let queue : Array[Int] = [source]
@@ -210,6 +192,10 @@ fn SPFA::compute(self : SPFA, source : Int) -> Array[Int64]? {
           }
         }
       }
+    }
+    where {
+      invariant: i >= 0 && i <= self.adj[u].length(),
+      reasoning: "Scan neighbors of u; index stays within adjacency bounds.",
     }
   }
 
