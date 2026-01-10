@@ -134,6 +134,10 @@ fn BridgeFinder::get_articulation_points(self : BridgeFinder) -> Array[Int] {
       result.push(i)
     }
   }
+  where {
+    invariant: i >= 0 && i <= self.n,
+    reasoning: "Scan all vertices to collect articulation points.",
+  }
   result
 }
 

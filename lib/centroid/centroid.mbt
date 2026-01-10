@@ -71,6 +71,10 @@ fn CentroidTree::compute_size(self : CentroidTree, u : Int, parent : Int) -> Int
       self.subtree_size[u] = self.subtree_size[u] + self.compute_size(v, u)
     }
   }
+  where {
+    invariant: i >= 0 && i <= self.adj[u].length(),
+    reasoning: "Accumulate subtree sizes by scanning all neighbors of u.",
+  }
   self.subtree_size[u]
 }
 
@@ -82,6 +86,10 @@ fn CentroidTree::find_centroid(self : CentroidTree, u : Int, parent : Int, tree_
     if v != parent && not(self.removed[v]) && self.subtree_size[v] > tree_size / 2 {
       return self.find_centroid(v, u, tree_size)
     }
+  }
+  where {
+    invariant: i >= 0 && i <= self.adj[u].length(),
+    reasoning: "Search neighbors to find a child subtree larger than half.",
   }
   u
 }
@@ -189,6 +197,10 @@ test "centroid depth bound" {
     if ct.get_depth(i) > max_depth {
       max_depth = ct.get_depth(i)
     }
+  }
+  where {
+    invariant: i >= 0 && i <= 7,
+    reasoning: "Scan all nodes to track maximum centroid depth.",
   }
   inspect(max_depth <= 3, content="true")
 }
