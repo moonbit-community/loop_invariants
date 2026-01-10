@@ -74,6 +74,12 @@ fn isqrt(n : Int) -> Int {
 
   } else {
     result - 1
+  } where {
+    invariant: result >= 1 && (result - 1) * (result - 1) <= n,
+    reasoning: (
+      #|result increases until result^2 > n.
+      #|The last valid candidate is result - 1, the floor of sqrt(n).
+    ),
   }
 }
 
@@ -109,11 +115,10 @@ fn MoDistinct::answer_queries(
   }
 
   // Create query objects with original indices
-  let mo_queries : Array[MoQuery] = []
-  for i = 0; i < q; i = i + 1 {
+  let mo_queries = Array::makei(q, (i) => {
     let (l, r) = queries[i]
-    mo_queries.push({ left: l, right: r, index: i })
-  }
+    { left: l, right: r, index: i }
+  })
 
   // Sort queries by (left_block, right)
   // INVARIANT: After sort, queries in same block have increasing right
@@ -184,6 +189,15 @@ fn MoDistinct::answer_queries(
 
     // Store answer at original query index
     answers[query.index] = distinct
+  } where {
+    invariant: i >= 0 && i <= q && cur_l >= 0 && cur_l <= cur_r + 1 &&
+      cur_r < self.n,
+    reasoning: (
+      #|STATE: freq matches counts in the current range [cur_l, cur_r],
+      #|distinct is the number of values with freq > 0.
+      #|answers for mo_queries[0..i) are already finalized.
+      #|Each while loop updates the range by one element, preserving counts.
+    ),
   }
 
   answers
@@ -223,11 +237,10 @@ fn MoSum::answer_queries(
     return []
   }
 
-  let mo_queries : Array[MoQuery] = []
-  for i = 0; i < q; i = i + 1 {
+  let mo_queries = Array::makei(q, (i) => {
     let (l, r) = queries[i]
-    mo_queries.push({ left: l, right: r, index: i })
-  }
+    { left: l, right: r, index: i }
+  })
 
   mo_queries.sort_by(fn(a, b) {
     let block_a = a.left / self.block_size
@@ -271,6 +284,14 @@ fn MoSum::answer_queries(
     }
 
     answers[query.index] = current_sum
+  } where {
+    invariant: i >= 0 && i <= q && cur_l >= 0 && cur_l <= cur_r + 1 &&
+      cur_r < self.n,
+    reasoning: (
+      #|STATE: current_sum equals sum(arr[cur_l..cur_r]) for the current range.
+      #|answers for mo_queries[0..i) are stored at original indices.
+      #|Moving cur_l/cur_r adjusts current_sum by a single element each step.
+    ),
   }
 
   answers
@@ -316,11 +337,10 @@ fn MoRangeCount::answer_queries(
   let freq : Array[Int] = Array::make(100001, 0)
 
   // Create MoQuery with extended info
-  let mo_queries : Array[(MoQuery, Int, Int)] = []
-  for i = 0; i < q; i = i + 1 {
+  let mo_queries = Array::makei(q, (i) => {
     let (l, r, lo, hi) = queries[i]
-    mo_queries.push(({ left: l, right: r, index: i }, lo, hi))
-  }
+    ({ left: l, right: r, index: i }, lo, hi)
+  })
 
   // Sort by Mo ordering
   mo_queries.sort_by(fn(a, b) {
@@ -373,8 +393,21 @@ fn MoRangeCount::answer_queries(
     let mut count = 0
     for v = lo; v <= hi && v < 100001; v = v + 1 {
       count = count + freq[v]
+    } where {
+      invariant: v >= lo && v <= hi && v < 100001,
+      reasoning: (
+        #|count is the sum of freq[lo..v) over the current range.
+        #|The upper bound is clamped by the freq array size.
+      ),
     }
     answers[query.index] = count
+  } where {
+    invariant: i >= 0 && i <= q && cur_l >= 0 && cur_l <= cur_r + 1 &&
+      cur_r < self.n,
+    reasoning: (
+      #|STATE: freq[v] counts occurrences of v in [cur_l, cur_r].
+      #|answers for mo_queries[0..i) are finalized in original order.
+    ),
   }
 
   answers
@@ -420,11 +453,10 @@ fn MoMode::answer_queries(
   let mut max_freq = 0
   let mut mode = 0
 
-  let mo_queries : Array[MoQuery] = []
-  for i = 0; i < q; i = i + 1 {
+  let mo_queries = Array::makei(q, (i) => {
     let (l, r) = queries[i]
-    mo_queries.push({ left: l, right: r, index: i })
-  }
+    { left: l, right: r, index: i }
+  })
 
   mo_queries.sort_by(fn(a, b) {
     let block_a = a.left / self.block_size
@@ -441,7 +473,7 @@ fn MoMode::answer_queries(
   let answers = Array::make(q, (0, 0))
 
   // Helper to recalculate mode (needed after removals)
-  fn recalc_mode(freq : Array[Int], n : Int, arr : Array[Int], cur_l : Int, cur_r : Int) -> (Int, Int) {
+  fn recalc_mode(freq : Array[Int], arr : Array[Int], cur_l : Int, cur_r : Int) -> (Int, Int) {
     let mut max_f = 0
     let mut m = 0
     for i = cur_l; i <= cur_r; i = i + 1 {
@@ -450,6 +482,12 @@ fn MoMode::answer_queries(
         max_f = freq[v]
         m = v
       }
+    } where {
+      invariant: i >= cur_l && i <= cur_r + 1,
+      reasoning: (
+        #|max_f/m track the best (highest freq, smallest value tie-break)
+        #|among values in arr[cur_l..i).
+      ),
     }
     (m, max_f)
   }
@@ -492,11 +530,19 @@ fn MoMode::answer_queries(
     }
 
     // Recalculate mode after removals (can't efficiently track max decrease)
-    let (m, f) = recalc_mode(freq, self.n, self.arr, cur_l, cur_r)
+    let (m, f) = recalc_mode(freq, self.arr, cur_l, cur_r)
     max_freq = f
     mode = m
 
     answers[query.index] = (mode, max_freq)
+  } where {
+    invariant: i >= 0 && i <= q && cur_l >= 0 && cur_l <= cur_r + 1 &&
+      cur_r < self.n,
+    reasoning: (
+      #|STATE: freq matches counts in [cur_l, cur_r]; mode/max_freq are
+      #|recomputed for the current range before storing each answer.
+      #|answers for mo_queries[0..i) are written in original order.
+    ),
   }
 
   answers
@@ -698,4 +744,10 @@ test "mo length" {
 
   let mo_sum = MoSum::new([1L, 2L, 3L])
   inspect(mo_sum.length(), content="3")
+
+  let mo_range = MoRangeCount::new([1, 2, 3])
+  inspect(mo_range.length(), content="3")
+
+  let mo_mode = MoMode::new([1, 2, 2])
+  inspect(mo_mode.length(), content="3")
 }

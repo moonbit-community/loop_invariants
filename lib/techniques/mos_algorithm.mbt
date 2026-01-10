@@ -47,12 +47,10 @@ fn mos_algorithm_range_sum(
   let block_size = mo_isqrt(n)
 
   // Create and sort query indices using bubble sort
-  let query_order : Array[Int] = []
-  for i = 0; i < q; i = i + 1 {
-    query_order.push(i)
-  }
+  let query_order = Array::makei(q, (i) => i)
   for i = 0; i < q - 1; i = i + 1 {
-    for j = 0; j < q - 1 - i; j = j + 1 {
+    let last = q - 1 - i
+    for j = 0; j < last; j = j + 1 {
       let idx1 = query_order[j]
       let idx2 = query_order[j + 1]
       let (l1, r1) = queries[idx1]
@@ -64,7 +62,18 @@ fn mos_algorithm_range_sum(
         query_order[j] = idx2
         query_order[j + 1] = idx1
       }
+    } where {
+      invariant: j >= 0 && j <= last,
+      reasoning: (
+        #|Bubble pass: after j steps, the largest query (by Mo ordering)
+        #|among the prefix [0..j] is placed at index j.
+      ),
     }
+  } where {
+    invariant: i >= 0 && i <= q - 1,
+    reasoning: (
+      #|After i outer passes, the last i positions are fixed in final order.
+    ),
   }
   let results : Array[Int] = Array::make(q, 0)
   for i = 0, curr_l = 0, curr_r = 0, curr_sum = 0; i < q; {
@@ -154,7 +163,7 @@ test "mos algorithm range sum" {
 /// Query: check partial blocks directly + full blocks from precomputed values.
 ///
 /// TIME: O(√n) per query, O(n) preprocessing
-struct SqrtDecomposition {
+priv struct SqrtDecomposition {
   arr : Array[Int]
   block_mins : Array[Int]
   block_size : Int
@@ -195,15 +204,15 @@ fn SqrtDecomposition::query_min(
   }
   for i = l, result = 2147483647; i < r; {
     let block_idx = i / self.block_size
-    let block_end = @math.minimum((block_idx + 1) * self.block_size, r)
+    let block_end = @cmp.minimum((block_idx + 1) * self.block_size, r)
     if i == block_idx * self.block_size &&
       block_end == (block_idx + 1) * self.block_size {
       // Full block
-      let new_result = @math.minimum(result, self.block_mins[block_idx])
+      let new_result = @cmp.minimum(result, self.block_mins[block_idx])
       continue block_end, new_result
     } else {
       // Partial block
-      let new_result = @math.minimum(result, self.arr[i])
+      let new_result = @cmp.minimum(result, self.arr[i])
       continue i + 1, new_result
     }
   } else {
@@ -233,7 +242,7 @@ fn SqrtDecomposition::update_sqrt(
   self.arr[idx] = val
   let block_idx = idx / self.block_size
   let block_start = block_idx * self.block_size
-  let block_end = @math.minimum(
+  let block_end = @cmp.minimum(
     block_start + self.block_size,
     self.arr.length(),
   )
@@ -282,6 +291,11 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
     // Reset frequencies
     for i = 0; i <= max_val; i = i + 1 {
       freq[i] = 0
+    } where {
+      invariant: i >= 0 && i <= max_val,
+      reasoning: (
+        #|freq[0..i) have been reset to zero for the new query.
+      ),
     }
 
     // Count frequencies
@@ -335,7 +349,7 @@ test "range mode query" {
 /// Block Decomposition for Range Sum with Updates
 ///
 /// O(√n) for both query and update.
-struct BlockSum {
+priv struct BlockSum {
   arr : Array[Int]
   block_sums : Array[Int]
   block_size : Int
@@ -369,7 +383,7 @@ fn BlockSum::query_sum(self : BlockSum, l : Int, r : Int) -> Int {
   for i = l, result = 0; i < r; {
     let block_idx = i / self.block_size
     let block_start = block_idx * self.block_size
-    let block_end = @math.minimum(block_start + self.block_size, r)
+    let block_end = @cmp.minimum(block_start + self.block_size, r)
     if i == block_start &&
       block_end == block_start + self.block_size &&
       block_end <= r {
@@ -416,18 +430,15 @@ test "block sum" {
 ///
 /// MATHEMATICAL FOUNDATION:
 /// Amortized O(α(n)) per operation where α is inverse Ackermann function.
-struct MoUnionFind {
+priv struct MoUnionFind {
   parent : Array[Int]
   rank : Array[Int]
 }
 
 ///|
 fn MoUnionFind::new(n : Int) -> MoUnionFind {
-  let parent : Array[Int] = Array::make(n, 0)
+  let parent = Array::makei(n, (i) => i)
   let rank : Array[Int] = Array::make(n, 0)
-  for i = 0; i < n; i = i + 1 {
-    parent[i] = i
-  }
   { parent, rank }
 }
 
@@ -500,15 +511,28 @@ fn offline_lca_simple(
   visited[root] = true
   for front = 0; front < queue.length(); front = front + 1 {
     let node = queue[front]
-    for i = 0; i < adj[node].length(); i = i + 1 {
-      let child = adj[node][i]
+    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
+      let child = adj[node][idx]
       if not(visited[child]) {
         visited[child] = true
         parent[child] = node
         depth[child] = depth[node] + 1
         queue.push(child)
       }
+    } where {
+      invariant: idx >= 0 && idx <= adj[node].length(),
+      reasoning: (
+        #|Neighbors adj[node][0..idx) have been scanned; unvisited ones
+        #|are enqueued with parent/depth set.
+      ),
     }
+  } where {
+    invariant: front >= 0 && front <= queue.length(),
+    reasoning: (
+      #|BFS INVARIANT: queue[0..front) nodes are fully expanded,
+      #|queue[front..] are discovered but not processed yet.
+      #|For each visited node, parent and depth define its BFS tree path.
+    ),
   }
 
   // Answer queries
@@ -566,29 +590,48 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
     let (node, par) = stack.pop().unwrap()
     parent[node] = par
     order.push(node)
-    for i = 0; i < adj[node].length(); i = i + 1 {
-      let child = adj[node][i]
+    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
+      let child = adj[node][idx]
       if child != par {
         stack.push((child, node))
       }
+    } where {
+      invariant: idx >= 0 && idx <= adj[node].length(),
+      reasoning: (
+        #|All neighbors in adj[node][0..idx) have been examined; non-parent
+        #|children are scheduled on the stack for DFS.
+      ),
     }
   }
   for i = order.length() - 1; i >= 0; i = i - 1 {
     let node = order[i]
     subtree_size[node] = 1
-    for j = 0; j < adj[node].length(); j = j + 1 {
-      let child = adj[node][j]
+    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
+      let child = adj[node][idx]
       if child != parent[node] {
         subtree_size[node] = subtree_size[node] + subtree_size[child]
       }
+    } where {
+      invariant: idx >= 0 && idx <= adj[node].length(),
+      reasoning: (
+        #|subtree_size[node] accumulates sizes from adj[node][0..idx)
+        #|excluding the parent edge.
+      ),
     }
+  } where {
+    invariant: i >= -1 && i < order.length(),
+    reasoning: (
+      #|POST-ORDER INVARIANT: for all nodes in order[i+1..],
+      #|subtree_size is already computed as 1 + sum(child subtree_size).
+      #|Processing in reverse DFS order ensures children are finalized first.
+    ),
   }
   let tree_size = subtree_size[root]
   for i = 0, centroid = root; i < n; {
     let node = order[i]
     let mut is_centroid = true
-    for j = 0; j < adj[node].length(); j = j + 1 {
-      let neighbor = adj[node][j]
+    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
+      let neighbor = adj[node][idx]
       let subtree = if neighbor == parent[node] {
         tree_size - subtree_size[node]
       } else {
@@ -597,6 +640,12 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
       if subtree > tree_size / 2 {
         is_centroid = false
       }
+    } where {
+      invariant: idx >= 0 && idx <= adj[node].length(),
+      reasoning: (
+        #|is_centroid remains true iff all processed neighbor subtrees
+        #|are no larger than n/2.
+      ),
     }
     if is_centroid {
       continue n, node
@@ -626,7 +675,7 @@ test "find tree centroid" {
 /// Euler Tour for Subtree Queries
 ///
 /// Maps tree to array: subtree[v] = arr[enter[v]..exit[v]]
-struct EulerTour {
+priv struct EulerTour {
   enter : Array[Int]
   exit : Array[Int]
   tour : Array[Int]
@@ -653,6 +702,12 @@ fn build_euler_tour(adj : Array[Array[Int]], root : Int) -> EulerTour {
         if child != par {
           stack.push((child, node, 0))
         }
+      } where {
+        invariant: i >= -1 && i < adj[node].length(),
+        reasoning: (
+          #|Reverse scan pushes children so the stack visits them in the
+          #|original adjacency order (LIFO mirrors recursive DFS).
+        ),
       }
     } else {
       exit[node] = time[0]
@@ -667,13 +722,14 @@ test "euler tour" {
   let et = build_euler_tour(adj, 0)
   assert_true(et.enter[1] < et.enter[3])
   assert_true(et.enter[3] < et.exit[1])
+  assert_eq(et.tour.length(), adj.length())
 }
 
 ///|
 /// Binary Lifting for LCA in O(log n)
 ///
 /// Precompute 2^k ancestors for each node.
-struct BinaryLifting {
+priv struct BinaryLifting {
   up : Array[Array[Int]]
   depth : Array[Int]
   log_n : Int
@@ -683,11 +739,8 @@ struct BinaryLifting {
 fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
   let n = adj.length()
   let log_n = 20
-  let up : Array[Array[Int]] = []
+  let up = Array::makei(n, (_) => Array::make(log_n, -1))
   let depth : Array[Int] = Array::make(n, 0)
-  for i = 0; i < n; i = i + 1 {
-    up.push(Array::make(log_n, -1))
-  }
   let queue : Array[Int] = []
   let visited : Array[Bool] = Array::make(n, false)
   queue.push(root)
@@ -695,15 +748,27 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
   up[root][0] = root
   for front = 0; front < queue.length(); front = front + 1 {
     let node = queue[front]
-    for i = 0; i < adj[node].length(); i = i + 1 {
-      let child = adj[node][i]
+    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
+      let child = adj[node][idx]
       if not(visited[child]) {
         visited[child] = true
         depth[child] = depth[node] + 1
         up[child][0] = node
         queue.push(child)
       }
+    } where {
+      invariant: idx >= 0 && idx <= adj[node].length(),
+      reasoning: (
+        #|Neighbors adj[node][0..idx) are processed; newly discovered nodes
+        #|are assigned depth and immediate parent.
+      ),
     }
+  } where {
+    invariant: front >= 0 && front <= queue.length(),
+    reasoning: (
+      #|BFS INVARIANT: nodes in queue[0..front) have their depth and
+      #|immediate parent (up[][0]) set; queue[front..] are discovered.
+    ),
   }
   for k = 1; k < log_n; k = k + 1 {
     for v = 0; v < n; v = v + 1 {
@@ -711,6 +776,11 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
       if half_ancestor >= 0 {
         up[v][k] = up[half_ancestor][k - 1]
       }
+    } where {
+      invariant: v >= 0 && v <= n,
+      reasoning: (
+        #|For fixed k, up[0..v) have their 2^k ancestors computed.
+      ),
     }
   } where {
     invariant: k >= 1 && k <= log_n,
@@ -742,6 +812,11 @@ fn BinaryLifting::lca_binary_lifting(
     if ((diff >> k) & 1) == 1 {
       u = self.up[u][k]
     }
+  } where {
+    invariant: k >= 0 && k <= self.log_n,
+    reasoning: (
+      #|After processing bits < k, u has been lifted by that prefix of diff.
+    ),
   }
   if u == v {
     return u
