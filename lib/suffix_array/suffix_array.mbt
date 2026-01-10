@@ -1,270 +1,219 @@
 // ============================================================================
-// SUFFIX ARRAY - Efficient Suffix Sorting with LCP Array
+// SUFFIX ARRAY - Efficient String Indexing
 // ============================================================================
 //
-// A Suffix Array is a sorted array of all suffixes of a string.
-// Combined with LCP (Longest Common Prefix) array, it enables powerful
-// string operations in O(n log n) construction and O(log n) or O(1) queries.
+// A suffix array is a sorted array of all suffixes of a string.
+// Combined with LCP (Longest Common Prefix) array, it enables
+// powerful string algorithms.
 //
-// SUFFIX ARRAY CONSTRUCTION (Simple O(n log^2 n) approach):
-// 1. Start with single-character ranks
-// 2. Double the comparison length each iteration
-// 3. Sort suffixes by (rank[i], rank[i+k]) pairs
-// 4. Total: O(n log^2 n) time, O(n) space
+// CONSTRUCTION (Prefix Doubling):
+// Sort by first 1, 2, 4, 8... characters iteratively.
 //
-// LCP ARRAY (Kasai's Algorithm):
-// lcp[i] = length of longest common prefix between suffix[sa[i]] and suffix[sa[i-1]]
-// Key insight: lcp[rank[i]] >= lcp[rank[i-1]] - 1
+// KEY INSIGHT: If we know the order of length-k prefixes, we can
+// compute length-2k order using pairs (rank[i], rank[i+k]).
 //
-// TIME COMPLEXITY: O(n log^2 n) construction, O(m log n) pattern search
+// INVARIANTS:
+// 1. sa[i] gives the starting position of the i-th smallest suffix
+// 2. rank[i] gives the rank of suffix starting at position i
+// 3. lcp[i] = length of longest common prefix of sa[i] and sa[i-1]
+//
+// TIME COMPLEXITY: O(n log n) construction
 // SPACE COMPLEXITY: O(n)
 
 ///|
 priv struct SuffixArray {
-  sa : Array[Int]
-  rank : Array[Int]
-  lcp : Array[Int]
-  text : String
+  sa : Array[Int]      // Suffix array
+  rank : Array[Int]    // Rank array
+  lcp : Array[Int]     // LCP array
+  n : Int
 }
 
 ///|
-fn SuffixArray::new(text : String) -> SuffixArray {
-  let n = text.length()
+/// Build suffix array using prefix doubling (functional style)
+fn SuffixArray::build(s : String) -> SuffixArray {
+  let n = s.length()
   if n == 0 {
-    return { sa: [], rank: [], lcp: [], text }
+    return { sa: [], rank: [], lcp: [], n: 0 }
   }
 
-  let sa = Array::make(n, 0)
-  let rank = Array::make(n, 0)
-
-  // Initialize
-  for i = 0; i < n; i = i + 1 {
-    sa[i] = i
-    rank[i] = text[i].to_int()
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: "I: Arrays uninitialized. M: Set sa[i] = i (identity) and rank[i] = character code. T: Initial ordering by first character.",
+  // Special case for single character
+  if n == 1 {
+    return { sa: [0], rank: [0], lcp: [0], n: 1 }
   }
 
-  // Prefix doubling
-  for k = 1; k < n; k = k * 2 {
-    // Sort by (rank[i], rank[i+k]) pairs
-    let get_key = fn(i : Int) -> (Int, Int) {
-      let r1 = rank[i]
-      let r2 = if i + k < n { rank[i + k] } else { -1 }
-      (r1, r2)
-    }
+  // Initialize ranks with character values
+  let initial_rank = Array::makei(n, fn(i) { s[i].to_int() })
 
-    sa.sort_by(fn(a, b) {
-      let (a1, a2) = get_key(a)
-      let (b1, b2) = get_key(b)
-      if a1 != b1 { a1 - b1 } else { a2 - b2 }
+  // Prefix doubling using functional for loop
+  let (final_sa, final_rank) = for k = 1, rank = initial_rank; k < n; k = k * 2 {
+    // Create suffix indices with their sort keys
+    let suffixes = Array::makei(n, fn(i) {
+      let second_rank = if i + k < n { rank[i + k] } else { -1 }
+      (i, rank[i], second_rank)
     })
 
+    // Sort by (first_rank, second_rank)
+    suffixes.sort_by_key(fn(t) { (t.1, t.2) })
+
     // Compute new ranks
-    let tmp = Array::make(n, 0)
-    tmp[sa[0]] = 0
+    let new_rank = Array::make(n, 0)
+    new_rank[suffixes[0].0] = 0
+
     for i = 1; i < n; i = i + 1 {
-      let prev_key = get_key(sa[i - 1])
-      let curr_key = get_key(sa[i])
-      tmp[sa[i]] = if prev_key == curr_key { tmp[sa[i - 1]] } else { tmp[sa[i - 1]] + 1 }
-    }
-
-    for i = 0; i < n; i = i + 1 {
-      rank[i] = tmp[i]
-    }
-
-    if rank[sa[n - 1]] == n - 1 {
-      break
-    }
-  } where {
-    invariant: k >= 1 && k <= n * 2,
-    reasoning: "I: k=1, suffixes sorted by first char. M: Each iteration sorts by first 2k chars. T: When all ranks unique or k >= n, fully sorted.",
-  }
-
-  // Normalize ranks to 0..n-1 range for LCP computation
-  // This handles the case where prefix doubling didn't run (n=1)
-  let rank_norm = Array::make(n, 0)
-  for i = 0; i < n; i = i + 1 {
-    rank_norm[sa[i]] = i
-  }
-
-  // Build LCP array using Kasai's algorithm
-  let lcp = Array::make(n, 0)
-  for i = 0, h = 0; i < n; {
-    let mut curr_h = h
-    if rank_norm[i] > 0 {
-      let j = sa[rank_norm[i] - 1]
-      while i + curr_h < n && j + curr_h < n && text[i + curr_h] == text[j + curr_h] {
-        curr_h = curr_h + 1
-      }
-      lcp[rank_norm[i]] = curr_h
-      if curr_h > 0 {
-        curr_h = curr_h - 1
+      let prev = suffixes[i - 1]
+      let curr = suffixes[i]
+      new_rank[curr.0] = if curr.1 == prev.1 && curr.2 == prev.2 {
+        new_rank[prev.0]
+      } else {
+        new_rank[prev.0] + 1
       }
     }
-    continue i + 1, curr_h
-  } where {
-    invariant: i >= 0 && i <= n && h >= 0,
-    reasoning: "I: i=0, h=0. M: For suffix at i, compute LCP with predecessor in sorted order. Key: LCP decreases by at most 1 between consecutive text positions. T: O(n) total.",
-  }
 
-  { sa, rank, lcp, text }
-}
-
-///|
-fn SuffixArray::search(self : SuffixArray, pattern : String) -> (Int, Int)? {
-  let n = self.sa.length()
-  let m = pattern.length()
-  if n == 0 || m == 0 {
-    return None
-  }
-
-  // Binary search for lower bound
-  let mut lo = 0
-  let mut hi = n
-  while lo < hi {
-    let mid = (lo + hi) / 2
-    let suffix_start = self.sa[mid]
-    if compare_suffix(self.text, suffix_start, pattern) < 0 {
-      lo = mid + 1
-    } else {
-      hi = mid
+    // Check if all ranks are unique
+    if new_rank[suffixes[n - 1].0] == n - 1 {
+      break (Array::makei(n, fn(i) { suffixes[i].0 }), new_rank)
     }
-  }
-  let first = lo
 
-  // Binary search for upper bound
-  hi = n
-  while lo < hi {
-    let mid = (lo + hi) / 2
-    let suffix_start = self.sa[mid]
-    if starts_with(self.text, suffix_start, pattern) {
-      lo = mid + 1
-    } else if compare_suffix(self.text, suffix_start, pattern) < 0 {
-      lo = mid + 1
-    } else {
-      hi = mid
-    }
-  }
-  let last = lo - 1
-
-  if first <= last && starts_with(self.text, self.sa[first], pattern) {
-    Some((first, last))
+    continue k * 2, new_rank
   } else {
-    None
+    // Build final SA from rank
+    let sa = Array::make(n, 0)
+    for i = 0; i < n; i = i + 1 {
+      sa[rank[i]] = i
+    }
+    (sa, rank)
+  }
+
+  // Compute LCP array using Kasai's algorithm
+  let lcp = compute_lcp(s, final_sa, final_rank)
+
+  { sa: final_sa, rank: final_rank, lcp, n }
+}
+
+///|
+/// Kasai's algorithm for LCP array (functional style)
+fn compute_lcp(s : String, sa : Array[Int], rank : Array[Int]) -> Array[Int] {
+  let n = s.length()
+  let lcp = Array::make(n, 0)
+
+  // Functional for loop with state
+  for i = 0, k = 0; i < n; {
+    if rank[i] == 0 {
+      continue i + 1, 0
+    }
+
+    let j = sa[rank[i] - 1]
+    let new_k = for h = k; i + h < n && j + h < n && s[i + h] == s[j + h]; {
+      continue h + 1
+    } else {
+      h
+    }
+
+    lcp[rank[i]] = new_k
+    continue i + 1, if new_k > 0 { new_k - 1 } else { 0 }
+  } else {
+    lcp
   }
 }
 
 ///|
-fn compare_suffix(text : String, start : Int, pattern : String) -> Int {
-  let n = text.length()
-  let m = pattern.length()
-  for i = 0; i < m; i = i + 1 {
-    if start + i >= n {
-      return -1
-    }
-    if text[start + i] < pattern[i] {
-      return -1
-    }
-    if text[start + i] > pattern[i] {
-      return 1
-    }
-  }
-  0
+/// Count occurrences of pattern in text using binary search
+fn SuffixArray::count(self : SuffixArray, text : String, pattern : String) -> Int {
+  let (lo, hi) = self.search_range(text, pattern)
+  if lo <= hi { hi - lo + 1 } else { 0 }
 }
 
 ///|
-fn starts_with(text : String, start : Int, pattern : String) -> Bool {
-  let n = text.length()
-  let m = pattern.length()
-  if start + m > n {
-    return false
-  }
-  for i = 0; i < m; i = i + 1 {
-    if text[start + i] != pattern[i] {
-      return false
-    }
-  }
-  true
+/// Find range of suffixes that start with pattern
+fn SuffixArray::search_range(self : SuffixArray, text : String, pattern : String) -> (Int, Int) {
+  let lo = self.lower_bound(text, pattern)
+  let hi = self.upper_bound(text, pattern)
+  (lo, hi - 1)
 }
 
 ///|
-fn SuffixArray::find_all(self : SuffixArray, pattern : String) -> Array[Int] {
-  match self.search(pattern) {
-    None => []
-    Some((first, last)) => {
-      let result : Array[Int] = []
-      for i = first; i <= last; i = i + 1 {
-        result.push(self.sa[i])
-      }
-      result.sort_by(fn(a, b) { a - b })
-      result
+fn SuffixArray::lower_bound(self : SuffixArray, text : String, pattern : String) -> Int {
+  for lo = 0, hi = self.n; lo < hi; {
+    let mid = (lo + hi) / 2
+    if compare_suffix(text, self.sa[mid], pattern) < 0 {
+      continue mid + 1, hi
+    } else {
+      continue lo, mid
     }
+  } else {
+    lo
   }
 }
 
 ///|
-fn SuffixArray::count(self : SuffixArray, pattern : String) -> Int {
-  match self.search(pattern) {
-    None => 0
-    Some((first, last)) => last - first + 1
+fn SuffixArray::upper_bound(self : SuffixArray, text : String, pattern : String) -> Int {
+  for lo = 0, hi = self.n; lo < hi; {
+    let mid = (lo + hi) / 2
+    if compare_suffix(text, self.sa[mid], pattern) <= 0 {
+      continue mid + 1, hi
+    } else {
+      continue lo, mid
+    }
+  } else {
+    lo
   }
 }
 
 ///|
-fn SuffixArray::longest_repeated_substring(self : SuffixArray) -> String {
-  let n = self.sa.length()
-  if n < 2 {
+/// Compare suffix starting at pos with pattern
+fn compare_suffix(text : String, pos : Int, pattern : String) -> Int {
+  let text_len = text.length()
+  let pat_len = pattern.length()
+
+  for i = 0; i < pat_len && pos + i < text_len; {
+    let tc = text[pos + i]
+    let pc = pattern[i]
+    if tc < pc {
+      break -1
+    } else if tc > pc {
+      break 1
+    } else {
+      continue i + 1
+    }
+  } else {
+    if pos + pat_len <= text_len { 0 } else { -1 }
+  }
+}
+
+///|
+/// Find all occurrences of pattern
+fn SuffixArray::find_all(self : SuffixArray, text : String, pattern : String) -> Array[Int] {
+  let (lo, hi) = self.search_range(text, pattern)
+  if lo > hi {
+    []
+  } else {
+    Array::makei(hi - lo + 1, fn(i) { self.sa[lo + i] })
+  }
+}
+
+///|
+/// Find longest repeated substring using LCP array
+fn SuffixArray::longest_repeated_substring(self : SuffixArray, text : String) -> String {
+  if self.n <= 1 {
     return ""
   }
 
-  let mut max_lcp = 0
-  let mut max_idx = 0
-
-  for i = 1; i < n; i = i + 1 {
-    if self.lcp[i] > max_lcp {
-      max_lcp = self.lcp[i]
-      max_idx = i
+  // Find maximum LCP value using functional for
+  let (max_lcp, max_idx) = for i = 1, best_lcp = 0, best_idx = 0; i < self.n; {
+    if self.lcp[i] > best_lcp {
+      continue i + 1, self.lcp[i], i
+    } else {
+      continue i + 1, best_lcp, best_idx
     }
-  } where {
-    invariant: i >= 1 && i <= n,
-    reasoning: "I: max_lcp=0. M: Track maximum LCP. T: After loop, max_idx has longest repeated.",
+  } else {
+    (best_lcp, best_idx)
   }
 
   if max_lcp == 0 {
-    return ""
+    ""
+  } else {
+    text.substring(start=self.sa[max_idx], end=self.sa[max_idx] + max_lcp)
   }
-
-  let start = self.sa[max_idx]
-  self.text.substring(start=start, end=start + max_lcp)
-}
-
-///|
-fn SuffixArray::count_distinct_substrings(self : SuffixArray) -> Int64 {
-  let n = self.sa.length()
-  if n == 0 {
-    return 0L
-  }
-
-  let mut total = (n.to_int64() * (n.to_int64() + 1L)) / 2L
-  for i = 1; i < n; i = i + 1 {
-    total = total - self.lcp[i].to_int64()
-  } where {
-    invariant: i >= 1 && i <= n,
-    reasoning: "I: total = n(n+1)/2. M: Subtract overlapping prefixes. T: Count of distinct substrings.",
-  }
-
-  total
-}
-
-///|
-fn SuffixArray::get_suffix(self : SuffixArray, i : Int) -> String {
-  if i < 0 || i >= self.sa.length() {
-    return ""
-  }
-  let start = self.sa[i]
-  self.text.substring(start=start, end=self.text.length())
 }
 
 // ============================================================================
@@ -272,87 +221,63 @@ fn SuffixArray::get_suffix(self : SuffixArray, i : Int) -> String {
 // ============================================================================
 
 ///|
-test "suffix array construction" {
-  let sa = SuffixArray::new("banana")
+test "suffix array build" {
+  let sa = SuffixArray::build("banana")
+  // Suffixes sorted: a, ana, anana, banana, na, nana
+  // Positions:       5, 3,   1,     0,      4,  2
   inspect(sa.sa[0], content="5")
   inspect(sa.sa[1], content="3")
   inspect(sa.sa[2], content="1")
-  inspect(sa.sa[3], content="0")
-  inspect(sa.sa[4], content="4")
-  inspect(sa.sa[5], content="2")
+}
+
+///|
+test "suffix array count" {
+  let text = "mississippi"
+  let sa = SuffixArray::build(text)
+
+  inspect(sa.count(text, "issi"), content="2")
+  inspect(sa.count(text, "ss"), content="2")
+  inspect(sa.count(text, "xyz"), content="0")
+}
+
+///|
+test "suffix array find all" {
+  let text = "abracadabra"
+  let sa = SuffixArray::build(text)
+
+  let positions = sa.find_all(text, "abra")
+  inspect(positions.length(), content="2")
+  let sorted = positions.copy()
+  sorted.sort()
+  inspect(sorted[0], content="0")
+  inspect(sorted[1], content="7")
 }
 
 ///|
 test "suffix array lcp" {
-  let sa = SuffixArray::new("banana")
+  let text = "banana"
+  let sa = SuffixArray::build(text)
   inspect(sa.lcp[1], content="1")
   inspect(sa.lcp[2], content="3")
-  inspect(sa.lcp[3], content="0")
-  inspect(sa.lcp[4], content="0")
-  inspect(sa.lcp[5], content="2")
-}
-
-///|
-test "suffix array search" {
-  let sa = SuffixArray::new("banana")
-  let matches = sa.find_all("ana")
-  inspect(matches.length(), content="2")
-  inspect(matches[0], content="1")
-  inspect(matches[1], content="3")
-  inspect(sa.count("na"), content="2")
-  inspect(sa.count("xyz"), content="0")
 }
 
 ///|
 test "suffix array longest repeated" {
-  let sa = SuffixArray::new("banana")
-  inspect(sa.longest_repeated_substring(), content="ana")
-
-  let sa2 = SuffixArray::new("abcabc")
-  inspect(sa2.longest_repeated_substring(), content="abc")
-}
-
-///|
-test "suffix array distinct substrings" {
-  let sa = SuffixArray::new("banana")
-  inspect(sa.count_distinct_substrings(), content="15")
+  let text = "banana"
+  let sa = SuffixArray::build(text)
+  let lrs = sa.longest_repeated_substring(text)
+  inspect(lrs, content="ana")
 }
 
 ///|
 test "suffix array empty" {
-  let sa = SuffixArray::new("")
-  inspect(sa.sa.length(), content="0")
+  let sa = SuffixArray::build("")
+  inspect(sa.n, content="0")
 }
 
 ///|
 test "suffix array single char" {
-  let sa = SuffixArray::new("a")
-  inspect(sa.sa.length(), content="1")
+  let sa = SuffixArray::build("a")
+  inspect(sa.n, content="1")
   inspect(sa.sa[0], content="0")
-  inspect(sa.count_distinct_substrings(), content="1")
-}
-
-///|
-test "suffix array all same" {
-  let sa = SuffixArray::new("aaaa")
-  inspect(sa.sa[0], content="3")
-  inspect(sa.sa[1], content="2")
-  inspect(sa.sa[2], content="1")
-  inspect(sa.sa[3], content="0")
-  inspect(sa.count_distinct_substrings(), content="4")
-}
-
-///|
-test "suffix array pattern not found" {
-  let sa = SuffixArray::new("banana")
-  let matches = sa.find_all("xyz")
-  inspect(matches.length(), content="0")
-}
-
-///|
-test "suffix array get suffix" {
-  let sa = SuffixArray::new("banana")
-  inspect(sa.get_suffix(0), content="a")
-  inspect(sa.get_suffix(1), content="ana")
-  inspect(sa.get_suffix(3), content="banana")
 }

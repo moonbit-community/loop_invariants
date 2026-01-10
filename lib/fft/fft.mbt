@@ -1,289 +1,203 @@
 // ============================================================================
-// FFT/NTT - Fast Polynomial Multiplication
+// FFT - Fast Fourier Transform
 // ============================================================================
 //
-// Fast Fourier Transform (FFT) and Number Theoretic Transform (NTT) enable
-// O(n log n) polynomial multiplication by converting to/from point-value form.
+// Computes the Discrete Fourier Transform in O(n log n) time.
+// Essential for fast polynomial multiplication.
 //
-// KEY INSIGHT: Multiplying polynomials in coefficient form is O(n²), but
-// in point-value form (evaluations) it's O(n). FFT converts in O(n log n).
+// DFT: X[k] = Σ x[n] * e^(-2πi*k*n/N) for k = 0..N-1
 //
-// NTT BASICS:
-// Uses primitive roots of unity in modular arithmetic instead of complex numbers.
-// For prime p = k * 2^m + 1, primitive root g exists where g^((p-1)/2^m) is
-// a 2^m-th root of unity modulo p.
-//
-// Common NTT-friendly primes:
-// - 998244353 = 119 * 2^23 + 1, primitive root = 3
-// - 167772161 = 5 * 2^25 + 1, primitive root = 3
-//
-// ALGORITHM (Cooley-Tukey):
-// 1. Bit-reverse permutation of coefficients
-// 2. Iteratively combine pairs using butterfly operations
-// 3. For inverse, use conjugate roots and divide by n
+// KEY INSIGHT (Cooley-Tukey): Split into even and odd indices.
+// DFT(x) = DFT(x_even) + w * DFT(x_odd) where w = e^(-2πi/N)
 //
 // INVARIANTS:
-// 1. After stage k, groups of 2^k elements are DFT of their original positions
-// 2. Bit-reversal maps index i to bit-reverse(i), preserving correct DFT ordering
-// 3. After inverse transform and division by n, original coefficients recovered
+// 1. Array length must be power of 2
+// 2. w^N = 1 (primitive N-th root of unity)
+// 3. Inverse FFT uses w^(-1) = conjugate(w) and divides by N
 //
 // TIME COMPLEXITY: O(n log n)
 // SPACE COMPLEXITY: O(n)
 
 ///|
-const NTT_MOD : Int64 = 998244353L
+const FFT_PI : Double = 3.14159265358979323846
 
 ///|
-const NTT_ROOT : Int64 = 3L
+priv struct Complex {
+  re : Double
+  im : Double
+} derive(Eq)
 
 ///|
-/// Fast modular exponentiation
-fn mod_pow(base : Int64, exp : Int64, m : Int64) -> Int64 {
-  let mut result = 1L
-  let mut b = base % m
-  let mut e = exp
-  while e > 0L {
-    if e % 2L == 1L {
-      result = result * b % m
-    }
-    b = b * b % m
-    e = e / 2L
-  }
-  result
+fn Complex::new(re : Double, im : Double) -> Complex {
+  { re, im }
 }
 
 ///|
-/// Compute bit reversal of index
-fn bit_reverse(x : Int, bits : Int) -> Int {
-  let mut result = 0
-  let mut v = x
-  for i = 0; i < bits; i = i + 1 {
-    result = (result << 1) | (v & 1)
-    v = v >> 1
-  }
-  result
+fn Complex::add(self : Complex, other : Complex) -> Complex {
+  { re: self.re + other.re, im: self.im + other.im }
 }
 
 ///|
-/// Number Theoretic Transform
-priv struct NTT {
-  n : Int // Must be power of 2
-  log_n : Int
-  root : Int64
-  root_inv : Int64
-  mod_val : Int64
+fn Complex::sub(self : Complex, other : Complex) -> Complex {
+  { re: self.re - other.re, im: self.im - other.im }
 }
 
 ///|
-fn NTT::new(size : Int) -> NTT {
-  // Find smallest power of 2 >= size
-  let mut n = 1
-  let mut log_n = 0
-  while n < size {
-    n = n * 2
-    log_n = log_n + 1
-  }
-
-  let root = mod_pow(NTT_ROOT, (NTT_MOD - 1L) / n.to_int64(), NTT_MOD)
-  let root_inv = mod_pow(root, NTT_MOD - 2L, NTT_MOD)
-
-  { n, log_n, root, root_inv, mod_val: NTT_MOD }
-}
-
-///|
-/// Perform NTT in-place
-fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
-  let n = self.n
-
-  // Bit-reverse permutation
-  for i = 0; i < n; i = i + 1 {
-    let j = bit_reverse(i, self.log_n)
-    if i < j {
-      let tmp = a[i]
-      a[i] = a[j]
-      a[j] = tmp
-    }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: "I: Array unsorted. M: Swap a[i] with a[bit_reverse(i)] when i < j (to avoid double swap). T: Array in bit-reversed order for Cooley-Tukey algorithm.",
-  }
-
-  // Cooley-Tukey NTT
-  let mut len = 2
-  while len <= n {
-    let w_base = if inverse { self.root_inv } else { self.root }
-    let w = mod_pow(w_base, (n / len).to_int64(), self.mod_val)
-
-    for i = 0; i < n; i = i + len {
-      let mut wn = 1L
-      for j = 0; j < len / 2; j = j + 1 {
-        let u = a[i + j]
-        let v = a[i + j + len / 2] * wn % self.mod_val
-        a[i + j] = (u + v) % self.mod_val
-        a[i + j + len / 2] = ((u - v) % self.mod_val + self.mod_val) % self.mod_val
-        wn = wn * w % self.mod_val
-      }
-    }
-    len = len * 2
-  }
-
-  // For inverse, divide by n
-  if inverse {
-    let n_inv = mod_pow(n.to_int64(), self.mod_val - 2L, self.mod_val)
-    for i = 0; i < n; i = i + 1 {
-      a[i] = a[i] * n_inv % self.mod_val
-    }
+fn Complex::mul(self : Complex, other : Complex) -> Complex {
+  {
+    re: self.re * other.re - self.im * other.im,
+    im: self.re * other.im + self.im * other.re,
   }
 }
 
 ///|
-/// Multiply two polynomials modulo NTT_MOD
-fn NTT::multiply(
-  self : NTT,
-  a : Array[Int64],
-  b : Array[Int64]
-) -> Array[Int64] {
-  let n = self.n
-
-  // Pad arrays to size n
-  let pa = Array::make(n, 0L)
-  let pb = Array::make(n, 0L)
-  for i = 0; i < a.length() && i < n; i = i + 1 {
-    pa[i] = a[i] % self.mod_val
-  }
-  for i = 0; i < b.length() && i < n; i = i + 1 {
-    pb[i] = b[i] % self.mod_val
-  }
-
-  // Transform both
-  self.transform(pa, false)
-  self.transform(pb, false)
-
-  // Point-wise multiplication
-  for i = 0; i < n; i = i + 1 {
-    pa[i] = pa[i] * pb[i] % self.mod_val
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: "I: pa, pb contain NTT of inputs. M: Multiply corresponding point values. Convolution theorem: NTT(a*b) = NTT(a) * NTT(b) pointwise. T: pa contains NTT of product.",
-  }
-
-  // Inverse transform
-  self.transform(pa, true)
-
-  pa
+fn Complex::scale(self : Complex, s : Double) -> Complex {
+  { re: self.re * s, im: self.im * s }
 }
 
-// ============================================================================
-// SIMPLE POLYNOMIAL MULTIPLICATION (for comparison)
-// ============================================================================
-
 ///|
-/// O(n²) naive polynomial multiplication
-fn poly_multiply_naive(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
-  if a.length() == 0 || b.length() == 0 {
-    return []
-  }
-  let result = Array::make(a.length() + b.length() - 1, 0L)
-  for i = 0; i < a.length(); i = i + 1 {
-    for j = 0; j < b.length(); j = j + 1 {
-      result[i + j] = (result[i + j] + a[i] * b[j]) % NTT_MOD
-    }
-  }
-  result
+fn Complex::conj(self : Complex) -> Complex {
+  { re: self.re, im: -self.im }
 }
 
-// ============================================================================
-// KARATSUBA MULTIPLICATION (O(n^1.58))
-// ============================================================================
+///|
+fn Complex::from_polar(r : Double, theta : Double) -> Complex {
+  { re: r * @math.cos(theta), im: r * @math.sin(theta) }
+}
 
 ///|
-/// Karatsuba polynomial multiplication
-fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
+/// Compute FFT in-place using iterative Cooley-Tukey
+fn fft(a : Array[Complex], invert : Bool) -> Unit {
   let n = a.length()
-  let m = b.length()
-  if n == 0 || m == 0 {
-    return []
-  }
-  if n < 32 || m < 32 {
-    return poly_multiply_naive(a, b)
+  if n == 1 {
+    return
   }
 
-  let half = (if n > m { n } else { m }) / 2
+  // Bit-reversal permutation
+  bit_reverse_permute(a)
 
-  // Split: a = a_low + x^half * a_high
-  let a_low : Array[Int64] = []
-  let a_high : Array[Int64] = []
-  for i = 0; i < a.length(); i = i + 1 {
-    if i < half {
-      a_low.push(a[i])
+  // Iterative FFT
+  for len = 2; len <= n; {
+    let angle = 2.0 * FFT_PI / len.to_double() * (if invert { -1.0 } else { 1.0 })
+    let wlen = Complex::from_polar(1.0, angle)
+
+    for i = 0; i < n; {
+      let w = for j = 0, w = Complex::new(1.0, 0.0); j < len / 2; {
+        let u = a[i + j]
+        let v = a[i + j + len / 2].mul(w)
+        a[i + j] = u.add(v)
+        a[i + j + len / 2] = u.sub(v)
+        continue j + 1, w.mul(wlen)
+      } else {
+        w
+      }
+      let _ = w
+      continue i + len
+    }
+    continue len * 2
+  }
+
+  if invert {
+    let n_inv = 1.0 / n.to_double()
+    for i = 0; i < n; i = i + 1 {
+      a[i] = a[i].scale(n_inv)
+    }
+  }
+}
+
+///|
+/// Bit-reversal permutation
+fn bit_reverse_permute(a : Array[Complex]) -> Unit {
+  let n = a.length()
+  for i = 1, j = 0; i < n; {
+    let bit = n / 2
+    let new_j = for b = bit, jj = j; b > 0 && jj >= b; {
+      continue b / 2, jj - b
     } else {
-      a_high.push(a[i])
+      jj + b
     }
-  }
 
-  let b_low : Array[Int64] = []
-  let b_high : Array[Int64] = []
-  for i = 0; i < b.length(); i = i + 1 {
-    if i < half {
-      b_low.push(b[i])
+    if i < new_j {
+      let tmp = a[i]
+      a[i] = a[new_j]
+      a[new_j] = tmp
+    }
+    continue i + 1, new_j
+  }
+}
+
+///|
+/// Multiply two polynomials using FFT
+fn poly_multiply(a : Array[Int], b : Array[Int]) -> Array[Int] {
+  let result_len = a.length() + b.length() - 1
+  let n = next_power_of_2(result_len)
+
+  // Convert to complex
+  let fa = Array::makei(n, fn(i) {
+    if i < a.length() {
+      Complex::new(a[i].to_double(), 0.0)
     } else {
-      b_high.push(b[i])
+      Complex::new(0.0, 0.0)
     }
+  })
+
+  let fb = Array::makei(n, fn(i) {
+    if i < b.length() {
+      Complex::new(b[i].to_double(), 0.0)
+    } else {
+      Complex::new(0.0, 0.0)
+    }
+  })
+
+  // Forward FFT
+  fft(fa, false)
+  fft(fb, false)
+
+  // Pointwise multiply
+  for i = 0; i < n; i = i + 1 {
+    fa[i] = fa[i].mul(fb[i])
   }
 
-  // Recursive multiplications
-  let z0 = poly_multiply_karatsuba(a_low, b_low)
-  let z2 = poly_multiply_karatsuba(a_high, b_high)
+  // Inverse FFT
+  fft(fa, true)
 
-  // z1 = (a_low + a_high)(b_low + b_high) - z0 - z2
-  let a_sum : Array[Int64] = []
-  let b_sum : Array[Int64] = []
-  let max_low = if a_low.length() > a_high.length() {
-    a_low.length()
+  // Extract result
+  Array::makei(result_len, fn(i) { (fa[i].re + 0.5).to_int() })
+}
+
+///|
+fn next_power_of_2(n : Int) -> Int {
+  for p = 1; p < n; {
+    continue p * 2
   } else {
-    a_high.length()
+    p
   }
-  for i = 0; i < max_low; i = i + 1 {
-    let av = if i < a_low.length() { a_low[i] } else { 0L }
-    let ah = if i < a_high.length() { a_high[i] } else { 0L }
-    a_sum.push((av + ah) % NTT_MOD)
-  }
-  let max_low_b = if b_low.length() > b_high.length() {
-    b_low.length()
-  } else {
-    b_high.length()
-  }
-  for i = 0; i < max_low_b; i = i + 1 {
-    let bv = if i < b_low.length() { b_low[i] } else { 0L }
-    let bh = if i < b_high.length() { b_high[i] } else { 0L }
-    b_sum.push((bv + bh) % NTT_MOD)
+}
+
+///|
+/// Convolution of two arrays
+fn convolve(a : Array[Double], b : Array[Double]) -> Array[Double] {
+  let result_len = a.length() + b.length() - 1
+  let n = next_power_of_2(result_len)
+
+  let fa = Array::makei(n, fn(i) {
+    if i < a.length() { Complex::new(a[i], 0.0) } else { Complex::new(0.0, 0.0) }
+  })
+
+  let fb = Array::makei(n, fn(i) {
+    if i < b.length() { Complex::new(b[i], 0.0) } else { Complex::new(0.0, 0.0) }
+  })
+
+  fft(fa, false)
+  fft(fb, false)
+
+  for i = 0; i < n; i = i + 1 {
+    fa[i] = fa[i].mul(fb[i])
   }
 
-  let z1_full = poly_multiply_karatsuba(a_sum, b_sum)
+  fft(fa, true)
 
-  // Combine: result = z0 + x^half * z1 + x^(2*half) * z2
-  let result_len = n + m - 1
-  let result = Array::make(result_len, 0L)
-
-  for i = 0; i < z0.length(); i = i + 1 {
-    result[i] = (result[i] + z0[i]) % NTT_MOD
-  }
-  for i = 0; i < z1_full.length(); i = i + 1 {
-    if i + half < result_len {
-      let sub = if i < z0.length() { z0[i] } else { 0L }
-      let sub2 = if i < z2.length() { z2[i] } else { 0L }
-      result[i + half] = ((result[i + half] + z1_full[i] - sub - sub2) % NTT_MOD +
-        NTT_MOD) %
-        NTT_MOD
-    }
-  }
-  for i = 0; i < z2.length(); i = i + 1 {
-    if i + 2 * half < result_len {
-      result[i + 2 * half] = (result[i + 2 * half] + z2[i]) % NTT_MOD
-    }
-  }
-
-  result
+  Array::makei(result_len, fn(i) { fa[i].re })
 }
 
 // ============================================================================
@@ -291,69 +205,84 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
 // ============================================================================
 
 ///|
-test "ntt basic multiplication" {
-  // (1 + 2x) * (3 + 4x) = 3 + 10x + 8x²
-  let a : Array[Int64] = [1L, 2L]
-  let b : Array[Int64] = [3L, 4L]
-  let ntt = NTT::new(4)
-  let result = ntt.multiply(a, b)
+test "poly multiply simple" {
+  // (1 + 2x) * (3 + 4x) = 3 + 10x + 8x^2
+  let a : Array[Int] = [1, 2]
+  let b : Array[Int] = [3, 4]
+  let result = poly_multiply(a, b)
+
   inspect(result[0], content="3")
   inspect(result[1], content="10")
   inspect(result[2], content="8")
 }
 
 ///|
-test "ntt larger multiplication" {
-  // (1 + x + x²) * (1 + x + x²) = 1 + 2x + 3x² + 2x³ + x⁴
-  let a : Array[Int64] = [1L, 1L, 1L]
-  let b : Array[Int64] = [1L, 1L, 1L]
-  let ntt = NTT::new(8)
-  let result = ntt.multiply(a, b)
+test "poly multiply larger" {
+  // (1 + x + x^2) * (1 + x) = 1 + 2x + 2x^2 + x^3
+  let a : Array[Int] = [1, 1, 1]
+  let b : Array[Int] = [1, 1]
+  let result = poly_multiply(a, b)
+
+  inspect(result[0], content="1")
+  inspect(result[1], content="2")
+  inspect(result[2], content="2")
+  inspect(result[3], content="1")
+}
+
+///|
+test "poly multiply by constant" {
+  // 3 * (2 + 5x) = 6 + 15x
+  let a : Array[Int] = [3]
+  let b : Array[Int] = [2, 5]
+  let result = poly_multiply(a, b)
+
+  inspect(result[0], content="6")
+  inspect(result[1], content="15")
+}
+
+///|
+test "complex operations" {
+  let a = Complex::new(3.0, 4.0)
+  let b = Complex::new(1.0, 2.0)
+
+  let sum = a.add(b)
+  inspect((sum.re - 4.0).abs() < 0.001, content="true")
+
+  let prod = a.mul(b)
+  // (3+4i)(1+2i) = 3 + 6i + 4i + 8i^2 = 3 - 8 + 10i = -5 + 10i
+  inspect((prod.re - (-5.0)).abs() < 0.001, content="true")
+  inspect((prod.im - 10.0).abs() < 0.001, content="true")
+}
+
+///|
+test "next power of 2" {
+  inspect(next_power_of_2(1), content="1")
+  inspect(next_power_of_2(3), content="4")
+  inspect(next_power_of_2(5), content="8")
+  inspect(next_power_of_2(8), content="8")
+}
+
+///|
+test "convolve" {
+  let a : Array[Double] = [1.0, 2.0, 3.0]
+  let b : Array[Double] = [1.0, 1.0]
+  let result = convolve(a, b)
+
+  inspect((result[0] - 1.0).abs() < 0.01, content="true")
+  inspect((result[1] - 3.0).abs() < 0.01, content="true")
+  inspect((result[2] - 5.0).abs() < 0.01, content="true")
+  inspect((result[3] - 3.0).abs() < 0.01, content="true")
+}
+
+///|
+test "poly multiply identity" {
+  // p * 1 = p
+  let a : Array[Int] = [1, 2, 3]
+  let b : Array[Int] = [1]
+  let result = poly_multiply(a, b)
+
+  inspect(result.length(), content="3")
   inspect(result[0], content="1")
   inspect(result[1], content="2")
   inspect(result[2], content="3")
-  inspect(result[3], content="2")
-  inspect(result[4], content="1")
-}
-
-///|
-test "ntt vs naive" {
-  let a : Array[Int64] = [1L, 2L, 3L, 4L]
-  let b : Array[Int64] = [5L, 6L, 7L, 8L]
-  let ntt = NTT::new(8)
-  let ntt_result = ntt.multiply(a, b)
-  let naive_result = poly_multiply_naive(a, b)
-
-  for i = 0; i < naive_result.length(); i = i + 1 {
-    inspect(ntt_result[i] == naive_result[i], content="true")
-  }
-}
-
-///|
-test "karatsuba vs naive" {
-  let a : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let b : Array[Int64] = [6L, 7L, 8L, 9L, 10L]
-  let karatsuba_result = poly_multiply_karatsuba(a, b)
-  let naive_result = poly_multiply_naive(a, b)
-
-  inspect(karatsuba_result.length() == naive_result.length(), content="true")
-  for i = 0; i < naive_result.length(); i = i + 1 {
-    inspect(karatsuba_result[i] == naive_result[i], content="true")
-  }
-}
-
-///|
-test "mod_pow" {
-  inspect(mod_pow(3L, 0L, 7L), content="1")
-  inspect(mod_pow(3L, 1L, 7L), content="3")
-  inspect(mod_pow(3L, 2L, 7L), content="2") // 9 % 7 = 2
-  inspect(mod_pow(2L, 10L, 1000L), content="24") // 1024 % 1000 = 24
-}
-
-///|
-test "bit_reverse" {
-  inspect(bit_reverse(0, 3), content="0")
-  inspect(bit_reverse(1, 3), content="4") // 001 -> 100
-  inspect(bit_reverse(2, 3), content="2") // 010 -> 010
-  inspect(bit_reverse(3, 3), content="6") // 011 -> 110
 }

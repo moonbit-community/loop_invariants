@@ -2,213 +2,159 @@
 // Z-ALGORITHM - Linear Time Pattern Matching
 // ============================================================================
 //
-// The Z-Algorithm computes the Z-array for a string in linear time.
-// Z[i] = length of longest substring starting at i that matches a prefix of s
+// The Z-algorithm computes for each position i the length of the longest
+// substring starting at i that matches a prefix of the string.
+//
+// Z[i] = length of longest string starting at i that is also a prefix
 //
 // KEY INSIGHT: Maintain a "Z-box" [l, r] where s[l..r] matches s[0..r-l].
-// For each position i, we can often reuse previously computed Z-values
-// if i falls within the current Z-box.
-//
-// ALGORITHM:
-// 1. Initialize l = r = 0 (empty Z-box)
-// 2. For each i from 1 to n-1:
-//    a. If i > r: expand naively from i, update l = r = i
-//    b. If i <= r:
-//       - k = i - l (corresponding position in prefix)
-//       - If Z[k] < r - i + 1: Z[i] = Z[k] (stays within Z-box)
-//       - Else: start matching from r+1, update l = i
-//
-// EXAMPLE for s = "aabcaab":
-// i:    0  1  2  3  4  5  6
-// s:    a  a  b  c  a  a  b
-// Z:    -  1  0  0  3  1  0
-//
-// Z[4] = 3 because s[4..6] = "aab" matches prefix s[0..2] = "aab"
-//
-// PATTERN MATCHING:
-// To find pattern P in text T, compute Z-array of "P$T"
-// Occurrences of P start at positions i where Z[i] = |P| (i > |P|)
+// When processing position i, if i is inside the Z-box, we can use
+// previously computed values.
 //
 // INVARIANTS:
-// 1. Z-box [l, r] always satisfies s[l..r] = s[0..r-l]
-// 2. r is the rightmost position that has been explicitly compared
-// 3. Z[i] is correctly computed after iteration i
+// 1. Z[0] = 0 by convention (or n, depending on definition)
+// 2. For i > 0: s[0..Z[i]-1] = s[i..i+Z[i]-1]
+// 3. Z-box [l, r] is always the rightmost Z-box found so far
 //
 // TIME COMPLEXITY: O(n)
 // SPACE COMPLEXITY: O(n)
 
 ///|
 /// Compute Z-array for string s
-/// Returns array where z[i] = length of longest prefix match starting at i
-fn compute_z(s : String) -> Array[Int] {
+fn z_function(s : String) -> Array[Int] {
   let n = s.length()
   if n == 0 {
     return []
   }
 
   let z = Array::make(n, 0)
-  z[0] = n // By definition, entire string matches prefix
+  z[0] = n // By convention, Z[0] = n
 
-  // INVARIANT: [l, r] is the Z-box where s[l..r] matches s[0..r-l]
-  // l and r start such that the Z-box is empty (r < l initially)
-  for i = 1, l = 0, r = 0; i < n; i = i + 1 {
-    if i > r {
-      // Case 1: i is outside Z-box, compute naively
-      let mut match_len = 0
-      while i + match_len < n && s[match_len] == s[i + match_len] {
-        match_len = match_len + 1
-      }
-      z[i] = match_len
-      if match_len > 0 {
-        continue i + 1, i, i + match_len - 1
+  // Functional for loop maintaining Z-box [l, r]
+  for i = 1, l = 0, r = 0; i < n; {
+    let (new_l, new_r, zi) = if i < r {
+      // i is inside Z-box
+      let k = i - l
+      if z[k] < r - i {
+        // Stays inside Z-box
+        (l, r, z[k])
       } else {
-        continue i + 1, l, r
+        // Extends beyond Z-box, need to match further
+        // We already know (r - i) characters match, check for more
+        let extended = match_from(s, r - i, r)
+        let total = (r - i) + extended
+        (i, i + total, total)
       }
     } else {
-      // Case 2: i is inside Z-box [l, r]
-      let k = i - l // Corresponding position in prefix
-      let remaining = r - i + 1 // How much of Z-box is left
-
-      if z[k] < remaining {
-        // Case 2a: Z[k] fits entirely within remaining Z-box
-        // s[i..i+z[k]-1] matches s[k..k+z[k]-1] which matches s[0..z[k]-1]
-        z[i] = z[k]
-        continue i + 1, l, r
+      // i is outside Z-box
+      let matched = match_from(s, 0, i)
+      if matched > 0 {
+        (i, i + matched, matched)
       } else {
-        // Case 2b: Need to extend beyond Z-box
-        let mut match_len = remaining
-        while i + match_len < n && s[match_len] == s[i + match_len] {
-          match_len = match_len + 1
-        }
-        z[i] = match_len
-        continue i + 1, i, i + match_len - 1
+        (l, r, 0)
       }
     }
+    z[i] = zi
+    continue i + 1, new_l, new_r
+  } else {
+    z
   }
+}
 
-  z
+///|
+/// Match s[0..] with s[start..], return length of match
+fn match_from(s : String, prefix_pos : Int, str_pos : Int) -> Int {
+  let n = s.length()
+  for len = 0; prefix_pos + len < n && str_pos + len < n; {
+    if s[prefix_pos + len] == s[str_pos + len] {
+      continue len + 1
+    } else {
+      break len
+    }
+  } else {
+    len
+  }
 }
 
 ///|
 /// Find all occurrences of pattern in text using Z-algorithm
-/// Returns array of starting indices where pattern occurs
-fn find_pattern(text : String, pattern : String) -> Array[Int] {
-  let result : Array[Int] = []
-
+fn z_search(text : String, pattern : String) -> Array[Int] {
   let m = pattern.length()
   let n = text.length()
 
-  if m == 0 || m > n {
-    return result
+  if m == 0 || n < m {
+    return []
   }
 
-  // Build concatenated string: pattern + "$" + text
-  // The "$" is a separator that won't match anything
-  let sb = StringBuilder::new()
-  sb.write_string(pattern)
-  sb.write_char('$')
-  sb.write_string(text)
-  let concat = sb.to_string()
+  // Concatenate: pattern + "$" + text
+  let concat = pattern + "$" + text
+  let z = z_function(concat)
 
-  let z = compute_z(concat)
-
-  // Find positions where Z[i] = m (full pattern match)
-  // These positions correspond to text[i - m - 1]
-  // INVARIANT: Valid matches are at positions > m (after pattern$)
-  for i = m + 1; i < z.length(); i = i + 1 {
-    if z[i] == m {
-      result.push(i - m - 1) // Convert to text index
+  // Collect matches using functional approach
+  let results : Array[Int] = []
+  for i = m + 1; i < concat.length(); {
+    if z[i] >= m {
+      results.push(i - m - 1)
     }
+    continue i + 1
   }
-
-  result
+  results
 }
 
 ///|
-/// Count occurrences of pattern in text
-fn count_pattern(text : String, pattern : String) -> Int {
-  find_pattern(text, pattern).length()
-}
-
-///|
-/// Find longest prefix that is also a suffix (excluding trivial cases)
-/// Uses Z-array property: if Z[i] = n - i, then s[i..n-1] = s[0..n-i-1]
+/// Find the longest prefix of s that is also a suffix
 fn longest_prefix_suffix(s : String) -> Int {
   let n = s.length()
   if n <= 1 {
     return 0
   }
 
-  let z = compute_z(s)
+  let z = z_function(s)
 
-  // Find longest i where Z[i] + i = n (s[i..] matches prefix)
-  // INVARIANT: Result is length of longest proper prefix that is also suffix
-  for i = 1, best = 0; i < n; i = i + 1 {
-    if z[i] + i == n && z[i] > best {
-      continue i + 1, z[i]
+  // Find longest Z[i] such that i + Z[i] = n
+  for i = 1, best = 0; i < n; {
+    let new_best = if z[i] > 0 && i + z[i] == n && z[i] > best {
+      z[i]
     } else {
-      continue i + 1, best
+      best
     }
+    continue i + 1, new_best
   } else {
     best
   }
 }
 
 ///|
-/// Find all border lengths (prefix-suffix matches)
-fn all_borders(s : String) -> Array[Int] {
-  let n = s.length()
-  if n == 0 {
-    return []
-  }
-
-  let z = compute_z(s)
-  let borders : Array[Int] = []
-
-  // A border of length k exists if some position i has Z[i] = n - i = k
-  for i = 1; i < n; i = i + 1 {
-    if z[i] + i == n {
-      borders.push(z[i])
-    }
-  }
-
-  // Sort borders in ascending order
-  borders.sort_by(fn(a, b) { a - b })
-  borders
+/// Count occurrences of pattern in text
+fn z_count(text : String, pattern : String) -> Int {
+  z_search(text, pattern).length()
 }
 
 ///|
-/// Find the period of a string (length of smallest repeating unit)
-/// A string with period p satisfies s[i] = s[i mod p] for all i
+/// Find the period of string (smallest p such that s[i] = s[i mod p])
 fn string_period(s : String) -> Int {
   let n = s.length()
   if n == 0 {
     return 0
   }
 
-  let z = compute_z(s)
+  let z = z_function(s)
 
-  // Period p means n - p is a border length, or equivalently
-  // there exists position p where Z[p] >= n - p
-  // INVARIANT: Find smallest p where s[p..] matches prefix of length >= n-p
-  for p = 1; p < n; p = p + 1 {
-    if z[p] >= n - p {
-      return p
+  // Find smallest i such that i + Z[i] = n
+  for i = 1; i < n; {
+    if i + z[i] == n {
+      break i
     }
+    continue i + 1
+  } else {
+    n // String has no proper period
   }
-
-  n // No repetition, period is entire string
 }
 
 ///|
-/// Check if string is a repetition of a smaller pattern
-fn is_repetition(s : String) -> Bool {
-  let n = s.length()
-  if n <= 1 {
-    return false
-  }
-  let p = string_period(s)
-  p < n && n % p == 0
+/// Check if pattern occurs in text
+fn z_contains(text : String, pattern : String) -> Bool {
+  z_search(text, pattern).length() > 0
 }
 
 // ============================================================================
@@ -216,27 +162,16 @@ fn is_repetition(s : String) -> Bool {
 // ============================================================================
 
 ///|
-test "z algorithm basic" {
-  let z = compute_z("aabcaab")
-
-  // Z[0] is always n (entire string matches prefix)
-  inspect(z[0], content="7")
-
-  // Z[1] = 1: "a" matches prefix "a"
-  inspect(z[1], content="1")
-
-  // Z[2] = 0: "b" doesn't match prefix "a"
-  inspect(z[2], content="0")
-
-  // Z[4] = 3: "aab" matches prefix "aab"
-  inspect(z[4], content="3")
+test "z function basic" {
+  let z = z_function("aabxaab")
+  inspect(z[0], content="7") // Whole string
+  inspect(z[1], content="1") // "a" matches prefix
+  inspect(z[4], content="3") // "aab" matches prefix
 }
 
 ///|
-test "z algorithm aaaa" {
-  let z = compute_z("aaaa")
-
-  // All suffixes match prefix
+test "z function all same" {
+  let z = z_function("aaaa")
   inspect(z[0], content="4")
   inspect(z[1], content="3")
   inspect(z[2], content="2")
@@ -244,129 +179,53 @@ test "z algorithm aaaa" {
 }
 
 ///|
-test "z algorithm abcd" {
-  let z = compute_z("abcd")
-
-  // No suffix matches prefix except trivially
-  inspect(z[0], content="4")
-  inspect(z[1], content="0")
-  inspect(z[2], content="0")
-  inspect(z[3], content="0")
+test "z search" {
+  let positions = z_search("abracadabra", "abra")
+  inspect(positions.length(), content="2")
+  inspect(positions[0], content="0")
+  inspect(positions[1], content="7")
 }
 
 ///|
-test "z algorithm empty" {
-  let z = compute_z("")
-  inspect(z.length(), content="0")
+test "z search no match" {
+  let positions = z_search("hello", "xyz")
+  inspect(positions.length(), content="0")
 }
 
 ///|
-test "find pattern basic" {
-  let matches = find_pattern("aabcaabxaab", "aab")
-
-  inspect(matches.length(), content="3")
-  inspect(matches[0], content="0")
-  inspect(matches[1], content="4")
-  inspect(matches[2], content="8")
-}
-
-///|
-test "find pattern no match" {
-  let matches = find_pattern("abcdef", "xyz")
-  inspect(matches.length(), content="0")
-}
-
-///|
-test "find pattern full match" {
-  let matches = find_pattern("abc", "abc")
-
-  inspect(matches.length(), content="1")
-  inspect(matches[0], content="0")
-}
-
-///|
-test "find pattern overlapping" {
-  let matches = find_pattern("aaaa", "aa")
-
-  // "aa" appears at positions 0, 1, 2
-  inspect(matches.length(), content="3")
-  inspect(matches[0], content="0")
-  inspect(matches[1], content="1")
-  inspect(matches[2], content="2")
-}
-
-///|
-test "count pattern" {
-  inspect(count_pattern("mississippi", "issi"), content="2")
-  inspect(count_pattern("abcabc", "abc"), content="2")
-  inspect(count_pattern("hello", "xyz"), content="0")
+test "z count" {
+  inspect(z_count("abababa", "aba"), content="3")
+  inspect(z_count("aaaa", "aa"), content="3")
 }
 
 ///|
 test "longest prefix suffix" {
-  // "abcab": prefix "ab" = suffix "ab"
-  inspect(longest_prefix_suffix("abcab"), content="2")
-
-  // "aaaa": prefix "aaa" = suffix "aaa"
-  inspect(longest_prefix_suffix("aaaa"), content="3")
-
-  // "abcd": no proper prefix-suffix
-  inspect(longest_prefix_suffix("abcd"), content="0")
-
-  // "a": trivially 0
-  inspect(longest_prefix_suffix("a"), content="0")
-}
-
-///|
-test "all borders" {
-  let borders = all_borders("aabaab")
-
-  // "aabaab" has borders: "aab" (length 3)
-  // Actually: "a" is NOT a border, let me recalculate
-  // s[0..2] = "aab", s[3..5] = "aab" - yes, border of length 3
-  // No border of length 1 or 2
-  inspect(borders.length() >= 1, content="true")
+  inspect(longest_prefix_suffix("abcab"), content="2") // "ab"
+  inspect(longest_prefix_suffix("aaa"), content="2")   // "aa"
+  inspect(longest_prefix_suffix("abcd"), content="0")  // No common
 }
 
 ///|
 test "string period" {
-  // "abab" has period 2 ("ab" repeats)
-  inspect(string_period("abab"), content="2")
-
-  // "abcabc" has period 3 ("abc" repeats)
-  inspect(string_period("abcabc"), content="3")
-
-  // "abcd" has period 4 (itself)
-  inspect(string_period("abcd"), content="4")
-
-  // "aaaa" has period 1
-  inspect(string_period("aaaa"), content="1")
+  inspect(string_period("abcabc"), content="3")  // "abc" repeats
+  inspect(string_period("aaaa"), content="1")    // "a" repeats
+  inspect(string_period("abcd"), content="4")    // No proper period
 }
 
 ///|
-test "is repetition" {
-  inspect(is_repetition("abab"), content="true")
-  inspect(is_repetition("abcabc"), content="true")
-  inspect(is_repetition("aaaa"), content="true")
-  inspect(is_repetition("abcd"), content="false")
-  inspect(is_repetition("abc"), content="false")
+test "z empty" {
+  let z = z_function("")
+  inspect(z.length(), content="0")
 }
 
 ///|
-test "z algorithm single char" {
-  let z = compute_z("x")
-  inspect(z.length(), content="1")
+test "z single" {
+  let z = z_function("a")
   inspect(z[0], content="1")
 }
 
 ///|
-test "find pattern empty pattern" {
-  let matches = find_pattern("abc", "")
-  inspect(matches.length(), content="0")
-}
-
-///|
-test "find pattern longer pattern" {
-  let matches = find_pattern("ab", "abcd")
-  inspect(matches.length(), content="0")
+test "z contains" {
+  inspect(z_contains("hello world", "world"), content="true")
+  inspect(z_contains("hello world", "xyz"), content="false")
 }

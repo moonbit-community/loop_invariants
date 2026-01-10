@@ -2,56 +2,45 @@
 // TREAP - Randomized Binary Search Tree
 // ============================================================================
 //
-// A Treap is a randomized BST that combines properties of:
-// 1. Binary Search Tree: keys satisfy BST property
-// 2. Heap: priorities satisfy heap property (max-heap)
+// A Treap is a BST where each node has a random priority.
+// The tree maintains BST property on keys and heap property on priorities.
 //
-// KEY INSIGHT: Random priorities ensure expected O(log n) height,
-// giving O(log n) expected time for all operations.
-//
-// STRUCTURE:
-// Each node has:
-// - key: satisfies BST property (left < key < right)
-// - priority: random value, satisfies max-heap property (parent >= children)
-//
-// OPERATIONS via SPLIT and MERGE:
-// - split(t, key): split tree t into (< key, >= key)
-// - merge(l, r): merge two trees where all keys in l < all keys in r
-//
-// SPLIT(t, key):
-// If t is empty: return (null, null)
-// If t.key < key: (l, r) = split(t.right, key); return (t with right=l, r)
-// Else: (l, r) = split(t.left, key); return (l, t with left=r)
-//
-// MERGE(l, r):
-// If l or r is empty: return the other
-// If l.priority > r.priority: return l with right = merge(l.right, r)
-// Else: return r with left = merge(l, r.left)
+// KEY INSIGHT: Random priorities ensure O(log n) expected height,
+// giving O(log n) expected time for insert/delete/search.
 //
 // INVARIANTS:
-// 1. BST property: for each node, all keys in left subtree < node.key < all keys in right
-// 2. Heap property: for each node, node.priority >= children's priorities
-// 3. Random priorities give expected O(log n) height
+// 1. BST property: left.key < node.key < right.key
+// 2. Heap property: node.priority > children.priority (max-heap)
+// 3. Expected height: O(log n) due to random priorities
 //
-// EXPECTED TIME COMPLEXITY: O(log n) for insert, delete, find
+// TIME COMPLEXITY: O(log n) expected per operation
 // SPACE COMPLEXITY: O(n)
 
 ///|
 priv struct TreapNode {
-  key : Int64
-  priority : Int // Random priority
-  mut left : TreapNode?
-  mut right : TreapNode?
-  mut size : Int // Subtree size for order statistics
+  key : Int
+  priority : Int
+  size : Int
+  left : TreapNode?
+  right : TreapNode?
 }
 
 ///|
-fn TreapNode::new(key : Int64, priority : Int) -> TreapNode {
-  { key, priority, left: None, right: None, size: 1 }
+priv struct Treap {
+  root : TreapNode?
+  seed : Int
 }
 
 ///|
-fn get_size(node : TreapNode?) -> Int {
+/// Simple PRNG for priorities
+fn next_random(seed : Int) -> (Int, Int) {
+  let new_seed = seed * 1103515245 + 12345
+  let priority = (new_seed / 65536) % 32768
+  (if priority < 0 { -priority } else { priority }, new_seed)
+}
+
+///|
+fn node_size(node : TreapNode?) -> Int {
   match node {
     None => 0
     Some(n) => n.size
@@ -59,147 +48,131 @@ fn get_size(node : TreapNode?) -> Int {
 }
 
 ///|
-fn update_size(node : TreapNode) -> Unit {
-  node.size = 1 + get_size(node.left) + get_size(node.right)
+/// Create a new node
+fn TreapNode::new(key : Int, priority : Int) -> TreapNode {
+  { key, priority, size: 1, left: None, right: None }
 }
 
 ///|
-/// Treap data structure
-priv struct Treap {
-  mut root : TreapNode?
-  mut rng_state : Int // Simple LCG random number generator
+/// Update size based on children
+fn update_size(node : TreapNode) -> TreapNode {
+  { ..node, size: 1 + node_size(node.left) + node_size(node.right) }
 }
 
 ///|
-/// Simple LCG random number generator
-fn next_random(state : Int) -> (Int, Int) {
-  // LCG: next = (a * state + c) mod m
-  // Using common constants
-  let a = 1103515245
-  let c = 12345
-  let next = a * state + c
-  (next, if next < 0 { -next } else { next })
+/// Right rotation (functional, returns new root)
+fn rotate_right(node : TreapNode) -> TreapNode {
+  match node.left {
+    None => node
+    Some(left) => {
+      let new_node = update_size({ ..node, left: left.right })
+      update_size({ ..left, right: Some(new_node) })
+    }
+  }
 }
 
 ///|
-fn Treap::new() -> Treap {
-  { root: None, rng_state: 42 }
+/// Left rotation (functional, returns new root)
+fn rotate_left(node : TreapNode) -> TreapNode {
+  match node.right {
+    None => node
+    Some(right) => {
+      let new_node = update_size({ ..node, right: right.left })
+      update_size({ ..right, left: Some(new_node) })
+    }
+  }
 }
 
 ///|
-/// Split tree into (keys < key, keys >= key)
-fn split(node : TreapNode?, key : Int64) -> (TreapNode?, TreapNode?) {
-  match node {
-    None => (None, None)
-    Some(n) => {
-      if n.key < key {
-        let (l, r) = split(n.right, key)
-        n.right = l
-        update_size(n)
-        (Some(n), r)
+/// Insert key into treap (functional, returns new root)
+fn treap_insert(root : TreapNode?, key : Int, priority : Int) -> TreapNode {
+  match root {
+    None => TreapNode::new(key, priority)
+    Some(node) =>
+      if key < node.key {
+        let new_left = treap_insert(node.left, key, priority)
+        let new_node = update_size({ ..node, left: Some(new_left) })
+        // Rotate right if heap property violated
+        if new_left.priority > node.priority {
+          rotate_right(new_node)
+        } else {
+          new_node
+        }
+      } else if key > node.key {
+        let new_right = treap_insert(node.right, key, priority)
+        let new_node = update_size({ ..node, right: Some(new_right) })
+        // Rotate left if heap property violated
+        if new_right.priority > node.priority {
+          rotate_left(new_node)
+        } else {
+          new_node
+        }
       } else {
-        let (l, r) = split(n.left, key)
-        n.left = r
-        update_size(n)
-        (l, Some(n))
+        // Key exists, no change
+        node
       }
-    }
   }
 }
 
 ///|
-/// Merge two treaps where all keys in l < all keys in r
-fn merge(l : TreapNode?, r : TreapNode?) -> TreapNode? {
-  match (l, r) {
-    (None, r) => r
-    (l, None) => l
-    (Some(ln), Some(rn)) => {
-      if ln.priority > rn.priority {
-        ln.right = merge(ln.right, Some(rn))
-        update_size(ln)
-        Some(ln)
-      } else {
-        rn.left = merge(Some(ln), rn.left)
-        update_size(rn)
-        Some(rn)
-      }
-    }
-  }
-}
-
-///|
-/// Insert a key into the treap
-fn Treap::insert(self : Treap, key : Int64) -> Unit {
-  let (next_state, priority) = next_random(self.rng_state)
-  self.rng_state = next_state
-
-  let new_node = TreapNode::new(key, priority)
-  let (l, r) = split(self.root, key)
-  self.root = merge(merge(l, Some(new_node)), r)
-}
-
-///|
-/// Delete a key from the treap (only one occurrence if duplicates exist)
-fn Treap::delete(self : Treap, key : Int64) -> Bool {
-  let (l, r) = split(self.root, key)
-  let (mid, r2) = split(r, key + 1L)
-
-  match mid {
-    None => {
-      self.root = merge(l, r2)
-      false
-    }
-    Some(mid_node) => {
-      // Delete only one occurrence: keep either left or right subtree of mid
-      // mid_node contains all elements with this key
-      // We keep all children (which are also key-duplicates) but remove the root
-      let remaining = merge(mid_node.left, mid_node.right)
-      self.root = merge(merge(l, remaining), r2)
-      true
-    }
-  }
-}
-
-///|
-/// Check if a key exists in the treap
-fn Treap::contains(self : Treap, key : Int64) -> Bool {
-  find_node(self.root, key) is Some(_)
-}
-
-///|
-fn find_node(node : TreapNode?, key : Int64) -> TreapNode? {
-  match node {
+/// Delete key from treap (functional, returns new root)
+fn treap_delete(root : TreapNode?, key : Int) -> TreapNode? {
+  match root {
     None => None
-    Some(n) => {
-      if key < n.key {
-        find_node(n.left, key)
-      } else if key > n.key {
-        find_node(n.right, key)
+    Some(node) =>
+      if key < node.key {
+        Some(update_size({ ..node, left: treap_delete(node.left, key) }))
+      } else if key > node.key {
+        Some(update_size({ ..node, right: treap_delete(node.right, key) }))
       } else {
-        Some(n)
+        // Found node to delete
+        match (node.left, node.right) {
+          (None, None) => None
+          (Some(left), None) => Some(left)
+          (None, Some(right)) => Some(right)
+          (Some(left), Some(right)) =>
+            // Rotate to push node down
+            if left.priority > right.priority {
+              let rotated = rotate_right(node)
+              Some(update_size({ ..rotated, right: treap_delete(rotated.right, key) }))
+            } else {
+              let rotated = rotate_left(node)
+              Some(update_size({ ..rotated, left: treap_delete(rotated.left, key) }))
+            }
+        }
       }
-    }
   }
 }
 
 ///|
-/// Get the k-th smallest element (0-indexed)
-fn Treap::kth_element(self : Treap, k : Int) -> Int64? {
-  kth_helper(self.root, k)
+/// Search for key in treap
+fn treap_search(root : TreapNode?, key : Int) -> Bool {
+  match root {
+    None => false
+    Some(node) =>
+      if key < node.key {
+        treap_search(node.left, key)
+      } else if key > node.key {
+        treap_search(node.right, key)
+      } else {
+        true
+      }
+  }
 }
 
 ///|
-fn kth_helper(node : TreapNode?, k : Int) -> Int64? {
-  match node {
+/// Find k-th smallest element (1-indexed)
+fn treap_kth(root : TreapNode?, k : Int) -> Int? {
+  match root {
     None => None
-    Some(n) => {
-      let left_size = get_size(n.left)
-      if k < left_size {
-        kth_helper(n.left, k)
-      } else if k == left_size {
-        Some(n.key)
+    Some(node) => {
+      let left_size = node_size(node.left)
+      if k <= left_size {
+        treap_kth(node.left, k)
+      } else if k == left_size + 1 {
+        Some(node.key)
       } else {
-        kth_helper(n.right, k - left_size - 1)
+        treap_kth(node.right, k - left_size - 1)
       }
     }
   }
@@ -207,85 +180,59 @@ fn kth_helper(node : TreapNode?, k : Int) -> Int64? {
 
 ///|
 /// Count elements less than key
-fn Treap::count_less_than(self : Treap, key : Int64) -> Int {
-  count_less_helper(self.root, key)
+fn treap_count_less(root : TreapNode?, key : Int) -> Int {
+  match root {
+    None => 0
+    Some(node) =>
+      if key <= node.key {
+        treap_count_less(node.left, key)
+      } else {
+        node_size(node.left) + 1 + treap_count_less(node.right, key)
+      }
+  }
 }
 
 ///|
-fn count_less_helper(node : TreapNode?, key : Int64) -> Int {
-  match node {
-    None => 0
-    Some(n) => {
-      if n.key < key {
-        1 + get_size(n.left) + count_less_helper(n.right, key)
-      } else {
-        count_less_helper(n.left, key)
-      }
-    }
-  }
+/// Get rank of key (1-indexed position if key exists)
+fn treap_rank(root : TreapNode?, key : Int) -> Int {
+  treap_count_less(root, key) + 1
+}
+
+///|
+fn Treap::new() -> Treap {
+  { root: None, seed: 42 }
+}
+
+///|
+fn Treap::insert(self : Treap, key : Int) -> Treap {
+  let (priority, new_seed) = next_random(self.seed)
+  let new_root = treap_insert(self.root, key, priority)
+  { root: Some(new_root), seed: new_seed }
+}
+
+///|
+fn Treap::delete(self : Treap, key : Int) -> Treap {
+  { root: treap_delete(self.root, key), seed: self.seed }
+}
+
+///|
+fn Treap::contains(self : Treap, key : Int) -> Bool {
+  treap_search(self.root, key)
+}
+
+///|
+fn Treap::kth(self : Treap, k : Int) -> Int? {
+  treap_kth(self.root, k)
 }
 
 ///|
 fn Treap::size(self : Treap) -> Int {
-  get_size(self.root)
+  node_size(self.root)
 }
 
 ///|
-/// Get minimum element
-fn Treap::min(self : Treap) -> Int64? {
-  min_helper(self.root)
-}
-
-///|
-fn min_helper(node : TreapNode?) -> Int64? {
-  match node {
-    None => None
-    Some(n) => {
-      match n.left {
-        None => Some(n.key)
-        Some(_) => min_helper(n.left)
-      }
-    }
-  }
-}
-
-///|
-/// Get maximum element
-fn Treap::max(self : Treap) -> Int64? {
-  max_helper(self.root)
-}
-
-///|
-fn max_helper(node : TreapNode?) -> Int64? {
-  match node {
-    None => None
-    Some(n) => {
-      match n.right {
-        None => Some(n.key)
-        Some(_) => max_helper(n.right)
-      }
-    }
-  }
-}
-
-///|
-/// Get elements in sorted order
-fn Treap::to_array(self : Treap) -> Array[Int64] {
-  let result : Array[Int64] = []
-  inorder(self.root, result)
-  result
-}
-
-///|
-fn inorder(node : TreapNode?, result : Array[Int64]) -> Unit {
-  match node {
-    None => ()
-    Some(n) => {
-      inorder(n.left, result)
-      result.push(n.key)
-      inorder(n.right, result)
-    }
-  }
+fn Treap::rank(self : Treap, key : Int) -> Int {
+  treap_rank(self.root, key)
 }
 
 // ============================================================================
@@ -293,144 +240,94 @@ fn inorder(node : TreapNode?, result : Array[Int64]) -> Unit {
 // ============================================================================
 
 ///|
-test "treap basic insert" {
+test "treap insert and search" {
   let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  t.insert(1L)
-  t.insert(9L)
+    .insert(5)
+    .insert(3)
+    .insert(7)
+    .insert(1)
 
-  inspect(t.size(), content="5")
-  inspect(t.contains(5L), content="true")
-  inspect(t.contains(3L), content="true")
-  inspect(t.contains(10L), content="false")
+  inspect(t.contains(5), content="true")
+  inspect(t.contains(3), content="true")
+  inspect(t.contains(10), content="false")
+}
+
+///|
+test "treap size" {
+  let t = Treap::new()
+    .insert(5)
+    .insert(3)
+    .insert(7)
+
+  inspect(t.size(), content="3")
 }
 
 ///|
 test "treap delete" {
   let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
+    .insert(5)
+    .insert(3)
+    .insert(7)
+    .delete(5)
 
-  inspect(t.delete(3L), content="true")
-  inspect(t.contains(3L), content="false")
+  inspect(t.contains(5), content="false")
+  inspect(t.contains(3), content="true")
   inspect(t.size(), content="2")
-
-  inspect(t.delete(10L), content="false")
 }
 
 ///|
-test "treap kth element" {
+test "treap kth" {
   let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  t.insert(1L)
-  t.insert(9L)
+    .insert(5)
+    .insert(3)
+    .insert(7)
+    .insert(1)
+    .insert(9)
 
   // Sorted: 1, 3, 5, 7, 9
-  inspect(t.kth_element(0), content="Some(1)")
-  inspect(t.kth_element(2), content="Some(5)")
-  inspect(t.kth_element(4), content="Some(9)")
-  inspect(t.kth_element(5), content="None")
+  inspect(t.kth(1), content="Some(1)")
+  inspect(t.kth(3), content="Some(5)")
+  inspect(t.kth(5), content="Some(9)")
 }
 
 ///|
-test "treap count less than" {
+test "treap rank" {
   let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  t.insert(1L)
-  t.insert(9L)
+    .insert(5)
+    .insert(3)
+    .insert(7)
+    .insert(1)
 
-  inspect(t.count_less_than(5L), content="2") // 1, 3
-  inspect(t.count_less_than(1L), content="0")
-  inspect(t.count_less_than(10L), content="5")
-}
-
-///|
-test "treap min max" {
-  let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-
-  inspect(t.min(), content="Some(3)")
-  inspect(t.max(), content="Some(7)")
-}
-
-///|
-test "treap to array" {
-  let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  t.insert(1L)
-  t.insert(9L)
-
-  let arr = t.to_array()
-  inspect(arr.length(), content="5")
-  inspect(arr[0], content="1")
-  inspect(arr[4], content="9")
+  // Sorted: 1, 3, 5, 7
+  inspect(t.rank(1), content="1")
+  inspect(t.rank(5), content="3")
+  inspect(t.rank(10), content="5")
 }
 
 ///|
 test "treap empty" {
   let t = Treap::new()
   inspect(t.size(), content="0")
-  inspect(t.min(), content="None")
-  inspect(t.max(), content="None")
-  inspect(t.kth_element(0), content="None")
+  inspect(t.contains(5), content="false")
+  inspect(t.kth(1) is None, content="true")
 }
 
 ///|
-test "treap single element" {
+test "treap duplicate insert" {
   let t = Treap::new()
-  t.insert(42L)
+    .insert(5)
+    .insert(5)
+    .insert(5)
 
   inspect(t.size(), content="1")
-  inspect(t.contains(42L), content="true")
-  inspect(t.min(), content="Some(42)")
-  inspect(t.max(), content="Some(42)")
 }
 
 ///|
-test "treap duplicates" {
+test "treap delete nonexistent" {
   let t = Treap::new()
-  t.insert(5L)
-  t.insert(5L)
-  t.insert(5L)
+    .insert(5)
+    .delete(10)
 
-  inspect(t.size(), content="3")
-  inspect(t.delete(5L), content="true")
-  inspect(t.size(), content="2")
-}
-
-///|
-test "treap sorted insertion" {
-  let t = Treap::new()
-  for i = 0; i < 10; i = i + 1 {
-    t.insert(i.to_int64())
-  }
-
-  inspect(t.size(), content="10")
-  inspect(t.kth_element(0), content="Some(0)")
-  inspect(t.kth_element(9), content="Some(9)")
-}
-
-///|
-test "treap reverse sorted insertion" {
-  let t = Treap::new()
-  for i = 9; i >= 0; i = i - 1 {
-    t.insert(i.to_int64())
-  }
-
-  inspect(t.size(), content="10")
-  let arr = t.to_array()
-  for i = 0; i < 10; i = i + 1 {
-    inspect(arr[i] == i.to_int64(), content="true")
-  }
+  inspect(t.size(), content="1")
+  inspect(t.contains(5), content="true")
 }

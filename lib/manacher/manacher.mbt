@@ -1,202 +1,194 @@
 // ============================================================================
-// MANACHER'S ALGORITHM - Longest Palindromic Substring in O(n)
+// MANACHER'S ALGORITHM - Longest Palindromic Substring
 // ============================================================================
 //
-// Manacher's algorithm finds the longest palindromic substring and all
-// palindrome radii in linear time O(n).
+// Finds all palindromic substrings in linear time by exploiting
+// the symmetric property of palindromes.
 //
-// KEY INSIGHT: When we're inside a known palindrome, we can use symmetry
-// to avoid redundant comparisons.
-//
-// TRANSFORMATION:
-// To handle both odd and even length palindromes uniformly, we insert
-// separators: "abba" -> "#a#b#b#a#"
-// Now every palindrome has odd length and a unique center.
-//
-// ALGORITHM:
-// Maintain the rightmost palindrome boundary (center c, right edge r).
-// For each position i:
-// 1. If i < r, use mirror position (2*c - i) to initialize p[i]
-// 2. Expand around i while characters match
-// 3. If i + p[i] > r, update c and r
-//
-// WHY IT WORKS:
-// - If i < r, then i is inside palindrome centered at c
-// - Mirror position i' = 2*c - i has p[i'] already computed
-// - If i' palindrome fits entirely inside c's palindrome, p[i] = p[i']
-// - Otherwise, we can at least say p[i] >= r - i (up to boundary)
-// - Expansion beyond r discovers new territory
+// KEY INSIGHT: Transform string by inserting separators (#a#b#c#).
+// This unifies odd and even length palindromes.
+// Use a "palindrome box" similar to Z-algorithm.
 //
 // INVARIANTS:
-// 1. r = c + p[c] is the rightmost boundary seen so far
-// 2. For all j < i: p[j] is the palindrome radius at j
-// 3. p[i] >= min(p[2*c - i], r - i) when i < r
+// 1. p[i] = radius of palindrome centered at i in transformed string
+// 2. Maintain rightmost palindrome boundary (center c, right r)
+// 3. Mirror property: p[i] >= min(p[mirror], r - i) when i < r
 //
-// TIME COMPLEXITY: O(n) - each position expanded at most once past r
+// TIME COMPLEXITY: O(n)
 // SPACE COMPLEXITY: O(n)
 
 ///|
-priv struct ManacherResult {
-  radii : Array[Int] // Palindrome radii in transformed string
-  original : String
-  transformed : String
-}
-
-///|
-/// Compute palindrome radii using Manacher's algorithm
-fn manacher(s : String) -> ManacherResult {
+/// Transform string by inserting # between characters
+fn transform(s : String) -> Array[Char] {
   let n = s.length()
-  if n == 0 {
-    return { radii: [], original: s, transformed: "" }
-  }
-
-  // Transform string: "abc" -> "#a#b#c#"
-  // Use UInt16 array since string indexing returns UInt16
-  let t_len = 2 * n + 1
-  let separator : UInt16 = '#'
-  let t : Array[UInt16] = Array::make(t_len, separator)
+  let result = Array::make(2 * n + 3, '#')
+  result[0] = '^' // Sentinel start
+  result[2 * n + 2] = '$' // Sentinel end
   for i = 0; i < n; i = i + 1 {
-    t[2 * i + 1] = s[i]
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: "I: t filled with '#'. M: Place s[i] at position 2*i+1, leaving separators at even positions. T: After i = n, t = ['#', s[0], '#', s[1], '#', ..., s[n-1], '#'], interleaving chars with separators.",
+    result[2 * i + 2] = s[i].to_int().to_char().unwrap()
   }
+  result
+}
 
-  let transformed = t.iter().map(fn(c) { Char::from_int(c.to_int()).to_string() }).collect().join("")
-  let p = Array::make(t_len, 0) // p[i] = radius of palindrome centered at i
+///|
+/// Manacher's algorithm - returns palindrome radii array
+fn manacher(s : String) -> Array[Int] {
+  let t = transform(s)
+  let n = t.length()
+  let p = Array::make(n, 0)
 
-  for i = 0, c = 0, r = 0; i < t_len; {
-    let mut curr_c = c
-    let mut curr_r = r
+  // Functional for loop with center and right boundary
+  for i = 1, c = 0, r = 0; i < n - 1; {
+    let mirror = 2 * c - i
 
-    // Use mirror property if inside known palindrome
-    let mirror = 2 * curr_c - i
-    if i < curr_r {
-      p[i] = min(curr_r - i, if mirror >= 0 { p[mirror] } else { 0 })
+    // Use mirror if inside boundary
+    let initial_p = if i < r {
+      let min_val = if p[mirror] < r - i { p[mirror] } else { r - i }
+      min_val
+    } else {
+      0
     }
 
-    // Expand around center i
-    while i - p[i] - 1 >= 0 &&
-          i + p[i] + 1 < t_len &&
-          t[i - p[i] - 1] == t[i + p[i] + 1] {
-      p[i] = p[i] + 1
+    // Expand palindrome
+    let expanded = for rad = initial_p; t[i + rad + 1] == t[i - rad - 1]; {
+      continue rad + 1
+    } else {
+      rad
     }
 
-    // Update rightmost boundary
-    if i + p[i] > curr_r {
-      curr_c = i
-      curr_r = i + p[i]
+    p[i] = expanded
+
+    // Update center and right if needed
+    let (new_c, new_r) = if i + expanded > r {
+      (i, i + expanded)
+    } else {
+      (c, r)
     }
 
-    continue i + 1, curr_c, curr_r
-  } where {
-    invariant: i >= 0 && i <= t_len && c >= 0 && r >= 0 && r <= t_len,
-    reasoning: "I: i=0, c=0, r=0; no palindromes computed. M: For position i, if i < r, use symmetry: p[i] >= min(p[mirror], r-i). Then expand greedily while chars match. If new right boundary i+p[i] > r, update c=i, r=i+p[i]. Key insight: r only increases, and each comparison that fails is at position > r, so it contributes to increasing r. Total comparisons O(n). T: After i = t_len, p[j] contains radius of longest palindrome centered at j.",
+    continue i + 1, new_c, new_r
+  } else {
+    p
   }
-
-  { radii: p, original: s, transformed }
 }
 
 ///|
-fn min(a : Int, b : Int) -> Int {
-  if a < b { a } else { b }
-}
-
-///|
-fn max(a : Int, b : Int) -> Int {
-  if a > b { a } else { b }
-}
-
-///|
-/// Get the longest palindromic substring
-fn ManacherResult::longest_palindrome(self : ManacherResult) -> String {
-  if self.radii.length() == 0 {
+/// Find longest palindromic substring
+fn longest_palindrome(s : String) -> String {
+  if s.length() == 0 {
     return ""
   }
 
-  let mut max_len = 0
-  let mut max_center = 0
+  let p = manacher(s)
 
-  for i = 0; i < self.radii.length(); i = i + 1 {
-    if self.radii[i] > max_len {
-      max_len = self.radii[i]
-      max_center = i
+  // Find maximum radius using functional for
+  let (max_len, center_idx) = for i = 1, best_len = 0, best_center = 0; i < p.length() - 1; {
+    if p[i] > best_len {
+      continue i + 1, p[i], i
+    } else {
+      continue i + 1, best_len, best_center
     }
-  } where {
-    invariant: i >= 0 && i <= self.radii.length(),
-    reasoning: "I: max_len=0, no radii examined. M: Track maximum radius and its center. T: After loop, max_center has longest palindrome in transformed string.",
+  } else {
+    (best_len, best_center)
   }
 
   // Convert back to original string indices
-  // In transformed string, position i corresponds to original position (i-1)/2
-  // Radius r in transformed = length r in original
-  let start = (max_center - max_len) / 2
-  let end = start + max_len
-  self.original.substring(start=start, end=end)
+  let start = (center_idx - max_len - 1) / 2
+  s.substring(start=start, end=start + max_len)
 }
 
 ///|
-/// Get length of longest palindrome centered at position i in original string
-/// For odd-length palindromes, i is the center character
-/// For even-length palindromes, i is between the two center characters
-fn ManacherResult::palindrome_length_at(self : ManacherResult, i : Int, odd : Bool) -> Int {
-  if i < 0 || i >= self.original.length() {
+/// Count total number of palindromic substrings
+fn count_palindromes(s : String) -> Int {
+  if s.length() == 0 {
     return 0
   }
-  // In transformed string:
-  // - Odd palindrome centered at original[i] -> transformed[2*i + 1]
-  // - Even palindrome between original[i-1] and original[i] -> transformed[2*i]
-  let t_pos = if odd { 2 * i + 1 } else { 2 * i }
-  if t_pos < 0 || t_pos >= self.radii.length() {
-    return 0
+
+  let p = manacher(s)
+
+  // Each p[i] contributes (p[i] + 1) / 2 palindromes for odd positions
+  // and p[i] / 2 for even positions
+  for i = 1, total = 0; i < p.length() - 1; {
+    // In transformed string, odd i corresponds to character centers
+    // even i corresponds to gap centers
+    let contribution = (p[i] + 1) / 2
+    continue i + 1, total + contribution
+  } else {
+    total
   }
-  self.radii[t_pos]
 }
 
 ///|
-/// Check if substring [l, r) is a palindrome
-fn ManacherResult::is_palindrome(self : ManacherResult, l : Int, r : Int) -> Bool {
-  if l < 0 || r > self.original.length() || l >= r {
-    return false
-  }
-  let len = r - l
-  let center = l + r // In transformed string
-  if center >= self.radii.length() {
-    return false
-  }
-  self.radii[center] >= len
-}
-
-///|
-/// Count all palindromic substrings
-fn ManacherResult::count_palindromes(self : ManacherResult) -> Int {
-  let mut count = 0
-  for i = 0; i < self.radii.length(); i = i + 1 {
-    // Each center contributes (radius + 1) / 2 palindromes
-    // For separator positions (even i), these are even-length palindromes
-    // For character positions (odd i), these are odd-length palindromes
-    count = count + (self.radii[i] + 1) / 2
-  } where {
-    invariant: i >= 0 && i <= self.radii.length(),
-    reasoning: "I: count=0. M: Each position i in transformed string with radius r contributes ceil((r+1)/2) palindromes: the center itself (if char position) and all expansions. T: Total count of all palindromic substrings.",
-  }
-  count
-}
-
-///|
-/// Get all maximal palindromes (not contained in larger palindrome at same center)
-fn ManacherResult::get_all_palindromes(self : ManacherResult) -> Array[(Int, Int)] {
-  let result : Array[(Int, Int)] = []
-
-  for i = 0; i < self.radii.length(); i = i + 1 {
-    if self.radii[i] > 0 {
-      let start = (i - self.radii[i]) / 2
-      let end = start + self.radii[i]
-      result.push((start, end))
+/// Check if string is a palindrome
+fn is_palindrome(s : String) -> Bool {
+  let n = s.length()
+  for i = 0; i < n / 2; {
+    if s[i] != s[n - 1 - i] {
+      break false
     }
+    continue i + 1
+  } else {
+    true
+  }
+}
+
+///|
+/// Find all distinct palindromic substrings (returns their lengths)
+fn palindrome_lengths(s : String) -> Array[Int] {
+  if s.length() == 0 {
+    return []
   }
 
-  result
+  let p = manacher(s)
+  let lengths : Array[Int] = []
+
+  for i = 1; i < p.length() - 1; {
+    if p[i] > 0 {
+      // Add palindrome length
+      lengths.push(p[i])
+    }
+    continue i + 1
+  }
+
+  lengths
+}
+
+///|
+/// Find the longest palindromic prefix
+fn longest_palindromic_prefix(s : String) -> String {
+  let n = s.length()
+  if n == 0 {
+    return ""
+  }
+
+  // Check each possible prefix length
+  for len = n; len >= 1; {
+    let prefix = s.substring(start=0, end=len)
+    if is_palindrome(prefix) {
+      break prefix
+    }
+    continue len - 1
+  } else {
+    s.substring(start=0, end=1) // Single char is always palindrome
+  }
+}
+
+///|
+/// Find the longest palindromic suffix
+fn longest_palindromic_suffix(s : String) -> String {
+  let n = s.length()
+  if n == 0 {
+    return ""
+  }
+
+  for start = 0; start < n; {
+    let suffix = s.substring(start=start)
+    if is_palindrome(suffix) {
+      break suffix
+    }
+    continue start + 1
+  } else {
+    s.substring(start=n - 1) // Single char is always palindrome
+  }
 }
 
 // ============================================================================
@@ -204,66 +196,66 @@ fn ManacherResult::get_all_palindromes(self : ManacherResult) -> Array[(Int, Int
 // ============================================================================
 
 ///|
-test "manacher basic" {
-  let result = manacher("babad")
-  let longest = result.longest_palindrome()
-  // "bab" or "aba" are both valid
-  inspect(longest.length(), content="3")
+test "longest palindrome odd" {
+  let result = longest_palindrome("babad")
+  // Either "bab" or "aba" is valid
+  inspect(result.length(), content="3")
 }
 
 ///|
-test "manacher even palindrome" {
-  let result = manacher("cbbd")
-  inspect(result.longest_palindrome(), content="bb")
+test "longest palindrome even" {
+  let result = longest_palindrome("cbbd")
+  inspect(result, content="bb")
 }
 
 ///|
-test "manacher single char" {
-  let result = manacher("a")
-  inspect(result.longest_palindrome(), content="a")
+test "longest palindrome single" {
+  let result = longest_palindrome("a")
+  inspect(result, content="a")
 }
 
 ///|
-test "manacher empty" {
-  let result = manacher("")
-  inspect(result.longest_palindrome(), content="")
+test "longest palindrome all same" {
+  let result = longest_palindrome("aaaa")
+  inspect(result, content="aaaa")
 }
 
 ///|
-test "manacher all same" {
-  let result = manacher("aaaa")
-  inspect(result.longest_palindrome(), content="aaaa")
+test "count palindromes" {
+  // "abc": a, b, c = 3
+  inspect(count_palindromes("abc"), content="3")
+  // "aaa": a(3) + aa(2) + aaa(1) = 6
+  inspect(count_palindromes("aaa"), content="6")
 }
 
 ///|
-test "manacher no palindrome longer than 1" {
-  let result = manacher("abcd")
-  inspect(result.longest_palindrome().length(), content="1")
+test "is palindrome" {
+  inspect(is_palindrome("racecar"), content="true")
+  inspect(is_palindrome("hello"), content="false")
+  inspect(is_palindrome("a"), content="true")
+  inspect(is_palindrome(""), content="true")
 }
 
 ///|
-test "manacher count palindromes" {
-  let result = manacher("aaa")
-  // Palindromes: a(3), aa(2), aaa(1) = 6 total
-  inspect(result.count_palindromes(), content="6")
+test "longest palindromic prefix" {
+  inspect(longest_palindromic_prefix("abacd"), content="aba")
+  inspect(longest_palindromic_prefix("abcd"), content="a")
+}
+
+///|
+test "longest palindromic suffix" {
+  inspect(longest_palindromic_suffix("dcaba"), content="aba")
+  inspect(longest_palindromic_suffix("abcd"), content="d")
+}
+
+///|
+test "empty string" {
+  inspect(longest_palindrome(""), content="")
+  inspect(count_palindromes(""), content="0")
 }
 
 ///|
 test "manacher complex" {
-  let result = manacher("abacaba")
-  inspect(result.longest_palindrome(), content="abacaba")
-}
-
-///|
-test "manacher is palindrome" {
-  let result = manacher("abacaba")
-  inspect(result.is_palindrome(0, 7), content="true") // abacaba
-  inspect(result.is_palindrome(0, 3), content="true") // aba
-  inspect(result.is_palindrome(0, 2), content="false") // ab
-}
-
-///|
-test "manacher racecar" {
-  let result = manacher("racecar")
-  inspect(result.longest_palindrome(), content="racecar")
+  let result = longest_palindrome("forgeeksskeegfor")
+  inspect(result, content="geeksskeeg")
 }

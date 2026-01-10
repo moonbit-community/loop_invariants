@@ -1,266 +1,223 @@
 // ============================================================================
-// MO'S ALGORITHM - Offline Range Query Processing with Sqrt Decomposition
+// MO'S ALGORITHM - Offline Range Queries
 // ============================================================================
 //
-// Mo's algorithm answers multiple range queries on a static array by
-// reordering queries to minimize the cost of transitioning between them.
+// Answers offline range queries in O((n + q) * sqrt(n)) time by
+// cleverly ordering queries to minimize element additions/removals.
 //
-// KEY INSIGHT: Group queries by blocks of size √n on the left endpoint.
-// Within each block, sort by right endpoint. This ensures:
-// - Left pointer moves O(√n) per query within a block
-// - Right pointer moves O(n) per block (monotonic within block)
-// - Total: O((n + q) * √n)
-//
-// ALGORITHM:
-// 1. Divide queries into √n blocks based on left endpoint
-// 2. Within each block, sort queries by right endpoint
-// 3. Process queries in this order, maintaining current [l, r] answer
-// 4. Transition between queries by adding/removing elements
-//
-// OPERATIONS:
-// - add(x): Include element x in current range
-// - remove(x): Exclude element x from current range
-// These must be O(1) or O(log n) for the algorithm to be efficient.
-//
-// EXAMPLE: Distinct element count queries
-// add(x): if count[x]++ == 0, distinct++
-// remove(x): if --count[x] == 0, distinct--
-//
-// WHY SQRT WORKS:
-// - Left pointer: within block moves ≤ √n, across blocks also ≤ √n per query
-//   Total left moves: O(q * √n)
-// - Right pointer: within block monotonic, so O(n) per block
-//   Total right moves: O(√n * n) = O(n√n)
-// - Combined: O((n + q) * √n)
+// KEY INSIGHT: Sort queries by (l / sqrt(n), r). This ensures that
+// as we process queries, left pointer moves O(n * sqrt(n)) total
+// and right pointer moves O(n * sqrt(n)) total.
 //
 // INVARIANTS:
-// 1. Queries processed in Mo order minimize transitions
-// 2. Current answer reflects elements in [curr_l, curr_r]
-// 3. Block size √n balances left and right pointer movements
+// 1. Current window [cur_l, cur_r] maintained by add/remove ops
+// 2. Queries in same block have l within sqrt(n) of each other
+// 3. Right pointer moves monotonically within each block
 //
-// TIME COMPLEXITY: O((n + q) * √n)
+// TIME COMPLEXITY: O((n + q) * sqrt(n) * f) where f is add/remove cost
 // SPACE COMPLEXITY: O(n + q)
 
 ///|
-priv struct MoQuery {
-  l : Int
-  r : Int // Inclusive range [l, r]
-  idx : Int // Original query index for result ordering
+priv struct Query {
+  id : Int
+  left : Int
+  right : Int
+  block : Int
 }
 
 ///|
-/// Mo's algorithm state for distinct element counting
-priv struct MoDistinct {
-  arr : Array[Int]
-  block_size : Int
-  mut curr_l : Int
-  mut curr_r : Int
-  mut distinct : Int
-  count : Array[Int] // count[x] = occurrences of x in current range
+fn Query::new(id : Int, left : Int, right : Int, block_size : Int) -> Query {
+  { id, left, right, block: left / block_size }
 }
 
 ///|
-fn isqrt(n : Int) -> Int {
-  if n <= 0 {
-    return 0
-  }
-  let mut x = n
-  let mut y = (x + 1) / 2
-  while y < x {
-    x = y
-    y = (x + n / x) / 2
-  }
-  x
-}
-
-///|
-fn max_element(arr : Array[Int]) -> Int {
-  let mut mx = 0
-  for i = 0; i < arr.length(); i = i + 1 {
-    if arr[i] > mx {
-      mx = arr[i]
-    }
-  }
-  mx
-}
-
-///|
-/// Create Mo's algorithm solver for distinct element queries
-fn MoDistinct::new(arr : Array[Int]) -> MoDistinct {
-  let n = arr.length()
-  let block_size = if n > 0 { isqrt(n) } else { 1 }
-  let max_val = max_element(arr) + 1
-  {
-    arr,
-    block_size,
-    curr_l: 0,
-    curr_r: -1,
-    distinct: 0,
-    count: Array::make(max_val + 1, 0),
-  }
-}
-
-///|
-fn MoDistinct::add(self : MoDistinct, idx : Int) -> Unit {
-  let x = self.arr[idx]
-  if self.count[x] == 0 {
-    self.distinct = self.distinct + 1
-  }
-  self.count[x] = self.count[x] + 1
-}
-
-///|
-fn MoDistinct::remove(self : MoDistinct, idx : Int) -> Unit {
-  let x = self.arr[idx]
-  self.count[x] = self.count[x] - 1
-  if self.count[x] == 0 {
-    self.distinct = self.distinct - 1
-  }
-}
-
-///|
-/// Process queries and return results in original order
-fn MoDistinct::process_queries(self : MoDistinct, queries : Array[(Int, Int)]) -> Array[Int] {
-  let q = queries.length()
-  if q == 0 {
-    return []
-  }
-
-  // Create query objects with indices
-  let mo_queries : Array[MoQuery] = []
-  for i = 0; i < q; i = i + 1 {
-    let (l, r) = queries[i]
-    mo_queries.push({ l, r, idx: i })
-  }
-
-  // Sort by Mo's order: block of left endpoint, then right endpoint
-  let block_size = self.block_size
-  mo_queries.sort_by(fn(a, b) {
-    let block_a = a.l / block_size
-    let block_b = b.l / block_size
-    if block_a != block_b {
-      block_a - block_b
-    } else {
-      // Alternate direction for better cache performance
-      if block_a % 2 == 0 { a.r - b.r } else { b.r - a.r }
-    }
+/// Sort queries for Mo's algorithm
+fn sort_queries(queries : Array[Query]) -> Array[Query] {
+  let sorted = queries.copy()
+  sorted.sort_by_key(fn(q) {
+    // Sort by block, then by right (alternating for optimization)
+    (q.block, if q.block % 2 == 0 { q.right } else { -q.right })
   })
+  sorted
+}
 
-  let results = Array::make(q, 0)
+///|
+/// Generic Mo's algorithm structure
+priv struct MoState {
+  n : Int
+  arr : Array[Int]
+  count : Array[Int]     // Count of each value
+  distinct : Int         // Number of distinct values in current window
+}
 
-  for i = 0; i < q; i = i + 1 {
-    let query = mo_queries[i]
+///|
+fn MoState::new(arr : Array[Int]) -> MoState {
+  let n = arr.length()
+  let max_val = for i = 0, m = 0; i < n; {
+    continue i + 1, if arr[i] > m { arr[i] } else { m }
+  } else {
+    m
+  }
+  { n, arr, count: Array::make(max_val + 1, 0), distinct: 0 }
+}
+
+///|
+fn MoState::add(self : MoState, idx : Int) -> Unit {
+  let val = self.arr[idx]
+  if self.count[val] == 0 {
+    self.count[val] = 1
+    // Can't modify distinct directly, need wrapper
+  } else {
+    self.count[val] = self.count[val] + 1
+  }
+}
+
+///|
+fn MoState::remove(self : MoState, idx : Int) -> Unit {
+  let val = self.arr[idx]
+  self.count[val] = self.count[val] - 1
+}
+
+///|
+/// Count distinct elements in range queries using Mo's algorithm
+fn mo_distinct_count(arr : Array[Int], queries : Array[(Int, Int)]) -> Array[Int] {
+  let n = arr.length()
+  if n == 0 || queries.length() == 0 {
+    return Array::make(queries.length(), 0)
+  }
+
+  let block_size = isqrt(n)
+  let max_val = for i = 0, m = 0; i < n; {
+    continue i + 1, if arr[i] > m { arr[i] } else { m }
+  } else {
+    m
+  }
+
+  // Create and sort query objects
+  let q_objs = Array::makei(queries.length(), fn(i) {
+    let (l, r) = queries[i]
+    Query::new(i, l, r, block_size)
+  })
+  let sorted = sort_queries(q_objs)
+
+  // Process queries
+  let count = Array::make(max_val + 1, 0)
+  let results = Array::make(queries.length(), 0)
+
+  let (_, _, _) = for i = 0, cur_l = 0, cur_r = -1, distinct = 0; i < sorted.length(); {
+    let q = sorted[i]
 
     // Expand right
-    while self.curr_r < query.r {
-      self.curr_r = self.curr_r + 1
-      self.add(self.curr_r)
+    let (new_r, d1) = for r = cur_r + 1, d = distinct; r <= q.right; {
+      let val = arr[r]
+      let new_d = if count[val] == 0 { d + 1 } else { d }
+      count[val] = count[val] + 1
+      continue r + 1, new_d
+    } else {
+      (q.right, d)
     }
 
     // Shrink right
-    while self.curr_r > query.r {
-      self.remove(self.curr_r)
-      self.curr_r = self.curr_r - 1
+    let (newer_r, d2) = for r = cur_r, d = d1; r > q.right; {
+      let val = arr[r]
+      count[val] = count[val] - 1
+      let new_d = if count[val] == 0 { d - 1 } else { d }
+      continue r - 1, new_d
+    } else {
+      (q.right, d)
     }
 
     // Expand left
-    while self.curr_l > query.l {
-      self.curr_l = self.curr_l - 1
-      self.add(self.curr_l)
+    let (new_l, d3) = for l = cur_l - 1, d = d2; l >= q.left; {
+      let val = arr[l]
+      let new_d = if count[val] == 0 { d + 1 } else { d }
+      count[val] = count[val] + 1
+      continue l - 1, new_d
+    } else {
+      (q.left, d)
     }
 
     // Shrink left
-    while self.curr_l < query.l {
-      self.remove(self.curr_l)
-      self.curr_l = self.curr_l + 1
+    let (newer_l, d4) = for l = cur_l, d = d3; l < q.left; {
+      let val = arr[l]
+      count[val] = count[val] - 1
+      let new_d = if count[val] == 0 { d - 1 } else { d }
+      continue l + 1, new_d
+    } else {
+      (q.left, d)
     }
 
-    results[query.idx] = self.distinct
-  } where {
-    invariant: i >= 0 && i <= q,
-    reasoning: "I: i=0, curr range is empty [0, -1]. M: For each query in Mo order, adjust curr_l and curr_r to match query's [l, r] by adding/removing elements. The Mo ordering ensures total pointer movements are O((n+q)√n): within each of √n blocks, right pointer moves monotonically O(n); left pointer moves at most √n per query. T: After i = q, all queries answered with results stored at original indices.",
+    results[q.id] = d4
+    continue i + 1, newer_l, newer_r, d4
+  } else {
+    (cur_l, cur_r, distinct)
   }
 
   results
 }
 
-// ============================================================================
-// MO'S ALGORITHM FOR RANGE SUM
-// ============================================================================
-
 ///|
-priv struct MoSum {
-  arr : Array[Int64]
-  block_size : Int
-  mut curr_l : Int
-  mut curr_r : Int
-  mut sum : Int64
+fn isqrt(n : Int) -> Int {
+  for x = n, y = (n + 1) / 2; y < x; {
+    continue y, (y + n / y) / 2
+  } else {
+    if x * x > n { x - 1 } else { x }
+  }
 }
 
 ///|
-fn MoSum::new(arr : Array[Int64]) -> MoSum {
+/// Sum in range queries using Mo's algorithm
+fn mo_range_sum(arr : Array[Int], queries : Array[(Int, Int)]) -> Array[Int] {
   let n = arr.length()
-  let block_size = if n > 0 { isqrt(n) } else { 1 }
-  { arr, block_size, curr_l: 0, curr_r: -1, sum: 0L }
-}
-
-///|
-fn MoSum::add(self : MoSum, idx : Int) -> Unit {
-  self.sum = self.sum + self.arr[idx]
-}
-
-///|
-fn MoSum::remove(self : MoSum, idx : Int) -> Unit {
-  self.sum = self.sum - self.arr[idx]
-}
-
-///|
-fn MoSum::process_queries(self : MoSum, queries : Array[(Int, Int)]) -> Array[Int64] {
-  let q = queries.length()
-  if q == 0 {
-    return []
+  if n == 0 || queries.length() == 0 {
+    return Array::make(queries.length(), 0)
   }
 
-  let mo_queries : Array[MoQuery] = []
-  for i = 0; i < q; i = i + 1 {
+  let block_size = isqrt(n)
+
+  let q_objs = Array::makei(queries.length(), fn(i) {
     let (l, r) = queries[i]
-    mo_queries.push({ l, r, idx: i })
-  }
-
-  let block_size = self.block_size
-  mo_queries.sort_by(fn(a, b) {
-    let block_a = a.l / block_size
-    let block_b = b.l / block_size
-    if block_a != block_b {
-      block_a - block_b
-    } else {
-      if block_a % 2 == 0 { a.r - b.r } else { b.r - a.r }
-    }
+    Query::new(i, l, r, block_size)
   })
+  let sorted = sort_queries(q_objs)
 
-  let results = Array::make(q, 0L)
+  let results = Array::make(queries.length(), 0)
 
-  for i = 0; i < q; i = i + 1 {
-    let query = mo_queries[i]
+  let (_, _, _) = for i = 0, cur_l = 0, cur_r = -1, sum = 0; i < sorted.length(); {
+    let q = sorted[i]
 
-    while self.curr_r < query.r {
-      self.curr_r = self.curr_r + 1
-      self.add(self.curr_r)
-    }
-    while self.curr_r > query.r {
-      self.remove(self.curr_r)
-      self.curr_r = self.curr_r - 1
-    }
-    while self.curr_l > query.l {
-      self.curr_l = self.curr_l - 1
-      self.add(self.curr_l)
-    }
-    while self.curr_l < query.l {
-      self.remove(self.curr_l)
-      self.curr_l = self.curr_l + 1
+    // Expand right
+    let (new_r, s1) = for r = cur_r + 1, s = sum; r <= q.right; {
+      continue r + 1, s + arr[r]
+    } else {
+      (q.right, s)
     }
 
-    results[query.idx] = self.sum
+    // Shrink right
+    let (_, s2) = for r = cur_r, s = s1; r > q.right; {
+      continue r - 1, s - arr[r]
+    } else {
+      (q.right, s)
+    }
+
+    // Expand left
+    let (new_l, s3) = for l = cur_l - 1, s = s2; l >= q.left; {
+      continue l - 1, s + arr[l]
+    } else {
+      (q.left, s)
+    }
+
+    // Shrink left
+    let (_, s4) = for l = cur_l, s = s3; l < q.left; {
+      continue l + 1, s - arr[l]
+    } else {
+      (q.left, s)
+    }
+
+    results[q.id] = s4
+    continue i + 1, new_l, new_r, s4
+  } else {
+    (cur_l, cur_r, sum)
   }
 
   results
@@ -271,91 +228,77 @@ fn MoSum::process_queries(self : MoSum, queries : Array[(Int, Int)]) -> Array[In
 // ============================================================================
 
 ///|
-test "mo distinct basic" {
-  let arr = [1, 2, 1, 3, 1, 2, 4]
-  let mo = MoDistinct::new(arr)
+test "mo distinct count" {
+  let arr : Array[Int] = [1, 2, 1, 3, 2, 1]
+  let queries : Array[(Int, Int)] = [(0, 2), (1, 4), (0, 5)]
+  let results = mo_distinct_count(arr, queries)
 
-  let queries = [(0, 2), (1, 4), (2, 6), (0, 6)]
-  let results = mo.process_queries(queries)
-
-  inspect(results[0], content="2") // [1,2,1] -> {1,2}
-  inspect(results[1], content="3") // [2,1,3,1] -> {1,2,3}
-  inspect(results[2], content="4") // [1,3,1,2,4] -> {1,2,3,4}
-  inspect(results[3], content="4") // [1,2,1,3,1,2,4] -> {1,2,3,4}
+  inspect(results[0], content="2") // [1,2,1] -> 2 distinct
+  inspect(results[1], content="3") // [2,1,3,2] -> 3 distinct
+  inspect(results[2], content="3") // all -> 3 distinct
 }
 
 ///|
-test "mo distinct single element" {
-  let arr = [5]
-  let mo = MoDistinct::new(arr)
+test "mo range sum" {
+  let arr : Array[Int] = [1, 2, 3, 4, 5]
+  let queries : Array[(Int, Int)] = [(0, 2), (1, 3), (0, 4)]
+  let results = mo_range_sum(arr, queries)
 
-  let queries = [(0, 0)]
-  let results = mo.process_queries(queries)
-
-  inspect(results[0], content="1")
+  inspect(results[0], content="6")  // 1+2+3
+  inspect(results[1], content="9")  // 2+3+4
+  inspect(results[2], content="15") // 1+2+3+4+5
 }
 
 ///|
-test "mo distinct all same" {
-  let arr = [1, 1, 1, 1, 1]
-  let mo = MoDistinct::new(arr)
+test "mo single element" {
+  let arr : Array[Int] = [5]
+  let queries : Array[(Int, Int)] = [(0, 0)]
 
-  let queries = [(0, 4), (1, 3), (2, 2)]
-  let results = mo.process_queries(queries)
+  let distinct = mo_distinct_count(arr, queries)
+  inspect(distinct[0], content="1")
 
-  inspect(results[0], content="1")
-  inspect(results[1], content="1")
-  inspect(results[2], content="1")
-}
-
-///|
-test "mo distinct all different" {
-  let arr = [1, 2, 3, 4, 5]
-  let mo = MoDistinct::new(arr)
-
-  let queries = [(0, 4), (0, 2), (3, 4)]
-  let results = mo.process_queries(queries)
-
-  inspect(results[0], content="5")
-  inspect(results[1], content="3")
-  inspect(results[2], content="2")
-}
-
-///|
-test "mo sum basic" {
-  let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let mo = MoSum::new(arr)
-
-  let queries = [(0, 4), (1, 3), (2, 2)]
-  let results = mo.process_queries(queries)
-
-  inspect(results[0], content="15") // 1+2+3+4+5
-  inspect(results[1], content="9") // 2+3+4
-  inspect(results[2], content="3") // 3
+  let sums = mo_range_sum(arr, queries)
+  inspect(sums[0], content="5")
 }
 
 ///|
 test "mo empty queries" {
-  let arr = [1, 2, 3]
-  let mo = MoDistinct::new(arr)
-  let results = mo.process_queries([])
+  let arr : Array[Int] = [1, 2, 3]
+  let queries : Array[(Int, Int)] = []
+
+  let results = mo_distinct_count(arr, queries)
   inspect(results.length(), content="0")
 }
 
 ///|
-test "mo large block" {
-  // Test with more elements to verify sqrt blocking
-  let arr : Array[Int] = []
-  for i = 0; i < 100; i = i + 1 {
-    arr.push(i % 10)
-  }
+test "mo all same elements" {
+  let arr : Array[Int] = [5, 5, 5, 5]
+  let queries : Array[(Int, Int)] = [(0, 3), (1, 2)]
+  let results = mo_distinct_count(arr, queries)
 
-  let mo = MoDistinct::new(arr)
-  let queries = [(0, 99), (0, 9), (50, 59), (25, 75)]
-  let results = mo.process_queries(queries)
+  inspect(results[0], content="1")
+  inspect(results[1], content="1")
+}
 
-  inspect(results[0], content="10") // All 0-9
-  inspect(results[1], content="10") // 0-9
-  inspect(results[2], content="10") // 0-9
-  inspect(results[3], content="10") // 0-9
+///|
+test "isqrt" {
+  inspect(isqrt(1), content="1")
+  inspect(isqrt(4), content="2")
+  inspect(isqrt(10), content="3")
+  inspect(isqrt(100), content="10")
+}
+
+///|
+test "mo many queries" {
+  let arr : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8]
+  let queries : Array[(Int, Int)] = [
+    (0, 3), (2, 5), (1, 6), (0, 7), (3, 4)
+  ]
+  let results = mo_range_sum(arr, queries)
+
+  inspect(results[0], content="10")  // 1+2+3+4
+  inspect(results[1], content="18")  // 3+4+5+6
+  inspect(results[2], content="27")  // 2+3+4+5+6+7
+  inspect(results[3], content="36")  // 1+...+8
+  inspect(results[4], content="9")   // 4+5
 }
