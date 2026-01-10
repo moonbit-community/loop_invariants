@@ -53,14 +53,9 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let m = a[0].length()
 
   // Create augmented matrix [A|b]
-  let aug = Array::make(n, [])
-  for i = 0; i < n; i = i + 1 {
-    aug[i] = Array::make(m + 1, 0.0)
-    for j = 0; j < m; j = j + 1 {
-      aug[i][j] = a[i][j]
-    }
-    aug[i][m] = b[i]
-  }
+  let aug = Array::makei(n, (i) => {
+    Array::makei(m + 1, (j) => if j < m { a[i][j] } else { b[i] })
+  })
 
   let mut rank = 0
   let mut row = 0
@@ -76,6 +71,20 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
         best_val = val
         best_row = i
       }
+    } where {
+      invariant: i >= row + 1 && i <= n,
+      reasoning: (
+        #|Scan rows below the current pivot row to find the largest absolute entry.
+        #|i advances through candidate rows in the same column.
+      ),
+      invariant: best_row >= row && best_row < n,
+      reasoning: (
+        #|best_row always points to a valid candidate row in the search range.
+      ),
+      invariant: best_val == abs(aug[best_row][col]),
+      reasoning: (
+        #|best_val tracks the maximum absolute value seen so far in column col.
+      ),
     }
 
     // Skip if column is zero
@@ -94,6 +103,16 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
     let pivot = aug[row][col]
     for j = col; j <= m; j = j + 1 {
       aug[row][j] = aug[row][j] / pivot
+    } where {
+      invariant: j >= col && j <= m + 1,
+      reasoning: (
+        #|Normalize the pivot row by dividing each entry by the pivot.
+        #|Entries in columns < j have already been scaled.
+      ),
+      invariant: abs(pivot) >= GAUSS_EPS,
+      reasoning: (
+        #|We only scale when the pivot is numerically non-zero.
+      ),
     }
 
     // Eliminate column
@@ -102,12 +121,39 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
         let factor = aug[i][col]
         for j = col; j <= m; j = j + 1 {
           aug[i][j] = aug[i][j] - factor * aug[row][j]
+        } where {
+          invariant: j >= col && j <= m + 1,
+          reasoning: (
+            #|Subtract factor * pivot_row from row i to zero out column col.
+            #|Columns col..j-1 have already been updated.
+          ),
         }
       }
+    } where {
+      invariant: i >= 0 && i <= n,
+      reasoning: (
+        #|Eliminate the pivot column from every other row.
+        #|Rows processed so far have column col reduced to zero.
+      ),
+      invariant: abs(aug[row][col] - 1.0) < GAUSS_EPS,
+      reasoning: (
+        #|Pivot row is normalized, so the pivot entry stays 1 throughout elimination.
+      ),
     }
 
     rank = rank + 1
     row = row + 1
+  } where {
+    invariant: 0 <= row && row <= n && 0 <= col && col <= m,
+    reasoning: (
+      #|row counts how many pivot rows have been fixed; col is the next column to process.
+      #|Bounds guarantee all matrix accesses remain valid.
+    ),
+    invariant: rank == row,
+    reasoning: (
+      #|Each successful pivot increases both rank and row by one.
+      #|Thus rank equals the number of pivot rows already placed in echelon form.
+    ),
   }
 
   // Check for inconsistency (0 = non-zero)
@@ -117,6 +163,11 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
       has_solution = false
       break
     }
+  } where {
+    invariant: i >= rank && i <= n,
+    reasoning: (
+      #|Rows below rank should be all zeros on the left; any non-zero RHS is inconsistent.
+    ),
   }
 
   // Extract solution
@@ -130,7 +181,18 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
           solution[j] = aug[i][m]
           break
         }
+      } where {
+        invariant: j >= 0 && j <= m,
+        reasoning: (
+          #|Scan row i to locate its pivot column (entry ~ 1.0).
+        ),
       }
+    } where {
+      invariant: i >= 0 && i <= rank && i <= m,
+      reasoning: (
+        #|Each pivot row contributes exactly one variable to the solution.
+        #|We only scan rows that correspond to pivots.
+      ),
     }
   }
 
@@ -140,9 +202,6 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
 // ============================================================================
 // MODULAR GAUSSIAN ELIMINATION
 // ============================================================================
-
-///|
-const GAUSS_MOD : Int64 = 1000000007L
 
 ///|
 /// Modular multiplicative inverse using Fermat's little theorem
@@ -177,14 +236,15 @@ fn gauss_mod(
   let m = a[0].length()
 
   // Create augmented matrix
-  let aug = Array::make(n, [])
-  for i = 0; i < n; i = i + 1 {
-    aug[i] = Array::make(m + 1, 0L)
-    for j = 0; j < m; j = j + 1 {
-      aug[i][j] = ((a[i][j] % p) + p) % p
-    }
-    aug[i][m] = ((b[i] % p) + p) % p
-  }
+  let aug = Array::makei(n, (i) => {
+    Array::makei(m + 1, (j) => {
+      if j < m {
+        ((a[i][j] % p) + p) % p
+      } else {
+        ((b[i] % p) + p) % p
+      }
+    })
+  })
 
   let mut row = 0
 
@@ -197,6 +257,16 @@ fn gauss_mod(
         pivot_row = i
         break
       }
+    } where {
+      invariant: i >= row && i <= n,
+      reasoning: (
+        #|Search for a non-zero pivot in the current column.
+        #|i advances through candidate rows starting at the current row.
+      ),
+      invariant: pivot_row == -1 || (pivot_row >= row && pivot_row < n),
+      reasoning: (
+        #|pivot_row is either unset (-1) or points to a valid candidate row.
+      ),
     }
 
     if pivot_row < 0 {
@@ -214,6 +284,11 @@ fn gauss_mod(
     let inv = mod_inverse(aug[row][col], p)
     for j = col; j <= m; j = j + 1 {
       aug[row][j] = aug[row][j] * inv % p
+    } where {
+      invariant: j >= col && j <= m + 1,
+      reasoning: (
+        #|Normalize the pivot row so aug[row][col] becomes 1 in mod p arithmetic.
+      ),
     }
 
     // Eliminate column
@@ -222,11 +297,32 @@ fn gauss_mod(
         let factor = aug[i][col]
         for j = col; j <= m; j = j + 1 {
           aug[i][j] = ((aug[i][j] - factor * aug[row][j]) % p + p) % p
+        } where {
+          invariant: j >= col && j <= m + 1,
+          reasoning: (
+            #|Use the normalized pivot row to zero out column col in row i.
+            #|All updates are reduced modulo p.
+          ),
         }
       }
+    } where {
+      invariant: i >= 0 && i <= n,
+      reasoning: (
+        #|Eliminate the pivot column across all other rows.
+      ),
+      invariant: aug[row][col] == 1L,
+      reasoning: (
+        #|Pivot row is normalized, so the pivot entry remains 1 in GF(p).
+      ),
     }
 
     row = row + 1
+  } where {
+    invariant: 0 <= row && row <= n && 0 <= col && col <= m,
+    reasoning: (
+      #|row counts the number of pivot rows found so far; col is the next column.
+      #|Bounds guarantee safe access during elimination.
+    ),
   }
 
   // Check for inconsistency
@@ -234,6 +330,11 @@ fn gauss_mod(
     if aug[i][m] != 0L {
       return ([], false)
     }
+  } where {
+    invariant: i >= row && i <= n,
+    reasoning: (
+      #|Rows below the last pivot must have zero RHS for consistency.
+    ),
   }
 
   // Extract solution
@@ -244,7 +345,17 @@ fn gauss_mod(
         solution[j] = aug[i][m]
         break
       }
+    } where {
+      invariant: j >= 0 && j <= m,
+      reasoning: (
+        #|Scan row i to locate its pivot column in GF(p).
+      ),
     }
+  } where {
+    invariant: i >= 0 && i <= row && i <= m,
+    reasoning: (
+      #|Each pivot row contributes one variable assignment in the solution.
+    ),
   }
 
   (solution, true)
@@ -265,14 +376,9 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
   let m = a[0].length()
 
   // Create augmented matrix
-  let aug = Array::make(n, [])
-  for i = 0; i < n; i = i + 1 {
-    aug[i] = Array::make(m + 1, 0)
-    for j = 0; j < m; j = j + 1 {
-      aug[i][j] = a[i][j] % 2
-    }
-    aug[i][m] = b[i] % 2
-  }
+  let aug = Array::makei(n, (i) => {
+    Array::makei(m + 1, (j) => if j < m { a[i][j] % 2 } else { b[i] % 2 })
+  })
 
   let mut row = 0
 
@@ -284,6 +390,15 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
         pivot_row = i
         break
       }
+    } where {
+      invariant: i >= row && i <= n,
+      reasoning: (
+        #|Search for a row with a 1 in the pivot column over GF(2).
+      ),
+      invariant: pivot_row == -1 || (pivot_row >= row && pivot_row < n),
+      reasoning: (
+        #|pivot_row is unset or points to a valid candidate row.
+      ),
     }
 
     if pivot_row < 0 {
@@ -302,11 +417,30 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
       if i != row && aug[i][col] == 1 {
         for j = col; j <= m; j = j + 1 {
           aug[i][j] = aug[i][j].lxor(aug[row][j])
+        } where {
+          invariant: j >= col && j <= m + 1,
+          reasoning: (
+            #|Apply XOR row operation to clear column col in row i.
+          ),
         }
       }
+    } where {
+      invariant: i >= 0 && i <= n,
+      reasoning: (
+        #|Eliminate the pivot column across all other rows in GF(2).
+      ),
+      invariant: aug[row][col] == 1,
+      reasoning: (
+        #|Pivot entry stays 1 since swaps preserve it and XOR does not change it.
+      ),
     }
 
     row = row + 1
+  } where {
+    invariant: 0 <= row && row <= n && 0 <= col && col <= m,
+    reasoning: (
+      #|row counts pivot rows found so far; col is the next column to process.
+    ),
   }
 
   // Check for inconsistency
@@ -314,6 +448,11 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
     if aug[i][m] == 1 {
       return ([], false)
     }
+  } where {
+    invariant: i >= row && i <= n,
+    reasoning: (
+      #|Rows below the last pivot must have zero RHS for consistency in GF(2).
+    ),
   }
 
   // Extract solution
@@ -324,7 +463,17 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
         solution[j] = aug[i][m]
         break
       }
+    } where {
+      invariant: j >= 0 && j <= m,
+      reasoning: (
+        #|Scan row i to locate its pivot column in GF(2).
+      ),
     }
+  } where {
+    invariant: i >= 0 && i <= row && i <= m,
+    reasoning: (
+      #|Each pivot row yields one variable value in the solution.
+    ),
   }
 
   (solution, true)
