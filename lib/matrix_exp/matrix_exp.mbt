@@ -1,0 +1,350 @@
+// ============================================================================
+// MATRIX EXPONENTIATION - O(n³ log k) Matrix Power
+// ============================================================================
+//
+// Computes M^k in O(n³ log k) time using binary exponentiation.
+// Essential for solving linear recurrences in O(log n) time.
+//
+// KEY INSIGHT: Any linear recurrence can be represented as matrix multiplication:
+// For Fibonacci: [F(n+1), F(n)] = [[1,1],[1,0]] * [F(n), F(n-1)]
+// So F(n) = ([[1,1],[1,0]]^n)[0][1]
+//
+// APPLICATIONS:
+// - Fibonacci in O(log n)
+// - Linear recurrence relations
+// - Graph path counting
+// - Dynamic programming acceleration
+//
+// INVARIANTS (for binary exponentiation):
+// 1. result * base^exp = original M^k (throughout loop)
+// 2. exp halves each iteration
+// 3. When exp is odd, multiply result by current base
+//
+// TIME COMPLEXITY: O(n³ log k)
+// SPACE COMPLEXITY: O(n²)
+
+///|
+const MATRIX_MOD : Int64 = 1000000007L
+
+///|
+priv struct Matrix {
+  data : Array[Array[Int64]]
+  rows : Int
+  cols : Int
+}
+
+///|
+fn Matrix::new(rows : Int, cols : Int) -> Matrix {
+  let data = Array::make(rows, [])
+  for i = 0; i < rows; i = i + 1 {
+    data[i] = Array::make(cols, 0L)
+  }
+  { data, rows, cols }
+}
+
+///|
+fn Matrix::identity(n : Int) -> Matrix {
+  let m = Matrix::new(n, n)
+  for i = 0; i < n; i = i + 1 {
+    m.data[i][i] = 1L
+  }
+  m
+}
+
+///|
+fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
+  let rows = arr.length()
+  if rows == 0 {
+    return Matrix::new(0, 0)
+  }
+  let cols = arr[0].length()
+  let data = Array::make(rows, [])
+  for i = 0; i < rows; i = i + 1 {
+    data[i] = Array::make(cols, 0L)
+    for j = 0; j < cols; j = j + 1 {
+      data[i][j] = arr[i][j]
+    }
+  }
+  { data, rows, cols }
+}
+
+///|
+fn Matrix::get(self : Matrix, i : Int, j : Int) -> Int64 {
+  self.data[i][j]
+}
+
+///|
+fn Matrix::set(self : Matrix, i : Int, j : Int, v : Int64) -> Unit {
+  self.data[i][j] = v
+}
+
+///|
+/// Matrix multiplication with modulo
+fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
+  let result = Matrix::new(self.rows, other.cols)
+
+  for i = 0; i < self.rows; i = i + 1 {
+    for j = 0; j < other.cols; j = j + 1 {
+      let mut sum = 0L
+      for k = 0; k < self.cols; k = k + 1 {
+        sum = (sum + self.data[i][k] * other.data[k][j]) % MATRIX_MOD
+      }
+      result.data[i][j] = sum
+    }
+  }
+
+  result
+}
+
+///|
+/// Matrix multiplication without modulo
+fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
+  let result = Matrix::new(self.rows, other.cols)
+
+  for i = 0; i < self.rows; i = i + 1 {
+    for j = 0; j < other.cols; j = j + 1 {
+      let mut sum = 0L
+      for k = 0; k < self.cols; k = k + 1 {
+        sum = sum + self.data[i][k] * other.data[k][j]
+      }
+      result.data[i][j] = sum
+    }
+  }
+
+  result
+}
+
+///|
+/// Matrix exponentiation using binary exponentiation
+fn Matrix::power(self : Matrix, exp : Int64) -> Matrix {
+  if self.rows != self.cols {
+    return self // Cannot exponentiate non-square matrix
+  }
+
+  let n = self.rows
+  let mut result = Matrix::identity(n)
+  let mut base = self.copy()
+
+  // Binary exponentiation: result * base^exp = original M^k (invariant)
+  // I: result=I, base=M. M: If e odd, result *= base. base = base². e /= 2.
+  // T: e eventually becomes 0.
+  for e = exp; e > 0L; e = e / 2L {
+    if e % 2L == 1L {
+      result = result.multiply(base)
+    }
+    base = base.multiply(base)
+  }
+
+  result
+}
+
+///|
+/// Copy matrix
+fn Matrix::copy(self : Matrix) -> Matrix {
+  let m = Matrix::new(self.rows, self.cols)
+  for i = 0; i < self.rows; i = i + 1 {
+    for j = 0; j < self.cols; j = j + 1 {
+      m.data[i][j] = self.data[i][j]
+    }
+  }
+  m
+}
+
+///|
+/// Check if matrices are equal
+fn Matrix::equals(self : Matrix, other : Matrix) -> Bool {
+  if self.rows != other.rows || self.cols != other.cols {
+    return false
+  }
+  for i = 0; i < self.rows; i = i + 1 {
+    for j = 0; j < self.cols; j = j + 1 {
+      if self.data[i][j] != other.data[i][j] {
+        return false
+      }
+    }
+  }
+  true
+}
+
+// ============================================================================
+// FIBONACCI using Matrix Exponentiation
+// ============================================================================
+
+///|
+/// Compute nth Fibonacci number in O(log n)
+fn fibonacci(n : Int64) -> Int64 {
+  if n <= 0L {
+    return 0L
+  }
+  if n == 1L {
+    return 1L
+  }
+
+  // [[1,1],[1,0]]^n gives [[F(n+1), F(n)], [F(n), F(n-1)]]
+  let fib_matrix = Matrix::from_array([[1L, 1L], [1L, 0L]])
+  let result = fib_matrix.power(n)
+  result.data[0][1] // F(n)
+}
+
+// ============================================================================
+// LINEAR RECURRENCE
+// ============================================================================
+
+///|
+/// Solve linear recurrence: f(n) = c[0]*f(n-1) + c[1]*f(n-2) + ... + c[k-1]*f(n-k)
+/// Given initial values f(0), f(1), ..., f(k-1)
+fn solve_recurrence(
+  coefficients : Array[Int64],
+  initial : Array[Int64],
+  n : Int64
+) -> Int64 {
+  let k = coefficients.length()
+  if k == 0 {
+    return 0L
+  }
+
+  if n < k.to_int64() {
+    return initial[n.to_int()]
+  }
+
+  // Build transition matrix
+  // [[c[0], c[1], ..., c[k-1]],
+  //  [1,    0,    ..., 0     ],
+  //  [0,    1,    ..., 0     ],
+  //  ...
+  //  [0,    0,    ..., 0     ]]
+  let m = Matrix::new(k, k)
+  for j = 0; j < k; j = j + 1 {
+    m.data[0][j] = coefficients[j]
+  }
+  for i = 1; i < k; i = i + 1 {
+    m.data[i][i - 1] = 1L
+  }
+
+  let result = m.power(n - k.to_int64() + 1L)
+
+  let mut ans = 0L
+  for j = 0; j < k; j = j + 1 {
+    ans = (ans + result.data[0][j] * initial[k - 1 - j]) % MATRIX_MOD
+  }
+
+  ans
+}
+
+// ============================================================================
+// GRAPH PATH COUNTING
+// ============================================================================
+
+///|
+/// Count paths of exactly k steps from u to v in graph
+fn count_paths(adj_matrix : Array[Array[Int64]], k : Int64) -> Matrix {
+  let m = Matrix::from_array(adj_matrix)
+  m.power(k)
+}
+
+// ============================================================================
+// TESTS
+// ============================================================================
+
+///|
+test "matrix multiply" {
+  let a = Matrix::from_array([[1L, 2L], [3L, 4L]])
+  let b = Matrix::from_array([[5L, 6L], [7L, 8L]])
+  let c = a.multiply_no_mod(b)
+
+  // [[1*5+2*7, 1*6+2*8], [3*5+4*7, 3*6+4*8]] = [[19, 22], [43, 50]]
+  inspect(c.get(0, 0), content="19")
+  inspect(c.get(0, 1), content="22")
+  inspect(c.get(1, 0), content="43")
+  inspect(c.get(1, 1), content="50")
+}
+
+///|
+test "matrix identity" {
+  let a = Matrix::from_array([[1L, 2L], [3L, 4L]])
+  let i = Matrix::identity(2)
+  let b = a.multiply_no_mod(i)
+  inspect(a.equals(b), content="true")
+}
+
+///|
+test "matrix power" {
+  let a = Matrix::from_array([[1L, 1L], [1L, 0L]])
+  let a2 = a.power(2L)
+  // [[1,1],[1,0]]^2 = [[2,1],[1,1]]
+  inspect(a2.get(0, 0), content="2")
+  inspect(a2.get(0, 1), content="1")
+  inspect(a2.get(1, 0), content="1")
+  inspect(a2.get(1, 1), content="1")
+}
+
+///|
+test "fibonacci" {
+  inspect(fibonacci(0L), content="0")
+  inspect(fibonacci(1L), content="1")
+  inspect(fibonacci(2L), content="1")
+  inspect(fibonacci(3L), content="2")
+  inspect(fibonacci(4L), content="3")
+  inspect(fibonacci(5L), content="5")
+  inspect(fibonacci(10L), content="55")
+  inspect(fibonacci(20L), content="6765")
+}
+
+///|
+test "fibonacci large" {
+  // F(50) = 12586269025, mod 10^9+7 = 586268941
+  inspect(fibonacci(50L), content="586268941")
+}
+
+///|
+test "solve_recurrence fibonacci" {
+  // Fibonacci: f(n) = f(n-1) + f(n-2)
+  let coeffs : Array[Int64] = [1L, 1L]
+  let initial : Array[Int64] = [0L, 1L] // f(0)=0, f(1)=1
+
+  inspect(solve_recurrence(coeffs, initial, 0L), content="0")
+  inspect(solve_recurrence(coeffs, initial, 1L), content="1")
+  inspect(solve_recurrence(coeffs, initial, 10L), content="55")
+}
+
+///|
+test "solve_recurrence tribonacci" {
+  // Tribonacci: f(n) = f(n-1) + f(n-2) + f(n-3)
+  let coeffs : Array[Int64] = [1L, 1L, 1L]
+  let initial : Array[Int64] = [0L, 0L, 1L] // f(0)=0, f(1)=0, f(2)=1
+
+  // T(3) = 1, T(4) = 2, T(5) = 4, T(6) = 7
+  inspect(solve_recurrence(coeffs, initial, 3L), content="1")
+  inspect(solve_recurrence(coeffs, initial, 4L), content="2")
+  inspect(solve_recurrence(coeffs, initial, 5L), content="4")
+  inspect(solve_recurrence(coeffs, initial, 6L), content="7")
+}
+
+///|
+test "count_paths" {
+  // Graph: 0 -> 1 -> 2 -> 0
+  let adj : Array[Array[Int64]] = [[0L, 1L, 0L], [0L, 0L, 1L], [1L, 0L, 0L]]
+
+  let paths2 = count_paths(adj, 2L)
+  // 2 steps from 0: 0->1->2
+  inspect(paths2.get(0, 2), content="1")
+
+  let paths3 = count_paths(adj, 3L)
+  // 3 steps from 0 back to 0: 0->1->2->0
+  inspect(paths3.get(0, 0), content="1")
+}
+
+///|
+test "matrix power zero" {
+  let a = Matrix::from_array([[2L, 3L], [4L, 5L]])
+  let a0 = a.power(0L)
+  let i = Matrix::identity(2)
+  inspect(a0.equals(i), content="true")
+}
+
+///|
+test "matrix power one" {
+  let a = Matrix::from_array([[2L, 3L], [4L, 5L]])
+  let a1 = a.power(1L)
+  inspect(a.equals(a1), content="true")
+}
