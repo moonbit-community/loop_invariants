@@ -39,10 +39,7 @@ priv struct BipartiteGraph {
 
 ///|
 fn BipartiteGraph::new(n_left : Int, n_right : Int) -> BipartiteGraph {
-  let adj = Array::make(n_left, [])
-  for i = 0; i < n_left; i = i + 1 {
-    adj[i] = []
-  }
+  let adj : Array[Array[Int]] = Array::makei(n_left, fn(_) { [] })
   { n_left, n_right, adj }
 }
 
@@ -91,6 +88,10 @@ fn Hungarian::dfs(self : Hungarian, u : Int) -> Bool {
       return true
     }
   }
+  where {
+    invariant: i >= 0 && i <= self.graph.adj[u].length(),
+    reasoning: "Scan neighbors of u; index stays within adjacency bounds.",
+  }
   false
 }
 
@@ -101,9 +102,7 @@ fn Hungarian::max_matching(self : Hungarian) -> Int {
 
   for u = 0; u < self.graph.n_left; u = u + 1 {
     // Reset visited for each left vertex
-    for i = 0; i < self.graph.n_right; i = i + 1 {
-      self.visited[i] = false
-    }
+    self.visited.fill(false)
     if self.dfs(u) {
       matching = matching + 1
     }
@@ -122,6 +121,10 @@ fn Hungarian::get_matching(self : Hungarian) -> Array[(Int, Int)] {
     if self.match_left[u] >= 0 {
       result.push((u, self.match_left[u]))
     }
+  }
+  where {
+    invariant: u >= 0 && u <= self.graph.n_left,
+    reasoning: "Scan left vertices to collect matched edges.",
   }
   result
 }
@@ -164,6 +167,10 @@ fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
       self.dist[u] = HK_INF
     }
   }
+  where {
+    invariant: u >= 0 && u <= self.graph.n_left,
+    reasoning: "Initialize BFS distances for all left vertices.",
+  }
 
   self.dist[self.graph.n_left] = HK_INF // Sentinel for unmatched
 
@@ -173,8 +180,7 @@ fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
     front = front + 1
 
     if self.dist[u] < self.dist[self.graph.n_left] {
-      for i = 0; i < self.graph.adj[u].length(); i = i + 1 {
-        let v = self.graph.adj[u][i]
+      self.graph.adj[u].each(fn(v) {
         let next = if self.match_right[v] < 0 {
           self.graph.n_left
         } else {
@@ -186,7 +192,7 @@ fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
             queue.push(next)
           }
         }
-      }
+      })
     }
   }
 
@@ -216,6 +222,10 @@ fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int) -> Bool {
       }
     }
   }
+  where {
+    invariant: i >= 0 && i <= self.graph.adj[u].length(),
+    reasoning: "Scan neighbors of u within adjacency bounds.",
+  }
 
   self.dist[u] = HK_INF // Mark as visited
   false
@@ -233,6 +243,10 @@ fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
         matching = matching + 1
       }
     }
+    where {
+      invariant: u >= 0 && u <= self.graph.n_left,
+      reasoning: "Try to augment from each unmatched left vertex.",
+    }
   }
 
   matching
@@ -245,6 +259,10 @@ fn HopcroftKarp::get_matching(self : HopcroftKarp) -> Array[(Int, Int)] {
     if self.match_left[u] >= 0 {
       result.push((u, self.match_left[u]))
     }
+  }
+  where {
+    invariant: u >= 0 && u <= self.graph.n_left,
+    reasoning: "Scan left vertices to collect matched edges.",
   }
   result
 }
@@ -278,8 +296,7 @@ fn minimum_vertex_cover(graph : BipartiteGraph) -> (Array[Int], Array[Int]) {
       return
     }
     visited_left[u] = true
-    for i = 0; i < graph.adj[u].length(); i = i + 1 {
-      let v = graph.adj[u][i]
+    graph.adj[u].each(fn(v) {
       if not(visited_right[v]) {
         visited_right[v] = true
         if match_right[v] >= 0 && not(visited_left[match_right[v]]) {
@@ -293,7 +310,7 @@ fn minimum_vertex_cover(graph : BipartiteGraph) -> (Array[Int], Array[Int]) {
           )
         }
       }
-    }
+    })
   }
 
   // Start from unmatched left vertices
@@ -309,6 +326,10 @@ fn minimum_vertex_cover(graph : BipartiteGraph) -> (Array[Int], Array[Int]) {
       )
     }
   }
+  where {
+    invariant: u >= 0 && u <= graph.n_left,
+    reasoning: "Start DFS from each unmatched left vertex.",
+  }
 
   // Vertex cover: left vertices NOT visited + right vertices visited
   let left_cover : Array[Int] = []
@@ -319,10 +340,18 @@ fn minimum_vertex_cover(graph : BipartiteGraph) -> (Array[Int], Array[Int]) {
       left_cover.push(u)
     }
   }
+  where {
+    invariant: u >= 0 && u <= graph.n_left,
+    reasoning: "Collect unvisited left vertices into the cover.",
+  }
   for v = 0; v < graph.n_right; v = v + 1 {
     if visited_right[v] {
       right_cover.push(v)
     }
+  }
+  where {
+    invariant: v >= 0 && v <= graph.n_right,
+    reasoning: "Collect visited right vertices into the cover.",
   }
 
   (left_cover, right_cover)
@@ -416,6 +445,11 @@ test "get_matching" {
   let _ = hungarian.max_matching()
   let matching = hungarian.get_matching()
   inspect(matching.length(), content="2")
+
+  let hk = HopcroftKarp::new(graph)
+  let _ = hk.max_matching()
+  let hk_matching = hk.get_matching()
+  inspect(hk_matching.length(), content="2")
 }
 
 ///|
