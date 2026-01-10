@@ -185,6 +185,12 @@ fn dfs1(adj : Array[Array[Int]], visited : Array[Bool], order : Array[Int], u : 
     if not(visited[v]) {
       dfs1(adj, visited, order, v)
     }
+  } where {
+    invariant: i >= 0 && i <= adj[u].length(),
+    reasoning: (
+      #|All neighbors adj[u][0..i) have been processed; any unvisited neighbor
+      #|has been fully explored and added to order before returning.
+    ),
   }
   order.push(u) // Post-order
 }
@@ -197,6 +203,11 @@ fn dfs2(radj : Array[Array[Int]], comp : Array[Int], scc_id : Int, u : Int) -> U
     if comp[v] < 0 {
       dfs2(radj, comp, scc_id, v)
     }
+  } where {
+    invariant: i >= 0 && i <= radj[u].length(),
+    reasoning: (
+      #|All reverse edges radj[u][0..i) have been explored for this SCC.
+    ),
   }
 }
 
@@ -218,8 +229,18 @@ fn TwoSat::verify(self : TwoSat, assignment : Array[Bool]) -> Bool {
         if not(val_v) {
           return false
         }
+      } where {
+        invariant: i >= 0 && i <= self.adj[u].length(),
+        reasoning: (
+          #|All implications from u to adj[u][0..i) are satisfied by assignment.
+        ),
       }
     }
+  } where {
+    invariant: u >= 0 && u <= 2 * self.n,
+    reasoning: (
+      #|All implication nodes in [0..u) have been validated against assignment.
+    ),
   }
   true
 }

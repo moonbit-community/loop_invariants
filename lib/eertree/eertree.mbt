@@ -154,6 +154,12 @@ fn Eertree::from_string(s : String) -> Eertree {
     let char_code = s[i].to_int()
     // Convert UInt16 to Char for add_char
     tree.add_char(Int::unsafe_to_char(char_code))
+  } where {
+    invariant: i >= 0 && i <= s.length() && tree.text.length() == i,
+    reasoning: (
+      #|The tree contains all palindromes from the prefix s[0..i).
+      #|Each iteration adds s[i] and extends the structure by one character.
+    ),
   }
   tree
 }
@@ -173,6 +179,12 @@ fn Eertree::propagate_counts(self : Eertree) -> Unit {
   for i = self.nodes.length() - 1; i >= 2; i = i - 1 {
     let suffix = self.nodes[i].suffix_link
     self.nodes[suffix].count = self.nodes[suffix].count + self.nodes[i].count
+  } where {
+    invariant: i >= 1 && i < self.nodes.length(),
+    reasoning: (
+      #|Nodes with index > i have already propagated their counts to suffix links.
+      #|Reverse order ensures children contribute before parents.
+    ),
   }
 }
 
@@ -182,6 +194,11 @@ fn Eertree::count_total(self : Eertree) -> Int {
   let mut total = 0
   for i = 2; i < self.nodes.length(); i = i + 1 {
     total = total + self.nodes[i].count
+  } where {
+    invariant: i >= 2 && i <= self.nodes.length(),
+    reasoning: (
+      #|total is the sum of counts for nodes [2..i).
+    ),
   }
   total
 }
@@ -206,11 +223,21 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
       // First half (including middle for odd length)
       for i = 0; i < current.length(); i = i + 1 {
         sb.write_char(Int::unsafe_to_char(current[i]))
+      } where {
+        invariant: i >= 0 && i <= current.length(),
+        reasoning: (
+          #|sb contains current[0..i) in order.
+        ),
       }
       // Second half (reverse, skip middle for odd length)
       let start = if len % 2 == 0 { current.length() - 1 } else { current.length() - 2 }
       for i = start; i >= 0; i = i - 1 {
         sb.write_char(Int::unsafe_to_char(current[i]))
+      } where {
+        invariant: i >= -1 && i <= start,
+        reasoning: (
+          #|sb appends the mirrored suffix of current from (i+1)..start.
+        ),
       }
       result.push(sb.to_string())
     }
@@ -223,6 +250,12 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
         dfs(tree, child, current, result)
         let _ = current.pop()
       }
+    } where {
+      invariant: c >= 0 && c <= 256,
+      reasoning: (
+        #|All edges with labels < c have been explored; current is restored
+        #|to its original state before moving to the next label.
+      ),
     }
   }
 
@@ -242,6 +275,11 @@ fn Eertree::longest_length(self : Eertree) -> Int {
     if self.nodes[i].len > max_len {
       max_len = self.nodes[i].len
     }
+  } where {
+    invariant: i >= 2 && i <= self.nodes.length(),
+    reasoning: (
+      #|max_len is the maximum length among nodes [2..i).
+    ),
   }
   max_len
 }
@@ -259,6 +297,11 @@ fn Eertree::contains_palindrome(self : Eertree, p : String) -> Bool {
     if p[i] != p[p.length() - 1 - i] {
       return false // Not a palindrome
     }
+  } where {
+    invariant: i >= 0 && i <= p.length() / 2,
+    reasoning: (
+      #|All checked pairs (0..i) are symmetric, so the prefix tested so far is palindromic.
+    ),
   }
 
   // Navigate tree: edges from node with palindrome P and char c lead to cPc
@@ -279,6 +322,12 @@ fn Eertree::contains_palindrome(self : Eertree, p : String) -> Bool {
       return false
     }
     node = next
+  } where {
+    invariant: i >= -1 && i <= start_idx,
+    reasoning: (
+      #|node represents the palindrome built from the center with processed
+      #|characters p[i+1..start_idx] added symmetrically to both ends.
+    ),
   }
 
   // Check if we reached a node with correct length
@@ -318,6 +367,11 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
         }
         let _ = path.pop()
       }
+    } where {
+      invariant: c >= 0 && c <= 256,
+      reasoning: (
+        #|All outgoing edges with labels < c have been explored for the target.
+      ),
     }
     false
   }
@@ -331,10 +385,20 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
   let sb = StringBuilder::new()
   for i = 0; i < path.length(); i = i + 1 {
     sb.write_char(Int::unsafe_to_char(path[i]))
+  } where {
+    invariant: i >= 0 && i <= path.length(),
+    reasoning: (
+      #|sb contains path[0..i) in order.
+    ),
   }
   let rev_start = if len % 2 == 0 { path.length() - 1 } else { path.length() - 2 }
   for i = rev_start; i >= 0; i = i - 1 {
     sb.write_char(Int::unsafe_to_char(path[i]))
+  } where {
+    invariant: i >= -1 && i <= rev_start,
+    reasoning: (
+      #|sb appends the mirrored suffix of path from (i+1)..rev_start.
+    ),
   }
   sb.to_string()
 }
@@ -433,10 +497,20 @@ test "eertree get palindromes" {
       }
     } else {
       true
+    } where {
+      invariant: j >= 0 && j <= p.length() / 2,
+      reasoning: (
+        #|All checked pairs (0..j) are symmetric for this palindrome candidate.
+      ),
     }
     guard is_palindrome else {
       fail("Not a palindrome: " + p)
     }
+  } where {
+    invariant: i >= 0 && i <= palindromes.length(),
+    reasoning: (
+      #|All palindromes in palindromes[0..i) have been verified.
+    ),
   }
 
   // Test get_palindrome_at for a specific node

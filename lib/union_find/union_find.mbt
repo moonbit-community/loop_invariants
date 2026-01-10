@@ -149,6 +149,11 @@ fn UnionFind::set_size(self : UnionFind, x : Int) -> Int {
     if self.find(i) == root {
       size = size + 1
     }
+  } where {
+    invariant: i >= 0 && i <= self.parent.length(),
+    reasoning: (
+      #|size counts members of root among indices [0..i).
+    ),
   }
   size
 }
@@ -174,6 +179,11 @@ fn WeightedUnionFind::new(n : Int) -> WeightedUnionFind {
 
   for i = 0; i < n; i = i + 1 {
     parent[i] = i
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: (
+      #|parent[0..i) initialized to self; each node is a singleton root.
+    ),
   }
 
   { parent, rank, weight }
@@ -388,6 +398,11 @@ test "union find path compression" {
   // Create a chain: 0 <- 1 <- 2 <- ... <- 9
   for i = 1; i < 10; i = i + 1 {
     let _ = uf.union(i - 1, i)
+  } where {
+    invariant: i >= 1 && i <= 10,
+    reasoning: (
+      #|Unions have been applied for pairs (0,1)..(i-1,i), forming a chain.
+    ),
   }
 
   // Find from deepest element
@@ -396,5 +411,10 @@ test "union find path compression" {
   // After find with path compression, all should point to root
   for i = 0; i < 10; i = i + 1 {
     inspect(uf.find(i) == root, content="true")
+  } where {
+    invariant: i >= 0 && i <= 10,
+    reasoning: (
+      #|All nodes in [0..i) have been verified to compress to the root.
+    ),
   }
 }

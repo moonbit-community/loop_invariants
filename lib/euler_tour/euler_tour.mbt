@@ -41,6 +41,11 @@ fn EulerTour::new(n : Int) -> EulerTour {
   let adj = Array::make(n, [])
   for i = 0; i < n; i = i + 1 {
     adj[i] = []
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: (
+      #|adj[0..i) has been initialized with distinct empty arrays.
+    ),
   }
   {
     n,
@@ -82,6 +87,12 @@ fn EulerTour::dfs(self : EulerTour, u : Int, p : Int, d : Int) -> Unit {
     if v != p {
       self.dfs(v, u, d + 1)
     }
+  } where {
+    invariant: i >= 0 && i <= self.adj[u].length() && self.adj.length() == self.n,
+    reasoning: (
+      #|All neighbors with index < i have been processed; any non-parent
+      #|neighbor has been fully explored and its subtree tour appended.
+    ),
   }
 
   self.exit[u] = self.timer
@@ -113,6 +124,11 @@ fn EulerTour::get_subtree(self : EulerTour, v : Int) -> Array[Int] {
   let end = self.exit[v]
   for i = start; i < end; i = i + 1 {
     result.push(self.tour[i])
+  } where {
+    invariant: i >= start && i <= end,
+    reasoning: (
+      #|result contains tour entries for the range [start..i).
+    ),
   }
   result
 }
@@ -137,6 +153,11 @@ fn EulerTourLCA::new(n : Int) -> EulerTourLCA {
   let adj = Array::make(n, [])
   for i = 0; i < n; i = i + 1 {
     adj[i] = []
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: (
+      #|adj[0..i) has been initialized with distinct empty arrays.
+    ),
   }
   {
     n,
@@ -168,6 +189,12 @@ fn EulerTourLCA::dfs_euler(self : EulerTourLCA, u : Int, p : Int, d : Int) -> Un
       self.euler.push(u)
       self.depth.push(d)
     }
+  } where {
+    invariant: i >= 0 && i <= self.adj[u].length() && self.adj.length() == self.n,
+    reasoning: (
+      #|All neighbors with index < i have been visited; each visited child
+      #|contributes an enter/exit pair in the euler/depth arrays.
+    ),
   }
 }
 
@@ -183,6 +210,11 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
   // Precompute log values
   for i = 2; i <= m; i = i + 1 {
     self.log[i] = self.log[i / 2] + 1
+  } where {
+    invariant: i >= 2 && i <= m + 1,
+    reasoning: (
+      #|log[2..i) is initialized so log[x] = floor(log2(x)).
+    ),
   }
 
   // Build sparse table for minimum depth
@@ -190,11 +222,21 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
   self.sparse = Array::make(k, [])
   for i = 0; i < k; i = i + 1 {
     self.sparse[i] = Array::make(m, 0)
+  } where {
+    invariant: i >= 0 && i <= k,
+    reasoning: (
+      #|sparse[0..i) rows are allocated with length m.
+    ),
   }
 
   // Initialize with indices
   for i = 0; i < m; i = i + 1 {
     self.sparse[0][i] = i
+  } where {
+    invariant: i >= 0 && i <= m,
+    reasoning: (
+      #|sparse[0][0..i) stores the index of each position in the Euler tour.
+    ),
   }
 
   // Fill sparse table
@@ -208,7 +250,17 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
       } else {
         self.sparse[j][i] = right
       }
+    } where {
+      invariant: i >= 0 && i + len <= m + 1,
+      reasoning: (
+        #|sparse[j][0..i) stores the min-depth index for intervals of length len.
+      ),
     }
+  } where {
+    invariant: j >= 1 && j <= k,
+    reasoning: (
+      #|All levels < j of the sparse table are fully built.
+    ),
   }
 }
 
@@ -264,6 +316,11 @@ test "euler_tour basic" {
   // Check entry < exit
   for i = 0; i < 5; i = i + 1 {
     inspect(et.entry[i] < et.exit[i], content="true")
+  } where {
+    invariant: i >= 0 && i <= 5,
+    reasoning: (
+      #|All nodes in [0..i) have been checked for entry < exit.
+    ),
   }
 }
 
@@ -279,7 +336,9 @@ test "euler_tour subtree" {
 
   // Subtree of 1 should include 1, 3, 4
   let subtree = et.get_subtree(1)
+  let (start, end) = et.subtree_range(1)
   inspect(subtree.length(), content="3")
+  inspect(end - start, content="3")
   inspect(subtree.contains(1), content="true")
   inspect(subtree.contains(3), content="true")
   inspect(subtree.contains(4), content="true")

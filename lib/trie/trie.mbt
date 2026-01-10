@@ -213,9 +213,19 @@ fn collect_words(node : TrieNode, current : Array[Char], result : Array[String])
     let mut s = ""
     for i = 0; i < current.length(); i = i + 1 {
       s = s + current[i].to_string()
+    } where {
+      invariant: i >= 0 && i <= current.length(),
+      reasoning: (
+        #|s is the concatenation of current[0..i).
+      ),
     }
     for j = 0; j < node.count; j = j + 1 {
       result.push(s)
+    } where {
+      invariant: j >= 0 && j <= node.count,
+      reasoning: (
+        #|result has received j copies of the word for this terminal node.
+      ),
     }
   }
 
@@ -228,6 +238,12 @@ fn collect_words(node : TrieNode, current : Array[Char], result : Array[String])
       }
       None => ()
     }
+  } where {
+    invariant: c >= 0 && c <= 26,
+    reasoning: (
+      #|All child edges with labels < c have been explored; current is restored
+      #|after each recursive descent.
+    ),
   }
 }
 
@@ -245,6 +261,11 @@ fn Trie::autocomplete(self : Trie, prefix : String) -> Array[String] {
           Some(c) => current.push(c)
           None => ()
         }
+      } where {
+        invariant: i >= 0 && i <= prefix.length(),
+        reasoning: (
+          #|current contains the characters prefix[0..i) in order.
+        ),
       }
       collect_words(node, current, result)
       result
@@ -273,6 +294,12 @@ fn Trie::longest_prefix(self : Trie, word : String) -> String {
         }
       }
     }
+  } where {
+    invariant: i >= 0 && i <= word.length(),
+    reasoning: (
+      #|current represents prefix word[0..i); last_end is the longest prefix
+      #|length <= i where a word ends in the trie.
+    ),
   }
 
   (try? word[0:last_end]).or("").to_string()
@@ -474,6 +501,11 @@ fn search_in_node(label : String, node : CompressedTrieNode, word : String) -> B
     if word[i] != label[i] {
       return false
     }
+  } where {
+    invariant: i >= 0 && i <= label_len,
+    reasoning: (
+      #|word[0..i) matches label[0..i).
+    ),
   }
 
   if word_len == label_len {
