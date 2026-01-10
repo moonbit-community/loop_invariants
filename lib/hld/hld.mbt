@@ -200,6 +200,10 @@ test "hld basic" {
   inspect(hld.lca(3, 4), content="1")
   inspect(hld.lca(3, 5), content="0")
   inspect(hld.lca(5, 6), content="2")
+  let pos3 = hld.get_position(3)
+  let head3 = hld.get_chain_head(3)
+  inspect(pos3 >= 0 && pos3 < 7, content="true")
+  inspect(head3 >= 0 && head3 < 7, content="true")
 }
 
 ///|
@@ -246,6 +250,11 @@ test "hld linear" {
   let hld = HLD::new(8)
   for i = 0; i < 7; i = i + 1 {
     hld.add_edge(i, i + 1)
+  } where {
+    invariant: i >= 0 && i <= 7,
+    reasoning: (
+      #|Add consecutive edges to form a line.
+    ),
   }
   hld.build(0)
 

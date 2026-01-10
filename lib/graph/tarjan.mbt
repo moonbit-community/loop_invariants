@@ -23,7 +23,7 @@
 // ============================================================================
 
 ///|
-struct TarjanSCC {
+priv struct TarjanSCC {
   graph : Array[Array[Int]] // Adjacency list
   n : Int
   disc : Array[Int] // Discovery time
@@ -129,6 +129,22 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
       if w == v {
         break
       }
+    } where {
+      invariant: self.on_stack[v],
+      invariant: scc.all((x) => not(self.on_stack[x])),
+      invariant: self.stack.length() + scc.length() <= self.n,
+      reasoning: (
+        #|SCC POP INVARIANT:
+        #|The stack stores the current DFS path; the SCC rooted at v is a
+        #|contiguous suffix of this stack. Each iteration pops one vertex from
+        #|the top, marks it not-on-stack, and records it in scc.
+        #|
+        #|v stays on the stack until it is popped, so self.on_stack[v] holds
+        #|for every iteration start. Popped vertices never return to the stack.
+        #|
+        #|Termination: v is on the stack and each iteration shrinks the stack,
+        #|so we eventually pop v and break.
+      ),
     }
     self.sccs.push(scc)
   }
@@ -226,7 +242,7 @@ test "tarjan_dag" {
 // (SCCs with no outgoing edges to other SCCs).
 
 ///|
-struct KosarajuSCC {
+priv struct KosarajuSCC {
   graph : Array[Array[Int]]
   reversed : Array[Array[Int]]
   n : Int
@@ -236,16 +252,16 @@ struct KosarajuSCC {
 }
 
 ///|
+#warnings("-missing_invariant-missing_reasoning")
 fn KosarajuSCC::new(graph : Array[Array[Int]]) -> KosarajuSCC {
   let n = graph.length()
   // Build reversed graph
   let reversed : Array[Array[Int]] = Array::make(n, [])
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     reversed[v] = []
   }
-  for v = 0; v < n; v = v + 1 {
-    for i = 0; i < graph[v].length(); i = i + 1 {
-      let w = graph[v][i]
+  for v in 0..<n {
+    for w in graph[v] {
       reversed[w].push(v)
     }
   }
@@ -410,7 +426,7 @@ test "kosaraju_basic" {
 //    (no back edge from w's subtree bypasses v)
 
 ///|
-struct ArticulationFinder {
+priv struct ArticulationFinder {
   graph : Array[Array[Int]]
   n : Int
   disc : Array[Int]
@@ -497,15 +513,16 @@ fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
 }
 
 ///|
+#warnings("-missing_invariant-missing_reasoning")
 fn find_articulation_points(graph : Array[Array[Int]]) -> Array[Int] {
   let finder = ArticulationFinder::new(graph)
-  for v = 0; v < finder.n; v = v + 1 {
+  for v in 0..<finder.n {
     if finder.disc[v] == -1 {
       finder.dfs(v)
     }
   }
   let aps : Array[Int] = []
-  for v = 0; v < finder.n; v = v + 1 {
+  for v in 0..<finder.n {
     if finder.is_ap[v] {
       aps.push(v)
     }
@@ -542,7 +559,7 @@ test "articulation_points" {
 // (v's subtree has no back edge to u or any ancestor of u)
 
 ///|
-struct BridgeFinder {
+priv struct BridgeFinder {
   graph : Array[Array[Int]]
   n : Int
   disc : Array[Int]
@@ -620,9 +637,10 @@ fn BridgeFinder::dfs(self : BridgeFinder, v : Int) -> Unit {
 }
 
 ///|
+#warnings("-missing_invariant-missing_reasoning")
 fn find_bridges(graph : Array[Array[Int]]) -> Array[(Int, Int)] {
   let finder = BridgeFinder::new(graph)
-  for v = 0; v < finder.n; v = v + 1 {
+  for v in 0..<finder.n {
     if finder.disc[v] == -1 {
       finder.dfs(v)
     }
@@ -657,7 +675,7 @@ test "bridges" {
 // If we detect a back edge during DFS, the graph has a cycle.
 
 ///|
-struct TopologicalSort {
+priv struct TopologicalSort {
   graph : Array[Array[Int]]
   n : Int
   state : Array[Int] // 0: unvisited, 1: visiting, 2: visited
@@ -712,9 +730,10 @@ fn TopologicalSort::dfs(self : TopologicalSort, v : Int) -> Unit {
 }
 
 ///|
+#warnings("-missing_invariant-missing_reasoning")
 fn topological_sort_dfs(graph : Array[Array[Int]]) -> Array[Int]? {
   let ts = TopologicalSort::new(graph)
-  for v = 0; v < ts.n; v = v + 1 {
+  for v in 0..<ts.n {
     if ts.state[v] == 0 {
       ts.dfs(v)
     }
@@ -723,11 +742,7 @@ fn topological_sort_dfs(graph : Array[Array[Int]]) -> Array[Int]? {
     None
   } else {
     // Reverse to get topological order
-    let result : Array[Int] = []
-    for i = ts.result.length() - 1; i >= 0; i = i - 1 {
-      result.push(ts.result[i])
-    }
-    Some(result)
+    Some(ts.result.rev())
   }
 }
 

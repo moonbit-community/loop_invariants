@@ -184,6 +184,11 @@ pub fn z_search(text : String, pattern : String) -> Array[Int] {
     if z[i] == m {
       matches.push(i - offset)
     }
+  } where {
+    invariant: i >= offset && i <= concat.length(),
+    reasoning: (
+      #|Scan Z-values after the delimiter; each i with z[i] == m marks a match.
+    ),
   }
 
   matches
