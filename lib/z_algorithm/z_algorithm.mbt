@@ -84,6 +84,22 @@ fn compute_z(s : String) -> Array[Int] {
         continue i + 1, i, i + match_len - 1
       }
     }
+  } where {
+    invariant: 1 <= i && i <= n,
+    reasoning: (
+      #|i is the next position whose Z value is not yet finalized.
+      #|All positions < i have been computed exactly once.
+    ),
+    invariant: 0 <= l && l <= r + 1 && r < n,
+    reasoning: (
+      #|Z-box boundaries stay within the string.
+      #|When r < l, the box is empty; otherwise s[l..r] matches s[0..r-l].
+    ),
+    invariant: l <= i,
+    reasoning: (
+      #|The Z-box never starts to the right of the current index.
+      #|When we extend a match, we reset l to i; otherwise l stays behind i.
+    ),
   }
 
   z
@@ -119,6 +135,12 @@ fn find_pattern(text : String, pattern : String) -> Array[Int] {
     if z[i] == m {
       result.push(i - m - 1) // Convert to text index
     }
+  } where {
+    invariant: i >= m + 1 && i <= z.length(),
+    reasoning: (
+      #|Indices before m+1 belong to pattern or separator and are ignored.
+      #|We only check Z-values aligned with the text portion.
+    ),
   }
 
   result
@@ -151,6 +173,17 @@ fn longest_prefix_suffix(s : String) -> Int {
     }
   } else {
     best
+  } where {
+    invariant: i >= 1 && i <= n,
+    reasoning: (
+      #|Scan all candidate split points i for which a suffix could match the prefix.
+      #|We only update when Z[i] reaches the end of the string.
+    ),
+    invariant: best >= 0,
+    reasoning: (
+      #|best stores the maximum border length seen so far (proper prefix = suffix).
+      #|This guarantees the result is the longest such border.
+    ),
   }
 }
 
@@ -170,6 +203,12 @@ fn all_borders(s : String) -> Array[Int] {
     if z[i] + i == n {
       borders.push(z[i])
     }
+  } where {
+    invariant: i >= 1 && i <= n,
+    reasoning: (
+      #|A border exists exactly when Z[i] reaches the end (Z[i] + i == n).
+      #|We enumerate all such i to collect every border length.
+    ),
   }
 
   // Sort borders in ascending order
@@ -195,6 +234,12 @@ fn string_period(s : String) -> Int {
     if z[p] >= n - p {
       return p
     }
+  } where {
+    invariant: p >= 1 && p <= n,
+    reasoning: (
+      #|A period p means the suffix of length n-p matches the prefix of length n-p.
+      #|We return the smallest p meeting Z[p] >= n - p.
+    ),
   }
 
   n // No repetition, period is entire string

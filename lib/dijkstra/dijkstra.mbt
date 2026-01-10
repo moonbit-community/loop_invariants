@@ -40,7 +40,7 @@
 priv struct HeapEntry {
   dist : Int64
   vertex : Int
-} derive(Show)
+}
 
 ///|
 /// Min-heap priority queue for Dijkstra's algorithm
@@ -107,6 +107,9 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
       self.data[i] = self.data[smallest]
       self.data[smallest] = temp
       i = smallest
+    } where {
+      invariant: i >= 0 && i < len,
+      reasoning: "Bubble down within heap bounds while restoring heap order.",
     }
   }
 
@@ -139,10 +142,7 @@ pub(all) struct Graph {
 ///|
 /// Create a new graph with n vertices
 pub fn Graph::new(n : Int) -> Graph {
-  let adj : Array[Array[Edge]] = []
-  for i = 0; i < n; i = i + 1 {
-    adj.push([])
-  }
+  let adj : Array[Array[Edge]] = Array::makei(n, (_) => [])
   { n, adj }
 }
 
@@ -256,12 +256,7 @@ pub fn reconstruct_path(result : DijkstraResult, target : Int) -> Array[Int] {
   }
 
   // Reverse to get source to target
-  let n = path.length()
-  for i = 0; i < n / 2; i = i + 1 {
-    let temp = path[i]
-    path[i] = path[n - 1 - i]
-    path[n - 1 - i] = temp
-  }
+  path.rev_in_place()
 
   path
 }
@@ -356,6 +351,9 @@ pub fn bidirectional_dijkstra(graph : Graph, reverse_graph : Graph, source : Int
                   dist_forward[v] = new_dist
                   pq_forward.push({ dist: new_dist, vertex: v })
                 }
+              } where {
+                invariant: i >= 0 && i <= graph.adj[u].length(),
+                reasoning: "Relax each outgoing edge from u in forward search.",
               }
             }
           }
@@ -393,6 +391,9 @@ pub fn bidirectional_dijkstra(graph : Graph, reverse_graph : Graph, source : Int
                   dist_backward[v] = new_dist
                   pq_backward.push({ dist: new_dist, vertex: v })
                 }
+              } where {
+                invariant: i >= 0 && i <= reverse_graph.adj[u].length(),
+                reasoning: "Relax each outgoing edge from u in backward search.",
               }
             }
           }
@@ -400,6 +401,9 @@ pub fn bidirectional_dijkstra(graph : Graph, reverse_graph : Graph, source : Int
         None => ()
       }
     }
+  } where {
+    invariant: best_dist >= 0L,
+    reasoning: "Alternate forward/backward relaxations until both queues are empty.",
   }
 
   if best_dist == INF { None } else { Some(best_dist) }
