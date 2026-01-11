@@ -40,7 +40,17 @@ fn next_greater_element(arr : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Empty stack, result=-1 for all. M: For each element, pop smaller elements (they found their NGE at current position i). Push current index. Stack remains decreasing. T: Elements remaining in stack have no NGE (result stays -1).",
+    reasoning: (
+      #|INVARIANT (NGE scan):
+      #|Indices in stack are in decreasing value order, and result is finalized
+      #|for all indices < i that have already found their next greater element.
+      #|MAINTENANCE:
+      #|Pop all smaller elements; the current index i is their first greater
+      #|to the right. Then push i to preserve decreasing order.
+      #|TERMINATION:
+      #|After i = n, remaining stack elements have no greater element to the
+      #|right, so their result stays -1.
+    ),
   }
   result
 }
@@ -60,7 +70,16 @@ fn next_smaller_element(arr : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Empty stack. M: Pop larger elements (current is their NSE). Push current. Stack remains increasing. T: Remaining elements have no NSE.",
+    reasoning: (
+      #|INVARIANT (NSE scan):
+      #|Indices in stack are in increasing value order, and result is finalized
+      #|for processed indices whose next smaller element has been found.
+      #|MAINTENANCE:
+      #|Pop all larger elements; the current index i is their first smaller
+      #|to the right. Push i to preserve increasing order.
+      #|TERMINATION:
+      #|After i = n, remaining stack elements have no next smaller element.
+    ),
   }
   result
 }
@@ -84,7 +103,16 @@ fn previous_greater_element(arr : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Empty stack. M: Pop elements <= current (can't be PGE for future elements). Top of stack is PGE for current. Push current. T: All PGE values computed.",
+    reasoning: (
+      #|INVARIANT (PGE scan):
+      #|Stack holds indices with strictly decreasing values from bottom to top,
+      #|so the top is the nearest previous greater element for the next index.
+      #|MAINTENANCE:
+      #|Pop elements <= current (they cannot be previous greater for future).
+      #|The new top (if any) is the PGE for i; push i to continue.
+      #|TERMINATION:
+      #|After i = n, each position has its previous greater index or -1.
+    ),
   }
   result
 }
@@ -106,7 +134,16 @@ fn previous_smaller_element(arr : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Empty stack. M: Pop elements >= current. Top is PSE. Push current. T: All PSE values computed.",
+    reasoning: (
+      #|INVARIANT (PSE scan):
+      #|Stack holds indices with strictly increasing values, so the top is the
+      #|nearest previous smaller element for the next index.
+      #|MAINTENANCE:
+      #|Pop elements >= current; the remaining top (if any) is the PSE for i.
+      #|Push i to preserve monotonicity.
+      #|TERMINATION:
+      #|After i = n, each position has its previous smaller index or -1.
+    ),
   }
   result
 }
@@ -141,7 +178,16 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
     stack.push(i)
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Stack stores indices of a strictly increasing height sequence for [0,i). M: Pop while height >= current so top is nearest smaller to the left; record prev_smaller[i], then push i to maintain monotonicity. T: After i = n, prev_smaller is computed for all bars.",
+    reasoning: (
+      #|INVARIANT (prev smaller):
+      #|Stack stores indices of a strictly increasing height sequence for
+      #|positions in [0, i). For processed bars, prev_smaller is correct.
+      #|MAINTENANCE:
+      #|Pop while height >= current so the top is the nearest smaller to left,
+      #|record prev_smaller[i], then push i to maintain monotonicity.
+      #|TERMINATION:
+      #|At i = n, prev_smaller is computed for all bars.
+    ),
   }
 
   // Compute next smaller
@@ -157,7 +203,16 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
     stack.push(i)
   } where {
     invariant: i >= -1 && i <= n - 1,
-    reasoning: "I: Stack stores indices of a strictly increasing height sequence to the right of i. M: Pop while height >= current so top is nearest smaller to the right; record next_smaller[i] (or keep n), then push i. T: After i = -1, next_smaller is computed for all bars.",
+    reasoning: (
+      #|INVARIANT (next smaller):
+      #|Stack stores indices of a strictly increasing height sequence to the
+      #|right of i, so the top is the nearest smaller to the right.
+      #|MAINTENANCE:
+      #|Pop while height >= current, record next_smaller[i] (or keep n), then
+      #|push i to preserve monotonicity.
+      #|TERMINATION:
+      #|At i = -1, next_smaller is computed for all bars.
+    ),
   }
 
   // Calculate max area
@@ -170,7 +225,15 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
     }
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: max_area=0. M: For bar i, it extends from prev_smaller[i]+1 to next_smaller[i]-1. Area = height[i] * width. Track maximum. T: All bars considered, max_area is answer.",
+    reasoning: (
+      #|INVARIANT (max area):
+      #|max_area is the largest rectangle area among bars in [0, i).
+      #|MAINTENANCE:
+      #|For bar i, compute width between prev_smaller and next_smaller and
+      #|update max_area if this rectangle is larger.
+      #|TERMINATION:
+      #|After i = n, max_area is the largest histogram rectangle.
+    ),
   }
   max_area
 }
@@ -210,7 +273,16 @@ fn trap_rain_water(heights : Array[Int64]) -> Int64 {
     stack.push(i)
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Empty stack, water=0. M: When we find a taller bar, we can trap water above shorter bars in between. Pop until stack empty or taller bar found. Water trapped = width * min(left, right) - height. T: All water pockets computed.",
+    reasoning: (
+      #|INVARIANT (rain water):
+      #|Stack holds indices of bars in decreasing height order. All trapped
+      #|water for positions < i that can be bounded on the right is accounted for.
+      #|MAINTENANCE:
+      #|When current bar is taller, pop a "mid" bar and compute water bounded
+      #|by the new top (left) and current bar (right). Each basin is counted once.
+      #|TERMINATION:
+      #|After i = n, all basins with a right boundary are processed.
+    ),
   }
   water
 }
@@ -241,7 +313,16 @@ fn stock_span(prices : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Empty stack. M: Pop smaller/equal prices. If stack empty, span includes all days so far (i+1). Otherwise, span is distance to previous greater. T: All spans computed.",
+    reasoning: (
+      #|INVARIANT (stock span):
+      #|Stack holds indices with strictly greater prices, so the top is the
+      #|nearest previous greater day for the current index.
+      #|MAINTENANCE:
+      #|Pop all days with price <= current; compute span as distance to the
+      #|nearest greater (or i+1 if none), then push i.
+      #|TERMINATION:
+      #|After i = n, each day's span is computed.
+    ),
   }
   span
 }
@@ -280,7 +361,16 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
     stack.push(i)
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Stack is increasing in value for indices in [0,i). M: Pop until a strictly smaller element remains; left[i] is distance to previous smaller (or i+1 if none). Push i to maintain monotonicity. T: left distances are computed for all positions.",
+    reasoning: (
+      #|INVARIANT (left distances):
+      #|Stack stores indices with strictly increasing values for [0, i), so
+      #|the top is the nearest previous smaller element.
+      #|MAINTENANCE:
+      #|Pop until a strictly smaller element remains; set left[i] to the
+      #|distance to that element (or i+1 if none), then push i.
+      #|TERMINATION:
+      #|At i = n, left distances are computed for all positions.
+    ),
   }
 
   // Next smaller or equal (to handle duplicates correctly)
@@ -298,7 +388,16 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
     stack.push(i)
   } where {
     invariant: i >= -1 && i <= n - 1,
-    reasoning: "I: Stack is non-decreasing in value for indices to the right. M: Pop while value > current so top is next smaller-or-equal; right[i] is distance to that index (or to n). Push i. T: right distances are computed for all positions.",
+    reasoning: (
+      #|INVARIANT (right distances):
+      #|Stack stores indices with non-decreasing values to the right of i, so
+      #|the top is the next smaller-or-equal element.
+      #|MAINTENANCE:
+      #|Pop while value > current; set right[i] to the distance to the next
+      #|smaller-or-equal (or to n), then push i.
+      #|TERMINATION:
+      #|At i = -1, right distances are computed for all positions.
+    ),
   }
 
   // Sum contributions
@@ -312,7 +411,15 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
     result = (result + contribution) % mod_val
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: result=0. M: Element arr[i] is minimum for left[i] * right[i] subarrays. Add arr[i] * count to result. T: All element contributions summed.",
+    reasoning: (
+      #|INVARIANT (sum mins):
+      #|result equals the sum of contributions from indices in [0, i). Each
+      #|contribution counts subarrays where arr[i] is the minimum.
+      #|MAINTENANCE:
+      #|Add arr[i] * left[i] * right[i] (mod mod_val) to the running sum.
+      #|TERMINATION:
+      #|At i = n, result is the sum of all subarray minimums.
+    ),
   }
   result
 }
