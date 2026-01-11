@@ -2,6 +2,11 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_btree"
 
 // Values
+pub fn empty() -> Tree
+
+pub fn insert(Tree, Int) -> Tree
+
+pub fn size(Tree) -> Int
 
 // Errors
 
@@ -12,7 +17,10 @@ pub impl Show for BNode
 type InsertResult
 pub impl Show for InsertResult
 
-type Tree
+pub enum Tree {
+  Empty
+  Node(node~ : BNode)
+}
 pub impl Show for Tree
 
 // Type aliases

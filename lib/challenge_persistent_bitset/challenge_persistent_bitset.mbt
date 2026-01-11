@@ -10,7 +10,7 @@ enum Node {
 } derive(Show)
 
 ///|
-struct Bitset {
+pub struct Bitset {
   root : Node
   n : Int
 } derive(Show)
@@ -95,7 +95,7 @@ fn get_bit(node : Node, l : Int, r : Int, idx : Int) -> Int {
 }
 
 ///|
-fn count_range(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
+fn count_range_node(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
   if qr <= l || r <= ql {
     0
   } else if ql <= l && r <= qr {
@@ -105,18 +105,19 @@ fn count_range(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
     match node {
       Node::Leaf(count=_) => node_count(node)
       Node::Branch(left~, right~, count=_) =>
-        count_range(left, l, mid, ql, qr) + count_range(right, mid, r, ql, qr)
+        count_range_node(left, l, mid, ql, qr) +
+        count_range_node(right, mid, r, ql, qr)
     }
   }
 }
 
 ///|
-fn make(n : Int) -> Bitset {
+pub fn make(n : Int) -> Bitset {
   { root: build_zero(0, n), n }
 }
 
 ///|
-fn set(bs : Bitset, idx : Int, value : Int) -> Bitset {
+pub fn set(bs : Bitset, idx : Int, value : Int) -> Bitset {
   if idx < 0 || idx >= bs.n {
     bs
   } else {
@@ -125,7 +126,7 @@ fn set(bs : Bitset, idx : Int, value : Int) -> Bitset {
 }
 
 ///|
-fn get(bs : Bitset, idx : Int) -> Int {
+pub fn get(bs : Bitset, idx : Int) -> Int {
   if idx < 0 || idx >= bs.n {
     0
   } else {
@@ -134,9 +135,19 @@ fn get(bs : Bitset, idx : Int) -> Int {
 }
 
 ///|
+pub fn length(bs : Bitset) -> Int {
+  bs.n
+}
+
+///|
+pub fn count_range(bs : Bitset, ql : Int, qr : Int) -> Int {
+  count_range_node(bs.root, 0, bs.n, ql, qr)
+}
+
+///|
 /// Build a bitset by setting indices to 1.
 #warnings("+missing_invariant+missing_reasoning")
-fn from_indices(n : Int, idxs : ArrayView[Int]) -> Bitset {
+pub fn from_indices(n : Int, idxs : ArrayView[Int]) -> Bitset {
   let m = idxs.length()
   for i = 0, bs = make(n) {
     if i >= m {
@@ -165,7 +176,7 @@ test "persistent_bitset" {
   let bs2 = set(bs1, 5, 1)
   assert_eq(get(bs2, 2), 1)
   assert_eq(get(bs2, 3), 0)
-  assert_eq(count_range(bs2.root, 0, bs2.n, 0, 6), 2)
+  assert_eq(count_range(bs2, 0, 6), 2)
   let built : Bitset = from_indices(8, [1, 4, 7][:])
-  assert_eq(count_range(built.root, 0, built.n, 0, 8), 3)
+  assert_eq(count_range(built, 0, 8), 3)
 }

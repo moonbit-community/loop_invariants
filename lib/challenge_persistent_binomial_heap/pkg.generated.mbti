@@ -2,11 +2,22 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_binomial_heap"
 
 // Values
+pub fn delete_min(Heap) -> Heap?
+
+pub fn empty() -> Heap
+
+pub fn find_min(Heap) -> Int?
+
+pub fn insert(Heap, Int) -> Heap
+
+pub fn merge(Heap, Heap) -> Heap
 
 // Errors
 
 // Types and methods
-type Heap
+pub struct Heap {
+  trees : Array[Tree?]
+}
 pub impl Show for Heap
 
 type Tree

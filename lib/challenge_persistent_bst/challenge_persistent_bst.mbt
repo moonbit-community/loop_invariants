@@ -4,7 +4,7 @@
 // ============================================================================
 
 ///|
-enum Tree {
+pub enum Tree {
   Empty
   Node(value~ : Int, left~ : Tree, right~ : Tree)
 } derive(Show)
@@ -47,7 +47,17 @@ fn bst_valid(t : Tree) -> Bool {
 }
 
 ///|
-fn insert(t : Tree, value : Int) -> Tree {
+pub fn empty() -> Tree {
+  Tree::Empty
+}
+
+///|
+pub fn size(t : Tree) -> Int {
+  tree_size(t)
+}
+
+///|
+pub fn insert(t : Tree, value : Int) -> Tree {
   match t {
     Tree::Empty => Tree::Node(value~, left=Tree::Empty, right=Tree::Empty)
     Tree::Node(value=v, left=l, right=r) =>
@@ -63,7 +73,7 @@ fn insert(t : Tree, value : Int) -> Tree {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn contains(t : Tree, value : Int) -> Bool {
+pub fn contains(t : Tree, value : Int) -> Bool {
   let none : Int? = None
   for cur = t, lo = none, hi = none {
     match cur {
@@ -96,7 +106,7 @@ fn contains(t : Tree, value : Int) -> Bool {
 ///|
 /// Build a BST by inserting elements in order.
 #warnings("+missing_invariant+missing_reasoning")
-fn from_array(arr : ArrayView[Int]) -> Tree {
+pub fn from_array(arr : ArrayView[Int]) -> Tree {
   let n = arr.length()
   for i = 0, tree = Tree::Empty {
     if i >= n {
@@ -120,7 +130,7 @@ fn from_array(arr : ArrayView[Int]) -> Tree {
 }
 
 ///|
-fn inorder(t : Tree) -> Array[Int] {
+pub fn inorder(t : Tree) -> Array[Int] {
   match t {
     Tree::Empty => []
     Tree::Node(value=v, left=l, right=r) => inorder(l) + [v] + inorder(r)

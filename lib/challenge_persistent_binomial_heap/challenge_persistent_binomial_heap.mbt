@@ -11,7 +11,7 @@ struct Tree {
 } derive(Show)
 
 ///|
-struct Heap {
+pub struct Heap {
   trees : Array[Tree?]
 } derive(Show)
 
@@ -112,6 +112,16 @@ fn merge_heaps(a : Heap, b : Heap) -> Heap {
 }
 
 ///|
+pub fn empty() -> Heap {
+  { trees: [] }
+}
+
+///|
+pub fn merge(a : Heap, b : Heap) -> Heap {
+  merge_heaps(a, b)
+}
+
+///|
 fn max2(a : Int, b : Int) -> Int {
   if a > b {
     a
@@ -127,13 +137,13 @@ fn singleton(value : Int) -> Heap {
 }
 
 ///|
-fn insert(h : Heap, value : Int) -> Heap {
+pub fn insert(h : Heap, value : Int) -> Heap {
   merge_heaps(h, singleton(value))
 }
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn find_min(h : Heap) -> Int? {
+pub fn find_min(h : Heap) -> Int? {
   let len = h.trees.length()
   let none : Int? = None
   for i = 0, best = none {
@@ -170,7 +180,7 @@ fn heap_from_children(children : Array[Tree], rank : Int) -> Heap {
 }
 
 ///|
-fn delete_min(h : Heap) -> Heap? {
+pub fn delete_min(h : Heap) -> Heap? {
   let len = h.trees.length()
   let mut min_idx = -1
   let mut min_val = 0

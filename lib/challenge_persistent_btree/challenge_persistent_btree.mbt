@@ -10,7 +10,7 @@ struct BNode {
 } derive(Show)
 
 ///|
-enum Tree {
+pub enum Tree {
   Empty
   Node(node~ : BNode)
 } derive(Show)
@@ -27,13 +27,13 @@ fn is_leaf(node : BNode) -> Bool {
 }
 
 ///|
-fn size(node : BNode) -> Int {
+fn node_size(node : BNode) -> Int {
   if is_leaf(node) {
     node.keys.length()
   } else {
     let mut sum = node.keys.length()
     for child in node.children {
-      sum = sum + size(child)
+      sum = sum + node_size(child)
     }
     sum
   }
@@ -43,7 +43,7 @@ fn size(node : BNode) -> Int {
 fn tree_size(t : Tree) -> Int {
   match t {
     Tree::Empty => 0
-    Tree::Node(node=n) => size(n)
+    Tree::Node(node=n) => node_size(n)
   }
 }
 
@@ -189,7 +189,17 @@ fn insert_node(node : BNode, key : Int) -> InsertResult {
 }
 
 ///|
-fn insert(t : Tree, key : Int) -> Tree {
+pub fn empty() -> Tree {
+  Tree::Empty
+}
+
+///|
+pub fn size(t : Tree) -> Int {
+  tree_size(t)
+}
+
+///|
+pub fn insert(t : Tree, key : Int) -> Tree {
   match t {
     Tree::Empty => Tree::Node(node={ keys: [key], children: [] })
     Tree::Node(node=n) =>

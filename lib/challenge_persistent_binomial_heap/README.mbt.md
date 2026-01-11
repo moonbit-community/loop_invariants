@@ -1,0 +1,20 @@
+# Persistent Binomial Heap
+
+Binomial heap with immutable merges and deletes via path copying.
+
+## Example
+
+```mbt check
+///|
+test "persistent binomial heap" {
+  let h0 = @challenge_persistent_binomial_heap.empty()
+  let h1 = @challenge_persistent_binomial_heap.insert(h0, 4)
+  let h2 = @challenge_persistent_binomial_heap.insert(h1, 1)
+  let h3 = @challenge_persistent_binomial_heap.insert(h2, 7)
+  inspect(@challenge_persistent_binomial_heap.find_min(h3), content="Some(1)")
+  guard @challenge_persistent_binomial_heap.delete_min(h3) is Some(h4) else {
+    fail("expected delete_min")
+  }
+  inspect(@challenge_persistent_binomial_heap.find_min(h4), content="Some(4)")
+}
+```

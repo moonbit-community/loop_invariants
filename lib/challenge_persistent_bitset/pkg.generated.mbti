@@ -2,11 +2,25 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_bitset"
 
 // Values
+pub fn count_range(Bitset, Int, Int) -> Int
+
+pub fn from_indices(Int, ArrayView[Int]) -> Bitset
+
+pub fn get(Bitset, Int) -> Int
+
+pub fn length(Bitset) -> Int
+
+pub fn make(Int) -> Bitset
+
+pub fn set(Bitset, Int, Int) -> Bitset
 
 // Errors
 
 // Types and methods
-type Bitset
+pub struct Bitset {
+  root : Node
+  n : Int
+}
 pub impl Show for Bitset
 
 type Node

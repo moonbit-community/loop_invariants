@@ -10,7 +10,7 @@ enum Stack[T] {
 } derive(Show)
 
 ///|
-struct Deque[T] {
+pub struct Deque[T] {
   front : Stack[T]
   back : Stack[T]
 } derive(Show)
@@ -24,7 +24,7 @@ fn[T] size_stack(s : Stack[T]) -> Int {
 }
 
 ///|
-fn[T] size(d : Deque[T]) -> Int {
+pub fn[T] size(d : Deque[T]) -> Int {
   size_stack(d.front) + size_stack(d.back)
 }
 
@@ -66,22 +66,22 @@ fn[T] normalize_back(d : Deque[T]) -> Deque[T] {
 }
 
 ///|
-fn[T] empty() -> Deque[T] {
+pub fn[T] empty() -> Deque[T] {
   { front: Stack::Nil, back: Stack::Nil }
 }
 
 ///|
-fn[T] push_front(d : Deque[T], value : T) -> Deque[T] {
+pub fn[T] push_front(d : Deque[T], value : T) -> Deque[T] {
   { front: Stack::Cons(head=value, tail=d.front), back: d.back }
 }
 
 ///|
-fn[T] push_back(d : Deque[T], value : T) -> Deque[T] {
+pub fn[T] push_back(d : Deque[T], value : T) -> Deque[T] {
   { front: d.front, back: Stack::Cons(head=value, tail=d.back) }
 }
 
 ///|
-fn[T] peek_front(d : Deque[T]) -> T? {
+pub fn[T] peek_front(d : Deque[T]) -> T? {
   let norm = normalize_front(d)
   match norm.front {
     Stack::Nil => None
@@ -90,7 +90,7 @@ fn[T] peek_front(d : Deque[T]) -> T? {
 }
 
 ///|
-fn[T] peek_back(d : Deque[T]) -> T? {
+pub fn[T] peek_back(d : Deque[T]) -> T? {
   let norm = normalize_back(d)
   match norm.back {
     Stack::Nil => None
@@ -99,7 +99,7 @@ fn[T] peek_back(d : Deque[T]) -> T? {
 }
 
 ///|
-fn[T] pop_front(d : Deque[T]) -> (T, Deque[T])? {
+pub fn[T] pop_front(d : Deque[T]) -> (T, Deque[T])? {
   let norm = normalize_front(d)
   match norm.front {
     Stack::Nil => None
@@ -108,7 +108,7 @@ fn[T] pop_front(d : Deque[T]) -> (T, Deque[T])? {
 }
 
 ///|
-fn[T] pop_back(d : Deque[T]) -> (T, Deque[T])? {
+pub fn[T] pop_back(d : Deque[T]) -> (T, Deque[T])? {
   let norm = normalize_back(d)
   match norm.back {
     Stack::Nil => None

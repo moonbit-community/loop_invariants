@@ -2,11 +2,29 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_deque"
 
 // Values
+pub fn[T] empty() -> Deque[T]
+
+pub fn[T] peek_back(Deque[T]) -> T?
+
+pub fn[T] peek_front(Deque[T]) -> T?
+
+pub fn[T] pop_back(Deque[T]) -> (T, Deque[T])?
+
+pub fn[T] pop_front(Deque[T]) -> (T, Deque[T])?
+
+pub fn[T] push_back(Deque[T], T) -> Deque[T]
+
+pub fn[T] push_front(Deque[T], T) -> Deque[T]
+
+pub fn[T] size(Deque[T]) -> Int
 
 // Errors
 
 // Types and methods
-type Deque[T]
+pub struct Deque[T] {
+  front : Stack[T]
+  back : Stack[T]
+}
 pub impl[T : Show] Show for Deque[T]
 
 type Stack[T]
