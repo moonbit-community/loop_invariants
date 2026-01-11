@@ -41,7 +41,15 @@ fn SuffixArray::new(text : String) -> SuffixArray {
     rank[i] = text[i].to_int()
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Arrays uninitialized. M: Set sa[i] = i (identity) and rank[i] = character code. T: Initial ordering by first character.",
+    reasoning: (
+      #|INVARIANT (initial ranks):
+      #|For all indices in [0, i), sa[j] = j and rank[j] equals the character
+      #|code of text[j]. This is the base ordering by single characters.
+      #|MAINTENANCE:
+      #|Assign sa[i] = i and rank[i] = text[i].to_int().
+      #|TERMINATION:
+      #|At i = n, every suffix has an initial rank from its first character.
+    ),
   }
 
   // Prefix doubling
@@ -75,20 +83,46 @@ fn SuffixArray::new(text : String) -> SuffixArray {
       }
     } where {
       invariant: i >= 1 && i <= n,
-      reasoning: "I: tmp ranks are assigned for sa[0..i). M: Compare adjacent keys and assign same or incremented rank. T: After i = n, tmp holds new ranks for all suffixes.",
+      reasoning: (
+        #|INVARIANT (rank recompute):
+        #|tmp has correct ranks for suffixes in sa[0..i). Equal adjacent keys
+        #|receive the same rank; strictly larger keys advance the rank.
+        #|MAINTENANCE:
+        #|Compare keys at sa[i-1] and sa[i] to decide whether to reuse or
+        #|increment the rank.
+        #|TERMINATION:
+        #|At i = n, tmp assigns a rank to every suffix for 2k-length prefixes.
+      ),
     }
     for i = 0; i < n; i = i + 1 {
       rank[i] = tmp[i]
     } where {
       invariant: i >= 0 && i <= n,
-      reasoning: "I: rank[0..i) updated from tmp. M: Copy tmp into rank. T: After i = n, rank reflects new ordering.",
+      reasoning: (
+        #|INVARIANT (copy ranks):
+        #|rank[0..i) has been updated from tmp, so those positions match the
+        #|new ordering by 2k-length prefixes.
+        #|MAINTENANCE:
+        #|Copy tmp[i] into rank[i].
+        #|TERMINATION:
+        #|At i = n, rank reflects the current suffix ordering for length 2k.
+      ),
     }
     if rank[sa[n - 1]] == n - 1 {
       break
     }
   } where {
     invariant: k >= 1 && k <= n * 2,
-    reasoning: "I: k=1, suffixes sorted by first char. M: Each iteration sorts by first 2k chars. T: When all ranks unique or k >= n, fully sorted.",
+    reasoning: (
+      #|INVARIANT (prefix doubling):
+      #|At the start of each iteration, sa is sorted by the first k characters
+      #|of each suffix and rank encodes that ordering.
+      #|MAINTENANCE:
+      #|Sort by pairs (rank[i], rank[i+k]) to order by the first 2k characters,
+      #|then recompute ranks accordingly.
+      #|TERMINATION:
+      #|If ranks become unique or k >= n, the full suffix order is determined.
+    ),
   }
 
   // Normalize ranks to 0..n-1 range for LCP computation
@@ -98,7 +132,15 @@ fn SuffixArray::new(text : String) -> SuffixArray {
     rank_norm[sa[i]] = i
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: rank_norm assigned for suffixes sa[0..i). M: Set rank_norm[sa[i]] = i. T: After i = n, rank_norm is the inverse permutation of sa.",
+    reasoning: (
+      #|INVARIANT (inverse permutation):
+      #|rank_norm is filled for suffixes in sa[0..i), mapping each suffix
+      #|start position to its order in sa.
+      #|MAINTENANCE:
+      #|Set rank_norm[sa[i]] = i.
+      #|TERMINATION:
+      #|At i = n, rank_norm is the full inverse permutation of sa.
+    ),
   }
 
   // Build LCP array using Kasai's algorithm
@@ -120,7 +162,17 @@ fn SuffixArray::new(text : String) -> SuffixArray {
     continue i + 1, curr_h
   } where {
     invariant: i >= 0 && i <= n && h >= 0,
-    reasoning: "I: i=0, h=0. M: For suffix at i, compute LCP with predecessor in sorted order. Key: LCP decreases by at most 1 between consecutive text positions. T: O(n) total.",
+    reasoning: (
+      #|INVARIANT (Kasai):
+      #|For all positions < i, lcp is correctly computed. h equals the LCP
+      #|length to reuse for the next suffix, bounded below by 0.
+      #|MAINTENANCE:
+      #|Compute LCP of suffix i with its predecessor in sa by extending from h.
+      #|Then decrement h by at most 1, using the property that LCP drops by at
+      #|most 1 between consecutive suffixes in text order.
+      #|TERMINATION:
+      #|At i = n, all LCP values are computed in total O(n) comparisons.
+    ),
   }
   { sa, lcp, text }
 }
@@ -184,7 +236,16 @@ fn compare_suffix(text : String, start : Int, pattern : String) -> Int {
     }
   } where {
     invariant: i >= 0 && i <= m,
-    reasoning: "I: text[start..start+i) matches pattern[0..i). M: Compare next character and return on first mismatch. T: After i = m, pattern matches prefix of suffix.",
+    reasoning: (
+      #|INVARIANT (suffix compare):
+      #|text[start..start+i) matches pattern[0..i). The comparison is decided
+      #|by the first mismatch.
+      #|MAINTENANCE:
+      #|Compare the next characters and return immediately on mismatch.
+      #|TERMINATION:
+      #|At i = m, pattern is a prefix of the suffix, so they compare equal up
+      #|to length m.
+    ),
   }
   0
 }
@@ -202,7 +263,14 @@ fn starts_with(text : String, start : Int, pattern : String) -> Bool {
     }
   } where {
     invariant: i >= 0 && i <= m,
-    reasoning: "I: text[start..start+i) matches pattern[0..i). M: Compare next character. T: After i = m, full pattern matches.",
+    reasoning: (
+      #|INVARIANT (prefix match):
+      #|text[start..start+i) matches pattern[0..i).
+      #|MAINTENANCE:
+      #|Compare the next character and fail on mismatch.
+      #|TERMINATION:
+      #|At i = m, the full pattern matches the suffix prefix.
+    ),
   }
   true
 }
@@ -217,7 +285,14 @@ fn SuffixArray::find_all(self : SuffixArray, pattern : String) -> Array[Int] {
         result.push(self.sa[i])
       } where {
         invariant: i >= first && i <= last + 1,
-        reasoning: "I: result holds matches from sa[first..i). M: Append sa[i] for each match range. T: After i = last+1, all matching suffix indices are collected.",
+        reasoning: (
+          #|INVARIANT (collect matches):
+          #|result contains sa indices for matches in sa[first..i).
+          #|MAINTENANCE:
+          #|Append sa[i] for each suffix in the matching range.
+          #|TERMINATION:
+          #|At i = last + 1, all matching suffix indices are collected.
+        ),
       }
       result.sort_by(fn(a, b) { a - b })
       result
@@ -248,7 +323,15 @@ fn SuffixArray::longest_repeated_substring(self : SuffixArray) -> String {
     }
   } where {
     invariant: i >= 1 && i <= n,
-    reasoning: "I: max_lcp=0. M: Track maximum LCP. T: After loop, max_idx has longest repeated.",
+    reasoning: (
+      #|INVARIANT (max LCP):
+      #|max_lcp is the maximum LCP among indices in [1, i), and max_idx
+      #|records where that maximum occurs.
+      #|MAINTENANCE:
+      #|Update max_lcp and max_idx when a larger LCP is found.
+      #|TERMINATION:
+      #|At i = n, max_lcp identifies the longest repeated substring.
+    ),
   }
   if max_lcp == 0 {
     return ""
@@ -268,7 +351,15 @@ fn SuffixArray::count_distinct_substrings(self : SuffixArray) -> Int64 {
     total = total - self.lcp[i].to_int64()
   } where {
     invariant: i >= 1 && i <= n,
-    reasoning: "I: total = n(n+1)/2. M: Subtract overlapping prefixes. T: Count of distinct substrings.",
+    reasoning: (
+      #|INVARIANT (distinct count):
+      #|total equals n(n+1)/2 minus the sum of lcp[1..i). Each LCP counts
+      #|overlapping prefixes between adjacent suffixes.
+      #|MAINTENANCE:
+      #|Subtract lcp[i] to remove duplicate substrings introduced by sa[i].
+      #|TERMINATION:
+      #|At i = n, total is the number of distinct substrings.
+    ),
   }
   total
 }
