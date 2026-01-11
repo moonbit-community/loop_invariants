@@ -216,6 +216,10 @@ fn matrix_mult_3x3(
               #|INVARIANT (Dot product):
               #|acc = Σ_{t < k} a[i,t] * b[t,j] (mod modulo).
               #|After k reaches 3, acc is the full inner product for cell (i,j).
+              #|MAINTENANCE:
+              #|Add the term a[i,k] * b[k,j] to acc, extending the partial sum.
+              #|TERMINATION:
+              #|At k = 3, all three terms are included, so acc is complete.
             ),
           }
           result[i * 3 + j] = sum
@@ -228,6 +232,10 @@ fn matrix_mult_3x3(
           #|After processing columns [0..j), result[i,*] is correct for those
           #|columns. Each column j computes the dot product of row i and
           #|column j of the right matrix.
+          #|MAINTENANCE:
+          #|Compute column j and store it in result, extending the row prefix.
+          #|TERMINATION:
+          #|At j = 3, the entire row i is filled.
         ),
       }
       continue i + 1
@@ -238,6 +246,10 @@ fn matrix_mult_3x3(
       #|INVARIANT (Matrix fill):
       #|After processing rows [0..i), all entries in those rows are computed.
       #|This is the standard triple-loop matrix multiplication.
+      #|MAINTENANCE:
+      #|Finish row i, then advance to i+1 with all prior rows fixed.
+      #|TERMINATION:
+      #|At i = 3, all rows are complete.
     ),
   }
   result
@@ -265,6 +277,11 @@ fn matrix_pow_3x3(m : Array[Int64], p : Int64, modulo : Int64) -> Array[Int64] {
       #|This is the same binary exponentiation invariant as the 2x2 case.
       #|Associativity of 3x3 multiplication ensures regrouping is valid,
       #|so halving power and squaring matrix preserves the equation.
+      #|MAINTENANCE:
+      #|If power is odd, move one factor of matrix into result and square
+      #|matrix; if even, only square matrix. The invariant is preserved.
+      #|TERMINATION:
+      #|At power = 0, result equals M^original_p.
     ),
   }
 }
@@ -356,6 +373,10 @@ fn count_paths(
                 #|INVARIANT (Dot product):
                 #|acc = Σ_{t < kk} a[i,t] * b[t,j] (mod modulo).
                 #|After kk reaches n, acc is the full inner product for (i,j).
+                #|MAINTENANCE:
+                #|Add the next term a[i,kk] * b[kk,j] to acc, extending the sum.
+                #|TERMINATION:
+                #|At kk = n, the full dot product is accumulated.
               ),
             }
             result[i * n + j] = sum
@@ -367,6 +388,10 @@ fn count_paths(
             #|INVARIANT (Row fill):
             #|After processing columns [0..j), result[i,*] is correct for those
             #|columns. Each column j computes a full dot product.
+            #|MAINTENANCE:
+            #|Compute column j and store it, extending the computed prefix.
+            #|TERMINATION:
+            #|At j = n, the entire row i is complete.
           ),
         }
         continue i + 1
@@ -378,6 +403,10 @@ fn count_paths(
         #|After processing rows [0..i), every entry result[r,c] for r < i
         #|matches the matrix product of a and b. The inner loops compute each
         #|row by full dot products, so the outer loop accumulates completed rows.
+        #|MAINTENANCE:
+        #|Finish row i, then move to the next row with previous rows fixed.
+        #|TERMINATION:
+        #|At i = n, the full n×n product is computed.
       ),
     }
     result
@@ -397,6 +426,10 @@ fn count_paths(
       #|INVARIANT (Identity build):
       #|After processing rows [0..i), identity has 1s on the diagonal entries
       #|(t,t) for t < i and 0s elsewhere.
+      #|MAINTENANCE:
+      #|Set identity[i,i] = 1, extending the diagonal prefix.
+      #|TERMINATION:
+      #|At i = n, identity is the full n×n identity matrix.
     ),
   }
   // Matrix exponentiation
@@ -419,6 +452,11 @@ fn count_paths(
       #|of length t from i to j. Binary exponentiation preserves this
       #|because matrix multiplication composes path lengths:
       #|A^a · A^b = A^(a+b).
+      #|MAINTENANCE:
+      #|If power is odd, multiply result by matrix, then square matrix and
+      #|halve power; if even, only square matrix and halve power.
+      #|TERMINATION:
+      #|At power = 0, result equals A^original_k and encodes path counts.
     ),
   }
 }
@@ -507,6 +545,11 @@ fn matrix_chain_order(dims : ArrayView[Int]) -> Int {
               #|- m[i,k]: cost to compute A_i...A_k (dimensions d_i × d_{k+1})
               #|- m[k+1,j]: cost to compute A_{k+1}...A_j (dimensions d_{k+1} × d_{j+1})
               #|- d_i·d_{k+1}·d_{j+1}: cost to multiply the two results
+              #|MAINTENANCE:
+              #|Evaluate split at k and update m[i,j] if it improves the best
+              #|cost seen so far, extending the min over [i..k].
+              #|TERMINATION:
+              #|At k = j, all split points have been considered, so m[i,j] is optimal.
             ),
           }
           continue i + 1
@@ -517,6 +560,11 @@ fn matrix_chain_order(dims : ArrayView[Int]) -> Int {
           #|Processing all chains of length len starting at position i.
           #|By the time we process m[i,j], all subproblems m[i,k] and m[k+1,j]
           #|for k in [i,j) have already been computed (shorter chains).
+          #|MAINTENANCE:
+          #|Compute m[i,j] using completed subproblems, then advance i to the
+          #|next chain start of the same length.
+          #|TERMINATION:
+          #|At i + len > n, all chains of this length are processed.
         ),
       }
       continue len + 1
@@ -532,6 +580,11 @@ fn matrix_chain_order(dims : ArrayView[Int]) -> Int {
       #|parenthesizations of A_i...A_k and A_{k+1}...A_j for some k.
       #|
       #|COMPLEXITY: O(n³) time, O(n²) space
+      #|MAINTENANCE:
+      #|Using all chains of length len to compute length len+1 preserves the
+      #|invariant for the next iteration.
+      #|TERMINATION:
+      #|At len = n + 1, all chain lengths up to n are processed.
     ),
   }
   m[0 * n + (n - 1)]
