@@ -132,6 +132,11 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
             #|REDIRECT INVARIANT: We redirect transitions from q to clone
             #|for all states on suffix chain where trans[c] == q.
             #|This maintains endpos equivalence classes correctly.
+            #|MAINTENANCE:
+            #|Each step rewires one transition along the suffix chain, so all
+            #|processed states now point to clone instead of q.
+            #|TERMINATION:
+            #|The loop ends when no further state on the chain has trans[c] == q.
           ),
         }
       }
@@ -147,6 +152,11 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
       #|
       #|CORRECTNESS: This ensures all new suffixes are reachable
       #|EFFICIENCY: Amortized O(1) per character
+      #|MAINTENANCE:
+      #|Adding transitions while walking suffix links preserves the SAM
+      #|property that all suffixes of the current string are represented.
+      #|TERMINATION:
+      #|p follows suffix links and strictly decreases in length until -1.
     ),
   }
   self.last = cur
@@ -188,6 +198,11 @@ fn SuffixAutomaton::contains(self : SuffixAutomaton, pattern : String) -> Bool {
       #|1. state is always valid (transitions lead to valid states)
       #|2. If we process all characters, pattern is a substring
       #|3. SAM accepts exactly all substrings of original text
+      #|MAINTENANCE:
+      #|Each transition consumes one character and advances the automaton
+      #|state according to the SAM transition function.
+      #|TERMINATION:
+      #|When i reaches pattern.length(), all characters are matched.
     ),
   }
 }
@@ -210,6 +225,10 @@ fn SuffixAutomaton::count_distinct_substrings(self : SuffixAutomaton) -> Int {
       #|Each state contributes (len - link.len) distinct substrings.
       #|These are the strings unique to this equivalence class.
       #|Sum over all states = total distinct substrings.
+      #|MAINTENANCE:
+      #|Adding each state's contribution accumulates the total count so far.
+      #|TERMINATION:
+      #|At i == states.length(), count is the total distinct substrings.
     ),
   }
 }
