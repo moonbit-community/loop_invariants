@@ -868,8 +868,13 @@ fn max_count_segment_tree_build(arr : ArrayView[Int]) -> MaxCountSegmentTree {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|LOOP INVARIANT: tree[n..n+i] contains leaf nodes for arr[0..i]
-      #|Each leaf has count=1 since it represents exactly one element.
+      #|INVARIANT (build leaves):
+      #|tree[n..n+i) contains leaf nodes for arr[0..i); each has count=1 because
+      #|it represents exactly one element.
+      #|MAINTENANCE:
+      #|Store arr[i] at tree[n+i], extending the leaf range by one.
+      #|TERMINATION:
+      #|At i == n, all leaves for arr[0..n) are initialized.
     ),
   }
 
@@ -879,8 +884,12 @@ fn max_count_segment_tree_build(arr : ArrayView[Int]) -> MaxCountSegmentTree {
   } where {
     invariant: i >= 0 && i < n,
     reasoning: (
-      #|LOOP INVARIANT: tree[i+1..n] are correctly computed
-      #|The combine operation correctly merges max and count.
+      #|INVARIANT (build internal):
+      #|Nodes tree[i+1..n) have been computed from their children.
+      #|MAINTENANCE:
+      #|Compute tree[i] from children 2*i and 2*i+1, extending the built range.
+      #|TERMINATION:
+      #|At i == 0, all internal nodes (including root) are computed.
     ),
   }
   { n, tree }
@@ -912,8 +921,14 @@ fn MaxCountSegmentTree::range_query(
   } where {
     invariant: l >= 0 && r >= 0,
     reasoning: (
-      #|LOOP INVARIANT: result contains (max, count) for processed elements
-      #|Same structure as iterative sum query, but with different combine.
+      #|INVARIANT (range query):
+      #|result combines all segments fully processed so far; [l, r) encodes the
+      #|remaining range in the implicit tree.
+      #|MAINTENANCE:
+      #|If l is a right child, merge tree[l] and increment l; if r is a right
+      #|boundary, decrement r and merge tree[r-1], then move to parents.
+      #|TERMINATION:
+      #|When l >= r, result covers the entire query range [ql, qr).
     ),
   }
 }
@@ -1126,8 +1141,14 @@ fn SegmentTree2D::range_sum(
   } where {
     invariant: row_l >= 0 && row_r >= 0,
     reasoning: (
-      #|LOOP INVARIANT: Standard iterative segment tree query on rows
-      #|For each processed row, we query columns [c1, c2) using col_sum.
+      #|INVARIANT (2D row query):
+      #|result is the sum of processed row segments; [row_l, row_r) represents
+      #|the remaining rows in the implicit tree.
+      #|MAINTENANCE:
+      #|Add col_sum for row_l or row_r-1 when they are right boundaries, then
+      #|move to parent indices.
+      #|TERMINATION:
+      #|When row_l >= row_r, result is the sum over rows [r1, r2).
     ),
   }
 }
@@ -1158,7 +1179,13 @@ fn SegmentTree2D::col_sum(
   } where {
     invariant: l >= 0 && r >= 0,
     reasoning: (
-      #|LOOP INVARIANT: Standard iterative segment tree query on columns
+      #|INVARIANT (2D col query):
+      #|result sums processed column segments; [l, r) is the remaining range.
+      #|MAINTENANCE:
+      #|If l is a right child, add tree[row][l] and increment l; if r is a right
+      #|boundary, decrement r and add tree[row][r-1], then move up.
+      #|TERMINATION:
+      #|When l >= r, result is the sum over columns [c1, c2) for this row.
     ),
   }
 }

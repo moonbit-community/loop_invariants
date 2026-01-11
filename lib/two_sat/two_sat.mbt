@@ -212,8 +212,14 @@ fn dfs1(
   } where {
     invariant: i >= 0 && i <= adj[u].length(),
     reasoning: (
-      #|All neighbors adj[u][0..i) have been processed; any unvisited neighbor
-      #|has been fully explored and added to order before returning.
+      #|INVARIANT (dfs1):
+      #|All neighbors adj[u][0..i) have been explored; any unvisited neighbor
+      #|has been fully DFS-visited and added to order before returning.
+      #|MAINTENANCE:
+      #|If adj[u][i] is unvisited, recurse; its subtree is added to order, then
+      #|advance i.
+      #|TERMINATION:
+      #|After i reaches adj[u].length(), all outgoing edges from u are processed.
     ),
   }
   order.push(u) // Post-order
@@ -235,7 +241,13 @@ fn dfs2(
   } where {
     invariant: i >= 0 && i <= radj[u].length(),
     reasoning: (
-      #|All reverse edges radj[u][0..i) have been explored for this SCC.
+      #|INVARIANT (dfs2):
+      #|All neighbors radj[u][0..i) reachable in the reverse graph are assigned
+      #|to scc_id; comp is set for their subtrees.
+      #|MAINTENANCE:
+      #|If radj[u][i] is unassigned, recurse to label its component.
+      #|TERMINATION:
+      #|After i reaches radj[u].length(), all reverse edges from u are handled.
     ),
   }
 }
@@ -264,14 +276,25 @@ fn TwoSat::verify(self : TwoSat, assignment : Array[Bool]) -> Bool {
       } where {
         invariant: i >= 0 && i <= self.adj[u].length(),
         reasoning: (
-          #|All implications from u to adj[u][0..i) are satisfied by assignment.
+          #|INVARIANT (verify implications):
+          #|All implications u -> adj[u][0..i) are satisfied by assignment.
+          #|MAINTENANCE:
+          #|Compute val_v for adj[u][i]; if false, return false, otherwise
+          #|advance i.
+          #|TERMINATION:
+          #|If all edges are checked, every implication from u is satisfied.
         ),
       }
     }
   } where {
     invariant: u >= 0 && u <= 2 * self.n,
     reasoning: (
+      #|INVARIANT (verify all nodes):
       #|All implication nodes in [0..u) have been validated against assignment.
+      #|MAINTENANCE:
+      #|If val_u is true, check all outgoing implications; otherwise skip.
+      #|TERMINATION:
+      #|At u == 2 * n, every implication is satisfied by assignment.
     ),
   }
   true

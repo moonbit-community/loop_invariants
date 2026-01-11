@@ -355,6 +355,11 @@ fn sprague_grundy_simple(n : Int) -> Int {
       #|  sg(3) = mex({0,1,2}) = 3
       #|  sg(4) = mex({1,2,3}) = 0
       #|  Pattern: sg(n) = n mod 4
+      #|MAINTENANCE:
+      #|Compute reachable SG values for position i, then set sg[i] = mex of
+      #|those values, extending the prefix by one.
+      #|TERMINATION:
+      #|At i == n + 1, sg[0..n] is computed; return sg[n].
     ),
   }
   sg[n]
@@ -378,7 +383,13 @@ fn mex(values : ArrayView[Int]) -> Int {
   } where {
     invariant: i >= 0 && i <= present.length(),
     reasoning: (
-      #|Find the smallest non-negative integer not in the set
+      #|INVARIANT (mex):
+      #|All indices in [0..i) have been checked; if present[j] is false, we
+      #|would have already returned that j as the mex.
+      #|MAINTENANCE:
+      #|If present[i] is true, advance; otherwise return i immediately.
+      #|TERMINATION:
+      #|If no false entry exists, mex is present.length().
     ),
   }
 }
@@ -440,15 +451,24 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
     } where {
       invariant: j >= i + 1 && j <= n,
       reasoning: (
-        #|Compare nums[i] with all later elements to update max_xor.
+        #|INVARIANT (max xor inner):
+        #|max_xor is the maximum XOR among pairs (i, k) for k in [i+1, j).
+        #|MAINTENANCE:
+        #|Compare nums[i] with nums[j] and update max_xor, then advance j.
+        #|TERMINATION:
+        #|At j == n, all pairs starting at i have been considered.
       ),
     }
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|LOOP INVARIANT: max_xor = maximum XOR of pairs in nums[0..i] with any nums[j] for j > pair_index
-      #|
-      #|This brute force is O(n^2). A trie-based solution achieves O(n * 32).
+      #|INVARIANT (max xor outer):
+      #|max_xor is the maximum XOR among all pairs with first index < i.
+      #|MAINTENANCE:
+      #|The inner loop updates max_xor for pairs starting at i, extending the
+      #|range of covered pairs.
+      #|TERMINATION:
+      #|At i == n, all pairs have been considered; max_xor is global.
     ),
   }
   max_xor
@@ -485,7 +505,12 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
     } where {
       invariant: multiple >= 1 && temp >= dvs,
       reasoning: (
-        #|Double temp and multiple until temp > dvd/2
+        #|INVARIANT (doubling step):
+        #|temp == dvs * multiple and temp <= dvd; multiple is a power of two.
+        #|MAINTENANCE:
+        #|Double temp and multiple while the next double still fits in dvd.
+        #|TERMINATION:
+        #|When the loop ends, temp is the largest power-of-two multiple <= dvd.
       ),
     }
     dvd = dvd - temp
@@ -499,10 +524,13 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
   } where {
     invariant: dvd >= 0,
     reasoning: (
-      #|LOOP INVARIANT: quotient * divisor + dvd = original dividend
-      #|
-      #|Each iteration finds the largest power-of-2 multiple of divisor
-      #|that can be subtracted from dvd. This achieves O(log n) iterations.
+      #|INVARIANT (division):
+      #|quotient * dvs + dvd equals the absolute original dividend.
+      #|MAINTENANCE:
+      #|Subtract the largest power-of-two multiple temp from dvd and add the
+      #|corresponding multiple to quotient.
+      #|TERMINATION:
+      #|When dvd < dvs, quotient is the final integer division result.
     ),
   }
 }
