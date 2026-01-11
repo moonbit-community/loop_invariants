@@ -1,6 +1,6 @@
 {
   "name": "bobzhang/loop_invariants",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "readme": "README.mbt.md",
   "repository": "https://github.com/bobzhang/loop_invariants",
   "license": "Apache-2.0",
