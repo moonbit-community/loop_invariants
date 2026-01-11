@@ -117,17 +117,29 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
     reasoning: (
       #|INVARIANT 1 (Bounds): i iterates through [0, n], and deque pointers stay
       #|within a valid slice of the backing array.
+      #|MAINTENANCE:
+      #|Each iteration increments i by 1; deque operations keep indices in [0, i].
+      #|TERMINATION:
+      #|At i = n, all positions are processed.
     ),
     invariant: dq.front >= 0 && dq.back >= dq.front && dq.back <= i,
     reasoning: (
       #|INVARIANT 2 (Deque indices): front/back delimit a valid slice of dq.data
       #|containing indices from the processed prefix [0, i).
+      #|MAINTENANCE:
+      #|Pop operations move the slice inward; push_back appends the new index i.
+      #|TERMINATION:
+      #|At loop end, deque indices refer only to processed elements.
     ),
     invariant: dq.is_empty() ||
     (dq.peek_front() >= i - k && dq.peek_front() <= i - 1),
     reasoning: (
       #|INVARIANT 3 (Window membership): if deque is non-empty, its front index
       #|lies inside the current window for prefix [0, i): [i-k, i-1].
+      #|MAINTENANCE:
+      #|Pop_front removes indices < i-k before using the front.
+      #|TERMINATION:
+      #|At i = n, the front belongs to the last window.
     ),
     invariant: result.length() == (if i >= k { i - k + 1 } else { 0 }),
     reasoning: (
@@ -185,17 +197,29 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
     reasoning: (
       #|INVARIANT 1 (Bounds): i advances through [0, n], deque pointers stay
       #|within a valid slice of the backing array.
+      #|MAINTENANCE:
+      #|Increment i by 1; deque operations keep indices within [0, i].
+      #|TERMINATION:
+      #|At i = n, all positions are processed.
     ),
     invariant: dq.front >= 0 && dq.back >= dq.front && dq.back <= i,
     reasoning: (
       #|INVARIANT 2 (Deque indices): front/back delimit a valid slice of dq.data
       #|containing indices from the processed prefix [0, i).
+      #|MAINTENANCE:
+      #|Pop operations move the slice inward; push_back appends the new index i.
+      #|TERMINATION:
+      #|At loop end, deque indices refer only to processed elements.
     ),
     invariant: dq.is_empty() ||
     (dq.peek_front() >= i - k && dq.peek_front() <= i - 1),
     reasoning: (
       #|INVARIANT 3 (Window membership): if deque is non-empty, its front index
       #|lies inside the current window for prefix [0, i): [i-k, i-1].
+      #|MAINTENANCE:
+      #|Pop_front removes indices < i-k before using the front.
+      #|TERMINATION:
+      #|At i = n, the front belongs to the last window.
     ),
     invariant: result.length() == (if i >= k { i - k + 1 } else { 0 }),
     reasoning: (
@@ -277,6 +301,10 @@ fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
     reasoning: (
       #|INVARIANT 1 (Bounds): left/right stay within [0, n] with at most one-step
       #|gap when the window becomes empty.
+      #|MAINTENANCE:
+      #|right increments each step; left only moves forward during shrinking.
+      #|TERMINATION:
+      #|At right = n, all elements have been processed.
     ),
     invariant: max_len >= 0 && max_len <= right,
     reasoning: (
@@ -324,6 +352,10 @@ fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int {
     reasoning: (
       #|INVARIANT 1 (Bounds): left/right stay within [0, n] with at most one-step
       #|gap when the window becomes empty.
+      #|MAINTENANCE:
+      #|right increments each step; left only moves forward during shrinking.
+      #|TERMINATION:
+      #|At right = n, all elements have been processed.
     ),
     invariant: min_len >= 1 && min_len <= n + 1,
     reasoning: (

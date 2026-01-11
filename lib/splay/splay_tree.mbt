@@ -281,7 +281,12 @@ fn SplayTree::find_min(self : SplayTree, x : Int) -> Int {
   } where {
     invariant: node >= 0,
     reasoning: (
-      #|FIND MIN INVARIANT: Minimum is always in leftmost position
+      #|FIND MIN INVARIANT:
+      #|node remains on the left spine toward the minimum.
+      #|MAINTENANCE:
+      #|Move to the left child while it exists.
+      #|TERMINATION:
+      #|When left is absent, node is the minimum.
     ),
   }
 }
@@ -301,7 +306,12 @@ fn SplayTree::find_max(self : SplayTree, x : Int) -> Int {
   } where {
     invariant: node >= 0,
     reasoning: (
-      #|FIND MAX INVARIANT: Maximum is always in rightmost position
+      #|FIND MAX INVARIANT:
+      #|node remains on the right spine toward the maximum.
+      #|MAINTENANCE:
+      #|Move to the right child while it exists.
+      #|TERMINATION:
+      #|When right is absent, node is the maximum.
     ),
   }
 }
