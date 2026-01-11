@@ -39,17 +39,24 @@ const NTT_ROOT : Int64 = 3L
 ///|
 /// Fast modular exponentiation
 fn mod_pow(base : Int64, exp : Int64, m : Int64) -> Int64 {
-  let mut result = 1L
-  let mut b = base % m
-  let mut e = exp
-  while e > 0L {
-    if e % 2L == 1L {
-      result = result * b % m
-    }
-    b = b * b % m
-    e = e / 2L
+  for e = exp, result = 1L, b = base % m; e > 0L; {
+    let next_result = if e % 2L == 1L { result * b % m } else { result }
+    continue e / 2L, next_result, b * b % m
+  } else {
+    result
+  } where {
+    invariant: e >= 0L,
+    reasoning: (
+      #|INVARIANT (fast exponentiation):
+      #|result * b^e (mod m) equals base^exp (mod m), and b holds the current
+      #|square base for the remaining exponent bits.
+      #|MAINTENANCE:
+      #|If e is odd, multiply result by b; then square b and halve e, preserving
+      #|result * b^e as the original power.
+      #|TERMINATION:
+      #|e halves each step, so it reaches 0 and the loop returns result.
+    ),
   }
-  result
 }
 
 ///|
@@ -87,11 +94,21 @@ priv struct NTT {
 ///|
 fn NTT::new(size : Int) -> NTT {
   // Find smallest power of 2 >= size
-  let mut n = 1
-  let mut log_n = 0
-  while n < size {
-    n = n * 2
-    log_n = log_n + 1
+  let (n, log_n) = for n = 1, log_n = 0; n < size; {
+    continue n * 2, log_n + 1
+  } else {
+    (n, log_n)
+  } where {
+    invariant: n >= 1,
+    invariant: log_n >= 0,
+    reasoning: (
+      #|INVARIANT (power-of-two growth):
+      #|n equals 2^log_n and is the smallest power of two checked so far.
+      #|MAINTENANCE:
+      #|Doubling n and incrementing log_n preserves n = 2^log_n.
+      #|TERMINATION:
+      #|n grows exponentially, so eventually n >= size.
+    ),
   }
   let root = mod_pow(NTT_ROOT, (NTT_MOD - 1L) / n.to_int64(), NTT_MOD)
   let root_inv = mod_pow(root, NTT_MOD - 2L, NTT_MOD)
@@ -119,12 +136,16 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
       #|We only swap when i < j to avoid undoing a previous swap, so each pair
       #|is processed exactly once. This prepares the array for iterative
       #|Cooley-Tukey butterflies.
+      #|MAINTENANCE:
+      #|Processing index i performs at most one swap and preserves the invariant
+      #|for the next prefix.
+      #|TERMINATION:
+      #|At i == n, the permutation is fully applied.
     ),
   }
 
   // Cooley-Tukey NTT
-  let mut len = 2
-  while len <= n {
+  for len = 2; len <= n; {
     let w_base = if inverse { self.root_inv } else { self.root }
     let w = mod_pow(w_base, (n / len).to_int64(), self.mod_val)
     for i = 0; i < n; i = i + len {
@@ -158,7 +179,19 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
         #|At i = n, all blocks for this stage are complete.
       ),
     }
-    len = len * 2
+    continue len * 2
+  } where {
+    invariant: len >= 2 && len <= n * 2,
+    reasoning: (
+      #|INVARIANT (NTT stages):
+      #|len is the current butterfly size; all previous stages with smaller
+      #|sizes have been fully applied to a.
+      #|MAINTENANCE:
+      #|Processing all blocks of size len completes this stage, then doubling
+      #|len advances to the next stage.
+      #|TERMINATION:
+      #|len doubles each step and exceeds n, completing all stages.
+    ),
   }
 
   // For inverse, divide by n
@@ -173,6 +206,10 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
         #|After processing indices [0..i), a[t] has been multiplied by n_inv
         #|to normalize the inverse NTT. When i reaches n, all coefficients are
         #|scaled by 1/n as required.
+        #|MAINTENANCE:
+        #|Multiplying a[i] by n_inv extends the normalized prefix by one.
+        #|TERMINATION:
+        #|At i == n, all coefficients are normalized.
       ),
     }
   }
@@ -232,6 +269,10 @@ fn NTT::multiply(
       #|mod mod_val for all t < i. By the convolution theorem, this is the
       #|NTT of the coefficient-wise convolution. The inverse transform then
       #|recovers the product polynomial.
+      #|MAINTENANCE:
+      #|Multiplying pa[i] by pb[i] extends the point-wise product prefix.
+      #|TERMINATION:
+      #|At i == n, all frequency components are multiplied.
     ),
   }
 
@@ -260,6 +301,10 @@ fn poly_multiply_naive(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
         #|INVARIANT (Inner products):
         #|After processing j, result[i + t] includes contribution from
         #|a[i] * b[t] for all t < j. This accumulates all pairs for fixed i.
+        #|MAINTENANCE:
+        #|Each step adds a[i] * b[j] to result[i + j], extending the prefix.
+        #|TERMINATION:
+        #|At j == b.length(), all products for row i are accumulated.
       ),
     }
   } where {
@@ -269,6 +314,10 @@ fn poly_multiply_naive(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       #|After processing i, result includes contributions from all pairs
       #|a[0..i) * b[*], so each coefficient has the sum of products for
       #|those leading terms.
+      #|MAINTENANCE:
+      #|Completing the inner loop adds all pairs for row i.
+      #|TERMINATION:
+      #|At i == a.length(), all coefficient products are summed.
     ),
   }
   result
@@ -306,6 +355,10 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       #|INVARIANT (Split a):
       #|a_low contains a[0..min(i,half)) and a_high contains a[half..i) for
       #|elements already processed. This partitions a into low/high halves.
+      #|MAINTENANCE:
+      #|Each element a[i] is appended to the appropriate half.
+      #|TERMINATION:
+      #|At i == a.length(), the split is complete.
     ),
   }
   let b_low : Array[Int64] = []
@@ -322,6 +375,10 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       #|INVARIANT (Split b):
       #|b_low contains b[0..min(i,half)) and b_high contains b[half..i)
       #|for processed indices, splitting b into low/high halves.
+      #|MAINTENANCE:
+      #|Each element b[i] is appended to the appropriate half.
+      #|TERMINATION:
+      #|At i == b.length(), the split is complete.
     ),
   }
 
@@ -347,6 +404,10 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       #|INVARIANT (a_low + a_high):
       #|a_sum[0..i) holds the coefficient-wise sum of a_low and a_high,
       #|padding with zeros when one half is shorter.
+      #|MAINTENANCE:
+      #|Each step appends one summed coefficient to a_sum.
+      #|TERMINATION:
+      #|At i == max_low, the summed vector is complete.
     ),
   }
   let max_low_b = if b_low.length() > b_high.length() {
@@ -364,6 +425,10 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       #|INVARIANT (b_low + b_high):
       #|b_sum[0..i) holds the coefficient-wise sum of b_low and b_high,
       #|with zero padding as needed.
+      #|MAINTENANCE:
+      #|Each step appends one summed coefficient to b_sum.
+      #|TERMINATION:
+      #|At i == max_low_b, the summed vector is complete.
     ),
   }
   let z1_full = poly_multiply_karatsuba(a_sum, b_sum)
@@ -379,6 +444,10 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       #|INVARIANT (z0 add):
       #|result[0..i) includes the low-part contribution z0, corresponding to
       #|coefficients of degree < half.
+      #|MAINTENANCE:
+      #|Adding z0[i] extends the low-part contribution by one coefficient.
+      #|TERMINATION:
+      #|At i == z0.length(), all low coefficients are added.
     ),
   }
   for i = 0; i < z1_full.length(); i = i + 1 {
@@ -396,6 +465,10 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       #|INVARIANT (z1 correction):
       #|result[half..half+i) has been updated with z1_full minus z0 and z2,
       #|which isolates the middle coefficients of the Karatsuba combine.
+      #|MAINTENANCE:
+      #|Updating index i extends the corrected middle band by one coefficient.
+      #|TERMINATION:
+      #|At i == z1_full.length(), all middle coefficients are corrected.
     ),
   }
   for i = 0; i < z2.length(); i = i + 1 {
@@ -408,6 +481,10 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       #|INVARIANT (z2 add):
       #|result[2*half..2*half+i) includes the high-part contribution z2,
       #|corresponding to degrees shifted by 2*half.
+      #|MAINTENANCE:
+      #|Adding z2[i] extends the high-part contribution by one coefficient.
+      #|TERMINATION:
+      #|At i == z2.length(), all high coefficients are added.
     ),
   }
   result
