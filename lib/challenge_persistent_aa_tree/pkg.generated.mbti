@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_persistent_aa_tree"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Aa
+pub impl Show for Aa
+
+// Type aliases
+
+// Traits
+

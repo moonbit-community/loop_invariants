@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_persistent_kd_tree"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Kd
+pub impl Show for Kd
+
+type Point
+pub impl Eq for Point
+pub impl Show for Point
+
+// Type aliases
+
+// Traits
+

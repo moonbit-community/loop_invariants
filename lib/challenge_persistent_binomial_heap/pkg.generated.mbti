@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_persistent_binomial_heap"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Heap
+pub impl Show for Heap
+
+type Tree
+pub impl Show for Tree
+
+// Type aliases
+
+// Traits
+
