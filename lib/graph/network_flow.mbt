@@ -25,7 +25,12 @@ fn FlowNetwork::new(n : Int) -> FlowNetwork {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|adj[0..i) initialized as empty adjacency lists.
+      #|INVARIANT (init network):
+      #|adj[0..i) are allocated as empty adjacency lists.
+      #|MAINTENANCE:
+      #|Push a fresh empty list for vertex i.
+      #|TERMINATION:
+      #|At i = n, all adjacency lists are initialized.
     ),
   }
   { adj, n }
@@ -193,7 +198,12 @@ fn DinicNetwork::new(n : Int) -> DinicNetwork {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|adj[0..i) initialized as empty adjacency lists.
+      #|INVARIANT (init dinic):
+      #|adj[0..i) are allocated as empty adjacency lists.
+      #|MAINTENANCE:
+      #|Push a fresh empty list for vertex i.
+      #|TERMINATION:
+      #|At i = n, all adjacency lists are initialized.
     ),
   }
   { adj, level: Array::make(n, -1), iter: Array::make(n, 0), n }
@@ -223,7 +233,12 @@ fn DinicNetwork::bfs_dinic(
   } where {
     invariant: i >= 0 && i <= self.n,
     reasoning: (
-      #|RESET: level[0..i) reset to -1, clearing the previous level graph.
+      #|INVARIANT (reset levels):
+      #|level[0..i) are cleared to -1 from the previous BFS.
+      #|MAINTENANCE:
+      #|Set level[i] = -1 to reset the next node.
+      #|TERMINATION:
+      #|At i = n, all levels are reset.
     ),
   }
   self.level[source] = 0
@@ -301,7 +316,12 @@ fn DinicNetwork::dinic_max_flow(
     } where {
       invariant: i >= 0 && i <= self.n,
       reasoning: (
-        #|Reset per-node edge iterators before building a blocking flow.
+        #|INVARIANT (reset iter):
+        #|iter[0..i) are reset to 0 for the next blocking-flow phase.
+        #|MAINTENANCE:
+        #|Set iter[i] = 0 to restart edge scans from the beginning.
+        #|TERMINATION:
+        #|At i = n, all iterators are reset.
       ),
     }
     let mut pushed = self.dfs_dinic(source, sink, 2147483647)
@@ -351,7 +371,12 @@ fn MCMFNetwork::new(n : Int) -> MCMFNetwork {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|adj[0..i) initialized as empty adjacency lists.
+      #|INVARIANT (init mcmf):
+      #|adj[0..i) are allocated as empty adjacency lists.
+      #|MAINTENANCE:
+      #|Push a fresh empty list for vertex i.
+      #|TERMINATION:
+      #|At i = n, all adjacency lists are initialized.
     ),
   }
   { adj, n }
@@ -392,8 +417,12 @@ fn MCMFNetwork::spfa_mcmf(
   } where {
     invariant: i >= 0 && i <= self.n,
     reasoning: (
-      #|Initialize dist/parent for indices [0..i). All vertices start as
-      #|unreached with no predecessor in the shortest path tree.
+      #|INVARIANT (init SPFA):
+      #|dist/parent for indices [0..i) are reset to inf/None.
+      #|MAINTENANCE:
+      #|Set dist[i] = inf and parent[i] = None for the next vertex.
+      #|TERMINATION:
+      #|At i = n, all vertices are reset for the new shortest-path search.
     ),
   }
   dist[source] = 0
@@ -514,7 +543,12 @@ fn bipartite_matching(
   } where {
     invariant: i >= 0 && i <= left_size,
     reasoning: (
-      #|Source edges added for left vertices [0..i).
+      #|INVARIANT (source edges):
+      #|Edges from source to left vertices [0..i) are added.
+      #|MAINTENANCE:
+      #|Add edge from source to left vertex i with capacity 1.
+      #|TERMINATION:
+      #|At i = left_size, all left vertices are connected to the source.
     ),
   }
   for i = 0; i < right_size; i = i + 1 {
@@ -522,7 +556,12 @@ fn bipartite_matching(
   } where {
     invariant: i >= 0 && i <= right_size,
     reasoning: (
-      #|Sink edges added for right vertices [0..i).
+      #|INVARIANT (sink edges):
+      #|Edges from right vertices [0..i) to sink are added.
+      #|MAINTENANCE:
+      #|Add edge from right vertex i to sink with capacity 1.
+      #|TERMINATION:
+      #|At i = right_size, all right vertices are connected to the sink.
     ),
   }
   for i = 0; i < edges.length(); i = i + 1 {
@@ -531,8 +570,12 @@ fn bipartite_matching(
   } where {
     invariant: i >= 0 && i <= edges.length(),
     reasoning: (
-      #|Building flow network for bipartite matching.
-      #|Max flow = maximum matching size.
+      #|INVARIANT (matching edges):
+      #|Edges[0..i) have been added between corresponding left/right vertices.
+      #|MAINTENANCE:
+      #|Add edge for edges[i] to encode a potential match.
+      #|TERMINATION:
+      #|At i = edges.length(), the flow network encodes the full bipartite graph.
     ),
   }
   network.edmonds_karp(source, sink)
@@ -651,7 +694,12 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
   } where {
     invariant: j >= 1 && j <= m + 1,
     reasoning: (
-      #|total_cost accumulates costs of assigned columns in [1..j).
+      #|INVARIANT (cost sum):
+      #|total_cost equals the sum of costs for assigned columns in [1..j).
+      #|MAINTENANCE:
+      #|If column j is assigned, add its cost; otherwise skip.
+      #|TERMINATION:
+      #|At j = m + 1, total_cost is the full assignment cost.
     ),
   }
   total_cost

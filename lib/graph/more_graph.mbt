@@ -128,14 +128,24 @@ fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
     } where {
       invariant: j >= 0 && j <= n,
       reasoning: (
-        #|row[0..j) has been initialized from adj[i][0..j).
+        #|INVARIANT (init row):
+        #|row[0..j) reflects direct edge weights from adj[i][0..j).
+        #|MAINTENANCE:
+        #|Copy adj[i][j] (or 0 for diagonal) into row[j].
+        #|TERMINATION:
+        #|At j = n, row i is fully initialized.
       ),
     }
     dist.push(row)
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|dist[0..i) rows have been initialized with direct edge weights.
+      #|INVARIANT (init dist):
+      #|dist[0..i) contains direct-edge distances for rows already built.
+      #|MAINTENANCE:
+      #|Create and push the initialized row for index i.
+      #|TERMINATION:
+      #|At i = n, all rows are initialized.
     ),
   }
 
@@ -720,7 +730,12 @@ fn find_root(parent : Array[Int], x : Int) -> Int {
   } where {
     invariant: p >= 0 && p < parent.length(),
     reasoning: (
-      #|Follow parent pointers with path compression
+      #|INVARIANT (find root):
+      #|p is always a valid index on the path from x to its root.
+      #|MAINTENANCE:
+      #|Compress by skipping a parent level, shortening the path.
+      #|TERMINATION:
+      #|When parent[p] == p, p is the root.
     ),
   }
 }
