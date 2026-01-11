@@ -282,12 +282,21 @@ fn gauss_mod(
     } where {
       invariant: i >= row && i <= n,
       reasoning: (
-        #|Search for a non-zero pivot in the current column.
-        #|i advances through candidate rows starting at the current row.
+        #|INVARIANT (pivot search):
+        #|Rows in [row..i) have been checked for a non-zero pivot in column col.
+        #|MAINTENANCE:
+        #|Advance i and test aug[i][col] for a non-zero entry.
+        #|TERMINATION:
+        #|At i = n, no pivot exists in this column.
       ),
       invariant: pivot_row == -1 || (pivot_row >= row && pivot_row < n),
       reasoning: (
-        #|pivot_row is either unset (-1) or points to a valid candidate row.
+        #|INVARIANT (pivot row):
+        #|pivot_row is -1 if no pivot found yet, otherwise a valid row in [row..n).
+        #|MAINTENANCE:
+        #|Set pivot_row only when a non-zero entry is found.
+        #|TERMINATION:
+        #|pivot_row indicates the first suitable pivot row, if any.
       ),
     }
     if pivot_row < 0 {
@@ -308,7 +317,12 @@ fn gauss_mod(
     } where {
       invariant: j >= col && j <= m + 1,
       reasoning: (
-        #|Normalize the pivot row so aug[row][col] becomes 1 in mod p arithmetic.
+        #|INVARIANT (normalize pivot row):
+        #|Entries aug[row][col..j) are scaled so aug[row][col] = 1 in GF(p).
+        #|MAINTENANCE:
+        #|Multiply aug[row][j] by inv to normalize each entry.
+        #|TERMINATION:
+        #|At j = m + 1, the entire row is normalized.
       ),
     }
 
@@ -321,27 +335,45 @@ fn gauss_mod(
         } where {
           invariant: j >= col && j <= m + 1,
           reasoning: (
-            #|Use the normalized pivot row to zero out column col in row i.
-            #|All updates are reduced modulo p.
+            #|INVARIANT (row elimination):
+            #|Entries aug[i][col..j) are updated to eliminate column col.
+            #|MAINTENANCE:
+            #|Subtract factor * pivot_row[j] modulo p for each column j.
+            #|TERMINATION:
+            #|At j = m + 1, row i has column col eliminated.
           ),
         }
       }
     } where {
       invariant: i >= 0 && i <= n,
       reasoning: (
-        #|Eliminate the pivot column across all other rows.
+        #|INVARIANT (column elimination):
+        #|Rows in [0..i) have column col eliminated (except pivot row).
+        #|MAINTENANCE:
+        #|Apply elimination to row i when needed.
+        #|TERMINATION:
+        #|At i = n, column col is eliminated in all non-pivot rows.
       ),
       invariant: aug[row][col] == 1L,
       reasoning: (
-        #|Pivot row is normalized, so the pivot entry remains 1 in GF(p).
+        #|INVARIANT (pivot stays 1):
+        #|The pivot entry aug[row][col] remains 1 throughout elimination.
+        #|MAINTENANCE:
+        #|Row operations on other rows do not modify the pivot row.
+        #|TERMINATION:
+        #|Pivot entry is 1 when moving to the next column.
       ),
     }
     row = row + 1
   } where {
     invariant: 0 <= row && row <= n && 0 <= col && col <= m,
     reasoning: (
-      #|row counts the number of pivot rows found so far; col is the next column.
-      #|Bounds guarantee safe access during elimination.
+      #|INVARIANT (forward elimination):
+      #|row is the number of pivots found; col is the current column being processed.
+      #|MAINTENANCE:
+      #|Each pivot increases row by 1 and moves to the next column.
+      #|TERMINATION:
+      #|At col = m or row = n, elimination is complete.
     ),
   }
 
@@ -353,7 +385,12 @@ fn gauss_mod(
   } where {
     invariant: i >= row && i <= n,
     reasoning: (
-      #|Rows below the last pivot must have zero RHS for consistency.
+      #|INVARIANT (consistency check):
+      #|All checked rows in [row..i) have zero RHS for a zero coefficient row.
+      #|MAINTENANCE:
+      #|Inspect aug[i][m] to ensure no contradiction appears.
+      #|TERMINATION:
+      #|At i = n, the system is consistent if no contradiction was found.
     ),
   }
 
@@ -368,13 +405,23 @@ fn gauss_mod(
     } where {
       invariant: j >= 0 && j <= m,
       reasoning: (
-        #|Scan row i to locate its pivot column in GF(p).
+        #|INVARIANT (pivot scan):
+        #|Columns in [0..j) have been checked for the pivot in row i.
+        #|MAINTENANCE:
+        #|Advance j until the leading 1 is found.
+        #|TERMINATION:
+        #|At j = m, the pivot is found or the row is all zeros.
       ),
     }
   } where {
     invariant: i >= 0 && i <= row && i <= m,
     reasoning: (
-      #|Each pivot row contributes one variable assignment in the solution.
+      #|INVARIANT (solution extraction):
+      #|Each processed pivot row contributes one variable value to solution.
+      #|MAINTENANCE:
+      #|Assign the RHS to the pivot column for row i.
+      #|TERMINATION:
+      #|At i = row (or m), all leading variables are assigned.
     ),
   }
   (solution, true)
@@ -411,11 +458,21 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
     } where {
       invariant: i >= row && i <= n,
       reasoning: (
-        #|Search for a row with a 1 in the pivot column over GF(2).
+        #|INVARIANT (pivot search xor):
+        #|Rows in [row..i) have been checked for a 1 in column col.
+        #|MAINTENANCE:
+        #|Advance i until a pivot row is found or the column is exhausted.
+        #|TERMINATION:
+        #|At i = n, no pivot exists in this column.
       ),
       invariant: pivot_row == -1 || (pivot_row >= row && pivot_row < n),
       reasoning: (
-        #|pivot_row is unset or points to a valid candidate row.
+        #|INVARIANT (pivot row xor):
+        #|pivot_row is -1 or a valid row index in [row..n).
+        #|MAINTENANCE:
+        #|Set pivot_row when aug[i][col] == 1.
+        #|TERMINATION:
+        #|pivot_row indicates the chosen pivot row, if any.
       ),
     }
     if pivot_row < 0 {
@@ -437,25 +494,45 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
         } where {
           invariant: j >= col && j <= m + 1,
           reasoning: (
-            #|Apply XOR row operation to clear column col in row i.
+            #|INVARIANT (xor elimination):
+            #|Entries aug[i][col..j) are updated by XOR with pivot row.
+            #|MAINTENANCE:
+            #|XOR aug[row][j] into aug[i][j] to clear the pivot column.
+            #|TERMINATION:
+            #|At j = m + 1, column col is cleared in row i.
           ),
         }
       }
     } where {
       invariant: i >= 0 && i <= n,
       reasoning: (
-        #|Eliminate the pivot column across all other rows in GF(2).
+        #|INVARIANT (column elimination xor):
+        #|Rows in [0..i) have column col eliminated (except the pivot row).
+        #|MAINTENANCE:
+        #|Apply XOR elimination to row i when it has a 1 in column col.
+        #|TERMINATION:
+        #|At i = n, the pivot column is cleared in all other rows.
       ),
       invariant: aug[row][col] == 1,
       reasoning: (
-        #|Pivot entry stays 1 since swaps preserve it and XOR does not change it.
+        #|INVARIANT (pivot stays 1 xor):
+        #|The pivot entry aug[row][col] remains 1 in GF(2).
+        #|MAINTENANCE:
+        #|XOR operations on other rows do not affect the pivot row.
+        #|TERMINATION:
+        #|Pivot entry is 1 when moving to the next column.
       ),
     }
     row = row + 1
   } where {
     invariant: 0 <= row && row <= n && 0 <= col && col <= m,
     reasoning: (
-      #|row counts pivot rows found so far; col is the next column to process.
+      #|INVARIANT (forward elimination xor):
+      #|row counts pivots found; col is the current column being processed.
+      #|MAINTENANCE:
+      #|Each pivot increases row by 1 and moves to the next column.
+      #|TERMINATION:
+      #|At col = m or row = n, elimination is complete.
     ),
   }
 
@@ -467,7 +544,12 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
   } where {
     invariant: i >= row && i <= n,
     reasoning: (
-      #|Rows below the last pivot must have zero RHS for consistency in GF(2).
+      #|INVARIANT (consistency check xor):
+      #|Checked rows in [row..i) have zero RHS for a zero coefficient row.
+      #|MAINTENANCE:
+      #|Inspect aug[i][m] to detect a contradiction.
+      #|TERMINATION:
+      #|At i = n, the system is consistent if no contradiction is found.
     ),
   }
 
@@ -482,13 +564,23 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
     } where {
       invariant: j >= 0 && j <= m,
       reasoning: (
-        #|Scan row i to locate its pivot column in GF(2).
+        #|INVARIANT (pivot scan xor):
+        #|Columns in [0..j) have been checked for the pivot in row i.
+        #|MAINTENANCE:
+        #|Advance j until the leading 1 is found.
+        #|TERMINATION:
+        #|At j = m, the pivot is found or the row is all zeros.
       ),
     }
   } where {
     invariant: i >= 0 && i <= row && i <= m,
     reasoning: (
-      #|Each pivot row yields one variable value in the solution.
+      #|INVARIANT (solution extraction xor):
+      #|Each processed pivot row yields a variable assignment.
+      #|MAINTENANCE:
+      #|Assign the RHS to the pivot column for row i.
+      #|TERMINATION:
+      #|At i = row (or m), all leading variables are assigned.
     ),
   }
   (solution, true)
