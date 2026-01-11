@@ -94,6 +94,11 @@ fn reservoir_sample(stream : ArrayView[Int], k : Int, rng : RNG) -> Array[Int] {
       #|  - Random sampling from large datasets
       #|  - A/B testing with unknown population size
       #|  - Stream processing and online algorithms
+      #|MAINTENANCE:
+      #|Each new element i is included with probability k/(i+1), preserving
+      #|uniform sampling of the prefix.
+      #|TERMINATION:
+      #|At i = stream.length(), the reservoir is a uniform k-sample.
     ),
   }
 }
@@ -169,6 +174,10 @@ fn fisher_yates_shuffle(arr : Array[Int], rng : RNG) -> Unit {
       #|WARNING: Using a biased or predictable RNG will produce
       #|non-uniform permutations! Cryptographic applications need
       #|cryptographically secure random number generators.
+      #|MAINTENANCE:
+      #|Swapping arr[i] with a random arr[j] fixes position i uniformly.
+      #|TERMINATION:
+      #|At i = 0, all positions are fixed into a uniform permutation.
     ),
   }
 }
@@ -213,6 +222,10 @@ fn weighted_select(weights : ArrayView[Int], rng : RNG) -> Int {
       #|sum = Σ(weights[0..i)).
       #|
       #|This builds the cumulative distribution function (CDF).
+      #|MAINTENANCE:
+      #|Add weights[i] into sum and assign prefix_sum[i].
+      #|TERMINATION:
+      #|At i = weights.length(), the full CDF is built.
     ),
   }
   let total = prefix_sum[weights.length() - 1]
@@ -253,6 +266,10 @@ fn weighted_select(weights : ArrayView[Int], rng : RNG) -> Int {
       #|
       #|TIME: O(n) preprocessing, O(log n) per query
       #|For repeated queries, preprocessing is amortized.
+      #|MAINTENANCE:
+      #|Binary search keeps target within [lo, hi) while shrinking the window.
+      #|TERMINATION:
+      #|When lo == hi, lo is the selected index.
     ),
   }
 }
@@ -425,6 +442,10 @@ fn count_leading_zeros(x : Int) -> Int {
         #|When val becomes negative, the sign bit is 1, meaning we have
         #|shifted past all leading zeros in the original x. The count n at
         #|that point is the number of leading zeros for a 32-bit value.
+        #|MAINTENANCE:
+        #|Shift left once and increment n, preserving val == x << n.
+        #|TERMINATION:
+        #|When val becomes negative, n is the leading-zero count.
       ),
     }
   }
@@ -540,6 +561,10 @@ fn skip_list_search(list : SkipList, target : Int) -> Int {
           #|
           #|This gives us O(log n) expected search time with a simple
           #|probabilistic structure (no complex rebalancing like AVL/Red-Black).
+          #|MAINTENANCE:
+          #|Advance curr while the next value is < target, otherwise stop.
+          #|TERMINATION:
+          #|When we can no longer advance, curr is the rightmost safe node.
         ),
       }
       if next != current && list.nodes[next].value == target {
@@ -562,6 +587,11 @@ fn skip_list_search(list : SkipList, target : Int) -> Int {
       #|We first walk forward at the current level until we would overshoot,
       #|then drop down one level and continue from that last safe position.
       #|This is the skip-list analog of staircase search in a matrix.
+      #|MAINTENANCE:
+      #|After scanning a level, decrement level and keep current as the last
+      #|node with value < target.
+      #|TERMINATION:
+      #|At level < 0, target is not present and we return -1.
     ),
   }
 }
