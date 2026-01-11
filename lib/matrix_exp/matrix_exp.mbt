@@ -94,6 +94,10 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
           #|sum equals the partial dot product
           #|  sum_{t < k} self[i,t] * other[t,j] (mod MATRIX_MOD).
           #|When k reaches self.cols, sum is the full (i,j) entry.
+          #|MAINTENANCE:
+          #|Each step adds the next term self[i,k] * other[k,j] to sum.
+          #|TERMINATION:
+          #|At k == self.cols, the dot product is complete.
         ),
       }
       result.data[i][j] = sum
@@ -103,6 +107,10 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
         #|INVARIANT (Row fill):
         #|After processing columns [0..j), result[i][c] is correct for all c < j.
         #|Each column is computed by a full dot product over the shared dimension.
+        #|MAINTENANCE:
+        #|Computing column j extends the verified prefix.
+        #|TERMINATION:
+        #|At j == other.cols, row i is complete.
       ),
     }
   } where {
@@ -111,6 +119,10 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
       #|INVARIANT (Matrix fill):
       #|After processing rows [0..i), every entry in those rows matches the
       #|matrix product. The loop constructs the result row by row.
+      #|MAINTENANCE:
+      #|Filling row i preserves correctness for the processed prefix.
+      #|TERMINATION:
+      #|At i == self.rows, the full product matrix is computed.
     ),
   }
   result
