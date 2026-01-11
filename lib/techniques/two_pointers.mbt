@@ -45,6 +45,10 @@ fn two_sum_two_pointer(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
       #|    No pair (k, right) for k < right can equal target
       #|    So we can safely decrement right
       #|
+      #|MAINTENANCE:
+      #|  The chosen pointer move preserves the invariant that any solution
+      #|  remains within [left, right].
+      #|
       #|TERMINATION: When left >= right, no valid pair exists in remaining range
     ),
   }
@@ -97,7 +101,13 @@ fn three_sum(arr : Array[Int], target : Int) -> Array[(Int, Int, Int)] {
     } where {
       invariant: left >= i + 1 && right < n && left <= right,
       reasoning: (
-        #|Two-pointer search maintains that any valid pair lies in [left, right].
+        #|INVARIANT (two-sum inner):
+        #|Any pair summing to remaining must lie in [left, right].
+        #|MAINTENANCE:
+        #|If sum < remaining, increment left to increase sum; if sum > remaining,
+        #|decrement right to decrease sum.
+        #|TERMINATION:
+        #|When left >= right, no additional pairs exist for this fixed i.
       ),
     }
   } where {
@@ -107,6 +117,10 @@ fn three_sum(arr : Array[Int], target : Int) -> Array[(Int, Int, Int)] {
       #|
       #|For each fixed first element, we use two-pointer to find pairs summing to target - arr[i].
       #|Skipping duplicates ensures each unique triplet is found exactly once.
+      #|MAINTENANCE:
+      #|Fix sorted[i], run the inner two-pointer, and skip duplicate anchors.
+      #|TERMINATION:
+      #|At i == n - 2, all triplets are enumerated.
     ),
   }
   result
@@ -125,7 +139,12 @@ fn skip_duplicates_forward(
   } where {
     invariant: l >= left + 1,
     reasoning: (
-      #|Skip all elements equal to arr[left] to avoid duplicate triplets
+      #|INVARIANT (skip forward):
+      #|All indices in (left, l) are equal to arr[left].
+      #|MAINTENANCE:
+      #|Advance l while arr[l] == arr[left].
+      #|TERMINATION:
+      #|At exit, l is the first index > left with a different value (or right).
     ),
   }
 }
@@ -143,7 +162,12 @@ fn skip_duplicates_backward(
   } where {
     invariant: r <= right - 1,
     reasoning: (
-      #|Skip all elements equal to arr[right] to avoid duplicate triplets
+      #|INVARIANT (skip backward):
+      #|All indices in (r, right) are equal to arr[right].
+      #|MAINTENANCE:
+      #|Decrement r while arr[r] == arr[right].
+      #|TERMINATION:
+      #|At exit, r is the last index < right with a different value (or left).
     ),
   }
 }
@@ -195,6 +219,10 @@ fn max_water_container(heights : ArrayView[Int]) -> Int {
       #|Similarly for h[right] <= h[left].
       #|
       #|This greedy choice explores all potentially optimal pairs in O(n) time.
+      #|MAINTENANCE:
+      #|Update max_area with current area, then move the shorter side inward.
+      #|TERMINATION:
+      #|At left >= right, all candidate pairs have been considered.
     ),
   }
 }
@@ -255,6 +283,10 @@ fn trap_water_two_pointer(height : ArrayView[Int]) -> Int {
       #|  - We can safely compute water[left] = left_max - height[left]
       #|
       #|Similarly for the right side.
+      #|MAINTENANCE:
+      #|Advance the limiting side, updating max and adding trapped water.
+      #|TERMINATION:
+      #|When left >= right, all positions are processed.
     ),
   }
 }
@@ -293,7 +325,12 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
     } where {
       invariant: deque.length() >= 0,
       reasoning: (
-        #|Drop indices that fell out of the current window.
+        #|INVARIANT (drop out-of-window):
+        #|All indices in deque are within the current window after removals.
+        #|MAINTENANCE:
+        #|Remove deque[0] while it is <= i - k.
+        #|TERMINATION:
+        #|When the loop ends, the front index is inside the window.
       ),
     }
 
@@ -308,7 +345,12 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
     } where {
       invariant: deque.length() >= 0,
       reasoning: (
-        #|Maintain decreasing order by discarding dominated indices.
+        #|INVARIANT (monotone deque):
+        #|Values at deque indices are in decreasing order.
+        #|MAINTENANCE:
+        #|Pop from the back while nums[i] dominates the tail value.
+        #|TERMINATION:
+        #|After the loop, nums[i] can be appended without breaking order.
       ),
     }
     deque.push(i)
@@ -333,6 +375,9 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
       #|  2. Remove indices with smaller values (they can never be max)
       #|  3. Add current index i
       #|  4. Front of deque is always the window maximum
+      #|MAINTENANCE:
+      #|Each step removes expired/smaller indices and appends i, preserving the
+      #|deque invariants.
       #|
       #|TERMINATION: After processing all elements, result has n-k+1 maximums.
     ),
@@ -375,7 +420,12 @@ fn min_window_substring(s : String, t : String) -> String {
   } where {
     invariant: i >= 0 && i <= t_len,
     reasoning: (
-      #|Count frequency of each target character.
+      #|INVARIANT (count required):
+      #|required reflects counts for t_chars[0..i).
+      #|MAINTENANCE:
+      #|Increment required for t_chars[i] and advance i.
+      #|TERMINATION:
+      #|At i == t_len, required holds full target counts.
     ),
   }
 
@@ -424,7 +474,12 @@ fn min_window_substring(s : String, t : String) -> String {
       } where {
         invariant: i >= min_left && i <= min_left + min_len,
         reasoning: (
-          #|Collect the minimal window's characters in order.
+          #|INVARIANT (collect window):
+          #|result holds s_chars[min_left..i) in order.
+          #|MAINTENANCE:
+          #|Append s_chars[i] and advance i.
+          #|TERMINATION:
+          #|At i == min_left + min_len, result is the minimal window substring.
         ),
       }
       String::from_array(result)
@@ -441,6 +496,10 @@ fn min_window_substring(s : String, t : String) -> String {
       #|CONTRACT: Remove s[left] while window remains valid, update minimum
       #|
       #|Each character is added once (right++) and removed once (left++), so O(n).
+      #|MAINTENANCE:
+      #|Update window counts at right, then contract from left while valid.
+      #|TERMINATION:
+      #|At right == s_len, the smallest valid window has been found.
     ),
   }
 }
@@ -483,7 +542,13 @@ fn contract_window(
   } where {
     invariant: l >= left && f >= 0,
     reasoning: (
-      #|Contract the window from left while maintaining all required characters
+      #|INVARIANT (contract window):
+      #|Window [l..right] remains valid (f == required_count), and (mleft, mlen)
+      #|tracks the smallest valid window seen so far.
+      #|MAINTENANCE:
+      #|Update minimum, remove s[l], update f, then advance l.
+      #|TERMINATION:
+      #|When f drops below required_count, the window is no longer valid.
     ),
   }
 }
@@ -531,6 +596,10 @@ fn longest_unique_substring(s : String) -> Int {
       #|  - Otherwise, the window can expand to include s[i]
       #|
       #|Each character is processed once, so O(n) time.
+      #|MAINTENANCE:
+      #|Advance i, move start past duplicates, and update max_len.
+      #|TERMINATION:
+      #|At i == n, max_len is the longest unique substring length.
     ),
   }
 }
@@ -582,6 +651,10 @@ fn subarray_sum_equals_k(nums : ArrayView[Int], k : Int) -> Int {
       #|This requires prefix[i] - prefix[j] = k, i.e., prefix[j] = prefix[i] - k.
       #|
       #|We count how many such j exist using the count array.
+      #|MAINTENANCE:
+      #|Update prefix, add matches, and record the new prefix in count.
+      #|TERMINATION:
+      #|At i == n, result counts all subarrays with sum k.
     ),
   }
 }
@@ -646,6 +719,10 @@ fn character_replacement(s : String, k : Int) -> Int {
       #|and find the optimal answer.
       #|
       #|This gives O(n) time complexity.
+      #|MAINTENANCE:
+      #|Expand right, shrink left when invalid, and update max_len.
+      #|TERMINATION:
+      #|At right == n, max_len is the best achievable length.
     ),
   }
 }
@@ -704,6 +781,10 @@ fn fruit_into_baskets(fruits : ArrayView[Int]) -> Int {
       #|
       #|When adding a new fruit type would exceed 2, we shrink from left
       #|until we have at most 2 types again.
+      #|MAINTENANCE:
+      #|Advance right to include fruits; when distinct would exceed 2, move left.
+      #|TERMINATION:
+      #|At right == n, max_len is the longest valid window.
     ),
   }
 }
@@ -737,6 +818,10 @@ fn remove_duplicates(nums : Array[Int]) -> Int {
       #|When nums[read] != nums[read-1], we've found a new unique element.
       #|We write it at position 'write' and increment both pointers.
       #|Otherwise, we skip the duplicate by only incrementing 'read'.
+      #|MAINTENANCE:
+      #|Copy new uniques to nums[write] and advance pointers accordingly.
+      #|TERMINATION:
+      #|At read == n, write is the count of unique elements.
     ),
   }
 }
@@ -774,6 +859,8 @@ fn move_zeroes(nums : Array[Int]) -> Unit {
       #|
       #|TERMINATION: When read reaches n, all non-zeros are in [0..write),
       #|and remaining positions [write..n) are zeros.
+      #|MAINTENANCE:
+      #|When nums[read] is non-zero, swap it into position write and advance.
     ),
   }
 }
@@ -834,6 +921,9 @@ fn sort_colors(nums : Array[Int]) -> Unit {
       #|  Swap with high, decrement high (don't advance mid, swapped value unknown)
       #|
       #|TERMINATION: When mid > high, entire array is partitioned.
+      #|MAINTENANCE:
+      #|Each case moves one element into its final region, shrinking the unknown
+      #|segment [mid..high].
     ),
   }
 }
@@ -886,6 +976,10 @@ fn partition(arr : Array[Int], lo : Int, hi : Int) -> Int {
       #|  - arr[lo..i) < pivot
       #|  - arr[i] = pivot
       #|  - arr[i+1..hi+1) >= pivot
+      #|MAINTENANCE:
+      #|Advance j, swapping into the < pivot region when needed.
+      #|TERMINATION:
+      #|At j == hi, place pivot at i to finalize the partition.
     ),
   }
 }
@@ -901,7 +995,12 @@ test "partition" {
   } where {
     invariant: i >= 0 && i <= p,
     reasoning: (
-      #|Verify all elements before p are less than the pivot.
+      #|INVARIANT (pivot left check):
+      #|All elements in arr[0..i) are < arr[p].
+      #|MAINTENANCE:
+      #|Check arr[i] and advance i.
+      #|TERMINATION:
+      #|At i == p, all elements before p satisfy the partition.
     ),
   }
   for i = p + 1; i < 8; i = i + 1 {
@@ -909,7 +1008,12 @@ test "partition" {
   } where {
     invariant: i >= p + 1 && i <= 8,
     reasoning: (
-      #|Verify all elements after p are greater than or equal to the pivot.
+      #|INVARIANT (pivot right check):
+      #|All elements in arr[p+1..i) are >= arr[p].
+      #|MAINTENANCE:
+      #|Check arr[i] and advance i.
+      #|TERMINATION:
+      #|At i == 8, all elements after p satisfy the partition.
     ),
   }
 }
