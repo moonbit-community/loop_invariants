@@ -170,6 +170,10 @@ fn build_lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
       #|
       #|This ensures total work is O(n): k increases at most n times total,
       #|and decreases by 1 at most n times.
+      #|MAINTENANCE:
+      #|Use k as a lower bound, extend matches, then decrement k by at most 1.
+      #|TERMINATION:
+      #|At i == n, all LCP values are computed.
     ),
   }
   lcp
@@ -229,6 +233,10 @@ fn count_distinct_substrings(s : String) -> Int {
       #|CORRECTNESS: Every substring is a prefix of exactly one suffix
       #|(the one starting at its position). By processing in sorted order
       #|and subtracting common prefixes, we count each distinct substring once.
+      #|MAINTENANCE:
+      #|Add (n - sa[i]) - lcp[i] to total and advance i.
+      #|TERMINATION:
+      #|At i == n, total equals the number of distinct substrings.
     ),
   }
 }
@@ -278,6 +286,10 @@ fn longest_repeated_substring(s : String) -> String {
       #|The longest repeated substring appears as a common prefix
       #|of two adjacent suffixes in sorted order, which is exactly
       #|what LCP measures.
+      #|MAINTENANCE:
+      #|Compare lcp[i] to max_lcp and update if larger, then advance i.
+      #|TERMINATION:
+      #|At i == n, max_lcp is the longest repeated substring length.
     ),
   }
 }
@@ -469,6 +481,10 @@ fn longest_common_substring_sa(s1 : String, s2 : String) -> String {
       #|    gives a common substring
       #|
       #|The separator '$' ensures no suffix crosses from s1 to s2.
+      #|MAINTENANCE:
+      #|When adjacent suffixes are from different strings, update max_lcp.
+      #|TERMINATION:
+      #|At i == n, max_lcp is the LCS length.
     ),
   }
 }
@@ -503,6 +519,10 @@ fn count_substrings_by_char(s : String) -> Array[Int] {
       #|
       #|Each position i contributes (n - i) substrings (all lengths 1 to n-i).
       #|We add this to the count for the starting character.
+      #|MAINTENANCE:
+      #|Accumulate substrings for chars[i] and advance i.
+      #|TERMINATION:
+      #|At i == n, all starting positions are counted.
     ),
   }
   count
@@ -546,6 +566,10 @@ fn burrows_wheeler_transform(s : String) -> String {
       #|
       #|KEY INSIGHT: BWT groups characters that precede similar contexts,
       #|making it highly compressible.
+      #|MAINTENANCE:
+      #|Append chars[(sa[i] - 1 + n) % n] and advance i.
+      #|TERMINATION:
+      #|At i == n, BWT is complete.
     ),
   }
   String::from_array(bwt)
@@ -594,6 +618,10 @@ fn smallest_rotation(s : String) -> String {
       #|By doubling the string, each rotation appears as a suffix.
       #|The lexicographically smallest suffix starting in the first half
       #|gives the smallest rotation.
+      #|MAINTENANCE:
+      #|Scan sa in order; return on the first index < n.
+      #|TERMINATION:
+      #|At i == 2 * n, all suffixes were checked (fallback to s).
     ),
   }
 }
