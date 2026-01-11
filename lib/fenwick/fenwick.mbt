@@ -69,7 +69,12 @@ fn FenwickTree::from_array(arr : Array[Int64]) -> FenwickTree {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|tree[1..i] equals arr[0..i) in 1-indexed form.
+      #|INVARIANT (copy to tree):
+      #|tree[1..i] equals arr[0..i) in 1-indexed form; later cells are untouched.
+      #|MAINTENANCE:
+      #|Assign tree[i+1] = arr[i], extending the copied prefix by one element.
+      #|TERMINATION:
+      #|At i = n, tree[1..n] matches arr[0..n).
     ),
   }
 
@@ -141,9 +146,13 @@ fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int64 {
   } where {
     invariant: idx >= 0 && idx <= idx_start,
     reasoning: (
-      #|sum accumulates tree nodes already visited along the BIT path from
-      #|idx_start down to idx; the remaining idx positions still cover the
-      #|unaccounted prefix ranges.
+      #|INVARIANT (prefix_sum walk):
+      #|sum is the total of tree nodes already visited on the path from idx_start
+      #|down to idx; remaining idx values still cover the uncounted prefix.
+      #|MAINTENANCE:
+      #|Add tree[idx] and jump to idx - lowbit(idx), the next covering node.
+      #|TERMINATION:
+      #|At idx = 0, all covering nodes have been accumulated.
     ),
   }
 }
@@ -199,7 +208,12 @@ fn FenwickTree2D::new(rows : Int, cols : Int) -> FenwickTree2D {
   } where {
     invariant: i >= 0 && i <= rows + 1,
     reasoning: (
-      #|tree has been allocated for rows 0..i) with cols+1 entries each.
+      #|INVARIANT (2D tree alloc):
+      #|tree has rows [0..i) allocated, each with cols+1 zero entries.
+      #|MAINTENANCE:
+      #|Push a new zero row for index i.
+      #|TERMINATION:
+      #|At i = rows + 1, all 1-indexed rows are allocated.
     ),
   }
   { rows, cols, tree }

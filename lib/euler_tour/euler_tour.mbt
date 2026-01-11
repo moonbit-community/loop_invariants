@@ -44,7 +44,12 @@ fn EulerTour::new(n : Int) -> EulerTour {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|adj[0..i) has been initialized with distinct empty arrays.
+      #|INVARIANT (adj init):
+      #|adj[0..i) contains distinct empty arrays; indices in [i..n) are pending.
+      #|MAINTENANCE:
+      #|Assign a fresh empty array to adj[i], preserving prior entries.
+      #|TERMINATION:
+      #|At i = n, all adjacency lists are initialized.
     ),
   }
   {
@@ -91,8 +96,13 @@ fn EulerTour::dfs(self : EulerTour, u : Int, p : Int, d : Int) -> Unit {
     i <= self.adj[u].length() &&
     self.adj.length() == self.n,
     reasoning: (
-      #|All neighbors with index < i have been processed; any non-parent
-      #|neighbor has been fully explored and its subtree tour appended.
+      #|INVARIANT (dfs neighbors):
+      #|Neighbors adj[u][0..i) are processed; every child subtree in that prefix
+      #|has been fully traversed and appended to tour with correct entry/exit.
+      #|MAINTENANCE:
+      #|If v is not the parent, recurse to append v's subtree tour.
+      #|TERMINATION:
+      #|At i = deg(u), all child subtrees of u are explored.
     ),
   }
   self.exit[u] = self.timer
@@ -127,7 +137,12 @@ fn EulerTour::get_subtree(self : EulerTour, v : Int) -> Array[Int] {
   } where {
     invariant: i >= start && i <= end,
     reasoning: (
-      #|result contains tour entries for the range [start..i).
+      #|INVARIANT (subtree slice):
+      #|result equals tour[start..i), preserving subtree order.
+      #|MAINTENANCE:
+      #|Append tour[i] to extend the slice by one element.
+      #|TERMINATION:
+      #|At i = end, result contains the full subtree interval.
     ),
   }
   result
@@ -156,7 +171,12 @@ fn EulerTourLCA::new(n : Int) -> EulerTourLCA {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|adj[0..i) has been initialized with distinct empty arrays.
+      #|INVARIANT (adj init):
+      #|adj[0..i) contains distinct empty arrays; indices in [i..n) are pending.
+      #|MAINTENANCE:
+      #|Assign a fresh empty array to adj[i], preserving prior entries.
+      #|TERMINATION:
+      #|At i = n, all adjacency lists are initialized.
     ),
   }
   {
@@ -198,8 +218,13 @@ fn EulerTourLCA::dfs_euler(
     i <= self.adj[u].length() &&
     self.adj.length() == self.n,
     reasoning: (
-      #|All neighbors with index < i have been visited; each visited child
-      #|contributes an enter/exit pair in the euler/depth arrays.
+      #|INVARIANT (euler neighbors):
+      #|Neighbors adj[u][0..i) are visited; each child visit appends its subtree
+      #|walk plus the return step to u in euler/depth arrays.
+      #|MAINTENANCE:
+      #|Recurse into v, then append u to record the return edge.
+      #|TERMINATION:
+      #|At i = deg(u), the full Euler walk for u's adjacency is recorded.
     ),
   }
 }
@@ -218,7 +243,12 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
   } where {
     invariant: i >= 2 && i <= m + 1,
     reasoning: (
-      #|log[2..i) is initialized so log[x] = floor(log2(x)).
+      #|INVARIANT (log table):
+      #|log[2..i) is initialized with log[x] = floor(log2(x)).
+      #|MAINTENANCE:
+      #|Use log[i/2] to compute log[i] for the next entry.
+      #|TERMINATION:
+      #|At i = m + 1, all log values up to m are set.
     ),
   }
 
@@ -230,7 +260,12 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
   } where {
     invariant: i >= 0 && i <= k,
     reasoning: (
-      #|sparse[0..i) rows are allocated with length m.
+      #|INVARIANT (sparse alloc):
+      #|sparse[0..i) rows are allocated with length m for interval length 2^row.
+      #|MAINTENANCE:
+      #|Allocate sparse[i] to hold RMQ indices for level i.
+      #|TERMINATION:
+      #|At i = k, all sparse rows are allocated.
     ),
   }
 
@@ -240,7 +275,12 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
   } where {
     invariant: i >= 0 && i <= m,
     reasoning: (
-      #|sparse[0][0..i) stores the index of each position in the Euler tour.
+      #|INVARIANT (sparse base):
+      #|sparse[0][0..i) stores the index of each single-element interval.
+      #|MAINTENANCE:
+      #|Set sparse[0][i] = i as the RMQ base case.
+      #|TERMINATION:
+      #|At i = m, the base row is fully initialized.
     ),
   }
 
@@ -258,13 +298,23 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
     } where {
       invariant: i >= 0 && i + len <= m + 1,
       reasoning: (
-        #|sparse[j][0..i) stores the min-depth index for intervals of length len.
+        #|INVARIANT (sparse fill):
+        #|sparse[j][0..i) stores min-depth indices for intervals of length len.
+        #|MAINTENANCE:
+        #|Combine two half-intervals of length len/2 from level j-1.
+        #|TERMINATION:
+        #|At i + len = m + 1, all length-len intervals are covered.
       ),
     }
   } where {
     invariant: j >= 1 && j <= k,
     reasoning: (
-      #|All levels < j of the sparse table are fully built.
+      #|INVARIANT (sparse levels):
+      #|Levels [1..j) are fully built with interval length 2^lvl at level lvl.
+      #|MAINTENANCE:
+      #|Fill level j using two adjacent intervals from level j-1.
+      #|TERMINATION:
+      #|At j = k, the sparse table is complete.
     ),
   }
 }
