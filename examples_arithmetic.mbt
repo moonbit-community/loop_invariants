@@ -16,12 +16,21 @@ fn div_mod_nonneg(n : Int, d : Int) -> (Int, Int) {
   } where {
     invariant: n == q * d + r,
     reasoning: (
-      #|We maintain the division identity with a shrinking remainder.
-      #|Each step moves one divisor chunk from r into q.
+      #|INVARIANT (division identity):
+      #|n == q * d + r holds with r as the remaining remainder.
+      #|MAINTENANCE:
+      #|Increment q and subtract d from r, preserving the identity.
+      #|TERMINATION:
+      #|When r < d, (q, r) is the quotient-remainder pair.
     ),
     invariant: r >= 0,
     reasoning: (
-      #|r starts at n >= 0 and decreases by d while staying non-negative.
+      #|INVARIANT (non-negative remainder):
+      #|r starts at n and decreases by d; we stop before r would go negative.
+      #|MAINTENANCE:
+      #|The loop condition ensures r >= d before subtracting.
+      #|TERMINATION:
+      #|At exit, r is the non-negative remainder.
     ),
   }
 }
@@ -65,7 +74,12 @@ fn horner_eval(coeffs : ArrayView[Int], x : Int) -> Int {
   } where {
     invariant: 1 <= i && i <= coeffs.length(),
     reasoning: (
-      #|i counts how many coefficients have been folded into acc.
+      #|INVARIANT (progress):
+      #|i is the number of coefficients folded into acc, within [1..len].
+      #|MAINTENANCE:
+      #|Each step consumes coeffs[i] and increments i by 1.
+      #|TERMINATION:
+      #|At i = coeffs.length(), all coefficients are processed.
     ),
     invariant: acc == poly_prefix(coeffs, i, x),
     reasoning: (

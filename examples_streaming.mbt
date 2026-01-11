@@ -54,20 +54,30 @@ fn max_profit_single(prices : ArrayView[Int]) -> Int {
   } where {
     invariant: 1 <= i && i <= prices.length(),
     reasoning: (
-      #|Bounds: i counts how many prices we have processed.
-      #|We start at 1 (price[0] is initial min) and increment by 1.
+      #|INVARIANT (progress):
+      #|i counts processed prices, so 1 <= i <= prices.length().
+      #|MAINTENANCE:
+      #|Each step consumes prices[i] and increments i by 1.
+      #|TERMINATION:
+      #|At i = prices.length(), all prices are processed.
     ),
     invariant: min_price == min_prefix(prices, i),
     reasoning: (
-      #|min_price is always the minimum seen in prices[0..i).
-      #|We update it only when we see a smaller price.
+      #|INVARIANT (min prefix):
+      #|min_price equals the minimum of prices[0..i).
+      #|MAINTENANCE:
+      #|Update min_price only when prices[i] is smaller.
+      #|TERMINATION:
+      #|At the end, min_price reflects the global minimum.
     ),
     invariant: best == max_profit_prefix(prices, i),
     reasoning: (
-      #|best is the best achievable profit using only prices[0..i).
-      #|At step i we consider selling at prices[i - 1] against the
-      #|minimum of the prefix, then take the max with the prior best.
-      #|This is exactly the definition of max_profit_prefix.
+      #|INVARIANT (best profit):
+      #|best is the maximum profit achievable using only prices[0..i).
+      #|MAINTENANCE:
+      #|Compare selling at prices[i - 1] vs. the min prefix, then keep the max.
+      #|TERMINATION:
+      #|At i = prices.length(), best is the optimal single-transaction profit.
     ),
   }
 }
@@ -126,17 +136,30 @@ fn is_balanced_parens(chars : ArrayView[Char]) -> Bool {
   } where {
     invariant: 0 <= i && i <= chars.length(),
     reasoning: (
-      #|i is the length of the processed prefix.
+      #|INVARIANT (progress):
+      #|i is the length of the processed prefix, bounded by chars.length().
+      #|MAINTENANCE:
+      #|Each step consumes one character and increments i by 1.
+      #|TERMINATION:
+      #|At i = chars.length(), the entire string is processed.
     ),
     invariant: balance == balance_prefix(chars, i),
     reasoning: (
-      #|balance tracks the exact prefix balance: '(' as +1 and ')' as -1.
-      #|We ignore other characters in both the loop and the spec helper.
+      #|INVARIANT (prefix balance):
+      #|balance equals the net '(' minus ')' in chars[0..i).
+      #|MAINTENANCE:
+      #|Update balance by +1/-1 for parens, leaving it unchanged otherwise.
+      #|TERMINATION:
+      #|At the end, balance reflects the full-string net balance.
     ),
     invariant: balance >= 0,
     reasoning: (
-      #|balance never goes negative inside the loop.
-      #|If a prefix would make it negative, we break false immediately.
+      #|INVARIANT (non-negative prefix):
+      #|balance is never negative for processed prefixes.
+      #|MAINTENANCE:
+      #|If next would go negative, we stop and return false.
+      #|TERMINATION:
+      #|If the loop finishes, all prefixes are non-negative.
     ),
   }
 }

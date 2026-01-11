@@ -761,7 +761,13 @@ fn majority_element(arr : ArrayView[Int]) -> Int? {
   } where {
     invariant: i >= 1 && i <= arr.length() && count >= 0,
     reasoning: (
-      #|INVARIANT 1 (Bounds): Basic validity.
+      #|INVARIANT 1 (Bounds):
+      #|i counts processed elements, so 1 <= i <= arr.length().
+      #|count tracks unmatched candidate votes and stays non-negative.
+      #|MAINTENANCE:
+      #|Each step increments i and adjusts count by at most 1.
+      #|TERMINATION:
+      #|At i = arr.length(), candidate and count reflect the full scan.
     ),
     invariant: count <= i,
     reasoning: (
@@ -1217,8 +1223,11 @@ fn lower_bound(arr : Array[Int], len : Int, target : Int) -> Int {
     ),
     invariant: hi == len || arr[hi] >= target,
     reasoning: (
-      #|Right candidate: hi is the first known index with arr[hi] >= target,
-      #|or hi=len when none is known yet.
+      #|Right candidate: hi is the smallest index known to satisfy arr[hi] >= target,
+      #|or hi = len if no such index has been found yet.
+      #|MAINTENANCE:
+      #|When arr[mid] >= target, we move hi to mid to keep the earliest candidate.
+      #|When arr[mid] < target, hi stays put and remains a valid upper bound.
     ),
   }
 }
@@ -1244,7 +1253,13 @@ fn lis_length(arr : ArrayView[Int]) -> Int {
   } where {
     invariant: i >= 0 && i <= arr.length() && len >= 0 && len <= i,
     reasoning: (
-      #|INVARIANT 1 (Bounds): Basic bounds on iteration variables.
+      #|INVARIANT 1 (Bounds):
+      #|i is the number of processed elements; len is the current LIS length.
+      #|We always have 0 <= len <= i <= arr.length().
+      #|MAINTENANCE:
+      #|Each step increments i and either keeps len or increases it by 1.
+      #|TERMINATION:
+      #|At i = arr.length(), len is the LIS length for the full array.
     ),
     invariant: len >= 0,
     reasoning: (

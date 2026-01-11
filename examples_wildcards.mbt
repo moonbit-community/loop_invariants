@@ -69,23 +69,39 @@ fn is_balanced_parens_star(chars : ArrayView[Char]) -> Bool {
   } where {
     invariant: 0 <= i && i <= chars.length(),
     reasoning: (
-      #|i is the length of the processed prefix.
+      #|INVARIANT (progress):
+      #|i is the length of the processed prefix, within [0..chars.length()].
+      #|MAINTENANCE:
+      #|Each step consumes one character and increments i by 1.
+      #|TERMINATION:
+      #|At i = chars.length(), all characters are processed.
     ),
     invariant: high == range_prefix(chars, i).1,
     reasoning: (
-      #|high tracks the maximum possible balance after i chars.
-      #|Each character shifts the whole range by +1, -1, or expands by 1.
+      #|INVARIANT (max balance):
+      #|high equals the maximum possible balance after i characters.
+      #|MAINTENANCE:
+      #|Update high by +1/-1 for '(' or ')', or +1 for '*'.
+      #|TERMINATION:
+      #|At the end, high bounds the maximum feasible balance.
     ),
     invariant: low == clamp_nonneg(range_prefix(chars, i).0),
     reasoning: (
-      #|low tracks the minimum *valid* balance after i chars.
-      #|We clamp negatives to 0 because any negative balance is invalid
-      #|and cannot be extended to a valid full string.
+      #|INVARIANT (min balance):
+      #|low equals the minimum feasible balance after i characters, clamped at 0.
+      #|MAINTENANCE:
+      #|Update low by -1/+1 for ')' or '(', and widen for '*', then clamp.
+      #|TERMINATION:
+      #|At the end, low bounds the minimum feasible balance.
     ),
     invariant: low <= high,
     reasoning: (
-      #|Possible balances for a prefix always form a contiguous interval.
-      #|If high < 0 then the interval is entirely negative → impossible.
+      #|INVARIANT (interval):
+      #|Possible balances form a contiguous interval [low, high].
+      #|MAINTENANCE:
+      #|Each update preserves contiguity; if high < 0 we stop early.
+      #|TERMINATION:
+      #|At completion, low <= high indicates a feasible balance range.
     ),
   }
 }
