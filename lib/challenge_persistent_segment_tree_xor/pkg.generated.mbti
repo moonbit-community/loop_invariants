@@ -2,11 +2,23 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_segment_tree_xor"
 
 // Values
+pub fn apply_updates(Node, Int, ArrayView[(Int, Int)]) -> Node
+
+pub fn build(ArrayView[Int], Int, Int) -> Node
+
+pub fn range_xor(Node, Int, Int, Int, Int) -> Int
+
+pub fn set_value(Node, Int, Int, Int, Int) -> Node
+
+pub fn xor_value(Node) -> Int
 
 // Errors
 
 // Types and methods
-type Node
+pub enum Node {
+  Leaf(xor~ : Int)
+  Branch(xor~ : Int, left~ : Node, right~ : Node)
+}
 pub impl Show for Node
 
 // Type aliases

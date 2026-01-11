@@ -2,11 +2,21 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_union_find"
 
 // Values
+pub fn find(DSU, Int) -> Int
+
+pub fn make(Int) -> DSU
+
+pub fn same(DSU, Int, Int) -> Bool
+
+pub fn union(DSU, Int, Int) -> DSU
 
 // Errors
 
 // Types and methods
-type DSU
+pub struct DSU {
+  parent : PArray
+  size : PArray
+}
 pub impl Show for DSU
 
 type Node

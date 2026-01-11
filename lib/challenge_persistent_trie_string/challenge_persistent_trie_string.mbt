@@ -4,13 +4,13 @@
 // ============================================================================
 
 ///|
-struct Node {
+pub struct Node {
   end : Bool
   children : Array[Node?]
 } derive(Show)
 
 ///|
-fn empty_node() -> Node {
+pub fn empty() -> Node {
   { end: false, children: Array::make(26, None) }
 }
 
@@ -29,7 +29,7 @@ fn insert(node : Node, s : StringView, idx : Int) -> Node {
       Some(ch) => {
         let i = char_index(ch)
         let child = match node.children[i] {
-          None => empty_node()
+          None => empty()
           Some(n) => n
         }
         let updated = insert(child, s, idx + 1)
@@ -42,13 +42,13 @@ fn insert(node : Node, s : StringView, idx : Int) -> Node {
 }
 
 ///|
-fn add(root : Node, s : String) -> Node {
+pub fn add(root : Node, s : String) -> Node {
   insert(root, s[:], 0)
 }
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn contains(root : Node, s : String) -> Bool {
+pub fn contains(root : Node, s : String) -> Bool {
   let view = s[:]
   for i = 0, cur = root {
     if i >= view.length() {
@@ -81,7 +81,7 @@ fn contains(root : Node, s : String) -> Bool {
 
 ///|
 test "persistent_trie_string" {
-  let root0 = empty_node()
+  let root0 = empty()
   let root1 = add(root0, "cat")
   let root2 = add(root1, "car")
   let root3 = add(root2, "dog")

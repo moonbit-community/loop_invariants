@@ -2,11 +2,27 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_treap_set"
 
 // Values
+pub fn contains(Treap, Int) -> Bool
+
+pub fn empty() -> Treap
+
+pub fn from_array(ArrayView[Int]) -> Treap
+
+pub fn insert(Treap, Int) -> Treap
+
+pub fn merge(Treap, Treap) -> Treap
+
+pub fn size(Treap) -> Int
+
+pub fn split(Treap, Int) -> (Treap, Treap)
 
 // Errors
 
 // Types and methods
-type Treap
+pub enum Treap {
+  Empty
+  Node(key~ : Int, priority~ : Int, size~ : Int, left~ : Treap, right~ : Treap)
+}
 pub impl Show for Treap
 
 // Type aliases

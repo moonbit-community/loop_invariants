@@ -4,7 +4,7 @@
 // ============================================================================
 
 ///|
-enum TreapMap {
+pub enum TreapMap {
   Empty
   Node(
     key~ : Int,
@@ -17,7 +17,7 @@ enum TreapMap {
 } derive(Show)
 
 ///|
-fn size(t : TreapMap) -> Int {
+pub fn size(t : TreapMap) -> Int {
   match t {
     TreapMap::Empty => 0
     TreapMap::Node(key=_, value=_, priority=_, size~, left=_, right=_) => size
@@ -82,7 +82,12 @@ fn make_node(
 }
 
 ///|
-fn split(t : TreapMap, key : Int) -> (TreapMap, TreapMap) {
+pub fn empty() -> TreapMap {
+  TreapMap::Empty
+}
+
+///|
+pub fn split(t : TreapMap, key : Int) -> (TreapMap, TreapMap) {
   match t {
     TreapMap::Empty => (TreapMap::Empty, TreapMap::Empty)
     TreapMap::Node(key=k, value=v, priority=p, size=_, left=l, right=r) =>
@@ -97,7 +102,7 @@ fn split(t : TreapMap, key : Int) -> (TreapMap, TreapMap) {
 }
 
 ///|
-fn merge(a : TreapMap, b : TreapMap) -> TreapMap {
+pub fn merge(a : TreapMap, b : TreapMap) -> TreapMap {
   match (a, b) {
     (TreapMap::Empty, _) => b
     (_, TreapMap::Empty) => a
@@ -114,7 +119,7 @@ fn merge(a : TreapMap, b : TreapMap) -> TreapMap {
 }
 
 ///|
-fn contains(t : TreapMap, key : Int) -> Bool {
+pub fn contains(t : TreapMap, key : Int) -> Bool {
   match t {
     TreapMap::Empty => false
     TreapMap::Node(key=k, value=_, priority=_, size=_, left=l, right=r) =>
@@ -144,7 +149,7 @@ fn update_value(t : TreapMap, key : Int, value : Int) -> TreapMap {
 }
 
 ///|
-fn insert_or_update(t : TreapMap, key : Int, value : Int) -> TreapMap {
+pub fn insert_or_update(t : TreapMap, key : Int, value : Int) -> TreapMap {
   if contains(t, key) {
     update_value(t, key, value)
   } else {
@@ -162,7 +167,7 @@ fn insert_or_update(t : TreapMap, key : Int, value : Int) -> TreapMap {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn get(t : TreapMap, key : Int) -> Int? {
+pub fn get(t : TreapMap, key : Int) -> Int? {
   let none : Int? = None
   for cur = t, lo = none, hi = none {
     match cur {
@@ -194,7 +199,7 @@ fn get(t : TreapMap, key : Int) -> Int? {
 ///|
 /// Build a treap map by inserting elements in order.
 #warnings("+missing_invariant+missing_reasoning")
-fn from_array(arr : ArrayView[(Int, Int)]) -> TreapMap {
+pub fn from_array(arr : ArrayView[(Int, Int)]) -> TreapMap {
   let n = arr.length()
   for i = 0, tree = TreapMap::Empty {
     if i >= n {

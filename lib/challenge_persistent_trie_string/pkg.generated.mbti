@@ -2,11 +2,19 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_trie_string"
 
 // Values
+pub fn add(Node, String) -> Node
+
+pub fn contains(Node, String) -> Bool
+
+pub fn empty() -> Node
 
 // Errors
 
 // Types and methods
-type Node
+pub struct Node {
+  end : Bool
+  children : Array[Node?]
+}
 pub impl Show for Node
 
 // Type aliases

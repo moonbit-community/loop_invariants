@@ -4,13 +4,13 @@
 // ============================================================================
 
 ///|
-enum Treap {
+pub enum Treap {
   Empty
   Node(key~ : Int, priority~ : Int, size~ : Int, left~ : Treap, right~ : Treap)
 } derive(Show)
 
 ///|
-fn size(t : Treap) -> Int {
+pub fn size(t : Treap) -> Int {
   match t {
     Treap::Empty => 0
     Treap::Node(key=_, priority=_, size~, left=_, right=_) => size
@@ -67,7 +67,12 @@ fn make_node(key : Int, priority : Int, left : Treap, right : Treap) -> Treap {
 }
 
 ///|
-fn split(t : Treap, key : Int) -> (Treap, Treap) {
+pub fn empty() -> Treap {
+  Treap::Empty
+}
+
+///|
+pub fn split(t : Treap, key : Int) -> (Treap, Treap) {
   match t {
     Treap::Empty => (Treap::Empty, Treap::Empty)
     Treap::Node(key=k, priority=p, size=_, left=l, right=r) =>
@@ -82,7 +87,7 @@ fn split(t : Treap, key : Int) -> (Treap, Treap) {
 }
 
 ///|
-fn merge(a : Treap, b : Treap) -> Treap {
+pub fn merge(a : Treap, b : Treap) -> Treap {
   match (a, b) {
     (Treap::Empty, _) => b
     (_, Treap::Empty) => a
@@ -99,7 +104,7 @@ fn merge(a : Treap, b : Treap) -> Treap {
 }
 
 ///|
-fn contains(t : Treap, key : Int) -> Bool {
+pub fn contains(t : Treap, key : Int) -> Bool {
   match t {
     Treap::Empty => false
     Treap::Node(key=k, priority=_, size=_, left=l, right=r) =>
@@ -114,7 +119,7 @@ fn contains(t : Treap, key : Int) -> Bool {
 }
 
 ///|
-fn insert(t : Treap, key : Int) -> Treap {
+pub fn insert(t : Treap, key : Int) -> Treap {
   if contains(t, key) {
     t
   } else {
@@ -127,7 +132,7 @@ fn insert(t : Treap, key : Int) -> Treap {
 ///|
 /// Build a treap by inserting elements in order.
 #warnings("+missing_invariant+missing_reasoning")
-fn from_array(arr : ArrayView[Int]) -> Treap {
+pub fn from_array(arr : ArrayView[Int]) -> Treap {
   let n = arr.length()
   for i = 0, tree = Treap::Empty {
     if i >= n {

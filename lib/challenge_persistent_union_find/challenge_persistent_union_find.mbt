@@ -16,7 +16,7 @@ struct PArray {
 } derive(Show)
 
 ///|
-struct DSU {
+pub struct DSU {
   parent : PArray
   size : PArray
 } derive(Show)
@@ -83,7 +83,7 @@ fn array_set(arr : PArray, idx : Int, value : Int) -> PArray {
 }
 
 ///|
-fn make(n : Int) -> DSU {
+pub fn make(n : Int) -> DSU {
   let parents = Array::makei(n, i => i)
   let sizes = Array::make(n, 1)
   { parent: make_array(parents[:]), size: make_array(sizes[:]) }
@@ -91,7 +91,7 @@ fn make(n : Int) -> DSU {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn find(dsu : DSU, x : Int) -> Int {
+pub fn find(dsu : DSU, x : Int) -> Int {
   for cur = x {
     let p = array_get(dsu.parent, cur)
     if p == cur {
@@ -113,7 +113,7 @@ fn find(dsu : DSU, x : Int) -> Int {
 }
 
 ///|
-fn union(dsu : DSU, a : Int, b : Int) -> DSU {
+pub fn union(dsu : DSU, a : Int, b : Int) -> DSU {
   let ra = find(dsu, a)
   let rb = find(dsu, b)
   if ra == rb {
@@ -131,6 +131,11 @@ fn union(dsu : DSU, a : Int, b : Int) -> DSU {
       { parent: parent2, size: size2 }
     }
   }
+}
+
+///|
+pub fn same(dsu : DSU, a : Int, b : Int) -> Bool {
+  find(dsu, a) == find(dsu, b)
 }
 
 ///|
