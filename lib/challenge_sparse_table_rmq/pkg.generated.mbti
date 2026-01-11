@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_sparse_table_rmq"
+
+// Values
+pub fn build_sparse_table(ArrayView[Int]) -> SparseTable
+
+pub fn range_min(SparseTable, Int, Int) -> Int
+
+// Errors
+
+// Types and methods
+pub struct SparseTable {
+  log : Array[Int]
+  table : Array[Array[Int]]
+}
+
+// Type aliases
+
+// Traits
+

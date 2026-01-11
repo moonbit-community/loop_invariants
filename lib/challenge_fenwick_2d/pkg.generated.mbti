@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_fenwick_2d"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Fenwick2D {
+  rows : Int
+  cols : Int
+  tree : Array[Array[Int]]
+}
+pub fn Fenwick2D::add(Self, Int, Int, Int) -> Unit
+pub fn Fenwick2D::new(Int, Int) -> Self
+pub fn Fenwick2D::prefix_sum(Self, Int, Int) -> Int
+pub fn Fenwick2D::range_sum(Self, Int, Int, Int, Int) -> Int
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_disjoint_sparse_table"
+
+// Values
+pub fn build_disjoint_sparse_table(ArrayView[Int]) -> DisjointSparseTable
+
+pub fn range_min(DisjointSparseTable, Int, Int) -> Int
+
+// Errors
+
+// Types and methods
+pub struct DisjointSparseTable {
+  n : Int
+  table : Array[Array[Int]]
+}
+
+// Type aliases
+
+// Traits
+
