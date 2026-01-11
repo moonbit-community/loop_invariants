@@ -64,39 +64,24 @@ fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
   }
   let log_n = compute_log(n)
   let adj : Array[Array[Int]] = []
-  for i = 0; i < n; i = i + 1 {
+  for _ in 0..<n {
     adj.push([])
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|Initialize adjacency list slots for each vertex.
-    ),
   }
 
   // Build adjacency list
-  for i = 0; i < edges.length(); i = i + 1 {
-    let (u, v) = edges[i]
+  for edge in edges {
+    let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       adj[u].push(v)
       adj[v].push(u)
     }
-  } where {
-    invariant: i >= 0 && i <= edges.length(),
-    reasoning: (
-      #|Add each undirected edge to both adjacency lists.
-    ),
   }
 
   // Initialize arrays
   let depth = Array::make(n, 0)
   let up : Array[Array[Int]] = []
-  for i = 0; i < n; i = i + 1 {
+  for _ in 0..<n {
     up.push(Array::make(log_n, -1))
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|Allocate ancestor table rows with -1 placeholders.
-    ),
   }
 
   // DFS to compute depth and immediate parent
@@ -112,12 +97,22 @@ fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
     } where {
       invariant: v >= 0 && v <= n,
       reasoning: (
-        #|Fill the 2^k ancestor for every vertex.
+        #|INVARIANT (Level k table fill):
+        #|After processing vertices [0..v), up[x][k] is computed for all x < v.
+        #|We use the recurrence up[v][k] = up[up[v][k-1]][k-1] when the
+        #|2^(k-1)-th ancestor exists, yielding the 2^k-th ancestor.
       ),
     }
   } where {
     invariant: k >= 1 && k <= log_n,
-    reasoning: "I: After DFS, up[v][0] = parent[v] for all v (base case: 2^0 = 1st ancestor). M: For level k, up[v][k] = up[up[v][k-1]][k-1]. This computes the 2^k-th ancestor by jumping to the 2^(k-1)-th ancestor, then jumping another 2^(k-1) steps. Proof: 2^(k-1) + 2^(k-1) = 2^k. If either jump is invalid (-1), up[v][k] remains -1. T: After k=log_n-1, up[v][k] correctly stores 2^k-th ancestor for all k in [0, log_n), enabling O(log n) ancestor queries.",
+    reasoning: (
+      #|INVARIANT (Binary lifting table):
+      #|After completing level k-1, up[v][t] is correct for all t < k.
+      #|Level k is computed by composing two jumps of length 2^(k-1):
+      #|  up[v][k] = up[up[v][k-1]][k-1].
+      #|If either jump is invalid, up[v][k] stays -1. This builds all
+      #|2^k ancestors needed for O(log n) queries.
+    ),
   }
   { n, log_n, up, depth }
 }
@@ -143,7 +138,10 @@ fn dfs_build(
   } where {
     invariant: i >= 0 && i <= adj[v].length(),
     reasoning: (
-      #|DFS explores each neighbor once, recursing into unvisited nodes.
+      #|INVARIANT (DFS expansion):
+      #|After processing neighbors [0..i), every vertex reachable from v
+      #|through those neighbors has been visited, with depth and parent set.
+      #|This ensures the DFS tree is built consistently and without revisits.
     ),
   }
 }
@@ -178,7 +176,15 @@ fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
     }
   } where {
     invariant: k >= 0 && k <= self.log_n,
-    reasoning: "I: diff = depth[u] - depth[v] > 0; curr_u is at original position. M: If bit k of diff is set, jump curr_u up by 2^k steps using up[curr_u][k]. The total jump distance equals the binary representation of diff: sum of 2^k for all set bits. T: After processing all bits, curr_u has moved up by exactly diff levels, so depth[curr_u] = depth[curr_v]. Both nodes are now at the same level, ready for LCA binary search.",
+    reasoning: (
+      #|INVARIANT (Leveling by bits):
+      #|After processing bits [0..k), curr_u has been lifted by the sum of
+      #|2^t for all processed bits t that are set in diff. The remaining
+      #|height difference equals diff with the lower k bits cleared.
+      #|
+      #|When the loop ends, curr_u is lifted by exactly diff levels, so
+      #|depth[curr_u] == depth[curr_v].
+    ),
   }
   if curr_u == curr_v {
     return curr_u
@@ -192,7 +198,16 @@ fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
     }
   } where {
     invariant: k >= -1 && k < self.log_n,
-    reasoning: "I: curr_u != curr_v (otherwise we returned early); LCA is a proper ancestor of both; distance from curr_u to LCA is < 2^log_n. M: For each k from high to low, if up[curr_u][k] != up[curr_v][k], the LCA is strictly above the 2^k-th ancestors, so we can safely jump both nodes up by 2^k. If they're equal, jumping would overshoot or reach LCA, so we skip. After bit k, both nodes are within 2^k steps of LCA. T: After k=0, both nodes are exactly 1 step below LCA (their parents are equal but they differ). Return up[curr_u][0] = LCA.",
+    reasoning: (
+      #|INVARIANT (Binary lift toward LCA):
+      #|curr_u and curr_v remain at the same depth and still below the LCA.
+      #|If their 2^k ancestors differ, then the LCA is above both, so lifting
+      #|by 2^k preserves correctness. If the ancestors are equal, lifting
+      #|would skip over the LCA, so we keep them in place.
+      #|
+      #|After finishing, curr_u and curr_v are distinct children of the LCA,
+      #|so up[curr_u][0] is the answer.
+    ),
   }
 
   // Parent of final position is LCA
