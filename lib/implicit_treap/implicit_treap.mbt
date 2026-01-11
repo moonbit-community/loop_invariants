@@ -331,7 +331,14 @@ fn ImplicitTreap::set(self : ImplicitTreap, pos : Int, val : Int64) -> Unit {
     }
   } where {
     invariant: node == -1 || (node >= 0 && node < self.nodes.length()),
-    reasoning: "Following tree structure toward target position",
+    reasoning: (
+      #|INVARIANT (implicit index walk):
+      #|target is the index within the current subtree rooted at node.
+      #|MAINTENANCE:
+      #|Move left if target < left_size; move right otherwise, adjusting target.
+      #|TERMINATION:
+      #|When target equals left_size, node is the desired position.
+    ),
   }
 }
 

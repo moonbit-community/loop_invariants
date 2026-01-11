@@ -641,7 +641,14 @@ test "scc sizes" {
     total = total + result.scc_sizes[i]
   } where {
     invariant: i >= 0 && i <= result.scc_sizes.length(),
-    reasoning: "I: total is sum of sizes for indices [0,i). M: Add size[i]. T: After i = len, total equals n.",
+    reasoning: (
+      #|INVARIANT (sum sizes):
+      #|total equals the sum of scc_sizes for indices in [0, i).
+      #|MAINTENANCE:
+      #|Add scc_sizes[i] to the running total.
+      #|TERMINATION:
+      #|At i = scc_sizes.length(), total equals n.
+    ),
   }
   inspect(total, content="4")
 }

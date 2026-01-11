@@ -81,7 +81,15 @@ fn FenwickTree::from_array(arr : Array[Int64]) -> FenwickTree {
     }
   } where {
     invariant: i >= 1 && i <= n + 1,
-    reasoning: "I: tree[i] = arr[i-1] for all i (values copied from input array). M: For each i, compute parent = i + lowbit(i). By BIT structure, tree[parent] must include tree[i]'s range. Since parent > i (lowbit >= 1), when we process i, all indices < i are already finalized, so tree[i] is complete. We propagate tree[i] to tree[parent], building the partial sums bottom-up. T: After i=n, each tree[j] contains the sum of elements in range [j - lowbit(j) + 1, j], exactly the BIT invariant. O(n) time since each index is visited once.",
+    reasoning: (
+      #|INVARIANT (build BIT):
+      #|tree[1..i) already holds the correct partial sums for their ranges.
+      #|MAINTENANCE:
+      #|Compute parent = i + lowbit(i) and add tree[i] to tree[parent], which
+      #|extends the parent's covered range. Since parent > i, tree[i] is final.
+      #|TERMINATION:
+      #|At i = n + 1, every tree[j] stores the sum of its lowbit range.
+    ),
   }
   { n, tree }
 }
