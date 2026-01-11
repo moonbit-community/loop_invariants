@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_mst_kruskal"
+
+// Values
+pub fn mst_weight(Int, ArrayView[(Int, Int, Int)]) -> Int?
+
+// Errors
+
+// Types and methods
+type DSU
+pub impl Show for DSU
+
+// Type aliases
+
+// Traits
+
