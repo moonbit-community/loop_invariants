@@ -290,7 +290,14 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
     sorted_vals.push(arr[i])
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: sorted_vals contains arr[0..i). M: Append arr[i]. T: After i = n, sorted_vals is a copy of arr.",
+    reasoning: (
+      #|INVARIANT (copy values):
+      #|sorted_vals contains arr[0..i).
+      #|MAINTENANCE:
+      #|Append arr[i] to sorted_vals.
+      #|TERMINATION:
+      #|At i = n, sorted_vals is a copy of arr.
+    ),
   }
   sorted_vals.sort_by(fn(a, b) {
     if a < b {
@@ -312,7 +319,15 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
     }
   } where {
     invariant: i >= 0 && i <= sorted_vals.length(),
-    reasoning: "I: unique_vals holds distinct values from sorted_vals[0..i) in order; val_to_idx maps those values to indices. M: On a new value, record its index and append to unique_vals. T: After i = n, unique_vals is the sorted list of unique values with a complete map.",
+    reasoning: (
+      #|INVARIANT (deduplicate):
+      #|unique_vals holds distinct values from sorted_vals[0..i) in order, and
+      #|val_to_idx maps each unique value to its index.
+      #|MAINTENANCE:
+      #|On a new value, record its index and append to unique_vals.
+      #|TERMINATION:
+      #|At i = sorted_vals.length(), the map and unique list are complete.
+    ),
   }
   let m = unique_vals.length()
   let nodes : Array[PNode] = []
@@ -334,7 +349,15 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
     roots.push(new_root)
   } where {
     invariant: i >= 0 && i <= n && roots.length() == i + 1,
-    reasoning: "I: roots[k] stores frequencies for prefix arr[0..k-1], so roots.length() == i+1 before insertion. M: Insert arr[i] to create new_root for prefix i+1. T: After i = n, roots has n+1 versions for all prefixes.",
+    reasoning: (
+      #|INVARIANT (build versions):
+      #|roots[k] stores frequencies for prefix arr[0..k-1], so roots has i+1
+      #|versions before inserting arr[i].
+      #|MAINTENANCE:
+      #|Insert arr[i] to create a new root for prefix length i+1.
+      #|TERMINATION:
+      #|At i = n, roots has n+1 versions for all prefixes.
+    ),
   }
   { nodes, roots, sorted_vals: unique_vals }
 }

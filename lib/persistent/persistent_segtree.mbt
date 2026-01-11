@@ -365,7 +365,14 @@ fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
     }
   } where {
     invariant: i >= 0 && i <= sorted.length(),
-    reasoning: "I: unique contains the distinct values from sorted[0..i) in order. M: Push sorted[i] only when it differs from the previous entry. T: After i = n, unique is the sorted list of unique values.",
+    reasoning: (
+      #|INVARIANT (deduplicate):
+      #|unique contains distinct values from sorted[0..i) in order.
+      #|MAINTENANCE:
+      #|Append sorted[i] when it differs from the previous value.
+      #|TERMINATION:
+      #|At i = sorted.length(), unique is the sorted list of unique values.
+    ),
   }
   let m = unique.length()
 
@@ -387,7 +394,14 @@ fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
 
   } where {
     invariant: i >= 0 && i <= arr.length(),
-    reasoning: "I: Versions 0..i represent prefix counts for arr[0..i-1]. M: Update version i at the rank of arr[i], creating version i+1. T: After i = n, there are n+1 versions representing all prefixes.",
+    reasoning: (
+      #|INVARIANT (build versions):
+      #|Versions 0..i represent prefix counts for arr[0..i-1].
+      #|MAINTENANCE:
+      #|Update version i at the rank of arr[i], creating version i+1.
+      #|TERMINATION:
+      #|At i = n, there are n+1 versions representing all prefixes.
+    ),
   }
   { pst, sorted_values: unique, n: arr.length() }
 }

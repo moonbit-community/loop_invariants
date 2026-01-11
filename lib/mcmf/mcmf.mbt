@@ -55,7 +55,14 @@ fn MinCostMaxFlow::new(n : Int) -> MinCostMaxFlow {
     adj[i] = []
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: adj has length n. M: Assign a fresh empty list at index i so lists do not alias. T: After i = n, every vertex has its own empty adjacency list.",
+    reasoning: (
+      #|INVARIANT (adj init):
+      #|Adjacency lists for vertices in [0, i) are initialized and independent.
+      #|MAINTENANCE:
+      #|Assign a fresh empty list to adj[i].
+      #|TERMINATION:
+      #|At i = n, all adjacency lists are initialized.
+    ),
   }
   {
     n,
@@ -96,7 +103,14 @@ fn MinCostMaxFlow::spfa(
     self.in_queue[i] = false
   } where {
     invariant: i >= 0 && i <= self.n,
-    reasoning: "I: SPFA state may be stale from prior calls. M: Reset dist/prev/queue flags for indices < i. T: After i = n, all vertices are unvisited with dist = INF and no queue marks.",
+    reasoning: (
+      #|INVARIANT (SPFA reset):
+      #|For vertices in [0, i), dist/prev/in_queue have been reset.
+      #|MAINTENANCE:
+      #|Clear state for vertex i.
+      #|TERMINATION:
+      #|At i = n, all vertices are reset for a fresh SPFA run.
+    ),
   }
   self.dist[source] = 0L
   let queue : Array[Int] = [source]
@@ -120,7 +134,15 @@ fn MinCostMaxFlow::spfa(
       }
     } where {
       invariant: i >= 0 && i <= self.adj[u].length() && self.dist[u] < MCMF_INF,
-      reasoning: "I: u was dequeued, so dist[u] is finite. M: Scan each outgoing edge once and relax dist for reachable neighbors, enqueueing if needed. T: After i = deg(u), all relaxations from u have been applied.",
+      reasoning: (
+        #|INVARIANT (SPFA relax):
+        #|All edges in adj[u][0..i) have been considered for relaxation.
+        #|MAINTENANCE:
+        #|Relax edge i if residual capacity exists and improve dist, enqueueing
+        #|the neighbor when needed.
+        #|TERMINATION:
+        #|At i = deg(u), all outgoing edges from u are processed.
+      ),
     }
   }
   self.dist[sink] < MCMF_INF
@@ -231,7 +253,14 @@ fn solve_assignment(cost : Array[Array[Int64]]) -> Int64 {
     mcmf.add_edge(source, i + 1, 1L, 0L)
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: No worker edges added yet. M: Add capacity-1 edge from source to worker i. T: After i = n, every worker has an incoming edge from source.",
+    reasoning: (
+      #|INVARIANT (source workers):
+      #|Workers in [0, i) have incoming edges from source.
+      #|MAINTENANCE:
+      #|Add the edge for worker i.
+      #|TERMINATION:
+      #|At i = n, all workers are connected from source.
+    ),
   }
 
   // Workers to tasks
@@ -240,11 +269,25 @@ fn solve_assignment(cost : Array[Array[Int64]]) -> Int64 {
       mcmf.add_edge(i + 1, n + 1 + j, 1L, cost[i][j])
     } where {
       invariant: j >= 0 && j <= cost[i].length(),
-      reasoning: "I: For fixed worker i, edges to tasks [0,j) have been added. M: Add one edge to task j with its assignment cost. T: After j = tasks, worker i connects to every task exactly once.",
+      reasoning: (
+        #|INVARIANT (worker tasks):
+        #|For fixed worker i, edges to tasks in [0, j) have been added.
+        #|MAINTENANCE:
+        #|Add the edge from worker i to task j with its cost.
+        #|TERMINATION:
+        #|At j = tasks, worker i connects to every task exactly once.
+      ),
     }
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Workers in [0,i) already have edges to all tasks. M: For worker i, add cost edges to every task column j. T: After i = n, the bipartite worker→task layer is fully connected with given costs.",
+    reasoning: (
+      #|INVARIANT (all workers):
+      #|Workers in [0, i) already have edges to all tasks.
+      #|MAINTENANCE:
+      #|Add edges for worker i to every task with its cost.
+      #|TERMINATION:
+      #|At i = n, the worker→task layer is fully connected.
+    ),
   }
 
   // Tasks to sink
@@ -252,7 +295,14 @@ fn solve_assignment(cost : Array[Array[Int64]]) -> Int64 {
     mcmf.add_edge(n + 1 + j, sink, 1L, 0L)
   } where {
     invariant: j >= 0 && j <= n,
-    reasoning: "I: No task→sink edges added yet. M: Add capacity-1 edge from task j to sink. T: After j = n, each task is connected to sink.",
+    reasoning: (
+      #|INVARIANT (tasks sink):
+      #|Tasks in [0, j) have edges to sink.
+      #|MAINTENANCE:
+      #|Add the edge from task j to sink.
+      #|TERMINATION:
+      #|At j = n, all tasks are connected to sink.
+    ),
   }
   let (_, min_cost) = mcmf.compute(source, sink)
   min_cost
