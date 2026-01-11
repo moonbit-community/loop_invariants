@@ -4,19 +4,19 @@
 // ============================================================================
 
 ///|
-struct Point {
+pub(all) struct Point {
   x : Int
   y : Int
 } derive(Show, Eq)
 
 ///|
-enum Kd {
+pub enum Kd {
   Empty
   Node(point~ : Point, axis~ : Int, left~ : Kd, right~ : Kd)
 } derive(Show)
 
 ///|
-fn size(t : Kd) -> Int {
+pub fn size(t : Kd) -> Int {
   match t {
     Kd::Empty => 0
     Kd::Node(point=_, axis=_, left~, right~) => 1 + size(left) + size(right)
@@ -33,22 +33,32 @@ fn coord(p : Point, axis : Int) -> Int {
 }
 
 ///|
-fn insert(t : Kd, p : Point, axis : Int) -> Kd {
+fn insert_node(t : Kd, p : Point, axis : Int) -> Kd {
   match t {
     Kd::Empty => Kd::Node(point=p, axis~, left=Kd::Empty, right=Kd::Empty)
     Kd::Node(point=pt, axis=ax, left=l, right=r) =>
       if p == pt {
         t
       } else if coord(p, ax) < coord(pt, ax) {
-        Kd::Node(point=pt, axis=ax, left=insert(l, p, 1 - ax), right=r)
+        Kd::Node(point=pt, axis=ax, left=insert_node(l, p, 1 - ax), right=r)
       } else {
-        Kd::Node(point=pt, axis=ax, left=l, right=insert(r, p, 1 - ax))
+        Kd::Node(point=pt, axis=ax, left=l, right=insert_node(r, p, 1 - ax))
       }
   }
 }
 
 ///|
-fn contains(t : Kd, p : Point) -> Bool {
+pub fn empty() -> Kd {
+  Kd::Empty
+}
+
+///|
+pub fn insert(t : Kd, p : Point) -> Kd {
+  insert_node(t, p, 0)
+}
+
+///|
+pub fn contains(t : Kd, p : Point) -> Bool {
   match t {
     Kd::Empty => false
     Kd::Node(point=pt, axis=ax, left=l, right=r) =>
@@ -65,7 +75,7 @@ fn contains(t : Kd, p : Point) -> Bool {
 ///|
 /// Iterative containment with reasoning on split axis.
 #warnings("+missing_invariant+missing_reasoning")
-fn contains_iter(t : Kd, p : Point) -> Bool {
+pub fn contains_iter(t : Kd, p : Point) -> Bool {
   for cur = t {
     match cur {
       Kd::Empty => break false
@@ -94,13 +104,13 @@ fn contains_iter(t : Kd, p : Point) -> Bool {
 ///|
 /// Build a KD-tree by inserting points in order.
 #warnings("+missing_invariant+missing_reasoning")
-fn from_array(arr : ArrayView[Point]) -> Kd {
+pub fn from_array(arr : ArrayView[Point]) -> Kd {
   let n = arr.length()
   for i = 0, tree = Kd::Empty {
     if i >= n {
       break tree
     } else {
-      continue i + 1, insert(tree, arr[i], 0)
+      continue i + 1, insert(tree, arr[i])
     }
   } where {
     invariant: i >= 0 && i <= n,

@@ -2,11 +2,23 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_interval_tree"
 
 // Values
+pub fn empty() -> Tree
+
+pub fn find_overlap(Tree, Int, Int) -> (Int, Int)?
+
+pub fn from_array(ArrayView[(Int, Int)]) -> Tree
+
+pub fn insert(Tree, Int, Int) -> Tree
+
+pub fn size(Tree) -> Int
 
 // Errors
 
 // Types and methods
-type Tree
+pub enum Tree {
+  Empty
+  Node(start~ : Int, end~ : Int, max_end~ : Int, left~ : Tree, right~ : Tree)
+}
 pub impl Show for Tree
 
 // Type aliases

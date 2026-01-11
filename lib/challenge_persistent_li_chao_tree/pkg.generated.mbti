@@ -2,14 +2,29 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_li_chao_tree"
 
 // Values
+pub fn empty() -> Node
+
+pub fn from_array(ArrayView[Line], Int, Int) -> Node
+
+pub fn insert(Node, Line, Int, Int) -> Node
+
+pub fn query(Node, Int, Int, Int) -> Int
+
+pub fn size(Node) -> Int
 
 // Errors
 
 // Types and methods
-type Line
+pub(all) struct Line {
+  m : Int
+  b : Int
+}
 pub impl Show for Line
 
-type Node
+pub enum Node {
+  Empty
+  Node(line~ : Line, left~ : Node, right~ : Node)
+}
 pub impl Show for Node
 
 // Type aliases

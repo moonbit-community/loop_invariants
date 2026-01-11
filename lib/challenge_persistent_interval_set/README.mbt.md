@@ -23,9 +23,6 @@ test "persistent interval set" {
     @challenge_persistent_interval_set.contains_point(t3, 10),
     content="false",
   )
-  inspect(
-    @challenge_persistent_interval_set.to_array(t3),
-    content="[(2, 9)]",
-  )
+  inspect(@challenge_persistent_interval_set.to_array(t3), content="[(2, 9)]")
 }
 ```

@@ -4,7 +4,7 @@
 // ============================================================================
 
 ///|
-enum Tree {
+pub enum Tree {
   Empty
   Node(start~ : Int, end~ : Int, max_end~ : Int, left~ : Tree, right~ : Tree)
 } derive(Show)
@@ -27,7 +27,7 @@ fn max_end(t : Tree) -> Int {
 }
 
 ///|
-fn size(t : Tree) -> Int {
+pub fn size(t : Tree) -> Int {
   match t {
     Tree::Empty => 0
     Tree::Node(start=_, end=_, max_end=_, left~, right~) =>
@@ -65,7 +65,12 @@ fn make_node(start : Int, end : Int, left : Tree, right : Tree) -> Tree {
 }
 
 ///|
-fn insert(t : Tree, start : Int, end : Int) -> Tree {
+pub fn empty() -> Tree {
+  Tree::Empty
+}
+
+///|
+pub fn insert(t : Tree, start : Int, end : Int) -> Tree {
   match t {
     Tree::Empty =>
       Tree::Node(start~, end~, max_end=end, left=Tree::Empty, right=Tree::Empty)
@@ -89,7 +94,7 @@ fn overlaps(a_start : Int, a_end : Int, b_start : Int, b_end : Int) -> Bool {
 ///|
 /// Find one interval that overlaps [qs, qe] if any.
 #warnings("+missing_invariant+missing_reasoning")
-fn find_overlap(t : Tree, qs : Int, qe : Int) -> (Int, Int)? {
+pub fn find_overlap(t : Tree, qs : Int, qe : Int) -> (Int, Int)? {
   for cur = t {
     match cur {
       Tree::Empty => break None
@@ -120,7 +125,7 @@ fn find_overlap(t : Tree, qs : Int, qe : Int) -> (Int, Int)? {
 ///|
 /// Build an interval tree by inserting intervals in order.
 #warnings("+missing_invariant+missing_reasoning")
-fn from_array(arr : ArrayView[(Int, Int)]) -> Tree {
+pub fn from_array(arr : ArrayView[(Int, Int)]) -> Tree {
   let n = arr.length()
   for i = 0, tree = Tree::Empty {
     if i >= n {

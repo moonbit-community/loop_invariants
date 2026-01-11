@@ -4,13 +4,13 @@
 // ============================================================================
 
 ///|
-struct Line {
+pub(all) struct Line {
   m : Int
   b : Int
 } derive(Show)
 
 ///|
-enum Node {
+pub enum Node {
   Empty
   Node(line~ : Line, left~ : Node, right~ : Node)
 } derive(Show)
@@ -52,7 +52,22 @@ fn insert_line(node : Node, line : Line, l : Int, r : Int) -> Node {
 }
 
 ///|
-fn query(node : Node, x : Int, l : Int, r : Int) -> Int {
+pub fn empty() -> Node {
+  Node::Empty
+}
+
+///|
+pub fn size(tree : Node) -> Int {
+  line_count(tree)
+}
+
+///|
+pub fn insert(tree : Node, line : Line, l : Int, r : Int) -> Node {
+  insert_line(tree, line, l, r)
+}
+
+///|
+pub fn query(node : Node, x : Int, l : Int, r : Int) -> Int {
   match node {
     Node::Empty => 0x3fffffff
     Node::Node(line=ln, left~, right~) => {
@@ -82,13 +97,13 @@ fn query(node : Node, x : Int, l : Int, r : Int) -> Int {
 ///|
 /// Build a Li Chao tree by inserting lines in order.
 #warnings("+missing_invariant+missing_reasoning")
-fn from_array(lines : ArrayView[Line], l : Int, r : Int) -> Node {
+pub fn from_array(lines : ArrayView[Line], l : Int, r : Int) -> Node {
   let n = lines.length()
   for i = 0, tree = Node::Empty {
     if i >= n {
       break tree
     } else {
-      continue i + 1, insert_line(tree, lines[i], l, r)
+      continue i + 1, insert(tree, lines[i], l, r)
     }
   } where {
     invariant: i >= 0 && i <= n,

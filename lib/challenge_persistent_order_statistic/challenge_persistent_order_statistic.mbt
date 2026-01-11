@@ -10,7 +10,7 @@ enum Node {
 } derive(Show)
 
 ///|
-struct OrderStat {
+pub struct OrderStat {
   root : Node
   lo : Int
   hi : Int
@@ -76,14 +76,24 @@ fn insert(node : Node, l : Int, r : Int, value : Int) -> Node {
 }
 
 ///|
-fn add(os : OrderStat, value : Int) -> OrderStat {
+pub fn make(lo : Int, hi : Int) -> OrderStat {
+  { root: Node::Empty, lo, hi }
+}
+
+///|
+pub fn size(os : OrderStat) -> Int {
+  count(os.root)
+}
+
+///|
+pub fn add(os : OrderStat, value : Int) -> OrderStat {
   { root: insert(os.root, os.lo, os.hi, value), lo: os.lo, hi: os.hi }
 }
 
 ///|
 /// kth element (0-based) within the multiset.
 #warnings("+missing_invariant+missing_reasoning")
-fn kth(os : OrderStat, k : Int) -> Int? {
+pub fn kth(os : OrderStat, k : Int) -> Int? {
   if k < 0 || k >= count(os.root) {
     return None
   }

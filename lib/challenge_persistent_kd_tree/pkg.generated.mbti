@@ -2,14 +2,31 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_kd_tree"
 
 // Values
+pub fn contains(Kd, Point) -> Bool
+
+pub fn contains_iter(Kd, Point) -> Bool
+
+pub fn empty() -> Kd
+
+pub fn from_array(ArrayView[Point]) -> Kd
+
+pub fn insert(Kd, Point) -> Kd
+
+pub fn size(Kd) -> Int
 
 // Errors
 
 // Types and methods
-type Kd
+pub enum Kd {
+  Empty
+  Node(point~ : Point, axis~ : Int, left~ : Kd, right~ : Kd)
+}
 pub impl Show for Kd
 
-type Point
+pub(all) struct Point {
+  x : Int
+  y : Int
+}
 pub impl Eq for Point
 pub impl Show for Point
 

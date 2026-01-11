@@ -2,6 +2,13 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_order_statistic"
 
 // Values
+pub fn add(OrderStat, Int) -> OrderStat
+
+pub fn kth(OrderStat, Int) -> Int?
+
+pub fn make(Int, Int) -> OrderStat
+
+pub fn size(OrderStat) -> Int
 
 // Errors
 
@@ -9,7 +16,11 @@ package "bobzhang/loop_invariants/lib/challenge_persistent_order_statistic"
 type Node
 pub impl Show for Node
 
-type OrderStat
+pub struct OrderStat {
+  root : Node
+  lo : Int
+  hi : Int
+}
 pub impl Show for OrderStat
 
 // Type aliases
