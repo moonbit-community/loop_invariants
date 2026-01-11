@@ -114,7 +114,36 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
     }
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Empty deque, no windows processed. M: (1) Remove front if outside [i-k+1, i]. (2) Remove back elements with values <= arr[i] (they can never be max while arr[i] exists). (3) Add i. Deque maintains decreasing values, so front is always max. T: After processing all elements, result contains max for each window.",
+    reasoning: (
+      #|INVARIANT 1 (Bounds): i iterates through [0, n], and deque pointers stay
+      #|within a valid slice of the backing array.
+    ),
+    invariant: dq.front >= 0 && dq.back >= dq.front && dq.back <= i,
+    reasoning: (
+      #|INVARIANT 2 (Deque indices): front/back delimit a valid slice of dq.data
+      #|containing indices from the processed prefix [0, i).
+    ),
+    invariant: dq.is_empty() ||
+    (dq.peek_front() >= i - k && dq.peek_front() <= i - 1),
+    reasoning: (
+      #|INVARIANT 3 (Window membership): if deque is non-empty, its front index
+      #|lies inside the current window for prefix [0, i): [i-k, i-1].
+    ),
+    invariant: result.length() == (if i >= k { i - k + 1 } else { 0 }),
+    reasoning: (
+      #|INVARIANT 4 (Output size): after processing indices [0, i), we have
+      #|exactly one maximum per full window.
+      #|
+      #|MAINTENANCE:
+      #|- Drop indices <= i-k (out of window).
+      #|- Drop back indices with value <= arr[i] so remaining values are
+      #|  strictly decreasing.
+      #|- Push i so deque indices increase and front stays the window maximum.
+      #|- When i >= k-1, emit front as the window max.
+      #|
+      #|TERMINATION:
+      #|After i = n, every window [j, j+k-1] has been recorded in order.
+    ),
   }
   result
 }
@@ -153,7 +182,36 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
     }
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: Empty deque. M: Maintain increasing values in deque. Front is minimum for current window. T: All window minimums computed.",
+    reasoning: (
+      #|INVARIANT 1 (Bounds): i advances through [0, n], deque pointers stay
+      #|within a valid slice of the backing array.
+    ),
+    invariant: dq.front >= 0 && dq.back >= dq.front && dq.back <= i,
+    reasoning: (
+      #|INVARIANT 2 (Deque indices): front/back delimit a valid slice of dq.data
+      #|containing indices from the processed prefix [0, i).
+    ),
+    invariant: dq.is_empty() ||
+    (dq.peek_front() >= i - k && dq.peek_front() <= i - 1),
+    reasoning: (
+      #|INVARIANT 3 (Window membership): if deque is non-empty, its front index
+      #|lies inside the current window for prefix [0, i): [i-k, i-1].
+    ),
+    invariant: result.length() == (if i >= k { i - k + 1 } else { 0 }),
+    reasoning: (
+      #|INVARIANT 4 (Output size): after processing indices [0, i), we have
+      #|exactly one minimum per full window.
+      #|
+      #|MAINTENANCE:
+      #|- Drop indices <= i-k (out of window).
+      #|- Drop back indices with value >= arr[i] so remaining values are
+      #|  strictly increasing.
+      #|- Push i so deque indices increase and front stays the window minimum.
+      #|- When i >= k-1, emit front as the window min.
+      #|
+      #|TERMINATION:
+      #|After i = n, every window [j, j+k-1] has been recorded in order.
+    ),
   }
   result
 }
@@ -179,12 +237,9 @@ fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
   result.push(window_sum)
 
   // Slide window
-  for i = k; i < n; i = i + 1 {
+  for i in k..<n {
     window_sum = window_sum + arr[i] - arr[i - k]
     result.push(window_sum)
-  } where {
-    invariant: i >= k && i <= n,
-    reasoning: "I: window_sum = sum of arr[0..k). M: Add new element arr[i], remove old arr[i-k]. window_sum always equals sum of current window. T: All window sums computed.",
   }
   result
 }
@@ -218,8 +273,26 @@ fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
       }
     }
   } where {
-    invariant: right >= 0 && right <= n && left <= right + 1,
-    reasoning: "I: Empty window, sum=0. M: Expand right, shrink left if sum > target. Window [left, right] always valid (sum <= target) after shrinking. Track maximum length. T: All subarrays considered, max_len is answer.",
+    invariant: right >= 0 && right <= n && left >= 0 && left <= right + 1,
+    reasoning: (
+      #|INVARIANT 1 (Bounds): left/right stay within [0, n] with at most one-step
+      #|gap when the window becomes empty.
+    ),
+    invariant: max_len >= 0 && max_len <= right,
+    reasoning: (
+      #|INVARIANT 2 (Best-so-far): max_len is the longest valid window found
+      #|in the processed prefix [0, right).
+      #|
+      #|MAINTENANCE:
+      #|- Add arr[right] to the running sum.
+      #|- If sum exceeds target, advance left while subtracting values.
+      #|  (Assumes non-negative elements so shrinking only decreases sum.)
+      #|- After shrinking, [left, right] is the longest valid window ending at right.
+      #|- Update max_len if this window is longer.
+      #|
+      #|TERMINATION:
+      #|After right = n, every window end was considered, so max_len is optimal.
+    ),
   }
   max_len
 }
@@ -247,8 +320,25 @@ fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int {
       left = left + 1
     }
   } where {
-    invariant: right >= 0 && right <= n && left <= right + 1,
-    reasoning: "I: Empty window, sum=0, min_len=impossible. M: Expand right. While sum >= target, record length and shrink left. T: min_len is shortest subarray with sum >= target, or n+1 if none.",
+    invariant: right >= 0 && right <= n && left >= 0 && left <= right + 1,
+    reasoning: (
+      #|INVARIANT 1 (Bounds): left/right stay within [0, n] with at most one-step
+      #|gap when the window becomes empty.
+    ),
+    invariant: min_len >= 1 && min_len <= n + 1,
+    reasoning: (
+      #|INVARIANT 2 (Best-so-far): min_len is the shortest window with sum >= target
+      #|seen in the processed prefix, or n+1 if none exists yet.
+      #|
+      #|MAINTENANCE:
+      #|- Add arr[right] to the running sum.
+      #|- While sum >= target, record the current length and shrink from left.
+      #|  (Assumes non-negative elements so shrinking only decreases sum.)
+      #|- This enumerates all minimal windows ending at right.
+      #|
+      #|TERMINATION:
+      #|After right = n, min_len is the minimal length over all valid windows.
+    ),
   }
   if min_len > n {
     0
