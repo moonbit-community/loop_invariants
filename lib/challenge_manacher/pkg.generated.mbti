@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_manacher"
+
+// Values
+pub fn longest_palindrome_len(StringView) -> Int
+
+pub fn manacher_radii(StringView) -> (Array[Int], Array[Int])
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
