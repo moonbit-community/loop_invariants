@@ -101,7 +101,18 @@ fn Eertree::get_suffix_link(self : Eertree, v : Int, i : Int, c : Int) -> Int {
     continue self.nodes[cur].suffix_link
   } where {
     invariant: cur >= 0 && cur < self.nodes.length(),
-    reasoning: "Suffix links eventually reach odd root which always matches",
+    reasoning: (
+      #|INVARIANT (suffix search):
+      #|cur is a palindromic suffix of text[0..i), and all longer suffix
+      #|palindromes have already been checked and cannot be extended by c.
+      #|MAINTENANCE:
+      #|If the character before this palindrome is not c, move to the suffix
+      #|link, which is the next shorter palindromic suffix.
+      #|TERMINATION:
+      #|Lengths strictly decrease along suffix links and eventually reach the
+      #|odd root (len = -1), for which prev_pos = i and text[i] == c, so the
+      #|loop always finds a valid extendable suffix.
+    ),
   }
 }
 
@@ -159,8 +170,13 @@ fn Eertree::from_string(s : String) -> Eertree {
   } where {
     invariant: i >= 0 && i <= s.length() && tree.text.length() == i,
     reasoning: (
-      #|The tree contains all palindromes from the prefix s[0..i).
-      #|Each iteration adds s[i] and extends the structure by one character.
+      #|INVARIANT (prefix build):
+      #|The tree contains all distinct palindromes from s[0..i), and the
+      #|stored text length equals i (processed prefix length).
+      #|MAINTENANCE:
+      #|Insert s[i], extending the tree with all palindromes ending at i.
+      #|TERMINATION:
+      #|At i = s.length(), the tree represents all palindromes of the string.
     ),
   }
   tree
@@ -184,8 +200,15 @@ fn Eertree::propagate_counts(self : Eertree) -> Unit {
   } where {
     invariant: i >= 1 && i < self.nodes.length(),
     reasoning: (
-      #|Nodes with index > i have already propagated their counts to suffix links.
-      #|Reverse order ensures children contribute before parents.
+      #|INVARIANT (count propagation):
+      #|All nodes with index > i have already pushed their counts to their
+      #|suffix links, so their parents reflect those occurrences.
+      #|MAINTENANCE:
+      #|Add node i's count to its suffix link, aggregating occurrences of
+      #|longer palindromes into their largest proper palindromic suffix.
+      #|TERMINATION:
+      #|After i = 1, every node's count includes contributions from all
+      #|palindromes that have it as a suffix.
     ),
   }
 }
@@ -199,7 +222,12 @@ fn Eertree::count_total(self : Eertree) -> Int {
   } where {
     invariant: i >= 2 && i <= self.nodes.length(),
     reasoning: (
-      #|total is the sum of counts for nodes [2..i).
+      #|INVARIANT (sum counts):
+      #|total equals the sum of counts for nodes in [2, i).
+      #|MAINTENANCE:
+      #|Add node i's count to the running total.
+      #|TERMINATION:
+      #|At i = nodes.length(), total is the sum over all palindrome nodes.
     ),
   }
   total
@@ -228,7 +256,13 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
       } where {
         invariant: i >= 0 && i <= current.length(),
         reasoning: (
-          #|sb contains current[0..i) in order.
+          #|INVARIANT (first half):
+          #|sb contains the characters of current[0..i) in order, so it is
+          #|the prefix used to build the palindrome string.
+          #|MAINTENANCE:
+          #|Append current[i] to extend the prefix by one character.
+          #|TERMINATION:
+          #|At i = current.length(), the first half (and middle if odd) is built.
         ),
       }
       // Second half (reverse, skip middle for odd length)
@@ -242,7 +276,13 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
       } where {
         invariant: i >= -1 && i <= start,
         reasoning: (
-          #|sb appends the mirrored suffix of current from (i+1)..start.
+          #|INVARIANT (mirror half):
+          #|sb already contains the first half, and the mirrored suffix for
+          #|indices (i+1..start] has been appended in reverse order.
+          #|MAINTENANCE:
+          #|Append current[i] to extend the mirrored half by one character.
+          #|TERMINATION:
+          #|At i = -1, the full palindrome string is constructed.
         ),
       }
       result.push(sb.to_string())
@@ -260,8 +300,13 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
     } where {
       invariant: c >= 0 && c <= 256,
       reasoning: (
-        #|All edges with labels < c have been explored; current is restored
-        #|to its original state before moving to the next label.
+        #|INVARIANT (child DFS):
+        #|All outgoing edges with labels < c have been explored, and current
+        #|has been restored to the path for node after each recursive call.
+        #|MAINTENANCE:
+        #|If an edge exists, push its label, recurse, then pop to backtrack.
+        #|TERMINATION:
+        #|At c = 256, every child edge has been visited exactly once.
       ),
     }
   }
@@ -284,7 +329,12 @@ fn Eertree::longest_length(self : Eertree) -> Int {
   } where {
     invariant: i >= 2 && i <= self.nodes.length(),
     reasoning: (
-      #|max_len is the maximum length among nodes [2..i).
+      #|INVARIANT (max length):
+      #|max_len equals the maximum palindrome length among nodes in [2, i).
+      #|MAINTENANCE:
+      #|Update max_len when a longer node is found.
+      #|TERMINATION:
+      #|At i = nodes.length(), max_len is the longest palindrome length.
     ),
   }
   max_len
@@ -306,7 +356,13 @@ fn Eertree::contains_palindrome(self : Eertree, p : String) -> Bool {
   } where {
     invariant: i >= 0 && i <= p.length() / 2,
     reasoning: (
-      #|All checked pairs (0..i) are symmetric, so the prefix tested so far is palindromic.
+      #|INVARIANT (palindrome check):
+      #|All checked pairs in indices [0, i) are symmetric, so the prefix tested
+      #|so far remains palindromic.
+      #|MAINTENANCE:
+      #|Compare the next symmetric pair; return false on mismatch.
+      #|TERMINATION:
+      #|At i = p.length()/2, all symmetric pairs match and p is a palindrome.
     ),
   }
 
@@ -331,8 +387,14 @@ fn Eertree::contains_palindrome(self : Eertree, p : String) -> Bool {
   } where {
     invariant: i >= -1 && i <= start_idx,
     reasoning: (
-      #|node represents the palindrome built from the center with processed
-      #|characters p[i+1..start_idx] added symmetrically to both ends.
+      #|INVARIANT (center expansion):
+      #|node represents the palindrome built from the center using characters
+      #|p[i+1..start_idx], added symmetrically outward.
+      #|MAINTENANCE:
+      #|Follow the edge labeled by p[i]; failure means the palindrome is not
+      #|represented in the tree.
+      #|TERMINATION:
+      #|At i = -1, node represents the full palindrome p.
     ),
   }
 
@@ -377,7 +439,13 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
     } where {
       invariant: c >= 0 && c <= 256,
       reasoning: (
-        #|All outgoing edges with labels < c have been explored for the target.
+        #|INVARIANT (path search):
+        #|All outgoing edges with labels < c have been explored, and path has
+        #|been restored after backtracking from any explored child.
+        #|MAINTENANCE:
+        #|Try edge c; if it does not lead to target, backtrack and continue.
+        #|TERMINATION:
+        #|At c = 256, all children have been tried with no path found.
       ),
     }
     false
@@ -395,7 +463,12 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
   } where {
     invariant: i >= 0 && i <= path.length(),
     reasoning: (
-      #|sb contains path[0..i) in order.
+      #|INVARIANT (prefix build):
+      #|sb contains path[0..i) in order, forming the first half of the palindrome.
+      #|MAINTENANCE:
+      #|Append path[i] to extend the prefix by one character.
+      #|TERMINATION:
+      #|At i = path.length(), the first half is complete.
     ),
   }
   let rev_start = if len % 2 == 0 {
@@ -408,7 +481,13 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
   } where {
     invariant: i >= -1 && i <= rev_start,
     reasoning: (
-      #|sb appends the mirrored suffix of path from (i+1)..rev_start.
+      #|INVARIANT (mirror build):
+      #|sb already contains the first half and the mirrored suffix for indices
+      #|(i+1..rev_start] has been appended in reverse order.
+      #|MAINTENANCE:
+      #|Append path[i] to extend the mirrored half.
+      #|TERMINATION:
+      #|At i = -1, the palindrome string is fully constructed.
     ),
   }
   sb.to_string()
