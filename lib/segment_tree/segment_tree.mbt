@@ -273,7 +273,14 @@ fn IterativeSegTree::new(arr : Array[Int64]) -> IterativeSegTree {
     tree[n + i] = arr[i]
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: tree[n..n+i) mirrors arr[0..i). M: Copy arr[i] into leaf position n+i. T: After i = n, all leaves store the array values.",
+    reasoning: (
+      #|INVARIANT (leaf copy):
+      #|tree[n..n+i) mirrors arr[0..i).
+      #|MAINTENANCE:
+      #|Copy arr[i] into leaf position n + i.
+      #|TERMINATION:
+      #|At i = n, all leaves store the array values.
+    ),
   }
 
   // Build internal nodes from bottom up
@@ -281,7 +288,14 @@ fn IterativeSegTree::new(arr : Array[Int64]) -> IterativeSegTree {
     tree[i] = tree[2 * i] + tree[2 * i + 1]
   } where {
     invariant: i >= 0 && i <= n - 1,
-    reasoning: "I: Leaves tree[n..2n) contain arr values. M: For each internal node i from n-1 down to 1, compute tree[i] = tree[2*i] + tree[2*i+1]. Since we process bottom-up, children are already computed. T: After i = 1, tree[1] is the total sum, and tree[i] = sum of corresponding range for all i. O(n) time for n-1 internal nodes.",
+    reasoning: (
+      #|INVARIANT (build internal nodes):
+      #|For all indices > i, internal node sums are correct.
+      #|MAINTENANCE:
+      #|Compute tree[i] as the sum of its two children, which are already built.
+      #|TERMINATION:
+      #|At i = 1, the entire tree stores correct range sums.
+    ),
   }
   { n, tree }
 }
@@ -427,7 +441,14 @@ test "segment tree large" {
     arr.push(i.to_int64())
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: arr has length i and contains 0..i-1. M: Push i. T: After i = n, arr holds 0..n-1.",
+    reasoning: (
+      #|INVARIANT (build test array):
+      #|arr has length i and contains values 0..i-1.
+      #|MAINTENANCE:
+      #|Push i to extend the sequence by one element.
+      #|TERMINATION:
+      #|At i = n, arr contains 0..n-1.
+    ),
   }
   let st = SegmentTree::new(arr)
   // Sum of 0..99 = 99*100/2 = 4950

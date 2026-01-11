@@ -973,7 +973,14 @@ fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
       st.tree[rows + i][cols + j] = matrix[i][j].to_int64()
     } where {
       invariant: j >= 0 && j <= cols,
-      reasoning: "I: For row i, leaves for columns [0,j) are set. M: Set leaf at column j from matrix. T: After j = cols, all leaves for row i are set.",
+      reasoning: (
+        #|INVARIANT (row leaves):
+        #|For row i, leaves for columns [0, j) are set from matrix[i].
+        #|MAINTENANCE:
+        #|Assign leaf at column j with matrix[i][j].
+        #|TERMINATION:
+        #|At j = cols, all leaves for row i are set.
+      ),
     }
     // Build inner tree for this row
     for j = cols - 1; j >= 1; j = j - 1 {
@@ -981,11 +988,25 @@ fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
         st.tree[rows + i][2 * j + 1]
     } where {
       invariant: j >= 0 && j <= cols - 1,
-      reasoning: "I: For row i, inner nodes in (j, cols) are computed from children. M: Compute node j from its two children. T: After j = 0, the row's inner tree is complete.",
+      reasoning: (
+        #|INVARIANT (row build):
+        #|For row i, inner nodes in (j, cols) have been computed.
+        #|MAINTENANCE:
+        #|Compute node j from its two children.
+        #|TERMINATION:
+        #|After j = 0, the row's inner tree is complete.
+      ),
     }
   } where {
     invariant: i >= 0 && i <= rows,
-    reasoning: "I: Rows [0,i) have their leaf values filled and inner trees built. M: Fill leaves for row i and compute its inner tree bottom-up. T: After i = rows, all leaf rows are built.",
+    reasoning: (
+      #|INVARIANT (leaf rows):
+      #|Rows in [0, i) have their leaf values filled and inner trees built.
+      #|MAINTENANCE:
+      #|Fill leaves and build the inner tree for row i.
+      #|TERMINATION:
+      #|At i = rows, all leaf rows are built.
+    ),
   }
 
   // Build internal rows
@@ -994,11 +1015,25 @@ fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
       st.tree[i][j] = st.tree[2 * i][j] + st.tree[2 * i + 1][j]
     } where {
       invariant: j >= 0 && j <= 2 * cols,
-      reasoning: "I: For row i, columns [0,j) are updated from child rows. M: Combine column j from the two child rows. T: After j = 2*cols, row i is fully updated.",
+      reasoning: (
+        #|INVARIANT (row combine):
+        #|For row i, columns [0, j) have been updated from child rows.
+        #|MAINTENANCE:
+        #|Combine column j from the two child rows.
+        #|TERMINATION:
+        #|At j = 2 * cols, row i is fully updated.
+      ),
     }
   } where {
     invariant: i >= 0 && i <= rows - 1,
-    reasoning: "I: All rows with index > i have been combined. M: For row i, sum corresponding columns from its two child rows. T: After i = 0, all internal row trees are built.",
+    reasoning: (
+      #|INVARIANT (internal rows):
+      #|All rows with index > i have been combined from their children.
+      #|MAINTENANCE:
+      #|Combine row i from its two child rows.
+      #|TERMINATION:
+      #|At i = 0, all internal rows are built.
+    ),
   }
   st
 }
@@ -1023,7 +1058,14 @@ fn SegmentTree2D::update(
       self.tree[init_r][2 * j + 1]
   } where {
     invariant: j >= 1 && j <= c / 2,
-    reasoning: "I: Nodes below j on the column path in row init_r reflect the updated leaf. M: Recompute node j from its children. T: After j = 0, the row's column aggregates are updated up to the root.",
+    reasoning: (
+      #|INVARIANT (update row):
+      #|Nodes below j on the column path in row init_r reflect the updated leaf.
+      #|MAINTENANCE:
+      #|Recompute node j from its two children.
+      #|TERMINATION:
+      #|At j = 0, the row's column aggregates are updated to the root.
+    ),
   }
 
   // Update outer tree
@@ -1034,11 +1076,25 @@ fn SegmentTree2D::update(
       self.tree[r][j] = self.tree[r][2 * j] + self.tree[r][2 * j + 1]
     } where {
       invariant: j >= 1 && j <= c / 2,
-      reasoning: "I: For row r, nodes below j on the column path are updated. M: Recompute node j from its children. T: After j = 0, row r's inner tree is consistent.",
+      reasoning: (
+        #|INVARIANT (update inner tree):
+        #|For row r, nodes below j on the column path are updated.
+        #|MAINTENANCE:
+        #|Recompute node j from its children.
+        #|TERMINATION:
+        #|At j = 0, row r's inner tree is consistent.
+      ),
     }
   } where {
     invariant: r >= 1 && r <= init_r / 2,
-    reasoning: "I: Rows below r on the path to the root have updated column c. M: Recompute column c at row r and fix its inner-tree ancestors. T: After r = 0, all ancestors reflect the updated cell.",
+    reasoning: (
+      #|INVARIANT (update outer tree):
+      #|Rows below r on the path to the root reflect the updated column c.
+      #|MAINTENANCE:
+      #|Recompute column c at row r and update its inner-tree ancestors.
+      #|TERMINATION:
+      #|At r = 0, all ancestors reflect the updated cell.
+    ),
   }
 }
 
