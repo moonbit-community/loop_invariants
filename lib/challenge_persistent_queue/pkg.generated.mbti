@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_persistent_queue"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Queue[T]
+pub impl[T : Show] Show for Queue[T]
+
+type Stack[T]
+pub impl[T : Show] Show for Stack[T]
+
+// Type aliases
+
+// Traits
+

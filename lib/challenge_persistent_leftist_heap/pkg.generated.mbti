@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_persistent_leftist_heap"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Heap
+pub impl Show for Heap
+
+// Type aliases
+
+// Traits
+

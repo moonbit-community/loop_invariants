@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_persistent_stack_min"
+
+// Values
+
+// Errors
+
+// Types and methods
+type MinStack
+pub impl Show for MinStack
+
+// Type aliases
+
+// Traits
+
