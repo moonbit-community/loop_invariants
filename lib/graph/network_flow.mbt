@@ -85,6 +85,11 @@ fn FlowNetwork::bfs_find_path(
         #|
         #|This preserves the BFS tree: parent[v] records the first edge that
         #|discovers v, giving a shortest (fewest-edge) path from source.
+        #|MAINTENANCE:
+        #|Each newly discovered neighbor is marked and queued exactly once,
+        #|so the invariant extends to the next edge.
+        #|TERMINATION:
+        #|When i == adj[u].length(), all residual edges out of u are scanned.
       ),
     }
   } where {
@@ -98,6 +103,10 @@ fn FlowNetwork::bfs_find_path(
       #|visited[v] = true iff v is reachable from source in the residual graph
       #|via the edges scanned so far; parent[v] stores a valid predecessor edge
       #|for all visited v != source.
+      #|
+      #|MAINTENANCE:
+      #|Expanding queue[front] scans its outgoing residual edges and appends
+      #|newly discovered vertices to the queue, preserving reachability.
       #|
       #|TERMINATION:
       #|We stop once sink is visited (shortest augmenting path found), or once
@@ -121,45 +130,81 @@ fn FlowNetwork::edmonds_karp(
   sink : Int,
 ) -> Int {
   let mut max_flow = 0
-  let mut found_path = true
-  while found_path {
+  for {
     let (has_path, parent) = self.bfs_find_path(source, sink)
-    found_path = has_path
-    if has_path {
-      // Find minimum residual capacity along path
-      let mut path_flow = 2147483647
-      let mut v = sink
-      while v != source {
-        match parent[v] {
-          None => v = source // Exit loop
-          Some((u, edge_idx)) => {
-            let residual = self.adj[u][edge_idx].capacity -
-              self.adj[u][edge_idx].flow
-            if residual < path_flow {
-              path_flow = residual
-            }
-            v = u
-          }
-        }
-      }
-
-      // Augment flow along path
-      v = sink
-      while v != source {
-        match parent[v] {
-          None => v = source
-          Some((u, edge_idx)) => {
-            self.adj[u][edge_idx].flow = self.adj[u][edge_idx].flow + path_flow
-            let rev_idx = self.adj[u][edge_idx].rev_idx
-            self.adj[v][rev_idx].flow = self.adj[v][rev_idx].flow - path_flow
-            v = u
-          }
-        }
-      }
-      max_flow = max_flow + path_flow
+    if not(has_path) {
+      break max_flow
     }
+    // Find minimum residual capacity along path
+    let mut path_flow = 2147483647
+    for v = sink; v != source; {
+      match parent[v] {
+        None => break
+        Some((u, edge_idx)) => {
+          let residual = self.adj[u][edge_idx].capacity -
+            self.adj[u][edge_idx].flow
+          if residual < path_flow {
+            path_flow = residual
+          }
+          continue u
+        }
+      }
+    } where {
+      invariant: v >= 0 && v < self.n,
+      reasoning: (
+        #|INVARIANT (Bottleneck scan):
+        #|Traversing the parent chain from sink toward source, path_flow equals
+        #|the minimum residual capacity over the edges on the already scanned
+        #|suffix of the path.
+        #|MAINTENANCE:
+        #|Each step considers one parent edge (u, v) and updates path_flow with
+        #|min(path_flow, residual), preserving the minimum over the suffix.
+        #|TERMINATION:
+        #|When v == source (or parent is None), the bottleneck of the path
+        #|from source to sink is determined.
+      ),
+    }
+
+    // Augment flow along path
+    for v = sink; v != source; {
+      match parent[v] {
+        None => break
+        Some((u, edge_idx)) => {
+          self.adj[u][edge_idx].flow = self.adj[u][edge_idx].flow + path_flow
+          let rev_idx = self.adj[u][edge_idx].rev_idx
+          self.adj[v][rev_idx].flow = self.adj[v][rev_idx].flow - path_flow
+          continue u
+        }
+      }
+    } where {
+      invariant: v >= 0 && v < self.n,
+      reasoning: (
+        #|INVARIANT (Augmentation):
+        #|For edges on the already processed suffix of the parent path, the
+        #|forward flow has been increased and the reverse flow decreased by
+        #|path_flow, preserving flow conservation and residual capacities.
+        #|MAINTENANCE:
+        #|Updating one edge and its reverse keeps antisymmetric residual
+        #|flows; continuing moves one step closer to source.
+        #|TERMINATION:
+        #|When v == source, the entire augmenting path has been updated.
+      ),
+    }
+    max_flow = max_flow + path_flow
+  } where {
+    invariant: max_flow >= 0,
+    reasoning: (
+      #|INVARIANT (Edmonds-Karp progress):
+      #|max_flow equals the value of the current feasible flow, and each
+      #|iteration augments along a shortest residual path (fewest edges).
+      #|MAINTENANCE:
+      #|BFS yields a shortest augmenting path; augmenting by path_flow
+      #|preserves feasibility and strictly increases max_flow.
+      #|TERMINATION:
+      #|When BFS finds no augmenting path, the residual graph has no s→t path,
+      #|so by max-flow/min-cut, the current flow is maximum.
+    ),
   }
-  max_flow
 }
 
 ///|
@@ -260,6 +305,11 @@ fn DinicNetwork::bfs_dinic(
         #|After processing edges adj[u][0..i), all neighbors reachable from u
         #|by a positive-residual edge have been assigned a level and enqueued.
         #|Each such neighbor gets level = level[u] + 1, preserving BFS layers.
+        #|MAINTENANCE:
+        #|Assigning a level to each newly discovered neighbor extends the
+        #|layering property to the next edge.
+        #|TERMINATION:
+        #|At i == adj[u].length(), all outgoing residual edges of u are scanned.
       ),
     }
   } where {
@@ -269,6 +319,11 @@ fn DinicNetwork::bfs_dinic(
       #|All nodes in queue[0..front) have been expanded; for any visited node v,
       #|level[v] equals the shortest edge-distance from source in the residual
       #|graph. Unvisited nodes keep level = -1.
+      #|MAINTENANCE:
+      #|Expanding queue[front] assigns levels to newly discovered neighbors,
+      #|preserving shortest-layer distances.
+      #|TERMINATION:
+      #|When front reaches queue.length(), the level graph is complete.
     ),
   }
   self.level[sink] >= 0
@@ -284,23 +339,40 @@ fn DinicNetwork::dfs_dinic(
   if u == sink {
     return flow_in
   }
-  while self.iter[u] < self.adj[u].length() {
-    let edge = self.adj[u][self.iter[u]]
+  for idx = self.iter[u]; idx < self.adj[u].length(); {
+    let edge = self.adj[u][idx]
     let residual = edge.capacity - edge.flow
     if residual > 0 && self.level[edge.to] == self.level[u] + 1 {
       let min_flow = if flow_in < residual { flow_in } else { residual }
       let pushed = self.dfs_dinic(edge.to, sink, min_flow)
       if pushed > 0 {
-        self.adj[u][self.iter[u]].flow = self.adj[u][self.iter[u]].flow + pushed
+        self.adj[u][idx].flow = self.adj[u][idx].flow + pushed
         let rev_idx = edge.rev_idx
         self.adj[edge.to][rev_idx].flow = self.adj[edge.to][rev_idx].flow -
           pushed
-        return pushed
+        self.iter[u] = idx
+        break pushed
       }
     }
-    self.iter[u] = self.iter[u] + 1
+    self.iter[u] = idx + 1
+    continue idx + 1
+  } else {
+    0
+  } where {
+    invariant: idx >= 0 && idx <= self.adj[u].length(),
+    invariant: self.iter[u] == idx,
+    reasoning: (
+      #|INVARIANT (DFS edge scan):
+      #|Edges adj[u][0..idx) have been fully explored for blocking flow, and
+      #|self.iter[u] tracks the first untried edge index.
+      #|MAINTENANCE:
+      #|If an edge cannot push flow, we advance idx and iter[u] together. If
+      #|we push flow, we stop and keep iter[u] at idx to allow further pushes.
+      #|TERMINATION:
+      #|idx increases toward adj[u].length(); the loop ends when all edges are
+      #|exhausted (return 0) or a positive flow is pushed.
+    ),
   }
-  0
 }
 
 ///|
@@ -310,7 +382,10 @@ fn DinicNetwork::dinic_max_flow(
   sink : Int,
 ) -> Int {
   let mut max_flow = 0
-  while self.bfs_dinic(source, sink) {
+  for {
+    if not(self.bfs_dinic(source, sink)) {
+      break max_flow
+    }
     for i = 0; i < self.n; i = i + 1 {
       self.iter[i] = 0
     } where {
@@ -324,13 +399,34 @@ fn DinicNetwork::dinic_max_flow(
         #|At i = n, all iterators are reset.
       ),
     }
-    let mut pushed = self.dfs_dinic(source, sink, 2147483647)
-    while pushed > 0 {
+    for pushed = self.dfs_dinic(source, sink, 2147483647); pushed > 0; {
       max_flow = max_flow + pushed
-      pushed = self.dfs_dinic(source, sink, 2147483647)
+      continue self.dfs_dinic(source, sink, 2147483647)
+    } where {
+      invariant: pushed >= 0,
+      reasoning: (
+        #|INVARIANT (Blocking flow augmentation):
+        #|Each successful dfs_dinic call augments along the current level
+        #|graph, so max_flow accumulates the flow sent in this phase.
+        #|MAINTENANCE:
+        #|Adding pushed preserves flow feasibility and increases max_flow.
+        #|TERMINATION:
+        #|When pushed == 0, the current level graph is blocked.
+      ),
     }
+  } where {
+    invariant: max_flow >= 0,
+    reasoning: (
+      #|INVARIANT (Dinic phases):
+      #|Each iteration builds a level graph and sends a blocking flow, so
+      #|max_flow is the value of a feasible flow in the network.
+      #|MAINTENANCE:
+      #|Blocking flow augmentation preserves feasibility and strictly increases
+      #|max_flow whenever the sink is reachable.
+      #|TERMINATION:
+      #|When BFS cannot reach sink, no augmenting path exists; the flow is max.
+    ),
   }
-  max_flow
 }
 
 ///|
@@ -451,6 +547,11 @@ fn MCMFNetwork::spfa_mcmf(
         #|After processing edges adj[u][0..i), any neighbor reachable from u
         #|via a positive-residual edge has been relaxed. If a shorter path
         #|is found, dist and parent are updated and the neighbor is queued.
+        #|MAINTENANCE:
+        #|Each edge relaxation updates dist/parent only when it improves the
+        #|best known cost, preserving shortest-path estimates.
+        #|TERMINATION:
+        #|At i == adj[u].length(), all residual edges from u are processed.
       ),
     }
   } where {
@@ -463,6 +564,11 @@ fn MCMFNetwork::spfa_mcmf(
       #|
       #|SPFA handles negative-cost reverse edges introduced by flow updates,
       #|while ensuring dist decreases only when a strictly cheaper path is found.
+      #|MAINTENANCE:
+      #|Popping a vertex scans its outgoing edges and enqueues any neighbor
+      #|whose dist improves, preserving the invariant.
+      #|TERMINATION:
+      #|When the queue is exhausted, no further relaxation is possible.
     ),
   }
   dist[sink] < inf
@@ -478,41 +584,76 @@ fn MCMFNetwork::min_cost_max_flow(
   let mut min_cost = 0
   let dist : Array[Int] = Array::make(self.n, 0)
   let parent : Array[(Int, Int)?] = Array::make(self.n, None)
-  while self.spfa_mcmf(source, sink, dist, parent) {
+  for {
+    if not(self.spfa_mcmf(source, sink, dist, parent)) {
+      break (max_flow, min_cost)
+    }
     // Find minimum residual capacity
     let mut path_flow = 2147483647
-    let mut v = sink
-    while v != source {
+    for v = sink; v != source; {
       match parent[v] {
-        None => v = source
+        None => break
         Some((u, edge_idx)) => {
           let residual = self.adj[u][edge_idx].capacity -
             self.adj[u][edge_idx].flow
           if residual < path_flow {
             path_flow = residual
           }
-          v = u
+          continue u
         }
       }
+    } where {
+      invariant: v >= 0 && v < self.n,
+      reasoning: (
+        #|INVARIANT (Bottleneck scan):
+        #|path_flow is the minimum residual capacity over the scanned suffix
+        #|of the parent path from sink toward source.
+        #|MAINTENANCE:
+        #|Each parent edge updates path_flow with a min against its residual.
+        #|TERMINATION:
+        #|When v == source, the full-path bottleneck is known.
+      ),
     }
 
     // Augment flow
-    v = sink
-    while v != source {
+    for v = sink; v != source; {
       match parent[v] {
-        None => v = source
+        None => break
         Some((u, edge_idx)) => {
           self.adj[u][edge_idx].flow = self.adj[u][edge_idx].flow + path_flow
           let rev_idx = self.adj[u][edge_idx].rev_idx
           self.adj[v][rev_idx].flow = self.adj[v][rev_idx].flow - path_flow
           min_cost = min_cost + path_flow * self.adj[u][edge_idx].cost
-          v = u
+          continue u
         }
       }
+    } where {
+      invariant: v >= 0 && v < self.n,
+      reasoning: (
+        #|INVARIANT (Costed augmentation):
+        #|For the processed suffix of the path, flow has been augmented by
+        #|path_flow and min_cost accounts for the added cost on those edges.
+        #|MAINTENANCE:
+        #|Updating one edge and its reverse preserves feasibility while
+        #|accumulating cost = path_flow * edge.cost.
+        #|TERMINATION:
+        #|When v == source, the entire augmenting path is updated.
+      ),
     }
     max_flow = max_flow + path_flow
+  } where {
+    invariant: max_flow >= 0,
+    reasoning: (
+      #|INVARIANT (MCMF progress):
+      #|max_flow/min_cost describe a feasible flow and its total cost.
+      #|Each SPFA iteration finds the cheapest residual path and augments it.
+      #|MAINTENANCE:
+      #|Augmenting by path_flow preserves feasibility and increases max_flow
+      #|while updating min_cost by the path cost.
+      #|TERMINATION:
+      #|When no residual path exists, the current flow is max with min cost.
+    ),
   }
-  (max_flow, min_cost)
 }
 
 ///|
@@ -614,7 +755,10 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
 
     // Find augmenting path
     let mut done = false
-    while not(done) {
+    for {
+      if done {
+        break
+      }
       used[j0] = true
       let i0 = p[j0]
       let mut delta = inf
@@ -641,6 +785,11 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
           #|
           #|delta/j1 track the smallest minv among un-used columns scanned so
           #|far, selecting the next column to enter the tree.
+          #|MAINTENANCE:
+          #|Updating minv/way for column j preserves the minimum reduced costs
+          #|for the scanned prefix and keeps delta/j1 as the best candidate.
+          #|TERMINATION:
+          #|At j == m + 1, delta/j1 identify the globally best un-used column.
         ),
       }
 
@@ -660,17 +809,48 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
           #|u[i] + v[j] <= cost[i][j] for all assigned rows/columns, while
           #|minv for un-used columns decreases uniformly so the best candidate
           #|reaches zero reduced cost.
+          #|MAINTENANCE:
+          #|Adjusting u/v for used columns and minv for others keeps all
+          #|reduced costs non-negative and maintains feasibility.
+          #|TERMINATION:
+          #|After the update, at least one new column has zero reduced cost.
         ),
       }
       j0 = j1
       done = p[j0] == 0
+    } where {
+      invariant: j0 >= 0 && j0 <= m,
+      reasoning: (
+        #|INVARIANT (Alternating tree):
+        #|used marks the columns currently in the alternating tree rooted at
+        #|column 0; for any un-used column k, minv[k] is the minimum reduced
+        #|cost edge from the tree to k, and way[k] stores its predecessor.
+        #|MAINTENANCE:
+        #|We add j0 to the tree, recompute the minimum reduced costs, update
+        #|potentials by delta to preserve feasibility, and move to j1, the
+        #|best next column candidate.
+        #|TERMINATION:
+        #|When p[j0] == 0, we have reached a free column and can augment.
+      ),
     }
 
     // Augment along path
-    while j0 != 0 {
-      let j1 = way[j0]
-      p[j0] = p[j1]
-      j0 = j1
+    for j = j0; j != 0; {
+      let j1 = way[j]
+      p[j] = p[j1]
+      continue j1
+    } where {
+      invariant: j >= 0 && j <= m,
+      reasoning: (
+        #|INVARIANT (Augment path):
+        #|Along the suffix from the current column j to 0, p has been updated
+        #|to shift the matching along the alternating path.
+        #|MAINTENANCE:
+        #|Assigning p[j] = p[j1] flips one edge of the alternating path and
+        #|moves one step closer to column 0.
+        #|TERMINATION:
+        #|When j == 0, the augmentation is complete and matching size grows.
+      ),
     }
   } where {
     invariant: i >= 1 && i <= n + 1,
@@ -682,6 +862,11 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
       #|
       #|The inner phase builds an alternating tree and augments along a
       #|zero reduced-cost path, extending the matching by one row.
+      #|MAINTENANCE:
+      #|Each iteration augments by one row using a zero reduced-cost path,
+      #|preserving feasibility and optimality of the partial matching.
+      #|TERMINATION:
+      #|After i == n, all rows are matched and the assignment is optimal.
     ),
   }
 
