@@ -96,26 +96,30 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
     reasoning: (
-      #|NEIGHBOR PROCESSING INVARIANT:
-      #|After processing neighbor w, low[v] is updated to reflect paths
-      #|through w that can reach earlier vertices on the stack.
+      #|INVARIANT 1 (Neighbors processed):
+      #|After processing neighbors[0..i), low[v] equals the minimum of:
+      #|  - disc[v] (v itself),
+      #|  - low[w] for processed tree edges v→w,
+      #|  - disc[w] for processed back edges v→w with w on stack.
+      #|Thus low[v] is the earliest discovery time reachable from v via any
+      #|processed edge while staying inside the current DFS stack.
       #|
-      #|CASE 1 (Tree edge, disc[w] == -1):
-      #|  w is unvisited, so we recurse.
-      #|  After recursion, low[w] contains the minimum disc reachable from w.
-      #|  We update low[v] = min(low[v], low[w]).
+      #|CASE ANALYSIS:
+      #|- Tree edge (disc[w] == -1): recurse; low[w] summarizes w's subtree.
+      #|- Back edge (on_stack[w]): update with disc[w] to capture a cycle.
+      #|- Cross edge (!on_stack[w]): ignore; w is in a finished SCC.
       #|
-      #|CASE 2 (Back edge, on_stack[w]):
-      #|  w is on the current DFS path (ancestor of v).
-      #|  This creates a cycle: v can reach w's discovery time.
-      #|  We update low[v] = min(low[v], disc[w]).
-      #|
-      #|CASE 3 (Cross edge, !on_stack[w]):
-      #|  w was visited but is not on stack → already in a finished SCC.
-      #|  We cannot use w to reach earlier stack vertices.
-      #|  No update needed.
-      #|
-      #|CORRECTNESS: low[v] captures the earliest reachable stack vertex.
+      #|CORRECTNESS: processing all neighbors yields the true low-link value.
+    ),
+    invariant: self.on_stack[v],
+    reasoning: (
+      #|INVARIANT 2 (Stack membership): v is pushed before the loop and is not
+      #|popped until after all neighbors are processed.
+    ),
+    invariant: self.low[v] <= self.disc[v],
+    reasoning: (
+      #|INVARIANT 3 (Low-link monotonicity): low[v] starts at disc[v] and only
+      #|decreases through min updates.
     ),
   }
   // Check if v is an SCC root
@@ -132,12 +136,17 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
     } where {
       invariant: self.on_stack[v],
       invariant: scc.all(x => not(self.on_stack[x])),
+      invariant: scc.all(x => self.disc[x] >= self.disc[v]),
       invariant: self.stack.length() + scc.length() <= self.n,
       reasoning: (
         #|SCC POP INVARIANT:
         #|The stack stores the current DFS path; the SCC rooted at v is a
         #|contiguous suffix of this stack. Each iteration pops one vertex from
         #|the top, marks it not-on-stack, and records it in scc.
+        #|
+        #|Because disc[v] == low[v], v is the earliest discovered vertex in
+        #|this SCC. Every popped vertex w was discovered after v, so
+        #|disc[w] >= disc[v].
         #|
         #|v stays on the stack until it is popped, so self.on_stack[v] holds
         #|for every iteration start. Popped vertices never return to the stack.
@@ -167,11 +176,12 @@ fn TarjanSCC::find_sccs(self : TarjanSCC) -> Unit {
     invariant: v >= 0 && v <= self.n,
     reasoning: (
       #|MAIN LOOP INVARIANT:
-      #|After processing vertex v, all vertices 0..v-1 that were reachable
-      #|from already-processed starting points have been assigned to SCCs.
+      #|After processing vertices [0, v), every vertex with index < v has
+      #|disc != -1, and every SCC reachable from those start points has been
+      #|fully extracted into self.sccs.
       #|
-      #|The graph may be disconnected, so we must start DFS from each
-      #|unvisited vertex to cover all SCCs.
+      #|The graph may be disconnected, so we start DFS from each unvisited
+      #|vertex to ensure complete SCC coverage.
     ),
   }
 }
@@ -294,7 +304,18 @@ fn KosarajuSCC::dfs1(self : KosarajuSCC, v : Int) -> Unit {
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
     reasoning: (
-      #|Standard DFS visiting all unvisited neighbors.
+      #|INVARIANT 1 (Neighbor processing):
+      #|After processing neighbors[0..i), every vertex reachable from v via
+      #|those neighbors is marked visited, and its subtree has been fully
+      #|explored. Those vertices will appear in finish_order before v
+      #|(post-order property).
+      #|
+      #|Each unvisited neighbor triggers a DFS, which completes before we
+      #|advance i, preserving DFS correctness.
+    ),
+    invariant: self.visited[v],
+    reasoning: (
+      #|INVARIANT 2 (Visited): v stays marked visited throughout its DFS.
     ),
   }
   // Post-order: add to finish order after processing all descendants
@@ -321,12 +342,18 @@ fn KosarajuSCC::dfs2(self : KosarajuSCC, v : Int, scc : Array[Int]) -> Unit {
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
     reasoning: (
-      #|DFS on reversed graph collects all vertices in same SCC.
+      #|INVARIANT 1 (Neighbor processing):
+      #|After processing neighbors[0..i), all vertices reachable from v via
+      #|those reversed edges are visited and added to scc.
       #|
       #|WHY THIS WORKS:
-      #|If u and v are in same SCC: u ⟷ v in original graph.
-      #|So u ⟷ v in reversed graph too.
-      #|Therefore, DFS from any SCC vertex reaches all SCC vertices.
+      #|If u and v are in the same SCC, then u ⟷ v in the original graph,
+      #|so u ⟷ v in the reversed graph too. DFS from v therefore reaches
+      #|exactly the vertices of its SCC (given the processing order in pass 2).
+    ),
+    invariant: self.visited[v],
+    reasoning: (
+      #|INVARIANT 2 (Visited): v remains marked visited during the DFS2 call.
     ),
   }
 }
@@ -348,7 +375,10 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
   } where {
     invariant: v >= 0 && v <= self.n,
     reasoning: (
-      #|First pass builds finish_order using post-order traversal.
+      #|PASS 1 INVARIANT:
+      #|After processing vertices [0, v), all vertices reachable from those
+      #|start points are visited, and their finishing times have been appended
+      #|to finish_order in post-order.
     ),
   }
   // Reset visited for pass 2
@@ -362,7 +392,9 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
   } where {
     invariant: v >= 0 && v <= self.n,
     reasoning: (
-      #|Reset visited array for second pass.
+      #|RESET INVARIANT:
+      #|After processing vertices [0, v), visited[0..v) = false, preparing
+      #|a clean slate for the second pass.
     ),
   }
   // Pass 2: DFS in reverse finish order on reversed graph
@@ -394,6 +426,11 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
       #|Each DFS2 call discovers exactly one SCC because:
       #|1. All vertices in an SCC are mutually reachable (in reversed graph too)
       #|2. We can't escape to other SCCs due to processing order
+    ),
+    invariant: self.sccs.length() <= self.n,
+    reasoning: (
+      #|PROGRESS: After each iteration, all vertices with finish-order index
+      #|greater than i are assigned to exactly one SCC in self.sccs.
     ),
   }
 }
@@ -492,22 +529,26 @@ fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
     reasoning: (
-      #|ARTICULATION POINT DETECTION:
+      #|INVARIANT 1 (Processed neighbors):
+      #|After processing neighbors[0..i), children equals the number of DFS
+      #|tree children of v among those neighbors.
       #|
-      #|For non-root vertex v with child w:
-      #|  If low[w] >= disc[v], then w's subtree has no back edge to
-      #|  any ancestor of v. Removing v disconnects w's subtree.
+      #|low[v] equals the minimum of:
+      #|  - disc[v],
+      #|  - low[w] for tree edges v→w among processed neighbors,
+      #|  - disc[w] for back edges (excluding parent) among processed neighbors.
       #|
-      #|For root vertex v:
-      #|  If v has 2+ children in DFS tree, removing v disconnects them.
-      #|  (Children can't reach each other without going through root)
+      #|ARTICULATION CONDITIONS:
+      #|- Root v is an articulation point iff children > 1.
+      #|- Non-root v is an articulation point iff there exists child w with
+      #|  low[w] >= disc[v] (w's subtree cannot bypass v).
       #|
-      #|LOW-LINK UPDATE:
-      #|  - Tree edge: low[v] = min(low[v], low[w])
-      #|  - Back edge: low[v] = min(low[v], disc[w])
-      #|
-      #|Note: We skip the parent edge in undirected graphs to avoid
-      #|treating the edge we came from as a back edge.
+      #|We skip the parent edge in undirected graphs to avoid false back edges.
+    ),
+    invariant: self.low[v] <= self.disc[v],
+    reasoning: (
+      #|INVARIANT 2 (Low-link monotonicity): low[v] starts at disc[v] and only
+      #|decreases through min updates.
     ),
   }
 }
@@ -615,23 +656,24 @@ fn BridgeFinder::dfs(self : BridgeFinder, v : Int) -> Unit {
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
     reasoning: (
+      #|INVARIANT 1 (Processed neighbors):
+      #|After processing neighbors[0..i), low[v] is the minimum of:
+      #|  - disc[v],
+      #|  - low[w] for tree edges v→w among processed neighbors,
+      #|  - disc[w] for back edges (excluding parent) among processed neighbors.
+      #|
       #|BRIDGE DETECTION:
+      #|Edge (v, w) is a bridge iff low[w] > disc[v]. This means w's subtree
+      #|cannot reach v or any ancestor of v via a back edge, so removing
+      #|edge (v, w) disconnects the graph.
       #|
-      #|Edge (v, w) is a bridge iff low[w] > disc[v].
-      #|
-      #|This means: the lowest discovery time reachable from w's subtree
-      #|is still greater than v's discovery time.
-      #|
-      #|In other words: there's no back edge from w's subtree to v or
-      #|any ancestor of v. The ONLY way to reach v from w is through
-      #|edge (v, w), making it a bridge.
-      #|
-      #|DIFFERENCE FROM ARTICULATION POINT:
-      #|  - Articulation: low[w] >= disc[v] (includes equality)
-      #|  - Bridge: low[w] > disc[v] (strictly greater)
-      #|
-      #|If low[w] == disc[v], there's a back edge to v itself,
-      #|so the edge (v, w) is part of a cycle and NOT a bridge.
+      #|If low[w] == disc[v], there is a back edge to v itself, making
+      #|edge (v, w) part of a cycle, hence not a bridge.
+    ),
+    invariant: self.low[v] <= self.disc[v],
+    reasoning: (
+      #|INVARIANT 2 (Low-link monotonicity): low[v] starts at disc[v] and only
+      #|decreases through min updates.
     ),
   }
 }
@@ -713,16 +755,23 @@ fn TopologicalSort::dfs(self : TopologicalSort, v : Int) -> Unit {
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
     reasoning: (
+      #|INVARIANT 1 (Neighbor processing):
+      #|After processing neighbors[0..i), any reachable neighbor subtree has
+      #|either been fully visited (state 2) or we have detected a cycle.
+      #|
       #|CYCLE DETECTION:
-      #|If we reach a vertex with state 1 (currently being visited),
-      #|we've found a back edge, which means a cycle exists.
+      #|If we reach a vertex with state 1 (currently being visited), we have
+      #|a back edge, which implies a directed cycle.
       #|
       #|THREE STATES:
       #|  0 (unvisited): Not yet reached
-      #|  1 (visiting): On current DFS path (ancestors)
+      #|  1 (visiting): On current DFS path
       #|  2 (visited): Completely processed
-      #|
-      #|A back edge goes from current vertex to a visiting vertex.
+    ),
+    invariant: self.state[v] == 1 || self.has_cycle,
+    reasoning: (
+      #|INVARIANT 2 (DFS stack): v remains in the visiting state until its
+      #|neighbors are processed (or a cycle short-circuits the search).
     ),
   }
   self.state[v] = 2 // Visited
