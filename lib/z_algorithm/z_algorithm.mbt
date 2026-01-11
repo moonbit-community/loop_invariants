@@ -85,18 +85,32 @@ fn compute_z(s : String) -> Array[Int] {
   } where {
     invariant: 1 <= i && i <= n,
     reasoning: (
-      #|i is the next position whose Z value is not yet finalized.
-      #|All positions < i have been computed exactly once.
+      #|INVARIANT (scan position):
+      #|i is the next position whose Z value is not finalized; all indices < i
+      #|have their Z-values computed.
+      #|MAINTENANCE:
+      #|Each iteration finalizes z[i] and increments i by 1.
+      #|TERMINATION:
+      #|At i = n, the entire Z-array is computed.
     ),
     invariant: 0 <= l && l <= r + 1 && r < n,
     reasoning: (
-      #|Z-box boundaries stay within the string.
-      #|When r < l, the box is empty; otherwise s[l..r] matches s[0..r-l].
+      #|INVARIANT (Z-box bounds):
+      #|[l, r] stays within [0..n-1]; when r < l the Z-box is empty, otherwise
+      #|s[l..r] matches s[0..r-l].
+      #|MAINTENANCE:
+      #|Updates to l and r only occur after computing a fresh match length.
+      #|TERMINATION:
+      #|Bounds guarantee all accesses stay inside the string.
     ),
     invariant: l <= i,
     reasoning: (
-      #|The Z-box never starts to the right of the current index.
-      #|When we extend a match, we reset l to i; otherwise l stays behind i.
+      #|INVARIANT (Z-box start):
+      #|The Z-box start l never moves to the right of the current index i.
+      #|MAINTENANCE:
+      #|If we extend beyond r, we reset l to i; otherwise l stays unchanged.
+      #|TERMINATION:
+      #|Ensures the mirror index k = i - l is always valid.
     ),
   }
   z
@@ -132,8 +146,13 @@ fn find_pattern(text : String, pattern : String) -> Array[Int] {
   } where {
     invariant: i >= m + 1 && i <= z.length(),
     reasoning: (
-      #|Indices before m+1 belong to pattern or separator and are ignored.
-      #|We only check Z-values aligned with the text portion.
+      #|INVARIANT (pattern scan):
+      #|Indices in [m+1..i) correspond to text positions already checked, and
+      #|result stores all matches found so far.
+      #|MAINTENANCE:
+      #|If z[i] == m, record the match at i - m - 1 and advance.
+      #|TERMINATION:
+      #|At i = z.length(), all text positions are examined.
     ),
   }
   result
@@ -168,13 +187,21 @@ fn longest_prefix_suffix(s : String) -> Int {
   } where {
     invariant: i >= 1 && i <= n,
     reasoning: (
-      #|Scan all candidate split points i for which a suffix could match the prefix.
-      #|We only update when Z[i] reaches the end of the string.
+      #|INVARIANT (border scan):
+      #|Positions in [1..i) are scanned; any border ending at n has been considered.
+      #|MAINTENANCE:
+      #|When z[i] + i == n, update best with z[i] if it is larger.
+      #|TERMINATION:
+      #|At i = n, all candidate borders are examined.
     ),
     invariant: best >= 0,
     reasoning: (
-      #|best stores the maximum border length seen so far (proper prefix = suffix).
-      #|This guarantees the result is the longest such border.
+      #|INVARIANT (best border):
+      #|best equals the maximum border length found among scanned positions.
+      #|MAINTENANCE:
+      #|Only increase best when a longer border is discovered.
+      #|TERMINATION:
+      #|The returned best is the longest proper prefix that is also a suffix.
     ),
   }
 }
@@ -197,8 +224,12 @@ fn all_borders(s : String) -> Array[Int] {
   } where {
     invariant: i >= 1 && i <= n,
     reasoning: (
-      #|A border exists exactly when Z[i] reaches the end (Z[i] + i == n).
-      #|We enumerate all such i to collect every border length.
+      #|INVARIANT (border enumeration):
+      #|Positions in [1..i) are scanned; borders contains all border lengths found.
+      #|MAINTENANCE:
+      #|When z[i] + i == n, append z[i] to record the new border.
+      #|TERMINATION:
+      #|At i = n, all border lengths have been collected.
     ),
   }
 
@@ -227,8 +258,12 @@ fn string_period(s : String) -> Int {
   } where {
     invariant: p >= 1 && p <= n,
     reasoning: (
-      #|A period p means the suffix of length n-p matches the prefix of length n-p.
-      #|We return the smallest p meeting Z[p] >= n - p.
+      #|INVARIANT (period scan):
+      #|All p' < p have been checked and do not satisfy the period condition.
+      #|MAINTENANCE:
+      #|If z[p] >= n - p, return p as the smallest valid period.
+      #|TERMINATION:
+      #|If no p < n works, the period is n (no repetition).
     ),
   }
   n // No repetition, period is entire string
