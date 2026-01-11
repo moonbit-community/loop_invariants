@@ -92,7 +92,17 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
     current.prefix_count = current.prefix_count + 1
   } where {
     invariant: i >= 0 && i <= word.length(),
-    reasoning: "I: current = root represents empty prefix word[0..0); root.prefix_count incremented to count this word. M: For character word[i], we navigate to children[c] where c = word[i] - 'a'. If child doesn't exist, create it (extending the trie). Move current to child and increment its prefix_count. After iteration i, current represents prefix word[0..i+1). T: After i = word.length()-1, current represents the full word. Setting is_end=true and incrementing count marks this as a complete word. prefix_count at each node correctly reflects how many words pass through it.",
+    reasoning: (
+      #|INVARIANT (insert):
+      #|current represents prefix word[0..i), and prefix_count is incremented
+      #|along the path for all processed characters.
+      #|MAINTENANCE:
+      #|Follow or create the child for word[i], move current, and increment
+      #|prefix_count to record this word passing through the node.
+      #|TERMINATION:
+      #|At i = word.length(), current represents the full word; setting is_end
+      #|and incrementing count records the word occurrence.
+    ),
   }
   current.is_end = true
   current.count = current.count + 1
@@ -151,7 +161,15 @@ fn Trie::find_node(self : Trie, s : String) -> TrieNode? {
     }
   } where {
     invariant: i >= 0 && i <= s.length(),
-    reasoning: "I: current = root represents empty prefix s[0..0). M: For character s[i], compute index c = s[i] - 'a'. If children[c] is None, the prefix s[0..i+1) doesn't exist in the trie, so return None immediately. Otherwise, move current to children[c]. After iteration i, current represents prefix s[0..i+1). The early return ensures we never proceed past a missing character. T: If loop completes without returning None, current is the node for full string s. Return Some(current). Partial match failure returns None.",
+    reasoning: (
+      #|INVARIANT (find node):
+      #|current represents prefix s[0..i), and all characters so far exist in
+      #|the trie path.
+      #|MAINTENANCE:
+      #|Follow child c for s[i]; if missing, return None immediately.
+      #|TERMINATION:
+      #|If the loop completes, current is the node for the full string s.
+    ),
   }
   Some(current)
 }
@@ -179,7 +197,17 @@ fn Trie::delete(self : Trie, word : String) -> Bool {
     }
   } where {
     invariant: i >= 0 && i <= word.length(),
-    reasoning: "I: Word existence verified by search(); current = root; root.prefix_count decremented. M: For each character word[i], navigate to children[c]. Since word exists (verified), children[c] is guaranteed non-None. Move to child and decrement its prefix_count. This exactly reverses the insert operation's prefix_count increments. T: After loop, current is the node for word. Decrement count; if count reaches 0, clear is_end. prefix_count at each ancestor correctly reflects the reduced word count. Note: nodes are not physically removed (lazy deletion), but counts are correct.",
+    reasoning: (
+      #|INVARIANT (delete):
+      #|current represents prefix word[0..i), and prefix_count has been
+      #|decremented along the path for all processed characters.
+      #|MAINTENANCE:
+      #|Follow child c (guaranteed to exist) and decrement its prefix_count,
+      #|reversing the insert operation.
+      #|TERMINATION:
+      #|At i = word.length(), current is the node for word; decrement count and
+      #|clear is_end if needed. Counts remain consistent.
+    ),
   }
   current.count = current.count - 1
   if current.count == 0 {
@@ -449,7 +477,15 @@ fn common_prefix_len(a : String, b : String) -> Int {
     }
   } where {
     invariant: i >= 0 && i <= min_len,
-    reasoning: "I: i=0; no characters compared yet; trivially a[0..0) == b[0..0). M: Compare a[i] and b[i]. If they differ, return i immediately (first mismatch position). If equal, increment i. After iteration i, we know a[0..i+1) == b[0..i+1). T: If loop completes without mismatch, a[0..min_len) == b[0..min_len), and min_len is the common prefix length. If one string is a prefix of the other, this correctly returns the shorter length.",
+    reasoning: (
+      #|INVARIANT (common prefix):
+      #|a[0..i) equals b[0..i); all characters before i match.
+      #|MAINTENANCE:
+      #|Compare a[i] and b[i]; on mismatch, return i as the first differing
+      #|position.
+      #|TERMINATION:
+      #|If the loop completes, the common prefix length is min_len.
+    ),
   }
   min_len
 }
