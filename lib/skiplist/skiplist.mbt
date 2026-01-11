@@ -116,6 +116,10 @@ fn SkipList::random_level(self : SkipList) -> Int {
       #|
       #|3. Loop termination: Either we fail promotion (break) or reach max_level
       #|   - Probability of reaching max_level = (1/p)^max_level, vanishingly small
+      #|MAINTENANCE:
+      #|Each iteration either promotes to the next level or stops on failure.
+      #|TERMINATION:
+      #|lvl increases until promotion fails or max_level is reached.
     ),
   }
 }
@@ -176,6 +180,10 @@ fn SkipList::search(self : SkipList, key : Int) -> Int? {
       #|
       #|5. Correctness: Due to sorted order at each level, if key exists,
       #|   it must be at current.forward[0] when we finish descending.
+      #|MAINTENANCE:
+      #|Moving right preserves current.key < key; dropping a level keeps current.
+      #|TERMINATION:
+      #|lvl strictly decreases when movement right is blocked, so we exit.
     ),
   }
 }
@@ -270,6 +278,11 @@ fn SkipList::insert(self : SkipList, key : Int, value : Int) -> Unit {
       #|4. Level hierarchy preserved:
       #|   - new_node exists at levels 0..new_level
       #|   - All levels properly linked
+      #|MAINTENANCE:
+      #|Search records correct predecessors; linking inserts new_node between
+      #|predecessor and successor at each level.
+      #|TERMINATION:
+      #|Search descends to level -1, then linking completes in bounded steps.
     ),
   }
 }
@@ -330,6 +343,10 @@ fn SkipList::delete(self : SkipList, key : Int) -> Bool {
             #|   - Level 0 always exists (base level)
             #|
             #|3. After reduction: self.level is the highest non-empty level
+            #|MAINTENANCE:
+            #|Each continue lowers level only when the header has no nodes there.
+            #|TERMINATION:
+            #|Level decreases until a non-empty level is found or reaches 0.
           ),
         }
         self.size = self.size - 1
@@ -352,6 +369,10 @@ fn SkipList::delete(self : SkipList, key : Int) -> Bool {
       #|   - All forward pointers to target are redirected
       #|   - Target becomes unreachable (garbage collected)
       #|   - Sorted order preserved at all levels
+      #|MAINTENANCE:
+      #|Search preserves predecessors; unlinking bypasses the target safely.
+      #|TERMINATION:
+      #|Search descends to level -1, then unlinking completes in bounded loops.
     ),
   }
 }
@@ -402,6 +423,10 @@ fn SkipList::range_query(
         #|
         #|3. Termination: Loop ends when key > high or we reach end
         #|   - All keys in range have been collected
+        #|MAINTENANCE:
+        #|Each step appends the current node and advances to the next at level 0.
+        #|TERMINATION:
+        #|Traversal stops at the first node with key > high or end of list.
       ),
     }
     result
@@ -412,6 +437,10 @@ fn SkipList::range_query(
       #|
       #|We find the predecessor of 'low', then traverse level 0
       #|to collect all elements in the range [low, high].
+      #|MAINTENANCE:
+      #|Search preserves current.key < low at each level.
+      #|TERMINATION:
+      #|After descending levels, current.forward[0] is the first node >= low.
     ),
   }
 }
@@ -472,6 +501,11 @@ fn SkipList::max(self : SkipList) -> (Int, Int)? {
       #|3. Termination: lvl decreases until lvl < 0, then exits to else
       #|
       #|4. Efficiency: Expected O(log n) - similar analysis to search
+      #|MAINTENANCE:
+      #|Moving right preserves maximality at the current level; dropping a
+      #|level keeps the rightmost node seen so far.
+      #|TERMINATION:
+      #|lvl decreases to -1 after finitely many drops.
     ),
   }
 }
@@ -500,6 +534,10 @@ fn SkipList::ceil(self : SkipList, key : Int) -> (Int, Int)? {
       #|
       #|After descending all levels, current.forward[0] points to
       #|the first node with key >= given key (if any exists).
+      #|MAINTENANCE:
+      #|We move right only while next.key < key, preserving current.key < key.
+      #|TERMINATION:
+      #|lvl decreases to -1, then we inspect the level 0 successor.
     ),
   }
 }
@@ -531,6 +569,10 @@ fn SkipList::floor(self : SkipList, key : Int) -> (Int, Int)? {
       #|   - current is the rightmost node at this level with key <= given key
       #|
       #|3. After all levels: current is the largest node <= key overall
+      #|MAINTENANCE:
+      #|Moving right keeps current.key <= key; dropping a level preserves it.
+      #|TERMINATION:
+      #|lvl decreases to -1, yielding the final predecessor.
     ),
   }
 }
@@ -557,6 +599,10 @@ fn SkipList::count_less_than(self : SkipList, key : Int) -> Int {
       #|1. Traverse level 0 (contains all elements)
       #|2. Increment count for each node with key < given key
       #|3. Stop when we reach a node >= key or end of list
+      #|MAINTENANCE:
+      #|Each visited node with key < key increments count by 1.
+      #|TERMINATION:
+      #|Traversal stops at first node with key >= key or end of list.
     ),
   }
 }
@@ -586,6 +632,10 @@ fn SkipList::kth_element(self : SkipList, k : Int) -> (Int, Int)? {
       #|1. We traverse level 0, counting elements
       #|2. When i == k, we've found the k-th element (0-indexed)
       #|3. Precondition k < size ensures we'll find it before reaching end
+      #|MAINTENANCE:
+      #|Each step advances one node and increments i by 1.
+      #|TERMINATION:
+      #|The loop breaks when i == k or the list ends (precluded by precondition).
     ),
   }
 }
@@ -860,6 +910,11 @@ fn MultiSkipList::insert(self : MultiSkipList, key : Int, value : Int) -> Unit {
       #|- We append to the values array instead of creating new node
       #|- This maintains one node per unique key
       #|- Total count (size) includes all duplicates
+      #|MAINTENANCE:
+      #|Either append to the existing node's values or link a new node into
+      #|the list while preserving sorted order.
+      #|TERMINATION:
+      #|The search descends levels to -1, then finishes with bounded updates.
     ),
   }
 }
