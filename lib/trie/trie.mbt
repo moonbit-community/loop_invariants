@@ -238,7 +238,15 @@ fn collect_words(
     } where {
       invariant: i >= 0 && i <= current.length(),
       reasoning: (
-        #|s is the concatenation of current[0..i).
+        #|INVARIANT (collect_words):
+        #|s equals the concatenation of current[0..i) and current itself is
+        #|unchanged while we build the string for this terminal node.
+        #|MAINTENANCE:
+        #|At iteration i, append current[i], extending s to match
+        #|current[0..i+1); the prefix of current used by s grows by one.
+        #|TERMINATION:
+        #|When i == current.length(), s is the full word represented by the
+        #|path; s is ready to be pushed node.count times.
       ),
     }
     for j = 0; j < node.count; j = j + 1 {
@@ -246,7 +254,13 @@ fn collect_words(
     } where {
       invariant: j >= 0 && j <= node.count,
       reasoning: (
-        #|result has received j copies of the word for this terminal node.
+        #|INVARIANT (collect_words copies):
+        #|result already includes the original entries plus exactly j copies
+        #|of s; node.count is fixed for this node.
+        #|MAINTENANCE:
+        #|Push one more s to extend the multiset of results to j+1 copies.
+        #|TERMINATION:
+        #|At j == node.count, we have emitted all occurrences for this word.
       ),
     }
   }
@@ -263,8 +277,15 @@ fn collect_words(
   } where {
     invariant: c >= 0 && c <= 26,
     reasoning: (
-      #|All child edges with labels < c have been explored; current is restored
-      #|after each recursive descent.
+      #|INVARIANT (collect_words children):
+      #|All child edges with labels < c have been fully explored, and after
+      #|each recursive descent the current word is restored to this node's
+      #|prefix before trying the next label.
+      #|MAINTENANCE:
+      #|For label c, if a child exists, append its char to current, recurse,
+      #|then pop to restore current; this preserves the prefix for c+1.
+      #|TERMINATION:
+      #|When c == 26, every possible child edge has been processed.
     ),
   }
 }
@@ -285,7 +306,15 @@ fn Trie::autocomplete(self : Trie, prefix : String) -> Array[String] {
       } where {
         invariant: i >= 0 && i <= prefix.length(),
         reasoning: (
-          #|current contains the characters prefix[0..i) in order.
+          #|INVARIANT (autocomplete prefix):
+          #|current contains the characters prefix[0..i) in order, so the
+          #|current array matches the traversed prefix exactly.
+          #|MAINTENANCE:
+          #|At step i, we append prefix[i] (if present) to extend current to
+          #|prefix[0..i+1); indices are in bounds so get_char is Some.
+          #|TERMINATION:
+          #|At i == prefix.length(), current equals the full prefix, ready for
+          #|collect_words to enumerate completions.
         ),
       }
       collect_words(node, current, result)
@@ -316,8 +345,15 @@ fn Trie::longest_prefix(self : Trie, word : String) -> String {
   } where {
     invariant: i >= 0 && i <= word.length(),
     reasoning: (
-      #|current represents prefix word[0..i); last_end is the longest prefix
-      #|length <= i where a word ends in the trie.
+      #|INVARIANT (longest_prefix):
+      #|current is the trie node for prefix word[0..i); last_end is the length
+      #|of the longest prefix <= i that ends a word.
+      #|MAINTENANCE:
+      #|If the next edge exists, advance current and update last_end when the
+      #|node is terminal; otherwise break, preserving the best prefix seen.
+      #|TERMINATION:
+      #|When i reaches word.length() or traversal stops, last_end is the
+      #|maximum prefix length present in the trie.
     ),
   }
   (try? word[0:last_end]).or("").to_string()
@@ -526,7 +562,12 @@ fn search_in_node(
   } where {
     invariant: i >= 0 && i <= label_len,
     reasoning: (
-      #|word[0..i) matches label[0..i).
+      #|INVARIANT (compressed search):
+      #|word[0..i) matches label[0..i), so the label prefix is verified.
+      #|MAINTENANCE:
+      #|Compare word[i] and label[i]; on mismatch, return false immediately.
+      #|TERMINATION:
+      #|If i reaches label_len, the entire edge label matches the word prefix.
     ),
   }
   if word_len == label_len {

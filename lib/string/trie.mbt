@@ -53,20 +53,15 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
   } where {
     invariant: i <= n,
     reasoning: (
-      #|TRIE INSERTION INVARIANT:
-      #|  node is the trie node reached after processing word[0..i)
-      #|  prefix_count incremented for each traversed node
-      #|
-      #|BASE CASE (i = 0):
-      #|  node = root, no characters processed yet
-      #|
-      #|INDUCTIVE STEP (i → i + 1):
-      #|  - Create child node if not exists
-      #|  - Move to child corresponding to word[i]
-      #|  - node now represents word[0..i+1)
-      #|
-      #|TERMINATION (i = n):
-      #|  node represents the full word, mark as end
+      #|INVARIANT (insert):
+      #|node is the trie node reached after processing word[0..i), and every
+      #|node along that path has had prefix_count incremented for this word.
+      #|MAINTENANCE:
+      #|Increment prefix_count at the current node, follow or create the child
+      #|for chars[i], and continue; the path for word[0..i+1) is updated.
+      #|TERMINATION:
+      #|When i == n, node is the full word; increment prefix_count, mark is_end,
+      #|and increase count to record this occurrence.
     ),
   }
 }
@@ -88,18 +83,13 @@ fn Trie::search(self : Trie, word : String) -> Bool {
   } where {
     invariant: i <= n,
     reasoning: (
-      #|TRIE SEARCH INVARIANT:
-      #|  node is reached by following word[0..i) from root
-      #|
-      #|BASE CASE (i = 0):
-      #|  node = root, searching starts
-      #|
-      #|INDUCTIVE STEP (i → i + 1):
-      #|  - Follow edge labeled word[i] if exists
-      #|  - Break with false if edge missing
-      #|
-      #|TERMINATION (i = n):
-      #|  Return is_end to check if word exists
+      #|INVARIANT (search):
+      #|node is reached by following word[0..i) from the root, so all processed
+      #|edges exist in the trie.
+      #|MAINTENANCE:
+      #|If the child for word[i] exists, advance to it; otherwise break false.
+      #|TERMINATION:
+      #|At i == n, node represents the full word; return node.is_end.
     ),
   }
 }
@@ -121,12 +111,12 @@ fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
   } where {
     invariant: i <= n,
     reasoning: (
-      #|PREFIX SEARCH INVARIANT:
-      #|  If we reach a node after processing prefix[0..i),
-      #|  then at least one word has prefix[0..i) as prefix
-      #|
+      #|INVARIANT (starts_with):
+      #|node is the trie node for prefix[0..i), so some word has that prefix.
+      #|MAINTENANCE:
+      #|Follow the child for prefix[i] if it exists, otherwise break false.
       #|TERMINATION:
-      #|  If we reach end of prefix, some word has this prefix
+      #|At i == n, the entire prefix is present in the trie, return true.
     ),
   }
 }
@@ -148,11 +138,13 @@ fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
   } where {
     invariant: i <= n,
     reasoning: (
-      #|PREFIX COUNT INVARIANT:
-      #|  node.prefix_count = number of words passing through this node
-      #|
+      #|INVARIANT (count_prefix):
+      #|node is the trie node for prefix[0..i), and node.prefix_count equals the
+      #|number of words that share that prefix.
+      #|MAINTENANCE:
+      #|Advance to the child for prefix[i] or break 0 if missing.
       #|TERMINATION:
-      #|  Return prefix_count of node representing the prefix
+      #|At i == n, return node.prefix_count for the full prefix.
     ),
   }
 }
@@ -223,15 +215,14 @@ fn AhoCorasick::add_pattern(
   } where {
     invariant: i <= n && node_idx >= 0 && node_idx < self.node_count,
     reasoning: (
-      #|TRIE CONSTRUCTION INVARIANT:
-      #|  node_idx is the trie node after reading pattern[0..i)
-      #|
-      #|INDUCTIVE STEP:
-      #|  Create new node if edge doesn't exist
-      #|  Follow/create edge for character at position i
-      #|
+      #|INVARIANT (insert pattern):
+      #|node_idx is the trie node after reading pattern[0..i), and all edges for
+      #|that prefix exist in the automaton.
+      #|MAINTENANCE:
+      #|If the edge for pattern[i] is missing, create a node and increment
+      #|node_count, then advance to that child.
       #|TERMINATION:
-      #|  Record pattern_idx in output list at final node
+      #|When i == n, append pattern_idx to output of the terminal node.
     ),
   }
 }
@@ -256,10 +247,18 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
     reasoning: (
       #|Scan all alphabet characters to seed the BFS queue.
       #|Each root child discovered is enqueued and assigned fail = 0.
+      #|MAINTENANCE:
+      #|Check child for c and enqueue it when present.
+      #|TERMINATION:
+      #|At c = 26, all root children are initialized.
     ),
     invariant: back >= 0 && back <= 26,
     reasoning: (
       #|back equals the number of root children enqueued so far.
+      #|MAINTENANCE:
+      #|Increment back each time a child is enqueued.
+      #|TERMINATION:
+      #|At c = 26, back equals the total number of root children.
     ),
   }
   // BFS to build failure links
@@ -288,11 +287,19 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
       reasoning: (
         #|Iterate through all outgoing edges of curr across the alphabet.
         #|Each child is enqueued exactly once and gets its failure link set.
+        #|MAINTENANCE:
+        #|For each existing child, compute fail and enqueue.
+        #|TERMINATION:
+        #|At c = 26, all outgoing edges are processed.
       ),
       invariant: back >= front && back <= self.node_count,
       reasoning: (
         #|Queue indices maintain a contiguous range of discovered nodes
         #|that will be processed in BFS order.
+        #|MAINTENANCE:
+        #|Enqueueing increments back while front advances in the outer loop.
+        #|TERMINATION:
+        #|Queue range remains valid until BFS finishes.
       ),
     }
   }
@@ -316,15 +323,14 @@ fn AhoCorasick::find_fail_link(
   } where {
     invariant: fail >= 0,
     reasoning: (
-      #|FAILURE LINK SEARCH INVARIANT:
-      #|  fail represents a suffix of the path to parent
-      #|  We're looking for the longest such suffix that has edge c
-      #|
-      #|The failure link points to the longest proper suffix
-      #|of the current string that is also a prefix in the trie.
-      #|
+      #|INVARIANT (find_fail_link):
+      #|fail is a suffix-state candidate for the parent path, and all longer
+      #|suffixes have been ruled out as lacking an edge labeled c.
+      #|MAINTENANCE:
+      #|If fail has child c, return it; otherwise jump to its failure link (or
+      #|root) to try the next shorter suffix.
       #|TERMINATION:
-      #|  Either find a node with child c, or reach root (0)
+      #|We either find a node with child c or reach root (0).
     ),
   }
 }
@@ -354,22 +360,14 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[ACMatch] {
   } where {
     invariant: i <= n && state >= 0,
     reasoning: (
-      #|AHO-CORASICK SEARCH INVARIANT:
-      #|  state is the node representing the longest suffix of
-      #|  text[0..i) that is a prefix of some pattern
-      #|
-      #|BASE CASE (i = 0):
-      #|  state = 0 (root), no text processed
-      #|
-      #|INDUCTIVE STEP (i → i + 1):
-      #|  - Transition on character text[i]
-      #|  - Follow failure links if needed
-      #|  - Collect all patterns ending at current state
-      #|
-      #|CORRECTNESS:
-      #|  All occurrences are found because:
-      #|  1. Failure links ensure we don't miss shorter patterns
-      #|  2. suffix_output links find patterns that are proper suffixes
+      #|INVARIANT (aho-corasick search):
+      #|state is the node for the longest suffix of text[0..i) that is a prefix
+      #|of some pattern, and matches contains all occurrences ending at < i.
+      #|MAINTENANCE:
+      #|Use transition with chars[i] to get next_state, then collect matches
+      #|ending at i + 1; this adds all patterns finishing at the new state.
+      #|TERMINATION:
+      #|At i == n, matches contains all pattern occurrences in the text.
     ),
   }
 }
@@ -388,11 +386,13 @@ fn AhoCorasick::transition(self : AhoCorasick, state_in : Int, c : Int) -> Int {
   } where {
     invariant: state >= 0,
     reasoning: (
-      #|TRANSITION INVARIANT:
-      #|  We're finding the longest suffix that can be extended by c
-      #|
+      #|INVARIANT (transition):
+      #|state is a suffix candidate of state_in's path; we seek the longest
+      #|suffix that has an outgoing edge labeled c.
+      #|MAINTENANCE:
+      #|If edge c exists, return it; otherwise follow failure links until root.
       #|TERMINATION:
-      #|  Either find edge c or reach root
+      #|We either find edge c or return root (0).
     ),
   }
 }
@@ -418,12 +418,13 @@ fn AhoCorasick::collect_matches(
   } where {
     invariant: suf == -1 || suf >= 0,
     reasoning: (
-      #|OUTPUT COLLECTION INVARIANT:
-      #|  Traverse suffix_output chain to find all patterns
-      #|  that are suffixes of the current matched string
-      #|
-      #|This ensures we don't miss patterns that are
-      #|proper suffixes of longer matched patterns.
+      #|INVARIANT (collect_matches):
+      #|All outputs for suffix_output nodes visited so far have been appended to
+      #|matches; suf is the next suffix_output node to process.
+      #|MAINTENANCE:
+      #|Append outputs for suf, then advance to its suffix_output link.
+      #|TERMINATION:
+      #|When suf == -1, all suffix-output nodes have been processed.
     ),
   }
 }
@@ -486,19 +487,14 @@ fn XORTrie::insert(self : XORTrie, num : Int) -> Unit {
   } where {
     invariant: bit >= -1 && bit < self.bits,
     reasoning: (
-      #|XOR TRIE INSERTION INVARIANT:
-      #|  node represents the prefix num[bits-1..bit+1) in binary
-      #|
-      #|We insert from MSB to LSB to enable greedy XOR maximization.
-      #|
-      #|BASE CASE (bit = bits - 1):
-      #|  node = root, start with MSB
-      #|
-      #|INDUCTIVE STEP (bit → bit - 1):
-      #|  Follow/create edge for bit value at position bit
-      #|
-      #|TERMINATION (bit < 0):
-      #|  All bits processed, number fully inserted
+      #|INVARIANT (xor insert):
+      #|node corresponds to the prefix num[bits-1..bit+1) in binary, and all
+      #|nodes for processed bits exist in the trie.
+      #|MAINTENANCE:
+      #|Choose or create the child for bit position `bit`, then continue with
+      #|bit - 1; this extends the stored path by one bit.
+      #|TERMINATION:
+      #|When bit < 0, the full number path exists and we increment node.count.
     ),
   }
 }
@@ -539,17 +535,14 @@ fn XORTrie::max_xor(self : XORTrie, num : Int) -> Int {
   } where {
     invariant: bit >= -1 && bit < self.bits,
     reasoning: (
-      #|XOR MAXIMIZATION INVARIANT:
-      #|  result contains the XOR of bits [bits-1..bit+1) with greedy choices
-      #|  node represents the path taken so far
-      #|
-      #|GREEDY STRATEGY:
-      #|  At each bit, prefer the opposite bit to maximize XOR
-      #|  If opposite not available, take whatever exists
-      #|
-      #|CORRECTNESS:
-      #|  Greedy is optimal because higher bits contribute more to the result.
-      #|  Maximizing bit i gives 2^i, which is > sum of all lower bits.
+      #|INVARIANT (xor max):
+      #|result stores the XOR value for processed bits [bits-1..bit+1), and
+      #|node is the trie node reached by the chosen path so far.
+      #|MAINTENANCE:
+      #|Prefer the opposite bit to maximize the current bit; if unavailable,
+      #|take the existing branch and update result accordingly.
+      #|TERMINATION:
+      #|At bit < 0, result is the maximal XOR over all numbers in the trie.
     ),
   }
 }
@@ -629,11 +622,19 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
     reasoning: (
       #|i counts how many characters of word have been inserted.
       #|node is the trie node representing prefix word[0..i) in the new version.
+      #|MAINTENANCE:
+      #|Advance i and move to the cloned/created child for word[i].
+      #|TERMINATION:
+      #|At i = n, the full word has been inserted.
     ),
     invariant: node.version == new_version,
     reasoning: (
       #|When traversing a child from an older version, we clone it first.
       #|Thus the path we update is fully owned by the new version.
+      #|MAINTENANCE:
+      #|Each cloned node is stamped with new_version.
+      #|TERMINATION:
+      #|All nodes on the updated path belong to new_version.
     ),
   }
   self.version = new_version
@@ -664,9 +665,12 @@ fn PersistentTrie::search_version(
       } where {
         invariant: i <= n,
         reasoning: (
-          #|PERSISTENT TRIE SEARCH INVARIANT:
-          #|  Same as regular trie search, but operates on
-          #|  snapshot at specified version
+          #|INVARIANT (persistent search):
+          #|node is the trie node for word[0..i) in the specified version.
+          #|MAINTENANCE:
+          #|Advance to the child for word[i] in that version or break false.
+          #|TERMINATION:
+          #|At i == n, node represents the word; return node.is_end.
         ),
       }
   }
@@ -718,7 +722,10 @@ fn common_prefix_length(s1 : String, s2 : String) -> Int {
     invariant: i >= 0 && i <= n,
     reasoning: (
       #|chars1[0..i) == chars2[0..i) holds for all processed positions.
-      #|A mismatch returns the first differing index.
+      #|MAINTENANCE:
+      #|Advance i while characters match.
+      #|TERMINATION:
+      #|On mismatch or i = n, return the prefix length.
     ),
   }
 }
@@ -737,7 +744,10 @@ fn RadixNode::find_child(self : RadixNode, c : Char) -> (Int, RadixNode?) {
     invariant: i >= 0 && i <= self.children.length(),
     reasoning: (
       #|No child with first_char == c exists in indices [0, i).
-      #|We either find it or exhaust the list.
+      #|MAINTENANCE:
+      #|Check child i and advance if it doesn't match.
+      #|TERMINATION:
+      #|At i = length, no matching child exists.
     ),
   }
 }
@@ -830,7 +840,10 @@ fn edge_matches(
     invariant: i >= 0 && i <= edge_len,
     reasoning: (
       #|chars[pos..pos+i) matches edge_chars[0..i) for all processed i.
-      #|A mismatch returns false at the first differing position.
+      #|MAINTENANCE:
+      #|Advance i while characters match.
+      #|TERMINATION:
+      #|On mismatch return false; otherwise true when i = edge_len.
     ),
   }
 }
@@ -871,12 +884,14 @@ fn RadixTree::search(self : RadixTree, word : String) -> Bool {
   } where {
     invariant: pos <= chars.length(),
     reasoning: (
-      #|RADIX TREE SEARCH INVARIANT:
-      #|  pos = number of characters matched so far
-      #|  node = current node after matching word[0..pos)
-      #|
-      #|Edge compression means we match multiple characters per edge
-      #|instead of one character per edge in standard trie.
+      #|INVARIANT (radix search):
+      #|pos characters of word have been matched, and node is the radix node for
+      #|word[0..pos), respecting compressed edges.
+      #|MAINTENANCE:
+      #|Find the child edge starting with word[pos], verify its entire label,
+      #|and advance pos by edge_len if it matches.
+      #|TERMINATION:
+      #|If pos reaches chars.length(), return whether node is terminal.
     ),
   }
 }

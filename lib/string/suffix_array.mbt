@@ -40,17 +40,24 @@ fn build_suffix_array_simple(s : String) -> Array[Int] {
     } where {
       invariant: j >= i + 1 && j <= n,
       reasoning: (
-        #|Scan candidates in (i, n) to place the smallest suffix at sa[i].
-        #|After each step, sa[i] is the minimum among indices i..j.
+        #|INVARIANT (selection):
+        #|sa[i] is the smallest suffix among indices in [i..j).
+        #|MAINTENANCE:
+        #|Compare sa[i] with sa[j] and swap if sa[j] is smaller.
+        #|TERMINATION:
+        #|At j = n, sa[i] is the minimum suffix in [i..n).
       ),
     }
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|LOOP INVARIANT: sa[0..i) contains the i smallest suffixes in sorted order
-      #|
-      #|After complete sorting, sa[i] is the starting index of the
-      #|lexicographically i-th smallest suffix.
+      #|INVARIANT (selection outer loop):
+      #|sa[0..i) contains the i smallest suffixes in sorted order.
+      #|MAINTENANCE:
+      #|The inner loop selects the smallest suffix in [i..n), placing it at
+      #|sa[i], so the prefix grows by one sorted suffix.
+      #|TERMINATION:
+      #|At i == n, the full suffix array is sorted lexicographically.
     ),
   }
   sa
@@ -72,7 +79,12 @@ fn compare_suffixes(chars : Array[Char], i : Int, j : Int) -> Int {
   } where {
     invariant: k >= 0,
     reasoning: (
-      #|Compare characters of suffix starting at i vs suffix starting at j
+      #|INVARIANT (suffix compare):
+      #|All positions up to offset k match between suffixes i and j.
+      #|MAINTENANCE:
+      #|Advance k while characters are equal.
+      #|TERMINATION:
+      #|On mismatch or end, the ordering is determined.
     ),
   }
 }
@@ -129,7 +141,12 @@ fn build_lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
     } where {
       invariant: k >= 0,
       reasoning: (
-        #|Extend matching prefix between suffixes at i and j
+        #|INVARIANT (LCP extend):
+        #|Characters match for the current prefix length k.
+        #|MAINTENANCE:
+        #|Increment k while the next characters match.
+        #|TERMINATION:
+        #|Stop when mismatch or end is reached; k is the LCP length.
       ),
     }
     lcp[rank[i]] = k
@@ -316,7 +333,12 @@ fn search_lower_bound(
   } where {
     invariant: lo >= 0 && hi >= 0 && lo <= hi + 1,
     reasoning: (
-      #|Binary search for first suffix >= pattern
+      #|INVARIANT (lower bound):
+      #|All indices < lo are < pattern; all indices >= hi are >= pattern.
+      #|MAINTENANCE:
+      #|Move lo or hi based on comparison at mid.
+      #|TERMINATION:
+      #|At lo == hi, lo is the first suffix >= pattern.
     ),
   }
 }
@@ -340,7 +362,12 @@ fn search_upper_bound(
   } where {
     invariant: lo >= 0 && hi >= 0 && lo <= hi + 1,
     reasoning: (
-      #|Binary search for first suffix > pattern (all characters compared)
+      #|INVARIANT (upper bound):
+      #|All indices < lo are <= pattern; all indices >= hi are > pattern.
+      #|MAINTENANCE:
+      #|Move lo or hi based on comparison at mid.
+      #|TERMINATION:
+      #|At lo == hi, lo is the first suffix > pattern.
     ),
   }
 }
@@ -367,8 +394,12 @@ fn compare_with_pattern(s : Array[Char], start : Int, p : Array[Char]) -> Int {
   } where {
     invariant: i >= 0 && i <= m,
     reasoning: (
-      #|Compare suffix starting at 'start' with pattern
-      #|Returns: -1 if suffix < pattern, 0 if prefix matches, 1 if suffix > pattern
+      #|INVARIANT (pattern compare):
+      #|Characters up to offset i match between suffix and pattern.
+      #|MAINTENANCE:
+      #|Advance i while characters are equal.
+      #|TERMINATION:
+      #|On mismatch or end, return ordering or prefix match.
     ),
   }
 }
