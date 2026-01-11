@@ -150,44 +150,51 @@ fn MoDistinct::answer_queries(
     let target_r = query.right
 
     // Expand right
-    // INVARIANT: Each expansion adds one element to the range
-    while cur_r < target_r {
-      cur_r = cur_r + 1
-      let val = self.arr[cur_r]
-      if freq[val] == 0 {
-        distinct = distinct + 1
+    if cur_r < target_r {
+      for r in (cur_r + 1)..=target_r {
+        let val = self.arr[r]
+        if freq[val] == 0 {
+          distinct = distinct + 1
+        }
+        freq[val] = freq[val] + 1
       }
-      freq[val] = freq[val] + 1
+      cur_r = target_r
     }
 
     // Shrink right
-    while cur_r > target_r {
-      let val = self.arr[cur_r]
-      freq[val] = freq[val] - 1
-      if freq[val] == 0 {
-        distinct = distinct - 1
+    if cur_r > target_r {
+      for r in (target_r + 1)..=cur_r {
+        let val = self.arr[r]
+        freq[val] = freq[val] - 1
+        if freq[val] == 0 {
+          distinct = distinct - 1
+        }
       }
-      cur_r = cur_r - 1
+      cur_r = target_r
     }
 
     // Expand left
-    while cur_l > target_l {
-      cur_l = cur_l - 1
-      let val = self.arr[cur_l]
-      if freq[val] == 0 {
-        distinct = distinct + 1
+    if cur_l > target_l {
+      for l in target_l..=(cur_l - 1) {
+        let val = self.arr[l]
+        if freq[val] == 0 {
+          distinct = distinct + 1
+        }
+        freq[val] = freq[val] + 1
       }
-      freq[val] = freq[val] + 1
+      cur_l = target_l
     }
 
     // Shrink left
-    while cur_l < target_l {
-      let val = self.arr[cur_l]
-      freq[val] = freq[val] - 1
-      if freq[val] == 0 {
-        distinct = distinct - 1
+    if cur_l < target_l {
+      for l in cur_l..=(target_l - 1) {
+        let val = self.arr[l]
+        freq[val] = freq[val] - 1
+        if freq[val] == 0 {
+          distinct = distinct - 1
+        }
       }
-      cur_l = cur_l + 1
+      cur_l = target_l
     }
 
     // Store answer at original query index
@@ -233,6 +240,8 @@ fn MoDistinct::answer_queries(
       #|
       #|PROGRESS:
       #|- answers for mo_queries[0..i) are finalized in original query order.
+      #|TERMINATION:
+      #|At i == q, all query answers are fixed and returned.
     ),
   }
   answers
@@ -292,21 +301,29 @@ fn MoSum::answer_queries(
     let query = mo_queries[i]
     let target_l = query.left
     let target_r = query.right
-    while cur_r < target_r {
-      cur_r = cur_r + 1
-      current_sum = current_sum + self.arr[cur_r]
+    if cur_r < target_r {
+      for r in (cur_r + 1)..=target_r {
+        current_sum = current_sum + self.arr[r]
+      }
+      cur_r = target_r
     }
-    while cur_r > target_r {
-      current_sum = current_sum - self.arr[cur_r]
-      cur_r = cur_r - 1
+    if cur_r > target_r {
+      for r in (target_r + 1)..=cur_r {
+        current_sum = current_sum - self.arr[r]
+      }
+      cur_r = target_r
     }
-    while cur_l > target_l {
-      cur_l = cur_l - 1
-      current_sum = current_sum + self.arr[cur_l]
+    if cur_l > target_l {
+      for l in target_l..=(cur_l - 1) {
+        current_sum = current_sum + self.arr[l]
+      }
+      cur_l = target_l
     }
-    while cur_l < target_l {
-      current_sum = current_sum - self.arr[cur_l]
-      cur_l = cur_l + 1
+    if cur_l < target_l {
+      for l in cur_l..=(target_l - 1) {
+        current_sum = current_sum - self.arr[l]
+      }
+      cur_l = target_l
     }
     answers[query.index] = current_sum
   } where {
@@ -352,6 +369,8 @@ fn MoSum::answer_queries(
       #|
       #|PROGRESS:
       #|- answers for mo_queries[0..i) are finalized in original order.
+      #|TERMINATION:
+      #|At i == q, all query answers are fixed and returned.
     ),
   }
   answers
@@ -421,25 +440,33 @@ fn MoRangeCount::answer_queries(
     let (query, lo, hi) = mo_queries[i]
     let target_l = query.left
     let target_r = query.right
-    while cur_r < target_r {
-      cur_r = cur_r + 1
-      let val = self.arr[cur_r]
-      freq[val] = freq[val] + 1
+    if cur_r < target_r {
+      for r in (cur_r + 1)..=target_r {
+        let val = self.arr[r]
+        freq[val] = freq[val] + 1
+      }
+      cur_r = target_r
     }
-    while cur_r > target_r {
-      let val = self.arr[cur_r]
-      freq[val] = freq[val] - 1
-      cur_r = cur_r - 1
+    if cur_r > target_r {
+      for r in (target_r + 1)..=cur_r {
+        let val = self.arr[r]
+        freq[val] = freq[val] - 1
+      }
+      cur_r = target_r
     }
-    while cur_l > target_l {
-      cur_l = cur_l - 1
-      let val = self.arr[cur_l]
-      freq[val] = freq[val] + 1
+    if cur_l > target_l {
+      for l in target_l..=(cur_l - 1) {
+        let val = self.arr[l]
+        freq[val] = freq[val] + 1
+      }
+      cur_l = target_l
     }
-    while cur_l < target_l {
-      let val = self.arr[cur_l]
-      freq[val] = freq[val] - 1
-      cur_l = cur_l + 1
+    if cur_l < target_l {
+      for l in cur_l..=(target_l - 1) {
+        let val = self.arr[l]
+        freq[val] = freq[val] - 1
+      }
+      cur_l = target_l
     }
 
     // Count elements in [lo, hi]
@@ -493,6 +520,8 @@ fn MoRangeCount::answer_queries(
       #|
       #|PROGRESS:
       #|- answers for mo_queries[0..i) are finalized in original order.
+      #|TERMINATION:
+      #|At i == q, all range-count answers are computed.
     ),
   }
   answers
@@ -600,33 +629,41 @@ fn MoMode::answer_queries(
     let query = mo_queries[i]
     let target_l = query.left
     let target_r = query.right
-    while cur_r < target_r {
-      cur_r = cur_r + 1
-      let val = self.arr[cur_r]
-      freq[val] = freq[val] + 1
-      if freq[val] > max_freq || (freq[val] == max_freq && val < mode) {
-        max_freq = freq[val]
-        mode = val
+    if cur_r < target_r {
+      for r in (cur_r + 1)..=target_r {
+        let val = self.arr[r]
+        freq[val] = freq[val] + 1
+        if freq[val] > max_freq || (freq[val] == max_freq && val < mode) {
+          max_freq = freq[val]
+          mode = val
+        }
       }
+      cur_r = target_r
     }
-    while cur_r > target_r {
-      let val = self.arr[cur_r]
-      freq[val] = freq[val] - 1
-      cur_r = cur_r - 1
-    }
-    while cur_l > target_l {
-      cur_l = cur_l - 1
-      let val = self.arr[cur_l]
-      freq[val] = freq[val] + 1
-      if freq[val] > max_freq || (freq[val] == max_freq && val < mode) {
-        max_freq = freq[val]
-        mode = val
+    if cur_r > target_r {
+      for r in (target_r + 1)..=cur_r {
+        let val = self.arr[r]
+        freq[val] = freq[val] - 1
       }
+      cur_r = target_r
     }
-    while cur_l < target_l {
-      let val = self.arr[cur_l]
-      freq[val] = freq[val] - 1
-      cur_l = cur_l + 1
+    if cur_l > target_l {
+      for l in target_l..=(cur_l - 1) {
+        let val = self.arr[l]
+        freq[val] = freq[val] + 1
+        if freq[val] > max_freq || (freq[val] == max_freq && val < mode) {
+          max_freq = freq[val]
+          mode = val
+        }
+      }
+      cur_l = target_l
+    }
+    if cur_l < target_l {
+      for l in cur_l..=(target_l - 1) {
+        let val = self.arr[l]
+        freq[val] = freq[val] - 1
+      }
+      cur_l = target_l
     }
 
     // Recalculate mode after removals (can't efficiently track max decrease)
@@ -671,6 +708,8 @@ fn MoMode::answer_queries(
       #|
       #|PROGRESS:
       #|- answers for mo_queries[0..i) are finalized in original order.
+      #|TERMINATION:
+      #|At i == q, all modes are computed and returned.
     ),
   }
   answers
