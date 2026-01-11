@@ -32,6 +32,10 @@ fn mod_exp(base : Int64, exp : Int64, m : Int64) -> Int64 {
       #|If e is odd, we multiply acc by b and decrement e:
       #|  acc * b^e = (acc*b) * b^(e-1).
       #|
+      #|MAINTENANCE:
+      #|Each update preserves acc * b^e by either absorbing one b into acc
+      #|or squaring b and halving e, so the invariant remains true.
+      #|TERMINATION:
       #|When e = 0, acc ≡ base^exp (mod m), which is returned.
     ),
   }
@@ -59,10 +63,10 @@ fn is_strong_probable_prime(n : Int64, a : Int64) -> Bool {
       #|
       #|Base: d = n-1, r = 0 → (n-1) × 2^0 = n-1. ✓
       #|
-      #|Inductive: When d is even, d' = d/2, r' = r+1.
+      #|MAINTENANCE: When d is even, d' = d/2, r' = r+1.
       #|  d' × 2^r' = (d/2) × 2^(r+1) = d × 2^r = n-1. ✓
       #|
-      #|Termination: d is eventually odd (finite binary representation).
+      #|TERMINATION: d is eventually odd (finite binary representation).
     ),
   }
 
@@ -105,6 +109,12 @@ fn is_strong_probable_prime(n : Int64, a : Int64) -> Bool {
       #|If a^(d×2^k) ≡ -1 for some k, continuing to square gives 1.
       #|If we never see -1 but eventually get 1, there's a non-trivial
       #|square root of 1, which proves n is composite.
+      #|
+      #|MAINTENANCE:
+      #|Each iteration squares x, so exponent doubles and the invariant
+      #|x = a^(d * 2^(i+1)) mod n advances with i.
+      #|TERMINATION:
+      #|After r-1 squarings, we either found -1 (pass) or proved composite.
       #|
       #|WITNESS PROPERTY: If n is composite, at least 3/4 of bases
       #|a ∈ [2, n-2] will "witness" this by failing the test.
@@ -155,6 +165,10 @@ fn is_prime_32(n : Int) -> Bool {
       #|
       #|For 32-bit n, the set {2, 7, 61} is proven sufficient: passing all
       #|these bases implies primality for n < 2^32.
+      #|MAINTENANCE:
+      #|Check witness i; if it passes, advance i, preserving the invariant.
+      #|TERMINATION:
+      #|At i = witnesses.length(), n passed all bases and is prime.
     ),
   }
 }
@@ -196,6 +210,11 @@ fn extended_gcd_64(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
       #|
       #|This is the key to constructing the Bézout coefficients.
       #|When r1 = 0, we have gcd = r0 and the coefficients x0, y0.
+      #|MAINTENANCE:
+      #|The Euclidean update on (r0, r1) is mirrored by the coefficient
+      #|updates, so the Bézout identities remain true.
+      #|TERMINATION:
+      #|When r1 = 0, r0 is gcd(a,b) with coefficients x0,y0.
     ),
     invariant: a * x1 + b * y1 == r1,
     reasoning: (
@@ -206,6 +225,10 @@ fn extended_gcd_64(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
       #|  (x0, x1) <- (x1, x0 - q*x1)
       #|  (y0, y1) <- (y1, y0 - q*y1),
       #|so both Bézout identities stay true together.
+      #|MAINTENANCE:
+      #|The linear combination for r1 follows directly from the update.
+      #|TERMINATION:
+      #|At r1 = 0, r0 is gcd(a,b) and r1's identity is vacuous.
     ),
   }
 }
@@ -255,6 +278,11 @@ fn chinese_remainder(congruences : ArrayView[(Int64, Int64)]) -> (Int64, Int64) 
       #|i is the next congruence to merge. Each iteration combines exactly
       #|one new pair into the accumulator, so we eventually process all
       #|congruences and terminate at i == congruences.length().
+      #|MAINTENANCE:
+      #|Increment i after merging the next congruence, keeping i aligned with
+      #|the number of merged pairs.
+      #|TERMINATION:
+      #|At i = congruences.length(), all pairs are merged.
     ),
     invariant: acc_m >= 1L,
     reasoning: (
@@ -282,6 +310,11 @@ fn chinese_remainder(congruences : ArrayView[(Int64, Int64)]) -> (Int64, Int64) 
       #|  x - x' ≡ 0 (mod acc_m × mi), so x ≡ x' (mod acc_m × mi).
       #|
       #|At termination: acc_a is unique solution mod ∏mj to all congruences.
+      #|MAINTENANCE:
+      #|solve_crt_pair merges one more congruence while preserving uniqueness
+      #|modulo the expanded product acc_m * mi.
+      #|TERMINATION:
+      #|At i = congruences.length(), acc_a solves all input congruences.
     ),
   }
 }
@@ -338,6 +371,11 @@ fn binary_gcd(a : Int, b : Int) -> Int {
       #|
       #|This is because gcd(a,b) = 2^k × gcd(a/2^k, b/2^k) where k is
       #|the number of common factors of 2.
+      #|MAINTENANCE:
+      #|When x is even, divide by 2 and increment k, preserving
+      #|(a|b) == x * 2^k.
+      #|TERMINATION:
+      #|When x is odd, all common factors of 2 are counted in k.
     ),
   }
 
@@ -357,6 +395,10 @@ fn binary_gcd(a : Int, b : Int) -> Int {
       #|Because all common powers of 2 were already removed into shift,
       #|this loop only removes extra powers of 2 from a, which do not affect
       #|the odd component of gcd(a, b). The invariant preserves the scaled gcd.
+      #|MAINTENANCE:
+      #|Divide x by 2 when even, keeping the scaled gcd unchanged.
+      #|TERMINATION:
+      #|When x is odd, we have isolated the odd part of a.
     ),
   }
 
@@ -376,6 +418,10 @@ fn binary_gcd(a : Int, b : Int) -> Int {
         #|Because u is odd, gcd(u, v) is unchanged by removing powers of 2
         #|from v. The loop returns the odd part of v, allowing the main
         #|subtraction step to operate only on odd numbers.
+        #|MAINTENANCE:
+        #|Strip one factor of 2 from v at a time, preserving gcd(u, v).
+        #|TERMINATION:
+        #|When x is odd, v1 is the odd part of v.
       ),
     }
     // Now both u and v1 are odd
@@ -399,6 +445,10 @@ fn binary_gcd(a : Int, b : Int) -> Int {
       #|Since a is odd and b is odd, b-a is even.
       #|We can keep removing 2s from the difference because
       #|they don't contribute to the odd part of the gcd.
+      #|
+      #|MAINTENANCE:
+      #|Replacing (u, v) with (min(u, v), |u - v|) preserves gcd(u, v).
+      #|After stripping 2s from |u - v|, both values remain odd.
       #|
       #|TERMINATION: |u - v| < max(u, v) when u ≠ v.
       #|The maximum of (u, v) strictly decreases each iteration.
@@ -527,8 +577,11 @@ fn ilog2(n : Int) -> Int {
       #|                  ≥ (x/2) × 2^(log+1) = x × 2^log
       #|  And x+1 > x implies (x'+1) × 2 > x when x > 1, so bound holds. ✓
       #|
-      #|Termination: x strictly decreases until x ≤ 1.
-      #|When x = 1: n ∈ [2^log, 2^(log+1)), so floor(log2(n)) = log.
+      #|MAINTENANCE:
+      #|Right shift reduces x and incrementing log keeps the bounds aligned.
+      #|TERMINATION:
+      #|x strictly decreases until x ≤ 1. When x = 1:
+      #|n ∈ [2^log, 2^(log+1)), so floor(log2(n)) = log.
     ),
   }
 }
@@ -618,6 +671,10 @@ fn is_perfect_power(n : Int) -> Bool {
       #|such that n = a^b for some a. We'll find it by trying all b.
       #|
       #|For each b, we compute floor(n^(1/b)) and check if it's exact.
+      #|MAINTENANCE:
+      #|Check exponent b and advance to b+1 if no exact root is found.
+      #|TERMINATION:
+      #|At b = max_exp + 1, all feasible exponents are tested.
     ),
   }
 }
@@ -645,6 +702,10 @@ fn nth_root(n : Int, b : Int) -> Int {
       #|lo is always a candidate with lo^b <= n, and hi is always a candidate
       #|with hi^b >= n. The update keeps the true floor root inside [lo, hi].
       #|Using the upper mid (lo + (hi-lo+1)/2) guarantees progress.
+      #|MAINTENANCE:
+      #|If mid^b <= n, move lo up to mid; otherwise move hi down to mid-1.
+      #|TERMINATION:
+      #|When lo >= hi, lo is the floor b-th root.
     ),
   }
 }
@@ -673,6 +734,11 @@ fn int_pow_checked(a : Int, b : Int, max_val : Int) -> Int {
       #|At each step, acc * base^exp equals a^b, unless overflow is detected.
       #|When a multiplication would exceed max_val, we clamp to max_val+1
       #|to signal overflow and keep comparisons sound.
+      #|MAINTENANCE:
+      #|Odd exp multiplies acc; even exp squares base. Both preserve the
+      #|acc * base^exp relation while guarding overflow.
+      #|TERMINATION:
+      #|exp decreases to 0, yielding the checked power in acc.
     ),
   }
 }
@@ -694,6 +760,11 @@ fn int_pow(a : Int, b : Int) -> Int {
       #|INVARIANT (Exponentiation by squaring):
       #|acc * base^exp == a^b. When exp is even, we square base and halve exp;
       #|when exp is odd, we multiply acc by base and decrement exp.
+      #|MAINTENANCE:
+      #|Each update preserves acc * base^exp by moving one factor of base
+      #|into acc or by squaring base and halving exp.
+      #|TERMINATION:
+      #|exp decreases to 0, leaving acc = a^b.
     ),
   }
 }
