@@ -27,6 +27,10 @@ fn count_set_bits(n : Int) -> Int {
       #|Example: 1100 & 1011 = 1000
       #|
       #|Each iteration clears exactly one bit, so loop runs O(set bits) times.
+      #|MAINTENANCE:
+      #|num loses its lowest set bit and count increments by one.
+      #|TERMINATION:
+      #|When num = 0, all set bits are cleared and count is complete.
     ),
   }
 }
@@ -75,6 +79,10 @@ fn single_number(nums : ArrayView[Int]) -> Int {
       #|
       #|Since a ^ a = 0 and XOR is commutative/associative,
       #|pairs cancel out, leaving only the unique element.
+      #|MAINTENANCE:
+      #|XOR nums[i] into result and advance i.
+      #|TERMINATION:
+      #|At i = nums.length(), result is the unique element.
     ),
   }
 }
@@ -105,6 +113,10 @@ fn missing_number(nums : ArrayView[Int]) -> Int {
       #|Initialize with n (since indices are 0 to n-1).
       #|After full loop: result = XOR of {0..n} ^ XOR of nums.
       #|The missing number doesn't cancel, so it remains.
+      #|MAINTENANCE:
+      #|XOR index i and nums[i] into result, extending the prefix.
+      #|TERMINATION:
+      #|At i = n, result is the missing number.
     ),
   }
 }
@@ -141,6 +153,10 @@ fn reverse_bits(n : Int) -> Int {
       #|  3. Shift num right to process next bit
       #|
       #|After 32 iterations, all bits are reversed.
+      #|MAINTENANCE:
+      #|Consume one bit from num and append it to result each iteration.
+      #|TERMINATION:
+      #|At i = 32, result contains the full reversal.
     ),
   }
 }
@@ -187,6 +203,10 @@ fn generate_subsets(elements : ArrayView[Int]) -> Array[Array[Int]] {
       #|
       #|Each bit position i in mask indicates whether elements[i] is in subset.
       #|This generates all 2^n possible combinations.
+      #|MAINTENANCE:
+      #|Build subset for the current mask and append it to result.
+      #|TERMINATION:
+      #|At mask = total, all subsets are generated.
     ),
   }
   result
@@ -220,6 +240,10 @@ fn gray_code(n : Int) -> Array[Int] {
       #|
       #|Proof: Consider i and i+1. The lowest differing bit at position k
       #|causes exactly one bit change in the XOR result.
+      #|MAINTENANCE:
+      #|Append G(i) and advance i to the next code.
+      #|TERMINATION:
+      #|At i = total, the full Gray code sequence is produced.
     ),
   }
   result
@@ -269,6 +293,10 @@ fn nim_xor(piles : ArrayView[Int]) -> Int {
       #|BASE CASE: Empty game (all piles = 0) has XOR = 0, player to move loses.
       #|STRATEGY: From XOR != 0, find a pile p where p XOR result has high bit < p.
       #|         Reduce that pile to p XOR result, making new XOR = 0.
+      #|MAINTENANCE:
+      #|XOR the next pile size into result and advance i.
+      #|TERMINATION:
+      #|At i = piles.length(), result is the total xor_sum.
     ),
   }
 }
@@ -302,6 +330,10 @@ fn nim_winning_move(piles : ArrayView[Int]) -> (Int, Int)? {
       #|Find pile where XOR reduces the pile size.
       #|Such a pile always exists when xor_sum != 0 because the highest
       #|bit of xor_sum must appear in some pile.
+      #|MAINTENANCE:
+      #|Scan piles until one satisfies target < piles[i].
+      #|TERMINATION:
+      #|If none exist, the position is losing and we return None.
     ),
   }
   None
