@@ -58,7 +58,17 @@ pub fn compute_failure(pattern : String) -> Array[Int] {
     continue i + 1, curr_k
   } where {
     invariant: i >= 1 && i <= m,
-    reasoning: "I: fail[0] = 0; for single char, no proper prefix exists. M: For position i, we find the longest border of pattern[0..i+1). Starting from k (border length of pattern[0..i)), we try to extend: if pattern[k] == pattern[i], border extends to k+1. Otherwise, we fall back to fail[k-1] (the next longest border candidate). This works because if pattern[0..k) = pattern[i-k..i) and we need pattern[0..j) = pattern[i+1-j..i+1), then j <= fail[k-1]+1 by the border structure. The while loop terminates because k decreases each iteration. T: After i = m-1, fail[j] correctly stores the longest proper prefix of pattern[0..j+1) that is also a suffix, for all j in [0, m).",
+    reasoning: (
+      #|INVARIANT (failure function):
+      #|fail[0..i) is correct; k is the length of the longest border for
+      #|pattern[0..i).
+      #|MAINTENANCE:
+      #|Try to extend the border with pattern[i]; on mismatch, fall back to the
+      #|next candidate border via fail[k-1].
+      #|TERMINATION:
+      #|At i = m, fail stores the longest proper prefix that is also a suffix
+      #|for each prefix of the pattern.
+    ),
   }
   fail
 }
@@ -88,7 +98,15 @@ pub fn kmp_search(text : String, pattern : String) -> Array[Int] {
     continue i + 1, curr_j
   } where {
     invariant: i >= 0 && i <= n && j >= 0 && j <= m,
-    reasoning: "I: i = 0, j = 0; no characters matched yet. M: At each position i in text, we maintain j = number of pattern characters matched. If text[i] == pattern[j], we extend the match (j++). If mismatch, we use fail[j-1] to find the next best prefix to try. Key insight: pattern[0..j) == text[i-j..i) is maintained as invariant. When j reaches m, we found a match at position i-m+1 and continue from fail[m-1]. T: After i = n-1, all occurrences are found. Time O(n): each iteration either advances i or decreases j, and j can increase at most n times total.",
+    reasoning: (
+      #|INVARIANT (KMP scan):
+      #|pattern[0..j) matches text[i-j..i), so j is the current match length.
+      #|MAINTENANCE:
+      #|On match, increment j; on mismatch, fall back using fail[j-1] to the
+      #|next viable border without rechecking characters.
+      #|TERMINATION:
+      #|When i reaches n, all matches are reported; the scan is linear time.
+    ),
   }
   matches
 }
@@ -140,7 +158,15 @@ pub fn compute_z_function(s : String) -> Array[Int] {
     continue i + 1, curr_l, curr_r
   } where {
     invariant: i >= 1 && i <= n && l <= r && r <= n,
-    reasoning: "I: z[0] = n; [l, r) = [0, 0) is empty Z-box. M: For each i, compute z[i] using the Z-box optimization. If i < r, then s[i..i+z[i-l]) == s[0..z[i-l]) by previous computation, so z[i] >= min(z[i-l], r-i). We then extend z[i] by comparing characters. If i + z[i] > r, update the Z-box to [i, i+z[i]). Key insight: r only increases, and each comparison that increases z[i] also increases r. Total comparisons O(n). T: After i = n-1, z[i] correctly stores the longest prefix match starting at i. The Z-box invariant ensures we never redo comparisons, achieving O(n) time.",
+    reasoning: (
+      #|INVARIANT (Z-function):
+      #|For all positions < i, z is correct, and [l, r) is the current Z-box.
+      #|MAINTENANCE:
+      #|If i < r, initialize z[i] from the mirror; then extend by comparisons.
+      #|Update [l, r) when a longer match is found.
+      #|TERMINATION:
+      #|At i = n, all z-values are computed in linear time.
+    ),
   }
   z
 }

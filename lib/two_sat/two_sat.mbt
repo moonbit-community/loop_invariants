@@ -138,7 +138,14 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
     }
   } where {
     invariant: i >= 0 && i <= num_nodes,
-    reasoning: "I: All nodes unvisited. M: For each unvisited node, run DFS and add nodes to order in post-order (finish time). T: After i = num_nodes, order contains all nodes sorted by decreasing finish time.",
+    reasoning: (
+      #|INVARIANT (finish order):
+      #|All nodes in [0, i) have been visited and added to order by finish time.
+      #|MAINTENANCE:
+      #|Run DFS from each unvisited node to append its post-order finish.
+      #|TERMINATION:
+      #|At i = num_nodes, order stores nodes by decreasing finish time.
+    ),
   }
 
   // Second DFS: find SCCs in reverse finish order
@@ -152,7 +159,15 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
     }
   } where {
     invariant: i >= -1 && i <= num_nodes - 1,
-    reasoning: "I: All nodes unassigned (comp = -1). M: Process nodes in reverse finish order. For each unassigned node, DFS on reverse graph assigns same SCC id to all reachable nodes. This correctly identifies SCCs because in reverse graph, we can only reach nodes in same or earlier SCCs. T: After i = -1, each node has SCC id in comp[], and num_scc is total SCC count.",
+    reasoning: (
+      #|INVARIANT (SCC assignment):
+      #|All nodes processed after index i have been assigned to their SCCs.
+      #|MAINTENANCE:
+      #|Process nodes in reverse finish order and DFS in the reverse graph to
+      #|assign a new SCC id to each unassigned component.
+      #|TERMINATION:
+      #|At i = -1, all nodes are assigned and num_scc is the total count.
+    ),
   }
 
   // Check satisfiability: x and ¬x must be in different SCCs
@@ -168,7 +183,15 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
     assignment[i] = comp[node_true] > comp[node_false]
   } where {
     invariant: i >= 0 && i <= self.n,
-    reasoning: "I: assignment uninitialized. M: For each variable i, check if x_i and ¬x_i are in same SCC (contradiction). If not, assign x_i = true iff SCC(x_i) has higher number than SCC(¬x_i). Higher SCC numbers correspond to later discovery in second DFS, meaning earlier in topological order. By implication semantics, if a → b and a is true, b must be true; processing in reverse topo ensures b is assigned before a. T: After i = n, either contradiction found or valid assignment computed.",
+    reasoning: (
+      #|INVARIANT (assignment):
+      #|All variables in [0, i) have been assigned consistently with SCC order.
+      #|MAINTENANCE:
+      #|If x and ¬x are in the same SCC, return None; otherwise, assign x to
+      #|true if its SCC comes later in reverse topological order.
+      #|TERMINATION:
+      #|At i = n, a full satisfying assignment is produced.
+    ),
   }
   Some(assignment)
 }
