@@ -45,7 +45,14 @@ fn StringHash::new(s : String) -> StringHash {
     powers[i + 1] = powers[i] * HASH_BASE % HASH_MOD
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: prefix/powers are correct for prefix length i. M: Extend hashes and powers with s[i]. T: After i = n, all prefix hashes and powers are computed.",
+    reasoning: (
+      #|INVARIANT (prefix tables):
+      #|prefix and powers are correct for all prefix lengths in [0, i].
+      #|MAINTENANCE:
+      #|Extend the prefix hash and power tables with s[i].
+      #|TERMINATION:
+      #|At i = n, all prefix hashes and base powers are computed.
+    ),
   }
   { prefix, powers, n }
 }
@@ -116,7 +123,14 @@ fn DoubleHash::new(s : String) -> DoubleHash {
     powers2[i + 1] = powers2[i] * HASH_BASE2 % HASH_MOD2
   } where {
     invariant: i >= 0 && i <= n,
-    reasoning: "I: prefix1/2 and powers1/2 are correct for prefix length i. M: Extend both hashes and powers with s[i]. T: After i = n, all prefix hashes and powers are computed.",
+    reasoning: (
+      #|INVARIANT (double prefix tables):
+      #|prefix1/2 and powers1/2 are correct for all prefix lengths in [0, i].
+      #|MAINTENANCE:
+      #|Extend both hashes and power tables with s[i] using their bases/mods.
+      #|TERMINATION:
+      #|At i = n, both prefix hashes and power tables are computed.
+    ),
   }
   { prefix1, prefix2, powers1, powers2, n }
 }
@@ -199,7 +213,14 @@ fn hash_pattern_match(text : String, pattern : String) -> Array[Int] {
     }
   } where {
     invariant: i >= 0 && i <= n - m + 1,
-    reasoning: "I: All positions in [0,i) have been checked. M: Compare hash at position i and record match. T: After i = n-m+1, all candidate positions are processed.",
+    reasoning: (
+      #|INVARIANT (pattern scan):
+      #|All positions in [0, i) have been checked against the target hash.
+      #|MAINTENANCE:
+      #|Compare the hash at position i and record a match if it equals target.
+      #|TERMINATION:
+      #|At i = n - m + 1, all candidate positions are processed.
+    ),
   }
   result
 }
@@ -218,7 +239,14 @@ fn count_distinct_substrings(s : String, k : Int) -> Int {
     seen[h] = true
   } where {
     invariant: i >= 0 && i <= n - k + 1,
-    reasoning: "I: seen contains hashes for substrings starting in [0,i). M: Insert hash for substring at i. T: After i = n-k+1, all length-k substrings are recorded.",
+    reasoning: (
+      #|INVARIANT (distinct length-k):
+      #|seen contains hashes for substrings starting in [0, i).
+      #|MAINTENANCE:
+      #|Insert the hash for the substring starting at i.
+      #|TERMINATION:
+      #|At i = n - k + 1, all length-k substrings are recorded.
+    ),
   }
   seen.length()
 }
