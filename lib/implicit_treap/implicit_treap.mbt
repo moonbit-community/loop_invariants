@@ -304,6 +304,12 @@ fn ImplicitTreap::get(self : ImplicitTreap, pos : Int) -> Int64? {
       #|
       #|Thus target always stays within the new subtree size, and each step
       #|moves down one level toward the requested index.
+      #|MAINTENANCE:
+      #|Updating (node, target) according to left_size preserves the mapping
+      #|between target and its position in the chosen child subtree.
+      #|TERMINATION:
+      #|Each iteration descends one level; the loop ends when the node is
+      #|found or a null child is reached.
     ),
   }
 }
