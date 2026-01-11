@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_persistent_array"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Node
+pub impl Show for Node
+
+type PArray
+pub impl Show for PArray
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_persistent_fenwick"
+
+// Values
+
+// Errors
+
+// Types and methods
+type Fenwick
+pub impl Show for Fenwick
+
+type Node
+pub impl Show for Node
+
+// Type aliases
+
+// Traits
+
