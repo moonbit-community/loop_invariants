@@ -367,8 +367,12 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
   } where {
     invariant: current >= 0 && current < n && hull.length() <= n,
     reasoning: (
-      #|Each step adds one hull vertex and sets current to a valid point index.
-      #|We stop upon returning to leftmost, so the hull length never exceeds n.
+      #|INVARIANT (Jarvis march):
+      #|current is a valid point index on the hull; hull stores the path so far.
+      #|MAINTENANCE:
+      #|Select the most counterclockwise next point and append it to hull.
+      #|TERMINATION:
+      #|When current returns to leftmost, the hull is closed within n steps.
     ),
   }
   hull
@@ -493,8 +497,12 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
     } where {
       invariant: curr_j >= 0 && curr_j < n,
       reasoning: (
-        #|curr_j is always an index on the hull; we only advance it modulo n.
-        #|The loop stops once rotating further no longer increases the area.
+        #|INVARIANT (advance antipodal):
+        #|curr_j stays a valid hull index; it is the best antipodal candidate so far.
+        #|MAINTENANCE:
+        #|Advance to j_next only when the area (distance proxy) increases.
+        #|TERMINATION:
+        #|Stop when further rotation does not improve the area.
       ),
     }
 

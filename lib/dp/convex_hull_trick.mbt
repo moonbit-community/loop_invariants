@@ -358,8 +358,12 @@ fn divide_conquer_dp(
     } where {
       invariant: j >= opt_lo && j <= opt_hi + 1,
       reasoning: (
-        #|best_val tracks the minimum cost among candidates in [opt_lo, j).
-        #|best_opt stores the argmin for the current midpoint.
+        #|INVARIANT (mid candidate scan):
+        #|best_val is the minimum value seen in [opt_lo..j) with best_opt as argmin.
+        #|MAINTENANCE:
+        #|Compare candidate j, updating best_val and best_opt when it improves.
+        #|TERMINATION:
+        #|At j = opt_hi + 1 (or mid), best_opt is the optimal decision for mid.
       ),
     }
     if best_val < dp[mid] {
@@ -440,14 +444,23 @@ fn knuth_optimization(
     } where {
       invariant: i >= 0 && i <= n,
       reasoning: (
-        #|Processing all intervals of length len in increasing start index.
+        #|INVARIANT (interval start scan):
+        #|Intervals of length len starting before i are fully processed.
+        #|MAINTENANCE:
+        #|Compute dp[i][j] and opt[i][j] for the current interval.
+        #|TERMINATION:
+        #|At i = n, all length-len intervals are processed.
       ),
     }
   } where {
     invariant: len >= 2 && len <= n + 1,
     reasoning: (
-      #|Processing intervals by increasing length.
-      #|Smaller intervals must be computed first.
+      #|INVARIANT (length layers):
+      #|All interval lengths in [2..len) are complete before processing len.
+      #|MAINTENANCE:
+      #|Use smaller intervals to build dp for length len.
+      #|TERMINATION:
+      #|At len = n + 1, all interval lengths are processed.
     ),
   }
   dp
@@ -490,7 +503,12 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
       } where {
         invariant: j >= 0 && j <= deque.length() - 1,
         reasoning: (
-          #|deque[0..j) has been shifted left by one position.
+          #|INVARIANT (shift left):
+          #|deque[0..j) has been shifted one position left to remove the front.
+          #|MAINTENANCE:
+          #|Copy deque[j+1] into deque[j], extending the shifted prefix.
+          #|TERMINATION:
+          #|At j = deque.length() - 1, the front element is removed.
         ),
       }
       let _ = deque.pop()
