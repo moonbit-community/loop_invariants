@@ -240,6 +240,10 @@ fn LinkCutTree::splay(self : LinkCutTree, x : Int) -> Unit {
       #|3. Amortized O(log n): Sleator-Tarjan potential function analysis
       #|   Potential = sum of log(size of subtree) for all nodes
       #|   Each splay pays O(3 * (new_potential - old_potential) + 1)
+      #|MAINTENANCE:
+      #|Each rotation preserves in-order structure while moving x upward.
+      #|TERMINATION:
+      #|x's depth strictly decreases until it becomes splay root.
     ),
   }
 }
@@ -345,6 +349,11 @@ fn LinkCutTree::access(self : LinkCutTree, v : Int) -> Unit {
       #|   - Each splay is O(log n) amortized
       #|   - Number of splays = number of preferred child changes on path
       #|   - Amortized O(1) preferred child changes per access
+      #|MAINTENANCE:
+      #|Each splice replaces w's right subtree with v, extending the preferred
+      #|path by one ancestor step.
+      #|TERMINATION:
+      #|path_parent moves upward and becomes -1 at the tree root.
     ),
   }
 }
@@ -377,6 +386,10 @@ fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
       #|2. Splay trees are ordered by depth (shallower = left)
       #|3. Tree root has minimum depth → it's the leftmost node
       #|4. We traverse left children until we reach leftmost node
+      #|MAINTENANCE:
+      #|Moving to the left child keeps us on the shallowest path.
+      #|TERMINATION:
+      #|When no left child exists, we are at the leftmost (tree root) node.
     ),
   }
 
