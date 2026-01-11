@@ -1,0 +1,15 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/challenge_persistent_treap_map"
+
+// Values
+
+// Errors
+
+// Types and methods
+type TreapMap
+pub impl Show for TreapMap
+
+// Type aliases
+
+// Traits
+
