@@ -16,8 +16,14 @@ fn mo_isqrt(n : Int) -> Int {
   } where {
     invariant: x > 0,
     reasoning: (
-      #|Newton's method for integer square root.
-      #|Converges to floor(sqrt(n)).
+      #|INVARIANT (integer sqrt):
+      #|x is a positive estimate for sqrt(n); the sequence stays positive and
+      #|moves toward a fixed point.
+      #|MAINTENANCE:
+      #|next = (x + n / x) / 2 shrinks the estimate when it's above sqrt(n),
+      #|so the sequence is non-increasing after a few steps.
+      #|TERMINATION:
+      #|When next >= x, x is the stable integer estimate and equals floor(sqrt(n)).
     ),
   }
 }
@@ -65,14 +71,26 @@ fn mos_algorithm_range_sum(
     } where {
       invariant: j >= 0 && j <= last,
       reasoning: (
-        #|Bubble pass: after j steps, the largest query (by Mo ordering)
-        #|among the prefix [0..j] is placed at index j.
+        #|INVARIANT (bubble inner):
+        #|After j steps, the largest query (by Mo ordering) among positions
+        #|[0..j] is at index j.
+        #|MAINTENANCE:
+        #|Compare adjacent queries and swap if out of order, pushing the
+        #|largest element one step to the right.
+        #|TERMINATION:
+        #|At j == last, the maximum of the unsorted prefix is fixed at last.
       ),
     }
   } where {
     invariant: i >= 0 && i <= q - 1,
     reasoning: (
-      #|After i outer passes, the last i positions are fixed in final order.
+      #|INVARIANT (bubble outer):
+      #|After i passes, the last i positions are fixed in Mo ordering.
+      #|MAINTENANCE:
+      #|The inner pass moves the next-largest remaining query into position
+      #|q - 1 - i.
+      #|TERMINATION:
+      #|At i == q - 1, the entire order is sorted.
     ),
   }
   let results : Array[Int] = Array::make(q, 0)
@@ -88,7 +106,12 @@ fn mos_algorithm_range_sum(
     } where {
       invariant: r >= curr_r && r <= qr,
       reasoning: (
-        #|Adding elements to right increases sum.
+        #|INVARIANT (expand right):
+        #|s equals sum(arr[curr_l..r)); the range grows to the right.
+        #|MAINTENANCE:
+        #|Add arr[r] and advance r, preserving s as the sum of the extended range.
+        #|TERMINATION:
+        #|At r == qr, the right boundary matches the query.
       ),
     }
 
@@ -100,7 +123,12 @@ fn mos_algorithm_range_sum(
     } where {
       invariant: r >= qr && r <= curr_r2,
       reasoning: (
-        #|Removing elements from right decreases sum.
+        #|INVARIANT (shrink right):
+        #|s equals sum(arr[curr_l..r)); the range shrinks from the right.
+        #|MAINTENANCE:
+        #|Subtract arr[r-1] and decrement r to remove the last element.
+        #|TERMINATION:
+        #|At r == qr, the right boundary matches the query.
       ),
     }
 
@@ -112,7 +140,12 @@ fn mos_algorithm_range_sum(
     } where {
       invariant: l >= curr_l && l <= ql,
       reasoning: (
-        #|Removing elements from left decreases sum.
+        #|INVARIANT (shrink left):
+        #|s equals sum(arr[l..curr_r3)); the range shrinks from the left.
+        #|MAINTENANCE:
+        #|Subtract arr[l] and advance l to drop the leftmost element.
+        #|TERMINATION:
+        #|At l == ql, the left boundary matches the query.
       ),
     }
 
@@ -124,7 +157,12 @@ fn mos_algorithm_range_sum(
     } where {
       invariant: l >= ql && l <= curr_l2,
       reasoning: (
-        #|Adding elements to left increases sum.
+        #|INVARIANT (expand left):
+        #|s equals sum(arr[l..curr_r3)); the range grows to the left.
+        #|MAINTENANCE:
+        #|Decrement l and add arr[l-1] to include the new leftmost element.
+        #|TERMINATION:
+        #|At l == ql, the left boundary matches the query.
       ),
     }
     results[query_idx] = sum5
@@ -134,12 +172,13 @@ fn mos_algorithm_range_sum(
   } where {
     invariant: i >= 0 && i <= q,
     reasoning: (
-      #|LOOP INVARIANT: curr_sum = sum(arr[curr_l..curr_r))
-      #|
-      #|MO'S ALGORITHM ANALYSIS:
-      #|- Right pointer: O(n × √n) total movement
-      #|- Left pointer: O(q × √n) total movement
-      #|Total: O((n + q) × √n)
+      #|INVARIANT (mo main loop):
+      #|curr_sum = sum(arr[curr_l..curr_r)) and results are filled for all
+      #|queries in query_order[0..i).
+      #|MAINTENANCE:
+      #|Adjust curr_l/curr_r to the next query and record the resulting sum.
+      #|TERMINATION:
+      #|At i == q, all queries have been answered.
     ),
   }
   results
@@ -186,8 +225,13 @@ fn SqrtDecomposition::new(arr : Array[Int]) -> SqrtDecomposition {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|LOOP INVARIANT: block_mins[b] = min(arr[b*block_size..(b+1)*block_size])
-      #|for all fully processed blocks.
+      #|INVARIANT (build block mins):
+      #|For every fully processed block, block_mins stores the minimum of its
+      #|elements; the current block is minimized over its processed prefix.
+      #|MAINTENANCE:
+      #|Update block_mins[block_idx] with arr[i] when smaller.
+      #|TERMINATION:
+      #|At i == n, all block minimums are computed.
     ),
   }
   { arr, block_mins, block_size }
@@ -220,12 +264,13 @@ fn SqrtDecomposition::query_min(
   } where {
     invariant: i >= l && i <= r,
     reasoning: (
-      #|LOOP INVARIANT: result = min(arr[l..i))
-      #|
-      #|For full blocks: jump block_size elements, use precomputed min.
-      #|For partial blocks: process element by element.
-      #|
-      #|TIME: At most 2 partial blocks + √n full blocks = O(√n)
+      #|INVARIANT (range min):
+      #|result = min(arr[l..i)); indices [i..r) remain to be processed.
+      #|MAINTENANCE:
+      #|If i aligns with a full block, use block_mins and jump; otherwise scan
+      #|element-by-element and advance i.
+      #|TERMINATION:
+      #|At i == r, result is the minimum over arr[l..r).
     ),
   }
 }
@@ -251,7 +296,12 @@ fn SqrtDecomposition::update_sqrt(
   } where {
     invariant: i >= block_start && i <= block_end,
     reasoning: (
-      #|Recomputing min for the affected block: O(√n)
+      #|INVARIANT (recompute block min):
+      #|block_mins[block_idx] is the minimum of arr[block_start..i).
+      #|MAINTENANCE:
+      #|Compare arr[i] to the current minimum and update if smaller.
+      #|TERMINATION:
+      #|At i == block_end, block_mins[block_idx] is fully recomputed.
     ),
   }
 }
@@ -291,7 +341,12 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
     } where {
       invariant: i >= 0 && i <= max_val,
       reasoning: (
-        #|freq[0..i) have been reset to zero for the new query.
+        #|INVARIANT (reset freq):
+        #|freq[0..i) has been reset to zero for the new query.
+        #|MAINTENANCE:
+        #|Set freq[i] = 0 and advance i.
+        #|TERMINATION:
+        #|At i == max_val, all frequencies are cleared.
       ),
     }
 
@@ -304,7 +359,12 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
     } where {
       invariant: i >= l && i <= r,
       reasoning: (
-        #|Counting frequencies in range [l, r).
+        #|INVARIANT (count freq):
+        #|freq reflects counts for arr[l..i); indices [i..r) remain.
+        #|MAINTENANCE:
+        #|Increment freq[val] for arr[i] when in range and advance i.
+        #|TERMINATION:
+        #|At i == r, freq holds counts for the full query range.
       ),
     }
 
@@ -319,14 +379,24 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
     } where {
       invariant: i >= 0 && i <= max_val + 1,
       reasoning: (
-        #|best = most frequent value in [0..i)
+        #|INVARIANT (find mode):
+        #|best/best_freq is the most frequent value in [0..i).
+        #|MAINTENANCE:
+        #|Compare freq[i] to best_freq and update if larger.
+        #|TERMINATION:
+        #|At i == max_val + 1, best is the mode.
       ),
     }
     results[qi] = mode
   } where {
     invariant: qi >= 0 && qi <= q,
     reasoning: (
-      #|Processing queries one by one.
+      #|INVARIANT (range mode):
+      #|results[0..qi) have been computed for previous queries.
+      #|MAINTENANCE:
+      #|Reset freq, count occurrences, compute mode, and store results[qi].
+      #|TERMINATION:
+      #|At qi == q, all modes are computed.
     ),
   }
   results
@@ -366,7 +436,12 @@ fn BlockSum::new(arr : Array[Int]) -> BlockSum {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|Computing block sums during initialization.
+      #|INVARIANT (build block sums):
+      #|block_sums for blocks fully covered in arr[0..i) are correct.
+      #|MAINTENANCE:
+      #|Add arr[i] to its block sum and advance i.
+      #|TERMINATION:
+      #|At i == n, all block sums are computed.
     ),
   }
   { arr, block_sums, block_size }
@@ -395,8 +470,13 @@ fn BlockSum::query_sum(self : BlockSum, l : Int, r : Int) -> Int {
   } where {
     invariant: i >= l && i <= r,
     reasoning: (
-      #|LOOP INVARIANT: result = sum(arr[l..i))
-      #|Full blocks use precomputed sums, partial blocks iterate.
+      #|INVARIANT (range sum):
+      #|result = sum(arr[l..i)); indices [i..r) remain.
+      #|MAINTENANCE:
+      #|If i aligns to a full block, add its sum and jump; otherwise add arr[i]
+      #|and advance i.
+      #|TERMINATION:
+      #|At i == r, result equals sum(arr[l..r)).
     ),
   }
 }
@@ -450,8 +530,12 @@ fn MoUnionFind::find_mo(self : MoUnionFind, x : Int) -> Int {
   } where {
     invariant: curr >= 0 && curr < self.parent.length(),
     reasoning: (
-      #|LOOP INVARIANT: Following parent pointers to root.
-      #|Path compression flattens the tree for O(α(n)) time.
+      #|INVARIANT (find with compression):
+      #|curr is on the path from x to the root; parent pointers remain valid.
+      #|MAINTENANCE:
+      #|Jump to grandparent and compress the path, shortening future finds.
+      #|TERMINATION:
+      #|When curr is a root, return it as the representative.
     ),
   }
 }
@@ -519,16 +603,25 @@ fn offline_lca_simple(
     } where {
       invariant: idx >= 0 && idx <= adj[node].length(),
       reasoning: (
-        #|Neighbors adj[node][0..idx) have been scanned; unvisited ones
-        #|are enqueued with parent/depth set.
+        #|INVARIANT (BFS neighbors):
+        #|Neighbors adj[node][0..idx) have been scanned; any newly discovered
+        #|node has parent/depth set and is enqueued.
+        #|MAINTENANCE:
+        #|If child is unvisited, mark it, record parent/depth, and enqueue it.
+        #|TERMINATION:
+        #|At idx == degree, all neighbors of node are processed.
       ),
     }
   } where {
     invariant: front >= 0 && front <= queue.length(),
     reasoning: (
-      #|BFS INVARIANT: queue[0..front) nodes are fully expanded,
-      #|queue[front..] are discovered but not processed yet.
-      #|For each visited node, parent and depth define its BFS tree path.
+      #|INVARIANT (BFS queue):
+      #|queue[0..front) nodes are fully expanded; queue[front..] are discovered
+      #|but not processed. parent/depth are correct for visited nodes.
+      #|MAINTENANCE:
+      #|Expand queue[front] and enqueue its undiscovered neighbors.
+      #|TERMINATION:
+      #|At front == queue.length(), all reachable nodes are expanded.
     ),
   }
 
@@ -551,12 +644,13 @@ fn offline_lca_simple(
   } where {
     invariant: qi >= 0 && qi <= q,
     reasoning: (
-      #|LOOP INVARIANT: results[0..qi) contains correct LCAs.
-      #|
-      #|LCA ALGORITHM:
-      #|1. Bring both nodes to same depth
-      #|2. Move up together until they meet
-      #|3. Meeting point is LCA
+      #|INVARIANT (offline LCA):
+      #|results[0..qi) contains correct LCAs for processed queries.
+      #|MAINTENANCE:
+      #|Lift deeper node, then move both up until they meet; store the meeting
+      #|node as LCA in results[qi].
+      #|TERMINATION:
+      #|At qi == q, all queries have their LCAs.
     ),
   }
   results
@@ -595,8 +689,13 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
     } where {
       invariant: idx >= 0 && idx <= adj[node].length(),
       reasoning: (
-        #|All neighbors in adj[node][0..idx) have been examined; non-parent
-        #|children are scheduled on the stack for DFS.
+        #|INVARIANT (centroid DFS):
+        #|Neighbors adj[node][0..idx) have been examined; non-parent children
+        #|have been pushed to the stack.
+        #|MAINTENANCE:
+        #|If a neighbor is not the parent, push it for DFS.
+        #|TERMINATION:
+        #|At idx == degree, all neighbors of node are processed.
       ),
     }
   }
@@ -611,16 +710,23 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
     } where {
       invariant: idx >= 0 && idx <= adj[node].length(),
       reasoning: (
-        #|subtree_size[node] accumulates sizes from adj[node][0..idx)
-        #|excluding the parent edge.
+        #|INVARIANT (subtree size):
+        #|subtree_size[node] equals 1 plus sizes of processed child subtrees.
+        #|MAINTENANCE:
+        #|Add subtree_size[child] for each non-parent neighbor.
+        #|TERMINATION:
+        #|At idx == degree, subtree_size[node] is complete.
       ),
     }
   } where {
     invariant: i >= -1 && i < order.length(),
     reasoning: (
-      #|POST-ORDER INVARIANT: for all nodes in order[i+1..],
-      #|subtree_size is already computed as 1 + sum(child subtree_size).
-      #|Processing in reverse DFS order ensures children are finalized first.
+      #|INVARIANT (post-order):
+      #|For nodes in order[i+1..], subtree_size is fully computed.
+      #|MAINTENANCE:
+      #|Process order[i] after its children to accumulate subtree sizes.
+      #|TERMINATION:
+      #|At i == -1, subtree_size is computed for all nodes.
     ),
   }
   let tree_size = subtree_size[root]
@@ -640,8 +746,12 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
     } where {
       invariant: idx >= 0 && idx <= adj[node].length(),
       reasoning: (
-        #|is_centroid remains true iff all processed neighbor subtrees
-        #|are no larger than n/2.
+        #|INVARIANT (centroid check):
+        #|is_centroid remains true iff all processed neighbor subtrees are <= n/2.
+        #|MAINTENANCE:
+        #|Compute the neighbor subtree size and invalidate if it exceeds n/2.
+        #|TERMINATION:
+        #|At idx == degree, is_centroid reflects the full condition.
       ),
     }
     if is_centroid {
@@ -653,10 +763,12 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|LOOP INVARIANT: Searching for centroid node.
-      #|
-      #|CENTROID PROPERTY: Node c is centroid iff every subtree
-      #|(created by removing c) has at most n/2 nodes.
+      #|INVARIANT (find centroid):
+      #|All nodes in order[0..i) have been checked; centroid holds any found.
+      #|MAINTENANCE:
+      #|Check order[i] and return it if all neighbor subtrees are <= n/2.
+      #|TERMINATION:
+      #|At i == n, a centroid has been found (tree always has one).
     ),
   }
 }
@@ -702,8 +814,12 @@ fn build_euler_tour(adj : Array[Array[Int]], root : Int) -> EulerTour {
       } where {
         invariant: i >= -1 && i < adj[node].length(),
         reasoning: (
-          #|Reverse scan pushes children so the stack visits them in the
-          #|original adjacency order (LIFO mirrors recursive DFS).
+          #|INVARIANT (euler push order):
+          #|Children adj[node][i+1..] have been pushed to the stack.
+          #|MAINTENANCE:
+          #|Push child i so the stack processes children in original order.
+          #|TERMINATION:
+          #|At i == -1, all children are scheduled for DFS.
         ),
       }
     } else {
@@ -756,15 +872,25 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
     } where {
       invariant: idx >= 0 && idx <= adj[node].length(),
       reasoning: (
-        #|Neighbors adj[node][0..idx) are processed; newly discovered nodes
-        #|are assigned depth and immediate parent.
+        #|INVARIANT (binary lifting BFS neighbors):
+        #|Neighbors adj[node][0..idx) are processed; discovered nodes have
+        #|depth and up[][0] set.
+        #|MAINTENANCE:
+        #|When discovering a child, record parent/depth and enqueue it.
+        #|TERMINATION:
+        #|At idx == degree, all neighbors are handled.
       ),
     }
   } where {
     invariant: front >= 0 && front <= queue.length(),
     reasoning: (
-      #|BFS INVARIANT: nodes in queue[0..front) have their depth and
-      #|immediate parent (up[][0]) set; queue[front..] are discovered.
+      #|INVARIANT (binary lifting BFS):
+      #|queue[0..front) nodes have depth and up[][0] set; queue[front..] are
+      #|discovered but not processed.
+      #|MAINTENANCE:
+      #|Expand queue[front] and enqueue newly discovered neighbors.
+      #|TERMINATION:
+      #|At front == queue.length(), depth and up[][0] are filled.
     ),
   }
   for k = 1; k < log_n; k = k + 1 {
@@ -776,16 +902,23 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
     } where {
       invariant: v >= 0 && v <= n,
       reasoning: (
+        #|INVARIANT (lift table row):
         #|For fixed k, up[0..v) have their 2^k ancestors computed.
+        #|MAINTENANCE:
+        #|Compute up[v][k] from the 2^(k-1) ancestor when it exists.
+        #|TERMINATION:
+        #|At v == n, the k-th column is complete.
       ),
     }
   } where {
     invariant: k >= 1 && k <= log_n,
     reasoning: (
-      #|LOOP INVARIANT: up[v][j] = 2^j ancestor for all j < k
-      #|
-      #|BINARY LIFTING: up[v][k] = up[up[v][k-1]][k-1]
-      #|The 2^k ancestor is the 2^(k-1) ancestor of the 2^(k-1) ancestor.
+      #|INVARIANT (lift table columns):
+      #|For all j < k, up[v][j] stores the 2^j ancestor of v.
+      #|MAINTENANCE:
+      #|Use up[v][k] = up[up[v][k-1]][k-1] to build the next column.
+      #|TERMINATION:
+      #|At k == log_n, the binary lifting table is complete.
     ),
   }
   { up, depth, log_n }
@@ -812,7 +945,12 @@ fn BinaryLifting::lca_binary_lifting(
   } where {
     invariant: k >= 0 && k <= self.log_n,
     reasoning: (
-      #|After processing bits < k, u has been lifted by that prefix of diff.
+      #|INVARIANT (lift to depth):
+      #|After processing bits < k, u has been lifted by those bits of diff.
+      #|MAINTENANCE:
+      #|If bit k is set, jump u to its 2^k ancestor.
+      #|TERMINATION:
+      #|At k == log_n, u and v are at the same depth.
     ),
   }
   if u == v {
@@ -826,9 +964,12 @@ fn BinaryLifting::lca_binary_lifting(
   } where {
     invariant: k >= -1 && k < self.log_n,
     reasoning: (
-      #|LOOP INVARIANT: LCA is an ancestor of both u and v.
-      #|
-      #|After all jumps, u and v are children of LCA.
+      #|INVARIANT (lift to LCA):
+      #|LCA is an ancestor of both u and v; u and v stay at equal depth.
+      #|MAINTENANCE:
+      #|If ancestors differ at 2^k, lift both nodes up by 2^k.
+      #|TERMINATION:
+      #|After the loop, u and v are children of the LCA.
     ),
   }
   self.up[u][0]
