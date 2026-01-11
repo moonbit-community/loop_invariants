@@ -10,7 +10,7 @@ enum ChildList {
 } derive(Show)
 
 ///|
-enum Heap {
+pub enum Heap {
   Empty
   Node(value~ : Int, children~ : ChildList)
 } derive(Show)
@@ -54,7 +54,17 @@ fn children_valid(parent : Int, children : ChildList) -> Bool {
 }
 
 ///|
-fn merge(a : Heap, b : Heap) -> Heap {
+pub fn empty() -> Heap {
+  Heap::Empty
+}
+
+///|
+pub fn size(h : Heap) -> Int {
+  heap_size(h)
+}
+
+///|
+pub fn merge(a : Heap, b : Heap) -> Heap {
   match (a, b) {
     (Heap::Empty, _) => b
     (_, Heap::Empty) => a
@@ -73,12 +83,12 @@ fn singleton(value : Int) -> Heap {
 }
 
 ///|
-fn insert(h : Heap, value : Int) -> Heap {
+pub fn insert(h : Heap, value : Int) -> Heap {
   merge(h, singleton(value))
 }
 
 ///|
-fn find_min(h : Heap) -> Int? {
+pub fn find_min(h : Heap) -> Int? {
   match h {
     Heap::Empty => None
     Heap::Node(value~, children=_) => Some(value)
@@ -116,7 +126,7 @@ fn merge_pairs(children : ChildList) -> Heap {
 }
 
 ///|
-fn delete_min(h : Heap) -> Heap? {
+pub fn delete_min(h : Heap) -> Heap? {
   match h {
     Heap::Empty => None
     Heap::Node(value=_, children~) => Some(merge_pairs(children))

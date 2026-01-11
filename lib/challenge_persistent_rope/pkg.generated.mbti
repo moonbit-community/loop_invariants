@@ -2,11 +2,26 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_rope"
 
 // Values
+pub fn concat(Rope, Rope) -> Rope
+
+pub fn concat_many(ArrayView[Rope]) -> Rope
+
+pub fn empty() -> Rope
+
+pub fn leaf(String) -> Rope
+
+pub fn length(Rope) -> Int
+
+pub fn to_string(Rope) -> String
 
 // Errors
 
 // Types and methods
-type Rope
+pub enum Rope {
+  Empty
+  Leaf(value~ : String)
+  Node(len~ : Int, left~ : Rope, right~ : Rope)
+}
 pub impl Show for Rope
 
 // Type aliases

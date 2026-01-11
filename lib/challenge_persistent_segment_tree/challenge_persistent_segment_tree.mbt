@@ -4,7 +4,7 @@
 // ============================================================================
 
 ///|
-enum Node {
+pub enum Node {
   Leaf(sum~ : Int)
   Branch(sum~ : Int, left~ : Node, right~ : Node)
 } derive(Show)
@@ -34,7 +34,12 @@ fn tree_valid(node : Node, len : Int) -> Bool {
 }
 
 ///|
-fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
+pub fn total(node : Node) -> Int {
+  node_sum(node)
+}
+
+///|
+pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
   if r - l == 1 {
     Node::Leaf(sum=arr[l])
   } else {
@@ -46,7 +51,7 @@ fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 }
 
 ///|
-fn add(node : Node, l : Int, r : Int, idx : Int, delta : Int) -> Node {
+pub fn add(node : Node, l : Int, r : Int, idx : Int, delta : Int) -> Node {
   if r - l == 1 {
     Node::Leaf(sum=node_sum(node) + delta)
   } else {
@@ -74,7 +79,7 @@ fn add(node : Node, l : Int, r : Int, idx : Int, delta : Int) -> Node {
 }
 
 ///|
-fn query(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
+pub fn query(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
   if qr <= l || r <= ql {
     0
   } else if ql <= l && r <= qr {
@@ -92,7 +97,11 @@ fn query(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 ///|
 /// Apply a list of point updates (index, delta).
 #warnings("+missing_invariant+missing_reasoning")
-fn apply_updates(root : Node, n : Int, updates : ArrayView[(Int, Int)]) -> Node {
+pub fn apply_updates(
+  root : Node,
+  n : Int,
+  updates : ArrayView[(Int, Int)],
+) -> Node {
   let m = updates.length()
   for i = 0, tree = root {
     if i >= m {

@@ -4,7 +4,7 @@
 // ============================================================================
 
 ///|
-enum Node {
+pub enum Node {
   Leaf(max~ : Int)
   Branch(max~ : Int, left~ : Node, right~ : Node)
 } derive(Show)
@@ -39,7 +39,12 @@ fn tree_valid(node : Node, len : Int) -> Bool {
 }
 
 ///|
-fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
+pub fn max_value(node : Node) -> Int {
+  node_max(node)
+}
+
+///|
+pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
   if r - l == 1 {
     Node::Leaf(max=arr[l])
   } else {
@@ -56,7 +61,7 @@ fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 }
 
 ///|
-fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
+pub fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
   if r - l == 1 {
     Node::Leaf(max=value)
   } else {
@@ -86,7 +91,7 @@ fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
 }
 
 ///|
-fn range_max(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
+pub fn range_max(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
   if qr <= l || r <= ql {
     -0x3fffffff
   } else if ql <= l && r <= qr {
@@ -111,7 +116,11 @@ fn range_max(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 ///|
 /// Apply point updates (idx, value).
 #warnings("+missing_invariant+missing_reasoning")
-fn apply_updates(root : Node, n : Int, updates : ArrayView[(Int, Int)]) -> Node {
+pub fn apply_updates(
+  root : Node,
+  n : Int,
+  updates : ArrayView[(Int, Int)],
+) -> Node {
   let m = updates.length()
   for i = 0, tree = root {
     if i >= m {

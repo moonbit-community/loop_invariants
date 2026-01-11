@@ -2,11 +2,23 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_segment_tree"
 
 // Values
+pub fn add(Node, Int, Int, Int, Int) -> Node
+
+pub fn apply_updates(Node, Int, ArrayView[(Int, Int)]) -> Node
+
+pub fn build(ArrayView[Int], Int, Int) -> Node
+
+pub fn query(Node, Int, Int, Int, Int) -> Int
+
+pub fn total(Node) -> Int
 
 // Errors
 
 // Types and methods
-type Node
+pub enum Node {
+  Leaf(sum~ : Int)
+  Branch(sum~ : Int, left~ : Node, right~ : Node)
+}
 pub impl Show for Node
 
 // Type aliases

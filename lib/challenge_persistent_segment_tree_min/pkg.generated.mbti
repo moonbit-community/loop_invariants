@@ -2,11 +2,23 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_segment_tree_min"
 
 // Values
+pub fn apply_updates(Node, Int, ArrayView[(Int, Int)]) -> Node
+
+pub fn build(ArrayView[Int], Int, Int) -> Node
+
+pub fn min_value(Node) -> Int
+
+pub fn range_min(Node, Int, Int, Int, Int) -> Int
+
+pub fn set_value(Node, Int, Int, Int, Int) -> Node
 
 // Errors
 
 // Types and methods
-type Node
+pub enum Node {
+  Leaf(min~ : Int)
+  Branch(min~ : Int, left~ : Node, right~ : Node)
+}
 pub impl Show for Node
 
 // Type aliases

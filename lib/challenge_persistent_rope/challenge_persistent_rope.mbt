@@ -4,14 +4,24 @@
 // ============================================================================
 
 ///|
-enum Rope {
+pub enum Rope {
   Empty
   Leaf(value~ : String)
   Node(len~ : Int, left~ : Rope, right~ : Rope)
 } derive(Show)
 
 ///|
-fn length(r : Rope) -> Int {
+pub fn empty() -> Rope {
+  Rope::Empty
+}
+
+///|
+pub fn leaf(value : String) -> Rope {
+  Rope::Leaf(value~)
+}
+
+///|
+pub fn length(r : Rope) -> Int {
   match r {
     Rope::Empty => 0
     Rope::Leaf(value~) => value.length()
@@ -20,7 +30,7 @@ fn length(r : Rope) -> Int {
 }
 
 ///|
-fn concat(a : Rope, b : Rope) -> Rope {
+pub fn concat(a : Rope, b : Rope) -> Rope {
   match (a, b) {
     (Rope::Empty, _) => b
     (_, Rope::Empty) => a
@@ -29,7 +39,7 @@ fn concat(a : Rope, b : Rope) -> Rope {
 }
 
 ///|
-fn to_string(r : Rope) -> String {
+pub fn to_string(r : Rope) -> String {
   match r {
     Rope::Empty => ""
     Rope::Leaf(value~) => value
@@ -49,7 +59,7 @@ fn prefix_length(ropes : ArrayView[Rope], n : Int) -> Int {
 ///|
 /// Concatenate a list of ropes in order.
 #warnings("+missing_invariant+missing_reasoning")
-fn concat_many(ropes : ArrayView[Rope]) -> Rope {
+pub fn concat_many(ropes : ArrayView[Rope]) -> Rope {
   let n = ropes.length()
   for i = 0, acc = Rope::Empty {
     if i >= n {
