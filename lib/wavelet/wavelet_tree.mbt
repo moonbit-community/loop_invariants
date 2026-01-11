@@ -410,8 +410,12 @@ fn WaveletTree::select(
   } where {
     invariant: lo >= l && hi <= r && lo <= hi,
     reasoning: (
-      #|The k-th occurrence (if it exists) remains within [lo, hi];
-      #|counts guide the narrowing of the search interval.
+      #|INVARIANT (kth search):
+      #|If the k-th occurrence exists, its position lies within [lo, hi].
+      #|MAINTENANCE:
+      #|Use count(l, mid+1) to choose the half that still contains the k-th.
+      #|TERMINATION:
+      #|At lo == hi, the candidate position is determined.
     ),
   }
 }

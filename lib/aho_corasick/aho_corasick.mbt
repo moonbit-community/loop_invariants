@@ -165,8 +165,12 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
       } where {
         invariant: f >= -1 && f < self.states.length(),
         reasoning: (
-          #|Failure links always point to a valid state or -1 (root sentinel).
-          #|Each step follows a shorter suffix, so the chain must terminate.
+          #|INVARIANT (failure chain):
+          #|f is a valid state index or -1; it represents a proper suffix state.
+          #|MAINTENANCE:
+          #|Move to failure[f], which strictly shortens the suffix each step.
+          #|TERMINATION:
+          #|The chain reaches the root sentinel after finitely many steps.
         ),
       }
       self.states[child].failure = failure

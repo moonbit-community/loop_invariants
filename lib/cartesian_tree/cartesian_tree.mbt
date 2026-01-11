@@ -131,8 +131,12 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
-      #|Iterate through indices in order while maintaining the monotonic stack.
-      #|The loop variable advances one step per iteration within [0, n].
+      #|INVARIANT (stack build):
+      #|Indices in [0..i) are processed and the monotonic stack is consistent.
+      #|MAINTENANCE:
+      #|Process index i, pop larger nodes, set links, then push i onto the stack.
+      #|TERMINATION:
+      #|At i = n, all nodes are integrated into the Cartesian tree.
     ),
   }
 
@@ -164,8 +168,12 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   } where {
     invariant: head >= 0 && head <= queue.length(),
     reasoning: (
-      #|Queue holds discovered nodes; head points to next node to process.
-      #|Pushing children only grows queue, so 0 <= head <= queue.length() stays true.
+      #|INVARIANT (BFS):
+      #|queue[0..head) is processed with depths assigned; queue[head..] is discovered.
+      #|MAINTENANCE:
+      #|Process queue[head], assign children depths, and enqueue them.
+      #|TERMINATION:
+      #|At head = queue.length(), all reachable nodes are processed.
     ),
   }
 
@@ -251,8 +259,12 @@ fn highest_bit(x : Int) -> Int {
   } where {
     invariant: val > 0 && result >= 0,
     reasoning: (
-      #|val starts positive and is halved each step, so it stays > 0.
-      #|result counts how many halving steps have been taken.
+      #|INVARIANT (highest_bit):
+      #|val == floor(x / 2^result) and val > 0 while looping.
+      #|MAINTENANCE:
+      #|Halve val and increment result, preserving the relation.
+      #|TERMINATION:
+      #|When val <= 1, result is floor(log2(x)).
     ),
   }
 }
