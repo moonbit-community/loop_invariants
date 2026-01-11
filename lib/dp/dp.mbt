@@ -282,8 +282,12 @@ fn coin_change_ways(coins : ArrayView[Int], amount : Int) -> Int {
     } where {
       invariant: a >= coin && a <= amount + 1,
       reasoning: (
-        #|INNER LOOP INVARIANT: dp[0..a) updated to include coin i
-        #|Processing amounts in increasing order allows using coin multiple times.
+        #|INVARIANT (ways inner):
+        #|dp[0..a) already includes combinations using coins[0..i], including coin i.
+        #|MAINTENANCE:
+        #|Update dp[a] by adding ways that use coin i at least once.
+        #|TERMINATION:
+        #|At a = amount + 1, all amounts reflect using coin i any number of times.
       ),
     }
   } where {
@@ -479,8 +483,12 @@ fn unique_paths(m : Int, n : Int) -> Int {
     } where {
       invariant: j >= 1 && j <= n,
       reasoning: (
-        #|INNER LOOP: dp[j] = paths to (i, j)
-        #|dp[j] was paths to (i-1, j), dp[j-1] is paths to (i, j-1)
+        #|INVARIANT (row paths):
+        #|dp[1..j) stores paths to row i for columns already updated.
+        #|MAINTENANCE:
+        #|Update dp[j] = dp[j] (from above) + dp[j-1] (from left).
+        #|TERMINATION:
+        #|At j = n, row i is fully updated.
       ),
     }
   } where {
@@ -762,8 +770,12 @@ fn egg_drop(eggs : Int, floors : Int) -> Int {
     } where {
       invariant: k >= 0 && k <= eggs,
       reasoning: (
-        #|dp[k] = max floors checkable with k eggs and current trials
-        #|After update: dp[k] with t+1 trials = 1 + dp[k-1,t] + dp[k,t]
+        #|INVARIANT (trials update):
+        #|Before update, dp[k] is the max floors with k eggs and current trials.
+        #|MAINTENANCE:
+        #|Update in reverse: new dp[k] = 1 + old dp[k-1] + old dp[k].
+        #|TERMINATION:
+        #|At k = 0, the row is fully updated for this trial count.
       ),
     }
   } else {
