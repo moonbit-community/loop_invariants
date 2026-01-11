@@ -83,9 +83,12 @@ fn horner_eval(coeffs : ArrayView[Int], x : Int) -> Int {
     ),
     invariant: acc == poly_prefix(coeffs, i, x),
     reasoning: (
-      #|Horner step: if acc = P_prefix(i), then
-      #|acc * x + coeffs[i] = P_prefix(i + 1).
-      #|So acc always equals the polynomial value for the processed prefix.
+      #|INVARIANT (Horner):
+      #|acc equals the value of the polynomial prefix of length i at x.
+      #|MAINTENANCE:
+      #|If acc = P_prefix(i), then acc * x + coeffs[i] = P_prefix(i + 1).
+      #|TERMINATION:
+      #|At i == coeffs.length(), acc equals the full polynomial value.
     ),
   }
 }

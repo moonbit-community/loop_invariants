@@ -249,6 +249,10 @@ fn longest_palindrome(s : ArrayView[Char]) -> (Int, Int) {
       #|Because p stores the palindrome radius at every center in the
       #|transformed string, the maximum radius corresponds to the longest
       #|palindromic substring in the original string (after conversion).
+      #|MAINTENANCE:
+      #|Compare p[i] with max_radius and update max_center when larger.
+      #|TERMINATION:
+      #|At i == p.length(), max_center marks the longest palindrome.
     ),
   }
 
@@ -469,6 +473,10 @@ fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
           #|LCS(s1[0..i), s2[0..t)). The recurrence uses prev (row i-1)
           #|and curr (row i) so each update is based on already-computed
           #|subproblems.
+          #|MAINTENANCE:
+          #|Compute curr[j] from prev and curr[j-1], then advance j.
+          #|TERMINATION:
+          #|At j == n + 1, row i is fully computed in curr.
         ),
       }
       let tmp = prev
@@ -518,6 +526,10 @@ fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
       #|SPACE OPTIMIZATION:
       #|L[i][j] only depends on L[i-1][j-1], L[i-1][j], L[i][j-1].
       #|We only need previous row and current row: O(n) space.
+      #|MAINTENANCE:
+      #|Fill curr from prev, then swap so prev holds row i for the next step.
+      #|TERMINATION:
+      #|At i == m + 1, prev[n] is the LCS length of the full strings.
     ),
   }
 }
