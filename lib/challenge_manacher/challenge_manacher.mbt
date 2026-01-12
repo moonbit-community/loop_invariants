@@ -12,6 +12,7 @@ fn min(a : Int, b : Int) -> Int {
 }
 
 ///|
+/// Compute odd and even palindrome radii for each center.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn manacher_radii(s : StringView) -> (Array[Int], Array[Int]) {
   let n = s.length()

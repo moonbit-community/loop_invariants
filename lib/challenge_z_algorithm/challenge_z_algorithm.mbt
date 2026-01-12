@@ -12,6 +12,7 @@ fn min(a : Int, b : Int) -> Int {
 }
 
 ///|
+/// Compute the Z-array for s (longest prefix match at each position).
 #warnings("+missing_invariant+missing_reasoning")
 pub fn z_function(s : StringView) -> Array[Int] {
   let n = s.length()
@@ -65,6 +66,7 @@ pub fn z_function(s : StringView) -> Array[Int] {
 }
 
 ///|
+/// Find all occurrences of pattern in text using the Z-algorithm.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn z_search(text : StringView, pattern : StringView) -> Array[Int] {
   let n = text.length()

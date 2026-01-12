@@ -3,6 +3,7 @@
 // ============================================================================
 
 ///|
+/// Compute the prefix function (pi array) for the pattern.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn prefix_function(pattern : StringView) -> Array[Int] {
   let m = pattern.length()
@@ -53,6 +54,7 @@ pub fn prefix_function(pattern : StringView) -> Array[Int] {
 }
 
 ///|
+/// Return all match start indices of pattern in text.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn kmp_search(text : StringView, pattern : StringView) -> Array[Int] {
   let n = text.length()

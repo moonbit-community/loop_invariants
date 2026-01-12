@@ -20,6 +20,7 @@ fn equal_at(text : StringView, pattern : StringView, start : Int) -> Bool {
 }
 
 ///|
+/// Find all occurrences of pattern in text using Rabin-Karp.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn rabin_karp_search(text : StringView, pattern : StringView) -> Array[Int] {
   let n = text.length()

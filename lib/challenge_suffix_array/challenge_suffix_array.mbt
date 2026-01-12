@@ -3,6 +3,7 @@
 // ============================================================================
 
 ///|
+/// Build the suffix array for s.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn suffix_array(s : StringView) -> Array[Int] {
   let n = s.length()
@@ -94,6 +95,7 @@ pub fn suffix_array(s : StringView) -> Array[Int] {
 }
 
 ///|
+/// Build the LCP array for s using a suffix array.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn lcp_array(s : StringView, sa : ArrayView[Int]) -> Array[Int] {
   let n = s.length()
