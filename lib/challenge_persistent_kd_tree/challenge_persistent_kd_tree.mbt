@@ -16,6 +16,7 @@ pub enum Kd {
 } derive(Show)
 
 ///|
+/// Return the number of points stored in the tree.
 pub fn size(t : Kd) -> Int {
   match t {
     Kd::Empty => 0
@@ -48,16 +49,19 @@ fn insert_node(t : Kd, p : Point, axis : Int) -> Kd {
 }
 
 ///|
+/// Create an empty KD-tree.
 pub fn empty() -> Kd {
   Kd::Empty
 }
 
 ///|
+/// Insert a point and return the new tree.
 pub fn insert(t : Kd, p : Point) -> Kd {
   insert_node(t, p, 0)
 }
 
 ///|
+/// Check whether a point exists in the tree.
 pub fn contains(t : Kd, p : Point) -> Bool {
   match t {
     Kd::Empty => false

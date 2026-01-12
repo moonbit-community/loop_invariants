@@ -27,6 +27,7 @@ fn max_end(t : Tree) -> Int {
 }
 
 ///|
+/// Return the number of intervals in the tree.
 pub fn size(t : Tree) -> Int {
   match t {
     Tree::Empty => 0
@@ -65,11 +66,13 @@ fn make_node(start : Int, end : Int, left : Tree, right : Tree) -> Tree {
 }
 
 ///|
+/// Create an empty interval tree.
 pub fn empty() -> Tree {
   Tree::Empty
 }
 
 ///|
+/// Insert an interval and return the new tree.
 pub fn insert(t : Tree, start : Int, end : Int) -> Tree {
   match t {
     Tree::Empty =>

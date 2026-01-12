@@ -107,16 +107,19 @@ fn merge_sorted(arr : ArrayView[(Int, Int)]) -> Array[(Int, Int)] {
 }
 
 ///|
+/// Create an empty interval set.
 pub fn empty() -> Tree {
   Tree::Empty
 }
 
 ///|
+/// Return all intervals in sorted order.
 pub fn to_array(t : Tree) -> Array[(Int, Int)] {
   inorder(t)
 }
 
 ///|
+/// Insert an interval [start, end] and return the merged set.
 pub fn insert_interval(t : Tree, start : Int, end : Int) -> Tree {
   let list = inorder(t)
   let with_new = insert_sorted(list[:], (start, end))
@@ -125,6 +128,7 @@ pub fn insert_interval(t : Tree, start : Int, end : Int) -> Tree {
 }
 
 ///|
+/// Check whether point x is contained in any interval.
 pub fn contains_point(t : Tree, x : Int) -> Bool {
   match t {
     Tree::Empty => false

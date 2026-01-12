@@ -52,21 +52,25 @@ fn insert_line(node : Node, line : Line, l : Int, r : Int) -> Node {
 }
 
 ///|
+/// Create an empty Li Chao tree.
 pub fn empty() -> Node {
   Node::Empty
 }
 
 ///|
+/// Return the number of lines stored in the tree.
 pub fn size(tree : Node) -> Int {
   line_count(tree)
 }
 
 ///|
+/// Insert a line over domain [l, r) and return the new tree.
 pub fn insert(tree : Node, line : Line, l : Int, r : Int) -> Node {
   insert_line(tree, line, l, r)
 }
 
 ///|
+/// Query the minimum value at x over domain [l, r).
 pub fn query(node : Node, x : Int, l : Int, r : Int) -> Int {
   match node {
     Node::Empty => 0x3fffffff
