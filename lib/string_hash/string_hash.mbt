@@ -197,7 +197,7 @@ fn StringHash::lcp(self : StringHash, i : Int, j : Int) -> Int {
 
 ///|
 /// Find all occurrences of pattern in text
-fn hash_pattern_match(text : String, pattern : String) -> Array[Int] {
+pub fn hash_pattern_match(text : String, pattern : String) -> Array[Int] {
   let result : Array[Int] = []
   let n = text.length()
   let m = pattern.length()

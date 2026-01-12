@@ -242,7 +242,7 @@ fn manacher(s : ArrayView[Char]) -> Array[Int] {
 
 ///|
 /// Find longest palindromic substring using Manacher's algorithm.
-fn longest_palindrome(s : ArrayView[Char]) -> (Int, Int) {
+pub fn longest_palindrome_range(s : ArrayView[Char]) -> (Int, Int) {
   let n = s.length()
   guard n > 0 else { return (0, 0) }
   let p = manacher(s)
@@ -284,19 +284,19 @@ fn longest_palindrome(s : ArrayView[Char]) -> (Int, Int) {
 test "manacher" {
   // "abacaba" - entire string is palindrome
   let s1 : Array[Char] = ['a', 'b', 'a', 'c', 'a', 'b', 'a']
-  let (start1, len1) = longest_palindrome(s1[:])
+  let (start1, len1) = longest_palindrome_range(s1[:])
   assert_eq(start1, 0)
   assert_eq(len1, 7)
 
   // "abba" - even length palindrome
   let s2 : Array[Char] = ['a', 'b', 'b', 'a']
-  let (start2, len2) = longest_palindrome(s2[:])
+  let (start2, len2) = longest_palindrome_range(s2[:])
   assert_eq(start2, 0)
   assert_eq(len2, 4)
 
   // "abcbd" - "bcb" is longest
   let s3 : Array[Char] = ['a', 'b', 'c', 'b', 'd']
-  let (start3, len3) = longest_palindrome(s3[:])
+  let (start3, len3) = longest_palindrome_range(s3[:])
   assert_eq(start3, 1)
   assert_eq(len3, 3)
 }
@@ -476,7 +476,7 @@ test "rabin_karp" {
 ///|
 /// LCS length using space-optimized DP (two rows).
 #warnings("+missing_invariant+missing_reasoning")
-fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
+pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
   let m = s1.length()
   let n = s2.length()
   guard m > 0 && n > 0 else { return 0 }

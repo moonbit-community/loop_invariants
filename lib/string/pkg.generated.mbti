@@ -2,6 +2,9 @@
 package "bobzhang/loop_invariants/lib/string"
 
 // Values
+pub fn lcs_length(ArrayView[Char], ArrayView[Char]) -> Int
+
+pub fn longest_palindrome_range(ArrayView[Char]) -> (Int, Int)
 
 // Errors
 

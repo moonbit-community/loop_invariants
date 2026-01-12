@@ -493,6 +493,21 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
   sb.to_string()
 }
 
+///|
+pub fn distinct_count(s : String) -> Int {
+  Eertree::from_string(s).count_distinct()
+}
+
+///|
+pub fn longest_length(s : String) -> Int {
+  Eertree::from_string(s).longest_length()
+}
+
+///|
+pub fn palindromes(s : String) -> Array[String] {
+  Eertree::from_string(s).get_palindromes()
+}
+
 // ============================================================================
 // TESTS
 // ============================================================================

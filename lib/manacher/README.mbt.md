@@ -16,6 +16,16 @@ let (odd, even) = manacher_radii(s)
 let best = longest_palindrome(s)
 ```
 
+## Example
+
+```mbt check
+///|
+test "manacher example" {
+  inspect(@manacher.longest_palindrome("cbbd"), content="bb")
+  inspect(@manacher.count_palindromes("aaa"), content="6")
+}
+```
+
 ## Notes
 
 - This package is a reference implementation with invariants.

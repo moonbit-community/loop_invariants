@@ -18,6 +18,16 @@ for c in s {
 }
 ```
 
+## Example
+
+```mbt check
+///|
+test "eertree example" {
+  inspect(@eertree.distinct_count("ababa"), content="5")
+  inspect(@eertree.longest_length("abacaba"), content="7")
+}
+```
+
 ## Notes
 
 - This package is a reference implementation with invariants.

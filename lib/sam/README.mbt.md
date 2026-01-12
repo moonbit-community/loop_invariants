@@ -15,6 +15,16 @@ for c in s:
   extend(c)
 ```
 
+## Example
+
+```mbt check
+///|
+test "sam example" {
+  inspect(@sam.contains_substring("abab", "aba"), content="true")
+  inspect(@sam.distinct_substrings_count("abab"), content="7")
+}
+```
+
 ## Notes
 
 - Time complexity: O(n) build

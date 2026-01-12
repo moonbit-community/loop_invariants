@@ -2,6 +2,9 @@
 package "bobzhang/loop_invariants/lib/sam"
 
 // Values
+pub fn contains_substring(String, String) -> Bool
+
+pub fn distinct_substrings_count(String) -> Int
 
 // Errors
 

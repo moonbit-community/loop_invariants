@@ -245,6 +245,16 @@ fn ManacherResult::get_all_palindromes(
   result
 }
 
+///|
+pub fn longest_palindrome(s : String) -> String {
+  manacher(s).longest_palindrome()
+}
+
+///|
+pub fn count_palindromes(s : String) -> Int {
+  manacher(s).count_palindromes()
+}
+
 // ============================================================================
 // TESTS
 // ============================================================================
