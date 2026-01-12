@@ -15,12 +15,14 @@ pub struct Fenwick2D {
 }
 
 ///|
+/// Create a 2D Fenwick tree with given rows and cols.
 pub fn Fenwick2D::new(rows : Int, cols : Int) -> Fenwick2D {
   let tree = Array::makei(rows + 1, fn(_) { Array::make(cols + 1, 0) })
   { rows, cols, tree }
 }
 
 ///|
+/// Add delta at position (r, c).
 #warnings("+missing_invariant+missing_reasoning")
 pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
   let x = r + 1
@@ -53,6 +55,7 @@ pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
 }
 
 ///|
+/// Return prefix sum over rectangle [0, r) x [0, c).
 #warnings("+missing_invariant+missing_reasoning")
 pub fn Fenwick2D::prefix_sum(self : Fenwick2D, r : Int, c : Int) -> Int {
   for i = r, sum = 0 {
@@ -91,6 +94,7 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, r : Int, c : Int) -> Int {
 }
 
 ///|
+/// Query sum over rectangle [r1, r2) x [c1, c2).
 pub fn Fenwick2D::range_sum(
   self : Fenwick2D,
   r1 : Int,

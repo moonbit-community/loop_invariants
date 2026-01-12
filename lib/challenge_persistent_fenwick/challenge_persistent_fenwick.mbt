@@ -75,12 +75,14 @@ fn tree_shape(node : Node, len : Int) -> Bool {
 }
 
 ///|
+/// Create a persistent Fenwick tree with n zeroed elements.
 pub fn make(n : Int) -> Fenwick {
   let size = n + 1
   { root: build_zero(0, size), n }
 }
 
 ///|
+/// Return the number of elements tracked by the tree.
 pub fn length(fw : Fenwick) -> Int {
   fw.n
 }
@@ -146,6 +148,7 @@ pub fn prefix_sum(fw : Fenwick, idx : Int) -> Int {
 }
 
 ///|
+/// Query the sum over [l, r] (inclusive).
 pub fn range_sum(fw : Fenwick, l : Int, r : Int) -> Int {
   if l > r {
     0

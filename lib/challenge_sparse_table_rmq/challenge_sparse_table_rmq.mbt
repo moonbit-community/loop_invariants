@@ -86,6 +86,7 @@ pub fn build_sparse_table(arr : ArrayView[Int]) -> SparseTable {
 }
 
 ///|
+/// Query the minimum over [l, r).
 pub fn range_min(st : SparseTable, l : Int, r : Int) -> Int {
   let len = r - l
   let k = st.log[len]

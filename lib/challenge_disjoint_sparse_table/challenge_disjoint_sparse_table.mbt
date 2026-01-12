@@ -125,6 +125,7 @@ pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable 
 }
 
 ///|
+/// Query the minimum over [l, r).
 pub fn range_min(dst : DisjointSparseTable, l : Int, r : Int) -> Int {
   if r - l <= 1 {
     return dst.table[0][l]

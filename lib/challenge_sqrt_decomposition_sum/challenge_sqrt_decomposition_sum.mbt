@@ -85,6 +85,7 @@ pub fn range_sum(sd : SqrtDecomp, l : Int, r : Int) -> Int {
 }
 
 ///|
+/// Update index idx to value in the sqrt decomposition structure.
 pub fn update(sd : SqrtDecomp, idx : Int, value : Int) -> Unit {
   let block = idx / sd.block_size
   let diff = value - sd.arr[idx]

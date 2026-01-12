@@ -120,17 +120,20 @@ fn prefix_sum(bit : Fenwick, idx : Int) -> Int {
 }
 
 ///|
+/// Create a range-update Fenwick structure with n elements.
 pub fn make(n : Int) -> RangeFenwick {
   let size = n + 2
   { bit1: make_bit(size), bit2: make_bit(size), n }
 }
 
 ///|
+/// Return the number of elements tracked by the structure.
 pub fn length(rf : RangeFenwick) -> Int {
   rf.n
 }
 
 ///|
+/// Add delta to all indices in [l, r] (inclusive).
 pub fn range_add(
   rf : RangeFenwick,
   l : Int,
@@ -151,6 +154,7 @@ pub fn range_add(
 }
 
 ///|
+/// Return prefix sum over [0, idx] after range updates.
 pub fn prefix_sum_range(rf : RangeFenwick, idx : Int) -> Int {
   if idx < 0 {
     0
@@ -163,6 +167,7 @@ pub fn prefix_sum_range(rf : RangeFenwick, idx : Int) -> Int {
 }
 
 ///|
+/// Query the sum over [l, r] (inclusive).
 pub fn range_sum(rf : RangeFenwick, l : Int, r : Int) -> Int {
   if l > r {
     0
