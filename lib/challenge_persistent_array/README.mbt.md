@@ -16,3 +16,15 @@ test "persistent array" {
   inspect(@challenge_persistent_array.length(arr2), content="4")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent array versions" {
+  let arr0 = @challenge_persistent_array.from_array([5, 6, 7][:])
+  let arr1 = @challenge_persistent_array.set_at(arr0, 0, 9)
+  inspect(@challenge_persistent_array.to_array(arr0), content="[5, 6, 7]")
+  inspect(@challenge_persistent_array.to_array(arr1), content="[9, 6, 7]")
+}
+```

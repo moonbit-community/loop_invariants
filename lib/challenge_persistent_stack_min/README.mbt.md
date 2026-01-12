@@ -19,3 +19,23 @@ test "persistent min stack" {
   inspect(@challenge_persistent_stack_min.size(s2b), content="2")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent min stack drop min" {
+  let s0 = @challenge_persistent_stack_min.empty()
+  let s1 = @challenge_persistent_stack_min.push(s0, 4)
+  let s2 = @challenge_persistent_stack_min.push(s1, 2)
+  let s3 = @challenge_persistent_stack_min.push(s2, 6)
+  guard @challenge_persistent_stack_min.pop(s3) is Some((6, s2b)) else {
+    fail("expected pop")
+  }
+  inspect(@challenge_persistent_stack_min.min_value(s2b), content="Some(2)")
+  guard @challenge_persistent_stack_min.pop(s2b) is Some((2, s1b)) else {
+    fail("expected pop")
+  }
+  inspect(@challenge_persistent_stack_min.min_value(s1b), content="Some(4)")
+}
+```

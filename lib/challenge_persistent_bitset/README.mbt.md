@@ -16,3 +16,14 @@ test "persistent bitset" {
   inspect(@challenge_persistent_bitset.length(bs2), content="8")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent bitset from indices" {
+  let bs = @challenge_persistent_bitset.from_indices(6, [1, 4][:])
+  inspect(@challenge_persistent_bitset.get(bs, 1), content="1")
+  inspect(@challenge_persistent_bitset.count_range(bs, 0, 6), content="2")
+}
+```
