@@ -27,6 +27,7 @@ fn height(t : Avl) -> Int {
 }
 
 ///|
+/// Return the number of keys in the AVL set.
 pub fn size(t : Avl) -> Int {
   match t {
     Avl::Empty => 0
@@ -135,11 +136,13 @@ fn balance(t : Avl) -> Avl {
 }
 
 ///|
+/// Create an empty AVL set.
 pub fn empty() -> Avl {
   Avl::Empty
 }
 
 ///|
+/// Insert key and return the new AVL set.
 pub fn insert(t : Avl, key : Int) -> Avl {
   match t {
     Avl::Empty => Avl::Node(key~, height=1, left=Avl::Empty, right=Avl::Empty)
@@ -155,6 +158,7 @@ pub fn insert(t : Avl, key : Int) -> Avl {
 }
 
 ///|
+/// Check whether key exists in the set.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn contains(t : Avl, key : Int) -> Bool {
   let none : Int? = None
@@ -185,6 +189,7 @@ pub fn contains(t : Avl, key : Int) -> Bool {
 }
 
 ///|
+/// Return an in-order traversal (sorted keys).
 pub fn inorder(t : Avl) -> Array[Int] {
   match t {
     Avl::Empty => []

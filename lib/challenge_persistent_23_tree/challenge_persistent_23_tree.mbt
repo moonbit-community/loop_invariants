@@ -17,6 +17,7 @@ enum InsertResult {
 } derive(Show)
 
 ///|
+/// Return the number of keys in the tree.
 pub fn size(t : Tree) -> Int {
   match t {
     Tree::Empty => 0
@@ -148,11 +149,13 @@ fn insert_inner(t : Tree, key : Int) -> InsertResult {
 }
 
 ///|
+/// Create an empty 2-3 tree.
 pub fn empty() -> Tree {
   Tree::Empty
 }
 
 ///|
+/// Insert key and return the new tree.
 pub fn insert(t : Tree, key : Int) -> Tree {
   match insert_inner(t, key) {
     InsertResult::Done(tree~) => tree
@@ -162,6 +165,7 @@ pub fn insert(t : Tree, key : Int) -> Tree {
 }
 
 ///|
+/// Check whether key exists in the tree.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn contains(t : Tree, key : Int) -> Bool {
   let none : Int? = None

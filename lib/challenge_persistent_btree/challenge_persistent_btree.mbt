@@ -189,16 +189,19 @@ fn insert_node(node : BNode, key : Int) -> InsertResult {
 }
 
 ///|
+/// Create an empty B-tree.
 pub fn empty() -> Tree {
   Tree::Empty
 }
 
 ///|
+/// Return the number of keys in the tree.
 pub fn size(t : Tree) -> Int {
   tree_size(t)
 }
 
 ///|
+/// Insert key and return the new tree.
 pub fn insert(t : Tree, key : Int) -> Tree {
   match t {
     Tree::Empty => Tree::Node(node={ keys: [key], children: [] })

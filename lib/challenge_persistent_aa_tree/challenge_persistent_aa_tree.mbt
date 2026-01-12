@@ -18,6 +18,7 @@ fn level(t : Aa) -> Int {
 }
 
 ///|
+/// Return the number of keys in the AA tree.
 pub fn size(t : Aa) -> Int {
   match t {
     Aa::Empty => 0
@@ -111,11 +112,13 @@ fn split(t : Aa) -> Aa {
 }
 
 ///|
+/// Create an empty AA tree.
 pub fn empty() -> Aa {
   Aa::Empty
 }
 
 ///|
+/// Insert key and return the new AA tree.
 pub fn insert(t : Aa, key : Int) -> Aa {
   match t {
     Aa::Empty => Aa::Node(key~, level=1, left=Aa::Empty, right=Aa::Empty)
@@ -133,6 +136,7 @@ pub fn insert(t : Aa, key : Int) -> Aa {
 }
 
 ///|
+/// Check whether key exists in the tree.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn contains(t : Aa, key : Int) -> Bool {
   let none : Int? = None
@@ -163,6 +167,7 @@ pub fn contains(t : Aa, key : Int) -> Bool {
 }
 
 ///|
+/// Return an in-order traversal (sorted keys).
 pub fn inorder(t : Aa) -> Array[Int] {
   match t {
     Aa::Empty => []
