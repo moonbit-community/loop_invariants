@@ -120,10 +120,10 @@ test "convex hull example" {
     { x: 2, y: 0 },
     { x: 2, y: 2 },
     { x: 0, y: 2 },
-    { x: 1, y: 1 },  // Interior point
+    { x: 1, y: 1 }, // Interior point
   ]
   let hull = @convex_hull.convex_hull_monotone(pts)
-  inspect(hull.length(), content="4")  // Square has 4 corners
+  inspect(hull.length(), content="4") // Square has 4 corners
 }
 ```
 

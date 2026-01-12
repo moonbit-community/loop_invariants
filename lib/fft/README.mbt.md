@@ -160,9 +160,9 @@ test "polynomial multiplication concept" {
   //
   // This achieves O(n log n) instead of O(n²)
 
-  inspect(1 * 3, content="3")           // constant term
-  inspect(1 * 4 + 2 * 3, content="10")  // x coefficient
-  inspect(2 * 4, content="8")           // x² coefficient
+  inspect(1 * 3, content="3") // constant term
+  inspect(1 * 4 + 2 * 3, content="10") // x coefficient
+  inspect(2 * 4, content="8") // x² coefficient
 }
 ```
 

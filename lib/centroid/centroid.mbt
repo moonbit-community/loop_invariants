@@ -180,6 +180,47 @@ fn CentroidTree::get_depth(self : CentroidTree, u : Int) -> Int {
   self.centroid_depth[u]
 }
 
+///|
+/// Public centroid decomposition result.
+pub struct CentroidDecomp {
+  parent : Array[Int]
+  depth : Array[Int]
+}
+
+///|
+/// Build centroid decomposition and return parent/depth arrays.
+pub fn build_centroid(n : Int, edges : ArrayView[(Int, Int)]) -> CentroidDecomp {
+  let tree = CentroidTree::new(n)
+  edges.each(fn(edge) {
+    let (u, v) = edge
+    if u >= 0 && u < n && v >= 0 && v < n {
+      tree.add_edge(u, v)
+    }
+  })
+  tree.build()
+  { parent: tree.centroid_parent, depth: tree.centroid_depth }
+}
+
+///|
+/// Return the centroid parent of v, or -1 if out of range.
+pub fn CentroidDecomp::parent(self : CentroidDecomp, v : Int) -> Int {
+  if v < 0 || v >= self.parent.length() {
+    -1
+  } else {
+    self.parent[v]
+  }
+}
+
+///|
+/// Return the centroid tree depth of v, or -1 if out of range.
+pub fn CentroidDecomp::depth(self : CentroidDecomp, v : Int) -> Int {
+  if v < 0 || v >= self.depth.length() {
+    -1
+  } else {
+    self.depth[v]
+  }
+}
+
 // ============================================================================
 // TESTS
 // ============================================================================

@@ -77,10 +77,10 @@ test "sparse table range minimum" {
   let st = @sparse_table.SparseTableMin::new(arr)
 
   // Query minimum in range [1, 4] (indices 1 to 4 inclusive)
-  inspect(st.query(1, 4), content="1")  // min of [2, 4, 7, 1]
+  inspect(st.query(1, 4), content="1") // min of [2, 4, 7, 1]
 
   // Query minimum in range [0, 2]
-  inspect(st.query(0, 2), content="2")  // min of [5, 2, 4]
+  inspect(st.query(0, 2), content="2") // min of [5, 2, 4]
 }
 ```
 

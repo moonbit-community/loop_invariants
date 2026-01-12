@@ -6,6 +6,14 @@ package "bobzhang/loop_invariants/lib/lca"
 // Errors
 
 // Types and methods
+pub struct LCA {
+  n : Int
+  log_n : Int
+  up : Array[Array[Int]]
+  depth : Array[Int]
+}
+pub fn LCA::new(Int, Array[(Int, Int)]) -> Self
+pub fn LCA::query(Self, Int, Int) -> Int
 
 // Type aliases
 

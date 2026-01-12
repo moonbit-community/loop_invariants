@@ -77,10 +77,9 @@ Find sum of elements in any range:
 test "range sum queries" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let st = @segment_tree.SegmentTree::new(arr)
-
-  inspect(st.query(0, 4), content="15")  // 1+2+3+4+5
-  inspect(st.query(1, 3), content="9")   // 2+3+4
-  inspect(st.query(2, 2), content="3")   // just element 2
+  inspect(st.query(0, 4), content="15") // 1+2+3+4+5
+  inspect(st.query(1, 3), content="9") // 2+3+4
+  inspect(st.query(2, 2), content="3") // just element 2
 }
 ```
 
@@ -92,13 +91,10 @@ Update elements and query efficiently:
 test "dynamic updates" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L]
   let st = @segment_tree.SegmentTree::new(arr)
-
   inspect(st.query(0, 3), content="10")
-
-  st.update(2, 10L)  // Change arr[2] from 3 to 10
-
-  inspect(st.query(0, 3), content="17")  // 1+2+10+4
-  inspect(st.query(2, 3), content="14")  // 10+4
+  st.update(2, 10L) // Change arr[2] from 3 to 10
+  inspect(st.query(0, 3), content="17") // 1+2+10+4
+  inspect(st.query(2, 3), content="14") // 10+4
 }
 ```
 

@@ -38,7 +38,7 @@
 
 ///|
 /// LCA data structure with binary lifting
-priv struct LCA {
+pub struct LCA {
   n : Int
   log_n : Int
   up : Array[Array[Int]] // up[v][k] = 2^k-th ancestor
@@ -66,8 +66,8 @@ fn compute_log(n : Int) -> Int {
 }
 
 ///|
-/// Create LCA structure from adjacency list (tree rooted at 0)
-fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
+/// Create LCA structure from edges (tree rooted at 0).
+pub fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
   if n == 0 {
     return { n: 0, log_n: 0, up: [], depth: [] }
   }
@@ -169,14 +169,14 @@ fn dfs_build(
 }
 
 ///|
-/// Find LCA of nodes u and v
+/// Find LCA of nodes u and v.
 /// TIME: O(log n)
 ///
 /// ALGORITHM:
 /// 1. Bring deeper node up to same level as shallower node
 /// 2. Binary search: jump both nodes while their ancestors differ
 /// 3. Return parent of final position (or position if already same)
-fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
+pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
   if u < 0 || u >= self.n || v < 0 || v >= self.n {
     return -1
   }

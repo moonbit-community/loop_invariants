@@ -103,11 +103,10 @@ test "connectivity" {
   let _ = uf.union(3, 4)
 
   // Check connectivity
-  inspect(uf.connected(0, 2), content="true")   // 0-1-2
-  inspect(uf.connected(0, 4), content="false")  // Different components
-
+  inspect(uf.connected(0, 2), content="true") // 0-1-2
+  inspect(uf.connected(0, 4), content="false") // Different components
   let _ = uf.union(2, 3)
-  inspect(uf.connected(0, 4), content="true")   // Now connected!
+  inspect(uf.connected(0, 4), content="true") // Now connected!
 }
 ```
 
@@ -117,14 +116,12 @@ test "connectivity" {
 ///|
 test "counting components" {
   let uf = @union_find.UnionFind::new(6)
-  inspect(uf.count_sets(), content="6")  // 6 singletons
-
+  inspect(uf.count_sets(), content="6") // 6 singletons
   let _ = uf.union(0, 1)
   let _ = uf.union(2, 3)
-  inspect(uf.count_sets(), content="4")  // {0,1}, {2,3}, {4}, {5}
-
+  inspect(uf.count_sets(), content="4") // {0,1}, {2,3}, {4}, {5}
   let _ = uf.union(0, 2)
-  inspect(uf.count_sets(), content="3")  // {0,1,2,3}, {4}, {5}
+  inspect(uf.count_sets(), content="3") // {0,1,2,3}, {4}, {5}
 }
 ```
 

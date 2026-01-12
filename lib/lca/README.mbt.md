@@ -195,6 +195,28 @@ Maximum edge weight on path from u to v:
 LCA queries help compare tree structures efficiently.
 ```
 
+## Example Usage
+
+```mbt check
+///|
+test "lca basic" {
+  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5)]
+  let lca = @lca.LCA::new(6, edges)
+  inspect(lca.query(4, 5), content="1")
+  inspect(lca.query(4, 2), content="0")
+}
+```
+
+```mbt check
+///|
+test "lca ancestor" {
+  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
+  let lca = @lca.LCA::new(5, edges)
+  inspect(lca.query(1, 4), content="1")
+  inspect(lca.query(3, 4), content="1")
+}
+```
+
 ## Complexity Analysis
 
 | Operation | Time |
@@ -244,4 +266,3 @@ Query weighted distance:
 - Use -1 to indicate "no ancestor"
 - log_n should be ceil(log2(n)) + 1
 - Handle edge cases: same node, invalid indices
-

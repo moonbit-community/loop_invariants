@@ -77,14 +77,13 @@ test "basic shortest paths" {
   g.add_edge(1, 2, 2)
   g.add_edge(0, 2, 4)
   g.add_edge(2, 3, 1)
-
   let res = @dijkstra.dijkstra(g, 0)
 
   // Distances from source 0
-  inspect(res.dist[0], content="0")  // Source
-  inspect(res.dist[1], content="1")  // 0 -> 1
-  inspect(res.dist[2], content="3")  // 0 -> 1 -> 2
-  inspect(res.dist[3], content="4")  // 0 -> 1 -> 2 -> 3
+  inspect(res.dist[0], content="0") // Source
+  inspect(res.dist[1], content="1") // 0 -> 1
+  inspect(res.dist[2], content="3") // 0 -> 1 -> 2
+  inspect(res.dist[3], content="4") // 0 -> 1 -> 2 -> 3
 }
 ```
 
@@ -98,11 +97,9 @@ test "path reconstruction" {
   g.add_edge(1, 2, 2)
   g.add_edge(0, 2, 4)
   g.add_edge(2, 3, 1)
-
   let res = @dijkstra.dijkstra(g, 0)
   let path = @dijkstra.reconstruct_path(res, 3)
-
-  inspect(path, content="[0, 1, 2, 3]")  // Actual path
+  inspect(path, content="[0, 1, 2, 3]") // Actual path
 }
 ```
 
@@ -116,11 +113,9 @@ test "single pair distance" {
   g.add_edge(1, 2, 2)
   g.add_edge(0, 2, 4)
   g.add_edge(2, 3, 1)
-
   let dist = @dijkstra.shortest_distance(g, 0, 3)
   inspect(dist, content="Some(4)")
-
-  let no_path = @dijkstra.shortest_distance(g, 3, 0)  // No path back
+  let no_path = @dijkstra.shortest_distance(g, 3, 0) // No path back
   inspect(no_path, content="None")
 }
 ```

@@ -135,18 +135,24 @@ Depth reduced from 7 to 3!
 
 ## Example Usage
 
-```mbt nocheck
-// Build centroid tree for a 5-node path: 0-1-2-3-4
-let ct = CentroidTree::new(5)
-ct.add_edge(0, 1)
-ct.add_edge(1, 2)
-ct.add_edge(2, 3)
-ct.add_edge(3, 4)
-ct.build()
+```mbt check
+///|
+test "centroid path" {
+  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+  let cd = @centroid.build_centroid(5, edges[:])
+  inspect(cd.depth(2), content="0")
+  inspect(cd.parent(2), content="-1")
+}
+```
 
-// Node 2 is the centroid (middle of path)
-ct.get_depth(2)  // 0 - root of centroid tree
-ct.get_parent(2) // -1 - no parent
+```mbt check
+///|
+test "centroid star" {
+  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
+  let cd = @centroid.build_centroid(5, edges[:])
+  inspect(cd.depth(0), content="0")
+  inspect(cd.parent(1), content="0")
+}
 ```
 
 ## Common Applications
@@ -215,4 +221,3 @@ Each node is in at most O(log n) such subtrees.
 - Use two DFS passes: one for sizes, one to find centroid
 - Handle the case where multiple nodes could be centroids (pick any)
 - For weighted edges, track distances during decomposition
-

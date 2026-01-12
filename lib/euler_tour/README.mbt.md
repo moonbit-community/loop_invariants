@@ -85,20 +85,25 @@ For LCA queries, Type 2 is often used.
 
 ## Example Usage
 
-```mbt nocheck
-// Build Euler tour for tree
-let tour = EulerTour::new(n)
-for edge in edges {
-  tour.add_edge(edge.u, edge.v)
+```mbt check
+///|
+test "euler tour subtree basics" {
+  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3)]
+  let tour = @euler_tour.build_euler_tour(4, edges[:], 0)
+  inspect(tour.subtree_size(1), content="3")
+  inspect(tour.is_ancestor(1, 3), content="true")
 }
-tour.build(root=0)
+```
 
-// Now subtree of u is range [tin[u], tout[u]]
-let subtree_start = tour.tin(u)
-let subtree_end = tour.tout(u)
-
-// Query subtree sum using a range data structure
-let sum = segment_tree.query(subtree_start, subtree_end)
+```mbt check
+///|
+test "euler tour subtree nodes" {
+  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3)]
+  let tour = @euler_tour.build_euler_tour(4, edges[:], 0)
+  let nodes = tour.subtree_nodes(1)
+  nodes.sort_by(fn(a, b) { a - b })
+  inspect(nodes, content="[1, 2, 3]")
+}
 ```
 
 ## Common Applications
@@ -199,4 +204,3 @@ Example:
 - tin[u] is always < tout[u] for the same node
 - Children of u have tin values in (tin[u], tout[u])
 - Size of subtree = (tout[u] - tin[u] + 1) / 2 for Type 2
-

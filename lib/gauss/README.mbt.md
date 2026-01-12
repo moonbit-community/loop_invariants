@@ -102,13 +102,13 @@ This prevents division by very small numbers!
 
 ```mbt nocheck
 // Solve system of linear equations
-let a = [
-  [2.0, 1.0, -1.0],
-  [-3.0, -1.0, 2.0],
-  [-2.0, 1.0, 2.0],
-]
+///|
+let a = [[2.0, 1.0, -1.0], [-3.0, -1.0, 2.0], [-2.0, 1.0, 2.0]]
+
+///|
 let b = [8.0, -11.0, -3.0]
 
+///|
 let solution = gauss_solve(a, b)
 // solution = Some([2.0, 3.0, -1.0])
 ```

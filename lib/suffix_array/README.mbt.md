@@ -115,7 +115,6 @@ The longest repeated substring corresponds to the maximum LCP value:
 test "longest repeated substring" {
   let sa = @suffix_array.SuffixArray::new("banana")
   inspect(sa.longest_repeated_substring(), content="ana")
-
   let sa2 = @suffix_array.SuffixArray::new("abcabc")
   inspect(sa2.longest_repeated_substring(), content="abc")
 }

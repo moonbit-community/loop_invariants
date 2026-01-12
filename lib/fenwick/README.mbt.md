@@ -121,20 +121,20 @@ test "fenwick tree complete example" {
   let ft = @fenwick.FenwickTree::from_array(arr)
 
   // Prefix sum queries
-  inspect(ft.prefix_sum(0), content="1")   // sum[0..0] = 1
-  inspect(ft.prefix_sum(2), content="6")   // sum[0..2] = 1+2+3 = 6
-  inspect(ft.prefix_sum(4), content="15")  // sum[0..4] = 15
+  inspect(ft.prefix_sum(0), content="1") // sum[0..0] = 1
+  inspect(ft.prefix_sum(2), content="6") // sum[0..2] = 1+2+3 = 6
+  inspect(ft.prefix_sum(4), content="15") // sum[0..4] = 15
 
   // Range sum queries
   inspect(ft.range_sum(1, 3), content="9") // sum[1..3] = 2+3+4 = 9
 
   // Point update
-  ft.add(2, 7L)  // arr[2] becomes 3+7=10
-  inspect(ft.prefix_sum(4), content="22")  // 1+2+10+4+5 = 22
+  ft.add(2, 7L) // arr[2] becomes 3+7=10
+  inspect(ft.prefix_sum(4), content="22") // 1+2+10+4+5 = 22
 
   // Get/set single values
   inspect(ft.get(2), content="10")
-  ft.set(2, 3L)  // Reset to original
+  ft.set(2, 3L) // Reset to original
   inspect(ft.prefix_sum(4), content="15")
 }
 ```
@@ -146,6 +146,7 @@ test "fenwick tree complete example" {
 Update a range [l, r] with +delta, query single points:
 
 ```mbt check
+///|
 test "range update example" {
   // Uses difference array internally
   // Add 10 to range [1, 3], query individual positions
@@ -157,6 +158,7 @@ test "range update example" {
 Both range updates and range sum queries:
 
 ```mbt check
+///|
 test "range-range example" {
   // Uses two BITs internally
   // Supports both range add and range sum

@@ -2,10 +2,24 @@
 package "bobzhang/loop_invariants/lib/euler_tour"
 
 // Values
+pub fn build_euler_tour(Int, ArrayView[(Int, Int)], Int) -> EulerTourInfo
 
 // Errors
 
 // Types and methods
+pub struct EulerTourInfo {
+  entry : Array[Int]
+  exit : Array[Int]
+  tour : Array[Int]
+  depth : Array[Int]
+  parent : Array[Int]
+}
+pub fn EulerTourInfo::entry(Self, Int) -> Int
+pub fn EulerTourInfo::exit(Self, Int) -> Int
+pub fn EulerTourInfo::is_ancestor(Self, Int, Int) -> Bool
+pub fn EulerTourInfo::subtree_nodes(Self, Int) -> Array[Int]
+pub fn EulerTourInfo::subtree_size(Self, Int) -> Int
+pub fn EulerTourInfo::tour(Self) -> Array[Int]
 
 // Type aliases
 

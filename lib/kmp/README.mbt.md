@@ -150,9 +150,9 @@ Z-value: 7 1 0 0 3 1 0
 ///|
 test "z-function example" {
   let z = @kmp.compute_z_function("AABXAAB")
-  inspect(z[0], content="7")  // whole string
-  inspect(z[1], content="1")  // "A" matches
-  inspect(z[4], content="3")  // "AAB" matches
+  inspect(z[0], content="7") // whole string
+  inspect(z[1], content="1") // "A" matches
+  inspect(z[4], content="3") // "AAB" matches
 
   // Use Z-function for pattern matching
   let matches = @kmp.z_search("ABABDABACDABABCABAB", "ABAB")

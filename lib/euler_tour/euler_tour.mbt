@@ -148,6 +148,122 @@ fn EulerTour::get_subtree(self : EulerTour, v : Int) -> Array[Int] {
   result
 }
 
+///|
+/// Public Euler tour data (entry/exit times and preorder tour).
+pub struct EulerTourInfo {
+  entry : Array[Int]
+  exit : Array[Int]
+  tour : Array[Int]
+  depth : Array[Int]
+  parent : Array[Int]
+}
+
+///|
+/// Build Euler tour information from edges rooted at root.
+pub fn build_euler_tour(
+  n : Int,
+  edges : ArrayView[(Int, Int)],
+  root : Int,
+) -> EulerTourInfo {
+  if n <= 0 {
+    return { entry: [], exit: [], tour: [], depth: [], parent: [] }
+  }
+  let tree = EulerTour::new(n)
+  edges.each(fn(edge) {
+    let (u, v) = edge
+    if u >= 0 && u < n && v >= 0 && v < n {
+      tree.add_edge(u, v)
+    }
+  })
+  let r = if root >= 0 && root < n { root } else { 0 }
+  tree.build(r)
+  {
+    entry: tree.entry,
+    exit: tree.exit,
+    tour: tree.tour,
+    depth: tree.depth,
+    parent: tree.parent,
+  }
+}
+
+///|
+/// Return entry time of v, or -1 if out of range.
+pub fn EulerTourInfo::entry(self : EulerTourInfo, v : Int) -> Int {
+  if v < 0 || v >= self.entry.length() {
+    -1
+  } else {
+    self.entry[v]
+  }
+}
+
+///|
+/// Return exit time of v, or -1 if out of range.
+pub fn EulerTourInfo::exit(self : EulerTourInfo, v : Int) -> Int {
+  if v < 0 || v >= self.exit.length() {
+    -1
+  } else {
+    self.exit[v]
+  }
+}
+
+///|
+/// Return subtree size of v using entry/exit times.
+pub fn EulerTourInfo::subtree_size(self : EulerTourInfo, v : Int) -> Int {
+  if v < 0 || v >= self.entry.length() {
+    0
+  } else {
+    self.exit[v] - self.entry[v]
+  }
+}
+
+///|
+/// Check whether u is an ancestor of v in the rooted tree.
+pub fn EulerTourInfo::is_ancestor(
+  self : EulerTourInfo,
+  u : Int,
+  v : Int,
+) -> Bool {
+  if u < 0 || v < 0 || u >= self.entry.length() || v >= self.entry.length() {
+    false
+  } else {
+    self.entry[u] <= self.entry[v] && self.exit[v] <= self.exit[u]
+  }
+}
+
+///|
+/// Return the preorder tour array.
+pub fn EulerTourInfo::tour(self : EulerTourInfo) -> Array[Int] {
+  self.tour
+}
+
+///|
+/// Return the nodes in v's subtree in tour order.
+pub fn EulerTourInfo::subtree_nodes(
+  self : EulerTourInfo,
+  v : Int,
+) -> Array[Int] {
+  if v < 0 || v >= self.entry.length() {
+    return []
+  }
+  let result : Array[Int] = []
+  let start = self.entry[v]
+  let end = self.exit[v]
+  for i = start; i < end; i = i + 1 {
+    result.push(self.tour[i])
+  } where {
+    invariant: i >= start && i <= end,
+    reasoning: (
+      #|INVARIANT (subtree slice):
+      #|result equals tour[start..i), preserving subtree order.
+      #|MAINTENANCE:
+      #|Append tour[i] to extend the slice by one element.
+      #|TERMINATION:
+      #|At i = end, result contains the full subtree interval.
+    ),
+  }
+  result
+}
+
 // ============================================================================
 // EULER TOUR WITH LCA SUPPORT
 // ============================================================================
