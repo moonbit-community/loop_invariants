@@ -120,6 +120,140 @@ fn min(a : Int, b : Int) -> Int {
 }
 
 ///|
+/// Compute odd/even palindrome radii for each center in the original string.
+/// d1[i] = radius of odd palindrome centered at i (length = 2*d1[i] - 1)
+/// d2[i] = radius of even palindrome centered between i-1 and i (length = 2*d2[i])
+pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
+  let n = s.length()
+  if n == 0 {
+    return ([], [])
+  }
+  let d1 = Array::make(n, 0)
+  for i = 0, l = 0, r = -1; i < n; {
+    let mut curr_l = l
+    let mut curr_r = r
+    let k = if i > curr_r {
+      1
+    } else {
+      min(d1[curr_l + curr_r - i], curr_r - i + 1)
+    }
+    let len = for t = k {
+      if i - t >= 0 && i + t < n && s[i - t] == s[i + t] {
+        continue t + 1
+      } else {
+        break t
+      }
+    } where {
+      invariant: t >= k && t <= n,
+      reasoning: (
+        #|INVARIANT (odd expand):
+        #|t is the current odd radius such that s[i-t..i+t] is a palindrome.
+        #|MAINTENANCE:
+        #|If both sides match, extend by one; otherwise stop.
+        #|TERMINATION:
+        #|When the loop ends, t is the maximal odd radius at center i.
+      ),
+    }
+    d1[i] = len
+    let right = i + len - 1
+    if right > curr_r {
+      curr_l = i - len + 1
+      curr_r = right
+    }
+    continue i + 1, curr_l, curr_r
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: (
+      #|INVARIANT (odd scan):
+      #|Odd radii d1[0..i) are finalized.
+      #|MAINTENANCE:
+      #|Seed the radius from the mirror when i is inside [l, r], then expand.
+      #|TERMINATION:
+      #|At i = n, all odd centers are processed.
+    ),
+    invariant: r >= -1 && r < n && l >= 0 && l <= i,
+    reasoning: (
+      #|INVARIANT (odd window bounds):
+      #|[l, r] is the rightmost odd palindrome window; r may be -1 if empty.
+      #|MAINTENANCE:
+      #|When a longer palindrome is found at i, update (l, r) accordingly.
+      #|TERMINATION:
+      #|Bounds ensure mirror indices stay valid when i <= r.
+    ),
+    invariant: r < 0 || l <= r,
+    reasoning: (
+      #|INVARIANT (odd window order):
+      #|When the window is non-empty, its left boundary does not exceed r.
+      #|MAINTENANCE:
+      #|Updates maintain a valid interval for the current rightmost palindrome.
+      #|TERMINATION:
+      #|Guarantees the window is well-formed for mirror lookup.
+    ),
+  }
+  let d2 = Array::make(n, 0)
+  for i = 0, l = 0, r = -1; i < n; {
+    let mut curr_l = l
+    let mut curr_r = r
+    let k = if i > curr_r {
+      0
+    } else {
+      min(d2[curr_l + curr_r - i + 1], curr_r - i + 1)
+    }
+    let len = for t = k {
+      if i - t - 1 >= 0 && i + t < n && s[i - t - 1] == s[i + t] {
+        continue t + 1
+      } else {
+        break t
+      }
+    } where {
+      invariant: t >= k && t <= n,
+      reasoning: (
+        #|INVARIANT (even expand):
+        #|t is the current even radius such that s[i-t..i+t-1] is a palindrome.
+        #|MAINTENANCE:
+        #|Extend when both sides match; otherwise stop.
+        #|TERMINATION:
+        #|When the loop ends, t is the maximal even radius at center i.
+      ),
+    }
+    d2[i] = len
+    let right = i + len - 1
+    if right > curr_r {
+      curr_l = i - len
+      curr_r = right
+    }
+    continue i + 1, curr_l, curr_r
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: (
+      #|INVARIANT (even scan):
+      #|Even radii d2[0..i) are finalized.
+      #|MAINTENANCE:
+      #|Seed radius from the mirror window, then expand around the center.
+      #|TERMINATION:
+      #|At i = n, all even centers are processed.
+    ),
+    invariant: r >= -1 && r < n && l >= 0 && l <= i + 1,
+    reasoning: (
+      #|INVARIANT (even window bounds):
+      #|[l, r] is the rightmost even palindrome window; r may be -1 if empty.
+      #|MAINTENANCE:
+      #|When a longer even palindrome is found, update (l, r) accordingly.
+      #|TERMINATION:
+      #|Bounds keep the mirror index valid when i <= r.
+    ),
+    invariant: r < 0 || l <= r + 1,
+    reasoning: (
+      #|INVARIANT (even window order):
+      #|When the window is non-empty, its left boundary is at most r + 1.
+      #|MAINTENANCE:
+      #|Updates preserve a valid interval for mirror-based initialization.
+      #|TERMINATION:
+      #|Guarantees window consistency for the even case.
+    ),
+  }
+  (d1, d2)
+}
 
 ///|
 /// Get the longest palindromic substring
@@ -252,6 +386,25 @@ pub fn longest_palindrome(s : String) -> String {
 }
 
 ///|
+/// Return the length of the longest palindromic substring in s.
+pub fn longest_palindrome_len(s : String) -> Int {
+  let (d1, d2) = manacher_radii(s)
+  let n = d1.length()
+  let mut best = 0
+  for i in 0..<n {
+    let odd = d1[i] * 2 - 1
+    if odd > best {
+      best = odd
+    }
+    let even = d2[i] * 2
+    if even > best {
+      best = even
+    }
+  }
+  best
+}
+
+///|
 /// Count all palindromic substrings in s.
 pub fn count_palindromes(s : String) -> Int {
   manacher(s).count_palindromes()
@@ -326,4 +479,18 @@ test "manacher is palindrome" {
 test "manacher racecar" {
   let result = manacher("racecar")
   inspect(result.longest_palindrome(), content="racecar")
+}
+
+///|
+test "manacher radii" {
+  let (d1, d2) = manacher_radii("abba")
+  inspect(d1, content="[1, 1, 1, 1]")
+  inspect(d2, content="[0, 0, 2, 0]")
+}
+
+///|
+test "manacher longest length" {
+  inspect(longest_palindrome_len("abacaba"), content="7")
+  inspect(longest_palindrome_len("babad"), content="3")
+  inspect(longest_palindrome_len("cbbd"), content="2")
 }

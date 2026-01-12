@@ -112,6 +112,10 @@ Therefore total time = O(n)
 test "manacher example" {
   inspect(@manacher.longest_palindrome("cbbd"), content="bb")
   inspect(@manacher.count_palindromes("aaa"), content="6")
+  inspect(@manacher.longest_palindrome_len("abacaba"), content="7")
+  let (d1, d2) = @manacher.manacher_radii("abba")
+  inspect(d1, content="[1, 1, 1, 1]")
+  inspect(d2, content="[0, 0, 2, 0]")
 }
 ```
 
@@ -215,4 +219,3 @@ Example: Transform "#a#b#b#a#"
 - Integer division automatically handles the 2x scaling
 - Edge cases: empty string, single character
 - P[0] = 0 for the leading separator
-

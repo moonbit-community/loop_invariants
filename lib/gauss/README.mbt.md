@@ -102,6 +102,7 @@ This prevents division by very small numbers!
 
 ```mbt nocheck
 // Solve system of linear equations
+
 ///|
 let a = [[2.0, 1.0, -1.0], [-3.0, -1.0, 2.0], [-2.0, 1.0, 2.0]]
 

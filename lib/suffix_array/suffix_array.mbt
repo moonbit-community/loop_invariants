@@ -179,6 +179,66 @@ pub fn SuffixArray::new(text : String) -> SuffixArray {
 }
 
 ///|
+/// Build the suffix array for s (convenience wrapper).
+pub fn suffix_array(s : String) -> Array[Int] {
+  SuffixArray::new(s).sa
+}
+
+///|
+/// Build the LCP array for s using a provided suffix array.
+pub fn lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
+  let n = s.length()
+  if n == 0 || sa.length() != n {
+    return []
+  }
+  let rank = Array::make(n, 0)
+  for i = 0; i < n; i = i + 1 {
+    rank[sa[i]] = i
+  } where {
+    invariant: i >= 0 && i <= n,
+    reasoning: (
+      #|INVARIANT (inverse SA):
+      #|rank is filled for sa[0..i), mapping suffix start to its position.
+      #|MAINTENANCE:
+      #|Set rank[sa[i]] = i.
+      #|TERMINATION:
+      #|At i = n, rank is the full inverse permutation of sa.
+    ),
+  }
+  let lcp = Array::make(n, 0)
+  for i = 0, h = 0; i < n; {
+    let mut curr_h = h
+    if rank[i] == 0 {
+      if curr_h > 0 {
+        curr_h = curr_h - 1
+      }
+      continue i + 1, curr_h
+    }
+    let j = sa[rank[i] - 1]
+    while i + curr_h < n && j + curr_h < n && s[i + curr_h] == s[j + curr_h] {
+      curr_h = curr_h + 1
+    }
+    lcp[rank[i]] = curr_h
+    if curr_h > 0 {
+      curr_h = curr_h - 1
+    }
+    continue i + 1, curr_h
+  } where {
+    invariant: i >= 0 && i <= n && h >= 0,
+    reasoning: (
+      #|INVARIANT (Kasai scan):
+      #|lcp is correct for suffixes with start < i. h is the current reuse
+      #|length that can be decremented by at most 1 each step.
+      #|MAINTENANCE:
+      #|Compute LCP with the previous suffix in SA order, then set h = max(h-1,0).
+      #|TERMINATION:
+      #|At i = n, all LCP values are computed in O(n).
+    ),
+  }
+  lcp
+}
+
+///|
 /// Return the suffix array index range matching pattern, or None if absent.
 pub fn SuffixArray::search(self : SuffixArray, pattern : String) -> (Int, Int)? {
   let n = self.sa.length()
@@ -406,6 +466,14 @@ test "suffix array lcp" {
   inspect(sa.lcp[3], content="0")
   inspect(sa.lcp[4], content="0")
   inspect(sa.lcp[5], content="2")
+}
+
+///|
+test "suffix array convenience" {
+  let sa = suffix_array("banana")
+  inspect(sa, content="[5, 3, 1, 0, 4, 2]")
+  let lcp = lcp_array("banana", sa[:])
+  inspect(lcp, content="[0, 1, 3, 0, 0, 2]")
 }
 
 ///|

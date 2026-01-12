@@ -12,6 +12,8 @@ pub fn kmp_find_first(String, String) -> Int
 
 pub fn kmp_search(String, String) -> Array[Int]
 
+pub fn prefix_function(String) -> Array[Int]
+
 pub fn z_search(String, String) -> Array[Int]
 
 // Errors

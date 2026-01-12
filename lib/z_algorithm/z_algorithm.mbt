@@ -117,6 +117,12 @@ pub fn compute_z(s : String) -> Array[Int] {
 }
 
 ///|
+/// Compute the Z-array for s (alias of compute_z).
+pub fn z_function(s : String) -> Array[Int] {
+  compute_z(s)
+}
+
+///|
 /// Find all occurrences of pattern in text using Z-algorithm
 /// Returns array of starting indices where pattern occurs
 pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
@@ -156,6 +162,12 @@ pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
     ),
   }
   result
+}
+
+///|
+/// Find all occurrences of pattern in text (alias of find_pattern).
+pub fn z_search(text : String, pattern : String) -> Array[Int] {
+  find_pattern(text, pattern)
 }
 
 ///|
@@ -313,6 +325,12 @@ test "z algorithm aaaa" {
 }
 
 ///|
+test "z function alias" {
+  let z = z_function("aaaaa")
+  inspect(z, content="[5, 4, 3, 2, 1]")
+}
+
+///|
 test "z algorithm abcd" {
   let z = compute_z("abcd")
 
@@ -360,6 +378,12 @@ test "find pattern overlapping" {
   inspect(matches[0], content="0")
   inspect(matches[1], content="1")
   inspect(matches[2], content="2")
+}
+
+///|
+test "z search alias" {
+  let matches = z_search("ababa", "aba")
+  inspect(matches, content="[0, 2]")
 }
 
 ///|

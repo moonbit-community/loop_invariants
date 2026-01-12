@@ -8,6 +8,10 @@ pub fn count_pattern(String, String) -> Int
 
 pub fn find_pattern(String, String) -> Array[Int]
 
+pub fn z_function(String) -> Array[Int]
+
+pub fn z_search(String, String) -> Array[Int]
+
 // Errors
 
 // Types and methods

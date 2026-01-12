@@ -6,6 +6,10 @@ pub fn count_palindromes(String) -> Int
 
 pub fn longest_palindrome(String) -> String
 
+pub fn longest_palindrome_len(String) -> Int
+
+pub fn manacher_radii(String) -> (Array[Int], Array[Int])
+
 // Errors
 
 // Types and methods

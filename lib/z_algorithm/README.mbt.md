@@ -100,6 +100,12 @@ test "z algorithm example" {
   inspect(z, content="[7, 1, 0, 0, 3, 1, 0]")
   let hits = @z_algorithm.find_pattern("aabcaabxaab", "aab")
   inspect(hits, content="[0, 4, 8]")
+
+  // Alias names are also available
+  let z2 = @z_algorithm.z_function("aaaaa")
+  inspect(z2, content="[5, 4, 3, 2, 1]")
+  let hits2 = @z_algorithm.z_search("ababa", "aba")
+  inspect(hits2, content="[0, 2]")
 }
 ```
 
@@ -193,4 +199,3 @@ Case 2b: i <= r and Z[k] >= r - i + 1
 - Z[0] is defined as n (entire string)
 - Use a sentinel character ($) for pattern matching
 - Watch for integer types when computing mirror indices
-

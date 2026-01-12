@@ -74,6 +74,12 @@ pub fn compute_failure(pattern : String) -> Array[Int] {
 }
 
 ///|
+/// Compute the prefix function (pi array) for the pattern.
+pub fn prefix_function(pattern : String) -> Array[Int] {
+  compute_failure(pattern)
+}
+
+///|
 /// Find all occurrences of pattern in text using KMP algorithm
 pub fn kmp_search(text : String, pattern : String) -> Array[Int] {
   let n = text.length()
@@ -236,6 +242,12 @@ test "failure function complex" {
   inspect(fail[4], content="1")
   inspect(fail[5], content="2")
   inspect(fail[6], content="3")
+}
+
+///|
+test "prefix function alias" {
+  let pi = prefix_function("ababa")
+  inspect(pi, content="[0, 0, 1, 2, 3]")
 }
 
 ///|

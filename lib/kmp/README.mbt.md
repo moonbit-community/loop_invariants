@@ -130,6 +130,10 @@ test "kmp complete example" {
   // Build failure function directly
   let fail = @kmp.compute_failure("ABAB")
   inspect(fail, content="[0, 0, 1, 2]")
+
+  // Prefix-function alias (pi array)
+  let pi = @kmp.prefix_function("ababa")
+  inspect(pi, content="[0, 0, 1, 2, 3]")
 }
 ```
 
