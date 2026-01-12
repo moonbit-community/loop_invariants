@@ -4,6 +4,7 @@
 // ============================================================================
 
 ///|
+/// Return the length of the longest increasing subsequence.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn lis_length(nums : ArrayView[Int]) -> Int {
   let n = nums.length()

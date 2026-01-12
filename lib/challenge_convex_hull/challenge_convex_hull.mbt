@@ -23,6 +23,7 @@ fn cross(a : Point, b : Point, c : Point) -> Int {
 }
 
 ///|
+/// Compute the convex hull in CCW order using the monotone chain algorithm.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn convex_hull(points : ArrayView[Point]) -> Array[Point] {
   let n = points.length()

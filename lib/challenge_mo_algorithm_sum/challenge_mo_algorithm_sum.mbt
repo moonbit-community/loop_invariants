@@ -35,6 +35,7 @@ priv struct Query {
 }
 
 ///|
+/// Answer offline range sum queries using Mo's algorithm.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn mo_range_sum(
   arr : ArrayView[Int],
