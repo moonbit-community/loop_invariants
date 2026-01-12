@@ -19,3 +19,14 @@ test "persistent skew heap" {
   inspect(@challenge_persistent_skew_heap.size(h4), content="2")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent skew heap from array" {
+  let h = @challenge_persistent_skew_heap.from_array([7, 1, 5][:])
+  inspect(@challenge_persistent_skew_heap.find_min(h), content="Some(1)")
+  inspect(@challenge_persistent_skew_heap.size(h), content="3")
+}
+```

@@ -19,3 +19,25 @@ test "persistent leftist heap" {
   inspect(@challenge_persistent_leftist_heap.size(h4), content="2")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent leftist heap merge" {
+  let h1 = @challenge_persistent_leftist_heap.insert(
+    @challenge_persistent_leftist_heap.empty(),
+    4,
+  )
+  let h2 = @challenge_persistent_leftist_heap.insert(
+    @challenge_persistent_leftist_heap.empty(),
+    2,
+  )
+  let merged = @challenge_persistent_leftist_heap.merge(h1, h2)
+  inspect(
+    @challenge_persistent_leftist_heap.find_min(merged),
+    content="Some(2)",
+  )
+  inspect(@challenge_persistent_leftist_heap.size(merged), content="2")
+}
+```

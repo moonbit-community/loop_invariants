@@ -25,3 +25,22 @@ test "persistent interval tree" {
   )
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent interval tree another" {
+  let t0 = @challenge_persistent_interval_tree.empty()
+  let t1 = @challenge_persistent_interval_tree.insert(t0, 10, 12)
+  let t2 = @challenge_persistent_interval_tree.insert(t1, 14, 15)
+  inspect(
+    @challenge_persistent_interval_tree.find_overlap(t2, 11, 11),
+    content="Some((10, 12))",
+  )
+  inspect(
+    @challenge_persistent_interval_tree.find_overlap(t2, 13, 13),
+    content="None",
+  )
+}
+```

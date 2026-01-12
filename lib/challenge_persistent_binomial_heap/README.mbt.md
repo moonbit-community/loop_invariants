@@ -18,3 +18,25 @@ test "persistent binomial heap" {
   inspect(@challenge_persistent_binomial_heap.find_min(h4), content="Some(4)")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent binomial heap merge" {
+  let h1 = @challenge_persistent_binomial_heap.insert(
+    @challenge_persistent_binomial_heap.empty(),
+    3,
+  )
+  let h2 = @challenge_persistent_binomial_heap.insert(
+    @challenge_persistent_binomial_heap.empty(),
+    1,
+  )
+  let merged = @challenge_persistent_binomial_heap.merge(h1, h2)
+  inspect(
+    @challenge_persistent_binomial_heap.find_min(merged),
+    content="Some(1)",
+  )
+  inspect(@challenge_persistent_binomial_heap.find_min(h1), content="Some(3)")
+}
+```

@@ -19,3 +19,25 @@ test "persistent pairing heap" {
   inspect(@challenge_persistent_pairing_heap.size(h4), content="2")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent pairing heap merge" {
+  let h1 = @challenge_persistent_pairing_heap.insert(
+    @challenge_persistent_pairing_heap.empty(),
+    9,
+  )
+  let h2 = @challenge_persistent_pairing_heap.insert(
+    @challenge_persistent_pairing_heap.empty(),
+    1,
+  )
+  let merged = @challenge_persistent_pairing_heap.merge(h1, h2)
+  inspect(
+    @challenge_persistent_pairing_heap.find_min(merged),
+    content="Some(1)",
+  )
+  inspect(@challenge_persistent_pairing_heap.size(merged), content="2")
+}
+```
