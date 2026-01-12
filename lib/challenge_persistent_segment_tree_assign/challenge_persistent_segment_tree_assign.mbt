@@ -51,11 +51,13 @@ fn apply_assign(node : Node, len : Int, value : Int) -> Node {
 }
 
 ///|
+/// Return the sum stored at the root.
 pub fn total(node : Node) -> Int {
   node_sum(node)
 }
 
 ///|
+/// Build a segment tree over arr[l..r).
 pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
   if r - l == 1 {
     Node::Leaf(sum=arr[l], tag=None)
@@ -68,6 +70,7 @@ pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 }
 
 ///|
+/// Assign value to all elements in [ql, qr) and return the new tree.
 pub fn range_assign(
   node : Node,
   l : Int,
@@ -109,6 +112,7 @@ pub fn range_assign(
 }
 
 ///|
+/// Query the sum over [ql, qr).
 pub fn range_sum(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
   if qr <= l || r <= ql {
     0

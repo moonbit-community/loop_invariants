@@ -42,11 +42,13 @@ fn tree_valid(node : Node, len : Int) -> Bool {
 }
 
 ///|
+/// Return the sum stored at the root.
 pub fn total(node : Node) -> Int {
   node_sum(node)
 }
 
 ///|
+/// Build a segment tree over arr[l..r).
 pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
   if r - l == 1 {
     Node::Leaf(sum=arr[l], tag=0)
@@ -68,6 +70,7 @@ fn apply(node : Node, len : Int, delta : Int) -> Node {
 }
 
 ///|
+/// Add delta to all elements in [ql, qr) and return the new tree.
 pub fn range_add(
   node : Node,
   l : Int,
@@ -104,6 +107,7 @@ pub fn range_add(
 }
 
 ///|
+/// Query the sum over [ql, qr).
 pub fn range_sum(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
   if qr <= l || r <= ql {
     0

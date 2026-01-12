@@ -47,11 +47,13 @@ fn apply_add(node : Node, delta : Int) -> Node {
 }
 
 ///|
+/// Return the minimum stored at the root.
 pub fn min_value(node : Node) -> Int {
   node_min(node)
 }
 
 ///|
+/// Build a segment tree over arr[l..r).
 pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
   if r - l == 1 {
     Node::Leaf(min=arr[l], tag=0)
@@ -69,6 +71,7 @@ pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 }
 
 ///|
+/// Add delta to all elements in [ql, qr) and return the new tree.
 pub fn range_add(
   node : Node,
   l : Int,
@@ -102,6 +105,7 @@ pub fn range_add(
 }
 
 ///|
+/// Query the minimum over [ql, qr).
 pub fn range_min(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
   if qr <= l || r <= ql {
     0x3fffffff
