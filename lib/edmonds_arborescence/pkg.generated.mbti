@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/edmonds_arborescence"
+
+// Values
+pub fn min_arborescence(Int, ArrayView[Edge], Int) -> Arborescence?
+
+// Errors
+
+// Types and methods
+pub(all) struct Arborescence {
+  cost : Int64
+  parent : Array[Int]
+}
+
+pub(all) struct Edge {
+  from : Int
+  to : Int
+  weight : Int64
+}
+
+// Type aliases
+
+// Traits
+
