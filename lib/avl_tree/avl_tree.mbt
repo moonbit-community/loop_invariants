@@ -162,6 +162,46 @@ fn AVLTree::insert(self : AVLTree, key : Int64) -> Unit {
 }
 
 ///|
+fn AVLTree::inorder_collect(
+  self : AVLTree,
+  node : Int,
+  out : Array[Int64],
+) -> Unit {
+  if node < 0 {
+    return
+  }
+  self.inorder_collect(self.nodes[node].left, out)
+  out.push(self.nodes[node].key)
+  self.inorder_collect(self.nodes[node].right, out)
+}
+
+///|
+fn AVLTree::to_sorted_array(self : AVLTree) -> Array[Int64] {
+  let out : Array[Int64] = []
+  self.inorder_collect(self.root, out)
+  out
+}
+
+///|
+pub fn avl_sorted(keys : ArrayView[Int64]) -> Array[Int64] {
+  let tree = AVLTree::new()
+  for i = 0; i < keys.length(); i = i + 1 {
+    tree.insert(keys[i])
+  } where {
+    invariant: i >= 0 && i <= keys.length(),
+    reasoning: (
+      #|INVARIANT (Insert prefix):
+      #|The first i keys have been inserted into the AVL tree.
+      #|MAINTENANCE:
+      #|Insert keys[i] and advance i.
+      #|TERMINATION:
+      #|At i = keys.length(), all keys are inserted.
+    ),
+  }
+  tree.to_sorted_array()
+}
+
+///|
 fn AVLTree::find_min(self : AVLTree, node : Int) -> Int {
   if node < 0 {
     return -1

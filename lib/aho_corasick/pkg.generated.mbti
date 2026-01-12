@@ -2,6 +2,9 @@
 package "bobzhang/loop_invariants/lib/aho_corasick"
 
 // Values
+pub fn count_all_matches(ArrayView[String], String) -> Int
+
+pub fn find_all_matches(ArrayView[String], String) -> Array[(Int, Int, String)]
 
 // Errors
 

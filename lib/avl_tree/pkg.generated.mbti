@@ -2,6 +2,7 @@
 package "bobzhang/loop_invariants/lib/avl_tree"
 
 // Values
+pub fn avl_sorted(ArrayView[Int64]) -> Array[Int64]
 
 // Errors
 

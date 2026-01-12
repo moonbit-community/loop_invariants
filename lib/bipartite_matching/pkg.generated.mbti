@@ -2,6 +2,7 @@
 package "bobzhang/loop_invariants/lib/bipartite_matching"
 
 // Values
+pub fn max_matching(Int, Int, ArrayView[(Int, Int)]) -> Array[(Int, Int)]
 
 // Errors
 

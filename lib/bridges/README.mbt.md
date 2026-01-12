@@ -20,8 +20,21 @@ let bridges = finder.get_bridges()
 let cut_vertices = finder.get_articulation_points()
 ```
 
+## Example
+
+```mbt check
+///|
+test "bridges example" {
+  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
+  let bridges = @bridges.find_bridges(4, edges[:])
+  inspect(bridges, content="[(1, 3)]")
+  let cuts = @bridges.articulation_points(4, edges[:])
+  inspect(cuts, content="[1]")
+}
+```
+
 ## Notes
 
-- This package is a reference implementation; the core struct is private.
+- This package is a reference implementation with a small public wrapper.
 - See the tests in `lib/bridges/bridges.mbt` for concrete graph examples.
 - Time complexity: `O(V + E)`.

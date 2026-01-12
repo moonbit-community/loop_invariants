@@ -147,6 +147,22 @@ fn Hungarian::get_matching(self : Hungarian) -> Array[(Int, Int)] {
   result
 }
 
+///|
+pub fn max_matching(
+  n_left : Int,
+  n_right : Int,
+  edges : ArrayView[(Int, Int)],
+) -> Array[(Int, Int)] {
+  let graph = BipartiteGraph::new(n_left, n_right)
+  edges.each(fn(edge) {
+    let (u, v) = edge
+    graph.add_edge(u, v)
+  })
+  let matcher = Hungarian::new(graph)
+  let _ = matcher.max_matching()
+  matcher.get_matching()
+}
+
 // ============================================================================
 // HOPCROFT-KARP ALGORITHM
 // ============================================================================

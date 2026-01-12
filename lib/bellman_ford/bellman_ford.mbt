@@ -25,7 +25,7 @@
 const BF_INF : Int64 = 4611686018427387903L // Large value but allows addition without overflow
 
 ///|
-priv struct BellmanFord {
+pub struct BellmanFord {
   n : Int
   edges : Array[(Int, Int, Int64)] // (from, to, weight)
   dist : Array[Int64]
@@ -34,7 +34,7 @@ priv struct BellmanFord {
 }
 
 ///|
-fn BellmanFord::new(n : Int) -> BellmanFord {
+pub fn BellmanFord::new(n : Int) -> BellmanFord {
   {
     n,
     edges: [],
@@ -45,7 +45,7 @@ fn BellmanFord::new(n : Int) -> BellmanFord {
 }
 
 ///|
-fn BellmanFord::add_edge(
+pub fn BellmanFord::add_edge(
   self : BellmanFord,
   from : Int,
   to : Int,
@@ -56,7 +56,7 @@ fn BellmanFord::add_edge(
 
 ///|
 /// Run Bellman-Ford from source vertex
-fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
+pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
   // Initialize distances
   self.dist.fill(BF_INF)
   self.parent.fill(-1)
@@ -106,7 +106,7 @@ fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
 }
 
 ///|
-fn BellmanFord::get_distance(self : BellmanFord, v : Int) -> Int64? {
+pub fn BellmanFord::get_distance(self : BellmanFord, v : Int) -> Int64? {
   if v < 0 || v >= self.n || self.dist[v] == BF_INF {
     None
   } else {
@@ -115,13 +115,13 @@ fn BellmanFord::get_distance(self : BellmanFord, v : Int) -> Int64? {
 }
 
 ///|
-fn BellmanFord::has_negative_cycle(self : BellmanFord) -> Bool {
+pub fn BellmanFord::has_negative_cycle(self : BellmanFord) -> Bool {
   self.has_negative_cycle
 }
 
 ///|
 /// Reconstruct path from source to target
-fn BellmanFord::get_path(self : BellmanFord, target : Int) -> Array[Int]? {
+pub fn BellmanFord::get_path(self : BellmanFord, target : Int) -> Array[Int]? {
   if target < 0 || target >= self.n || self.dist[target] == BF_INF {
     return None
   }

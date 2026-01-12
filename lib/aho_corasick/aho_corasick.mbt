@@ -335,6 +335,21 @@ fn AhoCorasick::find_all(
   result
 }
 
+///|
+pub fn find_all_matches(
+  patterns : ArrayView[String],
+  text : String,
+) -> Array[(Int, Int, String)] {
+  let ac = AhoCorasick::from_patterns(patterns.to_array())
+  ac.find_all(text)
+}
+
+///|
+pub fn count_all_matches(patterns : ArrayView[String], text : String) -> Int {
+  let ac = AhoCorasick::from_patterns(patterns.to_array())
+  ac.count_matches(text)
+}
+
 // ============================================================================
 // TESTS
 // ============================================================================
