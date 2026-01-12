@@ -19,6 +19,7 @@ pub struct FlowGraph {
 } derive(Show)
 
 ///|
+/// Create a flow graph with n vertices.
 pub fn make(n : Int) -> FlowGraph {
   { adj: Array::makei(n, _ => []) }
 }

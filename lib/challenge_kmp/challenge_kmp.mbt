@@ -108,6 +108,7 @@ pub fn kmp_search(text : StringView, pattern : StringView) -> Array[Int] {
 }
 
 ///|
+/// Return the first index of pattern in text, or -1 if absent.
 pub fn kmp_find_first(text : StringView, pattern : StringView) -> Int {
   let matches = kmp_search(text, pattern)
   if matches.length() > 0 {
@@ -118,6 +119,7 @@ pub fn kmp_find_first(text : StringView, pattern : StringView) -> Int {
 }
 
 ///|
+/// Count how many times pattern occurs in text.
 pub fn kmp_count(text : StringView, pattern : StringView) -> Int {
   kmp_search(text, pattern).length()
 }

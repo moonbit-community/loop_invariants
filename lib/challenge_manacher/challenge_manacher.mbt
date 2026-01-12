@@ -107,6 +107,7 @@ pub fn manacher_radii(s : StringView) -> (Array[Int], Array[Int]) {
 }
 
 ///|
+/// Return the length of the longest palindromic substring.
 pub fn longest_palindrome_len(s : StringView) -> Int {
   let (d1, d2) = manacher_radii(s)
   let n = s.length()
