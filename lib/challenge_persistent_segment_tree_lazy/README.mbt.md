@@ -37,3 +37,38 @@ test "persistent segment tree lazy" {
   inspect(@challenge_persistent_segment_tree_lazy.total(updated), content="12")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent segment tree lazy single update" {
+  let arr = [1, 1, 1, 1][:]
+  let root = @challenge_persistent_segment_tree_lazy.build(arr, 0, arr.length())
+  let updated = @challenge_persistent_segment_tree_lazy.apply_updates(
+    root,
+    arr.length(),
+    [(1, 3, 2)][:],
+  )
+  inspect(
+    @challenge_persistent_segment_tree_lazy.range_sum(
+      updated,
+      0,
+      arr.length(),
+      0,
+      4,
+    ),
+    content="8",
+  )
+  inspect(
+    @challenge_persistent_segment_tree_lazy.range_sum(
+      updated,
+      0,
+      arr.length(),
+      1,
+      3,
+    ),
+    content="6",
+  )
+}
+```

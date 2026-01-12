@@ -15,3 +15,16 @@ test "persistent rope" {
   inspect(@challenge_persistent_rope.length(rope), content="11")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent rope concat" {
+  let a = @challenge_persistent_rope.leaf("foo")
+  let b = @challenge_persistent_rope.leaf("bar")
+  let rope = @challenge_persistent_rope.concat(a, b)
+  inspect(@challenge_persistent_rope.to_string(rope), content="foobar")
+  inspect(@challenge_persistent_rope.length(rope), content="6")
+}
+```

@@ -21,3 +21,18 @@ test "persistent implicit treap" {
   inspect(@challenge_persistent_implicit_treap.to_array(r), content="[20]")
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent implicit treap insert" {
+  let t0 = @challenge_persistent_implicit_treap.from_array([1, 2][:])
+  let t1 = @challenge_persistent_implicit_treap.insert_at(t0, 1, 9)
+  inspect(@challenge_persistent_implicit_treap.to_array(t0), content="[1, 2]")
+  inspect(
+    @challenge_persistent_implicit_treap.to_array(t1),
+    content="[1, 9, 2]",
+  )
+}
+```

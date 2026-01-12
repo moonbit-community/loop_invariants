@@ -25,3 +25,16 @@ test "persistent kd tree" {
   )
 }
 ```
+
+## Another Example
+
+```mbt check
+///|
+test "persistent kd tree from array" {
+  let p1 = @challenge_persistent_kd_tree.Point::{ x: 0, y: 0 }
+  let p2 = @challenge_persistent_kd_tree.Point::{ x: 2, y: 2 }
+  let t = @challenge_persistent_kd_tree.from_array([p1, p2][:])
+  inspect(@challenge_persistent_kd_tree.contains(t, p2), content="true")
+  inspect(@challenge_persistent_kd_tree.size(t), content="2")
+}
+```
