@@ -11,16 +11,19 @@ pub enum Rope {
 } derive(Show)
 
 ///|
+/// Create an empty rope.
 pub fn empty() -> Rope {
   Rope::Empty
 }
 
 ///|
+/// Create a leaf rope from a string.
 pub fn leaf(value : String) -> Rope {
   Rope::Leaf(value~)
 }
 
 ///|
+/// Return the total length of the rope.
 pub fn length(r : Rope) -> Int {
   match r {
     Rope::Empty => 0
@@ -30,6 +33,7 @@ pub fn length(r : Rope) -> Int {
 }
 
 ///|
+/// Concatenate two ropes and return the result.
 pub fn concat(a : Rope, b : Rope) -> Rope {
   match (a, b) {
     (Rope::Empty, _) => b
@@ -39,6 +43,7 @@ pub fn concat(a : Rope, b : Rope) -> Rope {
 }
 
 ///|
+/// Convert the rope to a flat string.
 pub fn to_string(r : Rope) -> String {
   match r {
     Rope::Empty => ""

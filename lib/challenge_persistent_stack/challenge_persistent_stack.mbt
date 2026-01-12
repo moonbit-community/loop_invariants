@@ -10,21 +10,25 @@ pub enum Stack[T] {
 } derive(Show)
 
 ///|
+/// Create an empty persistent stack.
 pub fn[T] empty() -> Stack[T] {
   Stack::Nil
 }
 
 ///|
+/// Return true if the stack is empty.
 pub fn[T] is_empty(s : Stack[T]) -> Bool {
   s is Stack::Nil
 }
 
 ///|
+/// Push a value onto the stack and return the new stack.
 pub fn[T] push(s : Stack[T], value : T) -> Stack[T] {
   Stack::Cons(head=value, tail=s)
 }
 
 ///|
+/// Pop the top element and return (value, rest), or None if empty.
 pub fn[T] pop(s : Stack[T]) -> (T, Stack[T])? {
   match s {
     Stack::Nil => None
@@ -33,6 +37,7 @@ pub fn[T] pop(s : Stack[T]) -> (T, Stack[T])? {
 }
 
 ///|
+/// Peek the top element without removing it.
 pub fn[T] peek(s : Stack[T]) -> T? {
   match s {
     Stack::Nil => None
@@ -41,6 +46,7 @@ pub fn[T] peek(s : Stack[T]) -> T? {
 }
 
 ///|
+/// Return the number of elements in the stack.
 pub fn[T] size(s : Stack[T]) -> Int {
   match s {
     Stack::Nil => 0

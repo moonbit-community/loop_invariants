@@ -10,11 +10,13 @@ pub enum MinStack {
 } derive(Show)
 
 ///|
+/// Create an empty min-stack.
 pub fn empty() -> MinStack {
   MinStack::Nil
 }
 
 ///|
+/// Return the number of elements in the stack.
 pub fn size(s : MinStack) -> Int {
   match s {
     MinStack::Nil => 0
@@ -23,6 +25,7 @@ pub fn size(s : MinStack) -> Int {
 }
 
 ///|
+/// Return the minimum value, or None if empty.
 pub fn min_value(s : MinStack) -> Int? {
   match s {
     MinStack::Nil => None
@@ -31,6 +34,7 @@ pub fn min_value(s : MinStack) -> Int? {
 }
 
 ///|
+/// Push a value and return the new stack with updated minimum.
 pub fn push(s : MinStack, value : Int) -> MinStack {
   let new_min = match s {
     MinStack::Nil => value
@@ -45,6 +49,7 @@ pub fn push(s : MinStack, value : Int) -> MinStack {
 }
 
 ///|
+/// Pop the top value and return (value, rest), or None if empty.
 pub fn pop(s : MinStack) -> (Int, MinStack)? {
   match s {
     MinStack::Nil => None

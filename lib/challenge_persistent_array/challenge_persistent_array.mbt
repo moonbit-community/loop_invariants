@@ -61,17 +61,20 @@ fn set_node(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
 }
 
 ///|
+/// Build a persistent array from a mutable array view.
 pub fn from_array(arr : ArrayView[Int]) -> PArray {
   let n = arr.length()
   { root: build(arr, 0, n), n }
 }
 
 ///|
+/// Return the length of the persistent array.
 pub fn length(arr : PArray) -> Int {
   arr.n
 }
 
 ///|
+/// Get the value at idx, or None if out of range.
 pub fn get_at(arr : PArray, idx : Int) -> Int? {
   if idx < 0 || idx >= arr.n {
     None
@@ -81,6 +84,7 @@ pub fn get_at(arr : PArray, idx : Int) -> Int? {
 }
 
 ///|
+/// Set the value at idx and return the new persistent array.
 pub fn set_at(arr : PArray, idx : Int, value : Int) -> PArray {
   if idx < 0 || idx >= arr.n {
     arr

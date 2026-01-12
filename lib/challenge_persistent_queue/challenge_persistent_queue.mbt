@@ -16,6 +16,7 @@ pub struct Queue[T] {
 } derive(Show)
 
 ///|
+/// Create an empty persistent queue.
 pub fn[T] empty() -> Queue[T] {
   { front: Stack::Nil, back: Stack::Nil }
 }
@@ -29,6 +30,7 @@ fn[T] size_stack(s : Stack[T]) -> Int {
 }
 
 ///|
+/// Return the number of elements in the queue.
 pub fn[T] size(q : Queue[T]) -> Int {
   size_stack(q.front) + size_stack(q.back)
 }
@@ -63,11 +65,13 @@ fn[T] normalize(q : Queue[T]) -> Queue[T] {
 }
 
 ///|
+/// Enqueue a value and return the new queue.
 pub fn[T] enqueue(q : Queue[T], value : T) -> Queue[T] {
   { front: q.front, back: Stack::Cons(head=value, tail=q.back) }
 }
 
 ///|
+/// Peek the front value without removing it.
 pub fn[T] peek(q : Queue[T]) -> T? {
   let norm = normalize(q)
   match norm.front {
@@ -77,6 +81,7 @@ pub fn[T] peek(q : Queue[T]) -> T? {
 }
 
 ///|
+/// Dequeue the front value and return (value, rest), or None if empty.
 pub fn[T] dequeue(q : Queue[T]) -> (T, Queue[T])? {
   let norm = normalize(q)
   match norm.front {

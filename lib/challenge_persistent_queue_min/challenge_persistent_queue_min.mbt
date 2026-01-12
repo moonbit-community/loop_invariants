@@ -16,6 +16,7 @@ pub struct MinQueue {
 } derive(Show)
 
 ///|
+/// Create an empty min-queue.
 pub fn empty() -> MinQueue {
   { front: MinStack::Nil, back: MinStack::Nil }
 }
@@ -29,6 +30,7 @@ fn size_stack(s : MinStack) -> Int {
 }
 
 ///|
+/// Return the number of elements in the queue.
 pub fn size(q : MinQueue) -> Int {
   size_stack(q.front) + size_stack(q.back)
 }
@@ -88,11 +90,13 @@ fn normalize(q : MinQueue) -> MinQueue {
 }
 
 ///|
+/// Enqueue a value and return the new queue.
 pub fn enqueue(q : MinQueue, value : Int) -> MinQueue {
   { front: q.front, back: push(q.back, value) }
 }
 
 ///|
+/// Peek the front value without removing it.
 pub fn peek(q : MinQueue) -> Int? {
   let norm = normalize(q)
   match norm.front {
@@ -102,6 +106,7 @@ pub fn peek(q : MinQueue) -> Int? {
 }
 
 ///|
+/// Dequeue the front value and return (value, rest), or None if empty.
 pub fn dequeue(q : MinQueue) -> (Int, MinQueue)? {
   let norm = normalize(q)
   match norm.front {
@@ -112,6 +117,7 @@ pub fn dequeue(q : MinQueue) -> (Int, MinQueue)? {
 }
 
 ///|
+/// Return the minimum value in the queue, or None if empty.
 pub fn min_queue(q : MinQueue) -> Int? {
   match (min_value(q.front), min_value(q.back)) {
     (None, None) => None
