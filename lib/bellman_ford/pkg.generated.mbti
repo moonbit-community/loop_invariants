@@ -2,6 +2,7 @@
 package "bobzhang/loop_invariants/lib/bellman_ford"
 
 // Values
+pub fn bellman_ford(Int, ArrayView[(Int, Int, Int)], Int) -> (Array[Int], Bool)
 
 // Errors
 

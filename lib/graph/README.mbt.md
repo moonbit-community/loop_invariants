@@ -174,11 +174,12 @@ Together: nearly constant time per operation.
 
 ```mbt nocheck
 // These are reference implementations - read the source!
-// For callable APIs, use the challenge packages:
+// For callable APIs, use the dedicated packages:
 
-// @challenge_dijkstra.shortest_paths(...)
-// @challenge_union_find.UnionFind::new(...)
-// @challenge_topo_sort.topological_sort(...)
+// @dijkstra.dijkstra(...)
+// @dijkstra.dijkstra_dense(...)
+// @union_find.UnionFind::new(...)
+// @challenge_toposort_kahn.topo_sort(...)
 ```
 
 ## Algorithm Selection Guide
@@ -198,4 +199,3 @@ Together: nearly constant time per operation.
 - Read `lib/graph/graph.mbt` for annotated source
 - Use challenge packages for production APIs
 - Implementations are intentionally verbose for learning
-

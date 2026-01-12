@@ -122,7 +122,7 @@ test "convex hull example" {
     { x: 0, y: 2 },
     { x: 1, y: 1 }, // Interior point
   ]
-  let hull = @convex_hull.convex_hull_monotone(pts)
+  let hull = @convex_hull.convex_hull(pts[:])
   inspect(hull.length(), content="4") // Square has 4 corners
 }
 ```
@@ -206,4 +206,3 @@ Hull: 2 endpoints      Hull: 1 point        Hull: 2 points
 - Watch for integer overflow in cross product
 - Consider using Int64 for coordinates
 - Degenerate cases: 0, 1, or 2 points
-

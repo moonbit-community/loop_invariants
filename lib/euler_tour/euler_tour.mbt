@@ -187,6 +187,17 @@ pub fn build_euler_tour(
 }
 
 ///|
+/// Convenience wrapper returning entry/exit arrays and preorder tour.
+pub fn euler_tour(
+  n : Int,
+  edges : ArrayView[(Int, Int)],
+  root : Int,
+) -> (Array[Int], Array[Int], Array[Int]) {
+  let info = build_euler_tour(n, edges, root)
+  (info.entry, info.exit, info.tour)
+}
+
+///|
 /// Return entry time of v, or -1 if out of range.
 pub fn EulerTourInfo::entry(self : EulerTourInfo, v : Int) -> Int {
   if v < 0 || v >= self.entry.length() {

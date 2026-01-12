@@ -87,6 +87,23 @@ test "basic shortest paths" {
 }
 ```
 
+### 1b. Dense/Array-Based Dijkstra (O(n^2))
+
+```mbt check
+///|
+test "dense dijkstra" {
+  let adj : Array[Array[(Int, Int)]] = [
+    [(1, 2), (2, 5)],
+    [(2, 1), (3, 2)],
+    [(3, 3)],
+    [(4, 1)],
+    [],
+  ]
+  let dist = @dijkstra.dijkstra_dense(adj, 0)
+  inspect(dist, content="[0, 2, 3, 4, 5]")
+}
+```
+
 ### 2. Path Reconstruction
 
 ```mbt check

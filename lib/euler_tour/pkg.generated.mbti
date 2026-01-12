@@ -4,6 +4,8 @@ package "bobzhang/loop_invariants/lib/euler_tour"
 // Values
 pub fn build_euler_tour(Int, ArrayView[(Int, Int)], Int) -> EulerTourInfo
 
+pub fn euler_tour(Int, ArrayView[(Int, Int)], Int) -> (Array[Int], Array[Int], Array[Int])
+
 // Errors
 
 // Types and methods

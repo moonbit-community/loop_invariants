@@ -120,6 +120,21 @@ test "bellman ford example" {
 }
 ```
 
+```mbt check
+///|
+test "bellman ford convenience" {
+  let edges : Array[(Int, Int, Int)] = [
+    (0, 1, 1),
+    (1, 2, 2),
+    (0, 2, 5),
+    (2, 3, 1),
+  ]
+  let (dist, neg) = @bellman_ford.bellman_ford(4, edges[:], 0)
+  inspect(dist, content="[0, 1, 3, 4]")
+  inspect(neg, content="false")
+}
+```
+
 ## SPFA: Queue-Based Optimization
 
 ```
@@ -213,4 +228,3 @@ After iteration V-1:
 - Track parent pointers to reconstruct paths
 - Early termination: stop if no relaxation in an iteration
 - For negative cycle path: run V more iterations, track vertices that change
-

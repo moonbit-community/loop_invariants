@@ -6,6 +6,8 @@ pub fn bidirectional_dijkstra(Graph, Graph, Int, Int) -> Int64?
 
 pub fn dijkstra(Graph, Int) -> DijkstraResult
 
+pub fn dijkstra_dense(Array[Array[(Int, Int)]], Int) -> Array[Int]
+
 pub fn reconstruct_path(DijkstraResult, Int) -> Array[Int]
 
 pub fn shortest_distance(Graph, Int, Int) -> Int64?

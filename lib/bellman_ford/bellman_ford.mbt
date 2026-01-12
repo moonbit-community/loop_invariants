@@ -25,6 +25,9 @@
 const BF_INF : Int64 = 4611686018427387903L // Large value but allows addition without overflow
 
 ///|
+const BF_INF_INT : Int = 0x3fffffff
+
+///|
 pub struct BellmanFord {
   n : Int
   edges : Array[(Int, Int, Int64)] // (from, to, weight)
@@ -106,6 +109,34 @@ pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
     parent: self.parent,
     has_negative_cycle,
   }
+}
+
+///|
+/// Convenience wrapper that returns Int distances and negative-cycle flag.
+pub fn bellman_ford(
+  n : Int,
+  edges : ArrayView[(Int, Int, Int)],
+  src : Int,
+) -> (Array[Int], Bool) {
+  if n <= 0 {
+    return ([], false)
+  }
+  let dist = Array::make(n, BF_INF_INT)
+  if src < 0 || src >= n {
+    return (dist, false)
+  }
+  let solver = BellmanFord::new(n)
+  edges.each(fn(edge) {
+    let (u, v, w) = edge
+    solver.add_edge(u, v, w.to_int64())
+  })
+  let result = solver.compute(src)
+  for i in 0..<n {
+    if result.dist[i] != BF_INF {
+      dist[i] = result.dist[i].to_int()
+    }
+  }
+  (dist, result.has_negative_cycle())
 }
 
 ///|
@@ -239,6 +270,26 @@ test "bellman_ford basic" {
   inspect(result.get_distance(3), content="Some(4)")
   inspect(result.get_distance(4), content="Some(-2)")
   inspect(result.has_negative_cycle(), content="false")
+}
+
+///|
+test "bellman_ford wrapper" {
+  let edges : Array[(Int, Int, Int)] = [
+    (0, 1, 1),
+    (1, 2, 2),
+    (0, 2, 5),
+    (2, 3, 1),
+  ]
+  let (dist, neg) = bellman_ford(4, edges[:], 0)
+  inspect(dist, content="[0, 1, 3, 4]")
+  inspect(neg, content="false")
+}
+
+///|
+test "bellman_ford wrapper negative cycle" {
+  let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2), (2, 1, -2)]
+  let (_dist, neg) = bellman_ford(3, edges[:], 0)
+  inspect(neg, content="true")
 }
 
 ///|

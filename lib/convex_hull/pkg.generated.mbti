@@ -2,6 +2,8 @@
 package "bobzhang/loop_invariants/lib/convex_hull"
 
 // Values
+pub fn convex_hull(ArrayView[Point]) -> Array[Point]
+
 pub fn convex_hull_graham(Array[Point]) -> Array[Point]
 
 pub fn convex_hull_jarvis(Array[Point]) -> Array[Point]

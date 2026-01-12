@@ -181,6 +181,9 @@ pub fn Graph::add_undirected_edge(
 const INF : Int64 = 4611686018427387903L // Large value for infinity
 
 ///|
+const DIJK_INF_INT : Int = 0x3fffffff
+
+///|
 /// Result of Dijkstra's algorithm
 pub(all) struct DijkstraResult {
   dist : Array[Int64] // dist[v] = shortest distance from source to v
@@ -260,6 +263,74 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
     ),
   }
   { dist, parent }
+}
+
+///|
+/// Array-based Dijkstra for small or dense graphs (O(n^2)).
+pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
+  let n = adj.length()
+  let dist = Array::make(n, DIJK_INF_INT)
+  let used = Array::make(n, false)
+  if src < 0 || src >= n {
+    return dist
+  }
+  dist[src] = 0
+  for iter = 0; iter < n; iter = iter + 1 {
+    let mut u = -1
+    let mut best = DIJK_INF_INT
+    for i = 0; i < n; i = i + 1 {
+      if not(used[i]) && dist[i] < best {
+        u = i
+        best = dist[i]
+      }
+    } where {
+      invariant: i >= 0 && i <= n,
+      reasoning: (
+        #|INVARIANT (min scan):
+        #|best is the smallest dist among unvisited nodes in [0..i).
+        #|MAINTENANCE:
+        #|Update best when a smaller unvisited distance is found.
+        #|TERMINATION:
+        #|At i = n, u is the unvisited node with minimum dist (if any).
+      ),
+    }
+    if u < 0 {
+      break
+    }
+    used[u] = true
+    let neighbors = adj[u]
+    for j = 0; j < neighbors.length(); j = j + 1 {
+      let (v, w) = neighbors[j]
+      let cand = dist[u] + w
+      if not(used[v]) && cand < dist[v] {
+        dist[v] = cand
+      }
+    } where {
+      invariant: j >= 0 && j <= neighbors.length(),
+      reasoning: (
+        #|INVARIANT (relaxation scan):
+        #|All edges neighbors[0..j) have been relaxed from u.
+        #|MAINTENANCE:
+        #|Relax edge (u -> v) and update dist[v] if a shorter path is found.
+        #|TERMINATION:
+        #|After the loop, all outgoing edges from u are processed.
+      ),
+    }
+  } where {
+    invariant: iter >= 0 && iter <= n,
+    invariant: dist.length() == n && used.length() == n,
+    reasoning: (
+      #|INVARIANT (dense Dijkstra frontier):
+      #|All used nodes have final shortest distances from src.
+      #|For unused nodes, dist is the shortest path using only used nodes
+      #|as intermediate vertices.
+      #|MAINTENANCE:
+      #|Select the unused node with minimum tentative distance and relax edges.
+      #|TERMINATION:
+      #|After n iterations or when no reachable nodes remain, dist is correct.
+    ),
+  }
+  dist
 }
 
 ///|
@@ -477,6 +548,21 @@ test "dijkstra basic" {
   inspect(result.dist[2], content="3")
   inspect(result.dist[3], content="6")
   inspect(result.dist[4], content="10")
+}
+
+///|
+test "dijkstra dense basic" {
+  let adj : Array[Array[(Int, Int)]] = [
+    [(1, 2), (2, 5)],
+    [(2, 1), (3, 2)],
+    [(3, 3)],
+    [(4, 1)],
+    [],
+  ]
+  let dist = dijkstra_dense(adj, 0)
+  inspect(dist, content="[0, 2, 3, 4, 5]")
+  let dist2 = dijkstra_dense(adj, 4)
+  inspect(dist2[0] == DIJK_INF_INT, content="true")
 }
 
 ///|

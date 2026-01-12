@@ -160,6 +160,12 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
   hull
 }
 
+///|
+/// Compute convex hull using the monotone chain algorithm (ArrayView wrapper).
+pub fn convex_hull(points : ArrayView[Point]) -> Array[Point] {
+  convex_hull_monotone(points.to_array())
+}
+
 // ============================================================================
 // GRAHAM SCAN
 // ============================================================================
@@ -602,6 +608,19 @@ test "convex hull collinear points" {
   // Collinear points form a degenerate hull (line segment)
   let hull = convex_hull_monotone(points)
   inspect(hull.length(), content="2")
+}
+
+///|
+test "convex hull alias" {
+  let points : Array[Point] = [
+    { x: 0L, y: 0L },
+    { x: 2L, y: 0L },
+    { x: 2L, y: 2L },
+    { x: 0L, y: 2L },
+    { x: 1L, y: 1L },
+  ]
+  let hull = convex_hull(points[:])
+  inspect(hull.length(), content="4")
 }
 
 ///|

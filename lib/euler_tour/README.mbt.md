@@ -106,6 +106,16 @@ test "euler tour subtree nodes" {
 }
 ```
 
+```mbt check
+///|
+test "euler tour arrays" {
+  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
+  let (tin, tout, order) = @euler_tour.euler_tour(5, edges[:], 0)
+  inspect(order.length(), content="5")
+  inspect(tin[0] < tout[0], content="true")
+}
+```
+
 ## Common Applications
 
 ### 1. Subtree Queries
