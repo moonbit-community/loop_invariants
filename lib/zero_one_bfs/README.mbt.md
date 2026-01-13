@@ -13,6 +13,12 @@ This preserves nondecreasing distances in the deque and runs in linear time.
 - **Time**: O(V + E)
 - **Space**: O(V + E)
 
+## Core Idea
+
+- Maintain a deque of nodes in **nondecreasing distance** order.
+- Edge weight 0 goes to front; weight 1 goes to back.
+- Each edge is relaxed once, giving linear time.
+
 ## Example
 
 ```mbt check
