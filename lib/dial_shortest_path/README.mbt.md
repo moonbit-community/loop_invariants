@@ -10,6 +10,12 @@ using buckets indexed by distance.
 - **Time**: O(E + C * V)
 - **Space**: O(E + C * V)
 
+## Core Idea
+
+- Replace the priority queue with **distance buckets** of size `C`.
+- Scan buckets in order; the next non-empty bucket gives the next vertex.
+- Works when edge weights are **small non-negative integers**.
+
 ## Quick Start
 
 ```mbt check
