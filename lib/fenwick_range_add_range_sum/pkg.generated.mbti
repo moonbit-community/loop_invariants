@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/fenwick_range_add_range_sum"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct FenwickRangeAddRangeSum {
+  n : Int
+  bit1 : Array[Int64]
+  bit2 : Array[Int64]
+}
+pub fn FenwickRangeAddRangeSum::from_array(ArrayView[Int64]) -> Self
+pub fn FenwickRangeAddRangeSum::new(Int) -> Self
+pub fn FenwickRangeAddRangeSum::range_add(Self, Int, Int, Int64) -> Unit
+pub fn FenwickRangeAddRangeSum::range_sum(Self, Int, Int) -> Int64
+
+// Type aliases
+
+// Traits
+
