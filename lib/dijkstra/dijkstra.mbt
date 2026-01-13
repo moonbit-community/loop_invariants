@@ -249,11 +249,16 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
       }
     }
   } where {
-    invariant: true,
+    invariant: dist.length() == n &&
+    parent.length() == n &&
+    visited.length() == n,
     reasoning: (
       #|INVARIANT (Dijkstra):
-      #|All visited vertices have their final shortest distance; dist for
-      #|unvisited vertices is the best known upper bound.
+      #|All visited vertices have their final shortest distances from source.
+      #|For any unvisited vertex v, dist[v] is the shortest path length that
+      #|uses only visited vertices as internal nodes (a valid upper bound).
+      #|The priority queue may contain stale entries, but its minimum key
+      #|corresponds to the smallest current dist among unvisited vertices.
       #|MAINTENANCE:
       #|Extract the unvisited vertex u with minimum dist[u], mark it visited,
       #|and relax its outgoing edges. Non-negative weights ensure dist[u] is
