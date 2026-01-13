@@ -96,14 +96,3 @@ pub fn max_xor(root : Node, value : Int, max_bit : Int) -> Int {
     ),
   }
 }
-
-///|
-test "persistent_binary_trie" {
-  let root0 = Node::Empty
-  let root1 = insert(root0, 5, 4)
-  let root2 = insert(root1, 10, 4)
-  let root3 = insert(root2, 25, 4)
-  assert_eq(max_xor(root3, 5, 4), 28)
-  assert_eq(max_xor(root3, 10, 4), 19)
-  assert_eq(count(root1), 1)
-}

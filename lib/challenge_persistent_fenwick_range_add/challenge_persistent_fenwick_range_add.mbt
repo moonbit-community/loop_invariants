@@ -203,15 +203,3 @@ pub fn apply_updates(
     ),
   }
 }
-
-///|
-test "persistent_fenwick_range_add" {
-  let rf0 = make(5)
-  let rf1 = range_add(rf0, 1, 3, 2)
-  let rf2 = range_add(rf1, 0, 2, -1)
-  assert_eq(range_sum(rf2, 0, 4), 3)
-  assert_eq(range_sum(rf2, 2, 3), 3)
-  let rf3 = apply_updates(rf0, [(0, 4, 1), (2, 4, 2)][:])
-  assert_eq(range_sum(rf3, 0, 1), 2)
-  assert_eq(range_sum(rf3, 3, 4), 6)
-}

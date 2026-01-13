@@ -2,6 +2,11 @@
 
 Bitwise trie that supports maximum-xor queries with path copying.
 
+## Core Idea
+
+Each inserted value creates a new root by copying nodes along the bit path.
+Max-xor queries greedily choose the opposite bit when possible.
+
 ## Example
 
 ```mbt check
@@ -40,3 +45,8 @@ test "persistent binary trie small" {
   inspect(@challenge_persistent_binary_trie.count(root2), content="2")
 }
 ```
+
+## Notes
+
+- `max_bit` controls the bit width used.
+- Updates are O(max_bit) with structural sharing.

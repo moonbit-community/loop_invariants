@@ -224,15 +224,3 @@ pub fn delete_min(h : Heap) -> Heap? {
     }
   }
 }
-
-///|
-test "persistent_binomial_heap" {
-  let h0 = { trees: [] }
-  let h1 = insert(h0, 4)
-  let h2 = insert(h1, 1)
-  let h3 = insert(h2, 7)
-  assert_eq(find_min(h3), Some(1))
-  guard delete_min(h3) is Some(h4) else { fail("expected delete_min") }
-  assert_eq(find_min(h4), Some(4))
-  assert_eq(find_min(h1), Some(4))
-}

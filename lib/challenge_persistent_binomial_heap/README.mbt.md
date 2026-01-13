@@ -2,6 +2,12 @@
 
 Binomial heap with immutable merges and deletes via path copying.
 
+## Core Idea
+
+Binomial heaps maintain a forest of binomial trees, one per binary digit of the
+size. Merge is like binary addition on tree orders. Persistence is achieved by
+copying nodes along merge paths.
+
 ## Example
 
 ```mbt check
@@ -40,3 +46,8 @@ test "persistent binomial heap merge" {
   inspect(@challenge_persistent_binomial_heap.find_min(h1), content="Some(3)")
 }
 ```
+
+## Notes
+
+- Merge and insert are O(log n).
+- `delete_min` also costs O(log n).

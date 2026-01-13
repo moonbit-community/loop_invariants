@@ -2,6 +2,11 @@
 
 Two persistent BITs supporting range add and range sum queries.
 
+## Core Idea
+
+Use two BITs to convert range add into prefix sums, and make each update
+persistent by copying only the affected nodes.
+
 ## Example
 
 ```mbt check
@@ -40,3 +45,8 @@ test "persistent fenwick range add another" {
   )
 }
 ```
+
+## Notes
+
+- Range indices are inclusive.
+- Each update/query is O(log n).
