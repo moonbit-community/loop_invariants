@@ -230,16 +230,3 @@ pub fn from_array(arr : ArrayView[Int]) -> Tree {
     ),
   }
 }
-
-///|
-test "persistent_23_tree" {
-  let t0 = Tree::Empty
-  let t1 = insert(t0, 5)
-  let t2 = insert(t1, 2)
-  let t3 = insert(t2, 8)
-  let t4 = insert(t3, 6)
-  assert_eq(contains(t4, 6), true)
-  assert_eq(contains(t4, 7), false)
-  let built = from_array([5, 2, 8, 6][:])
-  assert_eq(contains(built, 2), true)
-}

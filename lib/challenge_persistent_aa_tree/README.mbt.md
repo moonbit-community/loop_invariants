@@ -2,6 +2,15 @@
 
 Balanced binary search tree with skew/split rebalancing and path copying.
 
+## Core Idea
+
+AA trees simulate red-black trees using only two operations:
+
+- **skew** (right rotation)
+- **split** (left rotation + level increment)
+
+Persistence is achieved by copying nodes along the update path.
+
 ## Example
 
 ```mbt check
@@ -27,3 +36,8 @@ test "persistent aa tree from array" {
   inspect(@challenge_persistent_aa_tree.size(t), content="3")
 }
 ```
+
+## Notes
+
+- Each insert returns a new version.
+- `inorder` returns the keys in sorted order.

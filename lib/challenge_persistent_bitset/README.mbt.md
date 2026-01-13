@@ -2,6 +2,14 @@
 
 Immutable bitset backed by a path-copying segment tree.
 
+## Core Idea
+
+Each update returns a new segment tree root. Only nodes on the path to the
+updated index are copied, while the rest of the tree is shared.
+
+This allows fast versioned queries like `count_range` without mutating
+previous versions.
+
 ## Example
 
 ```mbt check
@@ -27,3 +35,8 @@ test "persistent bitset from indices" {
   inspect(@challenge_persistent_bitset.count_range(bs, 0, 6), content="2")
 }
 ```
+
+## Notes
+
+- Indices are 0-based.
+- `count_range` uses half-open ranges.

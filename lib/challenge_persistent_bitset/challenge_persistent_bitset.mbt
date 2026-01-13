@@ -173,15 +173,3 @@ pub fn from_indices(n : Int, idxs : ArrayView[Int]) -> Bitset {
     ),
   }
 }
-
-///|
-test "persistent_bitset" {
-  let bs0 = make(8)
-  let bs1 = set(bs0, 2, 1)
-  let bs2 = set(bs1, 5, 1)
-  assert_eq(get(bs2, 2), 1)
-  assert_eq(get(bs2, 3), 0)
-  assert_eq(count_range(bs2, 0, 6), 2)
-  let built : Bitset = from_indices(8, [1, 4, 7][:])
-  assert_eq(count_range(built, 0, 8), 3)
-}

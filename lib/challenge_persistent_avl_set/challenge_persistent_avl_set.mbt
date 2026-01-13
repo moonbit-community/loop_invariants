@@ -222,16 +222,3 @@ pub fn from_array(arr : ArrayView[Int]) -> Avl {
     ),
   }
 }
-
-///|
-test "persistent_avl_set" {
-  let t0 = Avl::Empty
-  let t1 = insert(t0, 3)
-  let t2 = insert(t1, 1)
-  let t3 = insert(t2, 4)
-  let t4 = insert(t3, 2)
-  assert_eq(contains(t4, 2), true)
-  assert_eq(contains(t4, 5), false)
-  let built = from_array([3, 1, 4, 2][:])
-  assert_eq(inorder(built), [1, 2, 3, 4])
-}

@@ -2,6 +2,12 @@
 
 Balanced search tree that keeps versions by path copying.
 
+## Core Idea
+
+Each insertion returns a new root. Only the nodes along the update path are
+copied, while the rest of the tree is shared. This gives persistence with
+O(log n) additional memory per update.
+
 ## Example
 
 ```mbt check
@@ -27,3 +33,8 @@ test "persistent 2-3 tree from array" {
   inspect(@challenge_persistent_23_tree.size(t), content="3")
 }
 ```
+
+## Notes
+
+- Older versions remain valid after updates.
+- 2-3 trees maintain balance with nodes of 2 or 3 children.

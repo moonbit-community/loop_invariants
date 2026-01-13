@@ -2,6 +2,11 @@
 
 Self-balancing BST with path-copying insertions.
 
+## Core Idea
+
+AVL trees enforce a balance factor in {-1, 0, 1}. Persistence is implemented
+by copying nodes along the insertion path and rebalancing with rotations.
+
 ## Example
 
 ```mbt check
@@ -27,3 +32,8 @@ test "persistent avl set from array" {
   inspect(@challenge_persistent_avl_set.size(t), content="3")
 }
 ```
+
+## Notes
+
+- Duplicates are ignored in the set.
+- All previous versions remain available.

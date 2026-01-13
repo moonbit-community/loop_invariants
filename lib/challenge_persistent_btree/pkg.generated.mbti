@@ -2,7 +2,11 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_btree"
 
 // Values
+pub fn contains(Tree, Int) -> Bool
+
 pub fn empty() -> Tree
+
+pub fn from_array(ArrayView[Int]) -> Tree
 
 pub fn insert(Tree, Int) -> Tree
 

@@ -215,7 +215,10 @@ pub fn insert(t : Tree, key : Int) -> Tree {
 }
 
 ///|
-fn contains(t : Tree, key : Int) -> Bool {
+
+///|
+/// Check whether a key exists in the tree.
+pub fn contains(t : Tree, key : Int) -> Bool {
   match t {
     Tree::Empty => false
     Tree::Node(node=n) => {
@@ -234,7 +237,7 @@ fn contains(t : Tree, key : Int) -> Bool {
 ///|
 /// Build a B-tree by inserting keys in order.
 #warnings("+missing_invariant+missing_reasoning")
-fn from_array(arr : ArrayView[Int]) -> Tree {
+pub fn from_array(arr : ArrayView[Int]) -> Tree {
   let n = arr.length()
   for i = 0, tree = Tree::Empty {
     if i >= n {
@@ -254,18 +257,4 @@ fn from_array(arr : ArrayView[Int]) -> Tree {
       #|At i = n, all keys are inserted.
     ),
   }
-}
-
-///|
-test "persistent_btree" {
-  let t0 = Tree::Empty
-  let t1 = insert(t0, 5)
-  let t2 = insert(t1, 2)
-  let t3 = insert(t2, 8)
-  let t4 = insert(t3, 6)
-  let t5 = insert(t4, 1)
-  assert_eq(contains(t5, 6), true)
-  assert_eq(contains(t5, 7), false)
-  let built = from_array([5, 2, 8, 6, 1][:])
-  assert_eq(contains(built, 1), true)
 }
