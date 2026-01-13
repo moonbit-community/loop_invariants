@@ -2,6 +2,12 @@
 
 Interval tree with max-end augmentation for overlap queries.
 
+## Core Idea
+
+- Use **path copying** to preserve old versions after each insert.
+- Store `max_end` in each node to **prune non-overlapping subtrees**.
+- Overlap search descends only where `left.max_end >= query_start`.
+
 ## Example
 
 ```mbt check
