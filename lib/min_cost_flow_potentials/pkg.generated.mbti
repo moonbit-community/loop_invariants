@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/min_cost_flow_potentials"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Edge {
+  to : Int
+  cap : Int64
+  cost : Int64
+  mut flow : Int64
+  rev : Int
+}
+
+pub struct MinCostFlowPotentials {
+  n : Int
+  adj : Array[Array[Edge]]
+  dist : Array[Int64]
+  prev_v : Array[Int]
+  prev_e : Array[Int]
+}
+pub fn MinCostFlowPotentials::add_edge(Self, Int, Int, Int64, Int64) -> Unit
+pub fn MinCostFlowPotentials::compute(Self, Int, Int) -> (Int64, Int64)
+pub fn MinCostFlowPotentials::compute_with_limit(Self, Int, Int, Int64) -> (Int64, Int64)
+pub fn MinCostFlowPotentials::new(Int) -> Self
+
+// Type aliases
+
+// Traits
+
