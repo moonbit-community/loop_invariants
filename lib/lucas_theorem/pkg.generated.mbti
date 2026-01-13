@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/lucas_theorem"
+
+// Values
+pub fn nck_mod_prime_lucas(Int64, Int64, Int64) -> Int64
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
