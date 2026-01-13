@@ -7,6 +7,11 @@ Choose items multiple times to maximize value within a capacity limit.
 - DP over capacity with unlimited item usage
 - Forward iteration to allow reuse in the same iteration
 
+## Core Idea
+
+Let dp[cap] be the best value for capacity cap. Iterate capacity forward so
+each item can be used multiple times within the same pass.
+
 ## Pseudocode sketch
 
 ```mbt nocheck

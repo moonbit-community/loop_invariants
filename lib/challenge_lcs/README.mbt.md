@@ -8,6 +8,11 @@ Compute the length of the longest subsequence common to two sequences.
 - Row-by-row optimization to reduce memory
 - Classic recurrence with match vs. skip
 
+## Core Idea
+
+Let dp[i][j] be the LCS length for prefixes a[0..i) and b[0..j). If the last
+characters match, extend by 1; otherwise take the best of skipping one char.
+
 ## Pseudocode sketch
 
 ```mbt nocheck

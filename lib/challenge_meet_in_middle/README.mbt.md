@@ -9,6 +9,12 @@ O(2^(n/2)). Used here for subset sum.
 - Sorting one half and binary searching for the best complement
 - Combining results safely within a limit
 
+## Core Idea
+
+Split the array into two halves. Enumerate all subset sums for each half.
+Sort one side, then for each sum in the other side, binary search the best
+complement that keeps the total within the limit.
+
 ## Pseudocode sketch
 
 ```mbt nocheck

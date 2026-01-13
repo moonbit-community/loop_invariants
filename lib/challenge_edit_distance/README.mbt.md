@@ -9,6 +9,12 @@ one string into another.
 - Cost model for substitution vs. match
 - Rolling-row optimization
 
+## Core Idea
+
+Let dp[i][j] be the minimum edits to convert the first i chars of a into the
+first j chars of b. Transition with insert, delete, or substitute; matching
+characters costs 0.
+
 ## Pseudocode sketch
 
 ```mbt nocheck

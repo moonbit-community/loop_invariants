@@ -8,6 +8,11 @@ Choose each item at most once to maximize value within a capacity limit.
 - Transition by taking or skipping an item
 - Iteration order to avoid reuse
 
+## Core Idea
+
+Use a 1D dp array where dp[cap] is the best value for capacity cap. Iterate
+capacity in decreasing order so each item is used at most once.
+
 ## Pseudocode sketch
 
 ```mbt nocheck

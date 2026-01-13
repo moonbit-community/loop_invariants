@@ -8,6 +8,12 @@ Select the maximum number of non-overlapping intervals by sorting by end time.
 - Maintaining the last chosen end time
 - Proof by exchange argument
 
+## Core Idea
+
+Sort intervals by end time. Always pick the next interval whose start is not
+before the end of the last chosen interval. This greedy choice maximizes the
+count.
+
 ## Pseudocode sketch
 
 ```mbt nocheck

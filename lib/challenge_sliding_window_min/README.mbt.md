@@ -8,6 +8,12 @@ Maintain the minimum of each fixed-size window using a monotonic deque.
 - Maintaining increasing values to keep the minimum at the front
 - Removing expired indices as the window moves
 
+## Core Idea
+
+Use a deque of indices with increasing values. The front always holds the
+minimum for the current window. When the window slides, drop indices that fall
+out of range and remove larger values from the back before pushing the new one.
+
 ## Pseudocode sketch
 
 ```mbt nocheck

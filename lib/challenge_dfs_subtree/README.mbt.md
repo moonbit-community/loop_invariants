@@ -8,6 +8,12 @@ Compute subtree sizes in a rooted tree with a single DFS pass.
 - Parent tracking to avoid revisiting nodes
 - Simple tree DP pattern
 
+## Core Idea
+
+Run a DFS from the root. Each node starts with size 1 (itself), then adds the
+sizes of all child subtrees. Parent tracking prevents cycling in the undirected
+adjacency list.
+
 ## Pseudocode sketch
 
 ```mbt nocheck
