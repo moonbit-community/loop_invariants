@@ -1,6 +1,6 @@
 ///|
 /// Check if a key exists in the treap.
-fn Treap::contains(self : Treap, key : Int64) -> Bool {
+pub fn Treap::contains(self : Treap, key : Int64) -> Bool {
   find_node(self.root, key) is Some(_)
 }
 

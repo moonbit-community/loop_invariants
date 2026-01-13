@@ -6,6 +6,28 @@ package "bobzhang/loop_invariants/lib/treap"
 // Errors
 
 // Types and methods
+pub struct Treap {
+  mut root : TreapNode?
+  mut rng_state : Int
+}
+pub fn Treap::contains(Self, Int64) -> Bool
+pub fn Treap::count_less_than(Self, Int64) -> Int
+pub fn Treap::delete(Self, Int64) -> Bool
+pub fn Treap::insert(Self, Int64) -> Unit
+pub fn Treap::kth_element(Self, Int) -> Int64?
+pub fn Treap::max(Self) -> Int64?
+pub fn Treap::min(Self) -> Int64?
+pub fn Treap::new() -> Self
+pub fn Treap::size(Self) -> Int
+pub fn Treap::to_array(Self) -> Array[Int64]
+
+pub struct TreapNode {
+  key : Int64
+  priority : Int
+  mut left : TreapNode?
+  mut right : TreapNode?
+  mut size : Int
+}
 
 // Type aliases
 

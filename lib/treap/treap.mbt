@@ -37,7 +37,8 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-priv struct TreapNode {
+/// Node in the treap (BST key + heap priority).
+pub struct TreapNode {
   key : Int64
   priority : Int // Random priority
   mut left : TreapNode?
@@ -64,8 +65,8 @@ fn update_size(node : TreapNode) -> Unit {
 }
 
 ///|
-/// Treap data structure
-priv struct Treap {
+/// Randomized BST that supports order statistics.
+pub struct Treap {
   mut root : TreapNode?
   mut rng_state : Int // Simple LCG random number generator
 }
@@ -83,7 +84,7 @@ fn next_random(state : Int) -> (Int, Int) {
 
 ///|
 /// Create an empty treap with a deterministic RNG seed.
-fn Treap::new() -> Treap {
+pub fn Treap::new() -> Treap {
   { root: None, rng_state: 42 }
 }
 
@@ -127,8 +128,8 @@ fn merge(l : TreapNode?, r : TreapNode?) -> TreapNode? {
 }
 
 ///|
-/// Insert a key into the treap
-fn Treap::insert(self : Treap, key : Int64) -> Unit {
+/// Insert a key into the treap.
+pub fn Treap::insert(self : Treap, key : Int64) -> Unit {
   let (next_state, priority) = next_random(self.rng_state)
   self.rng_state = next_state
   let new_node = TreapNode::new(key, priority)
@@ -137,8 +138,8 @@ fn Treap::insert(self : Treap, key : Int64) -> Unit {
 }
 
 ///|
-/// Delete a key from the treap (only one occurrence if duplicates exist)
-fn Treap::delete(self : Treap, key : Int64) -> Bool {
+/// Delete a key from the treap (only one occurrence if duplicates exist).
+pub fn Treap::delete(self : Treap, key : Int64) -> Bool {
   let (l, r) = split(self.root, key)
   let (mid, r2) = split(r, key + 1L)
   match mid {
@@ -160,85 +161,6 @@ fn Treap::delete(self : Treap, key : Int64) -> Bool {
 // ============================================================================
 // TESTS
 // ============================================================================
-
-///|
-test "treap basic insert" {
-  let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  t.insert(1L)
-  t.insert(9L)
-  inspect(t.size(), content="5")
-  inspect(t.contains(5L), content="true")
-  inspect(t.contains(3L), content="true")
-  inspect(t.contains(10L), content="false")
-}
-
-///|
-test "treap delete" {
-  let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  inspect(t.delete(3L), content="true")
-  inspect(t.contains(3L), content="false")
-  inspect(t.size(), content="2")
-  inspect(t.delete(10L), content="false")
-}
-
-///|
-test "treap kth element" {
-  let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  t.insert(1L)
-  t.insert(9L)
-
-  // Sorted: 1, 3, 5, 7, 9
-  inspect(t.kth_element(0), content="Some(1)")
-  inspect(t.kth_element(2), content="Some(5)")
-  inspect(t.kth_element(4), content="Some(9)")
-  inspect(t.kth_element(5), content="None")
-}
-
-///|
-test "treap count less than" {
-  let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  t.insert(1L)
-  t.insert(9L)
-  inspect(t.count_less_than(5L), content="2") // 1, 3
-  inspect(t.count_less_than(1L), content="0")
-  inspect(t.count_less_than(10L), content="5")
-}
-
-///|
-test "treap min max" {
-  let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  inspect(t.min(), content="Some(3)")
-  inspect(t.max(), content="Some(7)")
-}
-
-///|
-test "treap to array" {
-  let t = Treap::new()
-  t.insert(5L)
-  t.insert(3L)
-  t.insert(7L)
-  t.insert(1L)
-  t.insert(9L)
-  let arr = t.to_array()
-  inspect(arr.length(), content="5")
-  inspect(arr[0], content="1")
-  inspect(arr[4], content="9")
-}
 
 ///|
 test "treap empty" {

@@ -23,6 +23,77 @@ Each node has two properties:
 
 The random priorities keep the tree balanced **with high probability**.
 
+## Quick Start Tutorial
+
+### 1) Insert and Search
+
+```mbt check
+///|
+test "treap quick start" {
+  let t = @treap.Treap::new()
+  t.insert(5L)
+  t.insert(3L)
+  t.insert(7L)
+  t.insert(1L)
+  t.insert(9L)
+  inspect(t.size(), content="5")
+  inspect(t.contains(5L), content="true")
+  inspect(t.contains(10L), content="false")
+}
+```
+
+### 2) Delete a Key
+
+```mbt check
+///|
+test "treap delete example" {
+  let t = @treap.Treap::new()
+  t.insert(5L)
+  t.insert(3L)
+  t.insert(7L)
+  inspect(t.delete(3L), content="true")
+  inspect(t.contains(3L), content="false")
+  inspect(t.size(), content="2")
+}
+```
+
+### 3) Order Statistics (k-th and rank)
+
+```mbt check
+///|
+test "treap order statistics" {
+  let t = @treap.Treap::new()
+  t.insert(5L)
+  t.insert(3L)
+  t.insert(7L)
+  t.insert(1L)
+  t.insert(9L)
+  inspect(t.kth_element(0), content="Some(1)")
+  inspect(t.kth_element(2), content="Some(5)")
+  inspect(t.kth_element(4), content="Some(9)")
+  inspect(t.kth_element(5), content="None")
+  inspect(t.count_less_than(5L), content="2")
+  inspect(t.count_less_than(10L), content="5")
+}
+```
+
+### 4) Min/Max and Inorder Traversal
+
+```mbt check
+///|
+test "treap min max and to_array" {
+  let t = @treap.Treap::new()
+  t.insert(5L)
+  t.insert(3L)
+  t.insert(7L)
+  t.insert(1L)
+  t.insert(9L)
+  inspect(t.min(), content="Some(1)")
+  inspect(t.max(), content="Some(9)")
+  inspect(t.to_array(), content="[1, 3, 5, 7, 9]")
+}
+```
+
 ## Structure Visualization
 
 ```
@@ -182,4 +253,3 @@ the complexity of maintaining balance invariants!
 - Store subtree sizes for order statistics
 - Split/merge approach is more elegant than rotations
 - Can support duplicates by allowing equal keys
-

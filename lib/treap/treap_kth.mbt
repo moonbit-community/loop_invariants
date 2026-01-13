@@ -1,6 +1,6 @@
 ///|
 /// Get the k-th smallest element (0-indexed).
-fn Treap::kth_element(self : Treap, k : Int) -> Int64? {
+pub fn Treap::kth_element(self : Treap, k : Int) -> Int64? {
   kth_helper(self.root, k)
 }
 

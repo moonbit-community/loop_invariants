@@ -1,6 +1,6 @@
 ///|
 /// Count elements strictly less than key.
-fn Treap::count_less_than(self : Treap, key : Int64) -> Int {
+pub fn Treap::count_less_than(self : Treap, key : Int64) -> Int {
   count_less_helper(self.root, key)
 }
 
@@ -20,13 +20,13 @@ fn count_less_helper(node : TreapNode?, key : Int64) -> Int {
 
 ///|
 /// Total number of keys in the treap.
-fn Treap::size(self : Treap) -> Int {
+pub fn Treap::size(self : Treap) -> Int {
   get_size(self.root)
 }
 
 ///|
 /// Get the minimum key in the treap.
-fn Treap::min(self : Treap) -> Int64? {
+pub fn Treap::min(self : Treap) -> Int64? {
   min_helper(self.root)
 }
 
@@ -45,7 +45,7 @@ fn min_helper(node : TreapNode?) -> Int64? {
 
 ///|
 /// Get the maximum key in the treap.
-fn Treap::max(self : Treap) -> Int64? {
+pub fn Treap::max(self : Treap) -> Int64? {
   max_helper(self.root)
 }
 
@@ -64,7 +64,7 @@ fn max_helper(node : TreapNode?) -> Int64? {
 
 ///|
 /// Get elements in sorted order.
-fn Treap::to_array(self : Treap) -> Array[Int64] {
+pub fn Treap::to_array(self : Treap) -> Array[Int64] {
   let result : Array[Int64] = []
   inorder(self.root, result)
   result
