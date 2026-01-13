@@ -38,3 +38,7 @@ Here `n = 2`, so masks are 0..3:
 - `0b11`: {0,1}
 
 The result `h[mask]` is the sum over all splits `A ⊆ mask` of `f[A] * g[mask\\A]`.
+
+## Notes
+
+- Complexity is O(n^2 * 2^n), so n should be small (n ≤ 20).

@@ -38,3 +38,4 @@ test "persistent btree versions" {
 
 - This uses minimum degree 2 (smallest nontrivial B-tree).
 - Each insertion returns a new version.
+- Search/insert are O(log n) in balanced cases.

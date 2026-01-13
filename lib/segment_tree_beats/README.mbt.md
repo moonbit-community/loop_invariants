@@ -38,3 +38,8 @@ test "segment tree beats example" {
   inspect(st.range_max(0, 5), content="4")
 }
 ```
+
+## Notes
+
+- The amortized bound comes from limiting how often a node’s max can change.
+- Works well for range chmin + max/sum queries.

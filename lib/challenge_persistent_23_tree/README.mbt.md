@@ -38,3 +38,4 @@ test "persistent 2-3 tree from array" {
 
 - Older versions remain valid after updates.
 - 2-3 trees maintain balance with nodes of 2 or 3 children.
+- Operations are O(log n).

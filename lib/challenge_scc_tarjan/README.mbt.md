@@ -37,3 +37,4 @@ test "scc tarjan isolated" {
 
 - Runs in O(n + m).
 - Component ids are arbitrary but consistent.
+- Uses a stack of active nodes during DFS.

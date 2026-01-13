@@ -37,3 +37,4 @@ test "persistent avl set from array" {
 
 - Duplicates are ignored in the set.
 - All previous versions remain available.
+- Operations are O(log n).

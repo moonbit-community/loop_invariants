@@ -37,3 +37,4 @@ test "mo example small" {
 
 - This variant answers sum queries with O(1) add/remove.
 - Overall time is about O((n + q) * sqrt(n)).
+- Query ranges are half-open: [l, r).

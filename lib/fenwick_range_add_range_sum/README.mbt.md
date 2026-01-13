@@ -38,3 +38,7 @@ test "fenwick range add point query" {
   inspect(st.range_sum(2, 2), content="5")
 }
 ```
+
+## Notes
+
+- `range_add` and `range_sum` use inclusive indices.
