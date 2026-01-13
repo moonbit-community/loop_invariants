@@ -8,6 +8,12 @@ A Fenwick Tree (also called Binary Indexed Tree or BIT) supports:
 
 It's simpler and more cache-friendly than segment trees for sum queries.
 
+## Core Idea
+
+- Store partial sums for ranges whose size is **lowbit(i)**.
+- Prefix sum walks **down** by subtracting lowbit; updates walk **up** by adding it.
+- Each value participates in O(log n) nodes, giving O(log n) updates/queries.
+
 ## The Key Insight: Lowbit
 
 The magic of Fenwick Trees lies in the **lowbit** function:
