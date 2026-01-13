@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/push_relabel_max_flow"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct Edge {
+  to : Int
+  cap : Int64
+  mut flow : Int64
+  rev : Int
+}
+
+pub struct PushRelabel {
+  n : Int
+  adj : Array[Array[Edge]]
+  height : Array[Int]
+  excess : Array[Int64]
+  next_edge : Array[Int]
+  in_active : Array[Bool]
+}
+pub fn PushRelabel::add_edge(Self, Int, Int, Int64) -> Unit
+pub fn PushRelabel::add_undirected_edge(Self, Int, Int, Int64) -> Unit
+pub fn PushRelabel::max_flow(Self, Int, Int) -> Int64
+pub fn PushRelabel::new(Int) -> Self
+
+// Type aliases
+
+// Traits
+
