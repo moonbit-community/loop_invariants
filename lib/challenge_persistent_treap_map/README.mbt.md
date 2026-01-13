@@ -2,6 +2,11 @@
 
 Key-value treap with immutable updates and search.
 
+## Core Idea
+
+Treaps maintain a BST by key and a heap by random priority. Persistence is
+achieved by copying nodes along update paths.
+
 ## Example
 
 ```mbt check
@@ -28,3 +33,8 @@ test "persistent treap map from array" {
   inspect(@challenge_persistent_treap_map.size(t), content="2")
 }
 ```
+
+## Notes
+
+- Insert/update returns a new version.
+- Expected time is O(log n).

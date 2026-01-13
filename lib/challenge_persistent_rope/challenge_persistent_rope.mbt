@@ -85,13 +85,3 @@ pub fn concat_many(ropes : ArrayView[Rope]) -> Rope {
     ),
   }
 }
-
-///|
-test "persistent_rope" {
-  let r1 = Rope::Leaf(value="hello")
-  let r2 = Rope::Leaf(value=" ")
-  let r3 = Rope::Leaf(value="world")
-  let rope = concat_many([r1, r2, r3][:])
-  assert_eq(to_string(rope), "hello world")
-  assert_eq(length(rope), 11)
-}

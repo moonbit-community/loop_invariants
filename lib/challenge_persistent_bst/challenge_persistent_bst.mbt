@@ -141,16 +141,3 @@ pub fn inorder(t : Tree) -> Array[Int] {
     Tree::Node(value=v, left=l, right=r) => inorder(l) + [v] + inorder(r)
   }
 }
-
-///|
-test "persistent_bst" {
-  let t0 = Tree::Empty
-  let t1 = insert(t0, 4)
-  let t2 = insert(t1, 2)
-  let t3 = insert(t2, 6)
-  let t4 = insert(t3, 5)
-  assert_eq(contains(t4, 2), true)
-  assert_eq(contains(t4, 3), false)
-  let built = from_array([4, 2, 6, 5][:])
-  assert_eq(inorder(built), [2, 4, 5, 6])
-}

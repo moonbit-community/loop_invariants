@@ -2,6 +2,11 @@
 
 Immutable binary search tree with path-copying inserts.
 
+## Core Idea
+
+Insertion returns a new tree, copying only the nodes on the path from root
+to the insertion point. All other nodes are shared between versions.
+
 ## Example
 
 ```mbt check
@@ -28,3 +33,8 @@ test "persistent bst from array" {
   inspect(@challenge_persistent_bst.inorder(t), content="[1, 2, 3, 4]")
 }
 ```
+
+## Notes
+
+- Operations are O(height).
+- Since this is a BST without rebalancing, worst-case is O(n).

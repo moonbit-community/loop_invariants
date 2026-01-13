@@ -2,6 +2,11 @@
 
 Path-copying segment tree that supports point updates and immutable versions.
 
+## Core Idea
+
+Each update creates a new root by copying the path from root to the updated
+leaf. All other nodes are shared, so old versions remain available.
+
 ## Example
 
 ```mbt check
@@ -28,3 +33,8 @@ test "persistent array versions" {
   inspect(@challenge_persistent_array.to_array(arr1), content="[9, 6, 7]")
 }
 ```
+
+## Notes
+
+- Access is O(log n).
+- Updates are O(log n) with structural sharing.

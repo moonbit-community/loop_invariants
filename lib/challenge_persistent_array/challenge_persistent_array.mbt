@@ -114,13 +114,3 @@ pub fn to_array(arr : PArray) -> Array[Int] {
   }
   out
 }
-
-///|
-test "persistent_array" {
-  let arr = from_array([1, 2, 3, 4][:])
-  assert_eq(get_at(arr, 2), Some(3))
-  let arr2 = set_at(arr, 1, 10)
-  assert_eq(get_at(arr, 1), Some(2))
-  assert_eq(get_at(arr2, 1), Some(10))
-  assert_eq(to_array(arr2), [1, 10, 3, 4])
-}

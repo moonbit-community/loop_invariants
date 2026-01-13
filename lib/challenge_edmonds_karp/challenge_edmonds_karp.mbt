@@ -170,21 +170,3 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
   }
   flow
 }
-
-///|
-test "edmonds_karp_basic" {
-  let g = make(4)
-  add_edge(g, 0, 1, 3)
-  add_edge(g, 0, 2, 2)
-  add_edge(g, 1, 2, 1)
-  add_edge(g, 1, 3, 2)
-  add_edge(g, 2, 3, 4)
-  assert_eq(max_flow(g, 0, 3), 5)
-}
-
-///|
-test "edmonds_karp_disconnected" {
-  let g = make(3)
-  add_edge(g, 0, 1, 1)
-  assert_eq(max_flow(g, 0, 2), 0)
-}

@@ -2,6 +2,11 @@
 
 BFS-based augmenting path algorithm for max flow.
 
+## Core Idea
+
+Run BFS on the residual graph to find the shortest augmenting path (in edges),
+augment it, and repeat. This guarantees O(VE^2) time.
+
 ## Example
 
 ```mbt check
@@ -29,3 +34,8 @@ test "edmonds-karp simple" {
   inspect(flow, content="7")
 }
 ```
+
+## Notes
+
+- Works with non-negative capacities.
+- Uses BFS to ensure polynomial time.

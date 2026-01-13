@@ -2,6 +2,12 @@
 
 Immutable concatenation tree for strings.
 
+## Core Idea
+
+Ropes store strings in a binary tree, where each node holds the length of its
+left subtree. Concatenation is O(1) by creating a new parent node, and the
+structure is persistent via sharing.
+
 ## Example
 
 ```mbt check
@@ -28,3 +34,8 @@ test "persistent rope concat" {
   inspect(@challenge_persistent_rope.length(rope), content="6")
 }
 ```
+
+## Notes
+
+- Great for many concatenations.
+- `to_string` flattens the rope.

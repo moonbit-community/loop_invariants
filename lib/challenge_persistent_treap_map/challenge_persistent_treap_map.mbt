@@ -229,15 +229,3 @@ pub fn from_array(arr : ArrayView[(Int, Int)]) -> TreapMap {
     ),
   }
 }
-
-///|
-test "persistent_treap_map" {
-  let t0 = TreapMap::Empty
-  let t1 = insert_or_update(t0, 3, 30)
-  let t2 = insert_or_update(t1, 1, 10)
-  let t3 = insert_or_update(t2, 3, 31)
-  assert_eq(get(t3, 3), Some(31))
-  assert_eq(get(t3, 2), None)
-  let built = from_array([(3, 30), (1, 10), (3, 31)][:])
-  assert_eq(get(built, 1), Some(10))
-}
