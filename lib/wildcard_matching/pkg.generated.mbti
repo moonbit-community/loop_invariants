@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/wildcard_matching"
+
+// Values
+pub fn wildcard_match(String, String) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
