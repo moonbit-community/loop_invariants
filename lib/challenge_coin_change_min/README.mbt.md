@@ -2,6 +2,18 @@
 
 Unbounded knapsack DP for minimum coin count.
 
+## Core Idea
+
+Let `dp[x]` be the minimum coins needed to make sum `x`.
+
+Transition:
+```
+dp[x] = min(dp[x], dp[x - coin] + 1)
+```
+
+Initialize `dp[0] = 0`, others to infinity. If `dp[target]` is still infinity,
+the sum is unreachable.
+
 ## Example
 
 ```mbt check
@@ -23,3 +35,8 @@ test "coin change unreachable" {
   inspect(ans, content="None")
 }
 ```
+
+## Notes
+
+- Coins can be used multiple times.
+- Time complexity is O(target * number_of_coins).

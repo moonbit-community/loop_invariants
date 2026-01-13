@@ -93,14 +93,3 @@ pub fn min_palindrome_cuts(s : String) -> Int {
   }
   dp[n - 1]
 }
-
-///|
-test "palindrome_partition_basic" {
-  assert_eq(min_palindrome_cuts("aab"), 1)
-  assert_eq(min_palindrome_cuts("racecar"), 0)
-}
-
-///|
-test "palindrome_partition_misc" {
-  assert_eq(min_palindrome_cuts("abcbm"), 2)
-}

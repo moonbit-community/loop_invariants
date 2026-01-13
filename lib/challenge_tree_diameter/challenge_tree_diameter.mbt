@@ -84,15 +84,3 @@ pub fn tree_diameter(n : Int, edges : ArrayView[(Int, Int)]) -> Int {
   let (b, dist) = bfs(adj, a)
   dist[b]
 }
-
-///|
-test "tree_diameter_path" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
-  assert_eq(tree_diameter(5, edges[:]), 4)
-}
-
-///|
-test "tree_diameter_star" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
-  assert_eq(tree_diameter(5, edges[:]), 2)
-}

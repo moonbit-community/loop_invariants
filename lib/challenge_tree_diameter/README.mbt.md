@@ -2,6 +2,15 @@
 
 Two BFS/DFS sweeps to find the longest path length in a tree.
 
+## Core Idea
+
+Pick any node, run BFS/DFS to find the farthest node `A`.  
+Run BFS/DFS again from `A`; the farthest node `B` is an endpoint of the
+diameter, and the distance `dist(A, B)` is the diameter length.
+
+Why this works: the farthest node from any start must be an endpoint of some
+diameter in a tree.
+
 ## Example
 
 ```mbt check
@@ -21,3 +30,8 @@ test "tree diameter star" {
   inspect(@challenge_tree_diameter.tree_diameter(4, edges[:]), content="2")
 }
 ```
+
+## Notes
+
+- The tree is assumed to be connected.
+- Edge count must be `n-1`.

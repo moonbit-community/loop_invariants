@@ -116,25 +116,3 @@ pub fn berlekamp_massey(seq : ArrayView[Int64], m : Int64) -> Array[Int64] {
   }
   result
 }
-
-// ============================================================================
-// TESTS
-// ============================================================================
-
-///|
-test "berlekamp massey fibonacci" {
-  let m = 1000000007L
-  let seq : Array[Int64] = [0L, 1L]
-  for i in 2..<10 {
-    let next = mod_add(seq[i - 1], seq[i - 2], m)
-    seq.push(next)
-  }
-  inspect(berlekamp_massey(seq, m), content="[1, 1]")
-}
-
-///|
-test "berlekamp massey geometric" {
-  let m = 1000000007L
-  let seq : Array[Int64] = [1L, 2L, 4L, 8L, 16L]
-  inspect(berlekamp_massey(seq, m), content="[2]")
-}

@@ -56,15 +56,3 @@ pub fn min_coins(coins : ArrayView[Int], amount : Int) -> Int? {
     Some(dp[amount])
   }
 }
-
-///|
-test "coin_change_basic" {
-  let coins : Array[Int] = [1, 3, 4]
-  assert_eq(min_coins(coins[:], 6), Some(2))
-}
-
-///|
-test "coin_change_impossible" {
-  let coins : Array[Int] = [2, 4]
-  assert_eq(min_coins(coins[:], 7), None)
-}
