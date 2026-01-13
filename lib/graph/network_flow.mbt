@@ -23,7 +23,7 @@ fn FlowNetwork::new(n : Int) -> FlowNetwork {
   for i = 0; i < n; i = i + 1 {
     adj.push([])
   } where {
-    invariant: i >= 0 && i <= n,
+    invariant: i >= 0 && i <= n && adj.length() == i,
     reasoning: (
       #|INVARIANT (init network):
       #|adj[0..i) are allocated as empty adjacency lists.
@@ -76,7 +76,10 @@ fn FlowNetwork::bfs_find_path(
         queue.push(edge.to)
       }
     } where {
-      invariant: i >= 0 && i <= self.adj[u].length(),
+      invariant: i >= 0 &&
+      i <= self.adj[u].length() &&
+      parent.length() == self.n &&
+      visited.length() == self.n,
       reasoning: (
         #|INVARIANT 1 (Edge scan):
         #|After processing edges adj[u][0..i), every neighbor reachable via a
@@ -93,7 +96,7 @@ fn FlowNetwork::bfs_find_path(
       ),
     }
   } where {
-    invariant: front >= 0 && front <= queue.length(),
+    invariant: front >= 0 && front <= queue.length() && visited[source],
     reasoning: (
       #|INVARIANT 1 (Queue processing):
       #|All nodes in queue[0..front) have had their outgoing residual edges
