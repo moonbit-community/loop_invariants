@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/suffix_tree"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) struct Edge {
+  start : Int
+  end : Int
+  child : Int
+}
+
+pub(all) struct Node {
+  edges : Array[Edge]
+  mut leaf_count : Int
+}
+
+pub struct SuffixTree {
+  text : Array[Char]
+  nodes : Array[Node]
+}
+pub fn SuffixTree::contains(Self, String) -> Bool
+pub fn SuffixTree::count_occurrences(Self, String) -> Int
+pub fn SuffixTree::new(String) -> Self
+
+// Type aliases
+
+// Traits
+
