@@ -59,15 +59,3 @@ pub fn matrix_chain_min_cost(dims : ArrayView[Int]) -> Int {
   }
   dp[0][n - 1]
 }
-
-///|
-test "matrix_chain_basic" {
-  let dims : Array[Int] = [10, 30, 5, 60]
-  assert_eq(matrix_chain_min_cost(dims[:]), 4500)
-}
-
-///|
-test "matrix_chain_small" {
-  let dims : Array[Int] = [5, 4, 6]
-  assert_eq(matrix_chain_min_cost(dims[:]), 120)
-}

@@ -2,6 +2,15 @@
 
 Lowest common ancestor with O(log n) queries after preprocessing.
 
+## Core Idea
+
+Precompute `up[k][v]` = the 2^k-th ancestor of node v, along with depths.
+To answer LCA(u, v):
+
+1. Lift the deeper node up to the same depth.
+2. Lift both nodes from highest power to lowest so they stay below the LCA.
+3. Their parents then match and give the LCA.
+
 ## Example
 
 ```mbt check
@@ -23,3 +32,8 @@ test "lca across subtrees" {
   inspect(@challenge_lca_binary_lift.lca(tree, 4, 5), content="0")
 }
 ```
+
+## Notes
+
+- Preprocessing is O(n log n).
+- Each query is O(log n).

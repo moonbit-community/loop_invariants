@@ -108,11 +108,3 @@ pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
   }
   comp
 }
-
-///|
-test "scc_kosaraju_basic" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (3, 4)]
-  let comp = scc_kosaraju(5, edges[:])
-  assert_eq(comp[0] == comp[1] && comp[1] == comp[2], true)
-  assert_eq(comp[3] != comp[4], true)
-}

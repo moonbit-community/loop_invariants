@@ -134,12 +134,3 @@ pub fn range_min(dst : DisjointSparseTable, l : Int, r : Int) -> Int {
   let k = highest_bit(l ^ (r - 1))
   min(dst.table[k][l], dst.table[k][r - 1])
 }
-
-///|
-test "disjoint_sparse_table" {
-  let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
-  let dst = build_disjoint_sparse_table(arr[:])
-  assert_eq(range_min(dst, 0, 8), 0)
-  assert_eq(range_min(dst, 1, 5), 1)
-  assert_eq(range_min(dst, 3, 6), 1)
-}

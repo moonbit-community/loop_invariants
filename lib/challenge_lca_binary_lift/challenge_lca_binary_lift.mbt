@@ -167,12 +167,3 @@ pub fn lca(tree : Lca, u : Int, v : Int) -> Int {
   }
   tree.up[0][a]
 }
-
-///|
-test "lca_binary_lift" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
-  let tree = build_lca(6, edges[:], 0)
-  assert_eq(lca(tree, 3, 4), 1)
-  assert_eq(lca(tree, 3, 5), 0)
-  assert_eq(lca(tree, 4, 2), 0)
-}

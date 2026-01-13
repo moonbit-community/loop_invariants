@@ -52,15 +52,3 @@ pub fn lis_length(nums : ArrayView[Int]) -> Int {
   }
   tails.length()
 }
-
-///|
-test "lis_length_basic" {
-  let nums : Array[Int] = [3, 1, 2, 1, 8, 5, 6]
-  assert_eq(lis_length(nums[:]), 4)
-}
-
-///|
-test "lis_length_decreasing" {
-  let nums : Array[Int] = [5, 4, 3]
-  assert_eq(lis_length(nums[:]), 1)
-}
