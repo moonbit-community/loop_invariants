@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/k_shortest_paths_yen"
+
+// Values
+pub fn yen_k_shortest_paths(Int, ArrayView[(Int, Int, Int64)], Int, Int, Int) -> Array[KPath]
+
+// Errors
+
+// Types and methods
+pub(all) struct KPath {
+  nodes : Array[Int]
+  cost : Int64
+}
+pub impl Show for KPath
+
+// Type aliases
+
+// Traits
+
