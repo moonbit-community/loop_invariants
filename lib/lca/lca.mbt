@@ -52,8 +52,8 @@ fn compute_log(n : Int) -> Int {
   } else {
     log + 1
   } where {
-    invariant: val >= 1,
     invariant: log >= 0,
+    invariant: val == 1 << log,
     reasoning: (
       #|INVARIANT (power-of-two growth):
       #|val equals 2^log and is the smallest power of two checked so far.
