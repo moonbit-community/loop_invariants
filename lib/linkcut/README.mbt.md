@@ -16,6 +16,11 @@ as a splay tree. The `access(x)` operation exposes the path from `x` to the
 root by cutting and re-linking preferred edges, which makes path queries and
 updates efficient.
 
+## What You Can Support
+
+- Path aggregates (sum, max, min) by maintaining data in each splay node.
+- Dynamic connectivity with `link` and `cut`.
+
 ## Typical Operations
 
 - `access(x)`: expose path from root to `x`

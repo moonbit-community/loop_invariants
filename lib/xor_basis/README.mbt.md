@@ -15,6 +15,9 @@ Maintain one basis vector per highest set bit (like Gaussian elimination over
 GF(2)). When inserting a number, eliminate its highest set bits using existing
 basis vectors. If a bit position is empty, store the reduced value there.
 
+To maximize xor with x, greedily try to flip the highest bits by xoring with
+basis vectors from high to low.
+
 ## API
 
 - `insert(x)` returns true if the rank increases.
@@ -34,3 +37,8 @@ test "xor basis max" {
   inspect(b.max_xor(0L), content="15")
 }
 ```
+
+## Notes
+
+- The basis is not unique; any reduced form works.
+- Rank equals the number of independent vectors.

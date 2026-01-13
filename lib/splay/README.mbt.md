@@ -14,6 +14,11 @@ This package focuses on the core splaying procedure and invariants.
 A splay tree rotates a chosen node up to the root. Repeated access keeps
 recently used nodes near the top, yielding amortized O(log n) operations.
 
+## Typical Uses
+
+- Sequence data structures (implicit keys)
+- Dynamic trees (via link-cut)
+
 ## Rotation Cases (Intuition)
 
 - **Zig**: parent is root; single rotation.

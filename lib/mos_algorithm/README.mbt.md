@@ -34,3 +34,8 @@ for q in sorted:
 
 - Complexity is roughly O((n + q) * sqrt(n)) for O(1) add/remove.
 - This package is a reference implementation with invariants (not a public API).
+
+## When to Use
+
+- Offline queries on arrays or trees.
+- When a good add/remove operation exists.

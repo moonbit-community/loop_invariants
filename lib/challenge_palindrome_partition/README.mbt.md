@@ -12,6 +12,11 @@ DP for minimal palindrome partitioning cuts.
 
 This yields O(n^2) time and O(n^2) space.
 
+## Complexity
+
+- Palindrome table: O(n^2)
+- DP for cuts: O(n^2)
+
 ## Example
 
 ```mbt check

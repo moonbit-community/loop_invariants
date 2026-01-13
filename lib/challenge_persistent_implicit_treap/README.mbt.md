@@ -2,6 +2,12 @@
 
 Sequence treap indexed by subtree sizes, supports split/merge and insert.
 
+## Core Idea
+
+Keys are implicit: each node stores subtree size, so the index of a node is
+its in-order position. Split by index and merge by priority give efficient
+insert/delete, while persistence is achieved by path copying.
+
 ## Example
 
 ```mbt check
@@ -36,3 +42,8 @@ test "persistent implicit treap insert" {
   )
 }
 ```
+
+## Notes
+
+- Expected time is O(log n) per operation.
+- Old versions remain available.
