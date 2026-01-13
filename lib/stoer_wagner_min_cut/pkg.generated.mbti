@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/stoer_wagner_min_cut"
+
+// Values
+pub fn stoer_wagner_min_cut(Int, ArrayView[(Int, Int, Int64)]) -> MinCutResult?
+
+// Errors
+
+// Types and methods
+pub(all) struct MinCutResult {
+  weight : Int64
+  cut : Array[Int]
+}
+
+// Type aliases
+
+// Traits
+
