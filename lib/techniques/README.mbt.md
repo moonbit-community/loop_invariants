@@ -11,6 +11,13 @@ many different problem types.
 - **Monotonic Stack/Queue**: O(n) for next greater/smaller
 - **Binary Search on Answer**: O(n log M) for optimization
 
+## Core Idea
+
+- Recognize a **structure or monotonicity** that restricts how state changes.
+- Use **invariants** (window validity, monotonic stacks, sorted order) to avoid
+  rework and keep updates O(1).
+- Turn the problem into a **template**: pointer moves, stack pops, or feasibility checks.
+
 ## The Key Insight
 
 ```
@@ -282,4 +289,3 @@ Wait, let me recheck...
 - For monotonic stack: decide increasing vs decreasing based on query type
 - For binary search: carefully handle boundary (lo < hi vs lo <= hi)
 - For Mo's: handle add/remove in both directions for correctness
-
