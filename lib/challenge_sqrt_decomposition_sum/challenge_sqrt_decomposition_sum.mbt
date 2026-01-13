@@ -94,13 +94,3 @@ pub fn update(sd : SqrtDecomp, idx : Int, value : Int) -> Unit {
   sd.arr[idx] = value
   sd.block_sum[block] = sd.block_sum[block] + diff
 }
-
-///|
-test "sqrt_decomposition_sum" {
-  let arr : Array[Int] = [1, 2, 3, 4, 5, 6]
-  let sd = build_sqrt_decomp(arr[:])
-  assert_eq(range_sum(sd, 0, 3), 6)
-  assert_eq(range_sum(sd, 2, 6), 18)
-  update(sd, 3, 10)
-  assert_eq(range_sum(sd, 2, 6), 24)
-}

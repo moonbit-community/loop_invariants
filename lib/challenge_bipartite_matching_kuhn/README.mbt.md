@@ -2,6 +2,14 @@
 
 DFS-based augmenting path algorithm for maximum bipartite matching.
 
+## Core Idea
+
+Repeatedly try to find an augmenting path from each left node using DFS.
+When a free right node is found (or can be freed), we augment the matching.
+
+Time complexity is O(VE) in the worst case but often fast in practice for
+small or sparse graphs.
+
 ## Example
 
 ```mbt check
@@ -25,3 +33,8 @@ test "bipartite matching empty" {
   inspect(m, content="0")
 }
 ```
+
+## Notes
+
+- Left size must be provided to `max_matching`.
+- The adjacency list is from left nodes to right nodes.

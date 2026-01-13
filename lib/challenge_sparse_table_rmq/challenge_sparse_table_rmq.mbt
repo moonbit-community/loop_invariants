@@ -94,12 +94,3 @@ pub fn range_min(st : SparseTable, l : Int, r : Int) -> Int {
   let span = 1 << k
   min(st.table[k][l], st.table[k][r - span])
 }
-
-///|
-test "sparse_table_rmq" {
-  let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
-  let st = build_sparse_table(arr[:])
-  assert_eq(range_min(st, 0, 8), 0)
-  assert_eq(range_min(st, 1, 5), 1)
-  assert_eq(range_min(st, 3, 6), 1)
-}

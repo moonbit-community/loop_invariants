@@ -92,17 +92,3 @@ pub fn max_matching(adj : Array[Array[Int]], right_n : Int) -> Int {
   }
   matched
 }
-
-///|
-test "bipartite_matching_kuhn" {
-  let edges : Array[(Int, Int)] = [(0, 0), (0, 1), (1, 1), (2, 2)]
-  let adj = build_adj(3, 3, edges[:])
-  assert_eq(max_matching(adj, 3), 3)
-}
-
-///|
-test "bipartite_matching_small" {
-  let edges : Array[(Int, Int)] = [(0, 0), (0, 1)]
-  let adj = build_adj(2, 2, edges[:])
-  assert_eq(max_matching(adj, 2), 1)
-}

@@ -83,8 +83,13 @@ pub fn topo_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
 }
 
 ///|
+/// Check whether `order` is a valid topological ordering for the graph.
 #warnings("+missing_invariant+missing_reasoning")
-fn is_topo(order : Array[Int], n : Int, edges : ArrayView[(Int, Int)]) -> Bool {
+pub fn is_topo(
+  order : Array[Int],
+  n : Int,
+  edges : ArrayView[(Int, Int)],
+) -> Bool {
   if order.length() != n {
     return false
   }
@@ -127,18 +132,4 @@ fn is_topo(order : Array[Int], n : Int, edges : ArrayView[(Int, Int)]) -> Bool {
     ),
   }
   true
-}
-
-///|
-test "toposort_kahn" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3), (3, 4)]
-  let order = topo_sort(5, edges[:])
-  guard order is Some(ord) else { fail("expected order") }
-  assert_eq(is_topo(ord, 5, edges[:]), true)
-}
-
-///|
-test "toposort_cycle" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
-  assert_eq(topo_sort(3, edges[:]), None)
 }
