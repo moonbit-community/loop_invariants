@@ -2,6 +2,12 @@
 
 Precompute 2^k ancestors to jump up a tree in O(log n) time.
 
+## Core Idea
+
+- Build a **jump table** where `up[k][v]` is the 2^k-th ancestor of `v`.
+- Decompose a distance into bits and jump by powers of two.
+- Each query climbs in O(log n) using the precomputed table.
+
 ## What you learn
 
 - Building the jump table `up[k][v]`
