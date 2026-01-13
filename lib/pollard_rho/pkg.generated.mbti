@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/pollard_rho"
+
+// Values
+pub fn factorize(Int64) -> Array[Int64]
+
+pub fn factorize_with_counts(Int64) -> Array[(Int64, Int)]
+
+pub fn is_prime(Int64) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
