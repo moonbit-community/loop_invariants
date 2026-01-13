@@ -1,0 +1,21 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/gomory_hu_tree"
+
+// Values
+pub fn gomory_hu_tree(Int, ArrayView[(Int, Int, Int64)]) -> GomoryHuTree
+
+// Errors
+
+// Types and methods
+pub struct GomoryHuTree {
+  n : Int
+  parent : Array[Int]
+  value : Array[Int64]
+  adj : Array[Array[(Int, Int64)]]
+}
+pub fn GomoryHuTree::min_cut(Self, Int, Int) -> Int64
+
+// Type aliases
+
+// Traits
+
