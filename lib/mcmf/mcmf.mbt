@@ -54,7 +54,7 @@ fn MinCostMaxFlow::new(n : Int) -> MinCostMaxFlow {
   for i = 0; i < n; i = i + 1 {
     adj[i] = []
   } where {
-    invariant: i >= 0 && i <= n,
+    invariant: i >= 0 && i <= n && adj.length() == n,
     reasoning: (
       #|INVARIANT (adj init):
       #|Adjacency lists for vertices in [0, i) are initialized and independent.
@@ -102,7 +102,12 @@ fn MinCostMaxFlow::spfa(
     self.prev_e[i] = -1
     self.in_queue[i] = false
   } where {
-    invariant: i >= 0 && i <= self.n,
+    invariant: i >= 0 &&
+    i <= self.n &&
+    self.dist.length() == self.n &&
+    self.prev_v.length() == self.n &&
+    self.prev_e.length() == self.n &&
+    self.in_queue.length() == self.n,
     reasoning: (
       #|INVARIANT (SPFA reset):
       #|For vertices in [0, i), dist/prev/in_queue have been reset.
@@ -133,7 +138,10 @@ fn MinCostMaxFlow::spfa(
         }
       }
     } where {
-      invariant: i >= 0 && i <= self.adj[u].length() && self.dist[u] < MCMF_INF,
+      invariant: i >= 0 &&
+      i <= self.adj[u].length() &&
+      self.dist[u] < MCMF_INF &&
+      self.prev_v.length() == self.n,
       reasoning: (
         #|INVARIANT (SPFA relax):
         #|All edges in adj[u][0..i) have been considered for relaxation.
