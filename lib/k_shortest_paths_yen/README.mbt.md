@@ -12,6 +12,12 @@ shortest path.
 - **Time**: O(k * n * (m log n)) in typical sparse cases
 - **Space**: O(n + m)
 
+## Core Idea
+
+- Start from the shortest path, then **deviate** at each prefix (spur node).
+- Use Dijkstra to find the best suffix while **blocking** reused prefixes.
+- Track candidate paths in a min-heap and output the next best.
+
 ## Key Idea
 
 Given the previous shortest path `P`:
