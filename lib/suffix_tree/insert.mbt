@@ -82,7 +82,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
   let n = text.length()
 
   // Main insertion loop: walk down tree, matching suffix characters
-  for current = 0, pos = start {
+  outer~: for current = 0, pos = start {
     // Base case: entire suffix has been matched (shouldn't happen with sentinel)
     guard pos < n else { break }
 
@@ -99,55 +99,51 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
     let edge = nodes[current].edges[edge_idx]
 
     // Match characters until mismatch or edge end
-    let (k, j) = for k = edge.start, j = pos {
-      guard k < edge.end && j < n && text[k] == text[j] else { break (k, j) }
+    for k = edge.start, j = pos {
+      // Case B: Edge fully matched - continue to child node
+      if k == edge.end {
+        continue outer~ edge.child, j
+      }
+      // Continue matching if characters match
+      guard j < n && text[k] == text[j] else {
+        // Case C: Mismatch mid-edge - must split
+        //
+        // BEFORE:
+        //   current ──[edge.start..edge.end)──► edge.child
+        //
+        // AFTER:
+        //   current ──[edge.start..k)──► split ──[k..edge.end)──► edge.child
+        //                                   └──[j..n)──────────► leaf
+        //
+        let split = nodes.length()
+        nodes.push(Node::new())
+        let leaf = nodes.length()
+        nodes.push(Node::new())
+
+        // Wire up the split: original subtree becomes child of split
+        nodes[split].edges.push({ start: k, end: edge.end, child: edge.child })
+        // New leaf for remaining suffix
+        nodes[split].edges.push({ start: j, end: n, child: leaf })
+        // Update original edge to point to split (shortened label)
+        nodes[current].edges[edge_idx] = {
+          start: edge.start,
+          end: k,
+          child: split,
+        }
+        break outer~
+      }
       continue k + 1, j + 1
     } where {
       invariant: k >= edge.start && k <= edge.end && j >= pos && j <= n,
       reasoning: (
-        #|INVARIANT (character matching):
+        #|INVARIANT (edge label matching):
         #|  text[edge.start..k) == text[pos..j)
         #|
-        #|We have matched (k - edge.start) characters of the edge label
-        #|against (j - pos) characters of the remaining suffix.
-        #|
-        #|MAINTENANCE:
-        #|  When text[k] == text[j], both match and we advance both pointers.
-        #|
         #|TERMINATION:
-        #|  Loop exits when:
-        #|    - k reaches edge.end (edge fully matched)
-        #|    - j reaches n (suffix fully matched)
-        #|    - text[k] != text[j] (mismatch found)
+        #|  - k reaches edge.end (edge exhausted, continue outer~ to child)
+        #|  - j reaches n or mismatch (split edge, break outer~)
       ),
     }
-
-    // Case B: Edge fully matched - continue to child node
-    if k == edge.end {
-      continue edge.child, j
-    }
-
-    // Case C: Mismatch mid-edge - must split
-    //
-    // BEFORE:
-    //   current ──[edge.start..edge.end)──► edge.child
-    //
-    // AFTER:
-    //   current ──[edge.start..k)──► split ──[k..edge.end)──► edge.child
-    //                                   └──[j..n)──────────► leaf
-    //
-    let split = nodes.length()
-    nodes.push(Node::new())
-    let leaf = nodes.length()
-    nodes.push(Node::new())
-
-    // Wire up the split: original subtree becomes child of split
-    nodes[split].edges.push({ start: k, end: edge.end, child: edge.child })
-    // New leaf for remaining suffix
-    nodes[split].edges.push({ start: j, end: n, child: leaf })
-    // Update original edge to point to split (shortened label)
-    nodes[current].edges[edge_idx] = { start: edge.start, end: k, child: split }
-    break
   } where {
     invariant: pos >= start && pos <= n,
     reasoning: (
@@ -155,12 +151,8 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
       #|  text[start..pos) is represented by the path from root to current.
       #|  text[pos..n) remains to be inserted.
       #|
-      #|The tree already contains the prefix text[start..pos) on the path
-      #|we have traversed. We now need to handle text[pos..n).
-      #|
       #|MAINTENANCE:
-      #|  When we fully match an edge, pos advances by the edge length,
-      #|  and we move to the child node.
+      #|  When edge is fully matched, continue outer~ to child node.
       #|
       #|TERMINATION:
       #|  - New leaf created (no matching edge)
