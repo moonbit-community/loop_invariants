@@ -63,12 +63,11 @@ pub fn tsp_min_cycle(dist : Array[Array[Int]]) -> Int {
     ),
   }
   let full = total - 1
-  let mut best = INF
-  for u = 1; u < n; u = u + 1 {
+  for u = 1, best = INF; u < n; {
     let cand = dp[full][u] + dist[u][0]
-    if cand < best {
-      best = cand
-    }
+    continue u + 1, if cand < best { cand } else { best }
+  } else {
+    best
   } where {
     invariant: u >= 1 && u <= n,
     reasoning: (
@@ -80,5 +79,4 @@ pub fn tsp_min_cycle(dist : Array[Array[Int]]) -> Int {
       #|At u = n, best is the optimal tour cost.
     ),
   }
-  best
 }

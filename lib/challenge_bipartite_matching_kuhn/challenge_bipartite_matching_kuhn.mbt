@@ -73,12 +73,16 @@ fn try_kuhn(
 pub fn max_matching(adj : Array[Array[Int]], right_n : Int) -> Int {
   let left_n = adj.length()
   let match_r = Array::make(right_n, -1)
-  let mut matched = 0
-  for u = 0; u < left_n; u = u + 1 {
+  for u = 0, matched = 0; u < left_n; {
     let seen = Array::make(right_n, false)
-    if try_kuhn(u, adj, seen, match_r) {
-      matched = matched + 1
+    let new_matched = if try_kuhn(u, adj, seen, match_r) {
+      matched + 1
+    } else {
+      matched
     }
+    continue u + 1, new_matched
+  } else {
+    matched
   } where {
     invariant: u >= 0 && u <= left_n,
     reasoning: (
@@ -90,5 +94,4 @@ pub fn max_matching(adj : Array[Array[Int]], right_n : Int) -> Int {
       #|At u = left_n, matched is the maximum matching size.
     ),
   }
-  matched
 }
