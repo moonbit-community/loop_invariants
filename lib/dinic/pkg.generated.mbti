@@ -2,11 +2,34 @@
 package "bobzhang/loop_invariants/lib/dinic"
 
 // Values
+pub const DINIC_INF : Int64 = 4611686018427387903
+
 pub fn max_flow(Int, ArrayView[(Int, Int, Int64)], Int, Int) -> Int64
 
 // Errors
 
 // Types and methods
+pub(all) struct Dinic {
+  n : Int
+  adj : Array[Array[DinicEdge]]
+  level : Array[Int]
+  iter : Array[Int]
+}
+pub fn Dinic::add_edge(Self, Int, Int, Int64) -> Unit
+pub fn Dinic::bfs(Self, Int, Int) -> Bool
+pub fn Dinic::dfs(Self, Int, Int, Int64) -> Int64
+pub fn Dinic::get_flow(Self, Int, Int) -> Int64
+pub fn Dinic::max_flow(Self, Int, Int) -> Int64
+pub fn Dinic::min_cut_source_side(Self, Int) -> Array[Int]
+pub fn Dinic::new(Int) -> Self
+pub fn Dinic::reset(Self) -> Unit
+
+pub(all) struct DinicEdge {
+  to : Int
+  cap : Int64
+  mut flow : Int64
+  rev : Int
+}
 
 // Type aliases
 
