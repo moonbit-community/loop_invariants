@@ -9,6 +9,12 @@ Articulation points are exactly the vertices that lie between blocks.
 - **Build**: O(V + E)
 - **Space**: O(V + E)
 
+## Core Idea
+
+- Use DFS low-link values to detect **articulation boundaries**.
+- Maintain an **edge stack**; popping yields a maximal biconnected block.
+- A vertex with `low[child] >= disc[parent]` separates blocks.
+
 ## Key Idea (Tarjan DFS)
 
 During DFS, we compute:
