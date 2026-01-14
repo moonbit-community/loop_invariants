@@ -40,3 +40,4 @@ while x is not root:
 
 - Amortized time: O(log n)
 - This package is a reference implementation with invariants (not a public API)
+- Keys are generic: operations require `T : Compare`.

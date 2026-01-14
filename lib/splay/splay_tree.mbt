@@ -27,8 +27,8 @@
 
 ///|
 /// Node in splay tree
-priv struct SplayNode {
-  mut key : Int
+priv struct SplayNode[T] {
+  mut key : T
   mut left : Int // Index of left child (-1 if none)
   mut right : Int // Index of right child (-1 if none)
   mut parent : Int // Index of parent (-1 if root)
@@ -36,21 +36,21 @@ priv struct SplayNode {
 }
 
 ///|
-fn SplayNode::new(key : Int) -> SplayNode {
+fn[T] SplayNode::new(key : T) -> SplayNode[T] {
   { key, left: -1, right: -1, parent: -1, size: 1 }
 }
 
 ///|
 /// Splay Tree data structure using array-based nodes
-priv struct SplayTree {
-  nodes : Array[SplayNode]
+priv struct SplayTree[T] {
+  nodes : Array[SplayNode[T]]
   mut root : Int // Index of root (-1 if empty)
   // Free list for deleted nodes (simple recycling)
   free_list : Array[Int]
 }
 
 ///|
-fn SplayTree::new() -> SplayTree {
+fn[T] SplayTree::new() -> SplayTree[T] {
   { nodes: [], root: -1, free_list: [] }
 }
 
@@ -60,7 +60,7 @@ fn SplayTree::new() -> SplayTree {
 
 ///|
 /// Update size of node based on children
-fn SplayTree::update_size(self : SplayTree, x : Int) -> Unit {
+fn[T] SplayTree::update_size(self : SplayTree[T], x : Int) -> Unit {
   if x < 0 {
     return
   }
@@ -78,14 +78,14 @@ fn SplayTree::update_size(self : SplayTree, x : Int) -> Unit {
 
 ///|
 /// Check if x is left child of its parent
-fn SplayTree::is_left_child(self : SplayTree, x : Int) -> Bool {
+fn[T] SplayTree::is_left_child(self : SplayTree[T], x : Int) -> Bool {
   let p = self.nodes[x].parent
   p >= 0 && self.nodes[p].left == x
 }
 
 ///|
 /// Allocate a new node (reuse from free list if available)
-fn SplayTree::alloc_node(self : SplayTree, key : Int) -> Int {
+fn[T] SplayTree::alloc_node(self : SplayTree[T], key : T) -> Int {
   if self.free_list.length() > 0 {
     let idx = self.free_list.pop().unwrap()
     self.nodes[idx].key = key
@@ -108,7 +108,7 @@ fn SplayTree::alloc_node(self : SplayTree, key : Int) -> Int {
 ///|
 /// Rotate x up (x takes parent's position)
 /// Preserves BST property and updates sizes
-fn SplayTree::rotate(self : SplayTree, x : Int) -> Unit {
+fn[T] SplayTree::rotate(self : SplayTree[T], x : Int) -> Unit {
   let p = self.nodes[x].parent
   if p < 0 {
     return // x is already root
@@ -177,7 +177,7 @@ fn SplayTree::rotate(self : SplayTree, x : Int) -> Unit {
 /// 1. Zig: x's parent is root → one rotation
 /// 2. Zig-zig: x and parent are both left (or both right) children → rotate parent, then x
 /// 3. Zig-zag: x and parent are different types → rotate x twice
-fn SplayTree::splay(self : SplayTree, x : Int) -> Unit {
+fn[T] SplayTree::splay(self : SplayTree[T], x : Int) -> Unit {
   if x < 0 {
     return
   }
@@ -237,7 +237,7 @@ fn SplayTree::splay(self : SplayTree, x : Int) -> Unit {
 ///|
 /// Search for key, splay the result (or last visited node) to root
 /// Returns true if key is found
-fn SplayTree::search(self : SplayTree, key : Int) -> Bool {
+fn[T : Compare] SplayTree::search(self : SplayTree[T], key : T) -> Bool {
   if self.root < 0 {
     return false
   }
@@ -276,7 +276,7 @@ fn SplayTree::search(self : SplayTree, key : Int) -> Bool {
 
 ///|
 /// Find minimum element in subtree rooted at x
-fn SplayTree::find_min(self : SplayTree, x : Int) -> Int {
+fn[T] SplayTree::find_min(self : SplayTree[T], x : Int) -> Int {
   if x < 0 {
     return -1
   }
@@ -301,7 +301,7 @@ fn SplayTree::find_min(self : SplayTree, x : Int) -> Int {
 
 ///|
 /// Find maximum element in subtree rooted at x
-fn SplayTree::find_max(self : SplayTree, x : Int) -> Int {
+fn[T] SplayTree::find_max(self : SplayTree[T], x : Int) -> Int {
   if x < 0 {
     return -1
   }
@@ -331,7 +331,7 @@ fn SplayTree::find_max(self : SplayTree, x : Int) -> Int {
 ///|
 /// Insert key into splay tree
 /// Returns true if key was inserted (false if already exists)
-fn SplayTree::insert(self : SplayTree, key : Int) -> Bool {
+fn[T : Compare] SplayTree::insert(self : SplayTree[T], key : T) -> Bool {
   if self.root < 0 {
     self.root = self.alloc_node(key)
     return true
@@ -389,7 +389,7 @@ fn SplayTree::insert(self : SplayTree, key : Int) -> Bool {
 ///|
 /// Delete key from splay tree
 /// Returns true if key was found and deleted
-fn SplayTree::delete(self : SplayTree, key : Int) -> Bool {
+fn[T : Compare] SplayTree::delete(self : SplayTree[T], key : T) -> Bool {
   if not(self.search(key)) {
     return false
   }
@@ -435,7 +435,7 @@ fn SplayTree::delete(self : SplayTree, key : Int) -> Bool {
 ///|
 /// Split tree into two: one with keys <= key, one with keys > key
 /// Returns (left_root, right_root)
-fn SplayTree::split(self : SplayTree, key : Int) -> (Int, Int) {
+fn[T : Compare] SplayTree::split(self : SplayTree[T], key : T) -> (Int, Int) {
   if self.root < 0 {
     return (-1, -1)
   }
@@ -468,7 +468,7 @@ fn SplayTree::split(self : SplayTree, key : Int) -> (Int, Int) {
 ///|
 /// Join two trees where all keys in t1 < all keys in t2
 /// Result becomes the tree's root
-fn SplayTree::join(self : SplayTree, t1 : Int, t2 : Int) -> Unit {
+fn[T] SplayTree::join(self : SplayTree[T], t1 : Int, t2 : Int) -> Unit {
   if t1 < 0 {
     self.root = t2
     return
@@ -495,7 +495,7 @@ fn SplayTree::join(self : SplayTree, t1 : Int, t2 : Int) -> Unit {
 
 ///|
 /// Find k-th smallest element (1-indexed)
-fn SplayTree::kth_element(self : SplayTree, k : Int) -> Int? {
+fn[T] SplayTree::kth_element(self : SplayTree[T], k : Int) -> T? {
   if self.root < 0 || k <= 0 || k > self.nodes[self.root].size {
     return None
   }
@@ -538,7 +538,7 @@ fn SplayTree::kth_element(self : SplayTree, k : Int) -> Int? {
 
 ///|
 /// Count elements less than key
-fn SplayTree::count_less(self : SplayTree, key : Int) -> Int {
+fn[T : Compare] SplayTree::count_less(self : SplayTree[T], key : T) -> Int {
   if self.root < 0 {
     return 0
   }
@@ -585,7 +585,7 @@ fn SplayTree::count_less(self : SplayTree, key : Int) -> Int {
 // ============================================================================
 
 ///|
-fn SplayTree::size(self : SplayTree) -> Int {
+fn[T] SplayTree::size(self : SplayTree[T]) -> Int {
   if self.root >= 0 {
     self.nodes[self.root].size
   } else {
@@ -594,12 +594,12 @@ fn SplayTree::size(self : SplayTree) -> Int {
 }
 
 ///|
-fn SplayTree::is_empty(self : SplayTree) -> Bool {
+fn[T] SplayTree::is_empty(self : SplayTree[T]) -> Bool {
   self.root < 0
 }
 
 ///|
-fn SplayTree::min(self : SplayTree) -> Int? {
+fn[T] SplayTree::min(self : SplayTree[T]) -> T? {
   if self.root < 0 {
     return None
   }
@@ -609,7 +609,7 @@ fn SplayTree::min(self : SplayTree) -> Int? {
 }
 
 ///|
-fn SplayTree::max(self : SplayTree) -> Int? {
+fn[T] SplayTree::max(self : SplayTree[T]) -> T? {
   if self.root < 0 {
     return None
   }
@@ -620,9 +620,9 @@ fn SplayTree::max(self : SplayTree) -> Int? {
 
 ///|
 /// Get in-order traversal (for testing)
-fn SplayTree::inorder(self : SplayTree) -> Array[Int] {
-  let result : Array[Int] = []
-  fn traverse(tree : SplayTree, node : Int, result : Array[Int]) -> Unit {
+fn[T] SplayTree::inorder(self : SplayTree[T]) -> Array[T] {
+  let result : Array[T] = []
+  fn traverse(tree : SplayTree[T], node : Int, result : Array[T]) -> Unit {
     if node < 0 {
       return
     }
@@ -641,7 +641,7 @@ fn SplayTree::inorder(self : SplayTree) -> Array[Int] {
 
 ///|
 test "splay tree basic operations" {
-  let st = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree::new()
 
   // Initially empty
   inspect(st.is_empty(), content="true")
@@ -670,7 +670,7 @@ test "splay tree basic operations" {
 
 ///|
 test "splay tree delete" {
-  let st = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree::new()
   for i in 1..=5 {
     let _ = st.insert(i)
 
@@ -694,7 +694,7 @@ test "splay tree delete" {
 
 ///|
 test "splay tree min max" {
-  let st = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree::new()
   inspect(st.min(), content="None")
   inspect(st.max(), content="None")
   let _ = st.insert(50)
@@ -708,7 +708,7 @@ test "splay tree min max" {
 
 ///|
 test "splay tree order statistics" {
-  let st = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree::new()
 
   // Insert 1, 3, 5, 7, 9
   for i in 0..<5 {
@@ -730,7 +730,7 @@ test "splay tree order statistics" {
 
 ///|
 test "splay tree inorder" {
-  let st = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree::new()
   let _ = st.insert(5)
   let _ = st.insert(3)
   let _ = st.insert(7)
@@ -742,7 +742,7 @@ test "splay tree inorder" {
 
 ///|
 test "splay tree stress" {
-  let st = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree::new()
 
   // Insert 100 elements
   for i in 0..<100 {
@@ -767,7 +767,7 @@ test "splay tree stress" {
 
 ///|
 test "splay tree split join" {
-  let st = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree::new()
   for i in 1..=10 {
     let _ = st.insert(i)
 
