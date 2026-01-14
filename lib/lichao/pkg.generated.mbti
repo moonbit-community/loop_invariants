@@ -2,10 +2,46 @@
 package "bobzhang/loop_invariants/lib/lichao"
 
 // Values
+pub fn undefined_line() -> Line
+
+pub fn undefined_line_min() -> Line
 
 // Errors
 
 // Types and methods
+pub(all) struct LCNode {
+  mut line : Line
+  mut left : Int
+  mut right : Int
+}
+
+pub(all) struct LiChaoTree {
+  nodes : Array[LCNode]
+  lo : Int64
+  hi : Int64
+}
+pub fn LiChaoTree::insert(Self, Int64, Int64) -> Unit
+pub fn LiChaoTree::new(Int64, Int64) -> Self
+pub fn LiChaoTree::node_count(Self) -> Int
+pub fn LiChaoTree::query(Self, Int64) -> Int64
+
+pub(all) struct LiChaoTreeMin {
+  nodes : Array[LCNode]
+  lo : Int64
+  hi : Int64
+}
+pub fn LiChaoTreeMin::insert(Self, Int64, Int64) -> Unit
+pub fn LiChaoTreeMin::new(Int64, Int64) -> Self
+pub fn LiChaoTreeMin::node_count(Self) -> Int
+pub fn LiChaoTreeMin::query(Self, Int64) -> Int64
+
+pub(all) struct Line {
+  m : Int64
+  b : Int64
+}
+pub fn Line::eval(Self, Int64) -> Int64
+pub fn Line::is_undefined(Self) -> Bool
+pub fn Line::is_undefined_min(Self) -> Bool
 
 // Type aliases
 
