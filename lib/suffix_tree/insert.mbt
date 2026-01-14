@@ -79,12 +79,10 @@ fn find_edge(
 ///
 /// INVARIANT: After insertion, text[start..n) is represented by a root-to-leaf path
 fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
-  let mut current = 0 // Current node index (start at root)
-  let mut pos = start // Current position in suffix being inserted
   let n = text.length()
 
   // Main insertion loop: walk down tree, matching suffix characters
-  for {
+  for current = 0, pos = start {
     // Base case: entire suffix has been matched (shouldn't happen with sentinel)
     guard pos < n else { break }
 
@@ -126,9 +124,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
 
     // Case B: Edge fully matched - continue to child node
     if k == edge.end {
-      current = edge.child
-      pos = j
-      continue
+      continue edge.child, j
     }
 
     // Case C: Mismatch mid-edge - must split
@@ -201,24 +197,10 @@ fn compute_leaf_counts(nodes : Array[Node], node_idx : Int) -> Int {
     return 1
   }
 
-  // Recursive case: sum children's leaf counts
-  let mut total = 0
-  for i = 0; i < nodes[node_idx].edges.length(); i = i + 1 {
-    let child = nodes[node_idx].edges[i].child
-    total = total + compute_leaf_counts(nodes, child)
-  } where {
-    invariant: i >= 0 && i <= nodes[node_idx].edges.length() && total >= 0,
-    reasoning: (
-      #|INVARIANT (leaf count accumulation):
-      #|  total == sum of leaf_count for children edges[0..i)
-      #|
-      #|MAINTENANCE:
-      #|  Add child's leaf count to total.
-      #|
-      #|TERMINATION:
-      #|  At i = edges.length(), total is the complete leaf count.
-    ),
-  }
+  // Recursive case: sum children's leaf counts using fold
+  let total = nodes[node_idx].edges.fold(init=0, fn(acc, edge) {
+    acc + compute_leaf_counts(nodes, edge.child)
+  })
   nodes[node_idx].leaf_count = total
   total
 }
