@@ -10,6 +10,12 @@ text processing and bioinformatics.
 - **LCS (Longest Common Subsequence)**: O(nm)
 - **Pattern Matching**: O(n + m) with KMP/Z-algorithm
 
+## Core Idea
+
+- Precompute **prefix/suffix relationships** to avoid rescanning text.
+- Use **linear-time scans** (KMP/Z/Manacher) by reusing previous matches.
+- Convert string problems into **DP or automata** when structure repeats.
+
 ## The Key Insight: Prefix Functions
 
 ```
@@ -207,4 +213,3 @@ Rabin-Karp:
 - Manacher adds special characters between each position for even-length handling
 - Consider case sensitivity and Unicode for real applications
 - For very long strings, consider suffix arrays or FM-index
-
