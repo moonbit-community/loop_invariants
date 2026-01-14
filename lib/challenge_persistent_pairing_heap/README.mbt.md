@@ -2,6 +2,12 @@
 
 Meldable heap that merges children in pairs after delete-min.
 
+## Core Idea
+
+- Heap is a **multiway tree**; merge links two roots by smaller key.
+- Delete-min uses **pairwise merging** of children, then merges results.
+- Persistence keeps old roots by sharing untouched subtrees.
+
 ## Example
 
 ```mbt check
