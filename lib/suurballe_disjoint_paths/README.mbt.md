@@ -9,6 +9,12 @@ Dijkstra passes with a clever edge reweighting and path reversal step.
 - **Time**: O(E log V)
 - **Space**: O(V + E)
 
+## Core Idea
+
+- Run Dijkstra once, then **reweight edges** with the shortest-path potentials.
+- Reverse edges on the first shortest path to allow an alternate disjoint path.
+- A second Dijkstra yields two **edge-disjoint shortest paths** combined.
+
 ## Example
 
 ```mbt check
