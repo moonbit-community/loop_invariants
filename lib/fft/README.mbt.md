@@ -9,6 +9,12 @@ and point-value representations.
 - **Time**: O(n log n)
 - **Space**: O(n)
 
+## Core Idea
+
+- Convert coefficients to **point-value form** using roots of unity.
+- Multiply values **pointwise**, then inverse transform.
+- Bit-reversal + butterfly steps implement the transform in O(n log n).
+
 ## The Problem
 
 ```
@@ -245,4 +251,3 @@ Level log n: 1 butterfly each × n groups
 - For inverse, use ω^(-1) = ω^(n-1) and divide by n
 - NTT avoids floating-point errors
 - Watch for integer overflow in NTT (use 64-bit)
-
