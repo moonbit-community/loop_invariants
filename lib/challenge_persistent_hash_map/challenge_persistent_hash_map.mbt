@@ -4,19 +4,19 @@
 // ============================================================================
 
 ///|
-enum Bucket {
+enum Bucket[K, V] {
   Nil
-  Cons(key~ : Int, value~ : Int, tail~ : Bucket)
+  Cons(key~ : K, value~ : V, tail~ : Bucket[K, V])
 } derive(Show)
 
 ///|
-pub struct HashMap {
-  buckets : Array[Bucket]
+pub struct HashMap[K, V] {
+  buckets : Array[Bucket[K, V]]
   size : Int
 } derive(Show)
 
 ///|
-fn bucket_size(b : Bucket) -> Int {
+fn[K, V] bucket_size(b : Bucket[K, V]) -> Int {
   match b {
     Bucket::Nil => 0
     Bucket::Cons(key=_, value=_, tail~) => 1 + bucket_size(tail)
@@ -24,7 +24,7 @@ fn bucket_size(b : Bucket) -> Int {
 }
 
 ///|
-fn bucket_no_key(b : Bucket, key : Int) -> Bool {
+fn[K : Eq, V] bucket_no_key(b : Bucket[K, V], key : K) -> Bool {
   match b {
     Bucket::Nil => true
     Bucket::Cons(key=k, value=_, tail=t) => key != k && bucket_no_key(t, key)
@@ -32,7 +32,10 @@ fn bucket_no_key(b : Bucket, key : Int) -> Bool {
 }
 
 ///|
-fn reverse_append(rev : Bucket, tail : Bucket) -> Bucket {
+fn[K, V] reverse_append(
+  rev : Bucket[K, V],
+  tail : Bucket[K, V],
+) -> Bucket[K, V] {
   match rev {
     Bucket::Nil => tail
     Bucket::Cons(key=k, value=v, tail=t) =>
@@ -42,14 +45,14 @@ fn reverse_append(rev : Bucket, tail : Bucket) -> Bucket {
 
 ///|
 /// Create an empty hash map with the given capacity (min 1).
-pub fn make(capacity : Int) -> HashMap {
+pub fn[K, V] make(capacity : Int) -> HashMap[K, V] {
   let cap = if capacity <= 0 { 1 } else { capacity }
   { buckets: Array::make(cap, Bucket::Nil), size: 0 }
 }
 
 ///|
-fn index_for(key : Int, cap : Int) -> Int {
-  let m = key % cap
+fn[K : Hash] index_for(key : K, cap : Int) -> Int {
+  let m = key.hash() % cap
   if m < 0 {
     m + cap
   } else {
@@ -59,7 +62,7 @@ fn index_for(key : Int, cap : Int) -> Int {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn bucket_get(bucket : Bucket, key : Int) -> Int? {
+fn[K : Eq, V] bucket_get(bucket : Bucket[K, V], key : K) -> V? {
   for cur = bucket, scanned = 0 {
     match cur {
       Bucket::Nil => break None
@@ -85,7 +88,11 @@ fn bucket_get(bucket : Bucket, key : Int) -> Int? {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn bucket_insert(bucket : Bucket, key : Int, value : Int) -> (Bucket, Bool) {
+fn[K : Eq, V] bucket_insert(
+  bucket : Bucket[K, V],
+  key : K,
+  value : V,
+) -> (Bucket[K, V], Bool) {
   for cur = bucket, rev = Bucket::Nil {
     match cur {
       Bucket::Nil => {
@@ -116,26 +123,30 @@ fn bucket_insert(bucket : Bucket, key : Int, value : Int) -> (Bucket, Bool) {
 
 ///|
 /// Return the number of entries in the map.
-pub fn size(map : HashMap) -> Int {
+pub fn[K, V] size(map : HashMap[K, V]) -> Int {
   map.size
 }
 
 ///|
 /// Return the number of buckets in the map.
-pub fn capacity(map : HashMap) -> Int {
+pub fn[K, V] capacity(map : HashMap[K, V]) -> Int {
   map.buckets.length()
 }
 
 ///|
 /// Lookup key and return its value if present.
-pub fn get(map : HashMap, key : Int) -> Int? {
+pub fn[K : Hash + Eq, V] get(map : HashMap[K, V], key : K) -> V? {
   let idx = index_for(key, map.buckets.length())
   bucket_get(map.buckets[idx], key)
 }
 
 ///|
 /// Insert or update a key/value pair and return the new map.
-pub fn put(map : HashMap, key : Int, value : Int) -> HashMap {
+pub fn[K : Hash + Eq, V] put(
+  map : HashMap[K, V],
+  key : K,
+  value : V,
+) -> HashMap[K, V] {
   let idx = index_for(key, map.buckets.length())
   let bucket = map.buckets[idx]
   let (new_bucket, added) = bucket_insert(bucket, key, value)

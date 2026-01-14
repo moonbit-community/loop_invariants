@@ -40,3 +40,4 @@ test "persistent hash map sizes" {
 
 - Collisions are handled with buckets.
 - `make(size)` controls bucket count.
+- Keys are generic and require `Hash + Eq`.

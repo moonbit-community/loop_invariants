@@ -2,27 +2,27 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_hash_map"
 
 // Values
-pub fn capacity(HashMap) -> Int
+pub fn[K, V] capacity(HashMap[K, V]) -> Int
 
-pub fn get(HashMap, Int) -> Int?
+pub fn[K : Hash + Eq, V] get(HashMap[K, V], K) -> V?
 
-pub fn make(Int) -> HashMap
+pub fn[K, V] make(Int) -> HashMap[K, V]
 
-pub fn put(HashMap, Int, Int) -> HashMap
+pub fn[K : Hash + Eq, V] put(HashMap[K, V], K, V) -> HashMap[K, V]
 
-pub fn size(HashMap) -> Int
+pub fn[K, V] size(HashMap[K, V]) -> Int
 
 // Errors
 
 // Types and methods
-type Bucket
-pub impl Show for Bucket
+type Bucket[K, V]
+pub impl[K : Show, V : Show] Show for Bucket[K, V]
 
-pub struct HashMap {
-  buckets : Array[Bucket]
+pub struct HashMap[K, V] {
+  buckets : Array[Bucket[K, V]]
   size : Int
 }
-pub impl Show for HashMap
+pub impl[K : Show, V : Show] Show for HashMap[K, V]
 
 // Type aliases
 
