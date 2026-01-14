@@ -2,6 +2,12 @@
 
 Meldable priority queue with null-path length property.
 
+## Core Idea
+
+- Maintain **heap order** plus **leftist property** (npl(left) >= npl(right)).
+- Merge two heaps recursively by **melding right child**, then swap if needed.
+- Persistence keeps old roots by sharing untouched subtrees.
+
 ## Example
 
 ```mbt check
