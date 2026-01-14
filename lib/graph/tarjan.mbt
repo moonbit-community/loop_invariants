@@ -558,19 +558,18 @@ fn ArticulationFinder::new(graph : Array[Array[Int]]) -> ArticulationFinder {
 ///|
 #warnings("+missing_invariant+missing_reasoning")
 fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
-  let mut children = 0
   self.disc[v] = self.time
   self.low[v] = self.time
   self.time = self.time + 1
   let neighbors = self.graph[v]
-  for i = 0 {
+  for i = 0, children = 0 {
     if i >= neighbors.length() {
       break
     } else {
       let w = neighbors[i]
       if self.disc[w] == -1 {
         // Tree edge
-        children = children + 1
+        let new_children = children + 1
         self.parent[w] = v
         self.dfs(w)
         // Update low value
@@ -578,7 +577,7 @@ fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
           self.low[v] = self.low[w]
         }
         // Check articulation point condition
-        if self.parent[v] == -1 && children > 1 {
+        if self.parent[v] == -1 && new_children > 1 {
           // Root with 2+ children
           self.is_ap[v] = true
         }
@@ -586,13 +585,16 @@ fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
           // Non-root with child that can't bypass v
           self.is_ap[v] = true
         }
+        continue i + 1, new_children
       } else if w != self.parent[v] {
         // Back edge (not to parent in undirected graph)
         if self.disc[w] < self.low[v] {
           self.low[v] = self.disc[w]
         }
+        continue i + 1, children
+      } else {
+        continue i + 1, children
       }
-      continue i + 1
     }
   } where {
     invariant: i >= 0 && i <= neighbors.length(),

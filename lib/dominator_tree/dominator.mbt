@@ -294,16 +294,24 @@ pub fn DominatorTree::dominates(self : DominatorTree, u : Int, v : Int) -> Bool 
   }
 
   // Walk up the dominator tree from v
-  let mut cur = v
-  while true {
+  for cur = v; ; {
     if cur == u {
-      return true // Found u on the path
+      break true // Found u on the path
     }
     let p = self.idom[cur]
     if p == cur || p < 0 {
-      break // Reached root or unreachable
+      break false // Reached root or unreachable
     }
-    cur = p
+    continue p
+  } where {
+    invariant: cur >= 0 && cur < self.idom.length(),
+    reasoning: (
+      #|INVARIANT (dominator walk):
+      #|cur is on the path from v toward the root in the dominator tree.
+      #|MAINTENANCE:
+      #|Move to parent in dominator tree.
+      #|TERMINATION:
+      #|Either find u, or reach root (idom[root] == root) or unreachable.
+    ),
   }
-  false
 }

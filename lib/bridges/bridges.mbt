@@ -79,12 +79,10 @@ fn BridgeFinder::dfs(self : BridgeFinder, u : Int, p : Int) -> Unit {
   self.low[u] = self.timer
   self.timer = self.timer + 1
   self.parent[u] = p
-  let mut children = 0
-  for i = 0; i < self.adj[u].length(); i = i + 1 {
+  let children = for i = 0, children = 0; i < self.adj[u].length(); {
     let v = self.adj[u][i]
     if self.disc[v] < 0 {
       // Tree edge
-      children = children + 1
       self.dfs(v, u)
 
       // Update low[u] from child
@@ -101,12 +99,18 @@ fn BridgeFinder::dfs(self : BridgeFinder, u : Int, p : Int) -> Unit {
       if self.low[v] > self.disc[u] {
         self.bridges.push((u, v))
       }
+      continue i + 1, children + 1
     } else if v != p {
       // Back edge (not to parent)
       if self.disc[v] < self.low[u] {
         self.low[u] = self.disc[v]
       }
+      continue i + 1, children
+    } else {
+      continue i + 1, children
     }
+  } else {
+    children
   } where {
     invariant: i >= 0 && i <= self.adj[u].length(),
     reasoning: (

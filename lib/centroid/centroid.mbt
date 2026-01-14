@@ -275,11 +275,21 @@ test "centroid depth bound" {
   ct.build()
 
   // Check all depths are reasonable (≤ log2(7) ≈ 3)
-  let mut max_depth = 0
-  for i in 0..<7 {
-    if ct.get_depth(i) > max_depth {
-      max_depth = ct.get_depth(i)
-    }
+  let max_depth = for i = 0, max_depth = 0; i < 7; {
+    let depth = ct.get_depth(i)
+    continue i + 1, if depth > max_depth { depth } else { max_depth }
+  } else {
+    max_depth
+  } where {
+    invariant: i >= 0 && i <= 7 && max_depth >= 0,
+    reasoning: (
+      #|INVARIANT (max depth check):
+      #|max_depth is the maximum depth among vertices [0, i).
+      #|MAINTENANCE:
+      #|Update max_depth if current depth is larger.
+      #|TERMINATION:
+      #|At i = 7, max_depth is the maximum over all vertices.
+    ),
   }
   inspect(max_depth <= 3, content="true")
 }

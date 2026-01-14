@@ -85,18 +85,19 @@ pub fn xor_convolution(
   a : ArrayView[Int64],
   b : ArrayView[Int64],
 ) -> Array[Int64] {
-  let mut n = 1
   let target = if a.length() > b.length() { a.length() } else { b.length() }
   if target == 0 {
     return []
   }
-  for i = 0; n < target; i = i + 1 {
-    n = n * 2
+  let n = for n = 1; n < target; {
+    continue n * 2
+  } else {
+    n
   } where {
     invariant: n > 0 && n <= 2 * target,
     reasoning: (
       #|INVARIANT (pad size):
-      #|n is the smallest power of two >= target after i doublings.
+      #|n is the smallest power of two >= target after doublings.
       #|MAINTENANCE:
       #|Double n until it reaches or exceeds target.
       #|TERMINATION:
