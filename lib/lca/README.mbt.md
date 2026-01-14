@@ -10,6 +10,12 @@ efficient queries.
 - **Query**: O(log n)
 - **Space**: O(n log n)
 
+## Core Idea
+
+- Precompute **2^k ancestors** for each node (binary lifting).
+- Level nodes to the same depth, then jump up in powers of two.
+- The first diverging ancestor gives the LCA.
+
 ## Visual Example
 
 ```
