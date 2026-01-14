@@ -4,19 +4,19 @@
 // ============================================================================
 
 ///|
-enum Node {
-  Leaf(value~ : Int)
-  Branch(left~ : Node, right~ : Node)
+enum Node[T] {
+  Leaf(value~ : T)
+  Branch(left~ : Node[T], right~ : Node[T])
 } derive(Show)
 
 ///|
-pub struct PArray {
-  root : Node
+pub struct PArray[T] {
+  root : Node[T]
   n : Int
 } derive(Show)
 
 ///|
-fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
+fn[T] build(arr : ArrayView[T], l : Int, r : Int) -> Node[T] {
   if r - l == 1 {
     Node::Leaf(value=arr[l])
   } else {
@@ -28,7 +28,7 @@ fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 }
 
 ///|
-fn get_node(node : Node, l : Int, r : Int, idx : Int) -> Int {
+fn[T] get_node(node : Node[T], l : Int, r : Int, idx : Int) -> T {
   match node {
     Node::Leaf(value~) => value
     Node::Branch(left~, right~) => {
@@ -43,7 +43,13 @@ fn get_node(node : Node, l : Int, r : Int, idx : Int) -> Int {
 }
 
 ///|
-fn set_node(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
+fn[T] set_node(
+  node : Node[T],
+  l : Int,
+  r : Int,
+  idx : Int,
+  value : T,
+) -> Node[T] {
   if r - l == 1 {
     Node::Leaf(value~)
   } else {
@@ -62,20 +68,20 @@ fn set_node(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
 
 ///|
 /// Build a persistent array from a mutable array view.
-pub fn from_array(arr : ArrayView[Int]) -> PArray {
+pub fn[T] from_array(arr : ArrayView[T]) -> PArray[T] {
   let n = arr.length()
   { root: build(arr, 0, n), n }
 }
 
 ///|
 /// Return the length of the persistent array.
-pub fn length(arr : PArray) -> Int {
+pub fn[T] length(arr : PArray[T]) -> Int {
   arr.n
 }
 
 ///|
 /// Get the value at idx, or None if out of range.
-pub fn get_at(arr : PArray, idx : Int) -> Int? {
+pub fn[T] get_at(arr : PArray[T], idx : Int) -> T? {
   if idx < 0 || idx >= arr.n {
     None
   } else {
@@ -85,7 +91,7 @@ pub fn get_at(arr : PArray, idx : Int) -> Int? {
 
 ///|
 /// Set the value at idx and return the new persistent array.
-pub fn set_at(arr : PArray, idx : Int, value : Int) -> PArray {
+pub fn[T] set_at(arr : PArray[T], idx : Int, value : T) -> PArray[T] {
   if idx < 0 || idx >= arr.n {
     arr
   } else {
@@ -96,7 +102,7 @@ pub fn set_at(arr : PArray, idx : Int, value : Int) -> PArray {
 ///|
 /// Materialize the persistent array to a mutable array.
 #warnings("+missing_invariant+missing_reasoning")
-pub fn to_array(arr : PArray) -> Array[Int] {
+pub fn[T] to_array(arr : PArray[T]) -> Array[T] {
   let out = Array::new()
   for i = 0; i < arr.n; i = i + 1 {
     out.push(get_node(arr.root, 0, arr.n, i))

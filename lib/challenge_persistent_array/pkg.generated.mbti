@@ -2,27 +2,27 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_array"
 
 // Values
-pub fn from_array(ArrayView[Int]) -> PArray
+pub fn[T] from_array(ArrayView[T]) -> PArray[T]
 
-pub fn get_at(PArray, Int) -> Int?
+pub fn[T] get_at(PArray[T], Int) -> T?
 
-pub fn length(PArray) -> Int
+pub fn[T] length(PArray[T]) -> Int
 
-pub fn set_at(PArray, Int, Int) -> PArray
+pub fn[T] set_at(PArray[T], Int, T) -> PArray[T]
 
-pub fn to_array(PArray) -> Array[Int]
+pub fn[T] to_array(PArray[T]) -> Array[T]
 
 // Errors
 
 // Types and methods
-type Node
-pub impl Show for Node
+type Node[T]
+pub impl[T : Show] Show for Node[T]
 
-pub struct PArray {
-  root : Node
+pub struct PArray[T] {
+  root : Node[T]
   n : Int
 }
-pub impl Show for PArray
+pub impl[T : Show] Show for PArray[T]
 
 // Type aliases
 

@@ -38,3 +38,4 @@ test "persistent array versions" {
 
 - Access is O(log n).
 - Updates are O(log n) with structural sharing.
+- The array is generic over element type `T`.
