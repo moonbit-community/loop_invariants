@@ -10,6 +10,12 @@ structure that combines features of suffix trees and automata.
 - **Space**: O(n)
 - **Distinct palindromes**: At most n
 
+## Core Idea
+
+- Each node represents a **distinct palindrome** with a suffix link.
+- Extending the current longest palindrome gives at most **one new node**.
+- Suffix links allow amortized O(1) extension per character.
+
 ## The Key Insight
 
 ```
@@ -236,4 +242,3 @@ Propagate to get total occurrences.
 - Track "last" node: longest palindrome ending at previous position
 - For suffix links of new nodes, follow suffix links until match found
 - Time complexity proof: each character is "visited" at most twice via suffix links
-
