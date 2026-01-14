@@ -10,6 +10,8 @@ amortized O(log n) time for all operations.
 - **Key Advantage**: Frequently accessed elements become faster to find
 - **No Balance Info**: Unlike AVL/Red-Black, no height/color storage needed
 
+This splay tree is generic over the key type: `T : Compare`.
+
 ## Core Idea
 
 - After access, **rotate the node to the root** (splaying).

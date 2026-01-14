@@ -23,8 +23,8 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-priv struct SplayNode {
-  mut key : Int64
+priv struct SplayNode[T] {
+  mut key : T
   mut left : Int
   mut right : Int
   mut parent : Int
@@ -32,24 +32,24 @@ priv struct SplayNode {
 }
 
 ///|
-fn SplayNode::new(key : Int64) -> SplayNode {
+fn[T] SplayNode::new(key : T) -> SplayNode[T] {
   { key, left: -1, right: -1, parent: -1, size: 1 }
 }
 
 ///|
-priv struct SplayTree {
-  nodes : Array[SplayNode]
+priv struct SplayTree[T] {
+  nodes : Array[SplayNode[T]]
   mut root : Int
   mut free_list : Int // Head of free list for deleted nodes
 }
 
 ///|
-fn SplayTree::new() -> SplayTree {
+fn[T] SplayTree::new() -> SplayTree[T] {
   { nodes: [], root: -1, free_list: -1 }
 }
 
 ///|
-fn SplayTree::alloc_node(self : SplayTree, key : Int64) -> Int {
+fn[T] SplayTree::alloc_node(self : SplayTree[T], key : T) -> Int {
   if self.free_list >= 0 {
     let idx = self.free_list
     self.free_list = self.nodes[idx].left
@@ -66,7 +66,7 @@ fn SplayTree::alloc_node(self : SplayTree, key : Int64) -> Int {
 }
 
 ///|
-fn SplayTree::update_size(self : SplayTree, x : Int) -> Unit {
+fn[T] SplayTree::update_size(self : SplayTree[T], x : Int) -> Unit {
   if x < 0 {
     return
   }
@@ -85,7 +85,7 @@ fn SplayTree::update_size(self : SplayTree, x : Int) -> Unit {
 
 ///|
 /// Right rotation: x becomes parent of its parent p
-fn SplayTree::rotate_right(self : SplayTree, x : Int) -> Unit {
+fn[T] SplayTree::rotate_right(self : SplayTree[T], x : Int) -> Unit {
   let p = self.nodes[x].parent
   if p < 0 {
     return
@@ -118,7 +118,7 @@ fn SplayTree::rotate_right(self : SplayTree, x : Int) -> Unit {
 
 ///|
 /// Left rotation
-fn SplayTree::rotate_left(self : SplayTree, x : Int) -> Unit {
+fn[T] SplayTree::rotate_left(self : SplayTree[T], x : Int) -> Unit {
   let p = self.nodes[x].parent
   if p < 0 {
     return
@@ -145,7 +145,7 @@ fn SplayTree::rotate_left(self : SplayTree, x : Int) -> Unit {
 
 ///|
 /// Splay node x to root
-fn SplayTree::splay(self : SplayTree, x : Int) -> Unit {
+fn[T] SplayTree::splay(self : SplayTree[T], x : Int) -> Unit {
   if x < 0 {
     return
   }
@@ -182,7 +182,7 @@ fn SplayTree::splay(self : SplayTree, x : Int) -> Unit {
 
 ///|
 /// Insert key into tree
-fn SplayTree::insert(self : SplayTree, key : Int64) -> Unit {
+fn[T : Compare] SplayTree::insert(self : SplayTree[T], key : T) -> Unit {
   if self.root < 0 {
     self.root = self.alloc_node(key)
     return
@@ -210,7 +210,7 @@ fn SplayTree::insert(self : SplayTree, key : Int64) -> Unit {
 
 ///|
 /// Find node with given key (returns -1 if not found)
-fn SplayTree::find_node(self : SplayTree, key : Int64) -> Int {
+fn[T : Compare] SplayTree::find_node(self : SplayTree[T], key : T) -> Int {
   let mut cur = self.root
   while cur >= 0 {
     if key == self.nodes[cur].key {
@@ -227,13 +227,13 @@ fn SplayTree::find_node(self : SplayTree, key : Int64) -> Int {
 
 ///|
 /// Check if key exists
-fn SplayTree::contains(self : SplayTree, key : Int64) -> Bool {
+fn[T : Compare] SplayTree::contains(self : SplayTree[T], key : T) -> Bool {
   self.find_node(key) >= 0
 }
 
 ///|
 /// Find minimum node in subtree
-fn SplayTree::find_min(self : SplayTree, x : Int) -> Int {
+fn[T] SplayTree::find_min(self : SplayTree[T], x : Int) -> Int {
   if x < 0 {
     return -1
   }
@@ -246,7 +246,7 @@ fn SplayTree::find_min(self : SplayTree, x : Int) -> Int {
 
 ///|
 /// Find maximum node in subtree
-fn SplayTree::find_max(self : SplayTree, x : Int) -> Int {
+fn[T] SplayTree::find_max(self : SplayTree[T], x : Int) -> Int {
   if x < 0 {
     return -1
   }
@@ -259,7 +259,7 @@ fn SplayTree::find_max(self : SplayTree, x : Int) -> Int {
 
 ///|
 /// Delete key from tree
-fn SplayTree::delete(self : SplayTree, key : Int64) -> Bool {
+fn[T : Compare] SplayTree::delete(self : SplayTree[T], key : T) -> Bool {
   let node = self.find_node(key)
   if node < 0 {
     return false
@@ -299,7 +299,7 @@ fn SplayTree::delete(self : SplayTree, key : Int64) -> Bool {
 
 ///|
 /// Get kth smallest element (1-indexed)
-fn SplayTree::kth_element(self : SplayTree, k : Int) -> Int64? {
+fn[T] SplayTree::kth_element(self : SplayTree[T], k : Int) -> T? {
   if self.root < 0 || k <= 0 {
     return None
   }
@@ -326,7 +326,7 @@ fn SplayTree::kth_element(self : SplayTree, k : Int) -> Int64? {
 
 ///|
 /// Count elements less than key
-fn SplayTree::count_less(self : SplayTree, key : Int64) -> Int {
+fn[T : Compare] SplayTree::count_less(self : SplayTree[T], key : T) -> Int {
   if self.root < 0 {
     return 0
   }
@@ -350,7 +350,7 @@ fn SplayTree::count_less(self : SplayTree, key : Int64) -> Int {
 
 ///|
 /// Get tree size
-fn SplayTree::size(self : SplayTree) -> Int {
+fn[T] SplayTree::size(self : SplayTree[T]) -> Int {
   if self.root < 0 {
     0
   } else {
@@ -360,7 +360,7 @@ fn SplayTree::size(self : SplayTree) -> Int {
 
 ///|
 /// Get minimum key
-fn SplayTree::min(self : SplayTree) -> Int64? {
+fn[T] SplayTree::min(self : SplayTree[T]) -> T? {
   let m = self.find_min(self.root)
   if m < 0 {
     None
@@ -372,7 +372,7 @@ fn SplayTree::min(self : SplayTree) -> Int64? {
 
 ///|
 /// Get maximum key
-fn SplayTree::max(self : SplayTree) -> Int64? {
+fn[T] SplayTree::max(self : SplayTree[T]) -> T? {
   let m = self.find_max(self.root)
   if m < 0 {
     None
@@ -414,7 +414,7 @@ test "splay delete" {
 
 ///|
 test "splay size" {
-  let tree = SplayTree::new()
+  let tree : SplayTree[Int64] = SplayTree::new()
   inspect(tree.size(), content="0")
   tree.insert(1L)
   tree.insert(2L)
