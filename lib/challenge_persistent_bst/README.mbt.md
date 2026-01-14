@@ -38,3 +38,4 @@ test "persistent bst from array" {
 
 - Operations are O(height).
 - Since this is a BST without rebalancing, worst-case is O(n).
+- The tree is generic: operations that compare keys require `T : Compare`.

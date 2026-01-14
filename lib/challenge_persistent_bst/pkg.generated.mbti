@@ -2,26 +2,26 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_bst"
 
 // Values
-pub fn contains(Tree, Int) -> Bool
+pub fn[T : Compare] contains(Tree[T], T) -> Bool
 
-pub fn empty() -> Tree
+pub fn[T] empty() -> Tree[T]
 
-pub fn from_array(ArrayView[Int]) -> Tree
+pub fn[T : Compare] from_array(ArrayView[T]) -> Tree[T]
 
-pub fn inorder(Tree) -> Array[Int]
+pub fn[T] inorder(Tree[T]) -> Array[T]
 
-pub fn insert(Tree, Int) -> Tree
+pub fn[T : Compare] insert(Tree[T], T) -> Tree[T]
 
-pub fn size(Tree) -> Int
+pub fn[T] size(Tree[T]) -> Int
 
 // Errors
 
 // Types and methods
-pub enum Tree {
+pub enum Tree[T] {
   Empty
-  Node(value~ : Int, left~ : Tree, right~ : Tree)
+  Node(value~ : T, left~ : Tree[T], right~ : Tree[T])
 }
-pub impl Show for Tree
+pub impl[T : Show] Show for Tree[T]
 
 // Type aliases
 
