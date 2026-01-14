@@ -45,11 +45,13 @@
 /// SPACE: O(m) for pattern array conversion
 ///
 /// EXAMPLE:
-/// ```
-///   tree = SuffixTree::new("banana")
-///   tree.contains("ana")   // true - occurs at positions 1 and 3
-///   tree.contains("ban")   // true - prefix of text
-///   tree.contains("xyz")   // false - not in text
+/// ```mbt check
+/// test {
+///   let tree = @suffix_tree.SuffixTree::new("banana")
+///   assert_true(tree.contains("ana")) // true - occurs at positions 1 and 3
+///   assert_true(tree.contains("ban")) // true - prefix of text
+///   assert_false(tree.contains("xyz")) // false - not in text
+/// }
 /// ```
 pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
   let p = pattern.to_array()
@@ -58,39 +60,66 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
   if p.length() == 0 {
     return true
   }
-  let mut node = 0 // Current node (start at root)
-  let mut i = 0 // Current position in pattern
 
   // Walk down tree matching pattern
-  while i < p.length() {
+  outer~: for node = 0, i = 0 {
+    guard i < p.length() else { break true }
+
     // Find edge starting with p[i]
-    let edge_idx = find_edge(self.nodes, self.text, node, p[i])
-    if edge_idx < 0 {
-      return false // No matching edge - pattern not found
+    let edges = self.nodes[node].edges
+    let edge_idx : Int = for idx, edge in edges {
+      if self.text[edge.start] == p[i] {
+        break idx
+      }
+    } else {
+      break outer~ false
     }
 
     // Match pattern against edge label
-    let edge = self.nodes[node].edges[edge_idx]
-    let mut k = edge.start
-    while k < edge.end && i < p.length() && self.text[k] == p[i] {
-      k = k + 1
-      i = i + 1
-    }
-
-    // Pattern fully matched (possibly mid-edge)
-    if i == p.length() {
-      return true
-    }
-
-    // Edge fully matched - continue to child
-    if k == edge.end {
-      node = edge.child
-    } else {
+    let edge = edges[edge_idx]
+    for k = edge.start, pi = i {
+      // Pattern fully matched (possibly mid-edge)
+      if pi == p.length() {
+        break outer~ true
+      }
+      // Edge fully matched - continue to child
+      if k == edge.end {
+        continue outer~ edge.child, pi
+      }
       // Mismatch mid-edge - pattern not found
-      return false
+      guard self.text[k] == p[pi] else { break outer~ false }
+      continue k + 1, pi + 1
+    } where {
+      invariant: k >= edge.start && k <= edge.end && pi >= i && pi <= p.length(),
+      reasoning: (
+        #|INVARIANT (edge label matching):
+        #|  self.text[edge.start..k) == p[i..pi)
+        #|
+        #|TERMINATION:
+        #|  - pi reaches p.length() (pattern matched)
+        #|  - k reaches edge.end (edge exhausted, continue to child)
+        #|  - character mismatch (pattern not found)
+      ),
     }
+  } where {
+    invariant: node >= 0 &&
+    node < self.nodes.length() &&
+    i >= 0 &&
+    i <= p.length(),
+    reasoning: (
+      #|INVARIANT (tree walk progress):
+      #|  p[0..i) has been matched along the path from root to node.
+      #|  We are at a valid node in the tree.
+      #|
+      #|MAINTENANCE:
+      #|  When edge is fully matched, we move to child and advance i.
+      #|
+      #|TERMINATION:
+      #|  - i reaches p.length() (pattern found)
+      #|  - No matching edge (pattern not found)
+      #|  - Mismatch mid-edge (pattern not found)
+    ),
   }
-  true
 }
 
 ///|
@@ -142,30 +171,62 @@ pub fn SuffixTree::count_occurrences(
   if p.length() == 0 {
     return 0
   }
-  let mut node = 0
-  let mut i = 0
-  while i < p.length() {
-    let edge_idx = find_edge(self.nodes, self.text, node, p[i])
-    if edge_idx < 0 {
-      return 0 // Pattern not found
-    }
-    let edge = self.nodes[node].edges[edge_idx]
-    let mut k = edge.start
-    while k < edge.end && i < p.length() && self.text[k] == p[i] {
-      k = k + 1
-      i = i + 1
+  outer~: for node = 0, i = 0 {
+    guard i < p.length() else { break 0 }
+
+    // Find edge starting with p[i]
+    let edges = self.nodes[node].edges
+    let edge_idx : Int = for idx, edge in edges {
+      if self.text[edge.start] == p[i] {
+        break idx
+      }
+    } else {
+      break outer~ 0
     }
 
-    // Pattern matched - return leaf count of child subtree
-    // (even if we stopped mid-edge, the child's subtree contains all matches)
-    if i == p.length() {
-      return self.nodes[edge.child].leaf_count
+    // Match pattern against edge label
+    let edge = edges[edge_idx]
+    for k = edge.start, pi = i {
+      // Pattern matched - return leaf count of child subtree
+      if pi == p.length() {
+        break outer~ self.nodes[edge.child].leaf_count
+      }
+      // Edge fully matched - continue to child
+      if k == edge.end {
+        continue outer~ edge.child, pi
+      }
+      // Mismatch mid-edge
+      guard self.text[k] == p[pi] else { break outer~ 0 }
+      continue k + 1, pi + 1
+    } where {
+      invariant: k >= edge.start && k <= edge.end && pi >= i && pi <= p.length(),
+      reasoning: (
+        #|INVARIANT (edge label matching):
+        #|  self.text[edge.start..k) == p[i..pi)
+        #|
+        #|TERMINATION:
+        #|  - pi reaches p.length() (pattern matched)
+        #|  - k reaches edge.end (edge exhausted, continue to child)
+        #|  - character mismatch (return 0)
+      ),
     }
-    if k == edge.end {
-      node = edge.child
-    } else {
-      return 0 // Mismatch mid-edge
-    }
+  } where {
+    invariant: node >= 0 &&
+    node < self.nodes.length() &&
+    i >= 0 &&
+    i <= p.length(),
+    reasoning: (
+      #|INVARIANT (tree walk progress):
+      #|  p[0..i) has been matched along the path from root to node.
+      #|  We are at a valid node in the tree.
+      #|
+      #|MAINTENANCE:
+      #|  When edge is fully matched, we move to child and advance i.
+      #|
+      #|TERMINATION:
+      #|  - i reaches p.length() (pattern found, return leaf count)
+      #|  - No matching edge (return 0)
+      #|  - Mismatch mid-edge (return 0)
+    ),
   }
-  0
 }

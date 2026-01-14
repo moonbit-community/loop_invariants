@@ -25,7 +25,7 @@
 ///   - ch: The character to match
 ///
 /// RETURNS:
-///   - Index of matching edge in nodes[node_idx].edges, or -1 if not found
+///   - Some(index) of matching edge in nodes[node_idx].edges, or None if not found
 ///
 /// TIME: O(alphabet_size) worst case, typically O(1) for small alphabets
 fn find_edge(
@@ -33,15 +33,9 @@ fn find_edge(
   text : Array[Char],
   node_idx : Int,
   ch : Char,
-) -> Int {
+) -> Int? {
   let edges = nodes[node_idx].edges
-  for i, e in edges {
-    if text[e.start] == ch {
-      break i
-    }
-  } else {
-    -1
-  }
+  edges.search_by(e => text[e.start] == ch)
 }
 
 ///|
@@ -85,20 +79,16 @@ fn find_edge(
 ///
 /// INVARIANT: After insertion, text[start..n) is represented by a root-to-leaf path
 fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
-  let mut current = 0 // Current node index (start at root)
-  let mut pos = start // Current position in suffix being inserted
   let n = text.length()
 
   // Main insertion loop: walk down tree, matching suffix characters
-  for {
+  for current = 0, pos = start {
     // Base case: entire suffix has been matched (shouldn't happen with sentinel)
     guard pos < n else { break }
 
     // Step 1: Find edge starting with current suffix character
-    let edge_idx = find_edge(nodes, text, current, text[pos])
-
     // Case A: No matching edge - create new leaf
-    if edge_idx < 0 {
+    guard find_edge(nodes, text, current, text[pos]) is Some(edge_idx) else {
       let leaf = nodes.length()
       nodes.push(Node::new())
       nodes[current].edges.push({ start: pos, end: n, child: leaf })
@@ -107,14 +97,11 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
 
     // Step 2: Match suffix against edge label
     let edge = nodes[current].edges[edge_idx]
-    let mut k = edge.start // Position in edge label
-    let mut j = pos // Position in suffix
 
     // Match characters until mismatch or edge end
-    for {
-      guard k < edge.end && j < n && text[k] == text[j] else { break }
-      k = k + 1
-      j = j + 1
+    let (k, j) = for k = edge.start, j = pos {
+      guard k < edge.end && j < n && text[k] == text[j] else { break (k, j) }
+      continue k + 1, j + 1
     } where {
       invariant: k >= edge.start && k <= edge.end && j >= pos && j <= n,
       reasoning: (
@@ -137,9 +124,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
 
     // Case B: Edge fully matched - continue to child node
     if k == edge.end {
-      current = edge.child
-      pos = j
-      continue
+      continue edge.child, j
     }
 
     // Case C: Mismatch mid-edge - must split
@@ -212,24 +197,10 @@ fn compute_leaf_counts(nodes : Array[Node], node_idx : Int) -> Int {
     return 1
   }
 
-  // Recursive case: sum children's leaf counts
-  let mut total = 0
-  for i = 0; i < nodes[node_idx].edges.length(); i = i + 1 {
-    let child = nodes[node_idx].edges[i].child
-    total = total + compute_leaf_counts(nodes, child)
-  } where {
-    invariant: i >= 0 && i <= nodes[node_idx].edges.length() && total >= 0,
-    reasoning: (
-      #|INVARIANT (leaf count accumulation):
-      #|  total == sum of leaf_count for children edges[0..i)
-      #|
-      #|MAINTENANCE:
-      #|  Add child's leaf count to total.
-      #|
-      #|TERMINATION:
-      #|  At i = edges.length(), total is the complete leaf count.
-    ),
-  }
+  // Recursive case: sum children's leaf counts using fold
+  let total = nodes[node_idx].edges.fold(init=0, fn(acc, edge) {
+    acc + compute_leaf_counts(nodes, edge.child)
+  })
   nodes[node_idx].leaf_count = total
   total
 }
