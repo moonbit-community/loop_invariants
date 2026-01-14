@@ -4,9 +4,9 @@
 // ============================================================================
 
 ///|
-pub enum Avl {
+pub enum Avl[T] {
   Empty
-  Node(key~ : Int, height~ : Int, left~ : Avl, right~ : Avl)
+  Node(key~ : T, height~ : Int, left~ : Avl[T], right~ : Avl[T])
 } derive(Show)
 
 ///|
@@ -19,7 +19,7 @@ fn max2(a : Int, b : Int) -> Int {
 }
 
 ///|
-fn height(t : Avl) -> Int {
+fn[T] height(t : Avl[T]) -> Int {
   match t {
     Avl::Empty => 0
     Avl::Node(key=_, height~, left=_, right=_) => height
@@ -28,7 +28,7 @@ fn height(t : Avl) -> Int {
 
 ///|
 /// Return the number of keys in the AVL set.
-pub fn size(t : Avl) -> Int {
+pub fn[T] size(t : Avl[T]) -> Int {
   match t {
     Avl::Empty => 0
     Avl::Node(key=_, height=_, left~, right~) => 1 + size(left) + size(right)
@@ -36,7 +36,7 @@ pub fn size(t : Avl) -> Int {
 }
 
 ///|
-fn within_bounds(value : Int, lo : Int?, hi : Int?) -> Bool {
+fn[T : Compare] within_bounds(value : T, lo : T?, hi : T?) -> Bool {
   let lo_ok = match lo {
     None => true
     Some(l) => value > l
@@ -49,7 +49,7 @@ fn within_bounds(value : Int, lo : Int?, hi : Int?) -> Bool {
 }
 
 ///|
-fn avl_valid(t : Avl, lo : Int?, hi : Int?) -> Bool {
+fn[T : Compare] avl_valid(t : Avl[T], lo : T?, hi : T?) -> Bool {
   match t {
     Avl::Empty => true
     Avl::Node(key=k, height=h, left=l, right=r) => {
@@ -65,13 +65,13 @@ fn avl_valid(t : Avl, lo : Int?, hi : Int?) -> Bool {
 }
 
 ///|
-fn make_node(key : Int, left : Avl, right : Avl) -> Avl {
+fn[T] make_node(key : T, left : Avl[T], right : Avl[T]) -> Avl[T] {
   let h = 1 + max2(height(left), height(right))
   Avl::Node(key~, height=h, left~, right~)
 }
 
 ///|
-fn rotate_left(t : Avl) -> Avl {
+fn[T] rotate_left(t : Avl[T]) -> Avl[T] {
   match t {
     Avl::Node(
       key=k,
@@ -87,7 +87,7 @@ fn rotate_left(t : Avl) -> Avl {
 }
 
 ///|
-fn rotate_right(t : Avl) -> Avl {
+fn[T] rotate_right(t : Avl[T]) -> Avl[T] {
   match t {
     Avl::Node(
       key=k,
@@ -103,7 +103,7 @@ fn rotate_right(t : Avl) -> Avl {
 }
 
 ///|
-fn balance(t : Avl) -> Avl {
+fn[T] balance(t : Avl[T]) -> Avl[T] {
   match t {
     Avl::Empty => t
     Avl::Node(key=k, height=_, left=l, right=r) => {
@@ -137,13 +137,13 @@ fn balance(t : Avl) -> Avl {
 
 ///|
 /// Create an empty AVL set.
-pub fn empty() -> Avl {
+pub fn[T] empty() -> Avl[T] {
   Avl::Empty
 }
 
 ///|
 /// Insert key and return the new AVL set.
-pub fn insert(t : Avl, key : Int) -> Avl {
+pub fn[T : Compare] insert(t : Avl[T], key : T) -> Avl[T] {
   match t {
     Avl::Empty => Avl::Node(key~, height=1, left=Avl::Empty, right=Avl::Empty)
     Avl::Node(key=k, height=_, left=l, right=r) =>
@@ -160,8 +160,8 @@ pub fn insert(t : Avl, key : Int) -> Avl {
 ///|
 /// Check whether key exists in the set.
 #warnings("+missing_invariant+missing_reasoning")
-pub fn contains(t : Avl, key : Int) -> Bool {
-  let none : Int? = None
+pub fn[T : Compare] contains(t : Avl[T], key : T) -> Bool {
+  let none : T? = None
   for cur = t, lo = none, hi = none {
     match cur {
       Avl::Empty => break false
@@ -190,7 +190,7 @@ pub fn contains(t : Avl, key : Int) -> Bool {
 
 ///|
 /// Return an in-order traversal (sorted keys).
-pub fn inorder(t : Avl) -> Array[Int] {
+pub fn[T] inorder(t : Avl[T]) -> Array[T] {
   match t {
     Avl::Empty => []
     Avl::Node(key=k, height=_, left=l, right=r) => inorder(l) + [k] + inorder(r)
@@ -200,7 +200,7 @@ pub fn inorder(t : Avl) -> Array[Int] {
 ///|
 /// Build an AVL set by inserting elements in order.
 #warnings("+missing_invariant+missing_reasoning")
-pub fn from_array(arr : ArrayView[Int]) -> Avl {
+pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Avl[T] {
   let n = arr.length()
   for i = 0, tree = Avl::Empty {
     if i >= n {

@@ -2,26 +2,26 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_avl_set"
 
 // Values
-pub fn contains(Avl, Int) -> Bool
+pub fn[T : Compare] contains(Avl[T], T) -> Bool
 
-pub fn empty() -> Avl
+pub fn[T] empty() -> Avl[T]
 
-pub fn from_array(ArrayView[Int]) -> Avl
+pub fn[T : Compare] from_array(ArrayView[T]) -> Avl[T]
 
-pub fn inorder(Avl) -> Array[Int]
+pub fn[T] inorder(Avl[T]) -> Array[T]
 
-pub fn insert(Avl, Int) -> Avl
+pub fn[T : Compare] insert(Avl[T], T) -> Avl[T]
 
-pub fn size(Avl) -> Int
+pub fn[T] size(Avl[T]) -> Int
 
 // Errors
 
 // Types and methods
-pub enum Avl {
+pub enum Avl[T] {
   Empty
-  Node(key~ : Int, height~ : Int, left~ : Avl, right~ : Avl)
+  Node(key~ : T, height~ : Int, left~ : Avl[T], right~ : Avl[T])
 }
-pub impl Show for Avl
+pub impl[T : Show] Show for Avl[T]
 
 // Type aliases
 
