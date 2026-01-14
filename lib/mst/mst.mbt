@@ -124,29 +124,14 @@ fn MST::kruskal(self : MST) -> (Array[Edge], Int64) {
   let uf = UF::new(self.n)
   let mst_edges : Array[Edge] = []
   let mut total_weight = 0L
-  for i = 0; i < sorted_edges.length(); i = i + 1 {
+  for edge in sorted_edges {
     if mst_edges.length() == self.n - 1 {
       break
     }
-    let edge = sorted_edges[i]
     if uf.union(edge.u, edge.v) {
       mst_edges.push(edge)
       total_weight = total_weight + edge.weight
     }
-  } where {
-    invariant: i >= 0 &&
-    i <= sorted_edges.length() &&
-    mst_edges.length() <= self.n - 1,
-    reasoning: (
-      #|INVARIANT (Kruskal):
-      #|mst_edges is a forest spanning the processed edges with minimum total
-      #|weight among all forests with the same number of edges.
-      #|MAINTENANCE:
-      #|Process edges in nondecreasing order; add an edge only if it connects
-      #|different components, preserving acyclicity and cut optimality.
-      #|TERMINATION:
-      #|When n-1 edges are chosen or all edges are processed, the MST is complete.
-    ),
   }
   (mst_edges, total_weight)
 }

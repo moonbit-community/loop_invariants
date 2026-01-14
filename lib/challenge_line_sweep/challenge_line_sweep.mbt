@@ -13,22 +13,12 @@ priv struct Event {
 #warnings("+missing_invariant+missing_reasoning")
 pub fn max_overlap(intervals : ArrayView[(Int, Int)]) -> Int {
   let events : Array[Event] = []
-  for i = 0; i < intervals.length(); i = i + 1 {
-    let (l, r) = intervals[i]
+  for interval in intervals {
+    let (l, r) = interval
     if l <= r {
       events.push({ pos: l, delta: 1 })
       events.push({ pos: r + 1, delta: -1 })
     }
-  } where {
-    invariant: i >= 0 && i <= intervals.length(),
-    reasoning: (
-      #|INVARIANT (Event construction):
-      #|All intervals in intervals[0..i) have been converted to sweep events.
-      #|MAINTENANCE:
-      #|Add +1 at l and -1 at r+1 for the next interval.
-      #|TERMINATION:
-      #|At i = intervals.length(), all events are built.
-    ),
   }
   events.sort_by_key(fn(e) { e.pos })
   for i = 0, cur = 0, best = 0 {

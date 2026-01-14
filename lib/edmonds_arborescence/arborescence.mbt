@@ -119,32 +119,11 @@ pub fn min_arborescence(
   // Step 1: Select minimum incoming edge for each vertex
   let in_cost = Array::make(n, INF64)
   let parent = Array::make(n, -1)
-  for i = 0; i < edge_list.length(); i = i + 1 {
-    let e = edge_list[i]
+  for e in edge_list {
     // Root has no incoming edge in arborescence
     guard e.to != root && e.weight < in_cost[e.to] else { continue }
     in_cost[e.to] = e.weight
     parent[e.to] = e.from
-  } where {
-    invariant: i >= 0 && i <= edge_list.length(),
-    reasoning: (
-      #|INVARIANT (minimum selection):
-      #|  For each vertex v, in_cost[v] is the minimum weight
-      #|  among edges[0..i) entering v.
-      #|  parent[v] is the source of that minimum edge.
-      #|
-      #|WHY GREEDY WORKS (locally):
-      #|  In any arborescence, vertex v has exactly one incoming edge.
-      #|  If we could replace it with a cheaper edge, we'd improve.
-      #|  So the minimum incoming edge is optimal... UNLESS it creates
-      #|  a cycle (which the algorithm handles via contraction).
-      #|
-      #|MAINTENANCE:
-      #|  Update in_cost[v] and parent[v] if edge[i] is cheaper.
-      #|
-      #|TERMINATION:
-      #|  At i = edges.length(), all minimum edges selected.
-    ),
   }
   parent[root] = -1
 
@@ -180,20 +159,8 @@ pub fn min_arborescence(
   // - Cycle vertices → component 0
   // - Other vertices → components 1, 2, ...
   let cycle_id = Array::make(n, -1)
-  for i = 0; i < cycle.length(); i = i + 1 {
-    cycle_id[cycle[i]] = 0
-  } where {
-    invariant: i >= 0 && i <= cycle.length(),
-    reasoning: (
-      #|INVARIANT (cycle marking):
-      #|  cycle[0..i) vertices are marked with cycle_id = 0.
-      #|
-      #|MAINTENANCE:
-      #|  Mark cycle[i] as belonging to the cycle component.
-      #|
-      #|TERMINATION:
-      #|  At i = cycle.length(), all cycle vertices marked.
-    ),
+  for v in cycle {
+    cycle_id[v] = 0
   }
   let mut new_index = 1
   let comp = Array::make(n, -1)
@@ -222,8 +189,7 @@ pub fn min_arborescence(
   // Step 4: Build contracted graph
   let new_n = new_index
   let contracted_edges : Array[Edge] = []
-  for i = 0; i < edge_list.length(); i = i + 1 {
-    let e = edge_list[i]
+  for e in edge_list {
     let a = comp[e.from]
     let b = comp[e.to]
 
@@ -231,33 +197,14 @@ pub fn min_arborescence(
     guard a != b else { continue }
 
     // Adjust weight for edges entering the cycle
-    let mut w = e.weight
-    if b == 0 {
+    let w = if b == 0 {
       // Edge enters cycle component - subtract the in_cost
       // This normalizes: selecting this edge "replaces" cycle edge at e.to
-      w = w - in_cost[e.to]
+      e.weight - in_cost[e.to]
+    } else {
+      e.weight
     }
     contracted_edges.push({ from: a, to: b, weight: w })
-  } where {
-    invariant: i >= 0 && i <= edge_list.length(),
-    reasoning: (
-      #|INVARIANT (edge contraction):
-      #|  Edges[0..i) that cross component boundaries are added
-      #|  to contracted_edges with adjusted weights.
-      #|
-      #|THE WEIGHT ADJUSTMENT:
-      #|  For edge u→v where v is in cycle (comp[v] = 0):
-      #|    w' = w - in_cost[v]
-      #|
-      #|  This means: "How much MORE does this edge cost compared
-      #|  to the already-selected cycle edge entering v?"
-      #|
-      #|MAINTENANCE:
-      #|  Add inter-component edge with proper weight.
-      #|
-      #|TERMINATION:
-      #|  At i = edges.length(), contracted graph complete.
-    ),
   }
 
   // Step 5: Recurse on contracted graph
