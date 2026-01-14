@@ -121,8 +121,8 @@ test "fenwick range add point query" {
 ///|
 test "fenwick multiple range adds" {
   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum::new(5)
-  st.range_add(0, 2, 10L)  // [10, 10, 10, 0, 0]
-  st.range_add(2, 4, 5L)   // [10, 10, 15, 5, 5]
+  st.range_add(0, 2, 10L) // [10, 10, 10, 0, 0]
+  st.range_add(2, 4, 5L) // [10, 10, 15, 5, 5]
   inspect(st.range_sum(0, 4), content="45")
   inspect(st.range_sum(1, 3), content="30")
 }

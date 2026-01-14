@@ -138,11 +138,7 @@ test "gomory-hu tree example" {
 ///|
 test "gomory-hu tree triangle" {
   // Triangle graph: each edge has capacity 1
-  let edges : Array[(Int, Int, Int64)] = [
-    (0, 1, 1L),
-    (1, 2, 1L),
-    (0, 2, 1L),
-  ]
+  let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, 1L), (0, 2, 1L)]
   let tree = @gomory_hu_tree.gomory_hu_tree(3, edges[:])
   // Min-cut between any pair is 2 (need to cut 2 edges)
   inspect(tree.min_cut(0, 1), content="2")

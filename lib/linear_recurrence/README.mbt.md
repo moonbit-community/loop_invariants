@@ -90,7 +90,7 @@ Using binary representation of n:
 ///|
 test "linear recurrence fibonacci" {
   let m = 1000000007L
-  let coeffs : Array[Int64] = [1L, 1L]  // f(n) = 1*f(n-1) + 1*f(n-2)
+  let coeffs : Array[Int64] = [1L, 1L] // f(n) = 1*f(n-1) + 1*f(n-2)
   let initial : Array[Int64] = [0L, 1L] // f(0)=0, f(1)=1
   inspect(
     @linear_recurrence.linear_recurrence_nth(coeffs, initial, 7L, m),
@@ -103,8 +103,8 @@ test "linear recurrence fibonacci" {
 ///|
 test "linear recurrence geometric" {
   let m = 1000000007L
-  let coeffs : Array[Int64] = [2L]       // f(n) = 2*f(n-1)
-  let initial : Array[Int64] = [1L]      // f(0) = 1
+  let coeffs : Array[Int64] = [2L] // f(n) = 2*f(n-1)
+  let initial : Array[Int64] = [1L] // f(0) = 1
   // f(n) = 2^n, so f(5) = 32
   inspect(
     @linear_recurrence.linear_recurrence_nth(coeffs, initial, 5L, m),
