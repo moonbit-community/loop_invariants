@@ -9,6 +9,12 @@ minimum total edge weight, using exactly V-1 edges.
 - **Prim's Time**: O((V + E) log V)
 - **Space**: O(V + E)
 
+## Core Idea
+
+- Use the **cut property**: the lightest edge crossing any cut is safe.
+- Kruskal grows a forest by **adding light edges** that don't form cycles.
+- Prim grows a tree by **expanding the frontier** with the cheapest edge.
+
 ## The Problem
 
 ```
@@ -234,4 +240,3 @@ Greedy choice is always safe!
 - Handle disconnected graphs (forest of MSTs)
 - For maximum spanning tree: negate weights or reverse comparisons
 - Multiple MSTs possible if equal-weight edges exist
-
