@@ -62,7 +62,7 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
   }
 
   // Walk down tree matching pattern
-  for node = 0, i = 0 {
+  outer~: for node = 0, i = 0 {
     guard i < p.length() else { break true }
 
     // Find edge starting with p[i]
@@ -72,15 +72,22 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
         break idx
       }
     } else {
-      break false
+      break outer~ false
     }
 
     // Match pattern against edge label
     let edge = edges[edge_idx]
-    let (k, new_i) = for k = edge.start, pi = i {
-      guard k < edge.end && pi < p.length() && self.text[k] == p[pi] else {
-        break (k, pi)
+    for k = edge.start, pi = i {
+      // Pattern fully matched (possibly mid-edge)
+      if pi == p.length() {
+        break outer~ true
       }
+      // Edge fully matched - continue to child
+      if k == edge.end {
+        continue outer~ edge.child, pi
+      }
+      // Mismatch mid-edge - pattern not found
+      guard self.text[k] == p[pi] else { break outer~ false }
       continue k + 1, pi + 1
     } where {
       invariant: k >= edge.start && k <= edge.end && pi >= i && pi <= p.length(),
@@ -89,22 +96,10 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
         #|  self.text[edge.start..k) == p[i..pi)
         #|
         #|TERMINATION:
-        #|  k advances toward edge.end, pi advances toward p.length(),
-        #|  or mismatch causes early exit.
+        #|  - pi reaches p.length() (pattern matched)
+        #|  - k reaches edge.end (edge exhausted, continue to child)
+        #|  - character mismatch (pattern not found)
       ),
-    }
-
-    // Pattern fully matched (possibly mid-edge)
-    if new_i == p.length() {
-      break true
-    }
-
-    // Edge fully matched - continue to child
-    if k == edge.end {
-      continue edge.child, new_i
-    } else {
-      // Mismatch mid-edge - pattern not found
-      break false
     }
   } where {
     invariant: node >= 0 &&
@@ -176,7 +171,7 @@ pub fn SuffixTree::count_occurrences(
   if p.length() == 0 {
     return 0
   }
-  for node = 0, i = 0 {
+  outer~: for node = 0, i = 0 {
     guard i < p.length() else { break 0 }
 
     // Find edge starting with p[i]
@@ -186,13 +181,22 @@ pub fn SuffixTree::count_occurrences(
         break idx
       }
     } else {
-      break 0
+      break outer~ 0
     }
+
+    // Match pattern against edge label
     let edge = edges[edge_idx]
-    let (k, new_i) = for k = edge.start, pi = i {
-      guard k < edge.end && pi < p.length() && self.text[k] == p[pi] else {
-        break (k, pi)
+    for k = edge.start, pi = i {
+      // Pattern matched - return leaf count of child subtree
+      if pi == p.length() {
+        break outer~ self.nodes[edge.child].leaf_count
       }
+      // Edge fully matched - continue to child
+      if k == edge.end {
+        continue outer~ edge.child, pi
+      }
+      // Mismatch mid-edge
+      guard self.text[k] == p[pi] else { break outer~ 0 }
       continue k + 1, pi + 1
     } where {
       invariant: k >= edge.start && k <= edge.end && pi >= i && pi <= p.length(),
@@ -201,20 +205,10 @@ pub fn SuffixTree::count_occurrences(
         #|  self.text[edge.start..k) == p[i..pi)
         #|
         #|TERMINATION:
-        #|  k advances toward edge.end, pi advances toward p.length(),
-        #|  or mismatch causes early exit.
+        #|  - pi reaches p.length() (pattern matched)
+        #|  - k reaches edge.end (edge exhausted, continue to child)
+        #|  - character mismatch (return 0)
       ),
-    }
-
-    // Pattern matched - return leaf count of child subtree
-    // (even if we stopped mid-edge, the child's subtree contains all matches)
-    if new_i == p.length() {
-      break self.nodes[edge.child].leaf_count
-    }
-    if k == edge.end {
-      continue edge.child, new_i
-    } else {
-      break 0 // Mismatch mid-edge
     }
   } where {
     invariant: node >= 0 &&
