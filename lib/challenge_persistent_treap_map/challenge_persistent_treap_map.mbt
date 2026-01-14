@@ -4,21 +4,21 @@
 // ============================================================================
 
 ///|
-pub enum TreapMap {
+pub enum TreapMap[K, V] {
   Empty
   Node(
-    key~ : Int,
-    value~ : Int,
+    key~ : K,
+    value~ : V,
     priority~ : Int,
     size~ : Int,
-    left~ : TreapMap,
-    right~ : TreapMap
+    left~ : TreapMap[K, V],
+    right~ : TreapMap[K, V]
   )
 } derive(Show)
 
 ///|
 /// Return the number of entries in the map.
-pub fn size(t : TreapMap) -> Int {
+pub fn[K, V] size(t : TreapMap[K, V]) -> Int {
   match t {
     TreapMap::Empty => 0
     TreapMap::Node(key=_, value=_, priority=_, size~, left=_, right=_) => size
@@ -26,7 +26,7 @@ pub fn size(t : TreapMap) -> Int {
 }
 
 ///|
-fn within_bounds(value : Int, lo : Int?, hi : Int?) -> Bool {
+fn[K : Compare] within_bounds(value : K, lo : K?, hi : K?) -> Bool {
   let lo_ok = match lo {
     None => true
     Some(l) => value > l
@@ -39,7 +39,7 @@ fn within_bounds(value : Int, lo : Int?, hi : Int?) -> Bool {
 }
 
 ///|
-fn treap_valid(t : TreapMap, lo : Int?, hi : Int?) -> Bool {
+fn[K : Compare, V] treap_valid(t : TreapMap[K, V], lo : K?, hi : K?) -> Bool {
   match t {
     TreapMap::Empty => true
     TreapMap::Node(key~, value=_, priority~, size=sz, left~, right~) => {
@@ -66,31 +66,34 @@ fn treap_valid(t : TreapMap, lo : Int?, hi : Int?) -> Bool {
 }
 
 ///|
-fn priority_for(key : Int) -> Int {
-  key * 1103515245 + 12345
+fn[K : Hash] priority_for(key : K) -> Int {
+  key.hash()
 }
 
 ///|
-fn make_node(
-  key : Int,
-  value : Int,
+fn[K, V] make_node(
+  key : K,
+  value : V,
   priority : Int,
-  left : TreapMap,
-  right : TreapMap,
-) -> TreapMap {
+  left : TreapMap[K, V],
+  right : TreapMap[K, V],
+) -> TreapMap[K, V] {
   let sz = 1 + size(left) + size(right)
   TreapMap::Node(key~, value~, priority~, size=sz, left~, right~)
 }
 
 ///|
 /// Create an empty treap map.
-pub fn empty() -> TreapMap {
+pub fn[K, V] empty() -> TreapMap[K, V] {
   TreapMap::Empty
 }
 
 ///|
 /// Split the map into (< key) and (>= key).
-pub fn split(t : TreapMap, key : Int) -> (TreapMap, TreapMap) {
+pub fn[K : Compare, V] split(
+  t : TreapMap[K, V],
+  key : K,
+) -> (TreapMap[K, V], TreapMap[K, V]) {
   match t {
     TreapMap::Empty => (TreapMap::Empty, TreapMap::Empty)
     TreapMap::Node(key=k, value=v, priority=p, size=_, left=l, right=r) =>
@@ -106,7 +109,7 @@ pub fn split(t : TreapMap, key : Int) -> (TreapMap, TreapMap) {
 
 ///|
 /// Merge two maps assuming all keys in a are < keys in b.
-pub fn merge(a : TreapMap, b : TreapMap) -> TreapMap {
+pub fn[K, V] merge(a : TreapMap[K, V], b : TreapMap[K, V]) -> TreapMap[K, V] {
   match (a, b) {
     (TreapMap::Empty, _) => b
     (_, TreapMap::Empty) => a
@@ -124,7 +127,7 @@ pub fn merge(a : TreapMap, b : TreapMap) -> TreapMap {
 
 ///|
 /// Check whether key exists in the map.
-pub fn contains(t : TreapMap, key : Int) -> Bool {
+pub fn[K : Compare, V] contains(t : TreapMap[K, V], key : K) -> Bool {
   match t {
     TreapMap::Empty => false
     TreapMap::Node(key=k, value=_, priority=_, size=_, left=l, right=r) =>
@@ -139,7 +142,11 @@ pub fn contains(t : TreapMap, key : Int) -> Bool {
 }
 
 ///|
-fn update_value(t : TreapMap, key : Int, value : Int) -> TreapMap {
+fn[K : Compare, V] update_value(
+  t : TreapMap[K, V],
+  key : K,
+  value : V,
+) -> TreapMap[K, V] {
   match t {
     TreapMap::Empty => TreapMap::Empty
     TreapMap::Node(key=k, value=v, priority=p, size=_, left=l, right=r) =>
@@ -155,7 +162,11 @@ fn update_value(t : TreapMap, key : Int, value : Int) -> TreapMap {
 
 ///|
 /// Insert or update a key/value pair and return the new map.
-pub fn insert_or_update(t : TreapMap, key : Int, value : Int) -> TreapMap {
+pub fn[K : Compare + Hash, V] insert_or_update(
+  t : TreapMap[K, V],
+  key : K,
+  value : V,
+) -> TreapMap[K, V] {
   if contains(t, key) {
     update_value(t, key, value)
   } else {
@@ -174,8 +185,8 @@ pub fn insert_or_update(t : TreapMap, key : Int, value : Int) -> TreapMap {
 ///|
 /// Lookup a key and return its value if present.
 #warnings("+missing_invariant+missing_reasoning")
-pub fn get(t : TreapMap, key : Int) -> Int? {
-  let none : Int? = None
+pub fn[K : Compare, V] get(t : TreapMap[K, V], key : K) -> V? {
+  let none : K? = None
   for cur = t, lo = none, hi = none {
     match cur {
       TreapMap::Empty => break None
@@ -206,7 +217,9 @@ pub fn get(t : TreapMap, key : Int) -> Int? {
 ///|
 /// Build a treap map by inserting elements in order.
 #warnings("+missing_invariant+missing_reasoning")
-pub fn from_array(arr : ArrayView[(Int, Int)]) -> TreapMap {
+pub fn[K : Compare + Hash, V] from_array(
+  arr : ArrayView[(K, V)],
+) -> TreapMap[K, V] {
   let n = arr.length()
   for i = 0, tree = TreapMap::Empty {
     if i >= n {

@@ -38,3 +38,4 @@ test "persistent treap map from array" {
 
 - Insert/update returns a new version.
 - Expected time is O(log n).
+- Keys are generic: operations require `K : Compare`, and priorities use `K : Hash`.

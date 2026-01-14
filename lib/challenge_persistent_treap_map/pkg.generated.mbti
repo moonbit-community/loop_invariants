@@ -2,30 +2,30 @@
 package "bobzhang/loop_invariants/lib/challenge_persistent_treap_map"
 
 // Values
-pub fn contains(TreapMap, Int) -> Bool
+pub fn[K : Compare, V] contains(TreapMap[K, V], K) -> Bool
 
-pub fn empty() -> TreapMap
+pub fn[K, V] empty() -> TreapMap[K, V]
 
-pub fn from_array(ArrayView[(Int, Int)]) -> TreapMap
+pub fn[K : Compare + Hash, V] from_array(ArrayView[(K, V)]) -> TreapMap[K, V]
 
-pub fn get(TreapMap, Int) -> Int?
+pub fn[K : Compare, V] get(TreapMap[K, V], K) -> V?
 
-pub fn insert_or_update(TreapMap, Int, Int) -> TreapMap
+pub fn[K : Compare + Hash, V] insert_or_update(TreapMap[K, V], K, V) -> TreapMap[K, V]
 
-pub fn merge(TreapMap, TreapMap) -> TreapMap
+pub fn[K, V] merge(TreapMap[K, V], TreapMap[K, V]) -> TreapMap[K, V]
 
-pub fn size(TreapMap) -> Int
+pub fn[K, V] size(TreapMap[K, V]) -> Int
 
-pub fn split(TreapMap, Int) -> (TreapMap, TreapMap)
+pub fn[K : Compare, V] split(TreapMap[K, V], K) -> (TreapMap[K, V], TreapMap[K, V])
 
 // Errors
 
 // Types and methods
-pub enum TreapMap {
+pub enum TreapMap[K, V] {
   Empty
-  Node(key~ : Int, value~ : Int, priority~ : Int, size~ : Int, left~ : TreapMap, right~ : TreapMap)
+  Node(key~ : K, value~ : V, priority~ : Int, size~ : Int, left~ : TreapMap[K, V], right~ : TreapMap[K, V])
 }
-pub impl Show for TreapMap
+pub impl[K : Show, V : Show] Show for TreapMap[K, V]
 
 // Type aliases
 
