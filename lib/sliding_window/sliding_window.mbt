@@ -33,20 +33,36 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
   }
   if k >= n {
     // Single window containing all elements - find max using fold
-    let m = arr[1:].fold(init=arr[0], fn(acc, x) { if x > acc { x } else { acc } })
+    let m = arr[1:].fold(init=arr[0], fn(acc, x) {
+      if x > acc {
+        x
+      } else {
+        acc
+      }
+    })
     return [m]
   }
   let result : Array[Int64] = []
   let dq : @deque.Deque[Int] = @deque.new()
   for i = 0; i < n; i = i + 1 {
     // Remove elements outside window
-    while not(dq.is_empty()) && dq.front().unwrap() <= i - k {
-      let _ = dq.pop_front()
+    while dq.front() is Some(front) {
+      if front <= i - k {
+        let _ = dq.pop_front()
+
+      } else {
+        break
+      }
     }
 
     // Remove smaller elements from back
-    while not(dq.is_empty()) && arr[dq.back().unwrap()] <= arr[i] {
-      let _ = dq.pop_back()
+    while dq.back() is Some(back) {
+      if arr[back] <= arr[i] {
+        let _ = dq.pop_back()
+
+      } else {
+        break
+      }
     }
 
     // Add current index
@@ -115,17 +131,33 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
   }
   if k >= n {
     // Single window containing all elements - find min using fold
-    let m = arr[1:].fold(init=arr[0], fn(acc, x) { if x < acc { x } else { acc } })
+    let m = arr[1:].fold(init=arr[0], fn(acc, x) {
+      if x < acc {
+        x
+      } else {
+        acc
+      }
+    })
     return [m]
   }
   let result : Array[Int64] = []
   let dq : @deque.Deque[Int] = @deque.new()
   for i = 0; i < n; i = i + 1 {
-    while not(dq.is_empty()) && dq.front().unwrap() <= i - k {
-      let _ = dq.pop_front()
+    while dq.front() is Some(front) {
+      if front <= i - k {
+        let _ = dq.pop_front()
+
+      } else {
+        break
+      }
     }
-    while not(dq.is_empty()) && arr[dq.back().unwrap()] >= arr[i] {
-      let _ = dq.pop_back()
+    while dq.back() is Some(back) {
+      if arr[back] >= arr[i] {
+        let _ = dq.pop_back()
+
+      } else {
+        break
+      }
     }
     dq.push_back(i)
     if i >= k - 1 {

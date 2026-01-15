@@ -37,3 +37,22 @@ for i = mid - 1; i >= block_start; i = i - 1 {
     #|row[i+1..mid] already holds suffix sums to mid.
   ),
 }
+
+## 2026-01-15: Pattern Match Deque Peeks
+- Problem: Sliding-window deque maintenance used `is_empty()` plus `unwrap()` calls.
+- Change: Use `front()`/`back()` with `is Some(...)` in the loop condition and break when the peek is in range.
+- Result: Loops are shorter and avoid unwraps while preserving behavior.
+- Example:
+// Before
+while not(dq.is_empty()) && dq.front().unwrap() <= i - k {
+  let _ = dq.pop_front()
+}
+
+// After
+while dq.front() is Some(front) {
+  if front <= i - k {
+    let _ = dq.pop_front()
+  } else {
+    break
+  }
+}
