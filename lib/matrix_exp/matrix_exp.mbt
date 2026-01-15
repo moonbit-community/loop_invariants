@@ -285,11 +285,22 @@ fn solve_recurrence(
     m.data[i][i - 1] = 1L
   }
   let result = m.power(n - k.to_int64() + 1L)
-  let mut ans = 0L
-  for j in 0..<k {
-    ans = (ans + result.data[0][j] * initial[k - 1 - j]) % MATRIX_MOD
+  // Compute answer using fold over coefficients and initial values
+  for j = 0, ans = 0L; j < k; {
+    continue j + 1, (ans + result.data[0][j] * initial[k - 1 - j]) % MATRIX_MOD
+  } else {
+    ans
+  } where {
+    invariant: j >= 0 && j <= k,
+    reasoning: (
+      #|INVARIANT (recurrence sum):
+      #|ans is the partial sum of result[0][t] * initial[k-1-t] for t in [0,j).
+      #|MAINTENANCE:
+      #|Add the next term result[0][j] * initial[k-1-j] to the sum.
+      #|TERMINATION:
+      #|At j = k, ans is the complete recurrence value f(n).
+    ),
   }
-  ans
 }
 
 // ============================================================================
