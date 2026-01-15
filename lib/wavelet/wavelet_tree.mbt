@@ -142,20 +142,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
   }
 
   // Create initial index array
-  let indices : Array[Int] = Array::make(n, 0)
-  for i = 0; i < n; i = i + 1 {
-    indices[i] = i
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (indices init):
-      #|indices[0..i) equals 0..i-1 in order; the rest is uninitialized.
-      #|MAINTENANCE:
-      #|Assign indices[i] = i to extend the identity mapping.
-      #|TERMINATION:
-      #|At i = n, indices contains 0..n-1.
-    ),
-  }
+  let indices = Array::makei(n, fn(i) { i })
   let root = build_node(nodes, arr.copy(), indices, 0, sigma)
   { nodes, root, n, sigma }
 }
