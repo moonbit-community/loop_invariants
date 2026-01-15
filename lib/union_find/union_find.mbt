@@ -131,13 +131,13 @@ pub fn UnionFind::set_size(self : UnionFind, x : Int) -> Int {
   if root < 0 {
     return 0
   }
-  let mut size = 0
-  for i in 0..<self.parent.length() {
+  self.parent.foldi(init=0, fn(i, acc, _) {
     if self.find(i) == root {
-      size = size + 1
+      acc + 1
+    } else {
+      acc
     }
-  }
-  size
+  })
 }
 
 // ============================================================================
