@@ -65,18 +65,8 @@ pub fn coordinate_compress(values : ArrayView[Int]) -> (Array[Int], Array[Int]) 
     ),
   }
   let compressed : Array[Int] = Array::make(n, 0)
-  for i = 0; i < n; i = i + 1 {
-    compressed[i] = lower_bound(unique[:], values[i])
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (Compression mapping):
-      #|compressed[0..i) contains indices into unique for values[0..i).
-      #|MAINTENANCE:
-      #|Map values[i] via lower_bound and advance i.
-      #|TERMINATION:
-      #|At i = n, all values are compressed.
-    ),
+  for i, val in values {
+    compressed[i] = lower_bound(unique[:], val)
   }
   (compressed, unique)
 }

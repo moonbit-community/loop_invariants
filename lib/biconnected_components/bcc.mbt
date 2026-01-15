@@ -50,29 +50,11 @@ pub fn biconnected_components(
   }
   let finder = BiconnectedFinder::new(n)
 
-  // Build graph from edges
-  for i = 0; i < edges.length(); i = i + 1 {
-    let (u, v) = edges[i]
+  // Build graph from edges - each edge gets its index as unique ID
+  for i, edge in edges {
+    let (u, v) = edge
     guard u >= 0 && u < n && v >= 0 && v < n else { continue }
     finder.add_edge(u, v, i)
-  } where {
-    invariant: i >= 0 && i <= edges.length(),
-    reasoning: (
-      #|INVARIANT (graph construction):
-      #|  Edges [0..i) have been added to adjacency lists.
-      #|  Each edge gets a unique ID (its index).
-      #|
-      #|WHY EDGE IDs:
-      #|  In undirected graphs, each edge appears twice in adjacency lists.
-      #|  The edge ID lets us identify the parent edge during DFS
-      #|  (to avoid immediately going back).
-      #|
-      #|MAINTENANCE:
-      #|  Add edge i if endpoints are valid.
-      #|
-      #|TERMINATION:
-      #|  At i = edges.length(), graph is complete.
-    ),
   }
 
   // Run the algorithm

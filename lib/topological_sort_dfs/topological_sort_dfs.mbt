@@ -156,36 +156,13 @@ test "topological sort basic" {
   let order = topological_sort(4, edges[:]).unwrap()
   // Validate order by checking edge directions
   let pos = Array::make(4, 0)
-  for i = 0; i < order.length(); i = i + 1 {
-    pos[order[i]] = i
-  } where {
-    invariant: i >= 0 && i <= order.length(),
-    reasoning: (
-      #|INVARIANT (position map):
-      #|pos is filled for vertices in order[0..i).
-      #|MAINTENANCE:
-      #|Assign the position of order[i].
-      #|TERMINATION:
-      #|At i = order.length(), pos maps every vertex to its order index.
-    ),
+  for i, v in order {
+    pos[v] = i
   }
-  let mut ok = true
-  for i = 0; i < edges.length(); i = i + 1 {
-    let (u, v) = edges[i]
-    if pos[u] >= pos[v] {
-      ok = false
-    }
-  } where {
-    invariant: i >= 0 && i <= edges.length(),
-    reasoning: (
-      #|INVARIANT (order check):
-      #|Edges in edges[0..i) satisfy pos[u] < pos[v] if ok remains true.
-      #|MAINTENANCE:
-      #|Check edge i and keep ok true only if the constraint holds.
-      #|TERMINATION:
-      #|At i = edges.length(), ok reflects validity of the topological order.
-    ),
-  }
+  let ok = edges.all(fn(edge) {
+    let (u, v) = edge
+    pos[u] < pos[v]
+  })
   inspect(ok, content="true")
 }
 

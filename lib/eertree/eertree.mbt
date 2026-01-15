@@ -163,21 +163,8 @@ fn Eertree::add_char(self : Eertree, c : Char) -> Unit {
 /// Build from string
 fn Eertree::from_string(s : String) -> Eertree {
   let tree = Eertree::new()
-  for i = 0; i < s.length(); i = i + 1 {
-    let char_code = s[i].to_int()
-    // Convert UInt16 to Char for add_char
-    tree.add_char(Int::unsafe_to_char(char_code))
-  } where {
-    invariant: i >= 0 && i <= s.length() && tree.text.length() == i,
-    reasoning: (
-      #|INVARIANT (prefix build):
-      #|The tree contains all distinct palindromes from s[0..i), and the
-      #|stored text length equals i (processed prefix length).
-      #|MAINTENANCE:
-      #|Insert s[i], extending the tree with all palindromes ending at i.
-      #|TERMINATION:
-      #|At i = s.length(), the tree represents all palindromes of the string.
-    ),
+  for c in s {
+    tree.add_char(c)
   }
   tree
 }

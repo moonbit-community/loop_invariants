@@ -708,19 +708,9 @@ fn bipartite_matching(
       #|At i = right_size, all right vertices are connected to the sink.
     ),
   }
-  for i = 0; i < edges.length(); i = i + 1 {
-    let (left, right) = edges[i]
+  for edge in edges {
+    let (left, right) = edge
     network.add_edge(left + 1, left_size + 1 + right, 1)
-  } where {
-    invariant: i >= 0 && i <= edges.length(),
-    reasoning: (
-      #|INVARIANT (matching edges):
-      #|Edges[0..i) have been added between corresponding left/right vertices.
-      #|MAINTENANCE:
-      #|Add edge for edges[i] to encode a potential match.
-      #|TERMINATION:
-      #|At i = edges.length(), the flow network encodes the full bipartite graph.
-    ),
   }
   network.edmonds_karp(source, sink)
 }
