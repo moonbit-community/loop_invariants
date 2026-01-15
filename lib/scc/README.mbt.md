@@ -133,7 +133,7 @@ Why it works:
 ```mbt check
 ///|
 test "scc example" {
-  let adj : Array[Array[Int]] = Array::makei(4, fn(_) { [] })
+  let adj : Array[Array[Int]] = Array::makei(4, _ => [])
   adj[0].push(1)
   adj[1].push(2)
   adj[2].push(0)
