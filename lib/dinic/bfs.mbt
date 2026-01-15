@@ -42,30 +42,15 @@
 /// RETURNS: true if sink is reachable from source in residual graph
 pub fn Dinic::bfs(self : Dinic, source : Int, sink : Int) -> Bool {
   // Reset levels
-  for i = 0; i < self.n; i = i + 1 {
-    self.level[i] = -1
-  } where {
-    invariant: i >= 0 && i <= self.n && self.level.length() == self.n,
-    reasoning: (
-      #|INVARIANT (level reset):
-      #|  level[0..i) have been reset to -1 (unvisited).
-      #|
-      #|MAINTENANCE:
-      #|  Set level[i] = -1.
-      #|
-      #|TERMINATION:
-      #|  At i = n, all levels are reset.
-    ),
-  }
+  self.level.fill(-1)
 
   // Initialize BFS from source
   self.level[source] = 0
   let queue : Array[Int] = [source]
 
   // BFS loop
-  for front = 0; front < queue.length(); {
-    let u = queue[front]
-
+  let mut front = 0
+  while queue.get(front) is Some(u) {
     // Explore all edges from u
     for e in self.adj[u] {
       // Only consider edges with residual capacity to unvisited vertices
@@ -74,17 +59,7 @@ pub fn Dinic::bfs(self : Dinic, source : Int, sink : Int) -> Bool {
         queue.push(e.to)
       }
     }
-    continue front + 1
-  } where {
-    invariant: front >= 0 && front <= queue.length(),
-    reasoning: (
-      #|INVARIANT (BFS queue):
-      #|Vertices in queue[0..front) have been dequeued and explored.
-      #|MAINTENANCE:
-      #|Process queue[front], enqueue unvisited neighbors.
-      #|TERMINATION:
-      #|front advances until queue is exhausted.
-    ),
+    front = front + 1
   }
 
   // Return true if sink is reachable

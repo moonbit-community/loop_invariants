@@ -56,25 +56,7 @@ pub fn Dinic::max_flow(self : Dinic, source : Int, sink : Int) -> Int64 {
   // Main loop: BFS phases
   while self.bfs(source, sink) {
     // Reset edge pointers for this phase
-    for i = 0; i < self.n; i = i + 1 {
-      self.iter[i] = 0
-    } where {
-      invariant: i >= 0 && i <= self.n && self.iter.length() == self.n,
-      reasoning: (
-        #|INVARIANT (iter reset):
-        #|  iter[0..i) reset to 0 for fresh DFS exploration.
-        #|
-        #|WHY RESET:
-        #|  The level graph changed, so edges that were dead ends
-        #|  in the previous phase might now lead to augmenting paths.
-        #|
-        #|MAINTENANCE:
-        #|  Set iter[i] = 0.
-        #|
-        #|TERMINATION:
-        #|  At i = n, all pointers are reset.
-      ),
-    }
+    self.iter.fill(0)
 
     // Find blocking flow using repeated DFS
     for f = self.dfs(source, sink, DINIC_INF); f > 0L; {
@@ -141,8 +123,8 @@ pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
   let result : Array[Int] = []
   let queue : Array[Int] = [source]
   visited[source] = true
-  for front = 0; front < queue.length(); front = front + 1 {
-    let u = queue[front]
+  let mut front = 0
+  while queue.get(front) is Some(u) {
     result.push(u)
     for e in self.adj[u] {
       if e.cap > e.flow && not(visited[e.to]) {
@@ -150,6 +132,7 @@ pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
         queue.push(e.to)
       }
     }
+    front = front + 1
   }
   result
 }
