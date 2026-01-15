@@ -120,7 +120,7 @@ pub fn gomory_hu_tree(
       #|At i = n, parent/value define a full Gomory-Hu tree.
     ),
   }
-  let adj : Array[Array[(Int, Int64)]] = Array::makei(n, fn(_) { [] })
+  let adj : Array[Array[(Int, Int64)]] = Array::makei(n, _ => [])
   for i in 0..<n {
     let p = parent[i]
     if p >= 0 {
