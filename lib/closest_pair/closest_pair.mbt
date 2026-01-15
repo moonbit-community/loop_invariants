@@ -25,23 +25,10 @@
 ///|
 fn sqrt_f64(x : Double) -> Double {
   if x <= 0.0 {
-    return 0.0
+    0.0
+  } else {
+    x.sqrt()
   }
-  let mut guess = x
-  for iter = 0; iter < 50; iter = iter + 1 {
-    guess = (guess + x / guess) / 2.0
-  } where {
-    invariant: iter >= 0 && iter <= 50,
-    reasoning: (
-      #|INVARIANT (Newton iterations):
-      #|Each iteration refines the guess toward sqrt(x).
-      #|MAINTENANCE:
-      #|Apply Newton's update rule to improve the estimate.
-      #|TERMINATION:
-      #|After a fixed number of iterations, guess is sufficiently accurate.
-    ),
-  }
-  guess
 }
 
 ///|
