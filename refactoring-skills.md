@@ -56,3 +56,29 @@ while dq.front() is Some(front) {
     break
   }
 }
+
+## 2026-01-16: Arrow Lambda for Penalty Test
+- Problem: A simple test helper used a verbose `fn` block for the penalty lambda.
+- Change: Use an arrow function with an `if` expression.
+- Result: Shorter inline helper that matches other lambda usage.
+- Example:
+// Before
+let compute = fn(lambda : Int64) -> (Int64, Int) {
+  if lambda < 0L {
+    (100L, 5)
+  } else if lambda < 10L {
+    (50L, 3)
+  } else {
+    (20L, 1)
+  }
+}
+
+// After
+let compute = lambda =>
+  if lambda < 0L {
+    (100L, 5)
+  } else if lambda < 10L {
+    (50L, 3)
+  } else {
+    (20L, 1)
+  }

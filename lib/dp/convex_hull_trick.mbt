@@ -610,15 +610,13 @@ fn aliens_trick(
 ///|
 test "aliens trick structure" {
   // Simple test: just verify the structure works
-  let compute = fn(lambda : Int64) -> (Int64, Int) {
-    // Simplified: more penalty means fewer items
-    if lambda < 0L {
-      (100L, 5)
-    } else if lambda < 10L {
-      (50L, 3)
-    } else {
-      (20L, 1)
-    }
+  // Simplified: more penalty means fewer items
+  let compute = lambda => if lambda < 0L {
+    (100L, 5)
+  } else if lambda < 10L {
+    (50L, 3)
+  } else {
+    (20L, 1)
   }
   let result = aliens_trick(10, 3, compute)
   // Should find lambda around 0-10 where k=3
