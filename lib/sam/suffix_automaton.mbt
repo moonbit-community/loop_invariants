@@ -721,7 +721,7 @@ fn SuffixAutomaton::all_substrings(self : SuffixAutomaton) -> Array[String] {
   }
 
   dfs(self, 0, StringBuilder::new(), result)
-  result.sort_by(fn(a, b) { a.compare(b) })
+  result.sort_by((a, b) => a.compare(b))
   result
 }
 
