@@ -38,7 +38,7 @@ priv struct EulerTour {
 
 ///|
 fn EulerTour::new(n : Int) -> EulerTour {
-  let adj : Array[Array[Int]] = Array::makei(n, fn(_) { [] })
+  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
   {
     n,
     adj,
@@ -279,7 +279,7 @@ priv struct EulerTourLCA {
 
 ///|
 fn EulerTourLCA::new(n : Int) -> EulerTourLCA {
-  let adj : Array[Array[Int]] = Array::makei(n, fn(_) { [] })
+  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
   {
     n,
     adj,
