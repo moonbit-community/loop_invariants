@@ -849,8 +849,8 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
   queue.push(root)
   visited[root] = true
   up[root][0] = root
-  for front = 0; front < queue.length(); front = front + 1 {
-    let node = queue[front]
+  let mut front = 0
+  while queue.get(front) is Some(node) {
     for idx = 0; idx < adj[node].length(); idx = idx + 1 {
       let child = adj[node][idx]
       if not(visited[child]) {
@@ -871,17 +871,7 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
         #|At idx == degree, all neighbors are handled.
       ),
     }
-  } where {
-    invariant: front >= 0 && front <= queue.length(),
-    reasoning: (
-      #|INVARIANT (binary lifting BFS):
-      #|queue[0..front) nodes have depth and up[][0] set; queue[front..] are
-      #|discovered but not processed.
-      #|MAINTENANCE:
-      #|Expand queue[front] and enqueue newly discovered neighbors.
-      #|TERMINATION:
-      #|At front == queue.length(), depth and up[][0] are filled.
-    ),
+    front = front + 1
   }
   for k = 1; k < log_n; k = k + 1 {
     for v = 0; v < n; v = v + 1 {
