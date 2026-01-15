@@ -86,7 +86,7 @@ pub fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
 
   // Initialize arrays using makei
   let depth = Array::make(n, 0)
-  let up : Array[Array[Int]] = Array::makei(n, fn(_) { Array::make(log_n, -1) })
+  let up : Array[Array[Int]] = Array::makei(n, _ => Array::make(log_n, -1))
 
   // DFS to compute depth and immediate parent
   let visited = Array::make(n, false)
