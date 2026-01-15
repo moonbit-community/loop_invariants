@@ -8,23 +8,12 @@
 #warnings("+missing_invariant+missing_reasoning")
 pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
   let adj : Array[Array[Int]] = Array::makei(n, _ => [])
-  let m = edges.length()
-  for i = 0; i < m; i = i + 1 {
-    let (u, v) = edges[i]
+  edges.each(fn(edge) {
+    let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       adj[u].push(v)
     }
-  } where {
-    invariant: i >= 0 && i <= m,
-    reasoning: (
-      #|INVARIANT (Build graph):
-      #|adj contains all edges in edges[0..i).
-      #|MAINTENANCE:
-      #|Insert edge (u -> v) into adjacency list.
-      #|TERMINATION:
-      #|At i = m, the graph is fully built.
-    ),
-  }
+  })
   let index = Array::make(n, -1)
   let low = Array::make(n, 0)
   let onstack = Array::make(n, false)
