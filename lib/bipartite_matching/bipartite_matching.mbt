@@ -39,7 +39,7 @@ priv struct BipartiteGraph {
 
 ///|
 fn BipartiteGraph::new(n_left : Int, n_right : Int) -> BipartiteGraph {
-  let adj : Array[Array[Int]] = Array::makei(n_left, fn(_) { [] })
+  let adj : Array[Array[Int]] = Array::makei(n_left, _ => [])
   { n_left, n_right, adj }
 }
 
