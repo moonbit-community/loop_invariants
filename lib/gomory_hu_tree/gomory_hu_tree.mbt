@@ -142,8 +142,8 @@ pub fn GomoryHuTree::min_cut(self : GomoryHuTree, u : Int, v : Int) -> Int64 {
   let parent_w = Array::make(self.n, 0L)
   let queue : Array[Int] = [u]
   parent[u] = u
-  for front = 0; front < queue.length(); front = front + 1 {
-    let x = queue[front]
+  let mut front = 0
+  while queue.get(front) is Some(x) {
     if x == v {
       break
     }
@@ -166,17 +166,7 @@ pub fn GomoryHuTree::min_cut(self : GomoryHuTree, u : Int, v : Int) -> Int64 {
         #|At i = deg(x), all neighbors of x have been processed.
       ),
     }
-  } where {
-    invariant: front >= 0 && front <= queue.length(),
-    reasoning: (
-      #|INVARIANT (tree BFS):
-      #|queue[0..front) have been expanded and assigned parents; every enqueued
-      #|vertex has its parent edge recorded in parent_w.
-      #|MAINTENANCE:
-      #|Expand queue[front] and enqueue unvisited neighbors.
-      #|TERMINATION:
-      #|If v is reachable (tree is connected), parent[v] is set.
-    ),
+    front = front + 1
   }
   if parent[v] == -1 {
     return 0L
