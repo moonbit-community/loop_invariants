@@ -733,7 +733,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
   }
 
   // Union-Find
-  let parent = Array::makei(n, fn(i) { i })
+  let parent = Array::makei(n, i => i)
   let rank = Array::make(n, 0)
   let mut total_weight = 0
   let mut edges_added = 0
