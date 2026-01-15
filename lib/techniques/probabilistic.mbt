@@ -188,7 +188,7 @@ test "fisher_yates_shuffle" {
   let rng = make_rng(12345L)
   fisher_yates_shuffle(arr, rng)
   // Verify it's still a permutation (contains same elements)
-  arr.sort_by_key(fn(x) { x })
+  arr.sort_by_key(x => x)
   assert_eq(arr, [1, 2, 3, 4, 5])
 }
 
