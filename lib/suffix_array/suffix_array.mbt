@@ -56,11 +56,7 @@ pub fn SuffixArray::new(text : String) -> SuffixArray {
   // Prefix doubling
   for k = 1; k < n; k = k * 2 {
     // Sort by (rank[i], rank[i+k]) pairs
-    let get_key = fn(i : Int) -> (Int, Int) {
-      let r1 = rank[i]
-      let r2 = if i + k < n { rank[i + k] } else { -1 }
-      (r1, r2)
-    }
+    let get_key = i => (rank[i], if i + k < n { rank[i + k] } else { -1 })
     sa.sort_by(fn(a, b) {
       let (a1, a2) = get_key(a)
       let (b1, b2) = get_key(b)
