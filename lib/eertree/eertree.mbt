@@ -195,11 +195,7 @@ fn Eertree::propagate_counts(self : Eertree) -> Unit {
 ///|
 /// Get total number of palindrome occurrences (counting multiplicity)
 fn Eertree::count_total(self : Eertree) -> Int {
-  let mut total = 0
-  for node in self.nodes[2:] {
-    total = total + node.count
-  }
-  total
+  self.nodes[2:].iter().fold(init=0, fn(acc, node) { acc + node.count })
 }
 
 ///|
