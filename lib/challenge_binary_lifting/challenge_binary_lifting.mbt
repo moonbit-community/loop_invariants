@@ -27,20 +27,7 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
       #|When pow >= n, k is the number of levels needed.
     ),
   }
-  let up : Array[Array[Int]] = Array::make(log, [])
-  for k = 0; k < log; k = k + 1 {
-    up[k] = Array::make(n, -1)
-  } where {
-    invariant: k >= 0 && k <= log,
-    reasoning: (
-      #|INVARIANT (Level allocation):
-      #|up[0..k) are distinct rows initialized to -1.
-      #|MAINTENANCE:
-      #|Allocate row k and advance.
-      #|TERMINATION:
-      #|At k = log, all levels are allocated.
-    ),
-  }
+  let up : Array[Array[Int]] = Array::makei(log, fn(_) { Array::make(n, -1) })
   for v = 0; v < n; v = v + 1 {
     up[0][v] = parent[v]
   } where {

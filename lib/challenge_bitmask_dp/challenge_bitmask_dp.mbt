@@ -11,20 +11,7 @@ pub fn tsp_min_cycle(dist : Array[Array[Int]], inf : Int) -> Int {
     return 0
   }
   let total = 1 << n
-  let dp : Array[Array[Int]] = Array::make(total, [])
-  for mask = 0; mask < total; mask = mask + 1 {
-    dp[mask] = Array::make(n, inf)
-  } where {
-    invariant: mask >= 0 && mask <= total,
-    reasoning: (
-      #|INVARIANT (DP allocation):
-      #|dp[0..mask) are distinct rows initialized to inf.
-      #|MAINTENANCE:
-      #|Allocate row mask and advance.
-      #|TERMINATION:
-      #|At mask = total, all rows are allocated.
-    ),
-  }
+  let dp : Array[Array[Int]] = Array::makei(total, fn(_) { Array::make(n, inf) })
   dp[1][0] = 0
   for mask = 1; mask < total; mask = mask + 1 {
     for u = 0; u < n; u = u + 1 {

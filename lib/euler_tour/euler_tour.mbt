@@ -355,20 +355,7 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
 
   // Build sparse table for minimum depth
   let k = self.log[m] + 1
-  self.sparse = Array::make(k, [])
-  for i = 0; i < k; i = i + 1 {
-    self.sparse[i] = Array::make(m, 0)
-  } where {
-    invariant: i >= 0 && i <= k,
-    reasoning: (
-      #|INVARIANT (sparse alloc):
-      #|sparse[0..i) rows are allocated with length m for interval length 2^row.
-      #|MAINTENANCE:
-      #|Allocate sparse[i] to hold RMQ indices for level i.
-      #|TERMINATION:
-      #|At i = k, all sparse rows are allocated.
-    ),
-  }
+  self.sparse = Array::makei(k, fn(_) { Array::make(m, 0) })
 
   // Initialize with indices
   for i = 0; i < m; i = i + 1 {
