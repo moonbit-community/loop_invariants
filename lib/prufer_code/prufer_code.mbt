@@ -321,7 +321,7 @@ fn normalize_edges(edges : Array[(Int, Int)]) -> Array[(Int, Int)] {
       result.push((v, u))
     }
   }
-  result.sort_by(fn(a, b) { if a.0 != b.0 { a.0 - b.0 } else { a.1 - b.1 } })
+  result.sort_by((a, b) => if a.0 != b.0 { a.0 - b.0 } else { a.1 - b.1 })
   result
 }
 
