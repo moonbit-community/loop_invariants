@@ -35,7 +35,7 @@ priv struct Matrix {
 
 ///|
 fn Matrix::new(rows : Int, cols : Int) -> Matrix {
-  let data = Array::makei(rows, fn(_) { Array::make(cols, 0L) })
+  let data = Array::makei(rows, _ => Array::make(cols, 0L))
   { data, rows, cols }
 }
 
@@ -55,7 +55,7 @@ fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
     return Matrix::new(0, 0)
   }
   let cols = arr[0].length()
-  let data = Array::makei(rows, fn(i) { arr[i].copy() })
+  let data = Array::makei(rows, i => arr[i].copy())
   { data, rows, cols }
 }
 
