@@ -142,7 +142,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
   }
 
   // Create initial index array
-  let indices = Array::makei(n, fn(i) { i })
+  let indices = Array::makei(n, i => i)
   let root = build_node(nodes, arr.copy(), indices, 0, sigma)
   { nodes, root, n, sigma }
 }
