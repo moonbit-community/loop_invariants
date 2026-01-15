@@ -253,8 +253,8 @@ fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? 
     }
   }
   let result : Array[Int] = []
-  for front = 0; front < queue.length(); {
-    let u = queue[front]
+  let mut front = 0
+  while queue.get(front) is Some(u) {
     result.push(u)
 
     // Reduce in-degree of neighbors
@@ -278,31 +278,12 @@ fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? 
         #|When i reaches adj[u].length(), all outgoing edges of u are removed.
       ),
     }
-    continue front + 1
+    front = front + 1
+  }
+  if result.length() == n {
+    Some(result)
   } else {
-    if result.length() == n {
-      Some(result)
-    } else {
-      None
-    }
-  } where {
-    invariant: front >= 0 && front <= queue.length(),
-    reasoning: (
-      #|LOOP INVARIANT:
-      #|  - result contains vertices in valid topological order
-      #|  - All vertices in result have been "removed" from the graph
-      #|  - in_degree[v] = remaining predecessors not yet in result
-      #|  - queue contains vertices with in_degree = 0
-      #|
-      #|When a vertex enters the queue, all its predecessors are in result,
-      #|so it can safely be next in the topological order.
-      #|
-      #|MAINTENANCE:
-      #|Processing queue[front] moves it to result and updates neighbors'
-      #|in-degrees, preserving the zero-in-degree queue invariant.
-      #|
-      #|TERMINATION: If result.length() < n, there's a cycle.
-    ),
+    None
   }
 }
 
