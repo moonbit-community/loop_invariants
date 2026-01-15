@@ -85,8 +85,8 @@ pub fn MinCostMaxFlow::spfa(
   self.in_queue[source] = true
 
   // Main SPFA loop
-  for front = 0; front < queue.length(); {
-    let u = queue[front]
+  let mut front = 0
+  while queue.get(front) is Some(u) {
     self.in_queue[u] = false
 
     // Relax all outgoing edges
@@ -131,17 +131,7 @@ pub fn MinCostMaxFlow::spfa(
         #|  At i = deg(u), all edges from u are processed.
       ),
     }
-    continue front + 1
-  } where {
-    invariant: front >= 0 && front <= queue.length(),
-    reasoning: (
-      #|INVARIANT (SPFA queue):
-      #|Vertices in queue[0..front) have been dequeued and relaxed.
-      #|MAINTENANCE:
-      #|Process queue[front], relax edges, enqueue improved vertices.
-      #|TERMINATION:
-      #|front advances until queue is exhausted.
-    ),
+    front = front + 1
   }
 
   // Return true if sink is reachable
