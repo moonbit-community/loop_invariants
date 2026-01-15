@@ -35,10 +35,7 @@ priv struct Matrix {
 
 ///|
 fn Matrix::new(rows : Int, cols : Int) -> Matrix {
-  let data = Array::make(rows, [])
-  for i in 0..<rows {
-    data[i] = Array::make(cols, 0L)
-  }
+  let data = Array::makei(rows, fn(_) { Array::make(cols, 0L) })
   { data, rows, cols }
 }
 
