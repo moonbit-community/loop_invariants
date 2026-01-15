@@ -294,7 +294,7 @@ pub fn SuffixAutomaton::count_occurrences(
   // Sort states by length (longest first)
   let max_len = self.states[:self.size]
     .iter()
-    .map(fn(s) { s.len })
+    .map(s => s.len)
     .maximum()
     .unwrap_or(0)
   let by_len : Array[Array[Int]] = Array::makei(max_len + 1, _ => [])
