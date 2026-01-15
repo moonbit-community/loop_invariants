@@ -49,8 +49,8 @@ priv struct TwoSat {
 ///|
 /// Create a 2-SAT instance with n boolean variables
 fn TwoSat::new(n : Int) -> TwoSat {
-  let adj : Array[Array[Int]] = Array::makei(2 * n, fn(_) { [] })
-  let radj : Array[Array[Int]] = Array::makei(2 * n, fn(_) { [] })
+  let adj : Array[Array[Int]] = Array::makei(2 * n, _ => [])
+  let radj : Array[Array[Int]] = Array::makei(2 * n, _ => [])
   { n, adj, radj }
 }
 
