@@ -82,3 +82,22 @@ let compute = lambda =>
   } else {
     (20L, 1)
   }
+
+## 2026-01-17: Deque Peek Without Unwrap in Sliding Window
+- Problem: Sliding-window maintenance used `is_empty()` plus `unwrap()` calls for peeks.
+- Change: Match on `front()` and `back()` inside the loop and break when in range.
+- Result: Removes unwraps while keeping deque logic and invariants intact.
+- Example:
+// Before
+while not(deque.is_empty()) && deque.front().unwrap() <= i - k {
+  let _ = deque.pop_front()
+}
+
+// After
+while deque.front() is Some(front) {
+  if front <= i - k {
+    let _ = deque.pop_front()
+  } else {
+    break
+  }
+}

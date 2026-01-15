@@ -14,13 +14,21 @@ pub fn sliding_window_min(arr : ArrayView[Int], k : Int) -> Array[Int] {
     if i >= n {
       break result
     } else {
-      while not(deque.is_empty()) && deque.front().unwrap() <= i - k {
-        let _ = deque.pop_front()
+      while deque.front() is Some(front) {
+        if front <= i - k {
+          let _ = deque.pop_front()
 
+        } else {
+          break
+        }
       }
-      while not(deque.is_empty()) && arr[deque.back().unwrap()] >= arr[i] {
-        let _ = deque.pop_back()
+      while deque.back() is Some(back) {
+        if arr[back] >= arr[i] {
+          let _ = deque.pop_back()
 
+        } else {
+          break
+        }
       }
       deque.push_back(i)
       if i >= k - 1 {
