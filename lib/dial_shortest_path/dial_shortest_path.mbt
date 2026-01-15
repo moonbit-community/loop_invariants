@@ -36,7 +36,7 @@ pub struct Graph {
 ///|
 /// Create a graph with n vertices and maximum edge weight max_weight.
 pub fn Graph::new(n : Int, max_weight : Int) -> Graph {
-  let adj : Array[Array[Edge]] = Array::makei(n, fn(_) { [] })
+  let adj : Array[Array[Edge]] = Array::makei(n, _ => [])
   { n, max_weight, adj }
 }
 
@@ -72,7 +72,7 @@ pub fn dial_shortest_paths(graph : Graph, source : Int) -> Array[Int] {
   } else {
     graph.max_weight * (n - 1)
   }
-  let buckets : Array[Array[Int]] = Array::makei(max_dist + 1, fn(_) { [] })
+  let buckets : Array[Array[Int]] = Array::makei(max_dist + 1, _ => [])
   dist[source] = 0
   buckets[0].push(source)
   for d = 0; d <= max_dist; d = d + 1 {
