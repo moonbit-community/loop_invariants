@@ -150,7 +150,7 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   }
 
   // Find root (node with no parent)
-  let root = match nodes.search_by(fn(node) { node.parent == -1 }) {
+  let root = match nodes.search_by(node => node.parent == -1) {
     Some(idx) => idx
     None => 0
   }
