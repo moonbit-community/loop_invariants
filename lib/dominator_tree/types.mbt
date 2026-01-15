@@ -21,7 +21,7 @@ priv struct Counter {
 ///|
 /// Build n separate empty lists for adjacency representation.
 fn build_adj_lists(n : Int) -> Array[Array[Int]] {
-  Array::makei(n, fn(_) { [] })
+  Array::makei(n, _ => [])
 }
 
 ///|
