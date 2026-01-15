@@ -4,7 +4,7 @@
 
 ///|
 fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj = Array::makei(n, fn(_) { [] })
+  let adj = Array::makei(n, _ => [])
   for i = 0; i < edges.length(); i = i + 1 {
     let (u, v) = edges[i]
     adj[u].push(v)
@@ -53,10 +53,23 @@ fn find_centroid(
   removed : Array[Bool],
   sub : Array[Int],
 ) -> Int {
-  for v in adj[u] {
+  let neighbors = adj[u]
+  for i = 0; i < neighbors.length(); i = i + 1 {
+    let v = neighbors[i]
     if v != p && !removed[v] && sub[v] > total / 2 {
       return find_centroid(v, u, total, adj, removed, sub)
     }
+  } where {
+    invariant: i >= 0 && i <= neighbors.length(),
+    reasoning: (
+      #|INVARIANT (centroid scan):
+      #|Neighbors in neighbors[0..i) have been checked for a heavy subtree
+      #|larger than total/2.
+      #|MAINTENANCE:
+      #|Check neighbors[i]; if it is heavy and active, recurse immediately.
+      #|TERMINATION:
+      #|At i = neighbors.length(), u is the centroid.
+    ),
   }
   u
 }
@@ -78,10 +91,22 @@ fn decompose(
   parent[c] = p
   level[c] = depth
   removed[c] = true
-  for v in adj[c] {
+  let neighbors = adj[c]
+  for i = 0; i < neighbors.length(); i = i + 1 {
+    let v = neighbors[i]
     if !removed[v] {
       decompose(v, c, depth + 1, adj, removed, sub, parent, level)
     }
+  } where {
+    invariant: i >= 0 && i <= neighbors.length(),
+    reasoning: (
+      #|INVARIANT (child components):
+      #|All neighbors in neighbors[0..i) have been decomposed if not removed.
+      #|MAINTENANCE:
+      #|Recurse on neighbors[i] when it belongs to an undecomposed subtree.
+      #|TERMINATION:
+      #|At i = neighbors.length(), all child components are processed.
+    ),
   }
 }
 
