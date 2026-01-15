@@ -21,7 +21,7 @@ pub fn shortest_path_grid(
   if grid[sx][sy] != 0 || grid[tx][ty] != 0 {
     return None
   }
-  let dist : Array[Array[Int]] = Array::makei(n, fn(_) { Array::make(m, -1) })
+  let dist : Array[Array[Int]] = Array::makei(n, _ => Array::make(m, -1))
   let queue : Array[(Int, Int)] = []
   dist[sx][sy] = 0
   queue.push((sx, sy))
