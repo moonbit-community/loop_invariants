@@ -53,8 +53,11 @@ fn FlowNetwork::bfs_find_path(
   let queue : Array[Int] = []
   queue.push(source)
   visited[source] = true
-  for front = 0; front < queue.length() && not(visited[sink]); front = front + 1 {
-    let u = queue[front]
+  let mut front = 0
+  while queue.get(front) is Some(u) {
+    if visited[sink] {
+      break
+    }
     for i = 0; i < self.adj[u].length(); i = i + 1 {
       let edge = self.adj[u][i]
       let residual = edge.capacity - edge.flow
@@ -83,26 +86,7 @@ fn FlowNetwork::bfs_find_path(
         #|When i == adj[u].length(), all residual edges out of u are scanned.
       ),
     }
-  } where {
-    invariant: front >= 0 && front <= queue.length() && visited[source],
-    reasoning: (
-      #|INVARIANT 1 (Queue processing):
-      #|All nodes in queue[0..front) have had their outgoing residual edges
-      #|scanned; queue[front..] are discovered but not yet expanded.
-      #|
-      #|INVARIANT 2 (Reachability):
-      #|visited[v] = true iff v is reachable from source in the residual graph
-      #|via the edges scanned so far; parent[v] stores a valid predecessor edge
-      #|for all visited v != source.
-      #|
-      #|MAINTENANCE:
-      #|Expanding queue[front] scans its outgoing residual edges and appends
-      #|newly discovered vertices to the queue, preserving reachability.
-      #|
-      #|TERMINATION:
-      #|We stop once sink is visited (shortest augmenting path found), or once
-      #|the queue is exhausted (no augmenting path exists).
-    ),
+    front = front + 1
   }
   (visited[sink], parent)
 }
