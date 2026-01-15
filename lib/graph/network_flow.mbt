@@ -252,8 +252,8 @@ fn DinicNetwork::bfs_dinic(
   self.level[source] = 0
   let queue : Array[Int] = []
   queue.push(source)
-  for front = 0; front < queue.length(); front = front + 1 {
-    let u = queue[front]
+  let mut front = 0
+  while queue.get(front) is Some(u) {
     for i = 0; i < self.adj[u].length(); i = i + 1 {
       let edge = self.adj[u][i]
       let residual = edge.capacity - edge.flow
@@ -275,19 +275,7 @@ fn DinicNetwork::bfs_dinic(
         #|At i == adj[u].length(), all outgoing residual edges of u are scanned.
       ),
     }
-  } where {
-    invariant: front >= 0 && front <= queue.length(),
-    reasoning: (
-      #|INVARIANT (Level graph):
-      #|All nodes in queue[0..front) have been expanded; for any visited node v,
-      #|level[v] equals the shortest edge-distance from source in the residual
-      #|graph. Unvisited nodes keep level = -1.
-      #|MAINTENANCE:
-      #|Expanding queue[front] assigns levels to newly discovered neighbors,
-      #|preserving shortest-layer distances.
-      #|TERMINATION:
-      #|When front reaches queue.length(), the level graph is complete.
-    ),
+    front = front + 1
   }
   self.level[sink] >= 0
 }
@@ -477,8 +465,8 @@ fn MCMFNetwork::spfa_mcmf(
   let queue : Array[Int] = []
   queue.push(source)
   in_queue[source] = true
-  for front = 0; front < queue.length(); front = front + 1 {
-    let u = queue[front]
+  let mut front = 0
+  while queue.get(front) is Some(u) {
     in_queue[u] = false
     for i = 0; i < self.adj[u].length(); i = i + 1 {
       let edge = self.adj[u][i]
@@ -505,22 +493,7 @@ fn MCMFNetwork::spfa_mcmf(
         #|At i == adj[u].length(), all residual edges from u are processed.
       ),
     }
-  } where {
-    invariant: front >= 0,
-    reasoning: (
-      #|INVARIANT (SPFA queue):
-      #|Vertices in queue are candidates whose outgoing edges may further
-      #|improve dist. dist[v] always represents the best known cost of a
-      #|residual path from source to v; parent encodes that path.
-      #|
-      #|SPFA handles negative-cost reverse edges introduced by flow updates,
-      #|while ensuring dist decreases only when a strictly cheaper path is found.
-      #|MAINTENANCE:
-      #|Popping a vertex scans its outgoing edges and enqueues any neighbor
-      #|whose dist improves, preserving the invariant.
-      #|TERMINATION:
-      #|When the queue is exhausted, no further relaxation is possible.
-    ),
+    front = front + 1
   }
   dist[sink] < inf
 }
