@@ -44,20 +44,7 @@ fn SAMState::new() -> SAMState {
 
 ///|
 fn SAMState::copy_trans(self : SAMState) -> SAMState {
-  let new_trans : Array[Int] = Array::make(alphabet_size, -1)
-  for i = 0; i < alphabet_size; i = i + 1 {
-    new_trans[i] = self.trans[i]
-  } where {
-    invariant: i >= 0 && i <= alphabet_size,
-    reasoning: (
-      #|INVARIANT (copy transitions):
-      #|new_trans[0..i) matches self.trans[0..i).
-      #|MAINTENANCE:
-      #|Copy transition i from self.trans into new_trans.
-      #|TERMINATION:
-      #|At i = alphabet_size, all transitions are copied.
-    ),
-  }
+  let new_trans = self.trans.copy()
   {
     trans: new_trans,
     link: self.link,
