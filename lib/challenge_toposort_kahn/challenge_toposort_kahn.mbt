@@ -8,24 +8,13 @@
 pub fn topo_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   let adj : Array[Array[Int]] = Array::makei(n, _ => [])
   let indeg : Array[Int] = Array::make(n, 0)
-  let m = edges.length()
-  for i = 0; i < m; i = i + 1 {
-    let (u, v) = edges[i]
+  edges.each(fn(edge) {
+    let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       adj[u].push(v)
       indeg[v] = indeg[v] + 1
     }
-  } where {
-    invariant: i >= 0 && i <= m,
-    reasoning: (
-      #|INVARIANT (Build graph):
-      #|adj and indeg reflect the edges in edges[0..i).
-      #|MAINTENANCE:
-      #|Insert edge (u, v) and increment indegree of v.
-      #|TERMINATION:
-      #|At i = m, the adjacency list and indegrees are complete.
-    ),
-  }
+  })
   let queue : Array[Int] = []
   for i = 0; i < n; i = i + 1 {
     if indeg[i] == 0 {
