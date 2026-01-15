@@ -94,7 +94,7 @@ priv struct BiconnectedFinder {
 ///|
 /// Create a new biconnected component finder.
 fn BiconnectedFinder::new(n : Int) -> BiconnectedFinder {
-  let adj : Array[Array[(Int, Int)]] = Array::makei(n, fn(_) { [] })
+  let adj : Array[Array[(Int, Int)]] = Array::makei(n, _ => [])
   {
     n,
     adj,
