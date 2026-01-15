@@ -297,7 +297,7 @@ pub fn SuffixAutomaton::count_occurrences(
     .map(fn(s) { s.len })
     .maximum()
     .unwrap_or(0)
-  let by_len : Array[Array[Int]] = Array::makei(max_len + 1, fn(_) { [] })
+  let by_len : Array[Array[Int]] = Array::makei(max_len + 1, _ => [])
   for i = 0; i < self.size; i = i + 1 {
     by_len[self.states[i].len].push(i)
   } where {
