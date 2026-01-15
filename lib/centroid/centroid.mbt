@@ -38,7 +38,7 @@ priv struct CentroidTree {
 
 ///|
 fn CentroidTree::new(n : Int) -> CentroidTree {
-  let adj = Array::makei(n, fn(_) { [] })
+  let adj = Array::makei(n, _ => [])
   {
     n,
     adj,
