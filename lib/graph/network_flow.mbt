@@ -236,19 +236,7 @@ fn DinicNetwork::bfs_dinic(
   source : Int,
   sink : Int,
 ) -> Bool {
-  for i = 0; i < self.n; i = i + 1 {
-    self.level[i] = -1
-  } where {
-    invariant: i >= 0 && i <= self.n,
-    reasoning: (
-      #|INVARIANT (reset levels):
-      #|level[0..i) are cleared to -1 from the previous BFS.
-      #|MAINTENANCE:
-      #|Set level[i] = -1 to reset the next node.
-      #|TERMINATION:
-      #|At i = n, all levels are reset.
-    ),
-  }
+  self.level.fill(-1)
   self.level[source] = 0
   let queue : Array[Int] = []
   queue.push(source)
