@@ -215,14 +215,13 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
     ),
   }
 
-  // Calculate max area
-  let mut max_area = 0L
-  for i = 0; i < n; i = i + 1 {
+  // Calculate max area using fold
+  for i = 0, max_area = 0L; i < n; {
     let width = (next_smaller[i] - prev_smaller[i] - 1).to_int64()
     let area = heights[i] * width
-    if area > max_area {
-      max_area = area
-    }
+    continue i + 1, if area > max_area { area } else { max_area }
+  } else {
+    max_area
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
@@ -235,7 +234,6 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
       #|After i = n, max_area is the largest histogram rectangle.
     ),
   }
-  max_area
 }
 
 // ============================================================================
@@ -400,15 +398,16 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
     ),
   }
 
-  // Sum contributions
-  let mut result = 0L
-  for i = 0; i < n; i = i + 1 {
+  // Sum contributions using functional for loop
+  for i = 0, result = 0L; i < n; {
     let contribution = arr[i] *
       left[i].to_int64() %
       mod_val *
       right[i].to_int64() %
       mod_val
-    result = (result + contribution) % mod_val
+    continue i + 1, (result + contribution) % mod_val
+  } else {
+    result
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
@@ -421,7 +420,6 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
       #|At i = n, result is the sum of all subarray minimums.
     ),
   }
-  result
 }
 
 // ============================================================================

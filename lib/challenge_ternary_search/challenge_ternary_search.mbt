@@ -32,11 +32,11 @@ pub fn find_min_unimodal(arr : ArrayView[Int]) -> Int {
       #|When hi - lo <= 3, the minimum is within a small window.
     ),
   }
-  let mut best_idx = l
-  for i = l; i <= h; i = i + 1 {
-    if arr[i] < arr[best_idx] {
-      best_idx = i
-    }
+  // Linear scan for minimum in small window using functional for loop
+  for i = l, best_idx = l; i <= h; {
+    continue i + 1, if arr[i] < arr[best_idx] { i } else { best_idx }
+  } else {
+    best_idx
   } where {
     invariant: i >= l && i <= h + 1,
     reasoning: (
@@ -48,7 +48,6 @@ pub fn find_min_unimodal(arr : ArrayView[Int]) -> Int {
       #|At i = h + 1, best_idx is the minimum index in [l, h].
     ),
   }
-  best_idx
 }
 
 ///|
