@@ -67,8 +67,7 @@ pub fn zero_one_bfs(graph : Graph, source : Int) -> Array[Int] {
   dist[source] = 0
   let deque : @deque.Deque[Int] = @deque.Deque::new()
   deque.push_front(source)
-  for steps = 0; deque.length() > 0; steps = steps + 1 {
-    let u = deque.pop_front().unwrap()
+  while deque.pop_front() is Some(u) {
     let du = dist[u]
     for e in graph.adj[u] {
       let nd = du + e.weight
@@ -81,23 +80,6 @@ pub fn zero_one_bfs(graph : Graph, source : Int) -> Array[Int] {
         }
       }
     }
-  } where {
-    invariant: steps >= 0 && dist.length() == n && dist[source] == 0,
-    reasoning: (
-      #|INVARIANT (0-1 BFS frontier):
-      #|The deque stores the current frontier of vertices whose outgoing edges
-      #|may still improve distances. Every vertex already popped from the front
-      #|has its final shortest distance. Distances of queued vertices are
-      #|nondecreasing from front to back.
-      #|MAINTENANCE:
-      #|Relaxing an edge never increases distances. A weight-0 relaxation keeps
-      #|the same distance and pushes to the front; a weight-1 relaxation adds 1
-      #|and pushes to the back. Since the front always has the smallest distance,
-      #|this preserves the distance order of the deque.
-      #|TERMINATION:
-      #|When the deque is empty, no edge can relax any distance further, so dist
-      #|contains the shortest 0/1 path lengths from source.
-    ),
   }
   dist
 }
