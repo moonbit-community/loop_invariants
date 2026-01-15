@@ -63,21 +63,7 @@ pub fn SuffixAutomaton::new(max_len : Int) -> SuffixAutomaton {
   states.push(init)
 
   // Reserve space for states
-  for iter = 0; iter < 2 * max_len; iter = iter + 1 {
-    states.push(SAMState::new())
-  } where {
-    invariant: iter >= 0 && iter <= 2 * max_len,
-    reasoning: (
-      #|INVARIANT (Capacity reserve):
-      #|states contains the initial state plus iter blank states. Each step
-      #|adds one placeholder, so after 2*max_len iterations we have space for
-      #|up to 2n states, which is the maximum size of a suffix automaton.
-      #|MAINTENANCE:
-      #|Pushing one fresh SAMState extends the reserved capacity by one.
-      #|TERMINATION:
-      #|At iter == 2 * max_len, the maximum state capacity is allocated.
-    ),
-  }
+  states.append(Array::makei(2 * max_len, fn(_) { SAMState::new() }))
   { states, last: 0, size: 1 }
 }
 
@@ -110,21 +96,7 @@ pub fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
       self.states[clone].len = self.states[p].len + 1
       self.states[clone].link = self.states[q].link
       self.states[clone].first_pos = self.states[q].first_pos
-      for i = 0; i < SAM_ALPHABET; i = i + 1 {
-        self.states[clone].next[i] = self.states[q].next[i]
-      } where {
-        invariant: i >= 0 && i <= SAM_ALPHABET,
-        reasoning: (
-          #|INVARIANT (Clone transitions):
-          #|For indices [0..i), clone.next matches q.next. When the loop ends,
-          #|clone has identical transitions to q, preserving the automaton
-          #|structure while allowing link redirection.
-          #|MAINTENANCE:
-          #|Copy q.next[i] into clone.next[i] and advance i.
-          #|TERMINATION:
-          #|At i == SAM_ALPHABET, clone.next fully matches q.next.
-        ),
-      }
+      self.states[q].next[:].blit_to(self.states[clone].next)
 
       // Redirect transitions from p and its ancestors to clone
       while p >= 0 && self.states[p].next[c] == q {
