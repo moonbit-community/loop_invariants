@@ -63,7 +63,7 @@ pub fn SuffixAutomaton::new(max_len : Int) -> SuffixAutomaton {
   states.push(init)
 
   // Reserve space for states
-  states.append(Array::makei(2 * max_len, fn(_) { SAMState::new() }))
+  states.append(Array::makei(2 * max_len, _ => SAMState::new()))
   { states, last: 0, size: 1 }
 }
 
