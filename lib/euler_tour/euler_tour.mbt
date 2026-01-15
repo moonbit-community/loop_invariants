@@ -355,7 +355,7 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
 
   // Build sparse table for minimum depth
   let k = self.log[m] + 1
-  self.sparse = Array::makei(k, fn(_) { Array::make(m, 0) })
+  self.sparse = Array::makei(k, _ => Array::make(m, 0))
 
   // Initialize with indices
   for i = 0; i < m; i = i + 1 {
