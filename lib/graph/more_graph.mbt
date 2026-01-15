@@ -224,7 +224,7 @@ test "floyd warshall" {
 fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   // Calculate in-degrees
   let in_degree = Array::make(n, 0)
-  let adj : Array[Array[Int]] = Array::makei(n, fn(_) { [] })
+  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
   for e = 0; e < edges.length(); e = e + 1 {
     let (u, v) = edges[e]
     adj[u].push(v)
@@ -472,7 +472,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
   }
 
   // Build reverse graph using makei
-  let rev_adj : Array[Array[Int]] = Array::makei(n, fn(_) { [] })
+  let rev_adj : Array[Array[Int]] = Array::makei(n, _ => [])
   for u = 0; u < n; u = u + 1 {
     for i = 0; i < adj[u].length(); i = i + 1 {
       rev_adj[adj[u][i]].push(u)
