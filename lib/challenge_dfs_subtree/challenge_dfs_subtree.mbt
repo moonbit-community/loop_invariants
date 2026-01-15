@@ -18,11 +18,24 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
   for idx = 0; idx < stack.length(); idx = idx + 1 {
     let u = stack[idx]
     order.push(u)
-    for v in adj[u] {
+    let neighbors = adj[u]
+    for j = 0; j < neighbors.length(); j = j + 1 {
+      let v = neighbors[j]
       if v != parent[u] && parent[v] == -1 {
         parent[v] = u
         stack.push(v)
       }
+    } where {
+      invariant: j >= 0 && j <= neighbors.length(),
+      reasoning: (
+        #|INVARIANT (neighbor scan):
+        #|Neighbors in neighbors[0..j) have been checked; any newly discovered
+        #|node among them has parent set to u and is pushed to stack.
+        #|MAINTENANCE:
+        #|Process neighbors[j], updating parent/stack if unvisited.
+        #|TERMINATION:
+        #|At j = neighbors.length(), all neighbors of u are processed.
+      ),
     }
   } where {
     invariant: idx >= 0 && idx <= stack.length(),
@@ -40,10 +53,22 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
   for i = order.length() - 1; i >= 0; i = i - 1 {
     let u = order[i]
     size[u] = 1
-    for v in adj[u] {
+    let neighbors = adj[u]
+    for j = 0; j < neighbors.length(); j = j + 1 {
+      let v = neighbors[j]
       if parent[v] == u {
         size[u] = size[u] + size[v]
       }
+    } where {
+      invariant: j >= 0 && j <= neighbors.length(),
+      reasoning: (
+        #|INVARIANT (child accumulation):
+        #|size[u] equals 1 plus the sizes of children in neighbors[0..j).
+        #|MAINTENANCE:
+        #|When neighbors[j] is a child, add its size to size[u].
+        #|TERMINATION:
+        #|At j = neighbors.length(), size[u] includes all children of u.
+      ),
     }
   } where {
     invariant: i >= -1 && i < order.length(),
