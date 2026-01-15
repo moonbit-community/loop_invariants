@@ -590,8 +590,8 @@ fn offline_lca_simple(
   let visited : Array[Bool] = Array::make(n, false)
   queue.push(root)
   visited[root] = true
-  for front = 0; front < queue.length(); front = front + 1 {
-    let node = queue[front]
+  let mut front = 0
+  while queue.get(front) is Some(node) {
     for idx = 0; idx < adj[node].length(); idx = idx + 1 {
       let child = adj[node][idx]
       if not(visited[child]) {
@@ -612,17 +612,7 @@ fn offline_lca_simple(
         #|At idx == degree, all neighbors of node are processed.
       ),
     }
-  } where {
-    invariant: front >= 0 && front <= queue.length(),
-    reasoning: (
-      #|INVARIANT (BFS queue):
-      #|queue[0..front) nodes are fully expanded; queue[front..] are discovered
-      #|but not processed. parent/depth are correct for visited nodes.
-      #|MAINTENANCE:
-      #|Expand queue[front] and enqueue its undiscovered neighbors.
-      #|TERMINATION:
-      #|At front == queue.length(), all reachable nodes are expanded.
-    ),
+    front = front + 1
   }
 
   // Answer queries
