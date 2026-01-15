@@ -23,24 +23,11 @@ fn bfs(adj : Array[Array[Int]], start : Int) -> (Int, Array[Int]) {
   queue.push(start)
   for head = 0; head < queue.length(); head = head + 1 {
     let u = queue[head]
-    let neighbors = adj[u]
-    for j = 0; j < neighbors.length(); j = j + 1 {
-      let v = neighbors[j]
+    for v in adj[u] {
       if dist[v] == -1 {
         dist[v] = dist[u] + 1
         queue.push(v)
       }
-    } where {
-      invariant: j >= 0 && j <= neighbors.length(),
-      reasoning: (
-        #|INVARIANT (neighbor scan):
-        #|Neighbors in neighbors[0..j) have been checked; newly discovered
-        #|nodes were assigned distance and enqueued.
-        #|MAINTENANCE:
-        #|Process neighbors[j], enqueueing if unseen.
-        #|TERMINATION:
-        #|At j = neighbors.length(), all neighbors are processed.
-      ),
     }
   } where {
     invariant: head >= 0 && head <= queue.length(),
