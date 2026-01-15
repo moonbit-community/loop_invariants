@@ -25,21 +25,11 @@ fn highest_bit(x : Int) -> Int {
 
 ///|
 fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj = Array::makei(n, fn(_) { [] })
-  for i = 0; i < edges.length(); i = i + 1 {
-    let (u, v) = edges[i]
+  let adj = Array::makei(n, _ => [])
+  for edge in edges {
+    let (u, v) = edge
     adj[u].push(v)
     adj[v].push(u)
-  } where {
-    invariant: i >= 0 && i <= edges.length(),
-    reasoning: (
-      #|INVARIANT (adjacency build):
-      #|All edges in edges[0..i) are added to adj.
-      #|MAINTENANCE:
-      #|Insert both directions for the next edge.
-      #|TERMINATION:
-      #|At i = edges.length(), the adjacency list is complete.
-    ),
   }
   adj
 }
@@ -58,7 +48,7 @@ pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
     return { up: [], depth: [] }
   }
   let log = highest_bit(n) + 1
-  let up = Array::makei(log, fn(_) { Array::make(n, -1) })
+  let up = Array::makei(log, _ => Array::make(n, -1))
   let depth = Array::make(n, 0)
   let adj = build_adj(n, edges)
   let queue : Array[Int] = []
