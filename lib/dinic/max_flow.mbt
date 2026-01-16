@@ -146,9 +146,9 @@ pub fn max_flow(
   sink : Int,
 ) -> Int64 {
   let flow = Dinic::new(n)
-  edges.each(fn(edge) {
+  for edge in edges {
     let (u, v, cap) = edge
     flow.add_edge(u, v, cap)
-  })
+  }
   flow.max_flow(source, sink)
 }
