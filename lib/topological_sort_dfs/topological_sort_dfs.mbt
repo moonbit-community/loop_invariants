@@ -146,7 +146,7 @@ test "topological sort basic" {
   for i, v in order {
     pos[v] = i
   }
-  let ok = edges.all(fn(edge) {
+  let ok = edges.all(edge => {
     let (u, v) = edge
     pos[u] < pos[v]
   })
