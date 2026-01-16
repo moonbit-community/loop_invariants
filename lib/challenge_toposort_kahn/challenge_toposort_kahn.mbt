@@ -8,13 +8,13 @@
 pub fn topo_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   let adj : Array[Array[Int]] = Array::makei(n, _ => [])
   let indeg : Array[Int] = Array::make(n, 0)
-  edges.each(fn(edge) {
+  for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       adj[u].push(v)
       indeg[v] = indeg[v] + 1
     }
-  })
+  }
   let queue : Array[Int] = []
   for i = 0; i < n; i = i + 1 {
     if indeg[i] == 0 {
