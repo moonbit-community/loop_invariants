@@ -144,12 +144,12 @@ pub struct CentroidDecomp {
 /// Build centroid decomposition and return parent/depth arrays.
 pub fn build_centroid(n : Int, edges : ArrayView[(Int, Int)]) -> CentroidDecomp {
   let tree = CentroidTree::new(n)
-  edges.each(fn(edge) {
+  for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       tree.add_edge(u, v)
     }
-  })
+  }
   tree.build()
   { parent: tree.centroid_parent, depth: tree.centroid_depth }
 }
