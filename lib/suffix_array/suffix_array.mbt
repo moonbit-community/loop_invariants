@@ -356,7 +356,7 @@ pub fn SuffixArray::find_all(
           #|At i = last + 1, all matching suffix indices are collected.
         ),
       }
-      result.sort_by(fn(a, b) { a - b })
+      result.sort_by((a, b) => a - b)
       result
     }
   }
@@ -414,7 +414,7 @@ pub fn SuffixArray::count_distinct_substrings(self : SuffixArray) -> Int64 {
   }
   // Total possible substrings minus overlaps (LCP sum)
   let total = n.to_int64() * (n.to_int64() + 1L) / 2L
-  let lcp_sum = self.lcp[1:].fold(init=0L, fn(sum, v) { sum + v.to_int64() })
+  let lcp_sum = self.lcp[1:].fold(init=0L, (sum, v) => sum + v.to_int64())
   total - lcp_sum
 }
 
