@@ -102,7 +102,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
     return None
   }
   let lines = halfplanes
-  lines.sort_by(fn(a, b) {
+  lines.sort_by((a, b) => {
     let ha = half(a.v)
     let hb = half(b.v)
     if ha != hb {
