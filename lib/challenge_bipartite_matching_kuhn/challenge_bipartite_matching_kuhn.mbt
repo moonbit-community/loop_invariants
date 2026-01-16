@@ -11,12 +11,12 @@ pub fn build_adj(
   edges : ArrayView[(Int, Int)],
 ) -> Array[Array[Int]] {
   let adj : Array[Array[Int]] = Array::makei(left_n, _ => [])
-  edges.each(fn(edge) {
+  for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < left_n && v >= 0 && v < right_n {
       adj[u].push(v)
     }
-  })
+  }
   adj
 }
 
