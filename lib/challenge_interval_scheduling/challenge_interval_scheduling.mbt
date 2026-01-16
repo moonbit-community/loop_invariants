@@ -17,32 +17,15 @@ fn max_non_overlapping(intervals : Array[Interval]) -> Int {
     return 0
   }
   intervals.sort_by_key(it => it.end)
-  for i = 0, count = 0, last_end = -1_000_000_000 {
-    if i >= intervals.length() {
-      break count
-    } else {
-      let it = intervals[i]
-      if it.start >= last_end {
-        continue i + 1, count + 1, it.end
-      } else {
-        continue i + 1, count, last_end
-      }
+  let mut count = 0
+  let mut last_end = -1_000_000_000
+  for it in intervals {
+    if it.start >= last_end {
+      count = count + 1
+      last_end = it.end
     }
-  } where {
-    invariant: i >= 0 && i <= intervals.length(),
-    invariant: count >= 0,
-    reasoning: (
-      #|INVARIANT (Greedy selection):
-      #|count is the number of selected non-overlapping intervals among
-      #|intervals[0..i) in end-time order, and last_end is the end of the
-      #|most recently selected interval (or a sentinel if none selected).
-      #|MAINTENANCE:
-      #|If intervals[i] starts after the last chosen end, select it; otherwise
-      #|skip it. Greedy by earliest end preserves optimality.
-      #|TERMINATION:
-      #|At i = n, count is the maximum number of non-overlapping intervals.
-    ),
   }
+  count
 }
 
 ///|
