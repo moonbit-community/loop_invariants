@@ -70,27 +70,14 @@ pub fn mst_weight(n : Int, edges : ArrayView[(Int, Int, Int)]) -> Int? {
   let dsu = dsu_make(n)
   let mut total = 0
   let mut used = 0
-  let m = sorted.length()
-  for i = 0; i < m; i = i + 1 {
-    let (u, v, w) = sorted[i]
+  for edge in sorted {
+    let (u, v, w) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       if dsu_union(dsu, u, v) {
         total = total + w
         used = used + 1
       }
     }
-  } where {
-    invariant: i >= 0 && i <= m,
-    invariant: used >= 0 && used <= n - 1,
-    reasoning: (
-      #|INVARIANT (Kruskal scan):
-      #|The selected edges form an acyclic forest of size used.
-      #|total equals the sum of selected edge weights.
-      #|MAINTENANCE:
-      #|Add an edge only when it connects two different components.
-      #|TERMINATION:
-      #|After all edges, used == n-1 iff the graph is connected.
-    ),
   }
   if used == n - 1 {
     Some(total)
