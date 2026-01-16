@@ -131,12 +131,9 @@ fn remove(x : Int, freq : Array[Int], distinct : Ref[Int]) -> Unit {
 
 // Sort queries, process with Mo's algorithm
 let block_size = sqrt(n)
-queries.sort_by(fn(a, b) {
-  let ba = a.l / block_size
-  let bb = b.l / block_size
-  if ba != bb { ba - bb }
-  else { a.r - b.r }
-})
+queries.sort_by((a, b) =>
+  if a.l / block_size != b.l / block_size { (a.l / block_size) - (b.l / block_size) }
+  else { a.r - b.r })
 
 // Process queries...
 ```
@@ -215,4 +212,3 @@ Block size tuning:
 - Handle edge cases: empty ranges, single elements
 - For tree queries, flatten with Euler tour first
 - Consider the "alternating sort" optimization for speed
-
