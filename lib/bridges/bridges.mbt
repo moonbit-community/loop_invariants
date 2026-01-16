@@ -180,10 +180,10 @@ pub fn find_bridges(
   edges : ArrayView[(Int, Int)],
 ) -> Array[(Int, Int)] {
   let finder = BridgeFinder::new(n)
-  edges.each(fn(edge) {
+  for edge in edges {
     let (u, v) = edge
     finder.add_edge(u, v)
-  })
+  }
   finder.find()
   finder.get_bridges()
 }
@@ -195,10 +195,10 @@ pub fn articulation_points(
   edges : ArrayView[(Int, Int)],
 ) -> Array[Int] {
   let finder = BridgeFinder::new(n)
-  edges.each(fn(edge) {
+  for edge in edges {
     let (u, v) = edge
     finder.add_edge(u, v)
-  })
+  }
   finder.find()
   finder.get_articulation_points()
 }
