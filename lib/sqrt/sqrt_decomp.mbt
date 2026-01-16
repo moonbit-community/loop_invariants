@@ -627,15 +627,11 @@ fn MoSolver::solve_distinct(
   // Sort queries by (l / block_size, r)
   // This is the key to Mo's algorithm efficiency
   let block_size = self.block_size
-  mo_queries.sort_by(fn(a : MoQuery, b : MoQuery) -> Int {
-    let block_a = a.l / block_size
-    let block_b = b.l / block_size
-    if block_a != block_b {
-      block_a - block_b
-    } else {
-      // Alternate direction for better cache behavior (optional optimization)
-      a.r - b.r
-    }
+  mo_queries.sort_by((a, b) => if a.l / block_size != b.l / block_size {
+    a.l / block_size - b.l / block_size
+  } else {
+    // Alternate direction for better cache behavior (optional optimization)
+    a.r - b.r
   })
   let results = Array::make(q, 0)
   let count = Array::make(max_val + 1, 0) // count[v] = occurrences of value v
