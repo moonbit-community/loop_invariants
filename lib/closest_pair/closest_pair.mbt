@@ -170,13 +170,13 @@ fn closest_pair_rec(
   // Divide points_y into left and right
   let left_y : Array[Point] = []
   let right_y : Array[Point] = []
-  points_y.each(fn(p) {
+  for p in points_y {
     if p.x <= mid_point.x {
       left_y.push(p)
     } else {
       right_y.push(p)
     }
-  })
+  }
 
   // Recursive calls
   let (d_left, l1, l2) = closest_pair_rec(points_x[0:mid], left_y)
@@ -194,7 +194,7 @@ fn closest_pair_rec(
 
   // Build strip of points within delta of mid line
   let strip : Array[Point] = []
-  points_y.each(fn(p) {
+  for p in points_y {
     let dx = p.x - mid_point.x
     if dx < 0.0 {
       if -dx < delta {
@@ -203,7 +203,7 @@ fn closest_pair_rec(
     } else if dx < delta {
       strip.push(p)
     }
-  })
+  }
 
   // Check strip
   strip_closest(strip, delta, p1, p2)
