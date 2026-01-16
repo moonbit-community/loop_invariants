@@ -51,25 +51,12 @@ fn try_kuhn(
 pub fn max_matching(adj : Array[Array[Int]], right_n : Int) -> Int {
   let left_n = adj.length()
   let match_r = Array::make(right_n, -1)
-  for u = 0, matched = 0; u < left_n; {
+  let mut matched = 0
+  for u in 0..<left_n {
     let seen = Array::make(right_n, false)
-    let new_matched = if try_kuhn(u, adj, seen, match_r) {
-      matched + 1
-    } else {
-      matched
+    if try_kuhn(u, adj, seen, match_r) {
+      matched = matched + 1
     }
-    continue u + 1, new_matched
-  } else {
-    matched
-  } where {
-    invariant: u >= 0 && u <= left_n,
-    reasoning: (
-      #|INVARIANT (Kuhn outer loop):
-      #|matched equals the size of the matching after processing nodes < u.
-      #|MAINTENANCE:
-      #|Find an augmenting path from u and update matching if possible.
-      #|TERMINATION:
-      #|At u = left_n, matched is the maximum matching size.
-    ),
   }
+  matched
 }
