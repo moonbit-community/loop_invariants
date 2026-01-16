@@ -156,12 +156,12 @@ pub fn build_euler_tour(
     return { entry: [], exit: [], tour: [], depth: [], parent: [] }
   }
   let tree = EulerTour::new(n)
-  edges.each(fn(edge) {
+  for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       tree.add_edge(u, v)
     }
-  })
+  }
   let r = if root >= 0 && root < n { root } else { 0 }
   tree.build(r)
   {
