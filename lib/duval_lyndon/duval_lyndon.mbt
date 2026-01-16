@@ -16,19 +16,9 @@
 ///|
 fn slice_string(s : String, start : Int, end : Int) -> String {
   let sb = StringBuilder::new()
-  for i = start; i < end; i = i + 1 {
-    let ch = s[i].to_int()
+  for idx in start..<end {
+    let ch = s[idx].to_int()
     sb.write_char(ch.unsafe_to_char())
-  } where {
-    invariant: i >= start && i <= end,
-    reasoning: (
-      #|INVARIANT (slice build):
-      #|sb contains s[start..i) as UTF-16 code units.
-      #|MAINTENANCE:
-      #|Append s[i] to extend the slice by one code unit.
-      #|TERMINATION:
-      #|At i = end, sb holds the full slice.
-    ),
   }
   sb.to_string()
 }
