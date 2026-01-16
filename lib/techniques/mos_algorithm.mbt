@@ -667,8 +667,7 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
   let stack : Array[(Int, Int)] = []
   let order : Array[Int] = []
   stack.push((root, -1))
-  while stack.length() > 0 {
-    let (node, par) = stack.pop().unwrap()
+  while stack.pop() is Some((node, par)) {
     parent[node] = par
     order.push(node)
     for idx = 0; idx < adj[node].length(); idx = idx + 1 {
@@ -789,8 +788,7 @@ fn build_euler_tour(adj : Array[Array[Int]], root : Int) -> EulerTour {
   let stack : Array[(Int, Int, Int)] = []
   stack.push((root, -1, 0))
   let time = Array::make(1, 0)
-  while stack.length() > 0 {
-    let (node, par, state) = stack.pop().unwrap()
+  while stack.pop() is Some((node, par, state)) {
     if state == 0 {
       enter[node] = time[0]
       tour.push(node)

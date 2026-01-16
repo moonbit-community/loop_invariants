@@ -63,8 +63,8 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
     dq.push_back(i)
 
     // Record maximum once we have a full window
-    if i >= k - 1 {
-      result.push(arr[dq.front().unwrap()])
+    if i >= k - 1 && dq.front() is Some(front) {
+      result.push(arr[front])
     }
   } where {
     invariant: i >= 0 && i <= n,
@@ -84,8 +84,10 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
       #|TERMINATION:
       #|At loop end, deque indices refer only to processed elements.
     ),
-    invariant: dq.is_empty() ||
-    (dq.front().unwrap() >= i - k && dq.front().unwrap() <= i - 1),
+    invariant: match dq.front() {
+      None => true
+      Some(f) => f >= i - k && f <= i - 1
+    },
     reasoning: (
       #|INVARIANT 3 (Window membership): if deque is non-empty, its front index
       #|lies inside the current window for prefix [0, i): [i-k, i-1].
@@ -148,8 +150,8 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
       }
     }
     dq.push_back(i)
-    if i >= k - 1 {
-      result.push(arr[dq.front().unwrap()])
+    if i >= k - 1 && dq.front() is Some(front) {
+      result.push(arr[front])
     }
   } where {
     invariant: i >= 0 && i <= n,
@@ -169,8 +171,10 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
       #|TERMINATION:
       #|At loop end, deque indices refer only to processed elements.
     ),
-    invariant: dq.is_empty() ||
-    (dq.front().unwrap() >= i - k && dq.front().unwrap() <= i - 1),
+    invariant: match dq.front() {
+      None => true
+      Some(f) => f >= i - k && f <= i - 1
+    },
     reasoning: (
       #|INVARIANT 3 (Window membership): if deque is non-empty, its front index
       #|lies inside the current window for prefix [0, i): [i-k, i-1].

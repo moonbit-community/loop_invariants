@@ -683,7 +683,10 @@ fn SlopeTrick::pop_left(self : SlopeTrick) -> Int64 {
     return -9223372036854775807L
   }
   let result = self.left_slopes[0]
-  let last = self.left_slopes.pop().unwrap()
+  let last = match self.left_slopes.pop() {
+    Some(v) => v
+    None => return result
+  }
   if self.left_slopes.length() > 0 {
     self.left_slopes[0] = last
     // Bubble down
@@ -719,7 +722,10 @@ fn SlopeTrick::pop_right(self : SlopeTrick) -> Int64 {
     return 9223372036854775807L
   }
   let result = self.right_slopes[0]
-  let last = self.right_slopes.pop().unwrap()
+  let last = match self.right_slopes.pop() {
+    Some(v) => v
+    None => return result
+  }
   if self.right_slopes.length() > 0 {
     self.right_slopes[0] = last
     // Bubble down

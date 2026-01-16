@@ -50,8 +50,7 @@ fn ImplicitTreap::random_priority(self : ImplicitTreap) -> Int {
 /// ```
 fn ImplicitTreap::alloc_node(self : ImplicitTreap, val : Int64) -> Int {
   let priority = self.random_priority()
-  if self.free_list.length() > 0 {
-    let idx = self.free_list.pop().unwrap()
+  if self.free_list.pop() is Some(idx) {
     self.nodes[idx] = {
       val,
       priority,

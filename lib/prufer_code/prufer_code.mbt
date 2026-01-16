@@ -62,7 +62,10 @@ fn MinHeap::pop(self : MinHeap) -> Int? {
     return None
   }
   let result = self.data[0]
-  let last = self.data.pop().unwrap()
+  let last = match self.data.pop() {
+    Some(v) => v
+    None => return Some(result)
+  }
   if self.data.length() > 0 {
     self.data[0] = last
     let mut i = 0
@@ -213,7 +216,10 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   let next_idx = Array::make(n, 0)
   let code : Array[Int] = []
   for step = 0; step < n - 2; step = step + 1 {
-    let leaf = heap.pop().unwrap()
+    let leaf = match heap.pop() {
+      Some(v) => v
+      None => return None
+    }
     let mut idx = next_idx[leaf]
     while idx < adj[leaf].length() && deg[adj[leaf][idx]] == 0 {
       idx = idx + 1
@@ -286,7 +292,10 @@ pub fn prufer_decode(code : ArrayView[Int]) -> Array[(Int, Int)]? {
   }
   let edges : Array[(Int, Int)] = []
   for v in code {
-    let leaf = heap.pop().unwrap()
+    let leaf = match heap.pop() {
+      Some(x) => x
+      None => return None
+    }
     edges.push((leaf, v))
     deg[leaf] = 0
     deg[v] = deg[v] - 1
@@ -294,14 +303,14 @@ pub fn prufer_decode(code : ArrayView[Int]) -> Array[(Int, Int)]? {
       heap.push(v)
     }
   }
-  if heap.is_empty() {
-    return None
+  let u = match heap.pop() {
+    Some(x) => x
+    None => return None
   }
-  let u = heap.pop().unwrap()
-  if heap.is_empty() {
-    return None
+  let v = match heap.pop() {
+    Some(x) => x
+    None => return None
   }
-  let v = heap.pop().unwrap()
   edges.push((u, v))
   Some(edges)
 }

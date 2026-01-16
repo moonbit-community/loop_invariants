@@ -31,8 +31,8 @@ pub fn sliding_window_min(arr : ArrayView[Int], k : Int) -> Array[Int] {
         }
       }
       deque.push_back(i)
-      if i >= k - 1 {
-        result.push(arr[deque.front().unwrap()])
+      if i >= k - 1 && deque.front() is Some(front) {
+        result.push(arr[front])
       }
       continue i + 1
     }

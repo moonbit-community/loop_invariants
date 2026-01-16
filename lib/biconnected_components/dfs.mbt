@@ -93,11 +93,14 @@ fn BiconnectedFinder::dfs(
       if self.low[v] >= self.disc[u] {
         let comp : Array[(Int, Int)] = []
         for {
-          guard self.edge_stack.length() != 0 else { break }
-          let e = self.edge_stack.pop().unwrap()
-          comp.push(e)
-          if e == (u, v) || e == (v, u) {
-            break
+          match self.edge_stack.pop() {
+            Some(e) => {
+              comp.push(e)
+              if e == (u, v) || e == (v, u) {
+                break
+              }
+            }
+            None => break
           }
         } where {
           invariant: comp.length() + self.edge_stack.length() >= 0,

@@ -147,11 +147,15 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
     // Pop all vertices until v to form this SCC
     let scc : Array[Int] = []
     for {
-      let w = self.stack.pop().unwrap()
-      self.on_stack[w] = false
-      scc.push(w)
-      if w == v {
-        break
+      match self.stack.pop() {
+        Some(w) => {
+          self.on_stack[w] = false
+          scc.push(w)
+          if w == v {
+            break
+          }
+        }
+        None => break
       }
     } where {
       invariant: self.on_stack[v],

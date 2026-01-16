@@ -86,8 +86,7 @@ fn[T] SplayTree::is_left_child(self : SplayTree[T], x : Int) -> Bool {
 ///|
 /// Allocate a new node (reuse from free list if available)
 fn[T] SplayTree::alloc_node(self : SplayTree[T], key : T) -> Int {
-  if self.free_list.length() > 0 {
-    let idx = self.free_list.pop().unwrap()
+  if self.free_list.pop() is Some(idx) {
     self.nodes[idx].key = key
     self.nodes[idx].left = -1
     self.nodes[idx].right = -1

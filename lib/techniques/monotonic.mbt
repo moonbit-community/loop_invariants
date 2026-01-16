@@ -23,8 +23,10 @@ fn next_greater_element(arr : ArrayView[Int]) -> Array[Int] {
     } else {
       // Pop elements smaller than current - current is their NGE
       while stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i] {
-        let top = stack.pop().unwrap()
-        result[top] = i
+        match stack.pop() {
+          Some(top) => result[top] = i
+          None => break
+        }
       }
       stack.push(i)
       continue i + 1
@@ -137,8 +139,8 @@ fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
       deque.push_back(i)
 
       // Once we have a full window, record the maximum
-      if i >= k - 1 {
-        result.push(arr[deque.front().unwrap()])
+      if i >= k - 1 && deque.front() is Some(front) {
+        result.push(arr[front])
       }
       continue i + 1
     }
@@ -239,18 +241,22 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
       // Pop bars taller than current - they can't extend further right
       while stack.length() > 0 &&
             heights[stack[stack.length() - 1]] > curr_height {
-        let h_idx = stack.pop().unwrap()
-        let height = heights[h_idx]
+        match stack.pop() {
+          Some(h_idx) => {
+            let height = heights[h_idx]
 
-        // Width = distance from previous stack element to current position
-        let width = if stack.length() == 0 {
-          i
-        } else {
-          i - stack[stack.length() - 1] - 1
-        }
-        let area = height * width
-        if area > max_area {
-          max_area = area
+            // Width = distance from previous stack element to current position
+            let width = if stack.length() == 0 {
+              i
+            } else {
+              i - stack[stack.length() - 1] - 1
+            }
+            let area = height * width
+            if area > max_area {
+              max_area = area
+            }
+          }
+          None => break
         }
       }
       stack.push(i)

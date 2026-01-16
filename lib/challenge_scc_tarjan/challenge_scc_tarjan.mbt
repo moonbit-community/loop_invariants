@@ -42,11 +42,15 @@ pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
     if low[v] == index[v] {
       for {
-        let w = stack.pop().unwrap()
-        onstack[w] = false
-        comp[w] = comp_id
-        if w == v {
-          break
+        match stack.pop() {
+          Some(w) => {
+            onstack[w] = false
+            comp[w] = comp_id
+            if w == v {
+              break
+            }
+          }
+          None => break
         }
       } where {
         invariant: stack.length() >= 0,

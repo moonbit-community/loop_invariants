@@ -125,8 +125,7 @@ fn dijkstra_original(
   dist[source] = 0L
   let heap = MinHeap::new()
   heap.push({ dist: 0L, vertex: source })
-  while not(heap.is_empty()) {
-    let entry = heap.pop().unwrap()
+  while heap.pop() is Some(entry) {
     let u = entry.vertex
     if entry.dist != dist[u] {
       continue
@@ -183,8 +182,7 @@ fn dijkstra_modified(
   dist[source] = 0L
   let heap = MinHeap::new()
   heap.push({ dist: 0L, vertex: source })
-  while not(heap.is_empty()) {
-    let entry = heap.pop().unwrap()
+  while heap.pop() is Some(entry) {
     let u = entry.vertex
     if entry.dist != dist[u] {
       continue

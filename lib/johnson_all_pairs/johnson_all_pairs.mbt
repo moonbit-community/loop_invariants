@@ -63,7 +63,10 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
     return None
   }
   let result = self.data[0]
-  let last = self.data.pop().unwrap()
+  let last = match self.data.pop() {
+    Some(v) => v
+    None => return Some(result)
+  }
   if self.data.length() > 0 {
     self.data[0] = last
     let mut i = 0

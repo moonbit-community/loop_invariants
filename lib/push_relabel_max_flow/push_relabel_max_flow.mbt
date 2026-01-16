@@ -223,9 +223,13 @@ pub fn PushRelabel::max_flow(
     ),
   }
   for steps = 0; active.length() > 0; steps = steps + 1 {
-    let u = active.pop().unwrap()
-    self.in_active[u] = false
-    self.discharge(u, active, source, sink)
+    match active.pop() {
+      Some(u) => {
+        self.in_active[u] = false
+        self.discharge(u, active, source, sink)
+      }
+      None => break
+    }
   } where {
     invariant: steps >= 0 && active.length() >= 0,
     reasoning: (
