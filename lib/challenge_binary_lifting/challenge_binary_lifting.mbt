@@ -28,46 +28,16 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
     ),
   }
   let up : Array[Array[Int]] = Array::makei(log, _ => Array::make(n, -1))
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     up[0][v] = parent[v]
-  } where {
-    invariant: v >= 0 && v <= n,
-    reasoning: (
-      #|INVARIANT (Level 0):
-      #|up[0][v] is the direct parent for all processed v.
-      #|MAINTENANCE:
-      #|Assign parent[v] to up[0][v], extending the prefix.
-      #|TERMINATION:
-      #|At v = n, the base level is filled.
-    ),
   }
-  for k = 1; k < log; k = k + 1 {
-    for v = 0; v < n; v = v + 1 {
+  for k in 1..<log {
+    for v in 0..<n {
       let mid = up[k - 1][v]
       if mid >= 0 {
         up[k][v] = up[k - 1][mid]
       }
-    } where {
-      invariant: v >= 0 && v <= n,
-      reasoning: (
-        #|INVARIANT (Fill level k):
-        #|up[k][v] is computed for all v < current v.
-        #|MAINTENANCE:
-        #|Use two jumps of size 2^(k-1) to fill up[k][v].
-        #|TERMINATION:
-        #|At v = n, level k is complete.
-      ),
     }
-  } where {
-    invariant: k >= 1 && k <= log,
-    reasoning: (
-      #|INVARIANT (Levels built):
-      #|All levels < k are fully computed.
-      #|MAINTENANCE:
-      #|Complete level k using the already-built level k-1.
-      #|TERMINATION:
-      #|At k = log, the lifting table is complete.
-    ),
   }
   up
 }
