@@ -155,10 +155,10 @@ pub fn max_matching(
   edges : ArrayView[(Int, Int)],
 ) -> Array[(Int, Int)] {
   let graph = BipartiteGraph::new(n_left, n_right)
-  edges.each(fn(edge) {
+  for edge in edges {
     let (u, v) = edge
     graph.add_edge(u, v)
-  })
+  }
   let matcher = Hungarian::new(graph)
   let _ = matcher.max_matching()
   matcher.get_matching()
@@ -215,7 +215,7 @@ fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
   let mut front = 0
   while queue.get(front) is Some(u) {
     if self.dist[u] < self.dist[self.graph.n_left] {
-      self.graph.adj[u].each(fn(v) {
+      for v in self.graph.adj[u] {
         let next = if self.match_right[v] < 0 {
           self.graph.n_left
         } else {
@@ -227,7 +227,7 @@ fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
             queue.push(next)
           }
         }
-      })
+      }
     }
     front = front + 1
   }
@@ -361,7 +361,7 @@ fn minimum_vertex_cover(graph : BipartiteGraph) -> (Array[Int], Array[Int]) {
       return
     }
     visited_left[u] = true
-    graph.adj[u].each(fn(v) {
+    for v in graph.adj[u] {
       if not(visited_right[v]) {
         visited_right[v] = true
         if match_right[v] >= 0 && not(visited_left[match_right[v]]) {
@@ -375,7 +375,7 @@ fn minimum_vertex_cover(graph : BipartiteGraph) -> (Array[Int], Array[Int]) {
           )
         }
       }
-    })
+    }
   }
 
   // Start from unmatched left vertices
