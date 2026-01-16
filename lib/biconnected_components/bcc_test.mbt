@@ -26,10 +26,10 @@ test "biconnected components basic" {
   let result = biconnected_components(4, edges[:])
 
   // Sort component sizes for comparison
-  let sizes = result.components.map(fn(c) { c.length() })
-  sizes.sort_by(fn(a, b) { a - b })
+  let sizes = result.components.map(c => c.length())
+  sizes.sort_by((a, b) => a - b)
   inspect(sizes, content="[1, 3]") // Bridge has 1 edge, triangle has 3
-  result.articulation_points.sort_by(fn(a, b) { a - b })
+  result.articulation_points.sort_by((a, b) => a - b)
   inspect(result.articulation_points, content="[1]")
 }
 
@@ -57,10 +57,10 @@ test "biconnected components tree" {
   let result = biconnected_components(4, edges[:])
 
   // Each edge is a separate component
-  let sizes = result.components.map(fn(c) { c.length() })
-  sizes.sort_by(fn(a, b) { a - b })
+  let sizes = result.components.map(c => c.length())
+  sizes.sort_by((a, b) => a - b)
   inspect(sizes, content="[1, 1, 1]")
-  result.articulation_points.sort_by(fn(a, b) { a - b })
+  result.articulation_points.sort_by((a, b) => a - b)
   inspect(result.articulation_points, content="[1]")
 }
 
@@ -140,7 +140,7 @@ test "biconnected components chain" {
   inspect(result.components.length(), content="5")
 
   // Vertices 1 and 2 are articulation points
-  result.articulation_points.sort_by(fn(a, b) { a - b })
+  result.articulation_points.sort_by((a, b) => a - b)
   inspect(result.articulation_points, content="[1, 2]")
 }
 

@@ -136,10 +136,10 @@ biconnected_components(n, edges):
 test "biconnected components example" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
   let res = @biconnected_components.biconnected_components(4, edges[:])
-  let sizes = res.components.map(fn(c) { c.length() })
-  sizes.sort_by(fn(a, b) { a - b })
+  let sizes = res.components.map(c => c.length())
+  sizes.sort_by((a, b) => a - b)
   inspect(sizes, content="[1, 3]")
-  res.articulation_points.sort_by(fn(a, b) { a - b })
+  res.articulation_points.sort_by((a, b) => a - b)
   inspect(res.articulation_points, content="[1]")
 }
 ```
@@ -296,4 +296,3 @@ Use cases:
 - Edge stack holds directed edges (order matters for popping)
 - Back edges update low[] but don't start new components
 - Empty graph or single vertex: no components
-
