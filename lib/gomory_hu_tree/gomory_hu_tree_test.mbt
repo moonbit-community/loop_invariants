@@ -9,20 +9,10 @@ test "gomory-hu tree matches min cuts" {
     (0, 2, 2L),
   ]
   let directed : Array[(Int, Int, Int64)] = []
-  for idx = 0; idx < undirected.length(); idx = idx + 1 {
-    let (u, v, cap) = undirected[idx]
+  for edge in undirected {
+    let (u, v, cap) = edge
     directed.push((u, v, cap))
     directed.push((v, u, cap))
-  } where {
-    invariant: idx >= 0 && idx <= undirected.length(),
-    reasoning: (
-      #|INVARIANT (edge expansion):
-      #|Edges in undirected[0..idx) have been expanded in both directions.
-      #|MAINTENANCE:
-      #|Expand edge idx into two directed edges.
-      #|TERMINATION:
-      #|At idx = len, all edges are expanded.
-    ),
   }
   let tree = @gomory_hu_tree.gomory_hu_tree(n, undirected[:])
   for u in 0..<n {

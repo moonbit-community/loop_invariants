@@ -592,25 +592,13 @@ fn offline_lca_simple(
   visited[root] = true
   let mut front = 0
   while queue.get(front) is Some(node) {
-    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
-      let child = adj[node][idx]
+    for child in adj[node] {
       if not(visited[child]) {
         visited[child] = true
         parent[child] = node
         depth[child] = depth[node] + 1
         queue.push(child)
       }
-    } where {
-      invariant: idx >= 0 && idx <= adj[node].length(),
-      reasoning: (
-        #|INVARIANT (BFS neighbors):
-        #|Neighbors adj[node][0..idx) have been scanned; any newly discovered
-        #|node has parent/depth set and is enqueued.
-        #|MAINTENANCE:
-        #|If child is unvisited, mark it, record parent/depth, and enqueue it.
-        #|TERMINATION:
-        #|At idx == degree, all neighbors of node are processed.
-      ),
     }
     front = front + 1
   }
@@ -670,42 +658,19 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
   while stack.pop() is Some((node, par)) {
     parent[node] = par
     order.push(node)
-    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
-      let child = adj[node][idx]
+    for child in adj[node] {
       if child != par {
         stack.push((child, node))
       }
-    } where {
-      invariant: idx >= 0 && idx <= adj[node].length(),
-      reasoning: (
-        #|INVARIANT (centroid DFS):
-        #|Neighbors adj[node][0..idx) have been examined; non-parent children
-        #|have been pushed to the stack.
-        #|MAINTENANCE:
-        #|If a neighbor is not the parent, push it for DFS.
-        #|TERMINATION:
-        #|At idx == degree, all neighbors of node are processed.
-      ),
     }
   }
   for i = order.length() - 1; i >= 0; i = i - 1 {
     let node = order[i]
     subtree_size[node] = 1
-    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
-      let child = adj[node][idx]
+    for child in adj[node] {
       if child != parent[node] {
         subtree_size[node] = subtree_size[node] + subtree_size[child]
       }
-    } where {
-      invariant: idx >= 0 && idx <= adj[node].length(),
-      reasoning: (
-        #|INVARIANT (subtree size):
-        #|subtree_size[node] equals 1 plus sizes of processed child subtrees.
-        #|MAINTENANCE:
-        #|Add subtree_size[child] for each non-parent neighbor.
-        #|TERMINATION:
-        #|At idx == degree, subtree_size[node] is complete.
-      ),
     }
   } where {
     invariant: i >= -1 && i < order.length(),
@@ -722,8 +687,7 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
   for i = 0, centroid = root; i < n; {
     let node = order[i]
     let mut is_centroid = true
-    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
-      let neighbor = adj[node][idx]
+    for neighbor in adj[node] {
       let subtree = if neighbor == parent[node] {
         tree_size - subtree_size[node]
       } else {
@@ -732,16 +696,6 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
       if subtree > tree_size / 2 {
         is_centroid = false
       }
-    } where {
-      invariant: idx >= 0 && idx <= adj[node].length(),
-      reasoning: (
-        #|INVARIANT (centroid check):
-        #|is_centroid remains true iff all processed neighbor subtrees are <= n/2.
-        #|MAINTENANCE:
-        #|Compute the neighbor subtree size and invalidate if it exceeds n/2.
-        #|TERMINATION:
-        #|At idx == degree, is_centroid reflects the full condition.
-      ),
     }
     if is_centroid {
       continue n, node
@@ -849,25 +803,13 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
   up[root][0] = root
   let mut front = 0
   while queue.get(front) is Some(node) {
-    for idx = 0; idx < adj[node].length(); idx = idx + 1 {
-      let child = adj[node][idx]
+    for child in adj[node] {
       if not(visited[child]) {
         visited[child] = true
         depth[child] = depth[node] + 1
         up[child][0] = node
         queue.push(child)
       }
-    } where {
-      invariant: idx >= 0 && idx <= adj[node].length(),
-      reasoning: (
-        #|INVARIANT (binary lifting BFS neighbors):
-        #|Neighbors adj[node][0..idx) are processed; discovered nodes have
-        #|depth and up[][0] set.
-        #|MAINTENANCE:
-        #|When discovering a child, record parent/depth and enqueue it.
-        #|TERMINATION:
-        #|At idx == degree, all neighbors are handled.
-      ),
     }
     front = front + 1
   }

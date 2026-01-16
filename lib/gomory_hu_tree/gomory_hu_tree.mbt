@@ -43,23 +43,12 @@ pub fn gomory_hu_tree(
 
   // Build directed edge list for min_cut_st.
   let directed : Array[(Int, Int, Int64)] = []
-  for idx = 0; idx < edges.length(); idx = idx + 1 {
-    let (u, v, cap) = edges[idx]
+  for edge in edges {
+    let (u, v, cap) = edge
     if u >= 0 && u < n && v >= 0 && v < n && u != v && cap > 0L {
       directed.push((u, v, cap))
       directed.push((v, u, cap))
     }
-  } where {
-    invariant: idx >= 0 && idx <= edges.length(),
-    reasoning: (
-      #|INVARIANT (directed expansion):
-      #|Undirected edges in edges[0..idx) have been expanded into two directed
-      #|edges (both directions) when valid.
-      #|MAINTENANCE:
-      #|Expand edge idx if it is within bounds and has positive capacity.
-      #|TERMINATION:
-      #|At idx = edges.length(), all valid edges are expanded.
-    ),
   }
   for i = 1; i < n; i = i + 1 {
     let p = parent[i]

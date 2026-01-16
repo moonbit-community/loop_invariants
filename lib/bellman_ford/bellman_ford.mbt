@@ -225,8 +225,8 @@ fn SPFA::compute(self : SPFA, source : Int) -> Array[Int64]? {
   let mut front = 0
   while queue.get(front) is Some(u) {
     self.in_queue[u] = false
-    for i = 0; i < self.adj[u].length(); i = i + 1 {
-      let (v, w) = self.adj[u][i]
+    for edge in self.adj[u] {
+      let (v, w) = edge
       if self.dist[u] + w < self.dist[v] {
         self.dist[v] = self.dist[u] + w
         if not(self.in_queue[v]) {
@@ -239,16 +239,6 @@ fn SPFA::compute(self : SPFA, source : Int) -> Array[Int64]? {
           }
         }
       }
-    } where {
-      invariant: i >= 0 && i <= self.adj[u].length(),
-      reasoning: (
-        #|INVARIANT (SPFA relax):
-        #|All neighbors in adj[u][0..i) have been considered for relaxation.
-        #|MAINTENANCE:
-        #|Relax edge to neighbor i and enqueue if improved.
-        #|TERMINATION:
-        #|At i = deg(u), all outgoing edges from u are processed.
-      ),
     }
     front = front + 1
   }

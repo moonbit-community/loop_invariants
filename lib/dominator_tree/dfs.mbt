@@ -100,8 +100,8 @@ fn DominatorWork::build_predecessors(
   self : DominatorWork,
   edges : ArrayView[(Int, Int)],
 ) -> Unit {
-  for i = 0; i < edges.length(); i = i + 1 {
-    let (u, v) = edges[i]
+  for edge in edges {
+    let (u, v) = edge
     // Skip out-of-range vertices
     guard u >= 0 && u < self.n && v >= 0 && v < self.n else { continue }
     let du = self.arr[u]
@@ -110,19 +110,5 @@ fn DominatorWork::build_predecessors(
     guard du != 0 && dv != 0 else { continue }
     // Add predecessor relationship in DFS-index space
     self.pred[dv].push(du)
-  } where {
-    invariant: i >= 0 && i <= edges.length(),
-    reasoning: (
-      #|INVARIANT (predecessor collection):
-      #|  edges[0..i) have been processed.
-      #|  For each edge (u,v) between reachable vertices,
-      #|  arr[u] is in pred[arr[v]].
-      #|
-      #|MAINTENANCE:
-      #|  Add arr[u] to pred[arr[v]] for the current edge.
-      #|
-      #|TERMINATION:
-      #|  At i = edges.length(), all predecessors are collected.
-    ),
   }
 }

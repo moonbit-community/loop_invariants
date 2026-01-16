@@ -194,22 +194,10 @@ pub fn build_dominator_tree(
 
   // Step 1: Build graph
   let work = DominatorWork::new(n)
-  for i = 0; i < edges.length(); i = i + 1 {
-    let (u, v) = edges[i]
+  for edge in edges {
+    let (u, v) = edge
     guard u >= 0 && u < n && v >= 0 && v < n else { continue }
     work.add_edge(u, v)
-  } where {
-    invariant: i >= 0 && i <= edges.length(),
-    reasoning: (
-      #|INVARIANT (graph build):
-      #|  edges[0..i) have been added to adjacency lists.
-      #|
-      #|MAINTENANCE:
-      #|  Add edge (u, v) if both endpoints are in range.
-      #|
-      #|TERMINATION:
-      #|  At i = edges.length(), the graph is complete.
-    ),
   }
 
   // Step 2: DFS to number vertices

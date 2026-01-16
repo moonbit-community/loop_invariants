@@ -69,8 +69,7 @@ fn HLD::dfs_size(self : HLD, u : Int, p : Int, d : Int) -> Unit {
   self.depth[u] = d
   self.subtree_size[u] = 1
   let mut max_child_size = 0
-  for i = 0; i < self.adj[u].length(); i = i + 1 {
-    let v = self.adj[u][i]
+  for v in self.adj[u] {
     if v != p {
       self.dfs_size(v, u, d + 1)
       self.subtree_size[u] = self.subtree_size[u] + self.subtree_size[v]
@@ -79,17 +78,6 @@ fn HLD::dfs_size(self : HLD, u : Int, p : Int, d : Int) -> Unit {
         self.heavy_child[u] = v
       }
     }
-  } where {
-    invariant: i >= 0 && i <= self.adj[u].length(),
-    reasoning: (
-      #|INVARIANT (dfs_size):
-      #|subtree_size[u] includes u and all processed children in adj[u][0..i);
-      #|heavy_child[u] is the largest processed child subtree.
-      #|MAINTENANCE:
-      #|Recurse into child v, add its size, and update heavy_child if needed.
-      #|TERMINATION:
-      #|At i = deg(u), subtree_size[u] is complete and heavy_child is correct.
-    ),
   }
 }
 

@@ -45,9 +45,8 @@ fn TopoSorter::add_edge(self : TopoSorter, u : Int, v : Int) -> Unit {
 fn TopoSorter::dfs(self : TopoSorter, u : Int) -> Bool {
   self.state[u] = 1
   let mut ok = true
-  for i = 0; i < self.adj[u].length(); i = i + 1 {
+  for v in self.adj[u] {
     if ok {
-      let v = self.adj[u][i]
       if self.state[v] == 0 {
         if not(self.dfs(v)) {
           ok = false
@@ -56,28 +55,6 @@ fn TopoSorter::dfs(self : TopoSorter, u : Int) -> Bool {
         ok = false
       }
     }
-  } where {
-    invariant: i >= 0 && i <= self.adj[u].length(),
-    reasoning: (
-      #|INVARIANT (DFS scan):
-      #|For neighbors in adj[u][0..i), either they are fully processed (state=2)
-      #|or a cycle has been detected and ok is false.
-      #|MAINTENANCE:
-      #|Recursing on an unvisited neighbor preserves the invariant; encountering
-      #|state=1 marks a back edge and sets ok=false.
-      #|TERMINATION:
-      #|At i = deg(u), all outgoing edges from u are checked.
-    ),
-    invariant: ok || self.state[u] == 1,
-    reasoning: (
-      #|INVARIANT (cycle flag):
-      #|If ok is false, a back edge has been seen in this DFS, so the graph is
-      #|not a DAG. If ok is true, no such edge has been encountered so far.
-      #|MAINTENANCE:
-      #|ok is only set to false when a back edge is detected.
-      #|TERMINATION:
-      #|The flag correctly indicates whether the current DFS subtree is acyclic.
-    ),
   }
   if not(ok) {
     return false
