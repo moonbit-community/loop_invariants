@@ -178,9 +178,9 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
       // Merge output: patterns ending at failure state also end here
       // (they are suffixes of current string)
       let failure_output = self.states[failure].output.copy()
-      failure_output.each(fn(pattern_idx) {
+      for pattern_idx in failure_output {
         self.states[child].output.push(pattern_idx)
-      })
+      }
     } where {
       invariant: 0 <= c && c < 256,
       reasoning: (
@@ -222,11 +222,11 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[(Int, Int)] {
     // Report all patterns ending at current position
     // Output contains indices of all patterns that are suffixes of current match
     let outputs = self.states[state].output
-    outputs.each(fn(pattern_idx) {
+    for pattern_idx in outputs {
       let pattern_len = self.patterns[pattern_idx].length()
       let match_start = i - pattern_len + 1
       matches.push((match_start, pattern_idx))
-    })
+    }
   } where {
     invariant: 0 <= i && i < text.length(),
     reasoning: (
@@ -317,12 +317,12 @@ fn AhoCorasick::find_all(
 ) -> Array[(Int, Int, String)] {
   let raw_matches = self.search(text)
   let result : Array[(Int, Int, String)] = []
-  raw_matches.each(fn(m) {
+  for m in raw_matches {
     let (start, pattern_idx) = m
     let pattern = self.patterns[pattern_idx]
     let end = start + pattern.length()
     result.push((start, end, pattern))
-  })
+  }
   result
 }
 
@@ -442,9 +442,9 @@ test "aho corasick prefix patterns" {
   inspect(matches.length(), content="4")
 
   // All should start at position 0
-  matches.each(fn(m) {
+  for m in matches {
     guard m.0 == 0 else { fail("Expected all matches at position 0") }
-  })
+  }
 }
 
 ///|
