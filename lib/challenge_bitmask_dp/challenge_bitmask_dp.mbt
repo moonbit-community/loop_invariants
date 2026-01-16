@@ -13,10 +13,10 @@ pub fn tsp_min_cycle(dist : Array[Array[Int]], inf : Int) -> Int {
   let total = 1 << n
   let dp : Array[Array[Int]] = Array::makei(total, _ => Array::make(n, inf))
   dp[1][0] = 0
-  for mask = 1; mask < total; mask = mask + 1 {
-    for u = 0; u < n; u = u + 1 {
+  for mask in 1..<total {
+    for u in 0..<n {
       if dp[mask][u] < inf {
-        for v = 0; v < n; v = v + 1 {
+        for v in 0..<n {
           if (mask & (1 << v)) == 0 {
             let new_mask = mask | (1 << v)
             let cand = dp[mask][u] + dist[u][v]
@@ -24,39 +24,9 @@ pub fn tsp_min_cycle(dist : Array[Array[Int]], inf : Int) -> Int {
               dp[new_mask][v] = cand
             }
           }
-        } where {
-          invariant: v >= 0 && v <= n,
-          reasoning: (
-            #|INVARIANT (Transition over v):
-            #|All destinations < v have been relaxed from (mask, u).
-            #|MAINTENANCE:
-            #|Try extending the path to v and update dp[new_mask][v].
-            #|TERMINATION:
-            #|At v = n, all outgoing transitions are processed.
-          ),
         }
       }
-    } where {
-      invariant: u >= 0 && u <= n,
-      reasoning: (
-        #|INVARIANT (States for mask):
-        #|All dp[mask][u] for u < current u have been expanded.
-        #|MAINTENANCE:
-        #|Expand transitions from dp[mask][u] to unvisited v.
-        #|TERMINATION:
-        #|At u = n, all states for this mask are processed.
-      ),
     }
-  } where {
-    invariant: mask >= 1 && mask <= total,
-    reasoning: (
-      #|INVARIANT (Masks processed):
-      #|All dp states for masks < current mask are finalized.
-      #|MAINTENANCE:
-      #|Process transitions from the current mask.
-      #|TERMINATION:
-      #|At mask = total, all subsets are processed.
-    ),
   }
   let full = total - 1
   let best = for u = 0, ans = inf {
