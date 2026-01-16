@@ -190,9 +190,8 @@ fn compute_leaf_counts(nodes : Array[Node], node_idx : Int) -> Int {
   }
 
   // Recursive case: sum children's leaf counts using fold
-  let total = nodes[node_idx].edges.fold(init=0, fn(acc, edge) {
-    acc + compute_leaf_counts(nodes, edge.child)
-  })
+  let total = nodes[node_idx].edges.fold(init=0, (acc, edge) => acc +
+    compute_leaf_counts(nodes, edge.child))
   nodes[node_idx].leaf_count = total
   total
 }
