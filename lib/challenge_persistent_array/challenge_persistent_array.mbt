@@ -104,19 +104,8 @@ pub fn[T] set_at(arr : PArray[T], idx : Int, value : T) -> PArray[T] {
 #warnings("+missing_invariant+missing_reasoning")
 pub fn[T] to_array(arr : PArray[T]) -> Array[T] {
   let out = Array::new()
-  for i = 0; i < arr.n; i = i + 1 {
+  for i in 0..<arr.n {
     out.push(get_node(arr.root, 0, arr.n, i))
-  } where {
-    invariant: i >= 0 && i <= arr.n,
-    invariant: out.length() == i,
-    reasoning: (
-      #|INVARIANT (Prefix materialization):
-      #|out holds get_at(arr, 0..i) in order, and i equals out.length().
-      #|MAINTENANCE:
-      #|Append index i, preserving prefix correctness.
-      #|TERMINATION:
-      #|At i = n, out is the full materialization.
-    ),
   }
   out
 }
