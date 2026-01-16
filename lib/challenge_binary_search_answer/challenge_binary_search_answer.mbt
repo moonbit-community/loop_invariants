@@ -42,22 +42,11 @@ pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
 pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
   let mut lo = 0
   let mut hi = 0
-  for i = 0; i < weights.length(); i = i + 1 {
-    if weights[i] > lo {
-      lo = weights[i]
+  for w in weights {
+    if w > lo {
+      lo = w
     }
-    hi = hi + weights[i]
-  } where {
-    invariant: i >= 0 && i <= weights.length(),
-    invariant: lo >= 0 && hi >= 0,
-    reasoning: (
-      #|INVARIANT (Bounds init):
-      #|lo tracks the maximum single weight, hi tracks total weight so far.
-      #|MAINTENANCE:
-      #|Update lo with max(lo, weights[i]) and add to hi.
-      #|TERMINATION:
-      #|At i = n, lo is the lower bound and hi is the upper bound.
-    ),
+    hi = hi + w
   }
   for low = lo, high = hi {
     if low >= high {
