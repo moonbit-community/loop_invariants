@@ -178,9 +178,9 @@ fn AhoCorasick::new(patterns : Array[String]) -> AhoCorasick {
   let nodes : Array[ACNode] = Array::makei(max_nodes, _ => ACNode::new())
   let ac : AhoCorasick = { nodes, node_count: 1 }
   // Build trie
-  patterns.eachi(fn(pattern_idx, pattern) {
+  for pattern_idx, pattern in patterns {
     ac.add_pattern(pattern, pattern_idx)
-  })
+  }
   // Build failure links using BFS
   ac.build_failure_links()
   ac
