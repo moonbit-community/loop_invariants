@@ -71,14 +71,14 @@ pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
   // Relax all edges V-1 times
   for iter = 0; iter < self.n - 1; iter = iter + 1 {
     let mut any_relaxed = false
-    self.edges.each(fn(edge) {
+    for edge in self.edges {
       let (u, v, w) = edge
       if self.dist[u] < BF_INF && self.dist[u] + w < self.dist[v] {
         self.dist[v] = self.dist[u] + w
         self.parent[v] = u
         any_relaxed = true
       }
-    })
+    }
     // Early termination if no relaxation happened
     if not(any_relaxed) {
       break
@@ -126,10 +126,10 @@ pub fn bellman_ford(
     return (dist, false)
   }
   let solver = BellmanFord::new(n)
-  edges.each(fn(edge) {
+  for edge in edges {
     let (u, v, w) = edge
     solver.add_edge(u, v, w.to_int64())
-  })
+  }
   let result = solver.compute(src)
   for i in 0..<n {
     if result.dist[i] != BF_INF {
