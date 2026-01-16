@@ -98,7 +98,7 @@ pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
   }
 
   // Check for negative cycles
-  let has_negative_cycle = self.edges.any(fn(edge) {
+  let has_negative_cycle = self.edges.any(edge => {
     let (u, v, w) = edge
     self.dist[u] < BF_INF && self.dist[u] + w < self.dist[v]
   })
