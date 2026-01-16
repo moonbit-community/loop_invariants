@@ -7,36 +7,14 @@ fn subset_sums(arr : ArrayView[Int]) -> Array[Int] {
   let n = arr.length()
   let total = 1 << n
   let sums : Array[Int] = Array::make(total, 0)
-  for mask = 0; mask < total; mask = mask + 1 {
-    let sum = for i = 0, acc = 0 {
-      if i >= n {
-        break acc
-      } else {
-        let add = if ((mask >> i) & 1) == 1 { arr[i] } else { 0 }
-        continue i + 1, acc + add
+  for mask in 0..<total {
+    let mut acc = 0
+    for i in 0..<n {
+      if ((mask >> i) & 1) == 1 {
+        acc = acc + arr[i]
       }
-    } where {
-      invariant: i >= 0 && i <= n,
-      reasoning: (
-        #|INVARIANT (Bit accumulation):
-        #|acc equals the sum of bits selected in positions [0..i).
-        #|MAINTENANCE:
-        #|Add arr[i] if the bit is set, then advance i.
-        #|TERMINATION:
-        #|At i = n, acc is the subset sum for mask.
-      ),
     }
-    sums[mask] = sum
-  } where {
-    invariant: mask >= 0 && mask <= total,
-    reasoning: (
-      #|INVARIANT (Subset enumeration):
-      #|sums[0..mask) contains subset sums for all prior masks.
-      #|MAINTENANCE:
-      #|Compute sum for mask and store it.
-      #|TERMINATION:
-      #|At mask = total, all subset sums are generated.
-    ),
+    sums[mask] = acc
   }
   sums
 }
@@ -78,31 +56,18 @@ pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int {
   let left_sums = subset_sums(left)
   let right_sums = subset_sums(right)
   right_sums.sort_by_key(x => x)
-  for i = 0, best = 0 {
-    if i >= left_sums.length() {
-      break best
-    } else {
-      let remaining = target - left_sums[i]
-      let idx = upper_bound(right_sums[:], remaining)
-      if idx > 0 {
-        let cand = left_sums[i] + right_sums[idx - 1]
-        if cand > best {
-          continue i + 1, cand
-        }
+  let mut best = 0
+  for val in left_sums {
+    let remaining = target - val
+    let idx = upper_bound(right_sums[:], remaining)
+    if idx > 0 {
+      let cand = val + right_sums[idx - 1]
+      if cand > best {
+        best = cand
       }
-      continue i + 1, best
     }
-  } where {
-    invariant: i >= 0 && i <= left_sums.length(),
-    reasoning: (
-      #|INVARIANT (Best so far):
-      #|best is the maximum subset sum <= target using left_sums[0..i).
-      #|MAINTENANCE:
-      #|For left_sums[i], pick the best compatible right sum and update best.
-      #|TERMINATION:
-      #|At i = left_sums.length(), best is optimal.
-    ),
   }
+  best
 }
 
 ///|
