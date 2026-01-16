@@ -16,36 +16,15 @@ pub fn knapsack_unbounded(
     values.length()
   }
   let dp : Array[Int] = Array::make(capacity + 1, 0)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let w_i = weights[i]
     let v_i = values[i]
-    for w = w_i; w <= capacity; w = w + 1 {
+    for w in w_i..=capacity {
       let cand = dp[w - w_i] + v_i
       if cand > dp[w] {
         dp[w] = cand
       }
-    } where {
-      invariant: w >= w_i && w <= capacity + 1,
-      reasoning: (
-        #|INVARIANT (Ascending weight update):
-        #|dp[w] reflects the best value using items up to i with unlimited copies.
-        #|MAINTENANCE:
-        #|Ascending w allows dp[w - w_i] to already include item i, enabling
-        #|reuse of the same item multiple times.
-        #|TERMINATION:
-        #|At w = capacity + 1, all weights for item i are updated.
-      ),
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (Items processed):
-      #|After items [0..i), dp stores optimal values with unlimited use.
-      #|MAINTENANCE:
-      #|Each item extends dp by considering repeated uses via ascending weights.
-      #|TERMINATION:
-      #|At i = n, dp[capacity] is optimal for all items.
-    ),
   }
   dp[capacity]
 }
