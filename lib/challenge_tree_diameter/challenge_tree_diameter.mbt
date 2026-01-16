@@ -43,21 +43,11 @@ fn bfs(adj : Array[Array[Int]], start : Int) -> (Int, Array[Int]) {
   }
   let mut best_node = start
   let mut best_dist = dist[start]
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     if dist[i] > best_dist {
       best_dist = dist[i]
       best_node = i
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (farthest scan):
-      #|best_node is the farthest among nodes in [0, i).
-      #|MAINTENANCE:
-      #|Update best_node when a larger distance is found.
-      #|TERMINATION:
-      #|At i = n, best_node is a farthest node from start.
-    ),
   }
   (best_node, dist)
 }
