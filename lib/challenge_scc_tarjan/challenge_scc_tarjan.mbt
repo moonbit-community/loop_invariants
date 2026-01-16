@@ -28,8 +28,7 @@ pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     stack.push(v)
     onstack[v] = true
     let neighbors = adj[v]
-    for j = 0; j < neighbors.length(); j = j + 1 {
-      let to = neighbors[j]
+    for to in neighbors {
       if index[to] == -1 {
         dfs(to)
         if low[to] < low[v] {
@@ -40,16 +39,6 @@ pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
           low[v] = index[to]
         }
       }
-    } where {
-      invariant: j >= 0 && j <= neighbors.length(),
-      reasoning: (
-        #|INVARIANT (Tarjan DFS):
-        #|low[v] reflects the smallest index reachable through neighbors[0..j).
-        #|MAINTENANCE:
-        #|Update low[v] from child low-link or back-edge index.
-        #|TERMINATION:
-        #|At j = deg(v), low[v] is finalized.
-      ),
     }
     if low[v] == index[v] {
       for {
@@ -74,20 +63,10 @@ pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
   }
 
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     if index[i] == -1 {
       dfs(i)
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (DFS forest):
-      #|All vertices < i have been assigned to some SCC.
-      #|MAINTENANCE:
-      #|Start DFS from each unvisited vertex.
-      #|TERMINATION:
-      #|At i = n, every vertex has a component id.
-    ),
   }
   comp
 }
