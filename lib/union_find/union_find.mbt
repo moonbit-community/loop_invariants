@@ -131,12 +131,10 @@ pub fn UnionFind::set_size(self : UnionFind, x : Int) -> Int {
   if root < 0 {
     return 0
   }
-  self.parent.foldi(init=0, fn(i, acc, _) {
-    if self.find(i) == root {
-      acc + 1
-    } else {
-      acc
-    }
+  self.parent.foldi(init=0, (i, acc, _) => if self.find(i) == root {
+    acc + 1
+  } else {
+    acc
   })
 }
 
