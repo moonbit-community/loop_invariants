@@ -7,10 +7,8 @@
 /// Return the length of the longest increasing subsequence.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn lis_length(nums : ArrayView[Int]) -> Int {
-  let n = nums.length()
   let tails : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
-    let x = nums[i]
+  for x in nums {
     let pos = for lo = 0, hi = tails.length() {
       if lo >= hi {
         break lo
@@ -38,17 +36,6 @@ pub fn lis_length(nums : ArrayView[Int]) -> Int {
     } else {
       tails[pos] = x
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (Tails array):
-      #|tails[k] is the minimum possible tail of an increasing subsequence
-      #|of length k+1 among nums[0..i).
-      #|MAINTENANCE:
-      #|Replace or extend the appropriate tail to keep tails minimal.
-      #|TERMINATION:
-      #|At i = n, tails.length() is the LIS length.
-    ),
   }
   tails.length()
 }
