@@ -12,19 +12,9 @@
 ///|
 fn slice_rotation(s : String, start : Int, len : Int) -> String {
   let sb = StringBuilder::new()
-  for i = 0; i < len; i = i + 1 {
-    let ch = s[start + i].to_int()
+  for offset in 0..<len {
+    let ch = s[start + offset].to_int()
     sb.write_char(ch.unsafe_to_char())
-  } where {
-    invariant: i >= 0 && i <= len,
-    reasoning: (
-      #|INVARIANT (build rotation):
-      #|sb contains the first i characters of the rotation slice.
-      #|MAINTENANCE:
-      #|Append s[start + i] to extend the slice.
-      #|TERMINATION:
-      #|At i = len, sb holds the full rotation.
-    ),
   }
   sb.to_string()
 }
