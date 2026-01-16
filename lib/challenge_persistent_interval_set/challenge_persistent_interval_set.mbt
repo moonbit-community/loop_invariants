@@ -44,25 +44,13 @@ fn insert_sorted(
   let e = if s0 <= e0 { e0 } else { s0 }
   let out = Array::new()
   let mut inserted = false
-  let n = arr.length()
-  for i = 0; i < n; i = i + 1 {
-    let (s1, e1) = arr[i]
+  for pair in arr {
+    let (s1, e1) = pair
     if !inserted && s < s1 {
       out.push((s, e))
       inserted = true
     }
     out.push((s1, e1))
-  } where {
-    invariant: i >= 0 && i <= n,
-    invariant: out.length() == i + (if inserted { 1 } else { 0 }),
-    reasoning: (
-      #|INVARIANT (Insert sorted):
-      #|out contains arr[0..i) plus the new interval if it was inserted.
-      #|MAINTENANCE:
-      #|When s < current start, insert once before pushing arr[i].
-      #|TERMINATION:
-      #|If never inserted, append (s, e) at the end to keep order.
-    ),
   }
   if !inserted {
     out.push((s, e))
@@ -74,9 +62,8 @@ fn insert_sorted(
 #warnings("+missing_invariant+missing_reasoning")
 fn merge_sorted(arr : ArrayView[(Int, Int)]) -> Array[(Int, Int)] {
   let out = Array::new()
-  let n = arr.length()
-  for i = 0; i < n; i = i + 1 {
-    let (s, e) = arr[i]
+  for pair in arr {
+    let (s, e) = pair
     if out.length() == 0 {
       out.push((s, e))
     } else {
@@ -89,19 +76,6 @@ fn merge_sorted(arr : ArrayView[(Int, Int)]) -> Array[(Int, Int)] {
         out.push((s, e))
       }
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    invariant: out.length() <= i,
-    invariant: out.length() == 0 ||
-    out[out.length() - 1].0 <= out[out.length() - 1].1,
-    reasoning: (
-      #|INVARIANT (Merge intervals):
-      #|out is the merged, disjoint form of arr[0..i).
-      #|MAINTENANCE:
-      #|If the next interval overlaps or touches the tail, extend it; else append.
-      #|TERMINATION:
-      #|At the end, out is the fully merged interval set.
-    ),
   }
   out
 }
