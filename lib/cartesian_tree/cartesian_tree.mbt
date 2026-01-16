@@ -193,65 +193,24 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   // ancestors[k][v] = 2^k-th ancestor of v
   // INVARIANT: ancestors[k][v] = ancestors[k-1][ancestors[k-1][v]]
   let ancestors : Array[Array[Int]] = []
-  for j = 0; j < log_n; j = j + 1 {
+  for j in 0..<log_n {
     ancestors.push(Array::make(n, -1))
-  } where {
-    invariant: j >= 0 && j <= log_n,
-    reasoning: (
-      #|INVARIANT (allocate levels):
-      #|ancestors contains tables for levels in [0, j), each sized n.
-      #|MAINTENANCE:
-      #|Append a fresh length-n table for level j.
-      #|TERMINATION:
-      #|At j = log_n, all binary lifting levels are allocated.
-    ),
   }
 
   // Base case: 2^0 = 1st ancestor is parent
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     ancestors[0][i] = nodes[i].parent
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (level 0):
-      #|ancestors[0][0..i) stores the immediate parent for each node.
-      #|MAINTENANCE:
-      #|Assign the parent of node i.
-      #|TERMINATION:
-      #|At i = n, level-0 ancestors are initialized for all nodes.
-    ),
   }
 
   // Build using dynamic programming
   // INVARIANT: After iteration k, ancestors[k][v] correctly stores 2^k-th ancestor
-  for k = 1; k < log_n; k = k + 1 {
-    for v = 0; v < n; v = v + 1 {
+  for k in 1..<log_n {
+    for v in 0..<n {
       let mid = ancestors[k - 1][v]
       if mid != -1 {
         ancestors[k][v] = ancestors[k - 1][mid]
       }
-    } where {
-      invariant: v >= 0 && v <= n,
-      reasoning: (
-        #|INVARIANT (build level k):
-        #|For v in [0, v), ancestors[k][v] is the 2^k-th ancestor, computed
-        #|via the 2^(k-1)-th ancestor.
-        #|MAINTENANCE:
-        #|If the 2^(k-1)-th ancestor exists, jump once more to fill level k.
-        #|TERMINATION:
-        #|At v = n, level k is fully computed.
-      ),
     }
-  } where {
-    invariant: k >= 1 && k <= log_n,
-    reasoning: (
-      #|INVARIANT (levels complete):
-      #|All levels in [1, k) are fully built.
-      #|MAINTENANCE:
-      #|Construct level k using level k-1.
-      #|TERMINATION:
-      #|At k = log_n, all binary lifting levels are available.
-    ),
   }
   { nodes, root, index_to_node, depth, ancestors, n, log_n }
 }
@@ -416,20 +375,10 @@ fn CartesianTree::verify_inorder(
   }
   let result : Array[Int64] = []
   inorder_collect(self.nodes, self.root, result)
-  for i = 0; i < arr.length(); i = i + 1 {
+  for i in 0..<arr.length() {
     if result[i] != arr[i] {
       return false
     }
-  } where {
-    invariant: i >= 0 && i <= arr.length(),
-    reasoning: (
-      #|INVARIANT (inorder check):
-      #|All positions in [0, i) match between result and arr.
-      #|MAINTENANCE:
-      #|Compare result[i] with arr[i] and return false on mismatch.
-      #|TERMINATION:
-      #|At i = arr.length(), the inorder traversal matches the original array.
-    ),
   }
   true
 }
@@ -573,27 +522,17 @@ fn largest_rectangle_histogram(heights : Array[Int64]) -> Int64 {
   let right = nearest_smaller_right(heights)
 
   // For each position, width extends from left+1 to right-1
-  // INVARIANT: max_area is the largest rectangle found so far
-  for i = 0, max_area = 0L; i < n; {
+  let mut max_area = 0L
+  for i in 0..<n {
     let l = if left[i] == -1 { 0 } else { left[i] + 1 }
     let r = if right[i] == -1 { n - 1 } else { right[i] - 1 }
     let width = (r - l + 1).to_int64()
     let area = heights[i] * width
-    let new_max = if area > max_area { area } else { max_area }
-    continue i + 1, new_max
-  } else {
-    max_area
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (max rectangle):
-      #|max_area is the largest rectangle area among bars in [0, i).
-      #|MAINTENANCE:
-      #|Compute area for bar i using its maximal span and update max_area.
-      #|TERMINATION:
-      #|At i = n, max_area is the largest rectangle in the histogram.
-    ),
+    if area > max_area {
+      max_area = area
+    }
   }
+  max_area
 }
 
 // ============================================================================
@@ -615,21 +554,11 @@ fn CartesianTree::tree_number(self : CartesianTree) -> Int64 {
   encode_tree(self.nodes, self.root, bits)
 
   // Convert to number
-  for i = 0, result = 0L; i < bits.length(); {
-    continue i + 1, result * 2L + bits[i].to_int64()
-  } else {
-    result
-  } where {
-    invariant: i >= 0 && i <= bits.length(),
-    reasoning: (
-      #|INVARIANT (binary encode):
-      #|result equals the binary value of bits[0..i) interpreted left-to-right.
-      #|MAINTENANCE:
-      #|Shift result by one bit (multiply by 2) and add bits[i].
-      #|TERMINATION:
-      #|At i = bits.length(), result encodes the full tree shape.
-    ),
+  let mut result = 0L
+  for i in 0..<bits.length() {
+    result = result * 2L + bits[i].to_int64()
   }
+  result
 }
 
 ///|
