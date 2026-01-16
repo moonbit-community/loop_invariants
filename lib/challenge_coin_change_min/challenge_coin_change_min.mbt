@@ -15,9 +15,7 @@ pub fn min_coins(coins : ArrayView[Int], amount : Int) -> Int? {
   }
   let dp = Array::make(amount + 1, INF)
   dp[0] = 0
-  let n = coins.length()
-  for i = 0; i < n; i = i + 1 {
-    let c = coins[i]
+  for c in coins {
     if c <= 0 {
       continue
     }
@@ -39,16 +37,6 @@ pub fn min_coins(coins : ArrayView[Int], amount : Int) -> Int? {
         #|At a = amount+1, all totals are relaxed for coin c.
       ),
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (Coin DP):
-      #|After processing coins[0..i), dp[a] is minimal coins for total a.
-      #|MAINTENANCE:
-      #|Relax using coin coins[i].
-      #|TERMINATION:
-      #|At i = n, dp contains optimal answers.
-    ),
   }
   if dp[amount] == INF {
     None
