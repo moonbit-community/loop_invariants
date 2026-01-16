@@ -459,7 +459,7 @@ test "dutch_flag" {
   let arr1 : Array[Int] = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]
   dutch_flag(arr1, 5)
   // All elements < 5, then == 5, then > 5
-  let _ = arr1.fold(init=(false, false), fn(state, x) {
+  let _ = arr1.fold(init=(false, false), (state, x) => {
     let (seen_equal, seen_greater) = state
     let seen_equal2 = seen_equal || x == 5
     let seen_greater2 = seen_greater || x > 5
@@ -887,9 +887,8 @@ fn majority_element(arr : ArrayView[Int]) -> Int? {
     ),
   }
   // Phase 2: Verify candidate is actually majority
-  let verify_count = arr.fold(init=0, fn(acc, x) {
-    acc + (if x == candidate { 1 } else { 0 })
-  })
+  let verify_count = arr.fold(init=0, (acc, x) => acc +
+    (if x == candidate { 1 } else { 0 }))
   if verify_count > arr.length() / 2 {
     Some(candidate)
   } else {
@@ -1045,10 +1044,10 @@ fn sieve(n : Int) -> Array[Int] {
   }
   // Collect remaining primes
   is_prime
-  .mapi(fn(i, b) { if b { Some(i) } else { None } })
-  .filter(fn(x) { x is Some(_) })
-  .map(fn(x) { x.unwrap() })
-  .filter(fn(x) { x >= 2 })
+  .mapi((i, b) => if b { Some(i) } else { None })
+  .filter(x => x is Some(_))
+  .map(x => x.unwrap())
+  .filter(x => x >= 2)
 }
 
 ///|
