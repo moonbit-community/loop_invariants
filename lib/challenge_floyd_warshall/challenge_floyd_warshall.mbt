@@ -11,7 +11,7 @@ pub fn floyd_warshall(
   inf : Int,
 ) -> Array[Array[Int]] {
   let n = matrix.length()
-  let dist = matrix.map(fn(row) { row.copy() })
+  let dist = matrix.map(row => row.copy())
   for k = 0; k < n; k = k + 1 {
     for i = 0; i < n; i = i + 1 {
       for j = 0; j < n; j = j + 1 {
