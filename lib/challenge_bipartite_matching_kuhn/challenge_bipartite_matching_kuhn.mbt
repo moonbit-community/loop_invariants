@@ -29,8 +29,7 @@ fn try_kuhn(
 ) -> Bool {
   let neighbors = adj[u]
   let right_n = match_r.length()
-  for i = 0; i < neighbors.length(); i = i + 1 {
-    let v = neighbors[i]
+  for v in neighbors {
     if v < 0 || v >= right_n {
       continue
     }
@@ -42,16 +41,6 @@ fn try_kuhn(
         return true
       }
     }
-  } where {
-    invariant: i >= 0 && i <= neighbors.length(),
-    reasoning: (
-      #|INVARIANT (Augmenting DFS):
-      #|All neighbors[0..i) have been tried for an augmenting path from u.
-      #|MAINTENANCE:
-      #|Explore unmatched or re-routed matches via recursion.
-      #|TERMINATION:
-      #|If a path is found, return true; otherwise all options are exhausted.
-    ),
   }
   false
 }
