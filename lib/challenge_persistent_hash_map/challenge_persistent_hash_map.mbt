@@ -16,32 +16,6 @@ pub struct HashMap[K, V] {
 } derive(Show)
 
 ///|
-fn[K, V] bucket_size(b : Bucket[K, V]) -> Int {
-  match b {
-    Bucket::Nil => 0
-    Bucket::Cons(key=_, value=_, tail~) => 1 + bucket_size(tail)
-  }
-}
-
-///|
-fn[K : Eq, V] bucket_no_key(b : Bucket[K, V], key : K) -> Bool {
-  match b {
-    Bucket::Nil => true
-    Bucket::Cons(key=k, value=_, tail=t) => key != k && bucket_no_key(t, key)
-  }
-}
-
-///|
-fn[K, V] reverse_append(
-  rev : Bucket[K, V],
-  tail : Bucket[K, V],
-) -> Bucket[K, V] {
-  match rev {
-    Bucket::Nil => tail
-    Bucket::Cons(key=k, value=v, tail=t) =>
-      reverse_append(t, Bucket::Cons(key=k, value=v, tail~))
-  }
-}
 
 ///|
 /// Create an empty hash map with the given capacity (min 1).
@@ -61,63 +35,33 @@ fn[K : Hash] index_for(key : K, cap : Int) -> Int {
 }
 
 ///|
-#warnings("+missing_invariant+missing_reasoning")
 fn[K : Eq, V] bucket_get(bucket : Bucket[K, V], key : K) -> V? {
-  for cur = bucket, scanned = 0 {
-    match cur {
-      Bucket::Nil => break None
-      Bucket::Cons(key=k, value=v, tail=t) =>
-        if k == key {
-          break Some(v)
-        } else {
-          continue t, scanned + 1
-        }
-    }
-  } where {
-    invariant: scanned >= 0 && scanned + bucket_size(cur) == bucket_size(bucket),
-    reasoning: (
-      #|INVARIANT (Bucket scan):
-      #|cur is the unscanned suffix; any match must appear in cur.
-      #|MAINTENANCE:
-      #|Advance to tail when key does not match.
-      #|TERMINATION:
-      #|At Nil, the key is absent; otherwise return its value.
-    ),
+  match bucket {
+    Bucket::Nil => None
+    Bucket::Cons(key=k, value=v, tail=t) =>
+      if k == key {
+        Some(v)
+      } else {
+        bucket_get(t, key)
+      }
   }
 }
 
 ///|
-#warnings("+missing_invariant+missing_reasoning")
 fn[K : Eq, V] bucket_insert(
   bucket : Bucket[K, V],
   key : K,
   value : V,
 ) -> (Bucket[K, V], Bool) {
-  for cur = bucket, rev = Bucket::Nil {
-    match cur {
-      Bucket::Nil => {
-        let updated = Bucket::Cons(key~, value~, tail=Bucket::Nil)
-        break (reverse_append(rev, updated), true)
+  match bucket {
+    Bucket::Nil => (Bucket::Cons(key~, value~, tail=Bucket::Nil), true)
+    Bucket::Cons(key=k, value=v, tail=t) =>
+      if k == key {
+        (Bucket::Cons(key~, value~, tail=t), false)
+      } else {
+        let (new_tail, added) = bucket_insert(t, key, value)
+        (Bucket::Cons(key=k, value=v, tail=new_tail), added)
       }
-      Bucket::Cons(key=k, value=v, tail=t) =>
-        if k == key {
-          let updated = Bucket::Cons(key~, value~, tail=t)
-          break (reverse_append(rev, updated), false)
-        } else {
-          continue t, Bucket::Cons(key=k, value=v, tail=rev)
-        }
-    }
-  } where {
-    invariant: bucket_size(rev) + bucket_size(cur) == bucket_size(bucket),
-    invariant: bucket_no_key(rev, key),
-    reasoning: (
-      #|INVARIANT (Bucket rebuild):
-      #|rev is the reversed prefix with no matching key; cur is the remainder.
-      #|MAINTENANCE:
-      #|Move one node to rev when the key does not match.
-      #|TERMINATION:
-      #|Reconstruct the bucket with an inserted or updated node.
-    ),
   }
 }
 
