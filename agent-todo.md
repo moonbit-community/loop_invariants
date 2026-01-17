@@ -168,7 +168,7 @@
 - [x] lib/monotonic_stack
 - [x] lib/mos_algorithm
 - [x] lib/mst
-- [ ] lib/persistent
+- [x] lib/persistent
 - [ ] lib/persistent_segtree
 - [ ] lib/point_in_polygon
 - [ ] lib/pollard_rho

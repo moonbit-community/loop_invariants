@@ -1,210 +1,291 @@
-# Persistent Data Structures
+# Persistent Data Structures (Versioned Data)
 
-## Overview
+This package is a **tutorial** package (no exported functions). It explains
+how persistent data structures keep **old versions** after updates without
+copying everything.
 
-**Persistent data structures** preserve previous versions after modifications.
-Instead of mutating in place, they create new versions while sharing unchanged
-portions. This enables "time travel" through data history.
+Think of persistence like a time machine for data:
 
-- **Update**: O(log n) typically
-- **Query any version**: O(log n)
-- **Space per update**: O(log n)
+- Every update creates a **new version**.
+- Old versions remain readable forever.
+- Updates only copy the **path** that changes.
 
-## The Key Insight
+---
 
-```
-Don't modify nodes—create new ones.
-Share unchanged subtrees between versions!
-
-Mutable update:          Persistent update:
-Before:    [A]           Before:    [A]
-          /   \                    /   \
-        [B]   [C]                [B]   [C]
-        /                        /
-      [D]                      [D]
-
-Modify D:  [A]           After:   [A']   ← new
-          /   \                  /    \
-        [B]   [C]   →        [B']   [C]  ← B' new, C shared
-        /                    /
-      [D']                 [D']   ← new
-                           /
-                         [D] ← old D still exists in old version
-
-Old tree: [A]-[B]-[D]
-New tree: [A']-[B']-[D']
-Shared: [C]
-```
-
-## Path Copying
+## 1. First intuition: versions as a timeline
 
 ```
-Only copy nodes on the path from root to modified node.
+version 0:  [1, 2, 3, 4]
+version 1:  [1, 2, 9, 4]   (changed index 2)
+version 2:  [1, 8, 9, 4]   (changed index 1)
 
-Binary tree with n nodes:
-  - Path length: O(log n)
-  - Nodes copied per update: O(log n)
-  - Total space for k updates: O(k log n)
-
-Original:         After update at *:
-     1                  1'   ← copy
-    / \                /  \
-   2   3              2'   3  ← copy 2, share 3
-  / \                /  \
- 4   5             4    5' ← share 4, copy 5
-     |                   |
-     *                   *' ← new value
+We can still query version 0 at any time.
+We did NOT clone the full array each time.
 ```
 
-## Example Usage
+We only copied the pieces affected by the update. Everything else is shared.
 
-```mbt nocheck
-// Version 0: initial tree
-let v0 = PersistentTree::new()
+---
 
-// Version 1: insert 5
-let v1 = v0.insert(5)
-
-// Version 2: insert 3
-let v2 = v1.insert(3)
-
-// Query any version!
-v0.contains(5)  // false
-v1.contains(5)  // true
-v2.contains(3)  // true
-
-// Version 3: update from v1 (branching history)
-let v3 = v1.insert(7)
-// v2 and v3 are independent branches
-```
-
-## Common Persistent Structures
-
-### Persistent Array (Versioned Array)
-```
-Update element at index i.
-Access element at index i in any version.
-
-Implementation: Use balanced tree indexed by position
-Time: O(log n) per operation
-```
-
-### Persistent Stack
-```
-Push and pop create new versions.
-Previous versions remain accessible.
-
-Implementation: Linked list (naturally persistent!)
-Time: O(1) per operation
-```
-
-### Persistent Segment Tree
-```
-Range queries on any version.
-Point updates create new version.
-
-Implementation: Path-copied segment tree
-Time: O(log n) per operation
-```
-
-### Persistent Union-Find
-```
-Find and union with version control.
-Query connectivity in any version.
-
-Time: O(log n) with partial persistence
-```
-
-## Common Applications
-
-### 1. Undo/Redo
-```
-Each edit creates new version.
-Undo: revert to previous version.
-Redo: move to next version.
-
-No need to track inverse operations!
-```
-
-### 2. Version Control (Git-like)
-```
-Each commit is a new version.
-Branches are multiple versions from same parent.
-Merge combines two versions.
-```
-
-### 3. Functional Programming
-```
-Immutable data structures are naturally persistent.
-Share structure between values.
-Safe concurrent access (no mutations).
-```
-
-### 4. Range Queries Over Time
-```
-Given array with updates, answer:
-"What was sum of [l, r] after k-th update?"
-
-Use persistent segment tree.
-```
-
-## Types of Persistence
+## 2. Persistent vs immutable vs mutable (beginner table)
 
 ```
-Partial Persistence:
+Mutable:
+  - Update overwrites the old value
+  - Old versions are lost
+
+Immutable (copy-on-write, naive):
+  - Update makes a full copy
+  - Old versions kept, but expensive
+
+Persistent (path copying):
+  - Update makes a *small* copy
+  - Old versions kept, efficient
+```
+
+---
+
+## 3. The key trick: path copying
+
+When you update a node in a tree, you only copy the nodes on the path from the
+root to that node.
+
+Example (binary tree):
+
+```
+Before update (version 0):
+        A
+       / \
+      B   C
+     / \
+    D   E
+
+Update E -> E'
+
+After update (version 1):
+        A'           (new root)
+       /  \
+      B'   C          (C is shared)
+     / \
+    D   E'            (D is shared)
+```
+
+Only A, B, E were copied. C and D are reused.
+
+This is why each update is O(log n) for balanced trees.
+
+---
+
+## 4. Example: a persistent stack (purely functional)
+
+A linked stack is **naturally persistent**: pushing just adds a new head.
+
+We can show version branching without any mutation.
+
+```mbt check
+///|
+enum PStack[T] {
+  Nil
+  Cons(T, PStack[T])
+} derive(Show)
+
+///|
+fn[T] PStack::push(self : PStack[T], x : T) -> PStack[T] {
+  Cons(x, self)
+}
+
+///|
+fn[T] PStack::pop(self : PStack[T]) -> PStack[T] {
+  match self {
+    Cons(_, rest) => rest
+    Nil => Nil
+  }
+}
+
+///|
+fn[T] PStack::top(self : PStack[T]) -> T? {
+  match self {
+    Cons(x, _) => Some(x)
+    Nil => None
+  }
+}
+
+///|
+test "persistent stack versions" {
+  let v0 : PStack[Int] = Nil
+  let v1 = v0.push(5)
+  let v2 = v1.push(3)
+  let v3 = v1.push(7) // branch from v1
+  inspect(v0.top(), content="None")
+  inspect(v1.top(), content="Some(5)")
+  inspect(v2.top(), content="Some(3)")
+  inspect(v3.top(), content="Some(7)")
+
+  // Old versions are still intact:
+  inspect(v1.top(), content="Some(5)")
+  inspect(v2.pop().top(), content="Some(5)")
+}
+```
+
+Key idea: each version is just a pointer to a different head node.
+
+---
+
+## 5. Example: versioned arrays (conceptual)
+
+Arrays are not naturally persistent, so we usually build them on top of a
+tree (segment tree or balanced BST). Updating index `i` replaces the leaf and
+copies the path to the root.
+
+```
+Update index 2 in version 0:
+
+v0 root
+  ├─ left subtree (shared)
+  └─ right subtree (copied)
+         └─ leaf at index 2 (copied)
+```
+
+That gives a new root for version 1, but still shares most nodes.
+
+---
+
+## 6. Example: persistent segment tree (range sums)
+
+Suppose we track sums. Start with:
+
+```
+v0: [1, 2, 3, 4, 5]   sum = 15
+```
+
+Update position 2 (0-based) from 3 to 10:
+
+```
+v1: [1, 2, 10, 4, 5]  sum = 22
+```
+
+Both versions exist simultaneously:
+
+```
+query(v0, 1..3) -> 2 + 3 + 4 = 9
+query(v1, 1..3) -> 2 + 10 + 4 = 16
+```
+
+Only the path to index 2 is copied.
+
+---
+
+## 7. Example: branching history
+
+Persistent structures allow **branching**.
+
+```
+v0: [0, 0, 0]
+
+v1 from v0: set(0, 10) -> [10, 0, 0]
+v2 from v1: set(1, 20) -> [10, 20, 0]
+v3 from v0: set(2, 30) -> [0, 0, 30]
+
+v2 and v3 are independent branches.
+```
+
+This is exactly how version control works:
+
+```
+v0 ---- v1 ---- v2
+  \
+   \---- v3
+```
+
+---
+
+## 8. Example: k-th smallest in a range (conceptual)
+
+Persistent segment trees are often used for:
+
+```
+"What is the k-th smallest value in [l, r]?"
+```
+
+Trick:
+
+- Build version i as the frequency counts of prefix [0..i-1].
+- To answer [l, r], subtract two versions:
+  - counts in prefix r+1
+  - counts in prefix l
+
+Then walk down the tree using the frequency difference.
+
+---
+
+## 9. Types of persistence
+
+```
+Partial persistence:
   - Query any version
-  - Only modify latest version
+  - Update only the newest version
 
-Full Persistence:
+Full persistence:
   - Query any version
-  - Modify any version (creates branch)
+  - Update any version (creates branch)
 
-Confluent Persistence:
+Confluent persistence:
   - Merge two versions into one
-  - Hardest to implement efficiently
+  - Hardest to implement
 ```
 
-## Complexity Analysis
+Most competitive programming problems use **partial or full persistence**.
 
-| Structure | Update | Query | Space/Update |
-|-----------|--------|-------|--------------|
-| Persistent Array | O(log n) | O(log n) | O(log n) |
-| Persistent Stack | O(1) | O(1) | O(1) |
-| Persistent Segtree | O(log n) | O(log n) | O(log n) |
-| Persistent Treap | O(log n) | O(log n) | O(log n) |
+---
 
-## Persistent vs Immutable vs Mutable
+## 10. Complexity table (rule of thumb)
 
-| Type | Modify | Old Versions | Sharing |
-|------|--------|--------------|---------|
-| Mutable | In-place | Lost | N/A |
-| Immutable | Full copy | All | None |
-| **Persistent** | Path copy | All | Maximum |
+| Structure | Update | Query | Extra Space / Update |
+|-----------|--------|-------|----------------------|
+| Persistent stack | O(1) | O(1) | O(1) |
+| Persistent array | O(log n) | O(log n) | O(log n) |
+| Persistent segment tree | O(log n) | O(log n) | O(log n) |
+| Persistent treap | O(log n) | O(log n) | O(log n) |
 
-**Choose Persistent when**: You need version history with efficient space/time.
+---
 
-## Fat Node vs Path Copying
+## 11. When should you use persistence?
 
-```
-Fat Node:
-  Each node stores all its historical values.
-  Space: O(1) per update
-  Query: O(log versions) per node access
+Use it when you need:
 
-Path Copying:
-  Copy nodes on update path.
-  Space: O(log n) per update
-  Query: O(log n) total
+- **Undo/redo** in editors
+- **time travel queries** ("what was the value yesterday?")
+- **branching histories** (version control, search trees)
+- **offline queries** like "k-th smallest in subarray"
 
-Path copying is simpler and often preferred.
-```
+Avoid it when:
 
-## Implementation Notes
+- data is tiny (simple copy is fine),
+- queries are only on the latest version.
 
-- Use immutable references/pointers
-- Never mutate—always create new nodes
-- Store root pointers for each version
-- Consider garbage collection for old versions
-- For segment tree, keep array of version roots
-- Reference counting can help manage memory
+---
 
+## 12. Common pitfalls
+
+1. **Accidentally mutating shared nodes**  
+   Once you mutate a node, you destroy persistence. Always copy.
+
+2. **Memory blow-up**  
+   Each update adds O(log n) nodes. It is efficient, but still grows with
+   the number of updates.
+
+3. **Large value domains**  
+   For frequency-based trees, compress values first.
+
+---
+
+## 13. Summary
+
+Persistent data structures are a sweet spot:
+
+- They keep every version accessible,
+- They share most structure to stay efficient,
+- They enable branching histories and historical queries.
+
+Once you understand **path copying**, most persistent structures become
+straightforward.
