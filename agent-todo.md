@@ -11,9 +11,9 @@
 - [x] lib/bipartite_matching
 - [x] lib/block_cut_tree
 - [x] lib/bridges
-- [ ] lib/cartesian_tree (in progress)
-- [ ] lib/centroid
-- [ ] lib/challenge_bfs_grid
+- [x] lib/cartesian_tree
+- [x] lib/centroid
+- [ ] lib/challenge_bfs_grid (in progress)
 - [ ] lib/challenge_binary_lifting
 - [ ] lib/challenge_binary_search_answer
 - [ ] lib/challenge_bipartite_matching_kuhn

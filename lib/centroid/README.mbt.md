@@ -1,137 +1,79 @@
-# Centroid Decomposition
+# Centroid Decomposition (Tree Divide & Conquer)
 
-## Overview
+## What It Is
 
-**Centroid Decomposition** divides a tree by repeatedly removing centroids,
-creating a decomposition tree of logarithmic depth. This enables efficient
-path queries and distance computations on trees.
+**Centroid decomposition** breaks a tree into smaller pieces by repeatedly
+removing a **centroid**. The centroids become the nodes of a new tree
+(the *centroid tree*), which has **O(log n)** height.
 
-- **Build**: O(n log n)
-- **Depth**: O(log n)
-- **Space**: O(n)
+This structure makes many tree queries fast because any node has only
+O(log n) centroid ancestors.
 
-## What is a Centroid?
+## The Problem It Solves
+
+Tree problems often ask for *path* or *distance* queries (not just subtree
+queries). Examples:
+
+- Count pairs of nodes at distance k
+- Find the nearest "marked" node to a query node
+- Count paths with certain properties
+
+Centroid decomposition turns these into **logarithmic** queries after
+preprocessing.
+
+## What Is a Centroid?
+
+For a tree with `n` nodes, a **centroid** is a node whose removal splits the
+tree into components of size at most `n/2`.
+
+Facts:
+
+- Every tree has **at least one centroid**.
+- There can be two centroids (adjacent) in some trees.
+
+Example (n = 7):
 
 ```
-A centroid is a node whose removal splits the tree
-such that no remaining subtree has more than n/2 nodes.
-
-Tree with 7 nodes:
         1
        /|\
       2 3 4
      /|   |
     5 6   7
 
-Subtree sizes from node 2:
-  - Remove 2: largest remaining = 4 nodes (via 1)
-
-Subtree sizes from node 1:
-  - Remove 1: largest remaining = 3 nodes (subtree of 2)
-
-Node 1 is the centroid: max subtree ≤ 7/2 = 3.5 ✓
-
-Every tree has at least one centroid!
+Removing node 1 leaves components of size 3,1,2  (all <= 7/2)
+So node 1 is a centroid.
 ```
 
-## The Key Insight
+## Core Idea of Decomposition
+
+1. Find a centroid `c` of the current tree.
+2. Remove `c`. The tree splits into smaller subtrees.
+3. Recurse on each subtree and connect their centroids under `c`.
+
+Because each subtree is at most half the size, the centroid tree has
+**O(log n)** depth.
+
+## How to Find a Centroid
+
+Two DFS passes:
+
+1. Compute subtree sizes.
+2. Walk again to find a node where no component exceeds n/2.
+
+Pseudo-logic:
 
 ```
-After removing centroid, each subtree has ≤ n/2 nodes.
-Apply recursively: each level halves the problem size.
+size[u] = 1 + sum(size[child])
 
-Level 0: n nodes → find centroid c₀
-Level 1: each subtree ≤ n/2 nodes → find their centroids
-Level 2: each subtree ≤ n/4 nodes
-...
-Level log(n): single nodes
-
-This gives a centroid tree of depth O(log n)!
+u is centroid if:
+  max( size[child] for children, n - size[u] ) <= n/2
 ```
 
-## Algorithm Walkthrough
+## Why It Helps
 
-```
-Tree:
-        1
-       /|\
-      2 3 4
-     /|   |
-    5 6   7
-
-Step 1: Find centroid of whole tree
-  Sizes: 5→1, 6→1, 7→1, 2→3, 4→2, 3→1, 1→7
-  Centroid: 1 (removing it → max subtree = 3)
-
-Step 2: Remove 1, decompose subtrees
-  Subtree rooted at 2: {2, 5, 6}
-    Centroid: 2
-  Subtree rooted at 3: {3}
-    Centroid: 3
-  Subtree rooted at 4: {4, 7}
-    Centroid: 4
-
-Step 3: Continue recursively
-  {5}, {6}, {7} are single nodes
-
-Centroid Tree:
-        1
-       /|\
-      2 3 4
-     /|   |
-    5 6   7
-
-(In general, centroid tree structure differs from original!)
-```
-
-## Finding the Centroid
-
-```
-Algorithm:
-1. Compute subtree sizes via DFS
-2. For each node u, check if it's a centroid:
-   - All children subtrees ≤ n/2
-   - Parent's portion ≤ n/2 (n - size[u])
-
-def find_centroid(tree, n):
-    sizes = compute_sizes(tree)
-    for u in tree:
-        is_centroid = true
-        for child in u.children:
-            if sizes[child] > n/2:
-                is_centroid = false
-        if n - sizes[u] > n/2:
-            is_centroid = false
-        if is_centroid:
-            return u
-```
-
-## Visual: Centroid Tree vs Original
-
-```
-Original Tree:           Centroid Tree:
-    1                         4
-   / \                       /|\
-  2   3                     2 1 5
- / \   \                   /| |\
-4   5   6                 3 7 6 8
-|   |
-7   8
-
-The centroid tree has depth O(log n) even if
-the original tree is a long chain!
-
-Original: Chain of 8      Centroid Tree:
-1-2-3-4-5-6-7-8              4
-                            / \
-                           2   6
-                          /|   |\
-                         1 3   5 7
-                                 |
-                                 8
-
-Depth reduced from 7 to 3!
-```
+Any node appears in the decomposition path only once per level, and the
+height is O(log n). So operations that combine data along centroid ancestors
+are typically **O(log n)**.
 
 ## Example Usage
 
@@ -157,67 +99,35 @@ test "centroid star" {
 
 ## Common Applications
 
-### 1. Path Queries
-```
-Query: Count paths of length exactly k
-For each centroid:
-  - Gather distances to all nodes in subtree
-  - Count pairs summing to k
-  - Recurse on child subtrees
-Time: O(n log n) for all queries
-```
+### 1. Nearest Marked Node
+Maintain for each centroid the best distance to a marked node. Query walks
+up the centroid ancestors and takes the minimum.
 
-### 2. Distance Queries
-```
-Query: Find closest node with property P
-Precompute: For each centroid, store distances
-            to all nodes in its subtree
-Query: Walk up centroid tree, check each level
-Time: O(log n) per query after O(n log n) preprocess
-```
+### 2. Count Pairs at Distance k
+For each centroid, combine distances in its subtrees using counting arrays
+or maps. This gives O(n log n) total time for all counts.
 
-### 3. Tree Coloring
-```
-Query: Count pairs of same-colored nodes at distance ≤ d
-Decompose by centroid, aggregate counts at each level.
-```
+### 3. Path Queries with Constraints
+If you can break a path into contributions from centroid ancestors, you
+get logarithmic query time.
 
-## Why O(n log n) Total?
+## Complexity
 
-```
-Each node appears in O(log n) centroid subtrees.
+- Build centroid tree: **O(n log n)**
+- Depth of centroid tree: **O(log n)**
+- Typical query: **O(log n)**
 
-Work per node at each level: O(1) or O(degree)
-Total work: O(n × log n)
+## Pitfalls
 
-Key insight: When processing centroid c,
-we only process nodes in c's current subtree.
-Each node is in at most O(log n) such subtrees.
-```
+- Always mark removed nodes so they are skipped in DFS.
+- If values are weighted, store distances while climbing centroid ancestors.
+- Handle the case of two possible centroids (either choice is valid).
 
-## Complexity Analysis
+## When to Use
 
-| Operation | Time |
-|-----------|------|
-| Build centroid tree | O(n log n) |
-| Find one centroid | O(n) |
-| Depth of decomposition | O(log n) |
+Use centroid decomposition when:
 
-## Centroid Decomposition vs Other Techniques
+- The tree is static (no edge updates), and
+- You need many path/distance queries
 
-| Technique | Preprocess | Query | Use Case |
-|-----------|------------|-------|----------|
-| **Centroid** | O(n log n) | O(log n) | Path queries |
-| Heavy-Light | O(n) | O(log² n) | Path updates |
-| Euler Tour | O(n) | O(1) subtree | Subtree queries |
-| LCA | O(n log n) | O(log n) | Ancestor queries |
-
-**Choose Centroid Decomposition when**: You need efficient path counting or distance queries on trees.
-
-## Implementation Notes
-
-- Mark nodes as "removed" instead of actually removing them
-- Store parent in centroid tree for walking up during queries
-- Use two DFS passes: one for sizes, one to find centroid
-- Handle the case where multiple nodes could be centroids (pick any)
-- For weighted edges, track distances during decomposition
+If you only need subtree queries, Euler tours are simpler.
