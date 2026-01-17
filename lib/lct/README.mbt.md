@@ -46,6 +46,11 @@ Before access(6):         After access(6):
 
 This is the core building block for link, cut, LCA, and path queries.
 
+### Access intuition in one line
+
+Each `access(v)` makes the path from `v` to the root the **right spine** of a
+splay tree, so the path is easy to query.
+
 ## Operations (High‑Level)
 
 ### Link(u, v)
@@ -74,6 +79,18 @@ The tree splits into two.
 access(u)
 access(v)
 If u now has any upward pointer, they were connected.
+
+### Path sum(u, v)
+
+If you store subtree sums in splay nodes:
+
+```
+make_root(u)
+access(v)
+then v's splay tree contains the path u..v
+```
+
+So the aggregate (e.g. sum) is at the root.
 ```
 
 ## Visual: Splay Tree vs Actual Tree
@@ -88,6 +105,11 @@ Actual tree:      Splay tree (preferred path order by depth)
    2   3                   2   3
 
 Rotations change the splay tree shape, but not the actual tree edges.
+
+### Why splay is ok
+
+Splay operations only change the auxiliary tree representation. The real tree
+edges are maintained separately by preferred paths and path-parent pointers.
 ```
 
 ## Example Usage
@@ -106,6 +128,21 @@ test "dynamic forest" {
   // Cut edge (1,2)
   inspect(forest.cut(1, 2), content="true")
   inspect(forest.connected(0, 2), content="false")
+}
+```
+
+### Example: path sum with LCT
+
+```mbt check
+///|
+test "lct path sum" {
+  let lct = @lct.LinkCutTree::with_values([1, 2, 3, 4])
+  lct.link(0, 1)
+  lct.link(1, 2)
+  lct.link(2, 3)
+  // Path 0-1-2-3 sums to 1+2+3+4 = 10
+  lct.make_root(0)
+  inspect(lct.path_sum(3), content="10")
 }
 ```
 
@@ -134,6 +171,14 @@ access(u), access(v) -> the split point of paths gives LCA.
 
 ```
 Store sum/min/max in each splay node and query on root‑to‑node path.
+
+### 5) Dynamic LCA (explicit)
+
+```
+make_root(u)
+access(v)
+the access return point is the LCA
+```
 ```
 
 ## Complexity
@@ -153,6 +198,11 @@ Store sum/min/max in each splay node and query on root‑to‑node path.
 - **Edge direction**: many LCT implementations treat edges as parent/child
   only after rerooting.
 - **Lazy reversal**: required for `make_root` to reverse paths safely.
+
+### Another pitfall
+
+For `link(u, v)`, ensure u and v are in **different** trees.
+Linking within one tree creates a cycle and breaks LCT invariants.
 
 ## LCT vs Other Structures
 
