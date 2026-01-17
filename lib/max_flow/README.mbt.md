@@ -10,6 +10,11 @@ Rules:
 - Flow on an edge cannot exceed its capacity.
 - For every vertex except `s` and `t`, inflow = outflow.
 
+### Tiny mental model
+
+Think of edges as **pipes** with maximum water capacity.
+We want to push as much water as possible from `s` to `t`.
+
 ## 2. Why this is hard
 
 A naive approach repeatedly finds any augmenting path and pushes flow.
@@ -37,6 +42,17 @@ Residual backward: 7
 
 The algorithm only travels through edges with **positive residual**.
 
+### Residual graph visual
+
+```
+Original edge:  A --(cap 10)--> B
+Current flow:   f = 7
+
+Residual graph:
+  A --(3)--> B    (can still send 3 forward)
+  B --(7)--> A    (can cancel up to 7)
+```
+
 ## 4. Level graph (BFS phase)
 
 We do BFS from the source and assign each vertex a level:
@@ -48,6 +64,8 @@ level[v] = level[u] + 1 for any edge u->v with residual > 0
 
 Only edges that go **from level d to level d+1** are kept in the level graph.
 This guarantees shortest augmenting paths are used in each phase.
+
+This also prevents DFS from wandering sideways or backward in the same phase.
 
 Diagram:
 
@@ -69,6 +87,11 @@ Within the level graph, DFS pushes flow until:
 This is called a **blocking flow**.
 Once we have a blocking flow, the shortest path length increases, and we build
 another level graph.
+
+### Intuition
+
+Think of each BFS phase as "all shortest paths right now".
+DFS tries to saturate all of them, so the next phase must use longer paths.
 
 ## 6. Small worked example
 
@@ -115,6 +138,10 @@ Total flow = 5
 No more paths in level graph. BFS again shows `t` unreachable.
 So max flow = 5.
 
+### Cut check
+
+The cut separating `s` from `t` has capacity 5, so the flow is optimal.
+
 ## 7. Why it works (max-flow min-cut)
 
 **Max-Flow Min-Cut Theorem**:
@@ -129,6 +156,19 @@ Cut capacity is the sum of capacities of edges from `S` to `T`.
 Dinic stops when no s-t path exists in the residual graph. At that point,
 `S` is exactly the set reachable from `s`. The edges from `S` to `T` are
 fully saturated, so the flow equals the cut capacity, which proves optimality.
+
+### Simple cut example
+
+```
+s -> A (3)
+s -> B (2)
+A -> t (2)
+B -> t (3)
+
+Cut S = {s, A}, T = {B, t}
+Edges from S to T: s->B (2), A->t (2) -> cut capacity = 4
+Maximum flow cannot exceed 4 (min-cut)
+```
 
 ## 8. Implementation details in this package
 
@@ -152,6 +192,16 @@ test "basic max flow" {
   mf.add_edge(2, 3, 3L)
   inspect(mf.max_flow(0, 3), content="4")
 }
+```
+
+### Example: flow on a small network (diagram)
+
+```
+s --3--> A --2--> t
+ \       |
+  \--2-->B --3--> t
+
+Max flow = 5
 ```
 
 ```mbt nocheck
@@ -181,6 +231,20 @@ test "bipartite matching" {
 - **Image segmentation** (min-cut)
 - **Bandwidth / throughput analysis** in networks
 
+### Another classic: bipartite matching
+
+```
+Left:  L1 L2 L3
+Right: R1 R2 R3
+
+Edges:
+L1 -> R1, R2
+L2 -> R2, R3
+L3 -> R1
+
+Max matching size = max flow
+```
+
 ## 11. Complexity
 
 ```
@@ -199,6 +263,11 @@ Why the improvement with unit capacity:
 - Using a DFS without iter[] can cause large slowdowns.
 - Undirected edges should be modeled as two directed edges.
 - Large graphs may still need push-relabel for speed.
+
+### Common beginner mistake
+
+Forgetting reverse edges means you cannot "undo" flow.
+Without reverse edges, the residual graph is incorrect and the algorithm fails.
 
 ## 13. Summary
 
