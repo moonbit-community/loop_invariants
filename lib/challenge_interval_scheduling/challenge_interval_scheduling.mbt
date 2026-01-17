@@ -11,7 +11,6 @@ priv struct Interval {
 
 ///|
 /// Return the maximum number of non-overlapping intervals.
-#warnings("+missing_invariant+missing_reasoning")
 fn max_non_overlapping(intervals : Array[Interval]) -> Int {
   if intervals.length() == 0 {
     return 0
@@ -30,7 +29,6 @@ fn max_non_overlapping(intervals : Array[Interval]) -> Int {
 
 ///|
 /// Return the maximum number of non-overlapping intervals.
-#warnings("-missing_invariant-missing_reasoning")
 pub fn max_non_overlapping_pairs(intervals : ArrayView[(Int, Int)]) -> Int {
   let arr : Array[Interval] = []
   for pair in intervals {

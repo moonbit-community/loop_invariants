@@ -52,8 +52,8 @@
 - [x] lib/challenge_edmonds_karp
 - [x] lib/challenge_fenwick_2d
 - [x] lib/challenge_floyd_warshall
-- [ ] lib/challenge_interval_scheduling (in progress)
-- [ ] lib/challenge_knapsack_01
+- [x] lib/challenge_interval_scheduling
+- [ ] lib/challenge_knapsack_01 (in progress)
 - [ ] lib/challenge_knapsack_unbounded
 - [ ] lib/challenge_lca_binary_lift
 - [ ] lib/challenge_lcs
