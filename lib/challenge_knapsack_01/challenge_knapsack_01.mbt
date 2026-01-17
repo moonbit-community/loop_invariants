@@ -4,7 +4,6 @@
 
 ///|
 /// Maximum value with weight limit using each item at most once.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn knapsack_01(
   weights : ArrayView[Int],
   values : ArrayView[Int],

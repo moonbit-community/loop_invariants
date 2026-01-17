@@ -53,8 +53,8 @@
 - [x] lib/challenge_fenwick_2d
 - [x] lib/challenge_floyd_warshall
 - [x] lib/challenge_interval_scheduling
-- [ ] lib/challenge_knapsack_01 (in progress)
-- [ ] lib/challenge_knapsack_unbounded
+- [x] lib/challenge_knapsack_01
+- [ ] lib/challenge_knapsack_unbounded (in progress)
 - [ ] lib/challenge_lca_binary_lift
 - [ ] lib/challenge_lcs
 - [ ] lib/challenge_line_sweep
