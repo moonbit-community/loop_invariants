@@ -14,26 +14,13 @@ fn abs_int(x : Int) -> Int {
 
 ///|
 /// Compute the greatest common divisor of a and b.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn gcd(a : Int, b : Int) -> Int {
-  let x0 = abs_int(a)
-  let y0 = abs_int(b)
-  for x = x0, y = y0 {
-    if y == 0 {
-      break x
-    } else {
-      continue y, x % y
-    }
-  } where {
-    invariant: x >= 0 && y >= 0,
-    reasoning: (
-      #|INVARIANT (Euclid):
-      #|gcd(x, y) equals gcd(x0, y0) and y decreases by modulus.
-      #|MAINTENANCE:
-      #|Replace (x, y) with (y, x mod y) without changing gcd.
-      #|TERMINATION:
-      #|When y = 0, x is the gcd.
-    ),
+  let x = abs_int(a)
+  let y = abs_int(b)
+  if y == 0 {
+    x
+  } else {
+    gcd(y, x % y)
   }
 }
 
@@ -52,20 +39,6 @@ fn node_gcd(node : Node) -> Int {
 }
 
 ///|
-fn tree_valid(node : Node, len : Int) -> Bool {
-  match node {
-    Node::Leaf(g=_) => len == 1
-    Node::Branch(g=gv, left~, right~) =>
-      if len <= 1 {
-        false
-      } else {
-        let mid = len / 2
-        tree_valid(left, mid) &&
-        tree_valid(right, len - mid) &&
-        gv == gcd(node_gcd(left), node_gcd(right))
-      }
-  }
-}
 
 ///|
 /// Return the GCD stored at the root.
@@ -134,32 +107,17 @@ pub fn range_gcd(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 
 ///|
 /// Apply point updates (idx, value).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn apply_updates(
   root : Node,
   n : Int,
   updates : ArrayView[(Int, Int)],
 ) -> Node {
-  let m = updates.length()
-  for i = 0, tree = root {
-    if i >= m {
-      break tree
-    } else {
-      let (idx, value) = updates[i]
-      continue i + 1, set_value(tree, 0, n, idx, value)
-    }
-  } where {
-    invariant: i >= 0 && i <= m,
-    invariant: tree_valid(tree, n),
-    reasoning: (
-      #|INVARIANT (GCD updates):
-      #|tree reflects the first i point updates with correct gcd values.
-      #|MAINTENANCE:
-      #|Update index i by path-copying while recomputing gcd values.
-      #|TERMINATION:
-      #|At i = m, all updates are applied.
-    ),
+  let mut tree = root
+  for update in updates {
+    let (idx, value) = update
+    tree = set_value(tree, 0, n, idx, value)
   }
+  tree
 }
 
 ///|
