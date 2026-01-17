@@ -1,232 +1,377 @@
-# Mo's Algorithm
+# Mo's Algorithm (Offline Range Queries)
 
-## Overview
+Mo's algorithm answers many **range queries** on a static array by **reordering
+the queries** so the sliding window moves very little. It is especially useful
+when each add/remove update is O(1) or O(log n), but recomputing from scratch
+would be too slow.
 
-**Mo's Algorithm** answers multiple offline range queries efficiently by
-reordering queries to minimize transitions between them. It achieves
-O((n + q) × √n) time using sqrt decomposition.
+Think of it as: "I will answer your questions in the smartest order so I can
+reuse almost all the work."
 
-- **Time**: O((n + q) × √n)
-- **Space**: O(n + q)
+---
 
-## The Problem
+## 1. The core problem (what we are trying to speed up)
 
-```
-Array: [1, 2, 1, 3, 1, 2, 4]
-Queries: How many distinct elements in each range?
-  [0, 2] → {1, 2} → 2
-  [1, 4] → {1, 2, 3} → 3
-  [2, 6] → {1, 2, 3, 4} → 4
+We have:
 
-Naive: O(q × n) - process each query from scratch
-Mo's: O((n + q) × √n) - reorder and transition efficiently
-```
+- An array `a[0..n-1]`
+- Many queries of the form: **"What is the answer for subarray [l, r]?"**
+- All queries are known in advance (**offline**).
 
-## The Key Insight: Sqrt Decomposition
+Example problem: **count distinct values** in each range.
 
 ```
-Divide array indices into √n blocks:
+Array:  [1, 2, 1, 3, 1, 2, 4]
+Index:   0  1  2  3  4  5  6
 
-Array:  [1, 2, 1, 3, 1, 2, 4, 5, 9]
-         \_____/  \_____/  \_____/
-         Block 0  Block 1  Block 2
+Queries:
+  Q0: [0, 2] -> {1,2} -> 2
+  Q1: [1, 4] -> {1,2,3} -> 3
+  Q2: [2, 6] -> {1,2,3,4} -> 4
+```
+
+Naive approach:
+
+- For each query, scan the range and compute the answer.
+- Time: O(q * n) in the worst case.
+
+Mo's algorithm:
+
+- Reorder queries so the window [L, R] barely moves between them.
+- Time: about O((n + q) * sqrt(n)).
+
+---
+
+## 2. Sliding window idea (the "add/remove" model)
+
+Maintain a current window `[L, R]` and a data structure that can:
+
+- `add(i)` when you extend the window to include `a[i]`
+- `remove(i)` when you shrink the window past `a[i]`
+
+For distinct counts:
+
+```
+count[x] = occurrences of value x in the window
+distinct = number of x with count[x] > 0
+
+add(i):
+  x = a[i]
+  if count[x] == 0: distinct += 1
+  count[x] += 1
+
+remove(i):
+  x = a[i]
+  count[x] -= 1
+  if count[x] == 0: distinct -= 1
+```
+
+Each move of L or R costs O(1).
+
+---
+
+## 3. Why reordering helps
+
+If you answer queries in random order, L and R jump around a lot.
+
+Example (poor order):
+
+```
+Q0: [0, 6] -> L=0, R=6
+Q1: [0, 2] -> R moves back by 4
+Q2: [2, 6] -> L moves forward by 2, R moves forward by 4
+```
+
+Mo's algorithm sorts queries so nearby ranges are processed together, which
+shrinks the total movement.
+
+---
+
+## 4. Block decomposition (the key trick)
+
+Divide indices into blocks of size `B ~ sqrt(n)`.
+
+Example with n=9, B=3:
+
+```
+Index:  0  1  2  3  4  5  6  7  8
+Block:  0  0  0  1  1  1  2  2  2
+```
 
 Sort queries by:
-  1. Block number of left endpoint
-  2. Within same block: right endpoint
 
-Block 0 queries: (0,2), (1,4), (2,6)  → sort by right
-Block 1 queries: (3,5), (4,7)          → sort by right
-...
-```
+1. block of left endpoint
+2. right endpoint (ascending)
 
-## Why O((n + q) × √n)?
+So queries in the same block are processed in order of `r`, which makes `R`
+mostly move forward.
 
-```
-Left pointer movement:
-- Within a block: moves at most √n per query
-- Across blocks: at most n total (q queries, each crosses ≤1 block boundary)
-- Total: O(q × √n)
+---
 
-Right pointer movement:
-- Within each block: monotonically increasing → O(n) per block
-- √n blocks total
-- Total: O(n × √n)
+## 5. Full step-by-step example
 
-Combined: O(q × √n + n × √n) = O((n + q) × √n)
-```
-
-## Algorithm Walkthrough
+Array:
 
 ```
-Array: [1, 2, 1, 3, 1, 2, 4]
-Block size: √7 ≈ 2
-
-Queries in original order:
-  Q0: [0, 6]
-  Q1: [0, 2]
-  Q2: [2, 4]
-  Q3: [1, 3]
-
-Sorted order (block of L, then R):
-  Q1: [0, 2]  block(0)=0, r=2
-  Q3: [1, 3]  block(1)=0, r=3
-  Q0: [0, 6]  block(0)=0, r=6
-  Q2: [2, 4]  block(2)=1, r=4
-
-Processing:
-  Start: window = ∅
-
-  Q1 [0,2]: add(0), add(1), add(2)
-            window = {1,2,1} → distinct = 2
-
-  Q3 [1,3]: remove(0), add(3)
-            window = {2,1,3} → distinct = 3
-
-  Q0 [0,6]: add(0), add(4), add(5), add(6)
-            window = {1,2,1,3,1,2,4} → distinct = 4
-
-  Q2 [2,4]: remove(0), remove(1), remove(5), remove(6)
-            window = {1,3,1} → distinct = 2
+a = [1, 2, 1, 3, 1, 2, 4]
+index 0  1  2  3  4  5  6
 ```
 
-## Visual: Pointer Movement
+Let block size B = 2 (sqrt(7) rounded).
+
+Blocks:
 
 ```
-Query processing with reordering:
+index:  0  1  2  3  4  5  6
+block:  0  0  1  1  2  2  3
+```
 
+Queries:
+
+```
+Q0: [0, 6]
+Q1: [0, 2]
+Q2: [2, 4]
+Q3: [1, 3]
+```
+
+Sort by (block(L), R):
+
+```
+Q1: [0, 2]  block(L)=0, R=2
+Q3: [1, 3]  block(L)=0, R=3
+Q0: [0, 6]  block(L)=0, R=6
+Q2: [2, 4]  block(L)=1, R=4
+```
+
+Now simulate pointer movement and distinct count:
+
+```
+Start window: empty, L=0, R=-1, distinct=0
+
+Q1 [0,2]:
+  add 0,1,2 -> values [1,2,1] -> distinct=2
+
+Q3 [1,3]:
+  remove 0  -> values [2,1]   -> distinct=2
+  add 3     -> values [2,1,3] -> distinct=3
+
+Q0 [0,6]:
+  add 0,4,5,6 -> values [1,2,1,3,1,2,4] -> distinct=4
+
+Q2 [2,4]:
+  remove 0,1 -> values [1,3,1,2,4] -> distinct=4
+  remove 5,6 -> values [1,3,1]     -> distinct=2
+```
+
+The answers are:
+
+```
+Q1 -> 2
+Q3 -> 3
+Q0 -> 4
+Q2 -> 2
+```
+
+---
+
+## 6. Diagram: pointer movement
+
+```
 Array:   [1, 2, 1, 3, 1, 2, 4]
-          0  1  2  3  4  5  6
+Index:    0  1  2  3  4  5  6
 
-Q1 [0,2]:  L──────R
-Q3 [1,3]:     L───────R          L moves 1, R moves 1
-Q0 [0,6]:  L──────────────────R  L moves 1, R moves 3
-Q2 [2,4]:        L───────R       L moves 2, R moves 2
+Q1 [0,2]:  L-----R
+Q3 [1,3]:    L-----R
+Q0 [0,6]:  L-----------------R
+Q2 [2,4]:       L-----R
 
-Without reordering (original order):
-Q0 [0,6]:  L──────────────────R
-Q1 [0,2]:  L──────R              R moves 4 (wasteful!)
-Q2 [2,4]:        L───────R       L moves 2, R moves 2
-Q3 [1,3]:     L───────R          L moves 1, R moves 1
-
-Reordering reduces wasted movement!
+Notice R mostly moves forward, with fewer large backtracks.
 ```
 
-## The Add/Remove Operations
+---
 
-```
-For distinct element count:
+## 7. Simple pseudocode (MoonBit style)
 
-State: count[x] = occurrences of x in window
-       distinct = number of x where count[x] > 0
+This is conceptual (no public API in this package).
 
-add(idx):
-  x = arr[idx]
-  if count[x] == 0:
-    distinct++
-  count[x]++
-
-remove(idx):
-  x = arr[idx]
-  count[x]--
-  if count[x] == 0:
-    distinct--
-
-Both are O(1)!
-```
-
-## Example Usage
-
-```mbt check
+```mbt nocheck
 ///|
-test "mo algorithm concept" {
-  // Mo's algorithm processes queries offline
-  // by reordering them to minimize pointer movement
+struct Query {
+  l : Int
+  r : Int
+  idx : Int
+}
 
-  // Example: Count distinct elements
-  // Array: [1, 2, 1, 3, 1, 2, 4]
-  // Query [0, 2]: {1, 2, 1} → 2 distinct
+fn block_of(i : Int, block_size : Int) -> Int {
+  i / block_size
+}
 
-  // Key insight: sorting queries by (block(L), R)
-  // minimizes total pointer movement to O((n+q)√n)
+fn mo_order(qs : ArrayView[Query], block_size : Int) -> Array[Query] {
+  let sorted = qs.to_array()
+  sorted.sort_by((a, b) => {
+    let ba = block_of(a.l, block_size)
+    let bb = block_of(b.l, block_size)
+    if ba != bb {
+      ba - bb
+    } else {
+      a.r - b.r
+    }
+  })
+  sorted
+}
 
-  inspect(true, content="true")
+fn process_queries(a : ArrayView[Int], qs : ArrayView[Query]) -> Array[Int] {
+  let n = a.length()
+  let block_size = (n.to_float().sqrt().to_int()).max(1)
+  let ordered = mo_order(qs, block_size)
+
+  let answers : Array[Int] = Array::make(qs.length(), 0)
+  let mut l = 0
+  let mut r = -1
+
+  // state for distinct count:
+  let mut distinct = 0
+  let freq : Map[Int, Int] = {}
+
+  let add = (i : Int) => {
+    let x = a[i]
+    let c = freq.get(x).unwrap_or(0)
+    if c == 0 { distinct = distinct + 1 }
+    freq[x] = c + 1
+  }
+
+  let remove = (i : Int) => {
+    let x = a[i]
+    let c = freq[x]
+    freq[x] = c - 1
+    if c - 1 == 0 { distinct = distinct - 1 }
+  }
+
+  for q in ordered {
+    loop {
+      if l <= q.l { break }
+      l = l - 1
+      add(l)
+    }
+    loop {
+      if r >= q.r { break }
+      r = r + 1
+      add(r)
+    }
+    loop {
+      if l >= q.l { break }
+      remove(l)
+      l = l + 1
+    }
+    loop {
+      if r <= q.r { break }
+      remove(r)
+      r = r - 1
+    }
+    answers[q.idx] = distinct
+  }
+  answers
 }
 ```
 
-## Common Applications
+---
 
-### 1. Distinct Element Count
-```
-Query: How many distinct values in [l, r]?
-add(i): if count[arr[i]]++ == 0, distinct++
-remove(i): if --count[arr[i]] == 0, distinct--
-```
+## 8. More examples (what else can Mo handle?)
 
-### 2. Frequency of Most Common Element
-```
-Query: Max frequency of any element in [l, r]?
-Maintain: count[x], freq_count[f] = elements with frequency f
-add(i): update count, freq_count, max_freq
-remove(i): update count, freq_count, recalculate max
-```
+Mo's algorithm works when you can maintain the answer under add/remove.
 
-### 3. Range Sum of Occurrences
-```
-Query: Sum of f(count[x]) for all x in [l, r]
-Example: f(c) = c² gives sum of squared frequencies
-```
+### Example A: sum of squared frequencies
 
-### 4. K-th Smallest Element (with persistent data structure)
-```
-Combine Mo's with order statistics tree
-Query: K-th smallest in [l, r]
-```
-
-## Complexity Analysis
-
-| Operation | Time |
-|-----------|------|
-| Sort queries | O(q log q) |
-| Process queries | O((n + q) × √n) |
-| Total | O((n + q) × √n) |
-
-The add/remove must be O(1) or O(log n) for efficiency.
-
-## Mo's Algorithm vs Alternatives
-
-| Method | Time | Online? | Updates? |
-|--------|------|---------|----------|
-| **Mo's Algorithm** | O((n+q)√n) | No | No |
-| Segment Tree | O(q log n) | Yes | Yes |
-| Sqrt Decomposition | O(q√n) | Yes | Yes |
-| Persistent Seg Tree | O(q log n) | Yes | No |
-
-**Choose Mo's when**: Offline queries with complex aggregate functions.
-
-## The Block Size Optimization
+Let:
 
 ```
-Standard: block_size = √n
-
-Alternating direction within blocks:
-- Even blocks: sort by R ascending
-- Odd blocks: sort by R descending
-
-This reduces R pointer backtracking:
-Block 0: R goes 0 → n
-Block 1: R goes n → 0 (instead of restarting at 0)
-Block 2: R goes 0 → n
-...
-
-Total R movement: O(n × √n) instead of O(n × √n), but better constant
+answer = sum over values x of (count[x] * count[x])
 ```
 
-## Implementation Notes
+Update on add/remove:
 
-- Query ordering is crucial - don't forget to store original indices
-- Maintain current [l, r] range incrementally
-- Handle empty ranges as edge case
-- For online queries, consider other data structures
-- Block size tuning: try √(n²/q) for better performance when q << n
+```
+add x:
+  ans -= count[x]^2
+  count[x]++
+  ans += count[x]^2
 
+remove x:
+  ans -= count[x]^2
+  count[x]--
+  ans += count[x]^2
+```
+
+This gives you statistics like "how repetitive is the subarray?"
+
+### Example B: number of pairs with equal values
+
+If `count[x]` is how many times x appears:
+
+```
+pairs = sum over x of count[x] * (count[x] - 1) / 2
+```
+
+This is common in competitive programming problems with "count pairs in range".
+
+---
+
+## 9. Complexity (why the sqrt shows up)
+
+Let `B = sqrt(n)`.
+
+- There are about `n / B` blocks.
+- Within each block, R mostly moves forward: about O(n) per block.
+- Total R movement: O(n * n / B) = O(n * sqrt(n)).
+- L moves at most O(q * B).
+
+So total time:
+
+```
+O((n + q) * sqrt(n))
+```
+
+Sorting the queries costs O(q log q), which is usually smaller.
+
+---
+
+## 10. Practical tips
+
+1. **Coordinate compression**: If values are large, compress them so `count`
+   is a small array instead of a map.
+2. **Odd-even block order**: Sort by R ascending in even blocks and descending
+   in odd blocks to reduce backtracking.
+3. **Block size tuning**: For very large q, try `B = max(1, n / sqrt(q))`.
+4. **Offline requirement**: You must know all queries first.
+5. **No updates**: Standard Mo does not support point updates; that is a
+   different variant (Mo's with modifications).
+
+---
+
+## 11. When to use (and when not to)
+
+Use Mo's algorithm when:
+
+- Queries are offline and static.
+- Your add/remove is O(1) or O(log n).
+- The answer is hard to compute from scratch.
+
+Avoid Mo's when:
+
+- You need online answers.
+- The array changes frequently (updates).
+- Each add/remove is expensive.
+
+---
+
+## 12. Summary
+
+Mo's algorithm is a powerful reordering technique:
+
+- It turns expensive per-query recomputation into cheap incremental updates.
+- It is simple once you define `add` and `remove`.
+- It trades ordering freedom (offline queries) for speed.
+
+If your problem fits the add/remove model, Mo's algorithm is often the
+cleanest way to reach near-linear performance.
