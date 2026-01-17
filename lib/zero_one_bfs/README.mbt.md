@@ -1,105 +1,92 @@
-# 0-1 BFS
+# 0-1 BFS (Beginner-Friendly Guide)
 
-## Overview
+0-1 BFS computes **shortest paths** when every edge weight is **0 or 1**.
+It is faster than Dijkstra in this special case:
 
-**0-1 BFS** computes single-source shortest paths in graphs where every edge
-weight is either 0 or 1. It achieves O(V + E) time by using a deque instead
-of a priority queue.
+- Time: **O(V + E)**
+- Space: **O(V + E)**
 
-- **Time**: O(V + E)
-- **Space**: O(V + E)
-- **Key Feature**: Linear time for 0-1 weighted graphs
-
-## The Key Insight
+This package provides:
 
 ```
-Dijkstra's algorithm: O((V + E) log V) with priority queue
-  - Needed because edges can have any weight
-  - Priority queue maintains sorted order
-
-0-1 BFS insight:
-  - With only weights 0 and 1, distances increase by at most 1 at each step
-  - A deque naturally maintains sorted order!
-  - Weight 0: push to front (same distance)
-  - Weight 1: push to back (distance + 1)
-
-No priority queue needed → O(V + E)!
+@zero_one_bfs.zero_one_bfs(graph, source) -> Array[Int]
+@zero_one_bfs.Graph::new(n)
+@zero_one_bfs.Graph::add_edge(u, v, weight)
+@zero_one_bfs.Graph::add_undirected_edge(u, v, weight)
 ```
 
-## Understanding the Deque Invariant
+Unreachable vertices keep a large constant distance (`ZERO_ONE_INF` in code).
+
+---
+
+## 1) Why 0-1 BFS works
+
+Dijkstra uses a priority queue to always pick the smallest distance next.
+With weights only 0 or 1, we can do this with a **deque**:
 
 ```
-The deque maintains nodes in non-decreasing distance order:
-
-  front ← [dist=2, dist=2, dist=3, dist=3, dist=3, dist=4] → back
-
-When we pop from front, we always get a minimum-distance node!
-
-Edge weight 0: New distance = current distance (add to front)
-Edge weight 1: New distance = current distance + 1 (add to back)
-
-This maintains the sorted invariant automatically.
+weight 0 -> push to front (same distance)
+weight 1 -> push to back  (distance + 1)
 ```
 
-## Visual: 0-1 BFS Execution
+So the deque always keeps nodes in **non-decreasing distance order**.
+
+---
+
+## 2) Deque invariant (picture)
 
 ```
+front -> [dist=2, dist=2, dist=3, dist=3, dist=4] -> back
+
+If we relax a 0-edge, the new node has the SAME distance,
+so it goes to the front.
+
+If we relax a 1-edge, the new node is +1 distance,
+so it goes to the back.
+```
+
+---
+
+## 3) Step-by-step example
+
 Graph:
-    0 ──(0)─► 1 ──(1)─► 3
-    │         │         ▲
-   (1)       (1)       (0)
-    │         │         │
-    ▼         ▼         │
-    2 ──(0)─► 4 ────────┘
-
-Initial: deque = [0], dist = [0, ∞, ∞, ∞, ∞]
-
-Step 1: Pop 0, process edges
-  Edge 0→1 (w=0): dist[1] = 0, push_front(1)
-  Edge 0→2 (w=1): dist[2] = 1, push_back(2)
-  deque = [1, 2], dist = [0, 0, 1, ∞, ∞]
-
-Step 2: Pop 1, process edges
-  Edge 1→3 (w=1): dist[3] = 1, push_back(3)
-  Edge 1→4 (w=1): dist[4] = 1, push_back(4)
-  deque = [2, 3, 4], dist = [0, 0, 1, 1, 1]
-
-Step 3: Pop 2, process edges
-  Edge 2→4 (w=0): dist[4] already 1 ≤ 1, skip
-
-Step 4: Pop 3, no new edges
-
-Step 5: Pop 4, process edges
-  Edge 4→3 (w=0): dist[3] already 1 ≤ 1, skip
-
-Final distances: [0, 0, 1, 1, 1]
-```
-
-## Why the Deque Works
 
 ```
-Key properties:
-
-1. All 0-weight edges are processed first
-   (They go to front, so they're popped before 1-weight edges)
-
-2. Nodes in deque have distances d or d+1
-   - Front nodes have distance d (from 0-weight edges)
-   - Back nodes have distance d+1 (from 1-weight edges)
-   - Never more than 2 different distances in deque!
-
-3. Each node is processed at most once
-   - Once we visit a node, its distance is final
-   - Later visits can't improve it (greedy is safe)
+0 --0--> 1 --1--> 3
+|         |
+1         1
+v         v
+2 --0--> 4 --0--> 3
 ```
 
-## Core Idea
+Start at 0:
 
-- Maintain a deque of nodes in **nondecreasing distance** order.
-- Edge weight 0 goes to front; weight 1 goes to back.
-- Each edge is relaxed once, giving linear time.
+```
+dist = [0, inf, inf, inf, inf]
+deque = [0]
 
-## Example Usage
+pop 0:
+  0->1 (0): dist[1]=0, push_front(1)
+  0->2 (1): dist[2]=1, push_back(2)
+deque = [1, 2]
+
+pop 1:
+  1->3 (1): dist[3]=1, push_back(3)
+  1->4 (1): dist[4]=1, push_back(4)
+deque = [2, 3, 4]
+
+pop 2:
+  2->4 (0): dist[4] stays 1
+
+pop 3, pop 4:
+  no improvements
+
+final dist = [0, 0, 1, 1, 1]
+```
+
+---
+
+## 4) Example usage (directed)
 
 ```mbt check
 ///|
@@ -116,7 +103,9 @@ test "0-1 bfs example" {
 }
 ```
 
-## More Examples
+---
+
+## 5) Example usage (undirected)
 
 ```mbt check
 ///|
@@ -130,74 +119,51 @@ test "0-1 bfs undirected" {
 }
 ```
 
-## Common Applications
+---
 
-### 1. Grid Navigation with Teleports
-```
-Move between adjacent cells (cost 1) or teleport (cost 0).
-Model as 0-1 graph, solve with 0-1 BFS.
-```
+## 6) Unreachable nodes
 
-### 2. String Transformation
-```
-Transform string s to t:
-  - Identical character: cost 0
-  - Different character: cost 1
-Find minimum cost to reach target.
-```
+If a node is unreachable, its distance stays large.
 
-### 3. Obstacle Removal
-```
-Path through a grid where:
-  - Empty cells: cost 0
-  - Obstacles: cost 1 to remove
-Find minimum removals to reach destination.
+```mbt check
+///|
+test "0-1 bfs unreachable" {
+  let g = @zero_one_bfs.Graph::new(3)
+  g.add_edge(0, 1, 1)
+  let dist = @zero_one_bfs.zero_one_bfs(g, 0)
+  inspect(dist[0], content="0")
+  inspect(dist[1], content="1")
+  // dist[2] is a large constant (unreachable)
+  inspect(dist[2] > 1000000, content="true")
+}
 ```
 
-### 4. Network Upgrades
-```
-Network where some links are free, others cost 1 to upgrade.
-Find minimum upgrades for connectivity.
-```
+---
 
-## Complexity Analysis
-
-| Operation | Time |
-|-----------|------|
-| 0-1 BFS | O(V + E) |
-| Build graph | O(E) |
-| Space | O(V + E) |
-
-## 0-1 BFS vs Other Shortest Path Algorithms
-
-| Algorithm | Time | Edge Weights |
-|-----------|------|--------------|
-| **0-1 BFS** | O(V + E) | {0, 1} only |
-| BFS | O(V + E) | All equal (unweighted) |
-| Dijkstra | O((V + E) log V) | Non-negative |
-| Bellman-Ford | O(VE) | Any (handles negative) |
-
-**Choose 0-1 BFS when**: All edge weights are 0 or 1.
-
-## Generalizing to 0-k BFS
+## 7) Common applications
 
 ```
-If edge weights are in {0, 1, 2, ..., k}:
-
-Use k+1 queues (or a "bucket" structure):
-  bucket[0], bucket[1], ..., bucket[k]
-
-When processing distance d:
-  - Weight w edge → add to bucket[(d + w) % (k+1)]
-
-Time: Still O(V + E) for small k
+Grid problems with 0/1 costs
+Teleport edges (0 cost) + normal edges (1 cost)
+Minimum obstacle removals (0 for empty, 1 for wall)
+Graph problems where weights are only 0 or 1
 ```
 
-## Implementation Notes
+---
 
-- Use a double-ended queue (deque) for O(1) front/back operations
-- Initialize distances to infinity (or max int)
-- Set source distance to 0 and push to deque
-- Process each node only once (check if already visited)
-- Works for both directed and undirected graphs
+## 8) 0-1 BFS vs others
 
+```
+BFS:        all edges weight 1
+0-1 BFS:    weights in {0,1}
+Dijkstra:   any non-negative weights
+Bellman:    negative weights allowed
+```
+
+---
+
+## 9) Common pitfalls
+
+- Using it when weights are not 0 or 1.
+- Forgetting that it is still **directed** unless you add both directions.
+- Off-by-one errors when building the graph (0-indexed nodes).

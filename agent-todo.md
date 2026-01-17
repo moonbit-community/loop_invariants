@@ -209,4 +209,4 @@
 - [x] lib/wildcard_matching
 - [x] lib/xor_basis
 - [x] lib/z_algorithm
-- [ ] lib/zero_one_bfs
+- [x] lib/zero_one_bfs
