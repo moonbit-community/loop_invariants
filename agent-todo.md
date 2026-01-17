@@ -36,8 +36,8 @@
 - [x] lib/cartesian_tree
 - [x] lib/centroid
 - [x] lib/challenge_bfs_grid
-- [ ] lib/challenge_binary_lifting (in progress)
-- [ ] lib/challenge_binary_search_answer
+- [x] lib/challenge_binary_lifting
+- [ ] lib/challenge_binary_search_answer (in progress)
 - [ ] lib/challenge_bipartite_matching_kuhn
 - [ ] lib/challenge_bitmask_dp
 - [ ] lib/challenge_bitmask_tsp

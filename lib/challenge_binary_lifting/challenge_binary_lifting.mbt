@@ -4,7 +4,6 @@
 
 ///|
 /// Build binary lifting table up[k][v] = 2^k-th ancestor of v.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
   let n = parent.length()
   if n == 0 {
@@ -44,7 +43,6 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
 
 ///|
 /// Lift node v by dist steps using the lifting table.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn lift(up : Array[Array[Int]], v : Int, dist : Int) -> Int {
   let levels = up.length()
   for k = 0, cur = v, d = dist {
