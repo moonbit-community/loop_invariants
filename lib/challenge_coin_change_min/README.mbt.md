@@ -1,20 +1,71 @@
 # Challenge: Coin Change (Min Coins)
 
-Unbounded knapsack DP for minimum coin count.
+This challenge solves the classic **minimum coin change** problem using
+unbounded knapsack DP.
 
-## Core Idea
+You can use each coin any number of times, and you want the **fewest coins**
+that sum to the target.
 
-Let `dp[x]` be the minimum coins needed to make sum `x`.
+## Problem statement
 
-Transition:
+Given a list of coin values and a target amount, return:
+
+- `Some(min_count)` if the target can be formed
+- `None` if it is impossible
+
+## DP state
+
+Let:
+
 ```
-dp[x] = min(dp[x], dp[x - coin] + 1)
+dp[x] = minimum number of coins needed to make sum x
 ```
 
-Initialize `dp[0] = 0`, others to infinity. If `dp[target]` is still infinity,
-the sum is unreachable.
+Initialization:
 
-## Example
+- `dp[0] = 0`
+- everything else is INF (unreachable)
+
+Transition (unbounded):
+
+```
+for each coin c:
+  for x from c to amount:
+    dp[x] = min(dp[x], dp[x - c] + 1)
+```
+
+Because we iterate `x` increasing, we allow reuse of the same coin.
+
+## Diagram: example DP table
+
+Coins = [1, 3, 4], target = 6
+
+After coin 1:
+
+```
+index: 0 1 2 3 4 5 6
+ dp  : 0 1 2 3 4 5 6
+```
+
+After coin 3:
+
+```
+index: 0 1 2 3 4 5 6
+ dp  : 0 1 2 1 2 3 2
+```
+
+After coin 4:
+
+```
+index: 0 1 2 3 4 5 6
+ dp  : 0 1 2 1 1 2 2
+```
+
+Answer for 6 is 2 (3+3 or 4+1+1).
+
+## Examples
+
+### Example 1: basic case
 
 ```mbt check
 ///|
@@ -25,7 +76,18 @@ test "coin change example" {
 }
 ```
 
-## Another Example
+### Example 2: larger target
+
+```mbt check
+///|
+test "coin change larger" {
+  let coins : Array[Int] = [1, 5, 7]
+  let ans = @challenge_coin_change_min.min_coins(coins[:], 11)
+  inspect(ans, content="Some(3)") // 5 + 5 + 1
+}
+```
+
+### Example 3: unreachable
 
 ```mbt check
 ///|
@@ -36,7 +98,32 @@ test "coin change unreachable" {
 }
 ```
 
-## Notes
+### Example 4: non-trivial combination
 
-- Coins can be used multiple times.
-- Time complexity is O(target * number_of_coins).
+```mbt check
+///|
+test "coin change nontrivial" {
+  let coins : Array[Int] = [2, 3, 6]
+  let ans = @challenge_coin_change_min.min_coins(coins[:], 13)
+  inspect(ans, content="Some(4)") // 6 + 3 + 2 + 2
+}
+```
+
+## Complexity
+
+Let `A = amount` and `C = number of coins`:
+
+- Time: O(A * C)
+- Space: O(A)
+
+## Practical notes and pitfalls
+
+- Coins must be positive; non-positive values are ignored.
+- The order of loops matters: coin outer, amount inner (increasing) gives
+  unbounded usage.
+- If you want the actual coin choices, store a predecessor array.
+
+## When to use it
+
+Use this DP when the target amount is moderate and you want exact minimum
+coin counts.
