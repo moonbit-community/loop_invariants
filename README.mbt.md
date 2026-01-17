@@ -1,205 +1,80 @@
-# Loop Invariants in MoonBit
+# Loop Invariants in MoonBit (Gentle Guide)
 
-A comprehensive collection of algorithms with rigorous loop invariants and mathematical reasoning, demonstrating how formal verification techniques can guide code generation and improve code quality.
+This repository is a teaching collection: each package explains **a problem** and the **simplest correct way to solve it**, with loop invariants that make the reasoning explicit. Think of it as a cookbook for algorithms where every recipe shows *why it works*.
 
-## What Are Loop Invariants?
+## How to Use This Repo
 
-A **loop invariant** is a property that:
-1. **Base Case**: Holds before the loop starts
-2. **Inductive Step**: If it holds before an iteration, it holds after
-3. **Termination**: When the loop ends, it implies the desired postcondition
+Each package follows the same learning flow:
 
-Loop invariants serve as *mathematical contracts* that help both humans and AI systems reason about code correctness.
+1. **Problem statement** in the package README
+2. **Key idea** in plain language
+3. **Step-by-step algorithm**
+4. **Loop invariants** that justify correctness
+5. **Complexity** and common pitfalls
 
-## Why This Repository?
+If you are new, start with small packages like:
+- `lib/union_find`
+- `lib/fenwick`
+- `lib/segment_tree`
+- `lib/dp`
 
-This repository demonstrates that:
-- **Deep mathematical reasoning** improves code quality
-- **Loop invariants** can guide AI code generation
-- **Formal specifications** catch bugs before runtime
-- **Complex algorithms** become understandable through invariants
+## What Is a Loop Invariant?
 
-## Repository Structure
+A loop invariant is a statement that stays true every time the loop repeats. It lets you explain correctness in three easy steps:
 
-| File | Description | Key Algorithms |
-|------|-------------|----------------|
-| `examples.mbt` | Core examples | Binary search, GCD, power, factorial |
-| `examples_arithmetic.mbt` | Arithmetic algorithms | Karatsuba multiplication, Newton-Raphson |
-| `examples_streaming.mbt` | Streaming algorithms | Online mean/variance, median tracking |
-| `examples_wildcards.mbt` | Pattern matching | Wildcard matching, regex-like patterns |
-| `examples_advanced.mbt` | Classic algorithms | Floyd's cycle detection, KMP, Convex Hull |
-| `examples_number_theory.mbt` | Number theory | Miller-Rabin, CRT, Extended Euclidean |
-| `examples_graph.mbt` | Graph algorithms | Dijkstra, Topological Sort, Union-Find |
-| `examples_probabilistic.mbt` | Randomized algorithms | Reservoir Sampling, Fisher-Yates |
-| `examples_string_algorithms.mbt` | String processing | Z-Algorithm, Manacher's, Rabin-Karp |
-| `examples_monotonic.mbt` | Monotonic structures | Monotonic Stack/Deque, Sliding Window |
-| `examples_matrix.mbt` | Matrix algorithms | Matrix exponentiation, Fast Fibonacci |
-| `examples_fenwick.mbt` | Tree structures | Fenwick Tree (BIT), 2D variants |
-| `examples_tarjan.mbt` | Graph connectivity | Tarjan's SCC, Articulation Points, Bridges |
-| `examples_segment_tree.mbt` | Segment Trees | Lazy propagation, Persistent, 2D queries |
-| `examples_two_pointers.mbt` | Two Pointers | Sliding window, Dutch flag, Partition |
-| `examples_dp.mbt` | Dynamic Programming | Knapsack, LIS, LCS, Matrix chain |
-| `examples_more_graph.mbt` | Advanced Graph | Bellman-Ford, Floyd-Warshall, MST |
-| `examples_bit_game.mbt` | Bits & Games | XOR tricks, Nim, Sprague-Grundy |
-| `examples_suffix_array.mbt` | Suffix Arrays | SA construction, LCP, BWT, Pattern search |
-| `examples_mos_algorithm.mbt` | Square Root Decomposition | Mo's Algorithm, LCA, Binary Lifting, Centroid |
-| `examples_convex_hull_trick.mbt` | DP Optimization | CHT, Li Chao Tree, Divide-Conquer DP, Knuth |
-| `examples_network_flow.mbt` | Network Flow | Edmonds-Karp, Dinic, MCMF, Hungarian |
-| `examples_fft.mbt` | Polynomial Multiplication | FFT, NTT, Convolution |
-| `examples_trie.mbt` | String Data Structures | Trie, Aho-Corasick, XOR Trie, Radix Tree |
+- **Before** the loop starts: the statement is true
+- **During** each iteration: the statement stays true
+- **After** the loop ends: the statement implies the answer is correct
 
-## Featured Insights
+You do not need formal math to use invariants. A good invariant is often just a sentence like:
 
-### Binary Representation Magic (Fenwick Tree)
+> "After processing the first i items, the partial result matches the best answer for those items."
 
-The Fenwick Tree exploits a beautiful property of binary numbers:
-```
-For index i, the parent in update tree is: i + (i & -i)
-For index i, the parent in query tree is:  i - (i & -i)
-```
+## Example (No-Frills)
 
-**Invariant**: `sum[1..i] = tree[i] + tree[i - LSB(i)] + tree[i - LSB(i) - LSB(i - LSB(i))] + ...`
+Below is the shape of a loop with an invariant. You will see this structure across the packages.
 
-### Matrix Exponentiation for Recurrences
-
-Any linear recurrence `F(n) = a₁F(n-1) + a₂F(n-2) + ... + aₖF(n-k)` can be computed in O(log n) time:
-
-```
-[F(n)  ]   [a₁ a₂ ... aₖ]^(n-k)   [F(k)  ]
-[F(n-1)] = [1  0  ... 0 ]       × [F(k-1)]
-[...]     [0  1  ... 0 ]         [...]
-[F(n-k+1)] [0  0  ... 1 ]         [F(1)  ]
-```
-
-**Invariant**: `M^original_power ≡ result × M^remaining_power (mod m)`
-
-### Tarjan's Low-Link Values
-
-In Tarjan's SCC algorithm, the low-link value captures reachability through back edges:
-
-```
-low[v] = min(disc[v], min{disc[u] : u is reachable from v via tree + one back edge})
-```
-
-**Invariant**: A vertex v is an SCC root iff `low[v] == disc[v]` after exploring all descendants.
-
-### Monotonic Stack Properties
-
-For "next greater element" problems:
-
-**Invariant**: Stack maintains indices in decreasing order of their values.
-**Key insight**: Each element is pushed and popped at most once → O(n) amortized.
-
-### Suffix Array via Doubling
-
-The suffix array construction uses a clever doubling technique:
-
-```
-Round k: Sort suffixes by their first 2^k characters
-Using: (rank[i], rank[i + 2^(k-1)]) as comparison key
-```
-
-**Invariant**: After round k, `rank[i]` gives the relative order of suffix i among all suffixes when comparing only first 2^k characters.
-
-### Mo's Algorithm for Offline Queries
-
-Mo's Algorithm achieves O((n + q)√n) by reordering queries:
-
-```
-Sort queries by (left / √n, right)
-Process in order, extending/shrinking range incrementally
-```
-
-**Invariant**: Total pointer movement is O(n√n) because left pointer moves O(n) per block, right pointer moves O(n) total per block.
-
-### Network Flow Duality
-
-In max-flow problems, the key insight is flow conservation:
-
-```
-For each vertex v (except source/sink):
-  Σ(flow into v) = Σ(flow out of v)
-```
-
-**Invariant**: At each iteration, current flow is valid (respects capacities and conservation), and residual graph represents remaining capacity.
-
-## MoonBit Loop Invariant Syntax
-
-```moonbit
+```mbt nocheck
 ///|
-fn algorithm(input : Array[Int]) -> Int {
-  for i = 0, result = initial_value; i < n; i = i + 1, result = update(result) {
-    // loop body
+fn example(xs : ArrayView[Int]) -> Int {
+  let n = xs.length()
+  for i = 0, acc = 0; i < n; {
+    continue i + 1, acc + xs[i]
   } else {
-    result
+    acc
   } where {
-    invariant: condition_that_always_holds,
-    reasoning: (
-      #|LOOP INVARIANT: Mathematical property
-      #|
-      #|BASE CASE (i = 0):
-      #|  - Property holds initially because...
-      #|
-      #|INDUCTIVE STEP (i → i + 1):
-      #|  - Assuming property holds at i
-      #|  - After iteration, property still holds because...
-      #|
-      #|TERMINATION (i = n):
-      #|  - Property implies our postcondition...
-    ),
+    invariant: 0 <= i && i <= n,
+    reasoning: "acc holds the sum of xs[0..i).",
   }
 }
 ```
 
-## Running the Examples
+## Running the Code
 
 ```bash
-# Build and run tests
 moon test
-
-# Check with full warnings
 moon check
-
-# Format code
 moon fmt
 ```
 
-## Algorithm Complexity Summary
+## Repository Map
 
-| Algorithm | Time | Space | Key Invariant |
-|-----------|------|-------|---------------|
-| Binary Search | O(log n) | O(1) | Target in `arr[lo..hi]` if exists |
-| Fenwick Update/Query | O(log n) | O(n) | Prefix sum decomposition |
-| Segment Tree Range | O(log n) | O(n) | Node covers interval `[l, r)` |
-| Matrix Power | O(k³ log n) | O(k²) | `M^p ≡ result × base^remaining` |
-| Tarjan's SCC | O(V + E) | O(V) | Low-link = earliest reachable |
-| Floyd-Warshall | O(V³) | O(V²) | Uses vertices `{0..k}` as intermediates |
-| Bellman-Ford | O(VE) | O(V) | Shortest using at most k edges |
-| KMP Search | O(n + m) | O(m) | Failure function = proper prefix-suffix |
-| LIS (Binary Search) | O(n log n) | O(n) | tails[i] = smallest end of LIS length i |
-| Nim Game | O(n) | O(1) | XOR = 0 iff losing position |
-| Sprague-Grundy | O(n × moves) | O(n) | sg = mex of reachable positions |
-| Union-Find | O(α(n)) | O(n) | Path compression maintains roots |
-| Suffix Array | O(n log n) | O(n) | Sorted suffixes by doubling |
-| Mo's Algorithm | O((n + q)√n) | O(n) | Query order minimizes pointer moves |
-| Convex Hull Trick | O(n) / O(log n) | O(n) | Lines sorted by slope, query monotonic |
-| Dinic's Flow | O(V²E) | O(V + E) | Blocking flow on level graph |
-| Hungarian | O(n³) | O(n²) | Augmenting paths via potentials |
-| FFT Multiply | O(n log n) | O(n) | Butterfly operations double each level |
-| Aho-Corasick | O(n + m + z) | O(m) | Failure links to longest suffix-prefix |
+- `lib/` contains the main algorithms, grouped by topic
+- Each `lib/<package>/README.mbt.md` is the package tutorial
+- `examples*.mbt` files show stand-alone demonstrations
 
 ## Contributing
 
-When adding new algorithms:
-1. Include comprehensive loop invariants
-2. Provide base case, inductive step, and termination reasoning
-3. Add test cases that verify correctness
-4. Document the mathematical insights
+When adding or improving a package tutorial:
+
+1. Describe the **problem** in one short paragraph
+2. Explain the **core idea** in simple words
+3. Give a **step-by-step algorithm**
+4. Show the **loop invariant** used in the implementation
+5. Note **time and space complexity**
+
+If a loop is simple, a `for .. in` loop is preferred and no invariant is needed.
 
 ## License
 
-MIT License - See LICENSE file for details.
-
----
-
-*This repository demonstrates that rigorous mathematical reasoning, expressed through loop invariants, leads to more reliable and understandable code.*
+See `LICENSE`.

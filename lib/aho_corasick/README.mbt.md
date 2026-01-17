@@ -1,148 +1,62 @@
-# Aho-Corasick Algorithm
+# Aho-Corasick (Multi-Pattern Search)
 
-## Overview
+## Problem
 
-The **Aho-Corasick Algorithm** finds all occurrences of multiple patterns in a
-text simultaneously. It's like running many KMP searches at once.
+You have **many patterns** and one long text. You want *all* matches in one pass.
 
-- **Build**: O(Σ pattern lengths × alphabet size)
-- **Search**: O(text length + number of matches)
-- **Space**: O(Σ pattern lengths × alphabet size)
+Example:
 
-## The Problem
+- Patterns: `he`, `she`, `his`, `hers`
+- Text: `ushers`
+- Matches: `she`, `he`, `hers`
 
-```
-Patterns: ["he", "she", "his", "hers"]
-Text:     "ushers"
+Naively running KMP for each pattern is slow. We want **one scan** of the text.
 
-Find ALL pattern occurrences:
-  Position 1: "she" matches
-  Position 2: "he" matches
-  Position 2: "hers" matches
+## Easy Idea
 
-Naive: Run each pattern separately → O(n × m) per pattern
-Aho-Corasick: One pass → O(n + total matches)
-```
+1. Put all patterns into a **trie**.
+2. Add **failure links** so we can fall back on mismatches.
+3. Scan the text once, following trie edges or failure links.
+4. Every time we land on a state, we output the patterns ending there.
 
-## The Key Insight
+This turns "many searches" into **one automaton walk**.
 
-```
-Combine patterns into a trie, then add "failure links"
-that enable efficient transitions on mismatches.
+## Step-by-Step Solution
 
-Patterns: ["he", "she", "his", "hers"]
+### 1. Build the trie
+Each node is a prefix of some pattern.
 
-Trie:
-         root
-        /    \
-       h      s
-      / \      \
-     e   i      h
-     |   |      |
-     r   s      e
-     |
-     s
+### 2. Build failure links (BFS)
+Failure link = "longest proper suffix that is also a trie prefix".
 
-When scanning "ushers":
-- At 'u': no match, stay at root
-- At 's': follow s transition
-- At 'h': follow h from s
-- At 'e': found "she"! Also follow failure link to "he"
-- etc.
-```
+**Why BFS?**
+If a node is deeper, its failure link points to a shallower node. BFS guarantees that target is already built.
 
-## Algorithm Components
+### 3. Search the text
+For each character:
 
-### 1. Trie (Goto Function)
+- If there is an edge, take it.
+- Otherwise, follow failure links until an edge exists (or reach root).
+- Output all patterns that end at this state.
 
-```
-Build trie from all patterns:
+## A Tiny Walkthrough
 
-Patterns: ["he", "she"]
+Text: `ushers`
 
-        root
-       /    \
-      h      s
-      |      |
-      e*     h
-             |
-             e*
+- `u`: no edge → stay at root
+- `s`: go to `s`
+- `h`: go to `sh`
+- `e`: go to `she` → match `she`, also match `he` (via failure)
+- `r`: follow failure links as needed
+- `s`: match `hers`
 
-* marks accepting states (pattern ends here)
-```
+## Complexity
 
-### 2. Failure Links
+- Build: O(total pattern length × alphabet)
+- Search: O(text length + matches)
+- Space: O(total pattern length × alphabet)
 
-```
-Failure link points to longest proper suffix that is
-also a prefix of some pattern.
-
-For "she":
-  State after "sh": failure → "h" (from pattern "he")
-  State after "she": failure → "he"
-
-        root
-       /    \
-      h      s
-      |      |
-      e*←────h
-       ↑     |
-       └─────e*
-
-Failure link from "she" to "he" because
-"he" is longest suffix of "she" that's a pattern prefix.
-```
-
-### 3. Output Function
-
-```
-At each state, list all patterns that end there.
-
-State "e" (from "she"):
-  - "she" ends here directly
-  - "he" ends here (via failure link)
-
-So when we reach this state, we output both matches!
-```
-
-## Algorithm Walkthrough
-
-```
-Patterns: ["he", "she", "his"]
-Text: "ushers"
-
-Step-by-step:
-  u: root → root (no 'u' edge, stay)
-  s: root → s
-  h: s → sh
-  e: sh → she (Match "she"!)
-       → follow failure to "he" (Match "he"!)
-  r: she → sher
-       → follow failure to "her"
-  s: sher → shers
-       → follow failure to "hers" (Match "hers"!)
-
-Matches found: [("she", 1), ("he", 2), ("hers", 2)]
-```
-
-## Visual: Failure Link Traversal
-
-```
-When pattern doesn't continue, follow failure links:
-
-At state "sh" trying to match 'x':
-1. No 'x' edge from "sh"
-2. Follow failure link to "h"
-3. No 'x' edge from "h"
-4. Follow failure link to root
-5. No 'x' edge from root → stay at root
-
-      sh ─fail→ h ─fail→ root
-       ↓        ↓         ↓
-      no x     no x      no x
-```
-
-## Example Usage
+## Example
 
 ```mbt check
 ///|
@@ -158,104 +72,12 @@ test "aho corasick example" {
 }
 ```
 
-## Building Failure Links (BFS)
+## When to Use It
 
-```
-Process states in BFS order (by depth):
+Use Aho-Corasick when:
 
-Why BFS? Failure link of depth-d state points to
-state with depth < d. So all targets are processed
-before their sources.
+- You have **multiple patterns**
+- You need **all** matches
+- You want **one pass** over the text
 
-Queue: [h, s]  (depth 1)
-
-Process h:
-  failure[h] = root
-
-Process s:
-  failure[s] = root
-
-Queue: [e, i, h]  (depth 2)
-
-Process e (from h):
-  Follow failure[h]=root, check if root has 'e' edge
-  No → failure[e] = root
-
-Process h (from s):
-  Follow failure[s]=root, check if root has 'h' edge
-  Yes → failure[sh] = h
-
-...and so on
-```
-
-## Common Applications
-
-### 1. Multi-Pattern Search
-```
-Find all occurrences of dictionary words in text
-Use case: Spam detection, sensitive word filtering
-```
-
-### 2. DNA Sequence Matching
-```
-Find all known gene sequences in a genome
-Patterns: known genes, text: genome
-```
-
-### 3. Network Intrusion Detection
-```
-Match packet payloads against signature database
-Real-time matching with streaming input
-```
-
-### 4. Text Indexing
-```
-Preprocess patterns, then search multiple texts
-Amortize O(m) build cost across many searches
-```
-
-## Complexity Analysis
-
-| Operation | Time |
-|-----------|------|
-| Add pattern | O(pattern length) |
-| Build automaton | O(total pattern length × alphabet) |
-| Search | O(text length + matches) |
-
-## Aho-Corasick vs Alternatives
-
-| Method | Patterns | Build | Search |
-|--------|----------|-------|--------|
-| **Aho-Corasick** | Multiple | O(m × σ) | O(n + z) |
-| KMP (per pattern) | Single | O(m) | O(n) |
-| Rabin-Karp | Multiple | O(m) | O(n × k) expected |
-| Suffix Array | Multiple | O(n log n) | O(m log n) per pattern |
-
-n = text length, m = total pattern length, k = pattern count, z = matches, σ = alphabet
-
-**Choose Aho-Corasick when**: You have multiple patterns and need all matches.
-
-## The Automaton View
-
-```
-Aho-Corasick builds a finite automaton:
-
-States: All prefixes of all patterns
-Transitions:
-  - Goto: Follow trie edge if exists
-  - Failure: Follow failure link otherwise
-
-Input: Text characters one by one
-Output: All patterns ending at current position
-
-The automaton never backtracks in the text!
-Each character advances the state exactly once.
-```
-
-## Implementation Notes
-
-- Use array of size 256 for ASCII transitions (or map for Unicode)
-- BFS order is crucial for building failure links
-- Output links chain multiple matches at same position
-- For streaming: maintain state between text chunks
-- Memory optimization: compress sparse transition tables
+If you only have one pattern, KMP is simpler.
