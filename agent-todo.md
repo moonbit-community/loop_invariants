@@ -10,8 +10,8 @@
 - [x] lib/binary_trie_xor
 - [x] lib/bipartite_matching
 - [x] lib/block_cut_tree
-- [ ] lib/bridges (in progress)
-- [ ] lib/cartesian_tree
+- [x] lib/bridges
+- [ ] lib/cartesian_tree (in progress)
 - [ ] lib/centroid
 - [ ] lib/challenge_bfs_grid
 - [ ] lib/challenge_binary_lifting
