@@ -57,7 +57,8 @@ fn DominatorWork::compute_idom(self : DominatorWork, root_idx : Int) -> Unit {
 
   // Phase 1: Process vertices in reverse DFS order
   // Compute semi-dominators and tentative immediate dominators
-  for i = n; i >= 1; i = i - 1 {
+  let start_exclusive = n + 1
+  for i in start_exclusive >.. 1 {
     // Step 1: Compute semi-dominator
     // sdom[i] = min { sdom[eval(p)] : p is a predecessor of i }
     for p in self.pred[i] {
@@ -87,27 +88,6 @@ fn DominatorWork::compute_idom(self : DominatorWork, root_idx : Int) -> Unit {
     if i > 1 {
       self.link(self.parent[i], i)
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (reverse pass):
-      #|  For all DFS indices j > i:
-      #|    - sdom[j] is correctly computed
-      #|    - j is linked to parent[j] in union-find
-      #|    - bucket[j] has been processed
-      #|    - idom[j] has a tentative value (correct or needs fix)
-      #|
-      #|MAINTENANCE:
-      #|  1. Compute sdom[i] from predecessors (eval works because
-      #|     all descendants are already linked)
-      #|  2. Add i to appropriate bucket
-      #|  3. Process bucket[i] to set tentative idom
-      #|  4. Link i to its parent for future queries
-      #|
-      #|TERMINATION:
-      #|  At i = 0 (loop ends at i = 1), all vertices have tentative
-      #|  idom values set.
-    ),
   }
 
   // Phase 2: Fix immediate dominators

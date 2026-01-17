@@ -480,7 +480,7 @@ fn nearest_smaller_right(arr : Array[Int64]) -> Array[Int] {
 
   // Process from right to left
   let stack : Array[Int] = []
-  for i = n - 1; i >= 0; i = i - 1 {
+  for i in n >.. 0 {
     while stack.length() > 0 {
       let top = stack[stack.length() - 1]
       if arr[top] >= arr[i] {
@@ -494,18 +494,6 @@ fn nearest_smaller_right(arr : Array[Int64]) -> Array[Int] {
       result[i] = stack[stack.length() - 1]
     }
     stack.push(i)
-  } where {
-    invariant: i >= 0 && i < n,
-    reasoning: (
-      #|INVARIANT (nearest smaller right):
-      #|Stack holds indices with strictly increasing values from bottom to top
-      #|for processed positions in (i, n).
-      #|MAINTENANCE:
-      #|Pop indices with value >= arr[i] so the top is the nearest smaller,
-      #|record it, then push i.
-      #|TERMINATION:
-      #|At i = -1, nearest smaller to the right is computed for all positions.
-    ),
   }
   result
 }

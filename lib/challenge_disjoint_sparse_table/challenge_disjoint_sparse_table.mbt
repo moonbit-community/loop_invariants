@@ -59,18 +59,9 @@ pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable 
       let end = min(block + span, n)
       if mid > block {
         table[k][mid - 1] = arr[mid - 1]
-        for i = mid - 2; i >= block; i = i - 1 {
+        let left_start = mid - 1
+        for i in left_start >.. block {
           table[k][i] = min(arr[i], table[k][i + 1])
-        } where {
-          invariant: i >= block && i < mid,
-          reasoning: (
-            #|INVARIANT (left prefix):
-            #|table[k][i+1..mid) stores minima for ranges [t, mid).
-            #|MAINTENANCE:
-            #|Set table[k][i] as min(arr[i], table[k][i+1]).
-            #|TERMINATION:
-            #|At i < block, the left half is complete.
-          ),
         }
       }
       if mid < end {

@@ -284,18 +284,8 @@ fn IterativeSegTree::new(arr : Array[Int64]) -> IterativeSegTree {
   }
 
   // Build internal nodes from bottom up
-  for i = n - 1; i > 0; i = i - 1 {
+  for i in n >.. 1 {
     tree[i] = tree[2 * i] + tree[2 * i + 1]
-  } where {
-    invariant: i >= 0 && i <= n - 1,
-    reasoning: (
-      #|INVARIANT (build internal nodes):
-      #|For all indices > i, internal node sums are correct.
-      #|MAINTENANCE:
-      #|Compute tree[i] as the sum of its two children, which are already built.
-      #|TERMINATION:
-      #|At i = 1, the entire tree stores correct range sums.
-    ),
   }
   { n, tree }
 }

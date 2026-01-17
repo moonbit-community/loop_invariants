@@ -128,7 +128,8 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
   // Build upper hull
   let lower_len = hull.length()
   // INVARIANT: hull[lower_len:] contains upper hull in right-to-left order
-  for i = n - 2; i >= 0; i = i - 1 {
+  let start_exclusive = n - 1
+  for i in start_exclusive >.. 0 {
     while hull.length() > lower_len {
       let top = hull[hull.length() - 1]
       let second = hull[hull.length() - 2]
@@ -140,19 +141,6 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
       }
     }
     hull.push(sorted[i])
-  } where {
-    invariant: i >= -1 && i <= n - 2,
-    reasoning: (
-      #|INVARIANT (upper hull):
-      #|hull[0..lower_len] is the completed lower hull; hull[lower_len..] is the
-      #|partial upper hull built from sorted points in (i, n).
-      #|MAINTENANCE:
-      #|Process points right-to-left, popping while convexity is violated, then
-      #|push sorted[i] to extend the upper hull.
-      #|TERMINATION:
-      #|At i = -1, the upper hull is complete; combined with lower hull, the
-      #|polygon is closed (duplicate endpoint removed).
-    ),
   }
 
   // Remove last point (duplicate of first)

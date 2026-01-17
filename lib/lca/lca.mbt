@@ -200,28 +200,11 @@ pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
   }
 
   // Binary search for LCA - jump both nodes while their 2^k ancestors are different
-  for k = self.log_n - 1; k >= 0; k = k - 1 {
+  for k in self.log_n >.. 0 {
     if self.up[curr_u][k] != self.up[curr_v][k] {
       curr_u = self.up[curr_u][k]
       curr_v = self.up[curr_v][k]
     }
-  } where {
-    invariant: k >= -1 && k < self.log_n,
-    reasoning: (
-      #|INVARIANT (Binary lift toward LCA):
-      #|curr_u and curr_v remain at the same depth and still below the LCA.
-      #|If their 2^k ancestors differ, then the LCA is above both, so lifting
-      #|by 2^k preserves correctness. If the ancestors are equal, lifting
-      #|would skip over the LCA, so we keep them in place.
-      #|
-      #|After finishing, curr_u and curr_v are distinct children of the LCA,
-      #|so up[curr_u][0] is the answer.
-      #|MAINTENANCE:
-      #|Lifting only when ancestors differ keeps both nodes strictly below
-      #|the LCA while reducing their distance to it.
-      #|TERMINATION:
-      #|When k drops below 0, no larger lift is possible and the parent is LCA.
-    ),
   }
 
   // Parent of final position is LCA

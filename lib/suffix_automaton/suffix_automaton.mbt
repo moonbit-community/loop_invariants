@@ -249,22 +249,11 @@ pub fn SuffixAutomaton::count_occurrences(
   for i in 0..<self.size {
     by_len[self.states[i].len].push(i)
   }
-  for len = max_len; len >= 0; len = len - 1 {
+  let len_start = max_len + 1
+  for len in len_start >.. 0 {
     for j in 0..<by_len[len].length() {
       order.push(by_len[len][j])
     }
-  } where {
-    invariant: len >= -1 && len <= max_len,
-    reasoning: (
-      #|INVARIANT (Length order):
-      #|order contains all states with length > len. Appending the current
-      #|bucket builds a list sorted by decreasing length, used for propagating
-      #|endpos counts from longer states to their suffix links.
-      #|MAINTENANCE:
-      #|Append the bucket for length len, then decrement len.
-      #|TERMINATION:
-      #|At len == -1, order contains all states sorted by length descending.
-    ),
   }
 
   // Mark terminal states (states on path from initial to last)

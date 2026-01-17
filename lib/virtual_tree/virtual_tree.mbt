@@ -89,44 +89,21 @@ fn lca(up : Array[Array[Int]], depth : Array[Int], a0 : Int, b0 : Int) -> Int {
   }
   let target_depth = depth[b]
   let mut diff = depth[a] - target_depth
-  for k = log - 1; k >= 0; k = k - 1 {
+  for k in log >.. 0 {
     let step = 1 << k
     if diff >= step {
       a = up[k][a]
       diff = diff - step
     }
-  } where {
-    invariant: k >= -1 &&
-    k < log &&
-    diff >= 0 &&
-    depth[a] == target_depth + diff,
-    reasoning: (
-      #|INVARIANT (lift to depth):
-      #|a remains an ancestor of the original deeper node, and diff is exactly
-      #|the remaining depth gap to target_depth. Processing higher k removes
-      #|powers of two from the gap while preserving ancestry.
-      #|TERMINATION:
-      #|When k = -1, diff = 0 and a is lifted to the same depth as b.
-    ),
   }
   if a == b {
     return a
   }
-  for k = log - 1; k >= 0; k = k - 1 {
+  for k in log >.. 0 {
     if up[k][a] != up[k][b] {
       a = up[k][a]
       b = up[k][b]
     }
-  } where {
-    invariant: k >= -1 && k < log && depth[a] == depth[b],
-    reasoning: (
-      #|INVARIANT (lift together):
-      #|a and b stay at the same depth, and their LCA is an ancestor of both.
-      #|If their 2^k ancestors differ, lifting preserves the invariant while
-      #|moving them closer to the LCA.
-      #|TERMINATION:
-      #|After k = -1, a and b are direct children of the LCA.
-    ),
   }
   up[0][a]
 }

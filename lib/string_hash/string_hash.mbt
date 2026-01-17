@@ -187,7 +187,8 @@ pub fn hash_pattern_match(text : String, pattern : String) -> Array[Int] {
   let text_hash = StringHash::new(text)
   let pattern_hash = StringHash::new(pattern)
   let target = pattern_hash.get_hash(0, m)
-  for i in 0..=(n - m) {
+  let last = n - m
+  for i in 0 ..<= last {
     if text_hash.get_hash(i, i + m) == target {
       result.push(i)
     }
@@ -204,7 +205,8 @@ fn count_distinct_substrings(s : String, k : Int) -> Int {
   }
   let hash = StringHash::new(s)
   let seen : Map[Int64, Bool] = {}
-  for i in 0..=(n - k) {
+  let last = n - k
+  for i in 0 ..<= last {
     let h = hash.get_hash(i, i + k)
     seen[h] = true
   }

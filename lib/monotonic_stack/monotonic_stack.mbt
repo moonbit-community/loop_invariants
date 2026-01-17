@@ -192,7 +192,7 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
 
   // Compute next smaller
   stack.clear()
-  for i = n - 1; i >= 0; i = i - 1 {
+  for i in n >.. 0 {
     while stack.length() > 0 && heights[stack[stack.length() - 1]] >= heights[i] {
       let _ = stack.pop()
 
@@ -201,18 +201,6 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
       next_smaller[i] = stack[stack.length() - 1]
     }
     stack.push(i)
-  } where {
-    invariant: i >= -1 && i <= n - 1,
-    reasoning: (
-      #|INVARIANT (next smaller):
-      #|Stack stores indices of a strictly increasing height sequence to the
-      #|right of i, so the top is the nearest smaller to the right.
-      #|MAINTENANCE:
-      #|Pop while height >= current, record next_smaller[i] (or keep n), then
-      #|push i to preserve monotonicity.
-      #|TERMINATION:
-      #|At i = -1, next_smaller is computed for all bars.
-    ),
   }
 
   // Calculate max area using fold
@@ -373,7 +361,7 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
 
   // Next smaller or equal (to handle duplicates correctly)
   stack.clear()
-  for i = n - 1; i >= 0; i = i - 1 {
+  for i in n >.. 0 {
     while stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i] {
       let _ = stack.pop()
 
@@ -384,18 +372,6 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
       stack[stack.length() - 1] - i
     }
     stack.push(i)
-  } where {
-    invariant: i >= -1 && i <= n - 1,
-    reasoning: (
-      #|INVARIANT (right distances):
-      #|Stack stores indices with non-decreasing values to the right of i, so
-      #|the top is the next smaller-or-equal element.
-      #|MAINTENANCE:
-      #|Pop while value > current; set right[i] to the distance to the next
-      #|smaller-or-equal (or to n), then push i.
-      #|TERMINATION:
-      #|At i = -1, right distances are computed for all positions.
-    ),
   }
 
   // Sum contributions using functional for loop

@@ -111,18 +111,8 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
       // suffix[i] = arr[i] + arr[i+1] + ... + arr[mid]
       if mid < n {
         row[mid] = arr[mid]
-        for i = mid - 1; i >= block_start; i = i - 1 {
+        for i in mid >.. block_start {
           row[i] = arr[i] + row[i + 1]
-        } where {
-          invariant: i >= block_start - 1 && i < mid,
-          reasoning: (
-            #|INVARIANT (sum suffix):
-            #|row[i+1..mid] stores sums arr[j..mid] for each j in [i+1..mid].
-            #|MAINTENANCE:
-            #|Set row[i] = arr[i] + row[i+1], extending one step left.
-            #|TERMINATION:
-            #|At i = block_start - 1, suffix sums for [block_start..mid] exist.
-          ),
         }
       }
 
@@ -232,18 +222,8 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
       // Suffix XOR
       if mid < n {
         row[mid] = arr[mid]
-        for i = mid - 1; i >= block_start; i = i - 1 {
+        for i in mid >.. block_start {
           row[i] = arr[i] ^ row[i + 1]
-        } where {
-          invariant: i >= block_start - 1 && i < mid,
-          reasoning: (
-            #|INVARIANT (xor suffix):
-            #|row[i+1..mid] stores XORs arr[j..mid] for each j in [i+1..mid].
-            #|MAINTENANCE:
-            #|Set row[i] = arr[i] ^ row[i+1], extending one step left.
-            #|TERMINATION:
-            #|At i = block_start - 1, suffix XORs for [block_start..mid] exist.
-          ),
         }
       }
 
@@ -350,18 +330,8 @@ fn DisjointSparseProd::new(
       // Suffix product
       if mid < n {
         row[mid] = arr[mid] % modulo
-        for i = mid - 1; i >= block_start; i = i - 1 {
+        for i in mid >.. block_start {
           row[i] = arr[i] * row[i + 1] % modulo
-        } where {
-          invariant: i >= block_start - 1 && i < mid,
-          reasoning: (
-            #|INVARIANT (prod suffix):
-            #|row[i+1..mid] stores products arr[j..mid] mod modulo for j in [i+1..mid].
-            #|MAINTENANCE:
-            #|Set row[i] = arr[i] * row[i+1] mod modulo, extending one step left.
-            #|TERMINATION:
-            #|At i = block_start - 1, suffix products for [block_start..mid] exist.
-          ),
         }
       }
 

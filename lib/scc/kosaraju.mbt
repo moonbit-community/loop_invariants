@@ -137,7 +137,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   let component = Array::make(n, -1)
   let scc_sizes : Array[Int] = []
   let mut scc_count = 0
-  for i = n - 1; i >= 0; i = i - 1 {
+  for i in n >.. 0 {
     let v = order[i]
     if component[v] == -1 {
       let size : Counter = { val: 0 }
@@ -145,29 +145,6 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       scc_sizes.push(size.val)
       scc_count = scc_count + 1
     }
-  } where {
-    invariant: i >= -1 && i <= n - 1,
-    reasoning: (
-      #|INVARIANT (SCC assignment):
-      #|  Vertices with finish-order index > i are assigned to SCCs.
-      #|
-      #|WHY REVERSE ORDER WORKS:
-      #|  Processing from highest finish time means we start at
-      #|  "source" SCCs in the original graph (which are "sinks"
-      #|  in the transpose).
-      #|
-      #|  DFS on transpose from v reaches exactly v's SCC because:
-      #|  - In original: if v's SCC can reach another SCC, that SCC
-      #|    finished earlier (lower index in order)
-      #|  - In transpose: edges are reversed, so we can't reach
-      #|    those already-processed SCCs
-      #|
-      #|MAINTENANCE:
-      #|  Each dfs_assign labels exactly one SCC.
-      #|
-      #|TERMINATION:
-      #|  At i < 0, all vertices assigned.
-    ),
   }
 
   // =========================================================================

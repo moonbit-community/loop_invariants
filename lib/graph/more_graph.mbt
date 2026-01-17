@@ -501,24 +501,12 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
   // Second pass: count SCCs
   let visited2 = Array::make(n, false)
   let mut scc_count = 0
-  for i = n - 1; i >= 0; i = i - 1 {
+  for i in n >.. 0 {
     let v = order[i]
     if not(visited2[v]) {
       dfs_mark(rev_adj, visited2, v)
       scc_count = scc_count + 1
     }
-  } where {
-    invariant: i >= -1 && i < n,
-    reasoning: (
-      #|INVARIANT (Reverse finish order):
-      #|Vertices in order[i+1..] have already been assigned to exactly one SCC.
-      #|Processing order[i] in the reversed graph discovers precisely its SCC,
-      #|because any edge to a different SCC would go to a vertex already marked.
-      #|MAINTENANCE:
-      #|Each dfs_mark call marks one new SCC and increments scc_count.
-      #|TERMINATION:
-      #|When i < 0, all vertices have been assigned to SCCs.
-    ),
   }
   scc_count
 }

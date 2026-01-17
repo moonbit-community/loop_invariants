@@ -206,18 +206,8 @@ fn LinkCutTree::splay(self : LinkCutTree, v : Int) -> Unit {
   path.push(curr)
 
   // Push down along path from root to v
-  for i = path.length() - 1; i >= 0; i = i - 1 {
+  for i in path.length() >.. 0 {
     self.push_down(path[i])
-  } where {
-    invariant: i >= -1 && i < path.length(),
-    reasoning: (
-      #|INVARIANT (push down path):
-      #|Nodes above index i in path have been pushed down.
-      #|MAINTENANCE:
-      #|Apply push_down at path[i] to propagate reversals.
-      #|TERMINATION:
-      #|At i = -1, all nodes on the path are pushed down.
-    ),
   }
 
   // Splay v to root

@@ -68,7 +68,8 @@ fn combine(
       tmp[idx] = mod_add(tmp[idx], mod_mul(a[i], b[j], m), m)
     }
   }
-  for i = 2 * k - 2; i >= k; i = i - 1 {
+  let start_exclusive = 2 * k - 1
+  for i in start_exclusive >.. k {
     let val = tmp[i]
     if val != 0L {
       for j in 1..<(k + 1) {
@@ -76,17 +77,6 @@ fn combine(
         tmp[idx] = mod_add(tmp[idx], mod_mul(val, coeffs[j - 1], m), m)
       }
     }
-  } where {
-    invariant: i >= k - 1,
-    reasoning: (
-      #|INVARIANT (polynomial reduction):
-      #|All degrees greater than i have already been reduced using the
-      #|recurrence, so tmp[d] for d > i is final. The loop pushes tmp[i]
-      #|down to lower degrees while preserving equivalence modulo the
-      #|characteristic polynomial.
-      #|TERMINATION:
-      #|When i < k, the remainder fits in degree < k.
-    ),
   }
   let result = Array::make(k, 0L)
   for i in 0..<k {

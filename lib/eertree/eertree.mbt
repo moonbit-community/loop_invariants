@@ -181,14 +181,9 @@ fn Eertree::count_distinct(self : Eertree) -> Int {
 fn Eertree::propagate_counts(self : Eertree) -> Unit {
   // Process nodes in reverse order (children before parents in suffix tree)
   // This ensures when we process a node, all its suffix-children are already processed
-  for i = self.nodes.length() - 1; i >= 2; i = i - 1 {
+  for i in self.nodes.length() >.. 2 {
     let suffix = self.nodes[i].suffix_link
     self.nodes[suffix].count = self.nodes[suffix].count + self.nodes[i].count
-  } where {
-    invariant: i >= 1 && i < self.nodes.length(),
-    reasoning: (
-      #| i decreases from nodes.length()-1 toward 2
-    ),
   }
 }
 
@@ -225,13 +220,9 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
       } else {
         current.length() - 2
       }
-      for i = start; i >= 0; i = i - 1 {
+      let start_exclusive = start + 1
+      for i in start_exclusive >.. 0 {
         sb.write_char(Int::unsafe_to_char(current[i]))
-      } where {
-        invariant: i >= -1 && i <= start,
-        reasoning: (
-          #| i decreases from start toward -1
-        ),
       }
       result.push(sb.to_string())
     }
@@ -287,18 +278,14 @@ fn Eertree::contains_palindrome(self : Eertree, p : String) -> Bool {
   let start_idx = if p.length() % 2 == 1 { mid } else { mid - 1 }
 
   // Navigate outward from center
-  for i = start_idx; i >= 0; i = i - 1 {
+  let start_exclusive = start_idx + 1
+  for i in start_exclusive >.. 0 {
     let c = p[i].to_int()
     let next = self.nodes[node].edges[c]
     if next < 0 {
       return false
     }
     node = next
-  } where {
-    invariant: i >= -1 && i <= start_idx,
-    reasoning: (
-      #| i decreases from start_idx toward -1
-    ),
   }
 
   // Check if we reached a node with correct length
@@ -358,13 +345,9 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
   } else {
     path.length() - 2
   }
-  for i = rev_start; i >= 0; i = i - 1 {
+  let rev_exclusive = rev_start + 1
+  for i in rev_exclusive >.. 0 {
     sb.write_char(Int::unsafe_to_char(path[i]))
-  } where {
-    invariant: i >= -1 && i <= rev_start,
-    reasoning: (
-      #| i decreases from rev_start toward -1
-    ),
   }
   sb.to_string()
 }

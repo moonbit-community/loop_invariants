@@ -670,7 +670,7 @@ test "splay tree basic operations" {
 ///|
 test "splay tree delete" {
   let st : SplayTree[Int] = SplayTree::new()
-  for i in 1..=5 {
+  for i in 1 ..<= 5 {
     let _ = st.insert(i)
 
   }
@@ -767,7 +767,7 @@ test "splay tree stress" {
 ///|
 test "splay tree split join" {
   let st : SplayTree[Int] = SplayTree::new()
-  for i in 1..=10 {
+  for i in 1 ..<= 10 {
     let _ = st.insert(i)
 
   }

@@ -706,28 +706,8 @@ fn iterative_segment_tree_build(arr : ArrayView[Int]) -> IterativeSegmentTree {
   }
 
   // Build internal nodes bottom-up
-  for i = n - 1; i >= 1; i = i - 1 {
+  for i in n >.. 1 {
     tree[i] = tree[2 * i] + tree[2 * i + 1]
-  } where {
-    invariant: i >= 0 && i < n,
-    reasoning: (
-      #|LOOP INVARIANT: tree[i+1..n] are correctly computed internal nodes
-      #|
-      #|BASE CASE (i = n - 1):
-      #|  - tree[n..2n] are leaves (correct by construction)
-      #|  - tree[n-1] not yet computed
-      #|
-      #|INDUCTIVE STEP (i → i - 1):
-      #|  - tree[2i] and tree[2i+1] are already correct
-      #|  - We set tree[i] = tree[2i] + tree[2i+1]
-      #|  - By induction, tree[i..n] are now correct
-      #|
-      #|TERMINATION (i = 0):
-      #|  - All internal nodes tree[1..n] are computed
-      #|  - tree[1] is the root (sum of entire array)
-      #|MAINTENANCE:
-      #|Combine children at i and move to the next parent by decrementing i.
-    ),
   }
   { n, tree }
 }
@@ -889,18 +869,8 @@ fn max_count_segment_tree_build(arr : ArrayView[Int]) -> MaxCountSegmentTree {
   }
 
   // Build internal nodes
-  for i = n - 1; i >= 1; i = i - 1 {
+  for i in n >.. 1 {
     tree[i] = max_count_combine(tree[2 * i], tree[2 * i + 1])
-  } where {
-    invariant: i >= 0 && i < n,
-    reasoning: (
-      #|INVARIANT (build internal):
-      #|Nodes tree[i+1..n) have been computed from their children.
-      #|MAINTENANCE:
-      #|Compute tree[i] from children 2*i and 2*i+1, extending the built range.
-      #|TERMINATION:
-      #|At i == 0, all internal nodes (including root) are computed.
-    ),
   }
   { n, tree }
 }
@@ -1008,19 +978,9 @@ fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
       ),
     }
     // Build inner tree for this row
-    for j = cols - 1; j >= 1; j = j - 1 {
+    for j in cols >.. 1 {
       st.tree[rows + i][j] = st.tree[rows + i][2 * j] +
         st.tree[rows + i][2 * j + 1]
-    } where {
-      invariant: j >= 0 && j <= cols - 1,
-      reasoning: (
-        #|INVARIANT (row build):
-        #|For row i, inner nodes in (j, cols) have been computed.
-        #|MAINTENANCE:
-        #|Compute node j from its two children.
-        #|TERMINATION:
-        #|After j = 0, the row's inner tree is complete.
-      ),
     }
   } where {
     invariant: i >= 0 && i <= rows,
@@ -1035,7 +995,7 @@ fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
   }
 
   // Build internal rows
-  for i = rows - 1; i >= 1; i = i - 1 {
+  for i in rows >.. 1 {
     for j = 0; j < 2 * cols; j = j + 1 {
       st.tree[i][j] = st.tree[2 * i][j] + st.tree[2 * i + 1][j]
     } where {
@@ -1049,16 +1009,6 @@ fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
         #|At j = 2 * cols, row i is fully updated.
       ),
     }
-  } where {
-    invariant: i >= 0 && i <= rows - 1,
-    reasoning: (
-      #|INVARIANT (internal rows):
-      #|All rows with index > i have been combined from their children.
-      #|MAINTENANCE:
-      #|Combine row i from its two child rows.
-      #|TERMINATION:
-      #|At i = 0, all internal rows are built.
-    ),
   }
   st
 }

@@ -46,22 +46,12 @@ pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
   }
 
-  for idx = order.length() - 1; idx >= 0; idx = idx - 1 {
+  for idx in order.length() >.. 0 {
     let v = order[idx]
     if comp[v] == -1 {
       dfs2(v, cid)
       cid = cid + 1
     }
-  } where {
-    invariant: idx >= -1 && idx < order.length(),
-    reasoning: (
-      #|INVARIANT (Second pass):
-      #|All vertices with order index > idx are assigned to some component.
-      #|MAINTENANCE:
-      #|Run reverse DFS from the next unassigned vertex.
-      #|TERMINATION:
-      #|At idx = -1, all components are labeled.
-    ),
   }
   comp
 }

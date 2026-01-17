@@ -147,23 +147,12 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
   // Second DFS: find SCCs in reverse finish order
   let comp = Array::make(num_nodes, -1)
   let mut num_scc = 0
-  for i = num_nodes - 1; i >= 0; i = i - 1 {
+  for i in num_nodes >.. 0 {
     let node = order[i]
     if comp[node] < 0 {
       dfs2(self.radj, comp, num_scc, node)
       num_scc = num_scc + 1
     }
-  } where {
-    invariant: i >= -1 && i <= num_nodes - 1,
-    reasoning: (
-      #|INVARIANT (SCC assignment):
-      #|All nodes processed after index i have been assigned to their SCCs.
-      #|MAINTENANCE:
-      #|Process nodes in reverse finish order and DFS in the reverse graph to
-      #|assign a new SCC id to each unassigned component.
-      #|TERMINATION:
-      #|At i = -1, all nodes are assigned and num_scc is the total count.
-    ),
   }
 
   // Check satisfiability: x and ¬x must be in different SCCs

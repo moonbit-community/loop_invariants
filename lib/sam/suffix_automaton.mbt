@@ -292,24 +292,12 @@ fn SuffixAutomaton::compute_counts(self : SuffixAutomaton) -> Unit {
   }
 
   // Propagate counts (longest to shortest)
-  for i = n - 1; i >= 0; i = i - 1 {
+  for i in n >.. 0 {
     let state_idx = sorted[i]
     let link = self.states[state_idx].link
     if link >= 0 {
       self.states[link].cnt = self.states[link].cnt + self.states[state_idx].cnt
     }
-  } where {
-    invariant: i >= -1,
-    reasoning: (
-      #|COUNT PROPAGATION INVARIANT:
-      #|
-      #|Processing from longest to shortest ensures children contribute counts
-      #|before their suffix link targets.
-      #|MAINTENANCE:
-      #|Add state_idx.count to its suffix link target to accumulate occurrences.
-      #|TERMINATION:
-      #|After i reaches -1, all counts are propagated to link ancestors.
-    ),
   }
 }
 

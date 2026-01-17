@@ -34,11 +34,6 @@ fn MinHeap::new() -> MinHeap {
 }
 
 ///|
-fn MinHeap::is_empty(self : MinHeap) -> Bool {
-  self.data.length() == 0
-}
-
-///|
 fn MinHeap::push(self : MinHeap, x : Int) -> Unit {
   self.data.push(x)
   let mut i = self.data.length() - 1

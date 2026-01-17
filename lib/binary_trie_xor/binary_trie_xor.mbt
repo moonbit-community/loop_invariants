@@ -44,7 +44,7 @@ pub fn BinaryTrie::size(self : BinaryTrie) -> Int {
 pub fn BinaryTrie::insert(self : BinaryTrie, x : Int64) -> Unit {
   let mut node = 0
   self.nodes[node].count = self.nodes[node].count + 1
-  for bit = self.max_bits; bit >= 0; bit = bit - 1 {
+  for bit in self.max_bits >=.. 0 {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let next = if b == 0 {
       self.nodes[node].next0
@@ -66,18 +66,6 @@ pub fn BinaryTrie::insert(self : BinaryTrie, x : Int64) -> Unit {
     }
     node = child
     self.nodes[node].count = self.nodes[node].count + 1
-  } where {
-    invariant: bit >= -1 && bit <= self.max_bits,
-    reasoning: (
-      #|INVARIANT (insert path):
-      #|Nodes along the path for bits [max_bits..bit+1] have been created as
-      #|needed and their counts incremented.
-      #|MAINTENANCE:
-      #|Follow the current bit, creating a child when missing, and increment
-      #|its count.
-      #|TERMINATION:
-      #|At bit < 0, the full key has been inserted.
-    ),
   }
 }
 
@@ -89,7 +77,7 @@ pub fn BinaryTrie::remove(self : BinaryTrie, x : Int64) -> Bool {
   }
   let path : Array[Int] = [0]
   let mut node = 0
-  for bit = self.max_bits; bit >= 0; bit = bit - 1 {
+  for bit in self.max_bits >=.. 0 {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let next = if b == 0 {
       self.nodes[node].next0
@@ -101,16 +89,6 @@ pub fn BinaryTrie::remove(self : BinaryTrie, x : Int64) -> Bool {
     }
     path.push(next)
     node = next
-  } where {
-    invariant: bit >= -1 && bit <= self.max_bits,
-    reasoning: (
-      #|INVARIANT (remove path):
-      #|path stores the trie nodes along the prefix for bits [max_bits..bit+1].
-      #|MAINTENANCE:
-      #|Follow the next bit, recording the node for later decrement.
-      #|TERMINATION:
-      #|At bit < 0, path covers the entire key.
-    ),
   }
   if self.nodes[node].count == 0 {
     return false

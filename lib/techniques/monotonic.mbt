@@ -480,7 +480,7 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
 
   // Compute right distances using monotonic stack (process right to left)
   stack.clear()
-  for i = n - 1; i >= 0; i = i - 1 {
+  for i in n >.. 0 {
     while stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i] {
       let _ = stack.pop()
 
@@ -491,19 +491,6 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
       stack[stack.length() - 1] - i
     }
     stack.push(i)
-  } where {
-    invariant: i >= -1 && i < n,
-    reasoning: (
-      #|INVARIANT (Next smaller):
-      #|Scanning from right to left, the stack keeps indices with strictly
-      #|increasing values. After popping, the top is the nearest index to the
-      #|right with value <= arr[i], so right[i] is computed correctly.
-      #|MAINTENANCE:
-      #|Pop until the next smaller-or-equal element is on top, then set right[i]
-      #|and push i.
-      #|TERMINATION:
-      #|At i = -1, all right distances are computed.
-    ),
   }
 
   // Sum contributions

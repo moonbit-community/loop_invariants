@@ -34,24 +34,10 @@ fn knapsack_01(
     let value = values[i]
 
     // Process weights in reverse to avoid using same item twice
-    for w = capacity; w >= weight; w = w - 1 {
+    for w in capacity >=.. weight {
       let without_item = dp[w]
       let with_item = dp[w - weight] + value
       dp[w] = if with_item > without_item { with_item } else { without_item }
-    } where {
-      invariant: w >= weight - 1 && w <= capacity,
-      reasoning: (
-        #|LOOP INVARIANT: dp[w..capacity] has been updated for item i
-        #|
-        #|Processing in reverse ensures dp[w - weight] still holds the value
-        #|from considering items [0..i), not including item i.
-        #|
-        #|This prevents using the same item multiple times.
-        #|MAINTENANCE:
-        #|Update dp[w] using dp[w - weight] and decrement w.
-        #|TERMINATION:
-        #|When w < weight, all capacities that can include item i are updated.
-      ),
     }
   } where {
     invariant: i >= 0 && i <= n,
@@ -383,7 +369,7 @@ fn longest_common_subsequence(s1 : String, s2 : String) -> Int {
       ),
     }
     // Swap rows
-    for k in 0..=n {
+    for k in 0 ..<= n {
       prev[k] = curr[k]
     }
   } where {
@@ -776,7 +762,7 @@ fn min_palindrome_cuts(s : String) -> Int {
 
   // dp[i] = min cuts for s[0..i)
   let dp = Array::make(n + 1, 0)
-  for i in 0..=n {
+  for i in 0 ..<= n {
     dp[i] = i - 1 // Maximum cuts = i - 1
   }
   for i = 1; i <= n; i = i + 1 {
@@ -849,22 +835,12 @@ fn egg_drop(eggs : Int, floors : Int) -> Int {
   let dp = Array::make(eggs + 1, 0)
   for trials = 1; dp[eggs] < floors; trials = trials + 1 {
     // Update dp in reverse to avoid using updated values
-    for k = eggs; k >= 1; k = k - 1 {
+    for k in eggs >=.. 1 {
       // With k eggs and t trials:
       // If egg breaks: we checked dp[k-1] floors below
       // If egg survives: we can check dp[k] floors above
       // Plus the current floor
       dp[k] = 1 + dp[k - 1] + dp[k]
-    } where {
-      invariant: k >= 0 && k <= eggs,
-      reasoning: (
-        #|INVARIANT (trials update):
-        #|Before update, dp[k] is the max floors with k eggs and current trials.
-        #|MAINTENANCE:
-        #|Update in reverse: new dp[k] = 1 + old dp[k-1] + old dp[k].
-        #|TERMINATION:
-        #|At k = 0, the row is fully updated for this trial count.
-      ),
     }
   } else {
     trials - 1
@@ -977,7 +953,7 @@ fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
 
   // dp[i][j] = min cost to multiply matrices i..j (1-indexed)
   let dp : Array[Array[Int]] = []
-  for _ in 0..=n {
+  for _ in 0 ..<= n {
     dp.push(Array::make(n + 1, 0))
   }
 

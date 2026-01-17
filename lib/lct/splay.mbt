@@ -242,25 +242,8 @@ fn LinkCutTree::push_down_path(self : LinkCutTree, x : Int) -> Unit {
   }
 
   // Push down from root to x (reverse order)
-  for i = path.length() - 1; i >= 0; i = i - 1 {
+  for i in path.length() >.. 0 {
     self.push_down(path[i])
-  } where {
-    invariant: i >= -1 && i < path.length(),
-    reasoning: (
-      #|INVARIANT (push down path):
-      #|  Nodes path[i+1..length) have had push_down applied.
-      #|  path[0] is x, path[length-1] is splay root.
-      #|
-      #|CORRECTNESS:
-      #|  By pushing from root to x, each node's children are
-      #|  correctly oriented before we push its children.
-      #|
-      #|MAINTENANCE:
-      #|  Apply push_down to path[i].
-      #|
-      #|TERMINATION:
-      #|  At i = -1, all nodes on path are pushed.
-    ),
   }
 }
 

@@ -37,7 +37,7 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
     ),
   }
   let size : Array[Int] = Array::make(n, 0)
-  for i = order.length() - 1; i >= 0; i = i - 1 {
+  for i in order.length() >.. 0 {
     let u = order[i]
     size[u] = 1
     for v in adj[u] {
@@ -45,16 +45,6 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
         size[u] = size[u] + size[v]
       }
     }
-  } where {
-    invariant: i >= -1 && i < order.length(),
-    reasoning: (
-      #|INVARIANT (Postorder accumulation):
-      #|All nodes after index i in order have their subtree sizes computed.
-      #|MAINTENANCE:
-      #|Compute size[u] using already-computed children sizes, then decrement i.
-      #|TERMINATION:
-      #|At i = -1, all subtree sizes are computed.
-    ),
   }
   size
 }

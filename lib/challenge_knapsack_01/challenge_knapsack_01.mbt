@@ -19,22 +19,11 @@ pub fn knapsack_01(
   for i in 0..<n {
     let w_i = weights[i]
     let v_i = values[i]
-    for w = capacity; w >= w_i; w = w - 1 {
+    for w in capacity >=.. w_i {
       let cand = dp[w - w_i] + v_i
       if cand > dp[w] {
         dp[w] = cand
       }
-    } where {
-      invariant: w >= -1 && w <= capacity,
-      reasoning: (
-        #|INVARIANT (Descending weight update):
-        #|For all weights > w, dp already includes item i at most once.
-        #|MAINTENANCE:
-        #|Using descending w ensures dp[w - w_i] still refers to the previous
-        #|item set (0/1), so adding v_i doesn't reuse item i.
-        #|TERMINATION:
-        #|When w < w_i, all feasible weights for item i are processed.
-      ),
     }
   }
   dp[capacity]

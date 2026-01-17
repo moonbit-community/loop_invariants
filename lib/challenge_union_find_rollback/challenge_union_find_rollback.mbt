@@ -72,13 +72,12 @@ pub fn RollbackDSU::snapshot(self : RollbackDSU) -> Int {
 pub fn RollbackDSU::rollback(self : RollbackDSU, snap : Int) -> Unit {
   for len = self.history.length(); len > snap; {
     match self.history.pop() {
-      Some((child, parent_size)) => {
+      Some((child, parent_size)) =>
         if child >= 0 {
           let root = self.parent[child]
           self.size[root] = parent_size
           self.parent[child] = child
         }
-      }
       None => break
     }
     continue self.history.length()

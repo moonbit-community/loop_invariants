@@ -29,7 +29,7 @@ pub fn XorBasis::new() -> XorBasis {
 /// Insert a value into the basis. Returns true if it increases rank.
 pub fn XorBasis::insert(self : XorBasis, value : Int64) -> Bool {
   let mut x = value
-  for bit = MAX_BITS; bit >= 0; bit = bit - 1 {
+  for bit in MAX_BITS >=.. 0 {
     if ((x >> bit) & 1L) == 0L {
       continue
     }
@@ -39,19 +39,6 @@ pub fn XorBasis::insert(self : XorBasis, value : Int64) -> Bool {
       return true
     }
     x = x ^ self.basis[bit]
-  } where {
-    invariant: bit >= -1 && bit <= MAX_BITS,
-    reasoning: (
-      #|INVARIANT (Gaussian elimination):
-      #|x equals the original value xor'd with a combination of basis vectors
-      #|whose leading bits are strictly greater than bit.
-      #|All bits above 'bit' in x are zero at each step.
-      #|MAINTENANCE:
-      #|If bit is set and basis[bit] exists, eliminate that bit with xor.
-      #|TERMINATION:
-      #|If x becomes 0, the value is dependent; otherwise a new basis vector is
-      #|stored at its leading bit.
-    ),
   }
   false
 }

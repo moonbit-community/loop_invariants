@@ -81,17 +81,9 @@ pub fn nck_mod_prime_lucas(n : Int64, k : Int64, p : Int64) -> Int64 {
   }
   let inv_fact = Array::make(prime, 1L)
   inv_fact[prime - 1] = pow_mod(fact[prime - 1], p - 2L, p)
-  for i = prime - 2; i >= 0; i = i - 1 {
+  let start_exclusive = prime - 1
+  for i in start_exclusive >.. 0 {
     inv_fact[i] = mod_mul(inv_fact[i + 1], (i + 1).to_int64(), p)
-  } where {
-    invariant: i >= -1 && i < prime,
-    reasoning: (
-      #|INVARIANT (inverse factorials):
-      #|For indices > i, inv_fact holds (j!)^{-1} modulo p. The loop extends
-      #|the property downward using inv_fact[i+1] * (i+1).
-      #|TERMINATION:
-      #|At i = -1, inv_fact[0..p-1] are all computed.
-    ),
   }
   let mut nn = n
   let mut kk = k

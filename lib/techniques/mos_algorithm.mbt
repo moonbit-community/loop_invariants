@@ -664,7 +664,7 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
       }
     }
   }
-  for i = order.length() - 1; i >= 0; i = i - 1 {
+  for i in order.length() >.. 0 {
     let node = order[i]
     subtree_size[node] = 1
     for child in adj[node] {
@@ -672,16 +672,6 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
         subtree_size[node] = subtree_size[node] + subtree_size[child]
       }
     }
-  } where {
-    invariant: i >= -1 && i < order.length(),
-    reasoning: (
-      #|INVARIANT (post-order):
-      #|For nodes in order[i+1..], subtree_size is fully computed.
-      #|MAINTENANCE:
-      #|Process order[i] after its children to accumulate subtree sizes.
-      #|TERMINATION:
-      #|At i == -1, subtree_size is computed for all nodes.
-    ),
   }
   let tree_size = subtree_size[root]
   for i = 0, centroid = root; i < n; {
@@ -748,21 +738,11 @@ fn build_euler_tour(adj : Array[Array[Int]], root : Int) -> EulerTour {
       tour.push(node)
       time[0] = time[0] + 1
       stack.push((node, par, 1))
-      for i = adj[node].length() - 1; i >= 0; i = i - 1 {
+      for i in adj[node].length() >.. 0 {
         let child = adj[node][i]
         if child != par {
           stack.push((child, node, 0))
         }
-      } where {
-        invariant: i >= -1 && i < adj[node].length(),
-        reasoning: (
-          #|INVARIANT (euler push order):
-          #|Children adj[node][i+1..] have been pushed to the stack.
-          #|MAINTENANCE:
-          #|Push child i so the stack processes children in original order.
-          #|TERMINATION:
-          #|At i == -1, all children are scheduled for DFS.
-        ),
       }
     } else {
       exit[node] = time[0]
@@ -876,21 +856,11 @@ fn BinaryLifting::lca_binary_lifting(
   if u == v {
     return u
   }
-  for k = self.log_n - 1; k >= 0; k = k - 1 {
+  for k in self.log_n >.. 0 {
     if self.up[u][k] != self.up[v][k] {
       u = self.up[u][k]
       v = self.up[v][k]
     }
-  } where {
-    invariant: k >= -1 && k < self.log_n,
-    reasoning: (
-      #|INVARIANT (lift to LCA):
-      #|LCA is an ancestor of both u and v; u and v stay at equal depth.
-      #|MAINTENANCE:
-      #|If ancestors differ at 2^k, lift both nodes up by 2^k.
-      #|TERMINATION:
-      #|After the loop, u and v are children of the LCA.
-    ),
   }
   self.up[u][0]
 }

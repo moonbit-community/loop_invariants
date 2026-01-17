@@ -106,23 +106,13 @@ pub fn lca(tree : Lca, u : Int, v : Int) -> Int {
   if a == b {
     return a
   }
-  for k = log - 1; k >= 0; k = k - 1 {
+  for k in log >.. 0 {
     let upa = tree.up[k][a]
     let upb = tree.up[k][b]
     if upa != upb {
       a = upa
       b = upb
     }
-  } where {
-    invariant: k >= 0 && k < log,
-    reasoning: (
-      #|INVARIANT (raise both):
-      #|a and b are at the same depth and remain below their LCA.
-      #|MAINTENANCE:
-      #|Jump both up when their 2^k ancestors differ.
-      #|TERMINATION:
-      #|At k = -1, a and b are children of the LCA.
-    ),
   }
   tree.up[0][a]
 }
