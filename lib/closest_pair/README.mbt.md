@@ -173,6 +173,75 @@ test "closest pair cluster" {
 
 ---
 
+## Detailed step-by-step (worked example)
+
+Points:
+
+```
+(0,0), (2,2), (3,0), (5,2), (6,0), (8,2)
+```
+
+1) Sort by x:
+
+```
+(0,0), (2,2), (3,0) | (5,2), (6,0), (8,2)
+```
+
+2) Solve left half by brute force:
+
+- distances: d(0,0)-(2,2) = sqrt(8)
+- d(0,0)-(3,0) = 3
+- d(2,2)-(3,0) = sqrt(5)
+
+Left best is `sqrt(5)`.
+
+3) Solve right half:
+
+- d(5,2)-(6,0) = sqrt(5)
+- d(5,2)-(8,2) = 3
+- d(6,0)-(8,2) = sqrt(8)
+
+Right best is also `sqrt(5)`.
+
+4) `delta = sqrt(5)`. Build strip around the midline:
+
+- Midline is between x=3 and x=5.
+- Points within delta of the midline are candidates for cross pairs.
+
+5) Sort strip by y and compare neighbors. In this case, no cross pair beats
+`sqrt(5)`, so the answer stays the same.
+
+This example shows how the algorithm relies on the strip step to safely combine
+the two halves.
+
+---
+
+## Closest pair vs other techniques
+
+| Method | Time | Notes |
+|--------|------|------|
+| Divide & conquer | `O(n log n)` | Deterministic, clean proof |
+| Sweep line | `O(n log n)` | Similar complexity, more event handling |
+| Grid hashing | `O(n)` expected | Randomized, good in practice |
+
+If you need deterministic performance and a classic proof, divide & conquer is
+the usual choice.
+
+---
+
+## Extension: k closest pairs (conceptual)
+
+To find the k closest pairs instead of just one:
+
+1. Enumerate candidate pairs (often via a heap).
+2. Keep only the k smallest distances.
+3. The merge step can contribute many pairs, so a max-heap of size k is common.
+
+This is more complex and usually `O(n log n + n log k)` or worse, depending on
+the approach.
+
+---
+
 ## Implementation notes
 
 - Pre-sorting by x is essential for `O(n log n)`
