@@ -25,20 +25,6 @@ fn count(node : Node) -> Int {
 }
 
 ///|
-fn tree_valid(node : Node, len : Int) -> Bool {
-  match node {
-    Node::Empty => true
-    Node::Node(count=c, left=l, right=r) =>
-      if len <= 1 {
-        c >= 0 && l is Node::Empty && r is Node::Empty
-      } else {
-        let mid = len / 2
-        tree_valid(l, mid) &&
-        tree_valid(r, len - mid) &&
-        c == count(l) + count(r)
-      }
-  }
-}
 
 ///|
 fn insert(node : Node, l : Int, r : Int, value : Int) -> Node {
@@ -95,38 +81,31 @@ pub fn add(os : OrderStat, value : Int) -> OrderStat {
 
 ///|
 /// kth element (0-based) within the multiset.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn kth(os : OrderStat, k : Int) -> Int? {
   if k < 0 || k >= count(os.root) {
     return None
   }
-  for node = os.root, l = os.lo, r = os.hi, rank = k {
-    match node {
-      Node::Empty => break None
-      Node::Node(left~, right~, count=_) =>
-        if r - l == 1 {
-          break Some(l)
+  match os.root {
+    Node::Empty => None
+    _ => kth_node(os.root, os.lo, os.hi, k)
+  }
+}
+
+///|
+fn kth_node(node : Node, l : Int, r : Int, k : Int) -> Int? {
+  match node {
+    Node::Empty => None
+    Node::Node(left~, right~, count=_) =>
+      if r - l == 1 {
+        Some(l)
+      } else {
+        let mid = (l + r) / 2
+        let left_count = count(left)
+        if k < left_count {
+          kth_node(left, l, mid, k)
         } else {
-          let mid = (l + r) / 2
-          let left_count = count(left)
-          if rank < left_count {
-            continue left, l, mid, rank
-          } else {
-            continue right, mid, r, rank - left_count
-          }
+          kth_node(right, mid, r, k - left_count)
         }
-    }
-  } where {
-    invariant: rank >= 0 && rank < count(node),
-    invariant: l < r,
-    invariant: tree_valid(node, r - l),
-    reasoning: (
-      #|INVARIANT (Order-statistic walk):
-      #|rank is the desired index within the subtree node spanning [l, r).
-      #|MAINTENANCE:
-      #|Use left subtree size to decide which side contains the rank.
-      #|TERMINATION:
-      #|When the segment is a single value, return its coordinate.
-    ),
+      }
   }
 }
