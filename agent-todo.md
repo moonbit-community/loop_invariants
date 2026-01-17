@@ -156,7 +156,7 @@
 - [x] lib/linkcut
 - [x] lib/longest_common_substring
 - [x] lib/lucas_theorem
-- [ ] lib/manacher
+- [x] lib/manacher
 - [ ] lib/math
 - [ ] lib/matrix_exp
 - [ ] lib/max_flow

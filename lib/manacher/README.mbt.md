@@ -1,221 +1,252 @@
-# Manacher's Algorithm
+# Manacher's Algorithm (palindromes in O(n))
 
-## Overview
+## 1. What problem does this solve?
 
-**Manacher's Algorithm** finds all palindromic substrings in linear time.
-It computes the longest palindrome centered at each position, enabling
-O(n) solution for the longest palindromic substring problem.
+A **palindrome** reads the same forward and backward.
+This package focuses on **palindromic substrings** (contiguous).
 
-- **Time**: O(n)
-- **Space**: O(n)
+Typical tasks:
 
-## The Problem
+- Longest palindromic substring
+- Length of the longest palindrome
+- Count of all palindromic substrings
+- Radii arrays for all centers (odd and even)
 
-```
-Input: "babad"
+Manacher's algorithm solves all of these in **linear time**.
 
-Naive approach: Check each center, expand → O(n²)
+## 2. Substring vs subsequence (quick reminder)
 
-Manacher's insight: Reuse information from palindromes
-we've already found!
-```
-
-## The Transformation
-
-Handle both odd and even length palindromes uniformly by inserting separators:
+A substring is contiguous, a subsequence is not.
+We only care about substrings here.
 
 ```
-Original: "abba"
-Transform: "#a#b#b#a#"
-
-Now every palindrome has odd length with a unique center:
-- "bb" (even) becomes "#b#b#" centered at middle #
-- "abba" (even) becomes "#a#b#b#a#" centered at middle #
+String:  a b a c
+Substring palindrome: "aba" (positions 0..2)
+Subsequence palindrome: "aac" (not contiguous) -> not our target
 ```
 
-## The Key Insight: Mirror Property
+## 3. Why the naive approach is too slow
 
-When inside a known palindrome, use symmetry to avoid redundant work:
+A naive solution expands around every possible center:
+
+- There are O(n) centers
+- Each expansion can cost O(n)
+
+Total: **O(n^2)**.
+
+Manacher reduces this to **O(n)** by reusing information from previously
+found palindromes.
+
+## 4. Odd vs even palindromes
+
+Every palindrome is either:
+
+- **Odd length**: has a center character
+- **Even length**: center is between two characters
+
+Example:
 
 ```
-Known palindrome centered at c with right edge r:
+String: "abac"
+Odd palindrome centered at index 1: "aba"
 
-    |<------palindrome------>|
-    |         c              |r
+String: "abba"
+Even palindrome centered between 1 and 2: "bb" and "abba"
+```
+
+Manacher handles both at once by transforming the string.
+
+## 5. The transformation (make everything odd)
+
+Insert separators between characters and at both ends:
+
+```
+Original:  a b b a
+Index:     0 1 2 3
+
+Transformed:  # a # b # b # a #
+Index:         0 1 2 3 4 5 6 7 8
+```
+
+Now every palindrome in the transformed string has **odd length** with a
+unique center.
+
+- Even palindrome "bb" becomes "#b#b#" centered at index 4
+- Odd palindrome "aba" becomes "#a#b#a#" centered at index 3
+
+## 6. Radii definition in the transformed string
+
+Let `P[i]` be the **radius** at center `i` in the transformed string:
+
+- Radius counts how far we can expand while staying palindrome
+- A radius of 0 means only the center matches
+
+Example for `"cbbd"`:
+
+```
+Transformed:  # c # b # b # d #
+Index:         0 1 2 3 4 5 6 7 8
+P[i]:          0 1 0 1 2 1 0 1 0
+```
+
+The maximum radius is 2 at center 4, which corresponds to "bb".
+
+## 7. Radii in the original string (d1 and d2)
+
+This package exposes `manacher_radii` returning two arrays:
+
+- `d1[i]`: radius of the longest **odd** palindrome centered at `i`
+  - Length = `2 * d1[i] - 1`
+- `d2[i]`: radius of the longest **even** palindrome centered between `i-1` and `i`
+  - Length = `2 * d2[i]`
+
+Example: `"abba"`
+
+```
+indices:  0 1 2 3
+string:   a b b a
+
+d1:       1 1 1 1   (all odd palindromes are just the single letter)
+d2:       0 0 2 0   (center between 1 and 2 gives "bb" and "abba")
+```
+
+## 8. The mirror property (the key speedup)
+
+Suppose we already have a palindrome centered at `c` with right boundary `r`.
+If we are at position `i` **inside** that palindrome, there is a mirror
+position `i'` on the other side:
+
+```
+         c
 ... # a # b # a # b # a # ...
-        i'      c       i
-        |<---->|<---->|
-        mirror distances equal!
-
-If i < r:
-  - Mirror position i' = 2*c - i
-  - P[i'] already computed
-  - P[i] >= min(P[i'], r - i)
+        i'         i
+            r
 ```
 
-## Algorithm Walkthrough
+Because of symmetry:
 
 ```
-String: "cbbd"
-Transform: "#c#b#b#d#"
-            0 1 2 3 4 5 6 7 8
-
-P[i] = palindrome radius at center i
-
-i=0: P[0] = 0 (#)
-i=1: P[1] = 1 (#c# centered at c)
-i=2: P[2] = 0 (c#b)
-i=3: P[3] = 1 (#b#)
-i=4: P[4] = 2 (#b#b# - this is "bb"!)
-i=5: P[5] = 1 (#b#)
-i=6: P[6] = 0 (b#d)
-i=7: P[7] = 1 (#d#)
-i=8: P[8] = 0 (#)
-
-Maximum: P[4] = 2
-Original palindrome length = P[4] = 2
-Substring: "bb"
+P[i] >= min(P[i'], r - i)
 ```
 
-## Visual Example
+This gives a strong lower bound without any comparisons.
+We only expand past `r` if needed. The right boundary `r` only moves forward,
+so total expansions across the whole scan are linear.
+
+## 9. Walkthrough example: "cbbd"
 
 ```
-String: "abacaba"
-Transform: "#a#b#a#c#a#b#a#"
-
-         |<----palindrome---->|
-... # a # b # a # c # a # b # a # ...
-         i'      c       i
-
-When processing i:
-- If i < r, check mirror i' = 2*c - i
-- P[i'] tells us minimum radius at i
-- Only expand beyond what we already know
+Original:    c b b d
+Transformed: # c # b # b # d #
+Index:        0 1 2 3 4 5 6 7 8
+P[i]:         0 1 0 1 2 1 0 1 0
 ```
 
-## Why O(n)?
+Interpretation:
 
-Each character comparison either:
-1. **Reuses** known information (O(1))
-2. **Extends** the right boundary r (at most n times total)
+- Center 4 has radius 2 -> length 2 in original
+- Start = (4 - 2) / 2 = 1
+- Substring = s[1:3] = "bb"
+
+## 10. Converting back to original indices
+
+If you know `(center, radius)` in the transformed string:
 
 ```
-r only increases, never decreases
-Total expansions across all centers ≤ n
-Therefore total time = O(n)
+start = (center - radius) / 2
+length = radius
 ```
 
-## Example Usage
+This is exactly how `longest_palindrome` maps the answer back.
+
+## 11. Counting palindromes from radii
+
+In the transformed string, each center contributes:
+
+```
+(r + 1) / 2
+```
+
+palindromes in the original string.
+
+Example: `"aaa"`
+
+Palindromic substrings:
+
+- "a" at (0), (1), (2) -> 3
+- "aa" at (0..1), (1..2) -> 2
+- "aaa" at (0..2) -> 1
+
+Total = 6.
+
+## 12. Example usage (runnable)
 
 ```mbt check
 ///|
-test "manacher example" {
+test "manacher basics" {
   inspect(@manacher.longest_palindrome("cbbd"), content="bb")
-  inspect(@manacher.count_palindromes("aaa"), content="6")
+  inspect(@manacher.longest_palindrome("racecar"), content="racecar")
   inspect(@manacher.longest_palindrome_len("abacaba"), content="7")
+}
+```
+
+```mbt check
+///|
+test "manacher counts" {
+  inspect(@manacher.count_palindromes("aaa"), content="6")
+  inspect(@manacher.count_palindromes("aaaa"), content="10")
+}
+```
+
+```mbt check
+///|
+test "manacher radii arrays" {
   let (d1, d2) = @manacher.manacher_radii("abba")
   inspect(d1, content="[1, 1, 1, 1]")
   inspect(d2, content="[0, 0, 2, 0]")
 }
 ```
 
-## Common Applications
-
-### 1. Longest Palindromic Substring
-```
-The classic problem! Find longest palindrome in a string.
-Example: "babad" → "bab" or "aba" (length 3)
-```
-
-### 2. Count Palindromic Substrings
-```
-Each center with radius r contributes (r+1)/2 palindromes.
-
-"aaa": 6 palindromic substrings
-  - "a" at positions 0, 1, 2 (3 substrings)
-  - "aa" at positions 0-1, 1-2 (2 substrings)
-  - "aaa" at position 0-2 (1 substring)
+```mbt check
+///|
+test "manacher unique longest" {
+  inspect(@manacher.longest_palindrome("abaxyzzyxf"), content="xyzzyx")
+  inspect(@manacher.longest_palindrome_len("abcdef"), content="1")
+}
 ```
 
-### 3. Palindrome Partitioning
-```
-Combined with DP for minimum cuts or counting partitions.
-```
+## 13. Common pitfalls
 
-### 4. Longest Palindromic Prefix/Suffix
-```
-Special case queries answered in O(1) after preprocessing.
-```
+- Confusing odd and even palindromes
+- Forgetting that `d1[i]` is a radius, not a length
+- Assuming the longest palindrome is unique (it is not in general)
+- Using this for grapheme clusters; MoonBit strings are UTF-16 code units
 
-## Complexity Analysis
-
-| Operation | Time | Space |
-|-----------|------|-------|
-| Build radii array | O(n) | O(n) |
-| Longest palindrome | O(n) | O(n) |
-| Count palindromes | O(n) | O(n) |
-| Check if [l,r) is palindrome | O(1)* | - |
-
-*After O(n) preprocessing.
-
-## Manacher vs Other Approaches
-
-| Method | Time | Space | Finds |
-|--------|------|-------|-------|
-| **Manacher** | O(n) | O(n) | All palindromes |
-| Expand from center | O(n²) | O(1) | All palindromes |
-| DP | O(n²) | O(n²) | All palindromes |
-| Hashing | O(n log n) | O(n) | Specific queries |
-| Suffix array + LCP | O(n) | O(n) | All palindromes |
-
-**Choose Manacher when**: You need O(n) time for palindrome queries.
-
-## The Algorithm States
+## 14. Complexity
 
 ```
-Maintain: center c, right boundary r
-
-For each position i:
-
-Case 1: i >= r
-  - Outside known palindrome
-  - Expand naively
-
-Case 2: i < r
-  - Inside palindrome centered at c
-  - Mirror position: i' = 2*c - i
-
-  Case 2a: P[i'] < r - i
-    - Mirror fits inside → P[i] = P[i']
-
-  Case 2b: P[i'] >= r - i
-    - Mirror reaches boundary
-    - P[i] >= r - i, expand from there
-
-Always: If expanded past r, update c = i, r = i + P[i]
+Time:  O(n)
+Space: O(n)
 ```
 
-## Converting Radii to Substrings
+Each position extends the right boundary at most once, so the total work is
+linear.
 
-```
-In transformed string:
-  - Center at position i
-  - Radius P[i]
+## 15. When to use Manacher
 
-Original substring:
-  - Start: (i - P[i]) / 2
-  - Length: P[i]
+- You need **all** palindrome radii in linear time
+- You need longest palindromic substring fast
+- You want to count palindromic substrings efficiently
 
-Example: Transform "#a#b#b#a#"
-  Center i=4 (#), radius P[4]=4
-  Original start = (4-4)/2 = 0
-  Original length = 4
-  Substring: "abba"
-```
+If `n` is small or code simplicity matters more than performance, a quadratic
+center-expansion might be simpler to implement. Otherwise Manacher is the
+standard choice.
 
-## Implementation Notes
+## 16. API summary
 
-- Use a sentinel (like #) that won't appear in input
-- Integer division automatically handles the 2x scaling
-- Edge cases: empty string, single character
-- P[0] = 0 for the leading separator
+This package provides:
+
+- `longest_palindrome(s)` -> longest palindromic substring
+- `longest_palindrome_len(s)` -> length only
+- `count_palindromes(s)` -> total count
+- `manacher_radii(s)` -> `(d1, d2)` arrays for odd/even centers
