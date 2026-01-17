@@ -1,56 +1,73 @@
-# Suffix Array
+# Suffix Array (Beginner‑Friendly Guide)
 
-## Overview
+This package provides:
 
-A **Suffix Array** is a sorted array of all suffixes of a string. Combined with
-an **LCP (Longest Common Prefix) array**, it enables powerful string operations.
+- `suffix_array(text)`
+- `lcp_array(text, sa)`
+- `SuffixArray` helper type with search utilities
 
-## What is a Suffix Array?
+---
 
-For string "banana", the suffixes are:
+## 1. What is a suffix array?
+
+Take every suffix of a string and sort them.
+
+Example: `"banana"`
+
+Suffixes:
 
 ```
 Index  Suffix
-  0    banana
-  1    anana
-  2    nana
-  3    ana
-  4    na
-  5    a
+0      banana
+1      anana
+2      nana
+3      ana
+4      na
+5      a
 ```
 
-Sorted alphabetically:
+Sorted:
 
 ```
-Rank  Suffix    Original Index
-  0   a         5
-  1   ana       3
-  2   anana     1
-  3   banana    0
-  4   na        4
-  5   nana      2
-
-Suffix Array: SA = [5, 3, 1, 0, 4, 2]
+Rank  Suffix    Index
+0     a         5
+1     ana       3
+2     anana     1
+3     banana    0
+4     na        4
+5     nana      2
 ```
 
-## The LCP Array
-
-The LCP array stores the **longest common prefix** between adjacent suffixes
-in the sorted order:
+Suffix array:
 
 ```
-Rank  Suffix    LCP with previous
-  0   a         -
-  1   ana       1  (shares "a" with "a")
-  2   anana     3  (shares "ana" with "ana")
-  3   banana    0  (shares nothing with "anana")
-  4   na        0  (shares nothing with "banana")
-  5   nana      2  (shares "na" with "na")
-
-LCP Array: [0, 1, 3, 0, 0, 2]
+SA = [5, 3, 1, 0, 4, 2]
 ```
 
-### Convenience Helpers
+---
+
+## 2. What is the LCP array?
+
+LCP = **Longest Common Prefix** of adjacent suffixes in SA order.
+
+For `"banana"`:
+
+```
+SA:   [5, 3, 1, 0, 4, 2]
+Suffixes: a, ana, anana, banana, na, nana
+
+LCP: [0, 1, 3, 0, 0, 2]
+```
+
+Explanation:
+
+- LCP(ana, a) = 1
+- LCP(anana, ana) = 3
+- etc.
+
+---
+
+## 3. Example usage (basic)
 
 ```mbt check
 ///|
@@ -62,86 +79,63 @@ test "suffix array helpers" {
 }
 ```
 
-## Visual: How Binary Search Works
+---
 
-To find pattern "ana" in "banana":
+## 4. Pattern search intuition
 
-```
-Suffix Array (sorted):
-  [0] a        <- "a" < "ana"
-  [1] ana      <- "ana" = "ana" MATCH!
-  [2] anana    <- "ana" prefix of "anana" MATCH!
-  [3] banana   <- "banana" > "ana"
-  [4] na       <- "na" > "ana"
-  [5] nana     <- "nana" > "ana"
+Because suffixes are sorted, you can binary‑search for a pattern.
 
-Binary search finds range [1, 2]
-Positions in original: SA[1]=3, SA[2]=1 → matches at indices 1 and 3
-```
-
-## Construction: Prefix Doubling
-
-We build the suffix array by sorting suffixes by longer and longer prefixes:
+Example: search `"ana"` in `"banana"`:
 
 ```
-Step 0 (k=1): Sort by first 1 character
-  Suffixes by first char: a(5), a(3), a(1), b(0), n(4), n(2)
-  Ranks: [b=0, a=1, n=2, a=1, n=2, a=1]
+Suffixes (sorted):
+0: a
+1: ana
+2: anana
+3: banana
+4: na
+5: nana
 
-Step 1 (k=2): Sort by first 2 characters
-  Compare pairs (rank[i], rank[i+1])
-  "ba" > "an" > "na" etc.
-
-Step 2 (k=4): Sort by first 4 characters
-  ...continue until all ranks unique
-
-Result: SA = [5, 3, 1, 0, 4, 2]
+"ana" appears at ranks 1 and 2.
+Original indices: SA[1]=3, SA[2]=1.
 ```
 
-## LCP Construction: Kasai's Algorithm
+---
 
-Key insight: If we know `LCP(SA[i], SA[i-1]) = h`, then
-`LCP(SA[rank[i+1]], SA[rank[i+1]-1]) >= h - 1`.
-
-This allows O(n) construction by processing suffixes in text order.
-
-## Use Cases
-
-### 1. Pattern Matching
-Find all occurrences of a pattern in O(m log n) time:
+## 5. Using the SuffixArray helper
 
 ```mbt check
 ///|
-test "pattern matching" {
+test "suffix array search" {
   let sa = @suffix_array.SuffixArray::new("mississippi")
   inspect(sa.find_all("issi"), content="[1, 4]")
   inspect(sa.count("ss"), content="2")
 }
 ```
 
-### 2. Longest Repeated Substring
-The longest repeated substring corresponds to the maximum LCP value:
+---
+
+## 6. Longest repeated substring
+
+The longest repeated substring is the maximum LCP.
 
 ```mbt check
 ///|
 test "longest repeated substring" {
   let sa = @suffix_array.SuffixArray::new("banana")
   inspect(sa.longest_repeated_substring(), content="ana")
-  let sa2 = @suffix_array.SuffixArray::new("abcabc")
-  inspect(sa2.longest_repeated_substring(), content="abc")
 }
 ```
 
-### 3. Count Distinct Substrings
-Total substrings minus LCP overlaps:
+---
+
+## 7. Count distinct substrings
+
+Formula:
 
 ```
-Formula: n(n+1)/2 - sum(LCP)
-
-For "banana" (n=6):
-  Total substrings = 6*7/2 = 21
-  Sum of LCP = 0+1+3+0+0+2 = 6
-  Distinct = 21 - 6 = 15
+total substrings = n(n+1)/2
+distinct = total - sum(LCP)
 ```
 
 ```mbt check
@@ -152,55 +146,33 @@ test "distinct substrings" {
 }
 ```
 
-### 4. Lexicographically Sorted Suffixes
-Access suffixes in sorted order:
+---
 
-```mbt check
-///|
-test "sorted suffixes" {
-  let sa = @suffix_array.SuffixArray::new("banana")
-  inspect(sa.get_suffix(0), content="a")
-  inspect(sa.get_suffix(1), content="ana")
-  inspect(sa.get_suffix(3), content="banana")
-}
-```
-
-## Common Applications
-
-1. **Genome Analysis**: Find repeated sequences in DNA
-2. **Data Compression**: Burrows-Wheeler Transform uses suffix arrays
-3. **Plagiarism Detection**: Find common substrings between documents
-4. **Search Engines**: Index text for fast substring queries
-5. **Text Editors**: Fast find/replace operations
-
-## Complexity Analysis
-
-| Operation            | Time          | Space |
-|----------------------|---------------|-------|
-| Build SA             | O(n log² n)   | O(n)  |
-| Build LCP (Kasai)    | O(n)          | O(n)  |
-| Search pattern       | O(m log n)    | O(1)  |
-| Longest repeated     | O(n)          | O(1)  |
-| Count distinct       | O(n)          | O(1)  |
-
-## Comparison with Other String Structures
-
-| Structure      | Build    | Pattern Search | Space | Use Case |
-|----------------|----------|----------------|-------|----------|
-| Suffix Array   | O(n lg²n)| O(m log n)     | O(n)  | General  |
-| Suffix Tree    | O(n)     | O(m)           | O(n)* | Complex queries |
-| KMP            | O(m)     | O(n)           | O(m)  | Single pattern |
-| Rabin-Karp     | O(n+m)   | O(n+m)         | O(1)  | Multiple patterns |
-
-*Suffix trees have larger constant factors
-
-## Advanced: Using LCP for Range Minimum Queries
-
-With the LCP array, you can answer "longest common prefix of any two suffixes"
-using Range Minimum Query (RMQ):
+## 8. Complexity
 
 ```
-LCP(suffix[i], suffix[j]) = min(LCP[rank[i]+1 ... rank[j]])
+Build SA:   O(n log^2 n) (prefix doubling)
+Build LCP:  O(n)
+Search:     O(m log n)
 ```
 
-This enables O(1) LCP queries after O(n) preprocessing with sparse tables.
+---
+
+## 9. When to use suffix arrays
+
+Use them for:
+
+- fast substring search,
+- repeated substring queries,
+- lexicographic suffix ordering,
+- building compression tools (BWT).
+
+---
+
+## 10. Summary
+
+Suffix arrays + LCP are a powerful, compact string index:
+
+- sorted suffixes,
+- binary search for patterns,
+- LCP powers repeated substring queries.

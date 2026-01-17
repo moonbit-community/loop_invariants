@@ -193,7 +193,7 @@
 - [x] lib/string
 - [x] lib/string_hash
 - [x] lib/subset_convolution
-- [ ] lib/suffix_array
+- [x] lib/suffix_array
 - [ ] lib/suffix_automaton
 - [ ] lib/suffix_tree
 - [ ] lib/suurballe_disjoint_paths
