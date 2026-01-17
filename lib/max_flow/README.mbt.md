@@ -1,239 +1,209 @@
 # Maximum Flow (Dinic's Algorithm)
 
-## Overview
+## 1. Problem statement
 
-**Maximum Flow** finds the maximum amount that can flow from source to sink
-through a network with edge capacities. This implementation uses **Dinic's algorithm**.
+You have a directed graph where each edge has a **capacity**.
+Find the maximum amount of flow that can go from a **source** `s` to a **sink** `t`.
 
-- **Time**: O(V²E) general, O(E√V) for unit capacity/bipartite
-- **Space**: O(V + E)
+Rules:
 
-## The Problem
+- Flow on an edge cannot exceed its capacity.
+- For every vertex except `s` and `t`, inflow = outflow.
 
-```
-Given a directed graph with edge capacities:
+## 2. Why this is hard
 
-        10          10
-    s ───────> A ───────> t
-    │         ↑│         ↑
-  10│       2 ││9        │10
-    │         │↓         │
-    └───────> B ───────>─┘
-        10          10
+A naive approach repeatedly finds any augmenting path and pushes flow.
+This can take a very long time depending on the path choices.
 
-Find: Maximum flow from s to t
-Answer: 19 (bottleneck limits flow)
-```
+Dinic's algorithm makes it fast by:
 
-## How Dinic's Algorithm Works
+1. Building a **level graph** with BFS
+2. Finding a **blocking flow** in that level graph with DFS
 
-### Step 1: Build Level Graph (BFS)
+## 3. Residual graph (the core concept)
 
-Assign levels to vertices by distance from source:
+For each edge `u -> v` with capacity `c` and current flow `f`:
 
-```
-Level 0:  s
-Level 1:  A, B
-Level 2:  t
-
-Level graph only uses edges going to next level.
-This ensures we find shortest augmenting paths first.
-```
-
-### Step 2: Find Blocking Flow (DFS)
-
-Repeatedly find augmenting paths in the level graph:
-
-```
-Phase 1:
-  Path s→A→t: push 10
-  Path s→B→t: push 10
-  Total flow: 20? No, let's be more careful...
-
-Actually:
-  s→A: capacity 10, s→B: capacity 10
-  A→t: capacity 10, B→t: capacity 10
-
-  But there might be bottlenecks...
-```
-
-### Step 3: Repeat
-
-Rebuild level graph and repeat until no path exists.
-
-## Visual Walkthrough
-
-```
-Initial:
-         10          10
-    s ────────> A ────────> t
-    │          ↑│          ↑
-  10│        2 ││9         │10
-    │          │↓          │
-    └────────> B ─────────>┘
-         10          10
-
-After Phase 1 (level graph with paths s→A→t, s→B→t):
-  Push 10 through s→A→t
-  Push 9 through s→B→A→t (using A→B backward = 2, limited by B→A)
-
-Wait, let me recalculate...
-
-Simpler example:
-         1
-    s ────────> A
-    │          ↓
-    │1         │1
-    │          ↓
-    └────────> B ────────> t
-                    1
-
-Phase 1: BFS finds level 0=s, level 1=A,B, level 2=t
-  DFS: s→A→t? No edge A→t
-  DFS: s→B→t? Push 1
-  Flow = 1
-
-Phase 2: BFS from residual graph
-  s→A still has capacity 1
-  A→B has capacity 1 (in level graph)
-  B→t saturated, but B→s has residual 1 (reverse)
-  No path to t in level graph
-  Done! Max flow = 1
-```
-
-## Residual Graph
-
-For each edge, track residual capacity:
-
-```
-Original edge: u → v with capacity c, flow f
-  Residual u → v: c - f  (remaining capacity)
-  Residual v → u: f      (can "undo" flow)
+- Residual capacity forward: `c - f` (how much more we can send)
+- Residual capacity backward: `f` (how much we can cancel)
 
 Example:
-  Edge A→B capacity 10, flow 7
-  Residual A→B: 3 (can push 3 more)
-  Residual B→A: 7 (can cancel 7 units)
-```
-
-## Why It Works: Max-Flow Min-Cut Theorem
-
-**Theorem**: Maximum flow = Minimum cut capacity
 
 ```
-A cut separates source from sink:
-
-    s ─── A               Cut edges: s→B, A→t
-    │     │               Capacity: 10 + 10 = 20
-    B ─── t
-
-The algorithm terminates when no augmenting path exists,
-which happens exactly when flow equals minimum cut.
+Edge: A -> B, capacity 10, flow 7
+Residual forward: 3
+Residual backward: 7
 ```
 
-## Common Applications
+The algorithm only travels through edges with **positive residual**.
 
-### 1. Bipartite Matching
+## 4. Level graph (BFS phase)
 
-```
-Workers: {A, B, C}    Jobs: {1, 2, 3}
-Edges show which worker can do which job
-
-        A ─── 1
-       /│     │\
-Source  │     │  Sink
-       \│     │/
-        B ─── 2
-       /      │
-      C ───── 3
-
-Max flow = Maximum matching
-```
-
-### 2. Image Segmentation
+We do BFS from the source and assign each vertex a level:
 
 ```
-Pixels connected to source = foreground
-Pixels connected to sink = background
-Edge weights = similarity between pixels
-
-Min cut separates foreground from background!
+level[s] = 0
+level[v] = level[u] + 1 for any edge u->v with residual > 0
 ```
 
-### 3. Network Reliability
+Only edges that go **from level d to level d+1** are kept in the level graph.
+This guarantees shortest augmenting paths are used in each phase.
+
+Diagram:
 
 ```
-Given network with link capacities,
-max flow = maximum bandwidth between two nodes
-min cut = bottleneck links to target
+Level 0: s
+Level 1: A, B
+Level 2: t
+
+Only edges that go down one level are allowed in the DFS phase.
 ```
 
-### 4. Project Selection
+## 5. Blocking flow (DFS phase)
+
+Within the level graph, DFS pushes flow until:
+
+- All s-t paths are saturated, or
+- The sink is unreachable
+
+This is called a **blocking flow**.
+Once we have a blocking flow, the shortest path length increases, and we build
+another level graph.
+
+## 6. Small worked example
+
+Graph:
 
 ```
-Projects with dependencies and profits:
-- Connect profitable projects to source
-- Connect costly projects to sink
-- Add dependency edges
-
-Max flow helps find optimal project set
+    s
+   / \
+  3   2
+ /     \
+A ---1--- B
+ \     /
+  2   3
+   \ /
+    t
 ```
 
-## Complexity Analysis
-
-| Graph Type | Time Complexity | Example |
-|------------|-----------------|---------|
-| General | O(V²E) | Dense graphs |
-| Unit capacity | O(E√V) | Unweighted |
-| Bipartite | O(E√V) | Matching |
-| Unit network | O(E√E) | Special structure |
-
-### Why O(V²E)?
+Edge list:
 
 ```
-- At most O(V) phases (shortest path increases each phase)
-- Each phase: O(VE) for blocking flow
-- Total: O(V²E)
-
-For unit capacity:
-- At most O(√V) phases
-- Total: O(E√V)
+s->A (3)
+s->B (2)
+A->B (1)
+A->t (2)
+B->t (3)
 ```
 
-## Algorithm Comparison
-
-| Algorithm | Time | Best For |
-|-----------|------|----------|
-| **Dinic** | O(V²E) | General, bipartite |
-| Ford-Fulkerson | O(E × maxflow) | Small flows |
-| Edmonds-Karp | O(VE²) | BFS-based |
-| Push-Relabel | O(V²E) or O(V³) | Dense graphs |
-| HLPP | O(V²√E) | Very large graphs |
-
-## Min-Cut Extraction
-
-After computing max flow, find min cut:
+### Phase 1 (BFS levels)
 
 ```
-1. Run BFS on residual graph from source
-2. Mark all reachable vertices
-3. Cut edges go from reachable to unreachable
-
-       s ─(10)─> A ─(0)─> t    (saturated)
-       │         ↑
-      (5)       (5)
-       ↓         │
-       B ─(10)─> C
-
-Reachable from s: {s, B, C}
-Cut edges: A→t (saturated)
-Cut capacity = max flow
+level[s]=0
+level[A]=1, level[B]=1
+level[t]=2 (reachable from both A and B)
 ```
 
-## Implementation Tips
+### Blocking flow
 
-- Store edges with reverse pointers for O(1) residual updates
-- Use `iter` array for dead-end pruning in DFS (Dinic optimization)
-- Level graph prevents infinite loops
-- Handle parallel edges by summing capacities
+- Path s->A->t, push 2 (A->t saturates)
+- Path s->B->t, push 2 (s->B saturates)
+- Path s->A->B->t, push 1 (A->B saturates)
 
+Total flow = 5
+
+No more paths in level graph. BFS again shows `t` unreachable.
+So max flow = 5.
+
+## 7. Why it works (max-flow min-cut)
+
+**Max-Flow Min-Cut Theorem**:
+
+```
+Maximum flow value = minimum cut capacity
+```
+
+A cut is a partition of vertices into `S` (reachable from source) and `T`.
+Cut capacity is the sum of capacities of edges from `S` to `T`.
+
+Dinic stops when no s-t path exists in the residual graph. At that point,
+`S` is exactly the set reachable from `s`. The edges from `S` to `T` are
+fully saturated, so the flow equals the cut capacity, which proves optimality.
+
+## 8. Implementation details in this package
+
+- Each edge stores a **reverse edge index** for O(1) residual updates.
+- BFS builds a `level[]` array.
+- DFS uses `iter[]` to avoid re-scanning dead ends (Dinic optimization).
+- All capacities and flows are `Int64`.
+
+## 9. Example usage (internal)
+
+This package does not export a public API. The examples below mirror the tests
+inside `lib/max_flow/max_flow.mbt`, so they are `mbt nocheck`.
+
+```mbt nocheck
+///|
+test "basic max flow" {
+  let mf = MaxFlow::new(4)
+  mf.add_edge(0, 1, 3L)
+  mf.add_edge(0, 2, 2L)
+  mf.add_edge(1, 3, 2L)
+  mf.add_edge(2, 3, 3L)
+  inspect(mf.max_flow(0, 3), content="4")
+}
+```
+
+```mbt nocheck
+///|
+test "bipartite matching" {
+  // Left: 1,2,3  Right: 4,5,6
+  let mf = MaxFlow::new(8)
+  mf.add_edge(0, 1, 1L)
+  mf.add_edge(0, 2, 1L)
+  mf.add_edge(0, 3, 1L)
+  mf.add_edge(1, 4, 1L)
+  mf.add_edge(1, 5, 1L)
+  mf.add_edge(2, 5, 1L)
+  mf.add_edge(2, 6, 1L)
+  mf.add_edge(3, 4, 1L)
+  mf.add_edge(4, 7, 1L)
+  mf.add_edge(5, 7, 1L)
+  mf.add_edge(6, 7, 1L)
+  inspect(mf.max_flow(0, 7), content="3")
+}
+```
+
+## 10. Common applications
+
+- **Bipartite matching** (unit capacities)
+- **Project selection** with profits and dependencies
+- **Image segmentation** (min-cut)
+- **Bandwidth / throughput analysis** in networks
+
+## 11. Complexity
+
+```
+General:        O(V^2 * E)
+Unit capacity:  O(E * sqrt(V))
+```
+
+Why the improvement with unit capacity:
+
+- Each BFS increases shortest path length
+- The number of phases is smaller when capacities are 1
+
+## 12. Pitfalls and tips
+
+- Forgetting to add reverse edges breaks the residual graph.
+- Using a DFS without iter[] can cause large slowdowns.
+- Undirected edges should be modeled as two directed edges.
+- Large graphs may still need push-relabel for speed.
+
+## 13. Summary
+
+Dinic's algorithm is the standard, reliable max-flow algorithm:
+
+- Simple to implement
+- Fast for most competitive programming inputs
+- Works for matching, min-cut, and many modeling tasks
