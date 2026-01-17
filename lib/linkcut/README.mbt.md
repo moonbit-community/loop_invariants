@@ -1,247 +1,171 @@
-# Link-Cut Tree
+# Link‑Cut Tree (Dynamic Forest)
 
-## Overview
+## What It Solves
 
-A **Link-Cut Tree** is a data structure for maintaining a forest of trees with
-efficient path queries and dynamic connectivity. It supports linking and cutting
-edges in O(log n) amortized time.
+A **Link‑Cut Tree (LCT)** maintains a **forest of dynamic trees** where edges
+can be added or removed while still supporting fast **path queries**.
 
-- **Operations**: O(log n) amortized
-- **Space**: O(n)
-- **Key Feature**: Dynamic tree structure (add/remove edges)
+You can do (amortized O(log n)):
 
-## The Key Insight
+- `link(u, v)` — connect two trees
+- `cut(u, v)` — remove an edge
+- `connected(u, v)` — check connectivity
+- `path_sum(u, v)` or other path aggregates
 
-```
-Decompose each tree into "preferred paths" stored as splay trees.
-The access(x) operation makes x-to-root the preferred path.
+Static trees can use HLD/LCA; LCT is designed for **dynamic** trees.
 
-Original tree:        Preferred path decomposition:
-       1                  Splay tree for path 1-2-4
-      /|\                        [2]
-     2 3 6                      /   \
-    /|                        [1]   [4]
-   4 5
-                          + separate splay trees for 3, 5, 6
-                            (connected via "path-parent" pointers)
+## Core Idea: Preferred Paths + Splay Trees
 
-After access(4):
-  The path 1-2-4 becomes preferred
-  All nodes on this path are in one splay tree
-```
-
-## Core Operations
+Each represented tree is decomposed into **preferred paths**.
+Each preferred path is stored as a **splay tree** (an auxiliary tree).
 
 ```
-access(x): Make path from root to x "preferred"
-  - Splay x to root of its auxiliary tree
-  - Walk up, re-linking preferred children
-  - After access, x is root of its splay tree
-
-link(x, y): Connect tree rooted at x under node y
-  - access(x), access(y)
-  - Make x a child of y
-
-cut(x): Remove edge from x to its parent
-  - access(x)
-  - Disconnect x from its left child (parent in real tree)
-
-find_root(x): Find root of x's tree
-  - access(x)
-  - Walk to leftmost node in splay tree
+Represented tree:            Preferred paths (one possible state):
+      1                               [1-2-4]
+     /|\                              [3]
+    2 3 6                             [5]
+   /|                                 [6]
+  4 5
 ```
 
-## Visual: Access Operation
+Preferred paths change as we access nodes. The key operation is `access`.
+
+## The Access Operation (Most Important)
+
+`access(x)` makes the path from **x to root** a single preferred path.
+That path becomes one splay tree with `x` at its root.
 
 ```
-Before access(5):
-  Real tree:           Preferred paths:
-       1                 [1]──[2]  (path 1-2)
-      / \
-     2   3               [3]  [5]  (separate)
-    / \
-   4   5                 [4]
+Before access(5):               After access(5):
+Preferred paths:                Preferred paths:
+  [1-2-4]                         [1-2-5]
+  [3]                             [3]
+  [5]                             [4]
 
-After access(5):
-  New preferred path: 1-2-5
-
-  Real tree:           Preferred paths:
-       1                 [1]──[2]──[5]  (path 1-2-5)
-      / \
-     2   3               [3]  [4]  (now separate)
-    / \
-   4   5
-
-  Node 4 is no longer on preferred path (was 1-2-4, now 1-2-5)
+Result: the path 1-2-5 is now the preferred path.
 ```
 
-## Visual: Link and Cut
+This is the building block for **link**, **cut**, **find_root**, and **lca**.
+
+## Visual: Splay Tree vs Represented Tree
+
+Splay rotations only rearrange the **auxiliary** tree; the represented tree
+(topology of edges) does not change.
 
 ```
-Link(6, 4):
-  Before:          After:
-    Tree A           Tree A
-       1                1
-      / \              / \
-     2   3            2   3
-    / \              / \
-   4   5            4   5
-                    |
-   Tree B           6
-     6              |
-     |              7
-     7
-
-Cut(4):
-  Before:          After:
-       1                1          4
-      / \              / \        / \
-     2   3            2   3      5   6
-    / \                          |
-   4   5                         7
-  / \
- 6   7
-  (cut edge 2-4)
+Represented tree:         Splay tree (preferred path order by depth)
+     1                                 1
+    / \                               / \
+   2   3                             2   3
 ```
 
-## Algorithm Walkthrough
+## Core Operations (High‑Level)
+
+### make_root(x)
+
+Reverse the preferred path so that `x` becomes the tree root.
 
 ```
-Operations on tree:
-       1
-      /|\
-     2 3 6
-    /|
-   4 5
-
-access(4):
-  1. Splay 4 in its auxiliary tree
-  2. Cut 4's right child (none)
-  3. Go to path-parent (2), splay 2
-  4. Set 4 as 2's right child, clear 2's old right
-  5. Go to path-parent (1), splay 1
-  6. Set 2 as 1's right child
-  7. No more path-parents → done
-
-  Auxiliary tree structure:
-         [1]
-           \
-           [2]
-             \
-             [4]
-
-  Now 4-2-1 is one splay tree!
-
-find_root(4):
-  1. access(4) → 4 is splay root
-  2. Go to leftmost: 4 → 2 → 1
-  3. Splay 1 to maintain balance
-  4. Return 1
+make_root(x):
+  access(x)
+  flip the path (lazy reversal)
 ```
 
-## Example Usage
+### link(u, v)
+
+Connect two trees by linking `u` under `v`:
+
+```
+make_root(u)
+access(v)
+attach u as a child of v
+```
+
+### cut(u, v)
+
+Remove the edge between u and v:
+
+```
+make_root(u)
+access(v)
+if v.left == u: cut it
+```
+
+### find_root(x)
+
+```
+access(x)
+walk to leftmost node in the splay tree (shallowest)
+```
+
+## Worked Example (Dynamic Connectivity)
+
+```
+Start with 5 isolated nodes: 0 1 2 3 4
+
+link(1, 0) -> 0-1
+link(2, 1) -> 0-1-2
+link(4, 3) -> 3-4
+
+connected(0, 2) = true
+connected(0, 3) = false
+
+cut(1, 2) -> separates {0,1} and {2}
+connected(0, 2) = false
+```
+
+## Example Usage (Conceptual)
+
+The Link‑Cut Tree in this package is internal, so the following is
+**illustrative** only.
 
 ```mbt nocheck
-// Create link-cut tree with n nodes
-let lct = LinkCutTree::new(n)
+///|
+let lct = LinkCutTree::new(5)
 
-// Initially all nodes are separate trees
-// Link node 2 under node 1
+lct.link(1, 0)
 lct.link(2, 1)
+inspect(lct.connected(0, 2), content="true")
 
-// Link node 3 under node 1
-lct.link(3, 1)
-
-// Now tree is: 1 with children 2, 3
-
-// Find root of node 2's tree
-lct.find_root(2)  // returns 1
-
-// Cut edge from 2 to its parent
-lct.cut(2)
-
-// Now 2 is separate from 1
-lct.find_root(2)  // returns 2
-
-// Check if connected
-lct.connected(1, 3)  // true
-lct.connected(1, 2)  // false
+lct.cut(1, 2)
+inspect(lct.connected(0, 2), content="false")
 ```
 
-## Common Applications
+## Path Aggregates (Optional)
 
-### 1. Dynamic Connectivity
-```
-Maintain connected components with edge insertions/deletions.
-Answer "are u and v connected?" queries.
-```
-
-### 2. Path Queries
-```
-With augmented splay trees, support:
-- Path sum/min/max
-- Path updates (add value to all nodes on path)
-```
-
-### 3. Dynamic MST
-```
-Maintain minimum spanning tree under edge updates.
-Use link-cut tree to find cycle when adding edge.
-```
-
-### 4. Network Flow
-```
-Dynamic trees in push-relabel max flow.
-Find bottleneck on augmenting paths.
-```
-
-## Complexity Analysis
-
-| Operation | Amortized Time |
-|-----------|---------------|
-| access(x) | O(log n) |
-| link(x, y) | O(log n) |
-| cut(x) | O(log n) |
-| find_root(x) | O(log n) |
-| connected(x, y) | O(log n) |
-| path_query(x, y) | O(log n) |
-
-## Link-Cut Tree vs Other Structures
-
-| Structure | Dynamic Edges | Path Queries | Subtree Queries |
-|-----------|--------------|--------------|-----------------|
-| **Link-Cut Tree** | Yes | O(log n) | Hard |
-| Euler Tour Tree | Yes | O(log n) | O(log n) |
-| Heavy-Light Decomp | No | O(log² n) | O(log n) |
-| Static Tree | No | O(log n) | O(log n) |
-
-**Choose Link-Cut Tree when**: You need dynamic edge operations with path queries.
-
-## Path Aggregates
+You can store values in nodes and aggregate them along the preferred path.
+Example: path sum from `u` to `v`.
 
 ```
-To support path sum/min/max, augment splay tree nodes:
-
-struct Node {
-  value: Int       // Value at this node
-  subtree_sum: Int // Sum of values in splay subtree
-  ...
-}
-
-When splaying, update subtree_sum:
-  node.subtree_sum = left.subtree_sum + right.subtree_sum + node.value
-
-Query path sum x to y:
-  1. make_root(x)  // Make x the root
-  2. access(y)     // Now path x-y is in one splay tree
-  3. Return root's subtree_sum
+make_root(u)
+access(v)
+answer = v.path_sum   // aggregate in v's splay tree
 ```
 
-## Implementation Notes
+This package maintains `path_sum` for each splay subtree.
 
-- Each node has: parent, left child, right child, path-parent
-- Path-parent connects splay tree roots to their real parents
-- Splay operations maintain the splay tree property
-- access() is the key operation - everything else builds on it
-- Be careful with edge cases: self-loops, disconnected nodes
+## Complexity (Amortized)
 
+| Operation | Time |
+|-----------|------|
+| access | O(log n) |
+| link | O(log n) |
+| cut | O(log n) |
+| find_root | O(log n) |
+| connected | O(log n) |
+| path query | O(log n) |
+
+## Common Pitfalls
+
+- **Amortized bounds**: worst‑case for a single op can be larger.
+- **Must reroot**: use `make_root(u)` before linking or cutting.
+- **Dynamic only**: LCT is overkill for static trees.
+- **Subtree queries**: LCT is designed for **path** queries, not subtree sums.
+
+## When to Use Link‑Cut Trees
+
+- You need to **add/remove edges** online.
+- You need **path queries** after each update.
+- You cannot rebuild heavy‑light or Euler tours each time.
+
+If your tree is static, HLD or LCA are simpler and often faster.

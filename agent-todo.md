@@ -153,8 +153,8 @@
 - [x] lib/line_segment_intersection
 - [x] lib/linear_recurrence
 - [x] lib/linear_sieve
-- [ ] lib/linkcut (in progress)
-- [ ] lib/longest_common_substring
+- [x] lib/linkcut
+- [ ] lib/longest_common_substring (in progress)
 - [ ] lib/lucas_theorem
 - [ ] lib/manacher
 - [ ] lib/math
