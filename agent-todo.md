@@ -21,6 +21,7 @@
 - [x] lib/challenge_bfs_grid
 - [x] lib/splay_tree
 - [x] lib/splay
+- [x] lib/skiplist
 
 ## Initial pass
 
