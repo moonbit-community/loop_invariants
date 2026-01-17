@@ -9,8 +9,8 @@
 - [x] lib/biconnected_components
 - [x] lib/binary_trie_xor
 - [x] lib/bipartite_matching
-- [ ] lib/block_cut_tree (in progress)
-- [ ] lib/bridges
+- [x] lib/block_cut_tree
+- [ ] lib/bridges (in progress)
 - [ ] lib/cartesian_tree
 - [ ] lib/centroid
 - [ ] lib/challenge_bfs_grid
