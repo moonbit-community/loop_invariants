@@ -73,7 +73,6 @@ fn make_bit(n : Int) -> Fenwick {
 }
 
 ///|
-#warnings("+missing_invariant+missing_reasoning")
 fn add_point(bit : Fenwick, idx : Int, delta : Int) -> Fenwick {
   for i = idx, tree = bit.root {
     if i >= bit.n {
@@ -97,7 +96,6 @@ fn add_point(bit : Fenwick, idx : Int, delta : Int) -> Fenwick {
 }
 
 ///|
-#warnings("+missing_invariant+missing_reasoning")
 fn prefix_sum(bit : Fenwick, idx : Int) -> Int {
   for i = idx, acc = 0 {
     if i <= 0 {
@@ -178,28 +176,14 @@ pub fn range_sum(rf : RangeFenwick, l : Int, r : Int) -> Int {
 
 ///|
 /// Apply range adds (l, r, delta) inclusive.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn apply_updates(
   rf : RangeFenwick,
   updates : ArrayView[(Int, Int, Int)],
 ) -> RangeFenwick {
-  let m = updates.length()
-  for i = 0, cur = rf {
-    if i >= m {
-      break cur
-    } else {
-      let (l, r, delta) = updates[i]
-      continue i + 1, range_add(cur, l, r, delta)
-    }
-  } where {
-    invariant: i >= 0 && i <= m,
-    reasoning: (
-      #|INVARIANT (Range add updates):
-      #|cur reflects the first i range adds.
-      #|MAINTENANCE:
-      #|Apply update i to both BITs.
-      #|TERMINATION:
-      #|At i = m, all updates are applied.
-    ),
+  let mut cur = rf
+  for update in updates {
+    let (l, r, delta) = update
+    cur = range_add(cur, l, r, delta)
   }
+  cur
 }
