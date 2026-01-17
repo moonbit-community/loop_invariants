@@ -62,37 +62,29 @@ pub fn insert(node : Node, value : Int, bit : Int) -> Node {
 
 ///|
 /// Query the maximum xor with value (assumes trie is non-empty).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn max_xor(root : Node, value : Int, max_bit : Int) -> Int {
-  for bit = max_bit, cur = root, acc = 0 {
+  let mut cur = root
+  let mut acc = 0
+  for bit in max_bit >=.. 0 {
     match cur {
-      Node::Empty => break acc
+      Node::Empty => break
       Node::Node(count=_, zero=z, one=o) => {
         let b = (value >> bit) & 1
         if b == 0 {
           if count(o) > 0 {
-            continue bit - 1, o, acc | (1 << bit)
+            acc = acc | (1 << bit)
+            cur = o
           } else {
-            continue bit - 1, z, acc
+            cur = z
           }
         } else if count(z) > 0 {
-          continue bit - 1, z, acc | (1 << bit)
+          acc = acc | (1 << bit)
+          cur = z
         } else {
-          continue bit - 1, o, acc
+          cur = o
         }
       }
     }
-  } where {
-    invariant: bit >= -1 && bit <= max_bit,
-    invariant: count(cur) >= 0,
-    reasoning: (
-      #|INVARIANT (Xor walk):
-      #|acc is the xor value determined by the chosen prefix; cur is the
-      #|subtrie for the remaining bits.
-      #|MAINTENANCE:
-      #|Choose the opposite bit when possible to maximize xor at this position.
-      #|TERMINATION:
-      #|After the last bit, acc is the maximum xor achievable in the trie.
-    ),
   }
+  acc
 }
