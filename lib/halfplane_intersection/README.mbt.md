@@ -1,128 +1,138 @@
-# Half-Plane Intersection
+# Half-Plane Intersection (Convex Feasible Region)
 
 ## Overview
 
-**Half-plane intersection** computes the convex polygon formed by the intersection
-of multiple half-planes. Each half-plane is defined by a directed line, keeping
-all points to the **left** of the direction.
+A **half-plane** is a line plus one chosen side. The intersection of multiple
+half-planes is always a **convex polygon** (or empty/unbounded). This package
+implements the classic O(n log n) deque algorithm to compute that polygon.
 
-- **Time**: O(n log n)
-- **Space**: O(n)
-- **Key Feature**: Finds feasible region of linear constraints
+- **Input**: half-planes as directed lines (keep points to the left).
+- **Output**: the convex polygon in counter-clockwise order, or `None` if
+  the region is empty or unbounded.
+- **Time**: O(n log n) for sorting + linear deque processing.
 
-## The Key Insight
+## How a Half-Plane Is Represented
 
-```
-Problem: Find region satisfying all linear constraints
-
-Naive: Intersect half-planes one by one → O(n²)
-
-Sorting insight:
-  Sort half-planes by angle (direction).
-  Process in angular order using a deque.
-
-  Key observation:
-    When processing half-plane H in sorted order,
-    H can only "cut off" the front or back of current polygon.
-    Never the middle! (due to convexity)
-
-  Deque maintains active half-planes:
-    - Remove from back if new line makes back intersection infeasible
-    - Remove from front if new line makes front intersection infeasible
-    - Finally, wrap around to trim front against back
-
-  Each half-plane enters and exits deque at most once → O(n)
-```
-
-## Visual: Half-Plane Representation
+We store a half-plane by a point `p` and a direction vector `v`:
 
 ```
-Half-plane from point A to point B:
-
-    feasible region
-    (left of A→B)
-          │
-    xxxxxx│
-    xxxxxx│
-    xxxxxx│A ─────────────► B
-    xxxxxx│    direction
-    xxxxxx│
-          │
-    infeasible region
-    (right of A→B)
-
-Half-plane keeps everything to the LEFT of direction vector.
+Line is: p + t * v
+Feasible side: points to the LEFT of v (looking from p)
 ```
 
-## Visual: Intersection Process
+That means a point `q` is inside if:
 
 ```
-Four half-planes forming a square:
-
-  H1: (0,0)→(1,0)  keeps y ≥ 0 (above)
-  H2: (1,0)→(1,1)  keeps x ≤ 1 (left of)
-  H3: (1,1)→(0,1)  keeps y ≤ 1 (below)
-  H4: (0,1)→(0,0)  keeps x ≥ 0 (right of)
-
-         H3
-    ←─────────
-    │         │
-    │ feasible│
- H4 │ region  │ H2
-    │         │
-    │         │
-    ─────────→
-         H1
-
-Intersection: unit square [0,1] × [0,1]
+cross(v, q - p) >= 0
 ```
 
-## The Algorithm
+### Visual Intuition
 
 ```
-halfplane_intersection(planes):
-  // Step 1: Sort by angle
-  sort planes by atan2(dy, dx)
+Directed line A -> B
 
-  // Step 2: Remove parallel duplicates (keep most restrictive)
-  remove_parallel_duplicates()
+      (left side is feasible)
 
-  // Step 3: Process with deque
-  deque = []
-
-  for each plane H:
-    // Remove from back while H invalidates back intersection
-    while |deque| ≥ 2 and
-          intersection(deque[-2], deque[-1]) is right of H:
-      deque.pop_back()
-
-    // Remove from front while H invalidates front intersection
-    while |deque| ≥ 2 and
-          intersection(deque[0], deque[1]) is right of H:
-      deque.pop_front()
-
-    deque.push_back(H)
-
-  // Step 4: Wrap-around trimming
-  while |deque| ≥ 3 and
-        intersection(deque[-2], deque[-1]) is right of deque[0]:
-    deque.pop_back()
-
-  while |deque| ≥ 3 and
-        intersection(deque[0], deque[1]) is right of deque[-1]:
-    deque.pop_front()
-
-  // Step 5: Build polygon from consecutive intersections
-  if |deque| < 3:
-    return None  // Empty or unbounded
-
-  polygon = []
-  for i in 0..|deque|-1:
-    polygon.append(intersection(deque[i], deque[i+1]))
-  polygon.append(intersection(deque[-1], deque[0]))
-
-  return polygon
+          feasible
+            ^
+            |
+xxxxxxxxxxxx|xxxxxxxxxxxx  (boundary line)
+            |    direction
+            A ----------> B
+            |
+          infeasible
 ```
+
+## From Inequalities to Half-Planes
+
+Many constraints are written as `ax + by + c >= 0`.
+
+To create a matching half-plane:
+
+1) Pick any point `p` on the line `ax + by + c = 0`
+2) Choose a direction vector `v` so that the left side satisfies the inequality
+
+Example: `x >= 0` (keep the right half-plane)
+
+```
+Line: x = 0
+Pick p = (0, 0)
+Direction v = (0, 1) (upwards)
+Left side of (0,1) is x >= 0
+```
+
+## The Key Insight (Why a Deque Works)
+
+Sort half-planes by their direction angle. When processed in that order,
+any new half-plane can only invalidate the **front** or **back** of the
+current candidate intersection, never the middle. That lets us maintain a
+deque of active half-planes in linear time.
+
+## Algorithm Outline (Readable Pseudocode)
+
+```
+1) Sort by angle
+2) Remove redundant parallel lines (keep the most restrictive)
+3) Process in angle order with a deque:
+   - pop back while the last intersection is outside the new half-plane
+   - pop front while the first intersection is outside the new half-plane
+   - push new half-plane
+4) Final trim: reconcile front/back
+5) If fewer than 3 lines remain -> empty or unbounded
+6) Intersect consecutive lines to get polygon vertices
+```
+
+## Worked Example 1: Unit Square
+
+Half-planes:
+
+```
+H1: y >= 0   (0,0)->(1,0)
+H2: x <= 1   (1,0)->(1,1)
+H3: y <= 1   (1,1)->(0,1)
+H4: x >= 0   (0,1)->(0,0)
+```
+
+Diagram:
+
+```
+      H3 (y <= 1)
+   <----------------
+   |                |
+   |   feasible     |
+H4 |    region      | H2
+   |   [0,1]^2      |
+   |                |
+   ----------------->
+        H1 (y >= 0)
+```
+
+After sorting by angle, the deque keeps all four lines. Intersect consecutive
+pairs to get the polygon:
+
+```
+(1,0), (1,1), (0,1), (0,0)
+```
+
+## Worked Example 2: Triangle With a Bounding Box
+
+Suppose you have only these three constraints:
+
+```
+y >= 0
+x + y <= 2
+x >= 0
+```
+
+This region is unbounded (it extends upward). The algorithm returns `None`
+unless you add a bounding box, such as:
+
+```
+-1000 <= x <= 1000
+-1000 <= y <= 1000
+```
+
+Now the intersection is bounded, and the true polygon appears inside the box.
 
 ## Example Usage
 
@@ -174,126 +184,45 @@ test "halfplane triangle" {
 }
 ```
 
-## Algorithm Walkthrough
-
-```
-Input: 4 half-planes forming a square
-
-H1: (0,0)→(1,0), angle = 0°
-H2: (1,0)→(1,1), angle = 90°
-H3: (1,1)→(0,1), angle = 180°
-H4: (0,1)→(0,0), angle = 270°
-
-After sorting by angle: [H1, H2, H3, H4]
-
-Processing:
-  Add H1: deque = [H1]
-  Add H2: deque = [H1, H2]
-  Add H3:
-    Check back: intersection(H1,H2) = (1,0), left of H3 ✓
-    deque = [H1, H2, H3]
-  Add H4:
-    Check back: intersection(H2,H3) = (1,1), left of H4 ✓
-    deque = [H1, H2, H3, H4]
-
-Wrap-around:
-  Check: intersection(H3,H4) = (0,1), left of H1 ✓
-  Check: intersection(H1,H2) = (1,0), left of H4 ✓
-  No trimming needed
-
-Build polygon:
-  intersection(H1,H2) = (1, 0)
-  intersection(H2,H3) = (1, 1)
-  intersection(H3,H4) = (0, 1)
-  intersection(H4,H1) = (0, 0)
-
-Result: [(1,0), (1,1), (0,1), (0,0)] - unit square ✓
-```
-
 ## Empty and Unbounded Cases
 
 ```
-Empty intersection:
-  H1: y ≥ 1 (above y=1)
-  H2: y ≤ 0 (below y=0)
+Empty:
+  y >= 1
+  y <= 0
+  -> no feasible point
 
-  No point satisfies both → returns None
-
-Unbounded intersection:
-  H1: x ≥ 0
-  H2: y ≥ 0
-
-  First quadrant is unbounded → returns None
-  (Only bounded regions form valid polygons)
-
-To make bounded:
-  Add "bounding box" half-planes at large distance
+Unbounded:
+  x >= 0
+  y >= 0
+  -> infinite quadrant (returns None)
 ```
 
-## Common Applications
-
-### 1. Linear Programming
-```
-Feasible region of linear constraints.
-Intersection is the set of valid solutions.
-```
-
-### 2. Voronoi Diagrams
-```
-Each Voronoi cell is intersection of half-planes.
-Cell for site p: all points closer to p than others.
-```
-
-### 3. Visibility Problems
-```
-What region can see point P?
-Each obstacle edge creates a blocking half-plane.
-```
-
-### 4. Robot Motion Planning
-```
-Configuration space obstacles.
-Robot must stay in intersection of constraints.
-```
-
-## Complexity Analysis
-
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Sort by angle | O(n log n) | Dominates complexity |
-| Remove duplicates | O(n) | Linear scan |
-| Deque processing | O(n) | Each plane enters/exits once |
-| Build polygon | O(n) | One intersection per plane |
-| **Total** | **O(n log n)** | Sorting is bottleneck |
-
-## Requirements and Edge Cases
+To force a bounded result, add a large bounding box:
 
 ```
-Requirements:
-  - Lines must not be degenerate (zero direction)
-  - Intersection must be bounded for polygon output
-  - At least 3 non-parallel half-planes for bounded region
-
-Edge cases handled:
-  - Parallel lines: keep most restrictive
-  - Nearly parallel: numerical stability issues
-  - Unbounded region: returns None
-  - Empty region: returns None
+-1e6 <= x <= 1e6
+-1e6 <= y <= 1e6
 ```
-
-## Half-Plane vs Other Representations
-
-| Representation | Use Case |
-|----------------|----------|
-| Point + Direction | This package |
-| ax + by + c ≤ 0 | Linear programming |
-| Normal vector | Physics simulations |
 
 ## Implementation Notes
 
-- Use atan2 for correct angle computation
-- Handle parallel half-planes by keeping tighter one
-- Numerical precision: use epsilon comparisons
-- Result polygon is in CCW order
-- Deque allows efficient front/back operations
+- Parallel half-planes are reduced: we keep the most restrictive one.
+- `EPS` is used to guard floating-point comparisons.
+- Output polygon is in counter-clockwise order.
+- The algorithm assumes the intersection, if non-empty, is bounded.
 
+## Common Applications
+
+- Linear programming feasibility (2D)
+- Clipping a convex polygon by many constraints
+- Visibility and shadow regions in computational geometry
+- Safe operating envelopes for robotic motion
+
+## Complexity
+
+| Step | Time |
+|------|------|
+| Sort by angle | O(n log n) |
+| Deque processing | O(n) |
+| Build polygon | O(n) |

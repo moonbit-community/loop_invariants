@@ -235,20 +235,10 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
     return None
   }
   let result : Array[Point] = []
-  for i = 0; i < m; i = i + 1 {
+  for i in 0..<m {
     let l1 = deque[head + i]
     let l2 = deque[head + (i + 1) % m]
     result.push(line_intersection(l1, l2))
-  } where {
-    invariant: i >= 0 && i <= m,
-    reasoning: (
-      #|INVARIANT (polygon build):
-      #|result contains intersections of consecutive lines for indices [0..i).
-      #|MAINTENANCE:
-      #|Intersect line i with line i+1 and append the vertex.
-      #|TERMINATION:
-      #|At i = m, result is the full polygon in CCW order.
-    ),
   }
   Some(result)
 }

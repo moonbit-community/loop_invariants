@@ -140,8 +140,8 @@
 - [x] lib/gauss
 - [x] lib/gomory_hu_tree
 - [x] lib/graph
-- [ ] lib/halfplane_intersection (in progress)
-- [ ] lib/hld
+- [x] lib/halfplane_intersection
+- [ ] lib/hld (in progress)
 - [ ] lib/implicit_treap
 - [ ] lib/johnson_all_pairs
 - [ ] lib/k_shortest_paths_yen
