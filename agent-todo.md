@@ -160,7 +160,7 @@
 - [x] lib/math
 - [x] lib/matrix_exp
 - [x] lib/max_flow
-- [ ] lib/mcmf
+- [x] lib/mcmf
 - [ ] lib/min_cost_flow_potentials
 - [ ] lib/min_cut_st
 - [ ] lib/minimum_cyclic_rotation

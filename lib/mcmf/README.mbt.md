@@ -1,211 +1,211 @@
 # Minimum Cost Maximum Flow (MCMF)
 
-## Overview
+## 1. Problem statement
 
-**Minimum Cost Maximum Flow** finds a maximum flow that minimizes total cost.
-Each edge has both capacity and cost per unit of flow. Among all maximum flows,
-MCMF finds the one with minimum total cost.
+You have a directed graph with **capacity** and **cost** on every edge.
+You want to send as much flow as possible from source `s` to sink `t` and
+**minimize the total cost** of that maximum flow.
 
-- **Time**: O(V × E × flow) with SPFA, O(V × E × flow × log V) with Dijkstra
-- **Space**: O(V + E)
+Flow rules:
 
-## The Problem
+- `0 <= flow(e) <= capacity(e)`
+- For every node except `s` and `t`, inflow = outflow
+
+## 2. Why this is harder than max flow
+
+In max flow, any augmenting path is fine. In MCMF, **the path must be cheapest**
+per unit flow, otherwise the total cost is not minimal.
+
+So the algorithm repeatedly finds a **minimum-cost augmenting path** in the
+residual graph and pushes as much as possible along it.
+
+## 3. Residual graph and negative costs
+
+For each edge `u -> v` with capacity `c` and current flow `f`:
+
+- Forward residual: `c - f` with cost `+w`
+- Backward residual: `f` with cost `-w`
+
+Diagram:
 
 ```
-Each edge has: capacity and cost per unit flow.
-Goal: Send maximum flow from source to sink with minimum total cost.
+Original:  u --(cap=c, cost=w)--> v
+Residual:  u --(cap=c-f, cost=+w)--> v
+           v --(cap=f,   cost=-w)--> u
+```
+
+The backward edge lets you **undo** expensive flow later. This is why shortest
+path must handle negative edges (SPFA is used here).
+
+## 4. Algorithm: successive shortest augmenting paths
+
+```
+flow = 0, cost = 0
+while shortest path s->t exists (by cost) in residual graph:
+  bottleneck = min residual capacity on that path
+  push bottleneck flow along the path
+  flow += bottleneck
+  cost += bottleneck * path_cost
+return (flow, cost)
+```
+
+This greedy-by-cost strategy is correct for each flow value, and by repeating
+it until no path exists, we get **min-cost max-flow**.
+
+## 5. A small worked example
 
 Graph:
-    capacity=3, cost=2
-  S ────────────────→ A ─────────────→ T
-  │                   │   cap=2, cost=1
-  │ cap=2             │ cap=1
-  │ cost=1            │ cost=3
-  ↓                   ↓
-  B ─────────────────→
-      cap=3, cost=2
-
-Maximum flow = 4, but costs differ by path:
-  S→A→T: 2 units × (2+1) = 6
-  S→B→T: 2 units × (1+2) = 6
-Total minimum cost for max flow = 12
-```
-
-## The Key Insight
 
 ```
-Repeatedly find shortest (minimum cost) augmenting path.
-"Shortest" means minimum cost per unit flow.
-
-Why it works:
-- Each shortest path augmentation is optimal for current flow value
-- Building up flow greedily by cost gives optimal total cost
-
-Unlike max flow where any augmenting path works,
-MCMF requires finding minimum cost paths!
+0 -> 1 (cap 2, cost 1)
+0 -> 2 (cap 1, cost 2)
+1 -> 2 (cap 1, cost 1)
+1 -> 3 (cap 1, cost 3)
+2 -> 3 (cap 2, cost 1)
 ```
 
-## Algorithm: Successive Shortest Paths
-
 ```
-1. Initialize flow = 0, cost = 0
-2. While shortest path from s to t exists in residual graph:
-   a. Find path using SPFA/Bellman-Ford (handles negative costs)
-   b. Find bottleneck (minimum residual capacity on path)
-   c. Augment flow along path
-   d. Add (path_cost × bottleneck) to total cost
-3. Return (flow, cost)
+        1        3
+    0 ----> 1 ------> 3
+    |        \       ^
+ 2  |         \1     |1
+    v          v     |
+    2 ---------> 3
+         1
 ```
 
-## Algorithm Walkthrough
+Cheapest augmenting paths are found in cost order until no more paths exist.
+The tests in this package confirm the expected flow and a reasonable cost.
 
-```
-Graph:
-  S →(cap=3, cost=1)→ A →(cap=2, cost=2)→ T
-  S →(cap=2, cost=2)→ B →(cap=3, cost=1)→ T
+## 6. Public API in this package
 
-Step 1: Find shortest path
-  S→A→T: cost = 1 + 2 = 3 per unit
-  S→B→T: cost = 2 + 1 = 3 per unit
-  Both equal, pick S→A→T
+The public surface includes:
 
-  Augment 2 units (limited by A→T)
-  Flow = 2, Cost = 2 × 3 = 6
+- `MinCostMaxFlow::new(n)`
+- `add_edge(u, v, cap, cost)`
+- `compute(source, sink)` -> `(flow, cost)`
+- `compute_with_limit(source, sink, max_flow)` -> `(flow, cost)`
+- `solve_assignment(cost_matrix)` for assignment problems
 
-Step 2: Find shortest path in residual
-  S→A: capacity 1 left, cost 1
-  A→T: saturated (but reverse edge exists)
-  S→B→T: cost = 3
+## 7. Example: single edge
 
-  Path S→B→T with cost 3
-  Augment 2 units (limited by S→B)
-  Flow = 4, Cost = 6 + 2 × 3 = 12
-
-Step 3: No more augmenting paths
-  Max flow = 4, Min cost = 12
+```mbt check
+///|
+test "mcmf simple edge" {
+  let mcmf = @mcmf.MinCostMaxFlow::new(2)
+  mcmf.add_edge(0, 1, 5L, 2L)
+  let (flow, cost) = mcmf.compute(0, 1)
+  inspect(flow, content="5")
+  inspect(cost, content="10")
+}
 ```
 
-## Visual: Residual Graph with Costs
+## 8. Example: diamond network
 
 ```
-Original edge: u →(cap=c, cost=w)→ v
-
-Residual graph:
-  Forward:  u →(cap=c-f, cost=w)→ v    (remaining capacity)
-  Backward: v →(cap=f, cost=-w)→ u     (can "undo" flow)
-
-The negative cost on backward edge is crucial!
-It allows "undoing" expensive flow for cheaper alternatives.
+0 -> 1 (cap 3, cost 1)
+0 -> 2 (cap 3, cost 2)
+1 -> 3 (cap 3, cost 1)
+2 -> 3 (cap 3, cost 1)
 ```
 
-## Example Usage
-
-```mbt nocheck
-// Create MCMF graph
-let mcmf = MCMF::new(n)
-
-// Add edges: (from, to, capacity, cost)
-mcmf.add_edge(0, 1, 3, 1)  // S to A
-mcmf.add_edge(0, 2, 2, 2)  // S to B
-mcmf.add_edge(1, 3, 2, 2)  // A to T
-mcmf.add_edge(2, 3, 3, 1)  // B to T
-
-// Compute min cost max flow
-let (flow, cost) = mcmf.min_cost_max_flow(source=0, sink=3)
-// flow = 4, cost = 12
+```
+    0
+   / \
+ 1/   \2
+ /     \
+1       2
+ \     /
+  \1  /1
+    3
 ```
 
-## Common Applications
+All 6 units can pass, but the top path is cheaper:
 
-### 1. Assignment Problem
-```
-Assign n workers to n jobs with costs.
-Source → Workers → Jobs → Sink
-All capacities = 1, edge costs = assignment costs.
-Min cost max flow = optimal assignment.
-```
+- 3 units through 0-1-3 (cost 2 per unit)
+- 3 units through 0-2-3 (cost 3 per unit)
 
-### 2. Transportation Problem
-```
-Ship goods from factories to warehouses.
-Edges have shipping costs and capacity limits.
-Minimize total shipping cost.
-```
+Total cost = 3*2 + 3*3 = 15.
 
-### 3. Project Scheduling
-```
-Schedule tasks with resource constraints.
-Model as flow network with time/resource costs.
+```mbt check
+///|
+test "mcmf diamond" {
+  let mcmf = @mcmf.MinCostMaxFlow::new(4)
+  mcmf.add_edge(0, 1, 3L, 1L)
+  mcmf.add_edge(0, 2, 3L, 2L)
+  mcmf.add_edge(1, 3, 3L, 1L)
+  mcmf.add_edge(2, 3, 3L, 1L)
+  let (flow, cost) = mcmf.compute(0, 3)
+  inspect(flow, content="6")
+  inspect(cost, content="15")
+}
 ```
 
-### 4. Network Design
-```
-Build network infrastructure with costs.
-Maximize connectivity while minimizing construction cost.
-```
+## 9. Example: flow limit
 
-## Handling Negative Costs
+If you only need `k` units of flow, use `compute_with_limit`:
 
-```
-Bellman-Ford/SPFA: Handle negative edges directly
-Dijkstra with potentials: Johnson's technique
-
-Potentials (π):
-  Reduce costs: new_cost(u,v) = cost(u,v) + π[u] - π[v]
-  All reduced costs become non-negative!
-  After each shortest path, update potentials.
+```mbt check
+///|
+test "mcmf limited flow" {
+  let mcmf = @mcmf.MinCostMaxFlow::new(2)
+  mcmf.add_edge(0, 1, 10L, 1L)
+  let (flow, cost) = mcmf.compute_with_limit(0, 1, 5L)
+  inspect(flow, content="5")
+  inspect(cost, content="5")
+}
 ```
 
-## Complexity Analysis
+## 10. Assignment problem
 
-| Method | Time |
-|--------|------|
-| SPFA-based | O(V × E × max_flow) |
-| Dijkstra + potentials | O(V × E × max_flow × log V) |
-| Capacity scaling | O(E² log V log U) |
-
-## MCMF vs Max Flow
-
-| Aspect | Max Flow | MCMF |
-|--------|----------|------|
-| Objective | Maximize flow | Maximize flow, minimize cost |
-| Path selection | Any augmenting | Shortest (min cost) |
-| Algorithm | Dinic, Push-Relabel | SPFA/Dijkstra + augment |
-| Complexity | O(V²E) | O(VE × flow) |
-
-**Choose MCMF when**: You need to optimize cost among maximum flows.
-
-## Min Cost Flow (Specific Amount)
+`solve_assignment` converts a cost matrix into a flow network and solves the
+minimum cost perfect matching.
 
 ```
-Sometimes you want exactly k units of flow, not maximum.
-
-Modify algorithm:
-  - Stop when flow reaches k
-  - Or: add edge from T to S with capacity k, cost 0
-        then find min cost circulation
+Workers: rows
+Jobs:    columns
 ```
 
-## Negative Cycles
+Example:
 
 ```
-If residual graph has negative cost cycle:
-  - Can reduce cost by pushing flow around cycle
-  - Keep canceling negative cycles until none remain
+Costs:
+  [1, 3]
+  [2, 2]
 
-Cycle-canceling algorithm:
-  1. Find any feasible flow (or max flow)
-  2. While negative cycle exists:
-     - Augment flow around cycle
-  3. Result is min cost flow
+Best assignment: 0->0 (1), 1->1 (2) => total = 3
 ```
 
-## Implementation Notes
+```mbt check
+///|
+test "assignment example" {
+  let cost : Array[Array[Int64]] = [[1L, 3L], [2L, 2L]]
+  inspect(@mcmf.solve_assignment(cost), content="3")
+}
+```
 
-- Store edges with reverse pointers for residual updates
-- SPFA works for negative costs but can be slow
-- Dijkstra with potentials is faster but needs careful initialization
-- Watch for integer overflow in cost calculation
-- For large flows, consider capacity scaling
-- Edge (u, v, cap, cost) creates reverse (v, u, 0, -cost)
+## 11. Complexity
 
+Let `F` be the max flow value:
+
+```
+SPFA per path:     O(V * E) worst case
+Total:            O(V * E * F)
+```
+
+SPFA is usually fast in practice, and it handles negative edges from the
+residual graph correctly. For faster asymptotic bounds, Dijkstra with
+potentials (Johnson) is a common upgrade.
+
+## 12. Common pitfalls
+
+- Forgetting reverse edges (breaks residual correctness)
+- Overflow in `cost += flow * dist[sink]`
+- Negative cycles in residual graph (rare in standard MCMF usage)
+- Not resetting `dist`/`prev` arrays before each shortest path
+
+## 13. Summary
+
+MCMF finds the **cheapest way** to push the **maximum amount** of flow.
+This package uses the classic **successive shortest augmenting path** method
+with SPFA, and exposes a simple API for building graphs and computing results.
