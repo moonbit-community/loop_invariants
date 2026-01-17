@@ -1,246 +1,307 @@
-# Implicit Treap
+# Implicit Treap (Sequence Treap)
 
-## Overview
+## What This Data Structure Solves
 
-An **Implicit Treap** (or Treap with Implicit Keys) is a balanced BST where
-positions are computed from subtree sizes rather than stored keys. This enables
-efficient sequence operations like insert-at-position, delete, reverse, and
-range queries—all in O(log n) expected time.
+An **implicit treap** stores a sequence (like an array), but supports
+**insert/delete/reverse/query by range** in **O(log n)** expected time.
 
-- **Operations**: O(log n) expected
-- **Space**: O(n)
+Think of it as:
 
-## The Key Insight
+- **A binary search tree** whose key is the *position* (index)
+- **A heap** ordered by a random priority
 
-Instead of storing explicit keys, compute position dynamically:
+So you get both:
 
-```
-position(node) = size(left_subtree)
+- the **order** of an array (in-order traversal)
+- the **balance** of a randomized BST
 
-        [B, pri=7]
-        /        \
-   [A, pri=3]  [C, pri=5]
+## Mental Model
 
-Positions computed by in-order traversal:
-  A: position 0 (0 nodes to left)
-  B: position 1 (1 node to left = A)
-  C: position 2 (2 nodes to left = A, B)
-
-Array representation: [A, B, C]
-```
-
-## Split and Merge: The Core Operations
-
-### Split by Position
-
-Split treap at position k into `[0,k)` and `[k,n)`:
+### 1) Two Properties at Once
 
 ```
-Split([A,B,C,D,E], k=2):
+BST by position (in-order traversal):
+  left subtree  ->  node  ->  right subtree
 
-Original:           After split:
-    [C]              [B]      [D]
-   /   \             /        /
-  [B]  [D]    →    [A]      [C]   [E]
-  /       \
-[A]       [E]
-
-Left: [A, B]        Right: [C, D, E]
-
-Algorithm:
-- If k ≤ left_size: recursively split left subtree
-- If k > left_size: recursively split right subtree
-- Adjust child pointers accordingly
+Heap by priority:
+  parent.priority > child.priority
 ```
 
-### Merge Two Treaps
+Because priorities are random, the height is **O(log n)** on average.
 
-Merge left and right treaps (where max(left) < min(right)):
+### 2) Implicit Keys (No Stored Indices)
+
+Positions are computed from subtree sizes.
 
 ```
-Merge([A,B], [C,D,E]):
-
-Decision based on priorities (heap property):
-- Higher priority becomes root
-- Recursively merge other subtree
-
-If priority(B) > priority(D):
-    B.right = merge(B.right, [C,D,E])
-Else:
-    D.left = merge([A,B], D.left)
+position(node) = size(left subtree) + positions skipped above
 ```
 
-## Building Complex Operations from Split/Merge
+Example (in-order sequence [A, B, C]):
+
+```
+      [B]
+     /   \
+   [A]   [C]
+
+size(left of B) = 1
+=> B is at position 1
+```
+
+This is why insert/delete at any position are fast: you do not store or update
+explicit indices.
+
+## Core Operations: Split and Merge
+
+Everything builds on **split** and **merge**.
+
+### Split: `split(root, k)` -> `[0..k)`, `[k..n)`
+
+Split by position, not by value.
+
+Example sequence: `[10, 20, 30, 40, 50]`, split at `k = 2`
+
+```
+Before (in-order): [10, 20, 30, 40, 50]
+
+After:
+Left  = [10, 20]
+Right = [30, 40, 50]
+```
+
+What happens at a node?
+
+```
+Let left_size = size(left child)
+
+if k <= left_size:
+  - split the left child
+  - node goes to RIGHT part
+else:
+  - split the right child with k - left_size - 1
+  - node goes to LEFT part
+```
+
+### Merge: `merge(left, right)` -> combined
+
+Precondition: all positions in `left` come before all positions in `right`.
+
+Decision rule:
+
+```
+if left.priority > right.priority:
+  left becomes root
+  left.right = merge(left.right, right)
+else:
+  right becomes root
+  right.left = merge(left, right.left)
+```
+
+This preserves heap order and keeps the tree balanced in expectation.
+
+## Building Operations From Split/Merge
 
 ### Insert at Position
 
+Insert `X` at position `k`:
+
 ```
-Insert(X at position 2):
+1) (A, B) = split(root, k)
+2) merge(A, X)
+3) merge(result, B)
+```
 
-1. Split at 2:     [A,B] | [C,D,E]
-2. Merge left+X:   [A,B,X]
-3. Merge with right: [A,B,X,C,D,E]
+Diagram (insert C at position 2 into [A, B, D, E]):
 
-        Split              Merge             Merge
-[A,B,C,D,E] → [A,B] [C,D,E] → [A,B,X] [C,D,E] → [A,B,X,C,D,E]
+```
+[A,B,D,E] -> split(2) -> [A,B] + [D,E]
+merge([A,B], C) -> [A,B,C]
+merge([A,B,C], [D,E]) -> [A,B,C,D,E]
 ```
 
 ### Delete at Position
 
+Delete position `k`:
+
 ```
-Delete(position 2):
-
-1. Split at 2:     [A,B] | [C,D,E]
-2. Split right at 1: [C] | [D,E]
-3. Merge left+right: [A,B,D,E]
-
-[A,B,C,D,E] → [A,B] [C] [D,E] → [A,B,D,E]
-               ↑    └─ discard
+1) (A, B) = split(root, k)
+2) (mid, C) = split(B, 1)
+3) discard mid
+4) root = merge(A, C)
 ```
 
 ### Range Reverse (Lazy Propagation)
 
-```
-Reverse([1,4)):  [A,B,C,D,E] → [A,D,C,B,E]
-                    ↑ ↑ ↑          ↑ ↑ ↑
-
-1. Split at 1:     [A] | [B,C,D,E]
-2. Split right at 3: [B,C,D] | [E]
-3. Mark middle as "reversed" (lazy flag)
-4. Merge: [A] + reversed[B,C,D] + [E]
-
-When accessing reversed subtree:
-- Swap left and right children
-- Propagate reversal flag to children
-```
-
-## Aggregate Queries with Subtree Information
+Reverse `[l, r)` without touching every node:
 
 ```
-Each node maintains:
-  - size: for implicit key computation
-  - sum: for range sum queries
-  - min/max: for range min/max queries
+1) (A, B) = split(root, l)
+2) (mid, C) = split(B, r - l)
+3) toggle mid.rev flag
+4) root = merge(A, merge(mid, C))
+```
 
-Range query [l, r):
-1. Split at l: left | middle+right
-2. Split middle+right at r-l: middle | right
-3. Read middle.aggregate
-4. Merge back: left + middle + right
+When a node with `rev = true` is visited, swap its children and flip the flag
+on each child. This makes reverse cost **O(log n)**.
 
-         [B, sum=15]
-        /           \
-   [A, sum=5]   [C, sum=3]
-      ↓             ↓
-    val=5         val=3
-                    ↓
-              node B val = 15-5-3 = 7
+## Lazy Reversal: Visual Example
+
+Sequence: `[1, 2, 3, 4, 5]`
+Reverse `[1, 4)` (elements 2,3,4)
+
+```
+Split:
+A = [1]
+mid = [2, 3, 4]
+C = [5]
+
+Toggle mid.rev
+
+Merge back:
+[1] + reversed([2,3,4]) + [5]
+=> [1, 4, 3, 2, 5]
+```
+
+You never move all nodes. The reversal is a flag.
+
+## Range Queries via Split
+
+Range sum on `[l, r)`:
+
+```
+1) (A, B) = split(root, l)
+2) (mid, C) = split(B, r - l)
+3) answer = mid.sum
+4) root = merge(A, merge(mid, C))
+```
+
+Same pattern for `min` and `max`.
+
+## Aggregates Stored Per Node
+
+Each node stores:
+
+- `size` for implicit positions
+- `sum`, `min_val`, `max_val` for range queries
+
+Update rule:
+
+```
+size  = size(left) + size(right) + 1
+sum   = sum(left) + sum(right) + val
+min   = min(min(left), val, min(right))
+max   = max(max(left), val, max(right))
+```
+
+Always call `update(node)` after structural changes.
+
+## Worked Example (Insert + Reverse + Sum)
+
+Start with `[10, 20, 30, 40]`
+
+1) Insert `25` at position `2`:
+
+```
+[10, 20, 30, 40] -> [10, 20, 25, 30, 40]
+```
+
+2) Reverse range `[1, 4)`:
+
+```
+[10, 20, 25, 30, 40]
+  reverse indices 1..3
+=> [10, 30, 25, 20, 40]
+```
+
+3) Range sum `[0, 3)`:
+
+```
+10 + 30 + 25 = 65
 ```
 
 ## Example Usage
 
 ```mbt check
 ///|
-test "implicit treap operations" {
-  // Implicit treap enables array-like operations with O(log n) time:
-  // - Insert at any position
-  // - Delete at any position
-  // - Reverse any range
-  // - Query sum/min/max of any range
+test "implicit treap demo" {
+  let treap = @implicit_treap.ImplicitTreap::new()
+  treap.push_back(10L)
+  treap.push_back(20L)
+  treap.push_back(30L)
+  treap.push_back(40L)
 
-  // Example sequence: [1, 2, 3, 4, 5]
-  // After reverse([1,4)): [1, 4, 3, 2, 5]
-  // Range sum [0,3): 1+4+3 = 8
+  // Insert 25 at index 2
+  treap.insert(2, 25L)
+  inspect(treap.to_array(), content="[10, 20, 25, 30, 40]")
 
-  inspect(true, content="true")
+  // Reverse [1, 4)
+  treap.reverse(1, 4)
+  inspect(treap.to_array(), content="[10, 30, 25, 20, 40]")
+
+  // Range sum [0, 3)
+  inspect(treap.range_sum(0, 3), content="65")
+}
+```
+
+```mbt check
+///|
+test "implicit treap split merge pattern" {
+  let treap = @implicit_treap.ImplicitTreap::from_array([1L, 2L, 3L, 4L, 5L])
+  // Cut out [2, 3, 4] and move it to front:
+  // [1, 2, 3, 4, 5] -> [2, 3, 4, 1, 5]
+  let (a, b) = treap.split(treap.root, 1)
+  let (mid, c) = treap.split(b, 3)
+  treap.root = treap.merge(mid, treap.merge(a, c))
+  inspect(treap.to_array(), content="[2, 3, 4, 1, 5]")
 }
 ```
 
 ## Common Applications
 
-### 1. Rope Data Structure
-```
-Efficient string/sequence editing:
-- Insert substring: split + merge
-- Delete substring: split + discard + merge
-- Concatenate: single merge
-- Access char at i: O(log n)
-```
+### 1) Rope (Text Editing)
 
-### 2. Dynamic Array with Range Operations
-```
-Supports operations that std::vector cannot do efficiently:
-- Insert/delete at arbitrary position: O(log n) vs O(n)
-- Reverse range: O(log n) vs O(n)
-- Cyclic shift: O(log n) via split+merge
-```
+Split at cursor, insert/delete chunks, and merge back.
+Large strings become fast to edit.
 
-### 3. Maintaining Sorted Sequence with Inserts
-```
-Insert while maintaining order:
-- Binary search for position: O(log n)
-- Insert at position: O(log n)
-- Total: O(log n) vs O(n) for array
-```
+### 2) Dynamic Arrays with Reversal
 
-### 4. Range Increment/Assignment
-```
-With lazy propagation:
-- Add x to range [l, r): O(log n)
-- Set range [l, r) to x: O(log n)
-- Query range sum/min/max: O(log n)
-```
+Reverse any interval in O(log n) instead of O(n).
 
-## Complexity Analysis
+### 3) Sequence Cut and Paste
 
-| Operation | Time (Expected) |
-|-----------|-----------------|
-| Insert at position | O(log n) |
-| Delete at position | O(log n) |
-| Access at position | O(log n) |
+Cut `[l, r)` and reinsert elsewhere using two splits and one merge.
+
+### 4) Range Aggregates
+
+Maintain sum/min/max of any range under updates and reversals.
+
+## Common Pitfalls
+
+- **Forgetting push_down** before traversing children.
+- **Forgetting update** after changing children.
+- **Using invalid indices** (check `0 <= pos < size`).
+- **Not handling empty ranges** (split results can be -1).
+- **Assuming worst-case balance**: treap is *expected* O(log n), not worst-case.
+
+## Complexity
+
+| Operation | Expected Time |
+|----------|----------------|
+| Split / Merge | O(log n) |
+| Insert / Delete | O(log n) |
+| Reverse range | O(log n) |
 | Range sum/min/max | O(log n) |
-| Range reverse | O(log n) |
-| Range update (lazy) | O(log n) |
-| Build from array | O(n log n)* |
+| Build by inserting | O(n log n) |
 
-*Can be O(n) with careful construction.
+## When to Choose Implicit Treap
 
-## Implicit Treap vs Other Structures
+Use it when you need **array-like order** plus **fast inserts and range ops**.
+If you only need static range sums, a Fenwick or segment tree is simpler.
 
-| Structure | Insert | Delete | Range Query | Range Reverse |
-|-----------|--------|--------|-------------|---------------|
-| **Implicit Treap** | O(log n) | O(log n) | O(log n) | O(log n) |
-| Array | O(n) | O(n) | O(n) or O(1)* | O(n) |
-| Segment Tree | O(n) | O(n) | O(log n) | N/A |
-| Splay Tree | O(log n)** | O(log n)** | O(log n)** | O(log n)** |
+## Implementation Notes (This Package)
 
-*With prefix sums. **Amortized.
-
-**Choose Implicit Treap when**: You need dynamic sequence with range operations.
-
-## Lazy Propagation Pattern
-
-```
-push_down(node):
-  if node.reversed:
-    swap(node.left, node.right)
-    if node.left: node.left.reversed ^= true
-    if node.right: node.right.reversed ^= true
-    node.reversed = false
-
-update(node):
-  node.size = size(left) + size(right) + 1
-  node.sum = sum(left) + sum(right) + node.val
-  node.min = min(min(left), node.val, min(right))
-
-Rule: ALWAYS push_down before accessing children!
-```
-
-## Implementation Notes
-
-- Use random priorities for expected O(log n) height
-- Push down lazy flags before any split/merge
-- Update aggregates after any structural change
-- Handle null nodes carefully (size=0, sum=0, min=+∞, max=-∞)
-- Consider node recycling for memory efficiency
-
+- Node storage is index-based arrays (no pointers).
+- Random priorities are generated by a simple LCG.
+- `split` and `merge` are the only structural primitives.
+- `reverse(l, r)` uses a lazy flag (`rev`).
+- Range queries use the split/query/merge pattern.
