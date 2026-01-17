@@ -86,8 +86,8 @@
 - [x] lib/challenge_persistent_li_chao_tree
 - [x] lib/challenge_persistent_order_statistic
 - [x] lib/challenge_persistent_pairing_heap
-- [ ] lib/challenge_persistent_queue (in progress)
-- [ ] lib/challenge_persistent_queue_min
+- [x] lib/challenge_persistent_queue
+- [ ] lib/challenge_persistent_queue_min (in progress)
 - [ ] lib/challenge_persistent_rope
 - [ ] lib/challenge_persistent_segment_tree
 - [ ] lib/challenge_persistent_segment_tree_assign
