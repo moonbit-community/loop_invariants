@@ -7,7 +7,6 @@ const INF : Int = 0x3fffffff
 
 ///|
 /// Minimum cuts to partition s into palindromes.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn min_palindrome_cuts(s : String) -> Int {
   let n = s.length()
   if n == 0 {
@@ -17,8 +16,8 @@ pub fn min_palindrome_cuts(s : String) -> Int {
   for i in 0..<n {
     pal[i][i] = true
   }
-  for len in 2..=n {
-    for i in 0..=(n - len) {
+  for len in 2..<(n + 1) {
+    for i in 0..<(n - len + 1) {
       let j = i + len - 1
       let ci = s.get_char(i)
       let cj = s.get_char(j)
@@ -31,7 +30,7 @@ pub fn min_palindrome_cuts(s : String) -> Int {
   }
   let dp = Array::make(n, INF)
   for i in 0..<n {
-    for j in 0..=i {
+    for j in 0..<(i + 1) {
       if pal[j][i] {
         if j == 0 {
           dp[i] = 0
