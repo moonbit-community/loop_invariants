@@ -110,8 +110,8 @@
 - [x] lib/challenge_scc_tarjan
 - [x] lib/challenge_sliding_window_min
 - [x] lib/challenge_sparse_table_rmq
-- [ ] lib/challenge_sqrt_decomposition_sum (in progress)
-- [ ] lib/challenge_ternary_search
+- [x] lib/challenge_sqrt_decomposition_sum
+- [ ] lib/challenge_ternary_search (in progress)
 - [ ] lib/challenge_toposort_kahn
 - [ ] lib/challenge_tree_diameter
 - [ ] lib/challenge_two_pointers

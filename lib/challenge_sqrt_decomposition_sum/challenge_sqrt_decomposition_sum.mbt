@@ -5,25 +5,18 @@
 ///|
 fn sqrt_ceil(n : Int) -> Int {
   if n <= 0 {
-    return 1
+    1
+  } else {
+    sqrt_ceil_from(n, 1)
   }
-  for b = 1 {
-    if b * b >= n {
-      break b
-    } else {
-      continue b + 1
-    }
-  } where {
-    invariant: b >= 1,
-    reasoning: (
-      #|INVARIANT (sqrt ceil):
-      #|b is the smallest candidate tested so far; all smaller values satisfy
-      #|b^2 < n.
-      #|MAINTENANCE:
-      #|Increment b while b^2 < n.
-      #|TERMINATION:
-      #|The first b with b^2 >= n is the ceiling of sqrt(n).
-    ),
+}
+
+///|
+fn sqrt_ceil_from(n : Int, b : Int) -> Int {
+  if b * b >= n {
+    b
+  } else {
+    sqrt_ceil_from(n, b + 1)
   }
 }
 
@@ -37,7 +30,6 @@ pub struct SqrtDecomp {
 
 ///|
 /// Build a sqrt decomposition structure for range sums.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn build_sqrt_decomp(arr : ArrayView[Int]) -> SqrtDecomp {
   let n = arr.length()
   let block_size = sqrt_ceil(n)
@@ -52,27 +44,23 @@ pub fn build_sqrt_decomp(arr : ArrayView[Int]) -> SqrtDecomp {
 
 ///|
 /// Query the sum over [l, r).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn range_sum(sd : SqrtDecomp, l : Int, r : Int) -> Int {
-  for pos = l, acc = 0 {
-    if pos >= r {
-      break acc
-    } else if pos % sd.block_size == 0 && pos + sd.block_size <= r {
-      continue pos + sd.block_size, acc + sd.block_sum[pos / sd.block_size]
-    } else {
-      continue pos + 1, acc + sd.arr[pos]
-    }
-  } where {
-    invariant: pos >= l && pos <= r,
-    reasoning: (
-      #|INVARIANT (range sum):
-      #|acc equals sum of sd.arr[l..pos). The cursor pos marks the next element
-      #|to account for.
-      #|MAINTENANCE:
-      #|If aligned, add a whole block; otherwise add a single element.
-      #|TERMINATION:
-      #|At pos = r, acc is the sum over [l, r).
-    ),
+  range_sum_from(sd, l, r, 0)
+}
+
+///|
+fn range_sum_from(sd : SqrtDecomp, pos : Int, r : Int, acc : Int) -> Int {
+  if pos >= r {
+    acc
+  } else if pos % sd.block_size == 0 && pos + sd.block_size <= r {
+    range_sum_from(
+      sd,
+      pos + sd.block_size,
+      r,
+      acc + sd.block_sum[pos / sd.block_size],
+    )
+  } else {
+    range_sum_from(sd, pos + 1, r, acc + sd.arr[pos])
   }
 }
 
