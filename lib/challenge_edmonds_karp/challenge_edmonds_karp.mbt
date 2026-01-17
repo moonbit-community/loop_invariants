@@ -48,7 +48,6 @@ fn min2(a : Int, b : Int) -> Int {
 
 ///|
 /// Compute max flow from s to t.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
   let n = g.adj.length()
   if s < 0 || s >= n || t < 0 || t >= n {

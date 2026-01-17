@@ -49,8 +49,8 @@
 - [x] lib/challenge_difference_array
 - [x] lib/challenge_disjoint_sparse_table
 - [x] lib/challenge_edit_distance
-- [ ] lib/challenge_edmonds_karp (in progress)
-- [ ] lib/challenge_fenwick_2d
+- [x] lib/challenge_edmonds_karp
+- [ ] lib/challenge_fenwick_2d (in progress)
 - [ ] lib/challenge_floyd_warshall
 - [ ] lib/challenge_interval_scheduling
 - [ ] lib/challenge_knapsack_01
