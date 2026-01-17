@@ -7,8 +7,8 @@
 - [x] lib/bellman_ford
 - [x] lib/berlekamp_massey
 - [x] lib/biconnected_components
-- [ ] lib/binary_trie_xor (in progress)
-- [ ] lib/bipartite_matching
+- [x] lib/binary_trie_xor
+- [ ] lib/bipartite_matching (in progress)
 - [ ] lib/block_cut_tree
 - [ ] lib/bridges
 - [ ] lib/cartesian_tree
