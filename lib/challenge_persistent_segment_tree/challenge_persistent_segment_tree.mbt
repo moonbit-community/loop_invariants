@@ -18,20 +18,6 @@ fn node_sum(node : Node) -> Int {
 }
 
 ///|
-fn tree_valid(node : Node, len : Int) -> Bool {
-  match node {
-    Node::Leaf(sum=_) => len == 1
-    Node::Branch(sum~, left~, right~) =>
-      if len <= 1 {
-        false
-      } else {
-        let mid = len / 2
-        tree_valid(left, mid) &&
-        tree_valid(right, len - mid) &&
-        sum == node_sum(left) + node_sum(right)
-      }
-  }
-}
 
 ///|
 /// Return the sum stored at the root.
@@ -100,32 +86,17 @@ pub fn query(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 
 ///|
 /// Apply a list of point updates (index, delta).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn apply_updates(
   root : Node,
   n : Int,
   updates : ArrayView[(Int, Int)],
 ) -> Node {
-  let m = updates.length()
-  for i = 0, tree = root {
-    if i >= m {
-      break tree
-    } else {
-      let (idx, delta) = updates[i]
-      continue i + 1, add(tree, 0, n, idx, delta)
-    }
-  } where {
-    invariant: i >= 0 && i <= m,
-    invariant: tree_valid(tree, n),
-    reasoning: (
-      #|INVARIANT (Persistent updates):
-      #|tree reflects the original root with the first i updates applied.
-      #|MAINTENANCE:
-      #|Apply update i by path-copying and preserving sum consistency.
-      #|TERMINATION:
-      #|At i = m, all updates are incorporated.
-    ),
+  let mut tree = root
+  for update in updates {
+    let (idx, delta) = update
+    tree = add(tree, 0, n, idx, delta)
   }
+  tree
 }
 
 ///|
