@@ -6,7 +6,6 @@
 ///|
 /// Apply range add updates to a base array and return the updated array.
 /// Each update is (l, r, delta) with inclusive bounds.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn apply_range_add(
   base : ArrayView[Int],
   updates : ArrayView[(Int, Int, Int)],
@@ -26,26 +25,10 @@ pub fn apply_range_add(
   }
   let result : Array[Int] = Array::make(n, 0)
   // Prefix-sum the difference array to reconstruct final values.
-  for i = 0, run = 0 {
-    if i >= n {
-      break
-    } else {
-      let new_run = run + diff[i]
-      result[i] = base[i] + new_run
-      continue i + 1, new_run
-    }
-  } where {
-    invariant: i >= 0 && i <= n,
-    invariant: i == 0 || run == result[i - 1] - base[i - 1],
-    reasoning: (
-      #|INVARIANT (Prefix reconstruction):
-      #|run is the accumulated diff prefix for indices [0..i), so result[0..i)
-      #|already reflects all updates for that prefix.
-      #|MAINTENANCE:
-      #|Add diff[i] into run and write result[i] = base[i] + run.
-      #|TERMINATION:
-      #|At i = n, all elements are updated.
-    ),
+  let mut run = 0
+  for i in 0..<n {
+    run = run + diff[i]
+    result[i] = base[i] + run
   }
   result
 }

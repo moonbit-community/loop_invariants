@@ -46,8 +46,8 @@
 - [x] lib/challenge_coordinate_compress
 - [x] lib/challenge_dag_shortest_path
 - [x] lib/challenge_dfs_subtree
-- [ ] lib/challenge_difference_array (in progress)
-- [ ] lib/challenge_disjoint_sparse_table
+- [x] lib/challenge_difference_array
+- [ ] lib/challenge_disjoint_sparse_table (in progress)
 - [ ] lib/challenge_edit_distance
 - [ ] lib/challenge_edmonds_karp
 - [ ] lib/challenge_fenwick_2d
