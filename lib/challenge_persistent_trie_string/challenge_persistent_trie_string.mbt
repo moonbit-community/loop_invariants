@@ -50,35 +50,25 @@ pub fn add(root : Node, s : String) -> Node {
 
 ///|
 /// Check whether a word exists in the trie.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn contains(root : Node, s : String) -> Bool {
-  let view = s[:]
-  for i = 0, cur = root {
-    if i >= view.length() {
-      break cur.end
-    } else {
-      match view.get_char(i) {
-        None => break false
-        Some(ch) => {
-          let idx = char_index(ch)
-          match cur.children[idx] {
-            None => break false
-            Some(next) => continue i + 1, next
-          }
+  contains_view(root, s[:], 0)
+}
+
+///|
+fn contains_view(node : Node, view : StringView, idx : Int) -> Bool {
+  if idx >= view.length() {
+    node.end
+  } else {
+    match view.get_char(idx) {
+      None => false
+      Some(ch) => {
+        let i = char_index(ch)
+        match node.children[i] {
+          None => false
+          Some(next) => contains_view(next, view, idx + 1)
         }
       }
     }
-  } where {
-    invariant: i >= 0 && i <= view.length(),
-    reasoning: (
-      #|INVARIANT (Trie walk):
-      #|cur corresponds to the prefix s[0..i). If a word exists, it must be
-      #|in the subtree rooted at cur.
-      #|MAINTENANCE:
-      #|Advance one character and descend into the matching child.
-      #|TERMINATION:
-      #|At i = |s|, cur.end indicates presence of the word.
-    ),
   }
 }
 
