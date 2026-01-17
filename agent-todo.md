@@ -18,7 +18,7 @@
 - [x] lib/bridges
 - [x] lib/cartesian_tree
 - [x] lib/centroid
-- [ ] lib/challenge_bfs_grid (in progress)
+- [x] lib/challenge_bfs_grid
 
 ## Initial pass
 
