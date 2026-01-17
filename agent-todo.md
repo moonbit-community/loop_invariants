@@ -130,8 +130,8 @@
 - [x] lib/edmonds_arborescence
 - [x] lib/eertree
 - [x] lib/euler_tour
-- [ ] lib/eulerian_path (in progress)
-- [ ] lib/fenwick
+- [x] lib/eulerian_path
+- [ ] lib/fenwick (in progress)
 - [ ] lib/fenwick2d
 - [ ] lib/fenwick_range_add_range_sum
 - [ ] lib/fft

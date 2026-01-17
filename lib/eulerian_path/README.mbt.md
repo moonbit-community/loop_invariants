@@ -37,37 +37,26 @@ Hierholzer's algorithm:
 ## Visual: Hierholzer's Algorithm
 
 ```
-Graph (undirected):
-    0───1───2
-    │   │   │
-    └───3───┘
+Graph (undirected, two cycles sharing a vertex):
 
-All vertices have degree 2 → Eulerian circuit exists!
+      1
+     / \
+    0---2
+    |   |
+    4---3
 
-Algorithm trace:
-  Start at 0, path = []
+Edges: 0-1-2-0 and 0-3-4-0
+All vertices have even degree → Eulerian circuit exists.
 
-  Step 1: Walk from 0
-    0 → 1 → 2 → 3 → 0
-    Stuck at 0 (all edges used from 0)
-    path = [0, 3, 2, 1, 0] (reversed)
+Hierholzer trace (stack grows, then backtracks):
+  stack: [0]
+  take 0-1-2-0, stack: [0, 1, 2, 0]
+  0 still has unused edges, take 0-3-4-0, stack: [0, 1, 2, 0, 3, 4, 0]
+  0 has no unused edges → pop to path
+  continue popping until stack empty
 
-  Wait, we haven't used edge 1-3!
-
-  Better trace:
-    0 → 1 → 3 (stuck? no, 3 has edge to 2)
-    3 → 2 → 1 (stuck? back to 1, edge 1→0 unused)
-    1 → 0 (stuck? 0 has edge to 3)
-    0 → 3 (stuck? yes, 3 has no unused edges)
-
-  Backtrack and build:
-    Final: [0, 1, 3, 2, 1, 0, 3]...
-
-  Actually, let me redo properly:
-    Start at 0
-    0 → 1 → 2 → 3 → 1... oops, 1 has unused edge to 3
-
-  Hierholzer handles this by DFS with backtracking!
+Reverse of pop order is the Eulerian circuit:
+  0 → 1 → 2 → 0 → 3 → 4 → 0
 ```
 
 ## Visual: Directed Graph Example
@@ -136,6 +125,19 @@ Eulerian path (not circuit):
   All others have even degree
 ```
 
+## Connectivity Requirement
+
+```
+Degree conditions are not enough.
+All vertices with nonzero degree must lie in one connected component
+of the underlying undirected graph.
+
+Example (undirected):
+  Triangle {0,1,2} and triangle {3,4,5} are separate.
+  Each vertex has even degree, but no single Eulerian circuit
+  can cover edges from both components.
+```
+
 ## Example Usage
 
 ```mbt check
@@ -163,6 +165,28 @@ test "directed no eulerian" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2)]
   let path = @eulerian_path.eulerian_path_directed(3, edges[:])
   inspect(path is None, content="true")
+}
+```
+
+```mbt check
+///|
+test "directed circuit endpoints" {
+  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
+  let path = @eulerian_path.eulerian_path_directed(3, edges[:]).unwrap()
+  inspect(path.length(), content="4")
+  inspect(path[0] == path[path.length() - 1], content="true")
+}
+```
+
+```mbt check
+///|
+test "undirected path endpoints" {
+  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
+  let path = @eulerian_path.eulerian_path_undirected(4, edges[:]).unwrap()
+  let start = path[0]
+  let end = path[path.length() - 1]
+  let ok = (start == 0 && end == 3) || (start == 3 && end == 0)
+  inspect(ok, content="true")
 }
 ```
 
@@ -220,24 +244,42 @@ Directed graph:
 ## Why Hierholzer Works
 
 ```
-Claim: When we get stuck, we're at the start vertex (for circuits).
+Key ideas:
 
-Proof:
-  Each time we enter a vertex (except start), we can leave it.
-  Why? Because in = out for all vertices.
-  The only vertex we might not be able to leave is start.
+1) The stack is always a valid trail.
+   We only push along unused edges, so no edge appears twice.
 
-Claim: DFS explores all edges.
+2) When a vertex has no unused edges, it is "finished".
+   We can safely append it to the path because no future step
+   can leave it via a new edge.
 
-Proof:
-  We mark edges as used and never revisit.
-  When stuck, we backtrack to find unused edges.
-  Process continues until all edges used.
+3) Every edge is used exactly once.
+   Each edge is consumed the first time we traverse it, and never again.
+   The algorithm ends only when all edges are consumed.
 
-The reversal gives correct order:
-  We add vertex to path only when ALL its edges are processed.
-  This ensures sub-paths are correctly spliced.
+4) The final path is the reverse of the finishing order.
+   This is why we pop vertices into the answer and reverse at the end.
 ```
+
+## Edge Cases
+
+```
+No edges:
+  Path is empty [] (this implementation returns Some([])).
+
+Disconnected graph with edges:
+  No Eulerian path because a single walk cannot cover all edges.
+
+Isolated vertices:
+  They are ignored as long as all edges lie in one component.
+```
+
+## Common Pitfalls
+
+- **Using degree rules alone**: connectivity still matters.
+- **Mixing directed/undirected rules**: check in/out separately for directed graphs.
+- **Forgetting reverse**: Hierholzer builds the path in reverse order.
+- **Multiple edges**: allowed, but you must treat each edge instance separately.
 
 ## Common Applications
 
@@ -316,4 +358,3 @@ Undirected:
 - For undirected: use edge pairing for mark-twin
 - Empty graph returns empty path
 - Single vertex with no edges: path = [v]
-

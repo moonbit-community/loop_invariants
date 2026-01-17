@@ -103,7 +103,7 @@ pub fn eulerian_path_directed(
   }
   let mut start = -1
   let mut end = -1
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     let diff = out_deg[v] - in_deg[v]
     if diff == 1 {
       if start != -1 {
@@ -118,17 +118,6 @@ pub fn eulerian_path_directed(
     } else if diff != 0 {
       return None
     }
-  } where {
-    invariant: v >= 0 && v <= n,
-    reasoning: (
-      #|INVARIANT (degree balance):
-      #|Vertices in [0..v) satisfy Euler degree conditions, and start/end
-      #|reflect any discovered imbalances.
-      #|MAINTENANCE:
-      #|Check diff for v and update start/end or reject if invalid.
-      #|TERMINATION:
-      #|At v = n, degree conditions are fully verified.
-    ),
   }
   if start == -1 {
     // Eulerian circuit case: choose any vertex with outgoing edges
@@ -266,9 +255,13 @@ pub fn eulerian_path_undirected(
       break
     }
     let v = stack[stack.length() - 1]
-    let mut idx = cursor[v]
-    while idx < adj[v].length() && used[adj[v][idx]] {
-      idx = idx + 1
+    let idx = loop cursor[v] {
+      i => {
+        if i < adj[v].length() && used[adj[v][i]] {
+          continue i + 1
+        }
+        break i
+      }
     }
     cursor[v] = idx
     if idx < adj[v].length() {
