@@ -56,53 +56,25 @@ pub fn[T] size(s : Stack[T]) -> Int {
 
 ///|
 /// Build a stack that preserves array order (top is arr[0]).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn[T] from_array(arr : ArrayView[T]) -> Stack[T] {
-  let n = arr.length()
-  for i = n, st = Stack::Nil {
-    if i <= 0 {
-      break st
-    } else {
-      let next_i = i - 1
-      continue next_i, Stack::Cons(head=arr[next_i], tail=st)
-    }
-  } where {
-    invariant: i >= 0 && i <= n,
-    invariant: size(st) == n - i,
-    reasoning: (
-      #|INVARIANT (Suffix stack):
-      #|st stores arr[i..n) in order, so its size is n - i.
-      #|MAINTENANCE:
-      #|Decrement i and cons arr[i-1]; this extends st with the next element.
-      #|TERMINATION:
-      #|At i = 0, st represents the entire array in stack order.
-    ),
-  }
+  arr.rev_fold(init=Stack::Nil, (st, value) => Stack::Cons(head=value, tail=st))
 }
 
 ///|
 /// Convert a stack to an array in top-to-bottom order.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn[T] to_array(s : Stack[T]) -> Array[T] {
   let out = Array::new()
-  for cur = s, idx = 0 {
-    match cur {
-      Stack::Nil => break out
-      Stack::Cons(head~, tail~) => {
-        out.push(head)
-        continue tail, idx + 1
-      }
+  fill_to_array(s, out)
+  out
+}
+
+///|
+fn[T] fill_to_array(cur : Stack[T], out : Array[T]) -> Unit {
+  match cur {
+    Stack::Nil => ()
+    Stack::Cons(head~, tail~) => {
+      out.push(head)
+      fill_to_array(tail, out)
     }
-  } where {
-    invariant: idx >= 0 && idx == out.length(),
-    invariant: idx + size(cur) == size(s),
-    reasoning: (
-      #|INVARIANT (Prefix materialization):
-      #|out contains the first idx elements of s in order; cur holds the rest.
-      #|MAINTENANCE:
-      #|Append head to out and advance cur, increasing idx by one.
-      #|TERMINATION:
-      #|When cur is Nil, out is the full stack materialization.
-    ),
   }
 }
