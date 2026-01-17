@@ -199,7 +199,7 @@
 - [x] lib/suurballe_disjoint_paths
 - [x] lib/techniques
 - [x] lib/topological_sort_dfs
-- [ ] lib/treap
+- [x] lib/treap
 - [ ] lib/tree
 - [ ] lib/trie
 - [ ] lib/two_sat
