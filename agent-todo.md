@@ -44,8 +44,8 @@
 - [x] lib/challenge_centroid_decomposition
 - [x] lib/challenge_coin_change_min
 - [x] lib/challenge_coordinate_compress
-- [ ] lib/challenge_dag_shortest_path (in progress)
-- [ ] lib/challenge_dfs_subtree
+- [x] lib/challenge_dag_shortest_path
+- [ ] lib/challenge_dfs_subtree (in progress)
 - [ ] lib/challenge_difference_array
 - [ ] lib/challenge_disjoint_sparse_table
 - [ ] lib/challenge_edit_distance

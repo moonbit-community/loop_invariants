@@ -7,7 +7,6 @@ const INF : Int = 0x3fffffff
 
 ///|
 /// Return shortest paths in a DAG, or None if a cycle exists.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn dag_shortest_paths(
   n : Int,
   edges : ArrayView[(Int, Int, Int)],
