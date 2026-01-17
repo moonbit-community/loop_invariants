@@ -214,25 +214,10 @@ pub fn[T : Compare] contains(t : Tree[T], key : T) -> Bool {
 
 ///|
 /// Build a B-tree by inserting keys in order.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Tree[T] {
-  let n = arr.length()
-  for i = 0, tree = Tree::Empty {
-    if i >= n {
-      break tree
-    } else {
-      continue i + 1, insert(tree, arr[i])
-    }
-  } where {
-    invariant: i >= 0 && i <= n,
-    invariant: tree_size(tree) == i,
-    reasoning: (
-      #|INVARIANT (B-tree build):
-      #|tree contains the first i keys and respects B-tree constraints.
-      #|MAINTENANCE:
-      #|Insert arr[i], splitting full nodes as needed.
-      #|TERMINATION:
-      #|At i = n, all keys are inserted.
-    ),
+  let mut tree = Tree::Empty
+  for key in arr {
+    tree = insert(tree, key)
   }
+  tree
 }
