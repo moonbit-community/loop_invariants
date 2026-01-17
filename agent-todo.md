@@ -116,8 +116,8 @@
 - [x] lib/challenge_tree_diameter
 - [x] lib/challenge_two_pointers
 - [x] lib/challenge_union_find_rollback
-- [ ] lib/closest_pair (in progress)
-- [ ] lib/convex_hull
+- [x] lib/closest_pair
+- [ ] lib/convex_hull (in progress)
 - [ ] lib/convex_hull_trick
 - [ ] lib/dial_shortest_path
 - [ ] lib/dijkstra

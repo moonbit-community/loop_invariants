@@ -60,35 +60,15 @@ fn brute_force_closest(points : ArrayView[Point]) -> (Double, Int, Int) {
   let mut min_dist = CP_INF
   let mut p1 = -1
   let mut p2 = -1
-  for i = 0; i < n; i = i + 1 {
-    for j = i + 1; j < n; j = j + 1 {
+  for i in 0..<n {
+    for j in (i + 1)..<n {
       let d = distance(points[i], points[j])
       if d < min_dist {
         min_dist = d
         p1 = points[i].idx
         p2 = points[j].idx
       }
-    } where {
-      invariant: j >= i + 1 && j <= n,
-      reasoning: (
-        #|INVARIANT (brute force inner):
-        #|All pairs (i, k) with k in [i+1, j) have been checked.
-        #|MAINTENANCE:
-        #|Compare point i with point j.
-        #|TERMINATION:
-        #|At j = n, all pairs with first index i are checked.
-      ),
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (brute force outer):
-      #|min_dist is the minimum distance among pairs with first index < i.
-      #|MAINTENANCE:
-      #|Check all pairs starting at i and update min_dist as needed.
-      #|TERMINATION:
-      #|At i = n, all pairs are checked and min_dist is optimal.
-    ),
   }
   (min_dist, p1, p2)
 }
@@ -110,36 +90,17 @@ fn strip_closest(
   strip.sort_by((a, b) => if a.y < b.y { -1 } else if a.y > b.y { 1 } else { 0 })
 
   // Check each point against at most 6 points below it
-  for i = 0; i < n; i = i + 1 {
-    for j = i + 1; j < n && strip[j].y - strip[i].y < min_dist; j = j + 1 {
+  for i in 0..<n {
+    let mut j = i + 1
+    while j < n && strip[j].y - strip[i].y < min_dist {
       let d = distance(strip[i], strip[j])
       if d < min_dist {
         min_dist = d
         p1 = strip[i].idx
         p2 = strip[j].idx
       }
-    } where {
-      invariant: j >= i + 1 && j <= n,
-      reasoning: (
-        #|INVARIANT (strip inner):
-        #|All candidate points below i in [i+1, j) within the y-window
-        #|have been checked.
-        #|MAINTENANCE:
-        #|Compare strip[i] with strip[j] while y-distance < min_dist.
-        #|TERMINATION:
-        #|At j = n or window break, all relevant pairs for i are checked.
-      ),
+      j = j + 1
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (strip outer):
-      #|min_dist is the best distance found so far in the strip for indices < i.
-      #|MAINTENANCE:
-      #|Check candidates within the y-window; packing argument bounds checks.
-      #|TERMINATION:
-      #|At i = n, all close pairs in the strip are checked.
-    ),
   }
   (min_dist, p1, p2)
 }
@@ -237,8 +198,8 @@ fn closest_pair_naive(points : Array[(Double, Double)]) -> (Double, Int, Int) {
   let mut min_dist = CP_INF
   let mut p1 = -1
   let mut p2 = -1
-  for i = 0; i < n; i = i + 1 {
-    for j = i + 1; j < n; j = j + 1 {
+  for i in 0..<n {
+    for j in (i + 1)..<n {
       let dx = points[i].0 - points[j].0
       let dy = points[i].1 - points[j].1
       let d = sqrt_f64(dx * dx + dy * dy)
@@ -247,27 +208,7 @@ fn closest_pair_naive(points : Array[(Double, Double)]) -> (Double, Int, Int) {
         p1 = i
         p2 = j
       }
-    } where {
-      invariant: j >= i + 1 && j <= n,
-      reasoning: (
-        #|INVARIANT (naive inner):
-        #|All pairs (i, k) with k in [i+1, j) have been checked.
-        #|MAINTENANCE:
-        #|Compare point i with point j.
-        #|TERMINATION:
-        #|At j = n, all pairs with first index i are checked.
-      ),
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (naive outer):
-      #|All pairs with first index < i have been checked.
-      #|MAINTENANCE:
-      #|Scan all pairs starting at i.
-      #|TERMINATION:
-      #|At i = n, all pairs are checked.
-    ),
   }
   (min_dist, p1, p2)
 }
@@ -284,33 +225,13 @@ fn k_closest_pairs(
 ) -> Array[(Double, Int, Int)] {
   let n = points.length()
   let pairs : Array[(Double, Int, Int)] = []
-  for i = 0; i < n; i = i + 1 {
-    for j = i + 1; j < n; j = j + 1 {
+  for i in 0..<n {
+    for j in (i + 1)..<n {
       let dx = points[i].0 - points[j].0
       let dy = points[i].1 - points[j].1
       let d = sqrt_f64(dx * dx + dy * dy)
       pairs.push((d, i, j))
-    } where {
-      invariant: j >= i + 1 && j <= n,
-      reasoning: (
-        #|INVARIANT (pair enum inner):
-        #|All pairs (i, k) with k in [i+1, j) have been added to pairs.
-        #|MAINTENANCE:
-        #|Add pair (i, j) with its distance.
-        #|TERMINATION:
-        #|At j = n, all pairs with first index i are added.
-      ),
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (pair enum outer):
-      #|pairs contains distances for all pairs with first index < i.
-      #|MAINTENANCE:
-      #|Enumerate pairs starting at i.
-      #|TERMINATION:
-      #|At i = n, all point pairs are collected.
-    ),
   }
 
   // Sort by distance
@@ -318,18 +239,15 @@ fn k_closest_pairs(
 
   // Take first k
   let result : Array[(Double, Int, Int)] = []
-  for i = 0; i < k && i < pairs.length(); i = i + 1 {
+  let limit = if k <= 0 {
+    0
+  } else if k < pairs.length() {
+    k
+  } else {
+    pairs.length()
+  }
+  for i in 0..<limit {
     result.push(pairs[i])
-  } where {
-    invariant: i >= 0 && i <= k && i <= pairs.length(),
-    reasoning: (
-      #|INVARIANT (take k):
-      #|result contains the first i pairs from the sorted list.
-      #|MAINTENANCE:
-      #|Append pairs[i] to result.
-      #|TERMINATION:
-      #|At i = k or i = pairs.length(), result has the k smallest pairs.
-    ),
   }
   result
 }

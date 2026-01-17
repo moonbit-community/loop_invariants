@@ -1,118 +1,128 @@
-# Closest Pair of Points
+# Closest Pair of Points (Divide and Conquer)
 
-## Overview
+The **closest pair** problem asks: given `n` points in the plane, find the two
+points with minimum Euclidean distance.
 
-The **Closest Pair** problem finds the minimum distance between any two points
-in the plane. The divide-and-conquer approach achieves O(n log n) time.
+A brute-force solution checks all pairs in `O(n^2)`. The divide-and-conquer
+algorithm solves it in **`O(n log n)`**.
 
-- **Time**: O(n log n)
-- **Space**: O(n)
+This package provides:
 
-## The Problem
+- `closest_pair(points)` returning `(distance, index1, index2)`
+
+---
+
+## The problem
+
+Given a list of 2D points, find the closest two:
 
 ```
-Given n points in 2D, find the pair with minimum Euclidean distance.
-
 Points: (0,0), (3,4), (1,1), (4,4), (5,2)
 
-         5 |
-         4 |   *       *
-         3 |
-         2 |               *
-         1 |   *
-         0 *───────────────────
-           0   1   2   3   4   5
-
-Brute force: Check all n(n-1)/2 pairs → O(n²)
-Divide and conquer: O(n log n)
+   y
+   5 |            *
+   4 |      *     *
+   3 |
+   2 |               *
+   1 |   *
+   0 *-------------------- x
+     0  1  2  3  4  5
 ```
 
-## The Key Insight
+Brute force: check all pairs -> `O(n^2)`.
+
+---
+
+## Core idea
+
+1. Sort points by x-coordinate.
+2. Split into left and right halves.
+3. Recursively solve both halves.
+4. Let `delta = min(left_best, right_best)`.
+5. Build a **strip** of points within distance `delta` of the mid line.
+6. Check only the strip, sorted by y-coordinate.
+
+Key geometry insight: in the strip, **each point only needs to compare with the
+next ~7 points** in y-sorted order.
+
+---
+
+## Walkthrough example
+
+Points (already x-sorted):
 
 ```
-Divide points by x-coordinate, solve recursively,
-then carefully merge in the "strip" near the dividing line.
-
-The strip check is O(n), not O(n²), because:
-- Only check points within distance d of mid-line
-- For each point, only check next 7 points in y-sorted order!
-
-Why only 7? Geometry limits how many points can fit
-in a d × 2d rectangle while being at least d apart.
+(0,0), (1,1), (3,0), (4,1), (6,0), (7,1)
 ```
 
-## Algorithm Walkthrough
+Split at `x = 3.5`:
 
 ```
-Points: (0,0), (1,1), (3,0), (4,1), (6,0), (7,1)
-
-Step 1: Sort by x-coordinate
-  Already sorted: (0,0), (1,1), (3,0), (4,1), (6,0), (7,1)
-
-Step 2: Divide at median x
-  Left:  (0,0), (1,1), (3,0)
-  Right: (4,1), (6,0), (7,1)
-  Mid-line: x = 3.5
-
-Step 3: Solve recursively
-  Left min:  d((0,0), (1,1)) = √2 ≈ 1.41
-  Right min: d((6,0), (7,1)) = √2 ≈ 1.41
-  d = min(√2, √2) = √2
-
-Step 4: Check strip (x in [3.5-√2, 3.5+√2])
-  Strip points (by y): (3,0), (4,1)
-  d((3,0), (4,1)) = √2
-
-Final answer: √2 (multiple pairs achieve this)
+Left:  (0,0), (1,1), (3,0)
+Right: (4,1), (6,0), (7,1)
 ```
 
-## Visual: The Strip
+- Left best = sqrt(2) between (0,0) and (1,1)
+- Right best = sqrt(2) between (6,0) and (7,1)
+- `delta = sqrt(2)`
+
+Strip: points with `|x - 3.5| < delta` are `(3,0)` and `(4,1)`.
+Their distance is also `sqrt(2)`, so the answer stays the same.
+
+---
+
+## Visual: the strip
 
 ```
-After recursive calls, d = min distance in each half.
+After recursion, delta is known.
 
-                    │
-     *              │      *
-          *         │          *
-                    │
-     *              │      *
-                    │
-    ←───── d ─────→ │ ←───── d ─────→
-                    │
-              ←─ strip ─→
-
-Points in strip: distance < d from mid-line
-Key insight: Each point needs only compare with
-next 7 points when sorted by y-coordinate!
+                |
+    *           |      *
+        *       |         *
+                |
+    *           |      *
+                |
+    <-- delta -->|<-- delta -->
+                |
+        strip = points with |x - mid| < delta
 ```
 
-## Why Only 7 Comparisons?
+---
 
+## Why only ~7 comparisons?
+
+In the strip, any closer point must lie inside a rectangle of size
+`delta` by `2 * delta` around a point. Packing arguments show you can fit
+at most 8 points in that rectangle while keeping distances >= delta.
+So each point only checks a constant number of neighbors.
+
+---
+
+## Pseudocode sketch
+
+```text
+closest(points):
+  if n <= 3: return brute_force(points)
+  split points by x into left/right
+  d_left = closest(left)
+  d_right = closest(right)
+  d = min(d_left, d_right)
+
+  strip = points with |x - mid_x| < d
+  sort strip by y
+  for i in strip:
+    for j in next few points while y-distance < d:
+      d = min(d, dist(i, j))
+  return d
 ```
-Consider point p in the strip at position (x, y).
-Any closer point must be in a d × 2d rectangle:
 
-    ┌─────────────────┐
-    │    │     │      │ ↑
-    │    │  *  │      │ d
-    │    │  p  │      │ ↓
-    │    │     │      │ ↑
-    │    │     │      │ d
-    └─────────────────┘ ↓
-    ←─ d ─→   ← d →
-         mid-line
+---
 
-This rectangle has area 2d × 2d = 4d².
-Each point needs d² area around it.
-Maximum points that fit: 8 (including p itself).
-So at most 7 others to check!
-```
-
-## Example Usage
+## Example 1: Simple line
 
 ```mbt check
 ///|
-test "closest pair example" {
+test "closest pair line" {
   let points : Array[(Double, Double)] = [(0.0, 0.0), (1.0, 0.0), (4.0, 0.0)]
   let (dist, p1, p2) = @closest_pair.closest_pair(points)
   inspect(dist, content="1")
@@ -120,100 +130,66 @@ test "closest pair example" {
 }
 ```
 
-## The Algorithm
+---
 
-```
-def closest_pair(points):
-    if len(points) <= 3:
-        return brute_force(points)
+## Example 2: Triangle
 
-    # Divide
-    mid = len(points) // 2
-    mid_x = points[mid].x
-    left = points[:mid]
-    right = points[mid:]
-
-    # Conquer
-    d_left = closest_pair(left)
-    d_right = closest_pair(right)
-    d = min(d_left, d_right)
-
-    # Combine: check strip
-    strip = [p for p in points if |p.x - mid_x| < d]
-    strip.sort(by=y)
-
-    for i in range(len(strip)):
-        for j in range(i+1, min(i+8, len(strip))):
-            if strip[j].y - strip[i].y >= d:
-                break
-            d = min(d, dist(strip[i], strip[j]))
-
-    return d
+```mbt check
+///|
+test "closest pair triangle" {
+  let points : Array[(Double, Double)] = [(0.0, 0.0), (3.0, 0.0), (1.5, 0.5)]
+  let (dist, _, _) = @closest_pair.closest_pair(points)
+  // Closest distance is about 1.58
+  inspect(dist < 1.6 && dist > 1.5, content="true")
+}
 ```
 
-## Common Applications
+---
 
-### 1. Collision Detection
-```
-Find objects that might collide (closest pairs).
-Often combined with spatial data structures for updates.
-```
+## Example 3: Two clusters
 
-### 2. Clustering
-```
-Hierarchical clustering starts by finding closest pairs.
-Repeatedly merge closest clusters.
-```
-
-### 3. Nearest Neighbor Search
-```
-Find the closest point to a query point.
-Closest pair is building block for k-nearest neighbors.
+```mbt check
+///|
+test "closest pair cluster" {
+  let points : Array[(Double, Double)] = [
+    (0.0, 0.0),
+    (10.0, 10.0),
+    (0.1, 0.0),
+    (10.1, 10.0),
+  ]
+  let (dist, _, _) = @closest_pair.closest_pair(points)
+  inspect(dist < 0.15 && dist > 0.05, content="true")
+}
 ```
 
-### 4. Geographic Analysis
+---
+
+## Applications
+
+- Collision detection
+- Clustering (single-link)
+- Geographic proximity queries
+- Preprocessing for nearest-neighbor search
+
+---
+
+## Implementation notes
+
+- Pre-sorting by x is essential for `O(n log n)`
+- Strip check is linear because of the constant bound
+- For integer coordinates, comparing squared distances avoids floating-point
+
+---
+
+## Complexity
+
+- Time: `O(n log n)`
+- Space: `O(n)`
+
+---
+
+## Reference implementation
+
+```mbt
+///| pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int, Int)
 ```
-Find closest pair of cities, facilities, etc.
-Input: latitude/longitude coordinates.
-```
-
-## Complexity Analysis
-
-| Operation | Time |
-|-----------|------|
-| Brute force | O(n²) |
-| Divide and conquer | O(n log n) |
-| Randomized | O(n) expected |
-
-**Recurrence**: T(n) = 2T(n/2) + O(n) = O(n log n)
-
-## Closest Pair vs Other Techniques
-
-| Method | Time | Notes |
-|--------|------|-------|
-| **D&C (this)** | O(n log n) | Deterministic, simple |
-| Randomized | O(n) expected | Grid-based hashing |
-| Sweep line | O(n log n) | Alternative approach |
-| k-d tree | O(n log n) | Good for k-nearest too |
-
-**Choose Divide & Conquer when**: You need a deterministic O(n log n) solution with clear correctness proof.
-
-## Extension: k-Closest Pairs
-
-```
-To find k closest pairs, not just the minimum:
-1. Use a max-heap of size k
-2. During merge step, add all strip pairs to heap
-3. Final heap contains k closest pairs
-
-Time: O(n log n + n log k)
-```
-
-## Implementation Notes
-
-- Pre-sort points by x before recursion (or use indices)
-- Pass y-sorted list through recursion for efficient strip sorting
-- Handle duplicate x-coordinates carefully
-- For integer coordinates, compare squared distances to avoid floating-point issues
-- Base case: 2-3 points, use brute force
-
