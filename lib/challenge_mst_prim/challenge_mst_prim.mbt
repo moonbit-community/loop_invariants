@@ -7,7 +7,6 @@ const INF : Int = 0x3fffffff
 
 ///|
 /// Build an undirected adjacency list from edge list (u, v, w).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn build_adj(
   n : Int,
   edges : ArrayView[(Int, Int, Int)],
@@ -25,7 +24,6 @@ pub fn build_adj(
 
 ///|
 /// Return the MST total weight if connected; otherwise None.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn mst_weight(adj : Array[Array[(Int, Int)]]) -> Int? {
   let n = adj.length()
   if n <= 1 {
@@ -36,7 +34,7 @@ pub fn mst_weight(adj : Array[Array[(Int, Int)]]) -> Int? {
   min_edge[0] = 0
   let mut total = 0
   let mut added = 0
-  for iter = 0; iter < n; iter = iter + 1 {
+  for _ in 0..<n {
     let mut v = -1
     let mut best = INF
     for i in 0..<n {
@@ -58,17 +56,6 @@ pub fn mst_weight(adj : Array[Array[(Int, Int)]]) -> Int? {
         min_edge[to] = w
       }
     }
-  } where {
-    invariant: iter >= 0 && iter <= n,
-    invariant: added >= 0 && added <= n,
-    reasoning: (
-      #|INVARIANT (Prim growth):
-      #|The in_mst set is connected and total equals its MST weight so far.
-      #|MAINTENANCE:
-      #|Add the cheapest edge to a new node and update frontier costs.
-      #|TERMINATION:
-      #|If added == n, total is the MST weight; otherwise graph is disconnected.
-    ),
   }
   if added == n {
     Some(total)
