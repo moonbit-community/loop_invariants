@@ -121,40 +121,20 @@ fn BridgeFinder::dfs(self : BridgeFinder, u : Int, p : Int) -> Unit {
 
 ///|
 fn BridgeFinder::find(self : BridgeFinder) -> Unit {
-  for i = 0; i < self.n; i = i + 1 {
+  for i in 0..<self.n {
     if self.disc[i] < 0 {
       self.dfs(i, -1)
     }
-  } where {
-    invariant: i >= 0 && i <= self.n,
-    reasoning: (
-      #|INVARIANT (component scan):
-      #|All vertices in [0, i) have been assigned to a DFS tree.
-      #|MAINTENANCE:
-      #|If vertex i is unvisited, start a DFS to cover its component.
-      #|TERMINATION:
-      #|At i = n, all connected components have been processed.
-    ),
   }
 }
 
 ///|
 fn BridgeFinder::get_articulation_points(self : BridgeFinder) -> Array[Int] {
   let result : Array[Int] = []
-  for i = 0; i < self.n; i = i + 1 {
+  for i in 0..<self.n {
     if self.articulation_points[i] {
       result.push(i)
     }
-  } where {
-    invariant: i >= 0 && i <= self.n,
-    reasoning: (
-      #|INVARIANT (collect APs):
-      #|result contains articulation points among vertices in [0, i).
-      #|MAINTENANCE:
-      #|Append i if it is marked as an articulation point.
-      #|TERMINATION:
-      #|At i = n, result lists all articulation points.
-    ),
   }
   result
 }
