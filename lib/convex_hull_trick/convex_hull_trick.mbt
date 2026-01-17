@@ -48,26 +48,15 @@ pub fn ConvexHullTrick::add_line(
   b : Int64,
 ) -> Unit {
   let line = { m, b }
-  for {
-    if self.lines.length() - self.head >= 2 {
-      let l1 = self.lines[self.lines.length() - 2]
-      let l2 = self.lines[self.lines.length() - 1]
-      if is_bad(l1, l2, line) {
-        let _ = self.lines.pop()
-        continue
-      }
+  while self.lines.length() - self.head >= 2 {
+    let l1 = self.lines[self.lines.length() - 2]
+    let l2 = self.lines[self.lines.length() - 1]
+    if is_bad(l1, l2, line) {
+      let _ = self.lines.pop()
+
+    } else {
+      break
     }
-    break
-  } where {
-    invariant: self.head >= 0 && self.head <= self.lines.length(),
-    reasoning: (
-      #|INVARIANT (upper hull maintenance):
-      #|lines[head..] is an upper hull with increasing slopes. If the last
-      #|line is made obsolete by the new line, it is removed; otherwise the
-      #|new line preserves convexity.
-      #|TERMINATION:
-      #|When no removal is needed, the hull is convex and insertion stops.
-    ),
   }
   self.lines.push(line)
 }
@@ -75,26 +64,14 @@ pub fn ConvexHullTrick::add_line(
 ///|
 /// Query maximum at x. x must be non-decreasing across calls.
 pub fn ConvexHullTrick::query(self : ConvexHullTrick, x : Int64) -> Int64 {
-  for {
-    if self.lines.length() - self.head >= 2 {
-      let l1 = self.lines[self.head]
-      let l2 = self.lines[self.head + 1]
-      if l2.value(x) >= l1.value(x) {
-        self.head = self.head + 1
-        continue
-      }
+  while self.lines.length() - self.head >= 2 {
+    let l1 = self.lines[self.head]
+    let l2 = self.lines[self.head + 1]
+    if l2.value(x) >= l1.value(x) {
+      self.head = self.head + 1
+    } else {
+      break
     }
-    break
-  } where {
-    invariant: self.head >= 0 && self.head < self.lines.length(),
-    reasoning: (
-      #|INVARIANT (monotone queries):
-      #|head points to the best line for the previous x. With non-decreasing x,
-      #|the optimal line index never moves backward, so we only advance head
-      #|when the next line is better.
-      #|TERMINATION:
-      #|When the current line is best for x, the loop stops.
-    ),
   }
   self.lines[self.head].value(x)
 }

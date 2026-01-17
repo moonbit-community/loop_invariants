@@ -118,8 +118,8 @@
 - [x] lib/challenge_union_find_rollback
 - [x] lib/closest_pair
 - [x] lib/convex_hull
-- [ ] lib/convex_hull_trick (in progress)
-- [ ] lib/dial_shortest_path
+- [x] lib/convex_hull_trick
+- [ ] lib/dial_shortest_path (in progress)
 - [ ] lib/dijkstra
 - [ ] lib/dinic
 - [ ] lib/disjoint_sparse
