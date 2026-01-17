@@ -60,8 +60,8 @@
 - [x] lib/challenge_line_sweep
 - [x] lib/challenge_lis_nlogn
 - [x] lib/challenge_matrix_chain
-- [ ] lib/challenge_meet_in_middle (in progress)
-- [ ] lib/challenge_mo_algorithm_sum
+- [x] lib/challenge_meet_in_middle
+- [ ] lib/challenge_mo_algorithm_sum (in progress)
 - [ ] lib/challenge_mst_kruskal
 - [ ] lib/challenge_mst_prim
 - [ ] lib/challenge_palindrome_partition

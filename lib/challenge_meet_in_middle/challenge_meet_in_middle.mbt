@@ -47,7 +47,6 @@ fn upper_bound(arr : ArrayView[Int], target : Int) -> Int {
 
 ///|
 /// Maximum subset sum <= target using meet-in-the-middle.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int {
   let n = nums.length()
   let mid = n / 2
