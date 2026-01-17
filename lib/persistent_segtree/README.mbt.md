@@ -1,194 +1,225 @@
-# Persistent Segment Tree
+# Persistent Segment Tree (Versioned Range Queries)
 
-## Overview
+This package is a **tutorial** package (no exported functions). It explains
+how a persistent segment tree keeps **every historical version** after updates
+while sharing most of the structure.
 
-A **Persistent Segment Tree** preserves all previous versions after updates.
-Each update creates a new version by copying only the modified path, enabling
-queries on any historical state of the data.
+If a regular segment tree is a tree of ranges, a **persistent** segment tree is
+the same tree, but you keep **all old roots** and only copy the update path.
 
-- **Update**: O(log n), creates new version
-- **Query**: O(log n), on any version
-- **Space**: O(log n) per update
+---
 
-## The Key Insight
+## 1. One picture: what changes on an update
 
-```
-Only copy nodes along the path to the update position.
-Share all other nodes between versions!
-
-Update at index 3 (version 1 → version 2):
-
-Version 1:         Version 2:
-    [0-7]              [0-7]' ← new root
-    /    \            /    \
- [0-3]  [4-7]     [0-3]' [4-7] ← share [4-7]
- /   \            /   \
-[0-1][2-3]     [0-1][2-3]' ← share [0-1]
-     /   \          /   \
-   [2]   [3]      [2]   [3]' ← new value
-
-Nodes copied: 4 (path to leaf)
-Nodes shared: rest of tree
-```
-
-## Algorithm Walkthrough
+Update index 3 in version 1:
 
 ```
-Initial array: [1, 2, 3, 4, 5, 6, 7, 8] (version 0)
-
-Version 0:
-        [36]          ← sum of all
-       /    \
-    [10]    [26]
-    /  \    /  \
-  [3]  [7][11][15]
-  / \  / \ / \ / \
- 1  2 3  4 5 6 7  8
-
-Update index 2 to value 10 (version 1):
-  Path: root → left → right → leaf[2]
-  New sum at leaf: 10
-  Update ancestors: [14], [17], [43]
-
-Version 1:
-        [43]'         ← new root
-       /    \
-    [17]'   [26]     ← share [26]
-    /   \
-  [3]   [14]'        ← share [3]
-  / \   /  \
- 1  2 10   4         ← new leaf
-
-Both versions accessible:
-  query(version=0, 0, 7) = 36
-  query(version=1, 0, 7) = 43
+Version 1:               Version 2:
+    [0..7]                  [0..7]'   <- new root
+    /    \                  /    \
+ [0..3] [4..7]        [0..3]'  [4..7]  <- right shared
+ /   \                 /   \
+[0..1][2..3]       [0..1][2..3]' <- left-left shared
+      /  \                /  \
+    [2]  [3]            [2]  [3]' <- updated leaf
 ```
 
-## Visual: Version Tree
+Only nodes along the path to the leaf are copied (O(log n) nodes).
+Everything else is shared.
+
+---
+
+## 2. Why it works (path copying)
+
+For a balanced segment tree:
+
+- height is O(log n),
+- updating a single index touches exactly one node per level,
+- so we only create O(log n) new nodes per update.
+
+Old nodes remain intact, so previous versions are still queryable.
+
+---
+
+## 3. A tiny worked example (sum)
+
+Initial array:
 
 ```
-Multiple updates create a tree of versions:
-
-    v0 ──update(2, 10)──→ v1 ──update(5, 0)──→ v2
-     │
-     └──update(0, 5)──→ v3 ──update(7, 1)──→ v4
-
-v0: [1,2,3,4,5,6,7,8]
-v1: [1,2,10,4,5,6,7,8]
-v2: [1,2,10,4,5,0,7,8]
-v3: [5,2,3,4,5,6,7,8]  (branched from v0)
-v4: [5,2,3,4,5,6,7,1]
-
-Each version is independently queryable!
+v0 = [1, 2, 3, 4, 5]
+sum(0..4) = 15
 ```
 
-## Example Usage
+Update index 2 to 10:
+
+```
+v1 = [1, 2, 10, 4, 5]
+sum(0..4) = 22
+```
+
+Queries on versions:
+
+```
+query(v0, 1..3) = 2 + 3 + 4  = 9
+query(v1, 1..3) = 2 + 10 + 4 = 16
+```
+
+Both versions exist at the same time.
+
+---
+
+## 4. Version tree (branching history)
+
+Every update can branch from any version:
+
+```
+v0 --update(2, 10)--> v1 --update(4, 0)--> v2
+ |
+ +--update(0, 7)--> v3 --update(1, 8)--> v4
+```
+
+Each version is an independent root into the same shared node pool.
+
+---
+
+## 5. Beginner-friendly pseudocode (conceptual)
+
+This shows the pattern, not a public API.
 
 ```mbt nocheck
-// Build initial segment tree (version 0)
-let arr = [1, 2, 3, 4, 5, 6, 7, 8]
-let versions = [PersistentSegTree::build(arr)]
+///|
+struct Node {
+  left : Int
+  right : Int
+  sum : Int
+}
 
-// Update creates new version
-versions.push(versions[0].update(2, 10))  // version 1
-versions.push(versions[1].update(5, 0))   // version 2
+// Update one position, return new root
 
-// Query any version
-versions[0].query(0, 3)  // sum [1,2,3,4] = 10
-versions[1].query(0, 3)  // sum [1,2,10,4] = 17
-versions[2].query(0, 7)  // sum of v2 = 37
+///|
+fn update(node : Int, lo : Int, hi : Int, idx : Int, val : Int) -> Int {
+  if lo == hi {
+    return new_node(left=-1, right=-1, sum=val)
+  }
+  let mid = (lo + hi) / 2
+  let old = nodes[node]
+  if idx <= mid {
+    let new_left = update(old.left, lo, mid, idx, val)
+    let new_sum = nodes[new_left].sum + nodes[old.right].sum
+    return new_node(left=new_left, right=old.right, sum=new_sum)
+  } else {
+    let new_right = update(old.right, mid + 1, hi, idx, val)
+    let new_sum = nodes[old.left].sum + nodes[new_right].sum
+    return new_node(left=old.left, right=new_right, sum=new_sum)
+  }
+}
 ```
 
-## Common Applications
+Key idea: only the modified path is rebuilt.
 
-### 1. Kth Element in Range (Online)
-```
-Classic problem: Kth smallest in array[l..r]
+---
 
-Solution:
-1. Sort array, get ranks
-2. Build persistent segtree on ranks
-3. Version i = prefix tree after inserting first i elements
-4. Query(l, r, k) = difference between versions r and l-1
+## 6. Diagram: range query on a version
 
-Time: O(log n) per query
-```
-
-### 2. Time-Travel Queries
-```
-Array changes over time, query past states.
-Version t = state after t-th update.
-Query(version=t, l, r) gives historical range sum.
-```
-
-### 3. 2D Range Queries
-```
-Count points in rectangle [x1, x2] × [y1, y2].
-Version x = points with x-coordinate ≤ x.
-Query difference between version x2 and x1-1.
-```
-
-### 4. Tree Path Queries
-```
-Query path from u to v in tree.
-Root-to-u versions enable path extraction via LCA.
-```
-
-## Complexity Analysis
-
-| Operation | Time | Space |
-|-----------|------|-------|
-| Build | O(n) | O(n) |
-| Update (create version) | O(log n) | O(log n) |
-| Query (any version) | O(log n) | O(1) |
-| Total for k updates | O(k log n) | O(n + k log n) |
-
-## Persistent Segtree vs Regular Segtree
-
-| Feature | Regular | Persistent |
-|---------|---------|------------|
-| Query | O(log n) | O(log n) |
-| Update | O(log n) | O(log n) |
-| Space | O(n) | O(n + k log n) |
-| History | Lost | Preserved |
-| Branching | No | Yes |
-
-**Choose Persistent Segment Tree when**: You need to query historical states.
-
-## Space Optimization
+The query works exactly like a normal segment tree, but you pick which root:
 
 ```
-Without garbage collection:
-  All O(n + k log n) nodes stay in memory
-
-With garbage collection:
-  Only reachable versions kept
-  Reference counting or tracing GC
-
-For offline problems:
-  Process queries in order
-  Delete unneeded versions
+query(v2, L, R)
+  |
+  +-- uses root of version 2
+  +-- traverses tree as usual
 ```
 
-## Combining with Other Techniques
+So query is still O(log n).
+
+---
+
+## 7. Application 1: time‑travel range sum
 
 ```
-Persistent + Lazy:
-  Store lazy tags in nodes
-  Copy lazy tag during update
-  More complex, rarely needed
+You process updates over time:
+  v0: initial
+  v1: after update #1
+  v2: after update #2
 
-Persistent + Merge Sort Tree:
-  Each node stores sorted list of subtree values
-  Very powerful for range rank queries
+Now ask:
+  "What was the sum in [l, r] after update #1?"
+
+Answer = query(v1, l, r)
 ```
 
-## Implementation Notes
+---
 
-- Store version roots in array/vector
-- Each node: left_child, right_child, value (pointers/indices)
-- Use implicit tree (no explicit indices) or explicit
-- For sum tree: update ancestors after creating new leaf
-- Be careful with memory: persistent trees can use lots of RAM
-- Consider using object pool for node allocation
+## 8. Application 2: k‑th smallest in subarray
 
+Classic trick:
+
+1. Coordinate-compress values.
+2. Build version i as the frequency tree of prefix [0..i-1].
+3. For range [l, r], compare two versions:
+   - counts in prefix r+1
+   - counts in prefix l
+4. Walk down the tree by counts to find the k‑th smallest.
+
+This gives O(log n) per query after O(n log n) preprocessing.
+
+---
+
+## 9. Application 3: 2D offline counting
+
+```
+Points (x, y), queries ask:
+  "How many points have x in [x1, x2] and y in [y1, y2]?"
+
+Sort points by x.
+Build version i with first i points inserted by y.
+
+Answer = query(version x2) - query(version x1 - 1)
+```
+
+Persistent segtrees are a standard tool for offline 2D queries.
+
+---
+
+## 10. Complexity summary
+
+```
+Build:   O(n)
+Update:  O(log n)
+Query:   O(log n)
+Space:   O(n + updates * log n)
+```
+
+---
+
+## 11. Comparison: regular vs persistent
+
+```
+Regular segtree:
+  - only latest version
+  - O(n) space
+
+Persistent segtree:
+  - all versions kept
+  - O(n + updates * log n) space
+```
+
+Use persistent when you need **historical queries** or **branching updates**.
+
+---
+
+## 12. Common pitfalls
+
+1. **Mutating nodes**: If you mutate a shared node, you break persistence.
+2. **Too many versions**: Memory grows with each update.
+3. **Large value ranges**: For frequency trees, compress values first.
+
+---
+
+## 13. Summary
+
+A persistent segment tree is just a segment tree with **versioned roots**:
+
+- Updates copy only the path to the leaf.
+- Queries work the same as usual, just pick a version.
+- Perfect for time‑travel and offline range problems.

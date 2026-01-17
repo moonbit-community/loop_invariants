@@ -169,7 +169,7 @@
 - [x] lib/mos_algorithm
 - [x] lib/mst
 - [x] lib/persistent
-- [ ] lib/persistent_segtree
+- [x] lib/persistent_segtree
 - [ ] lib/point_in_polygon
 - [ ] lib/pollard_rho
 - [ ] lib/polygon_triangulation
