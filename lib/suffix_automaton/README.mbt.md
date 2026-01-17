@@ -62,6 +62,17 @@ Each state represents multiple substrings that share the same end positions.
 
 ---
 
+## 3b. State counts (why 2n - 1)
+
+Each new character can create **at most 2 states**:
+
+1) a new state for the extended string, and  
+2) sometimes a "clone" state to preserve transitions.
+
+So total states ≤ 2n - 1.
+
+---
+
 ## 4. Suffix links (backbone)
 
 Each state has a **suffix link** to the state representing its longest proper
@@ -96,6 +107,22 @@ test "suffix automaton example" {
 
 ---
 
+## 5b. Count occurrences (extra example)
+
+```mbt check
+///|
+test "suffix automaton occurrences" {
+  let sam = @suffix_automaton.SuffixAutomaton::new(10)
+  sam.build("aaaa")
+  inspect(sam.count_occurrences("a"), content="4")
+  inspect(sam.count_occurrences("aa"), content="3")
+  inspect(sam.count_occurrences("aaa"), content="2")
+  inspect(sam.count_occurrences("aaaa"), content="1")
+}
+```
+
+---
+
 ## 6. Distinct substrings count
 
 Each state `q` contributes:
@@ -114,6 +141,24 @@ a, b, ab, ba, aba, bab, abab  -> 7
 
 ---
 
+## 6b. Why the formula works (intuition)
+
+Each state `q` represents substrings with lengths in:
+
+```
+(len[link[q]] + 1) .. len[q]
+```
+
+So the count contributed by `q` is exactly:
+
+```
+len[q] - len[link[q]]
+```
+
+Summing over all states counts all distinct substrings once.
+
+---
+
 ## 7. Longest common substring (idea)
 
 Build SAM for S, then walk through T:
@@ -125,6 +170,14 @@ track max length seen
 ```
 
 Total time: O(|S| + |T|).
+
+### Tiny example
+
+```
+S = "abcde"
+T = "cdefg"
+Longest common substring = "cde" (length 3)
+```
 
 ---
 
