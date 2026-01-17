@@ -74,10 +74,9 @@ fn Hungarian::new(graph : BipartiteGraph) -> Hungarian {
 ///|
 /// Try to find augmenting path from left vertex u
 fn Hungarian::dfs(self : Hungarian, u : Int) -> Bool {
-  for i = 0; i < self.graph.adj[u].length(); i = i + 1 {
-    let v = self.graph.adj[u][i]
+  for v in self.graph.adj[u] {
     if self.visited[v] {
-      continue i + 1
+      continue
     }
     self.visited[v] = true
 
@@ -87,16 +86,6 @@ fn Hungarian::dfs(self : Hungarian, u : Int) -> Bool {
       self.match_right[v] = u
       return true
     }
-  } where {
-    invariant: i >= 0 && i <= self.graph.adj[u].length(),
-    reasoning: (
-      #|INVARIANT (DFS neighbors):
-      #|All neighbors in adj[u][0..i) have been considered for augmentation.
-      #|MAINTENANCE:
-      #|Advance to the next neighbor, respecting adjacency bounds.
-      #|TERMINATION:
-      #|At i = deg(u), all neighbors are scanned.
-    ),
   }
   false
 }
@@ -128,20 +117,10 @@ fn Hungarian::max_matching(self : Hungarian) -> Int {
 ///|
 fn Hungarian::get_matching(self : Hungarian) -> Array[(Int, Int)] {
   let result : Array[(Int, Int)] = []
-  for u = 0; u < self.graph.n_left; u = u + 1 {
+  for u in 0..<self.graph.n_left {
     if self.match_left[u] >= 0 {
       result.push((u, self.match_left[u]))
     }
-  } where {
-    invariant: u >= 0 && u <= self.graph.n_left,
-    reasoning: (
-      #|INVARIANT (collect matching):
-      #|result contains all matched edges for left vertices in [0, u).
-      #|MAINTENANCE:
-      #|If u is matched, append (u, match_left[u]).
-      #|TERMINATION:
-      #|At u = n_left, result holds the full matching.
-    ),
   }
   result
 }
@@ -193,23 +172,13 @@ fn HopcroftKarp::new(graph : BipartiteGraph) -> HopcroftKarp {
 /// BFS to build layered graph
 fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
   let queue : Array[Int] = []
-  for u = 0; u < self.graph.n_left; u = u + 1 {
+  for u in 0..<self.graph.n_left {
     if self.match_left[u] < 0 {
       self.dist[u] = 0
       queue.push(u)
     } else {
       self.dist[u] = HK_INF
     }
-  } where {
-    invariant: u >= 0 && u <= self.graph.n_left,
-    reasoning: (
-      #|INVARIANT (BFS init):
-      #|dist is set for left vertices in [0, u): 0 for unmatched, INF for matched.
-      #|MAINTENANCE:
-      #|Initialize dist[u] and enqueue unmatched vertices.
-      #|TERMINATION:
-      #|At u = n_left, BFS initialization is complete.
-    ),
   }
   self.dist[self.graph.n_left] = HK_INF // Sentinel for unmatched
   let mut front = 0
@@ -240,8 +209,7 @@ fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int) -> Bool {
   if u >= self.graph.n_left {
     return true // Reached unmatched right vertex
   }
-  for i = 0; i < self.graph.adj[u].length(); i = i + 1 {
-    let v = self.graph.adj[u][i]
+  for v in self.graph.adj[u] {
     let next = if self.match_right[v] < 0 {
       self.graph.n_left
     } else {
@@ -254,16 +222,6 @@ fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int) -> Bool {
         return true
       }
     }
-  } where {
-    invariant: i >= 0 && i <= self.graph.adj[u].length(),
-    reasoning: (
-      #|INVARIANT (HK DFS neighbors):
-      #|All neighbors in adj[u][0..i) have been considered for layered DFS.
-      #|MAINTENANCE:
-      #|Advance to the next neighbor while respecting adjacency bounds.
-      #|TERMINATION:
-      #|At i = deg(u), all neighbors are scanned.
-    ),
   }
   self.dist[u] = HK_INF // Mark as visited
   false
@@ -314,20 +272,10 @@ fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
 ///|
 fn HopcroftKarp::get_matching(self : HopcroftKarp) -> Array[(Int, Int)] {
   let result : Array[(Int, Int)] = []
-  for u = 0; u < self.graph.n_left; u = u + 1 {
+  for u in 0..<self.graph.n_left {
     if self.match_left[u] >= 0 {
       result.push((u, self.match_left[u]))
     }
-  } where {
-    invariant: u >= 0 && u <= self.graph.n_left,
-    reasoning: (
-      #|INVARIANT (collect matching):
-      #|result contains matched edges for left vertices in [0, u).
-      #|MAINTENANCE:
-      #|Append (u, match_left[u]) when u is matched.
-      #|TERMINATION:
-      #|At u = n_left, result is the full matching.
-    ),
   }
   result
 }
@@ -379,7 +327,7 @@ fn minimum_vertex_cover(graph : BipartiteGraph) -> (Array[Int], Array[Int]) {
   }
 
   // Start from unmatched left vertices
-  for u = 0; u < graph.n_left; u = u + 1 {
+  for u in 0..<graph.n_left {
     if hk.match_left[u] < 0 {
       dfs_cover(
         graph,
@@ -390,50 +338,20 @@ fn minimum_vertex_cover(graph : BipartiteGraph) -> (Array[Int], Array[Int]) {
         visited_right,
       )
     }
-  } where {
-    invariant: u >= 0 && u <= graph.n_left,
-    reasoning: (
-      #|INVARIANT (start cover DFS):
-      #|All unmatched left vertices in [0, u) have been used as DFS roots.
-      #|MAINTENANCE:
-      #|If u is unmatched, start an alternating-path DFS from u.
-      #|TERMINATION:
-      #|At u = n_left, the alternating forest is fully built.
-    ),
   }
 
   // Vertex cover: left vertices NOT visited + right vertices visited
   let left_cover : Array[Int] = []
   let right_cover : Array[Int] = []
-  for u = 0; u < graph.n_left; u = u + 1 {
+  for u in 0..<graph.n_left {
     if not(visited_left[u]) {
       left_cover.push(u)
     }
-  } where {
-    invariant: u >= 0 && u <= graph.n_left,
-    reasoning: (
-      #|INVARIANT (left cover):
-      #|left_cover contains exactly the unvisited left vertices in [0, u).
-      #|MAINTENANCE:
-      #|Append u if it is unvisited.
-      #|TERMINATION:
-      #|At u = n_left, left_cover is complete.
-    ),
   }
-  for v = 0; v < graph.n_right; v = v + 1 {
+  for v in 0..<graph.n_right {
     if visited_right[v] {
       right_cover.push(v)
     }
-  } where {
-    invariant: v >= 0 && v <= graph.n_right,
-    reasoning: (
-      #|INVARIANT (right cover):
-      #|right_cover contains exactly the visited right vertices in [0, v).
-      #|MAINTENANCE:
-      #|Append v if it is visited.
-      #|TERMINATION:
-      #|At v = n_right, right_cover is complete.
-    ),
   }
   (left_cover, right_cover)
 }

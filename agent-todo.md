@@ -13,8 +13,8 @@
 - [x] lib/berlekamp_massey
 - [x] lib/biconnected_components
 - [x] lib/binary_trie_xor
-- [ ] lib/bipartite_matching (in progress)
-- [ ] lib/block_cut_tree
+- [x] lib/bipartite_matching
+- [ ] lib/block_cut_tree (in progress)
 - [ ] lib/bridges
 - [ ] lib/cartesian_tree
 - [ ] lib/centroid

@@ -1,57 +1,121 @@
-# Bipartite Matching
+# Bipartite Matching (Maximum Matching)
 
-## Problem
+A **bipartite graph** has two disjoint vertex sets: **left** and **right**.
+Edges only go between the sets. A **matching** is a set of edges where no
+vertex appears more than once.
 
-You have two groups (left and right). Edges mean "can match". Find the **largest set of pairs** where no vertex is used twice.
+This package computes a **maximum matching**: the largest possible number of
+non-conflicting pairs.
 
-Example:
+## Problem statement
 
-- Left: workers
-- Right: jobs
-- Edge: worker can do job
+Given:
 
-## Simple Idea (Augmenting Paths)
+- `n_left` left vertices labeled `0..n_left-1`
+- `n_right` right vertices labeled `0..n_right-1`
+- a list of edges `(u, v)` with `u` on the left and `v` on the right
 
-Start with an empty matching. Repeatedly find a path that **alternates** between:
+Find a maximum-size set of pairs `(u, v)` where no left or right vertex is
+used twice.
 
-- unmatched edges
-- matched edges
+## The key idea: augmenting paths
 
-If the path ends at an unmatched right vertex, **flip** the edges on the path. This increases the matching size by 1.
+An **augmenting path** is a path that alternates:
 
-## Algorithm Used Here (Kuhn / DFS)
+- unmatched edge
+- matched edge
+- unmatched edge
+- ...
 
-This package uses the simple DFS-based augmenting path algorithm:
+and starts at an unmatched left vertex and ends at an unmatched right vertex.
+Flipping the matched/unmatched status of every edge on that path increases the
+matching size by 1.
 
-1. For each left vertex `u`:
-2. Run DFS to find an augmenting path
-3. If found, increase the matching
+If no augmenting path exists, the matching is maximum.
 
-It is easy to implement and good for medium-sized graphs.
+## Algorithm used here (Kuhn / DFS)
 
-## Complexity
+The public function `max_matching` uses the classic DFS-based algorithm:
 
-- Time: **O(V × E)**
-- Space: **O(V + E)**
+1. Start with an empty matching.
+2. For each left vertex `u`, try to find an augmenting path with DFS.
+3. If found, update the matching.
 
-## Example
+This is simple to implement and works well for medium-sized graphs.
+
+## Public API
+
+```
+@bipartite_matching.max_matching(n_left, n_right, edges)
+```
+
+Returns an array of `(left, right)` pairs that form a maximum matching.
+The order of pairs is not guaranteed.
+
+## Examples
+
+### Example 1: small matching
 
 ```mbt check
 ///|
-test "bipartite matching example" {
+test "small matching" {
   let edges : Array[(Int, Int)] = [(0, 0), (0, 1), (1, 1)]
   let matching = @bipartite_matching.max_matching(2, 2, edges[:])
-  inspect(matching, content="[(0, 0), (1, 1)]")
+  let sorted = matching.copy()
+  sorted.sort_by((a, b) => a.0 - b.0)
+  inspect(sorted, content="[(0, 0), (1, 1)]")
   inspect(matching.length(), content="2")
 }
 ```
 
-## When to Use
+### Example 2: more left vertices than right
+
+```mbt check
+///|
+test "unbalanced sets" {
+  let edges : Array[(Int, Int)] = [(0, 0), (1, 0), (2, 1), (3, 1)]
+  let matching = @bipartite_matching.max_matching(4, 2, edges[:])
+  inspect(matching.length(), content="2")
+}
+```
+
+Only two right vertices exist, so the maximum matching size is 2.
+
+### Example 3: assignment style
+
+Workers on the left, jobs on the right. An edge means a worker can do a job.
+
+```mbt check
+///|
+test "assignment example" {
+  let edges : Array[(Int, Int)] = [(0, 0), (0, 2), (1, 0), (1, 1), (2, 1)]
+  let matching = @bipartite_matching.max_matching(3, 3, edges[:])
+  inspect(matching.length(), content="3")
+}
+```
+
+## Practical notes and pitfalls
+
+- Edges must point from left to right; `(u, v)` is invalid if `u` or `v` is out
+  of range.
+- Duplicate edges are allowed but may slow down DFS.
+- The order of pairs in the result depends on DFS order; sort if you need a
+  stable presentation.
+
+## Complexity
+
+- Time: O(V * E)
+- Space: O(V + E)
+
+`V = n_left + n_right` and `E = edges.length()`.
+
+## When to use it
 
 Use bipartite matching when you need:
 
-- Assignments (workers → jobs)
-- Pairing requests (students → courses)
-- Maximum non-conflicting pairs
+- Assignments (workers to jobs, students to courses)
+- Pairing tasks without conflicts
+- Maximum compatibility matches
 
-If the graph is very large, Hopcroft–Karp is faster, but the idea is the same.
+If the graph is very large, Hopcroft-Karp is faster, but the core idea is the
+same.
