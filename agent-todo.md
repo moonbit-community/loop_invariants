@@ -206,7 +206,7 @@
 - [x] lib/union_find
 - [x] lib/virtual_tree
 - [x] lib/wavelet
-- [ ] lib/wildcard_matching
+- [x] lib/wildcard_matching
 - [ ] lib/xor_basis
 - [ ] lib/z_algorithm
 - [ ] lib/zero_one_bfs
