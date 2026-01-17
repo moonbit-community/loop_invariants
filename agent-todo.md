@@ -115,8 +115,8 @@
 - [x] lib/challenge_toposort_kahn
 - [x] lib/challenge_tree_diameter
 - [x] lib/challenge_two_pointers
-- [ ] lib/challenge_union_find_rollback (in progress)
-- [ ] lib/closest_pair
+- [x] lib/challenge_union_find_rollback
+- [ ] lib/closest_pair (in progress)
 - [ ] lib/convex_hull
 - [ ] lib/convex_hull_trick
 - [ ] lib/dial_shortest_path

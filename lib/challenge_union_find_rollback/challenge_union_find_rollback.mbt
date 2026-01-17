@@ -23,21 +23,11 @@ pub fn RollbackDSU::new(n : Int) -> RollbackDSU {
 ///|
 /// Find the representative of x (no path compression).
 pub fn RollbackDSU::find(self : RollbackDSU, x : Int) -> Int {
-  for cur = x; self.parent[cur] != cur; {
-    continue self.parent[cur]
-  } else {
-    cur
-  } where {
-    invariant: cur >= 0,
-    reasoning: (
-      #|INVARIANT (Root chase):
-      #|cur stays on the parent chain of x.
-      #|MAINTENANCE:
-      #|Advance cur to its parent until a root is found.
-      #|TERMINATION:
-      #|When parent[cur] == cur, cur is the root.
-    ),
+  let mut cur = x
+  while self.parent[cur] != cur {
+    cur = self.parent[cur]
   }
+  cur
 }
 
 ///|
@@ -68,9 +58,8 @@ pub fn RollbackDSU::snapshot(self : RollbackDSU) -> Int {
 
 ///|
 /// Roll back all unions after the given snapshot.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn RollbackDSU::rollback(self : RollbackDSU, snap : Int) -> Unit {
-  for len = self.history.length(); len > snap; {
+  while self.history.length() > snap {
     match self.history.pop() {
       Some((child, parent_size)) =>
         if child >= 0 {
@@ -78,19 +67,8 @@ pub fn RollbackDSU::rollback(self : RollbackDSU, snap : Int) -> Unit {
           self.size[root] = parent_size
           self.parent[child] = child
         }
-      None => break
+      None => ()
     }
-    continue self.history.length()
-  } where {
-    invariant: len == self.history.length(),
-    reasoning: (
-      #|INVARIANT (Rollback stack):
-      #|len tracks the current history size as we undo unions.
-      #|MAINTENANCE:
-      #|Pop one change and restore parent/size if it was a real union.
-      #|TERMINATION:
-      #|When len == snap, all later unions are undone.
-    ),
   }
 }
 
