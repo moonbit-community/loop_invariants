@@ -184,7 +184,7 @@
 - [x] lib/segment_tree_beats
 - [x] lib/skiplist
 - [x] lib/sliding_window
-- [ ] lib/sparse_table
+- [x] lib/sparse_table
 - [ ] lib/splay
 - [ ] lib/splay_tree
 - [ ] lib/sqrt
