@@ -5,7 +5,6 @@
 
 ///|
 /// Compute strongly connected components using Kosaraju's algorithm.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
   let adj : Array[Array[Int]] = Array::makei(n, _ => [])
   let rev : Array[Array[Int]] = Array::makei(n, _ => [])
