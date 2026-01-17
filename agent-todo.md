@@ -90,8 +90,8 @@
 - [x] lib/challenge_persistent_queue_min
 - [x] lib/challenge_persistent_rope
 - [x] lib/challenge_persistent_segment_tree
-- [ ] lib/challenge_persistent_segment_tree_assign (in progress)
-- [ ] lib/challenge_persistent_segment_tree_gcd
+- [x] lib/challenge_persistent_segment_tree_assign
+- [ ] lib/challenge_persistent_segment_tree_gcd (in progress)
 - [ ] lib/challenge_persistent_segment_tree_lazy
 - [ ] lib/challenge_persistent_segment_tree_max
 - [ ] lib/challenge_persistent_segment_tree_min

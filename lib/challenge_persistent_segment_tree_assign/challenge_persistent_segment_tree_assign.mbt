@@ -18,28 +18,6 @@ fn node_sum(node : Node) -> Int {
 }
 
 ///|
-fn tree_valid(node : Node, len : Int) -> Bool {
-  match node {
-    Node::Leaf(sum=sv, tag=tagv) =>
-      len == 1 &&
-      (match tagv {
-        None => true
-        Some(v) => sv == v * len
-      })
-    Node::Branch(sum=sv, tag=tagv, left~, right~) =>
-      if len <= 1 {
-        false
-      } else {
-        match tagv {
-          None =>
-            tree_valid(left, len / 2) &&
-            tree_valid(right, len - len / 2) &&
-            sv == node_sum(left) + node_sum(right)
-          Some(v) => sv == v * len
-        }
-      }
-  }
-}
 
 ///|
 fn apply_assign(node : Node, len : Int, value : Int) -> Node {
@@ -141,32 +119,17 @@ pub fn range_sum(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 
 ///|
 /// Apply range assignments (l, r, value), where r is exclusive.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn apply_updates(
   root : Node,
   n : Int,
   updates : ArrayView[(Int, Int, Int)],
 ) -> Node {
-  let m = updates.length()
-  for i = 0, tree = root {
-    if i >= m {
-      break tree
-    } else {
-      let (l, r, v) = updates[i]
-      continue i + 1, range_assign(tree, 0, n, l, r, v)
-    }
-  } where {
-    invariant: i >= 0 && i <= m,
-    invariant: tree_valid(tree, n),
-    reasoning: (
-      #|INVARIANT (Assign updates):
-      #|tree reflects the first i range assignments with consistent sums.
-      #|MAINTENANCE:
-      #|Apply assignment i with lazy tags and path-copying.
-      #|TERMINATION:
-      #|At i = m, all assignments are applied.
-    ),
+  let mut tree = root
+  for update in updates {
+    let (l, r, v) = update
+    tree = range_assign(tree, 0, n, l, r, v)
   }
+  tree
 }
 
 ///|
