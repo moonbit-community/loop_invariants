@@ -36,7 +36,6 @@ priv struct Query {
 
 ///|
 /// Answer offline range sum queries using Mo's algorithm.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn mo_range_sum(
   arr : ArrayView[Int],
   queries : ArrayView[(Int, Int)],
@@ -61,81 +60,26 @@ pub fn mo_range_sum(
   let mut cur_r = 0
   let mut sum = 0
   for target in qs {
-    let (l1, sum1) = for l = cur_l, s = sum {
-      if l <= target.l {
-        break (l, s)
-      } else {
-        let l2 = l - 1
-        continue l2, s + arr[l2]
+    if cur_l > target.l {
+      for i in cur_l >.. target.l {
+        sum = sum + arr[i]
       }
-    } where {
-      invariant: l >= target.l && l <= cur_l,
-      reasoning: (
-        #|INVARIANT (extend left):
-        #|s equals sum over arr[l..cur_r). We extend the window leftward until
-        #|l reaches target.l.
-        #|MAINTENANCE:
-        #|Decrement l and add the new element arr[l].
-        #|TERMINATION:
-        #|At l = target.l, the left boundary matches the target.
-      ),
-    }
-    let (r1, sum2) = for r = cur_r, s = sum1 {
-      if r >= target.r {
-        break (r, s)
-      } else {
-        continue r + 1, s + arr[r]
+    } else if cur_l < target.l {
+      for i in cur_l..<target.l {
+        sum = sum - arr[i]
       }
-    } where {
-      invariant: r >= cur_r && r <= target.r,
-      reasoning: (
-        #|INVARIANT (extend right):
-        #|s equals sum over arr[l1..r). We extend the window rightward until
-        #|r reaches target.r.
-        #|MAINTENANCE:
-        #|Add arr[r] and increment r.
-        #|TERMINATION:
-        #|At r = target.r, the right boundary matches the target.
-      ),
     }
-    let (l2, sum3) = for l = l1, s = sum2 {
-      if l >= target.l {
-        break (l, s)
-      } else {
-        continue l + 1, s - arr[l]
+    cur_l = target.l
+    if cur_r < target.r {
+      for i in cur_r..<target.r {
+        sum = sum + arr[i]
       }
-    } where {
-      invariant: l >= l1 && l <= target.l,
-      reasoning: (
-        #|INVARIANT (shrink left):
-        #|s equals sum over arr[l..r1). We move l rightward to target.l.
-        #|MAINTENANCE:
-        #|Subtract arr[l] and increment l.
-        #|TERMINATION:
-        #|At l = target.l, the left boundary is aligned.
-      ),
-    }
-    let (r2, sum4) = for r = r1, s = sum3 {
-      if r <= target.r {
-        break (r, s)
-      } else {
-        let r2 = r - 1
-        continue r2, s - arr[r2]
+    } else if cur_r > target.r {
+      for i in cur_r >.. target.r {
+        sum = sum - arr[i]
       }
-    } where {
-      invariant: r >= target.r && r <= r1,
-      reasoning: (
-        #|INVARIANT (shrink right):
-        #|s equals sum over arr[l2..r). We move r leftward to target.r.
-        #|MAINTENANCE:
-        #|Decrement r and subtract arr[r].
-        #|TERMINATION:
-        #|At r = target.r, the right boundary is aligned.
-      ),
     }
-    cur_l = l2
-    cur_r = r2
-    sum = sum4
+    cur_r = target.r
     ans[target.idx] = sum
   }
   ans
