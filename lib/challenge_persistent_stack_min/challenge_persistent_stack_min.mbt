@@ -58,41 +58,9 @@ pub fn[T] pop(s : MinStack[T]) -> (T, MinStack[T])? {
 }
 
 ///|
-fn[T : Compare] min_suffix(arr : ArrayView[T], i : Int) -> T? {
-  if i >= arr.length() {
-    None
-  } else {
-    let tail = min_suffix(arr, i + 1)
-    match tail {
-      None => Some(arr[i])
-      Some(m) => Some(if arr[i] < m { arr[i] } else { m })
-    }
-  }
-}
 
 ///|
 /// Build a min-stack that preserves array order (top is arr[0]).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn[T : Compare] from_array(arr : ArrayView[T]) -> MinStack[T] {
-  let n = arr.length()
-  for i = n, st = MinStack::Nil {
-    if i <= 0 {
-      break st
-    } else {
-      let next_i = i - 1
-      continue next_i, push(st, arr[next_i])
-    }
-  } where {
-    invariant: i >= 0 && i <= n,
-    invariant: size(st) == n - i,
-    invariant: min_value(st) == min_suffix(arr, i),
-    reasoning: (
-      #|INVARIANT (Min stack suffix):
-      #|st stores arr[i..n) in order, and its top min equals min(arr[i..n)).
-      #|MAINTENANCE:
-      #|Push arr[i-1], updating the stored min with min(value, previous min).
-      #|TERMINATION:
-      #|At i = 0, st represents the whole array with correct minima.
-    ),
-  }
+  arr.rev_fold(init=MinStack::Nil, (st, value) => push(st, value))
 }

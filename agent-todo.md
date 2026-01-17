@@ -100,8 +100,8 @@
 - [x] lib/challenge_persistent_segment_tree_xor
 - [x] lib/challenge_persistent_skew_heap
 - [x] lib/challenge_persistent_stack
-- [ ] lib/challenge_persistent_stack_min (in progress)
-- [ ] lib/challenge_persistent_treap_map
+- [x] lib/challenge_persistent_stack_min
+- [ ] lib/challenge_persistent_treap_map (in progress)
 - [ ] lib/challenge_persistent_treap_set
 - [ ] lib/challenge_persistent_trie_string
 - [ ] lib/challenge_persistent_union_find
