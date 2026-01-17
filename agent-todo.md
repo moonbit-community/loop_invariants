@@ -173,7 +173,7 @@
 - [x] lib/point_in_polygon
 - [x] lib/pollard_rho
 - [x] lib/polygon_triangulation
-- [ ] lib/prufer_code
+- [x] lib/prufer_code
 - [ ] lib/push_relabel_max_flow
 - [ ] lib/rabin_karp
 - [ ] lib/rolling_hash
