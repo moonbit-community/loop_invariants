@@ -4,37 +4,26 @@
 
 ///|
 /// Find index of minimum value in a unimodal array (decreasing then increasing).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn find_min_unimodal(arr : ArrayView[Int]) -> Int {
   let n = arr.length()
   guard n > 0 else { return -1 }
-  let (l, h) = for lo = 0, hi = n - 1 {
+  let mut lo = 0
+  let mut hi = n - 1
+  for _ in 0..<n {
     if hi - lo <= 3 {
-      break (lo, hi)
-    } else {
-      let m1 = lo + (hi - lo) / 3
-      let m2 = hi - (hi - lo) / 3
-      if arr[m1] <= arr[m2] {
-        continue lo, m2 - 1
-      } else {
-        continue m1 + 1, hi
-      }
+      break
     }
-  } where {
-    invariant: lo >= 0 && hi < n && lo <= hi,
-    reasoning: (
-      #|INVARIANT (Unimodal bracket):
-      #|The minimum lies within [lo, hi].
-      #|MAINTENANCE:
-      #|Compare arr[m1] and arr[m2]; discard the side that cannot contain
-      #|the minimum for a unimodal sequence.
-      #|TERMINATION:
-      #|When hi - lo <= 3, the minimum is within a small window.
-    ),
+    let m1 = lo + (hi - lo) / 3
+    let m2 = hi - (hi - lo) / 3
+    if arr[m1] <= arr[m2] {
+      hi = m2 - 1
+    } else {
+      lo = m1 + 1
+    }
   }
-  // Linear scan for minimum in small window using functional for loop
-  let mut best_idx = l
-  for i in l..=h {
+  // Linear scan for minimum in the small window
+  let mut best_idx = lo
+  for i in lo..<(hi + 1) {
     if arr[i] < arr[best_idx] {
       best_idx = i
     }

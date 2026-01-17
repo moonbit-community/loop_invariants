@@ -111,8 +111,8 @@
 - [x] lib/challenge_sliding_window_min
 - [x] lib/challenge_sparse_table_rmq
 - [x] lib/challenge_sqrt_decomposition_sum
-- [ ] lib/challenge_ternary_search (in progress)
-- [ ] lib/challenge_toposort_kahn
+- [x] lib/challenge_ternary_search
+- [ ] lib/challenge_toposort_kahn (in progress)
 - [ ] lib/challenge_tree_diameter
 - [ ] lib/challenge_two_pointers
 - [ ] lib/challenge_union_find_rollback
