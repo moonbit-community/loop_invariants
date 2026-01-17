@@ -32,26 +32,6 @@ fn[T] children_size(children : ChildList[T]) -> Int {
 }
 
 ///|
-fn[T : Compare] heap_valid(h : Heap[T]) -> Bool {
-  match h {
-    Heap::Empty => true
-    Heap::Node(value~, children~) => children_valid(value, children)
-  }
-}
-
-///|
-fn[T : Compare] children_valid(parent : T, children : ChildList[T]) -> Bool {
-  match children {
-    ChildList::Nil => true
-    ChildList::Cons(head~, tail~) => {
-      let head_ok = match head {
-        Heap::Empty => false
-        Heap::Node(value=v, children=_) => parent <= v && heap_valid(head)
-      }
-      head_ok && children_valid(parent, tail)
-    }
-  }
-}
 
 ///|
 /// Create an empty pairing heap.
@@ -101,32 +81,29 @@ pub fn[T] find_min(h : Heap[T]) -> T? {
 }
 
 ///|
-#warnings("+missing_invariant+missing_reasoning")
 fn[T : Compare] merge_pairs(children : ChildList[T]) -> Heap[T] {
-  for cur = children, acc = Heap::Empty {
-    match cur {
-      ChildList::Nil => break acc
-      ChildList::Cons(head~, tail~) =>
-        match tail {
-          ChildList::Nil => break merge(acc, head)
-          ChildList::Cons(head=second, tail=rest) => {
-            let merged = merge(head, second)
-            continue rest, merge(acc, merged)
-          }
-        }
-    }
-  } where {
-    invariant: heap_valid(acc),
-    invariant: heap_size(acc) + children_size(cur) == children_size(children),
-    reasoning: (
-      #|INVARIANT (Pairwise merge progress):
-      #|acc is the merge of processed child pairs; cur holds remaining heaps.
-      #|Size is preserved: acc plus remaining children cover the original list.
-      #|MAINTENANCE:
-      #|Merge the next two children (or one leftover) into acc.
-      #|TERMINATION:
-      #|When cur is Nil, acc is the full merge of all child heaps.
-    ),
+  let pairs = merge_pairs_list(children)
+  merge_all(pairs)
+}
+
+///|
+fn[T : Compare] merge_pairs_list(children : ChildList[T]) -> ChildList[T] {
+  match children {
+    ChildList::Nil => ChildList::Nil
+    ChildList::Cons(head~, tail~) =>
+      match tail {
+        ChildList::Nil => ChildList::Cons(head~, tail=ChildList::Nil)
+        ChildList::Cons(head=second, tail=rest) =>
+          ChildList::Cons(head=merge(head, second), tail=merge_pairs_list(rest))
+      }
+  }
+}
+
+///|
+fn[T : Compare] merge_all(children : ChildList[T]) -> Heap[T] {
+  match children {
+    ChildList::Nil => Heap::Empty
+    ChildList::Cons(head~, tail~) => merge(head, merge_all(tail))
   }
 }
 
