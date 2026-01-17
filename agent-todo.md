@@ -186,7 +186,7 @@
 - [x] lib/sliding_window
 - [x] lib/sparse_table
 - [x] lib/splay
-- [ ] lib/splay_tree
+- [x] lib/splay_tree
 - [ ] lib/sqrt
 - [ ] lib/sqrt_decomposition
 - [ ] lib/stoer_wagner_min_cut
