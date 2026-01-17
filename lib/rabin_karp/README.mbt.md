@@ -1,193 +1,192 @@
-# Rabin-Karp Algorithm
+# Rabin–Karp (Rolling Hash String Matching)
 
-## Overview
+This package implements **Rabin–Karp**, a fast string matching algorithm based
+on **rolling hashes**.
 
-**Rabin-Karp** is a string matching algorithm using rolling hashes. It computes
-a hash for the pattern and slides a window over the text, comparing hashes
-for O(1) average-case matching per position.
+It is great when:
 
-- **Expected Time**: O(n + m)
-- **Worst Case**: O(nm) (many hash collisions)
-- **Space**: O(1)
+- you want a **simple** string search,
+- you have **many patterns**,
+- or you want fast approximate checks before verifying characters.
 
-## The Key Insight
+---
 
-```
-Instead of comparing characters, compare hashes.
-Use a "rolling hash" to update hash in O(1) as window slides.
+## 1. Big idea (beginner friendly)
 
-Pattern: "aba"  →  hash("aba") = H_p
-
-Text: "acababa"
-       |||
-Slide window:
-  "aca" → hash = H₁ ≠ H_p
-  "cab" → hash = H₂ ≠ H_p  (O(1) update from H₁!)
-  "aba" → hash = H₃ = H_p  → verify characters
-  ...
-
-If hashes match, verify to avoid false positives.
-```
-
-## Rolling Hash
+Instead of comparing strings character by character every time, compare their
+**hashes**.
 
 ```
-Polynomial hash:
-  hash(s) = s[0] × b^(m-1) + s[1] × b^(m-2) + ... + s[m-1]
-  where b = base (e.g., 31 or 256)
+pattern = "aba"
+text    = "acababa"
 
-Rolling update when sliding from s[i..i+m] to s[i+1..i+m+1]:
-  new_hash = (old_hash - s[i] × b^(m-1)) × b + s[i+m]
+hash("aba") = H
 
-Example: base = 10, text = "12345"
-  hash("123") = 1×100 + 2×10 + 3 = 123
-  hash("234") = (123 - 1×100) × 10 + 4 = 234
-
-This is O(1) instead of O(m)!
+Slide a window of length 3:
+  "aca" -> hash != H
+  "cab" -> hash != H
+  "aba" -> hash == H  -> verify characters -> match!
 ```
 
-## Algorithm Walkthrough
+The rolling hash lets us update the hash in O(1) time when the window slides.
+
+---
+
+## 2. Rolling hash formula
+
+We treat a string like a number in base `b`:
 
 ```
-Pattern: "ab" (m = 2)
-Text: "aabab" (n = 5)
-Base = 31
-
-Precompute:
-  h_pattern = 'a'×31 + 'b' = 97×31 + 98 = 3105
-
-Sliding window:
-  i=0: "aa" → hash = 97×31 + 97 = 3104 ≠ 3105
-  i=1: "ab" → hash = (3104 - 97×31)×31 + 98 = 3105 = h_pattern
-       Verify: "ab" == "ab" ✓ Match at position 1!
-  i=2: "ba" → hash = (3105 - 97×31)×31 + 97 = 3106 ≠ 3105
-  i=3: "ab" → hash = 3105 = h_pattern
-       Verify: Match at position 3!
-
-Matches found at: [1, 3]
+hash(s[0..m-1]) =
+  s0 * b^(m-1) + s1 * b^(m-2) + ... + s(m-1)
 ```
 
-## Example Usage
+Rolling update (slide by 1):
+
+```
+new_hash = (old_hash - s[i] * b^(m-1)) * b + s[i+m]
+```
+
+Example (base 10):
+
+```
+hash("123") = 1*100 + 2*10 + 3 = 123
+hash("234") = (123 - 1*100)*10 + 4 = 234
+```
+
+---
+
+## 3. Small step‑by‑step example
+
+Text: `"aabab"`
+Pattern: `"ab"`
+
+Let base = 31, ASCII chars.
+
+```
+hash("ab") = 97*31 + 98 = 3105
+```
+
+Window hashes:
+
+```
+i=0: "aa" -> 97*31 + 97 = 3104
+i=1: "ab" -> 3105  -> match (verify characters)
+i=2: "ba" -> 98*31 + 97 = 3135
+i=3: "ab" -> 3105  -> match
+```
+
+Matches at positions [1, 3].
+
+---
+
+## 4. Why verification is needed
+
+Hashes can collide:
+
+```
+hash("ab") == hash("cd")   // possible with unlucky hash
+```
+
+So we **always verify** characters when hashes match.
+
+This makes the algorithm **correct**, with expected O(n) time.
+
+---
+
+## 5. API overview
+
+From `pkg.generated.mbti`:
+
+- `rabin_karp_search(text, pattern) -> Array[Int]`
+- `rabin_karp_count(text, pattern) -> Int`
+- `rabin_karp_multi(text, patterns) -> Array[(Int, Int)]`
+
+`rabin_karp_multi` returns `(pattern_index, position)` pairs.
+
+---
+
+## 6. Example usage
 
 ```mbt check
 ///|
-test "rabin karp example" {
+test "rabin karp search" {
   let matches = @rabin_karp.rabin_karp_search("abababab", "aba")
   inspect(matches, content="[0, 2, 4]")
+}
+```
+
+```mbt check
+///|
+test "rabin karp count" {
   inspect(@rabin_karp.rabin_karp_count("aaaa", "aa"), content="3")
 }
 ```
 
-## The Algorithm
-
-```
-def rabin_karp(text, pattern):
-    n, m = len(text), len(pattern)
-    if m > n: return []
-
-    # Precompute
-    h_pattern = hash(pattern)
-    h_text = hash(text[0:m])
-    b_power = base^(m-1) mod prime
-
-    matches = []
-
-    for i in 0..n-m:
-        if h_text == h_pattern:
-            if text[i:i+m] == pattern:  # Verify!
-                matches.append(i)
-
-        # Roll hash to next position
-        if i < n - m:
-            h_text = ((h_text - text[i] × b_power) × base + text[i+m]) mod prime
-
-    return matches
+```mbt check
+///|
+test "rabin karp multi" {
+  let patterns = ["aba", "bab", "ab"]
+  let hits = @rabin_karp.rabin_karp_multi("ababab", patterns)
+  inspect(hits, content="[(0, 0), (1, 1), (0, 2), (1, 3), (2, 0), (2, 2), (2, 4)]")
+}
 ```
 
-## Common Applications
+---
 
-### 1. Single Pattern Search
-```
-Find all occurrences of pattern in text.
-Average O(n + m), handles multiple patterns well.
-```
-
-### 2. Multiple Pattern Search
-```
-Search for many patterns simultaneously.
-Compute hash for each pattern, check all at each position.
-Time: O(n × k) for k patterns (hash comparisons are O(1))
-```
-
-### 3. Plagiarism Detection
-```
-Find common substrings between documents.
-Hash all k-grams, find matching hashes.
-```
-
-### 4. Longest Repeated Substring
-```
-Binary search on length, use hashing to check.
-O(n log n) with rolling hash.
-```
-
-## Hash Collision Handling
+## 7. Diagram: sliding window
 
 ```
-Problem: Different strings can have same hash (collision)
+text:    a b a b a b
+index:   0 1 2 3 4 5
+pattern: a b a
 
-Solutions:
-1. Always verify: Compare characters when hashes match
-2. Double hashing: Use two independent hash functions
-3. Large modulus: Use prime modulus to reduce collisions
-
-Collision probability ≈ 1/prime for random strings
-With 64-bit hash: ~1/10^18 probability
+window 0: [a b a]  -> match
+window 1:   [b a b]
+window 2:     [a b a]  -> match
+window 3:       [b a b]
 ```
 
-## Complexity Analysis
+---
 
-| Case | Time |
-|------|------|
-| Best/Average | O(n + m) |
-| Worst (many collisions) | O(nm) |
-| Multiple patterns (k) | O(n × k) average |
+## 8. Multiple pattern search (why Rabin–Karp shines)
 
-## Rabin-Karp vs Other String Matching
-
-| Algorithm | Time | Preprocessing | Best For |
-|-----------|------|---------------|----------|
-| **Rabin-Karp** | O(n) avg | O(m) | Multiple patterns |
-| KMP | O(n + m) | O(m) | Single pattern |
-| Boyer-Moore | O(n/m) best | O(m + σ) | Long patterns |
-| Aho-Corasick | O(n + z) | O(total pattern) | Many patterns |
-
-**Choose Rabin-Karp when**: You need simple implementation or multiple pattern matching.
-
-## Choosing Hash Parameters
+If you have many patterns, hashing makes it cheap to compare all of them:
 
 ```
-Base (b):
-  - Typically alphabet size or a prime (31, 37, 256)
-  - Should be larger than alphabet size
-
-Modulus (p):
-  - Large prime to reduce collisions
-  - Common: 10^9 + 7, 10^9 + 9, 2^61 - 1
-  - Larger = fewer collisions but slower arithmetic
-
-Multiple hashes:
-  - Use 2-3 independent (base, modulus) pairs
-  - Collision requires matching ALL hashes
-  - Probability: 1/p₁ × 1/p₂ × ...
+patterns = {P0, P1, P2}
+For each window in text:
+  compare hash(window) with all pattern hashes
+  if match, verify
 ```
 
-## Implementation Notes
+This is often simpler than building a complex automaton.
 
-- Precompute base^(m-1) for efficiency
-- Use modular arithmetic to avoid overflow
-- Handle negative remainders carefully (add modulus if needed)
-- For case-insensitive matching, normalize before hashing
-- Consider using 64-bit integers to avoid overflow issues
-- Verification is essential to avoid false positives
+---
 
+## 9. Complexity
+
+```
+Expected: O(n + m)
+Worst:    O(nm) if every hash collides (very unlikely)
+```
+
+With verification, correctness is guaranteed.
+
+---
+
+## 10. Practical tips
+
+1. Use a large modulus (or 64‑bit hash) to reduce collisions.
+2. Precompute `b^(m-1)` for rolling.
+3. Always verify when hashes match.
+4. For case‑insensitive search, normalize the text and pattern first.
+
+---
+
+## 11. Summary
+
+- Rabin–Karp uses rolling hashes for fast window checks.
+- Hash equality is a **filter**, not proof.
+- Verification makes it exact.
+- Great for multiple patterns or quick substring searches.

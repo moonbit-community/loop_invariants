@@ -175,7 +175,7 @@
 - [x] lib/polygon_triangulation
 - [x] lib/prufer_code
 - [x] lib/push_relabel_max_flow
-- [ ] lib/rabin_karp
+- [x] lib/rabin_karp
 - [ ] lib/rolling_hash
 - [ ] lib/rotating_calipers_diameter
 - [ ] lib/sam
