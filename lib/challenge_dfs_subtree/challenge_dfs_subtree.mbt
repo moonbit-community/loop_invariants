@@ -4,7 +4,6 @@
 
 ///|
 /// Compute subtree sizes rooted at 'root' for a tree graph.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
   let n = adj.length()
   if n == 0 || root < 0 || root >= n {
