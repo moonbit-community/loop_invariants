@@ -122,8 +122,8 @@
 - [x] lib/dial_shortest_path
 - [x] lib/dijkstra
 - [x] lib/dinic
-- [ ] lib/disjoint_sparse (in progress)
-- [ ] lib/dominator_tree
+- [x] lib/disjoint_sparse
+- [ ] lib/dominator_tree (in progress)
 - [ ] lib/dp
 - [ ] lib/dsu_on_tree
 - [ ] lib/duval_lyndon

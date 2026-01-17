@@ -64,23 +64,13 @@ fn highest_bit(x : Int) -> Int {
   if x <= 0 {
     return 0
   }
-
-  // INVARIANT: result = floor(log2(x))
-  for result = 0, val = x; val > 1; {
-    continue result + 1, val / 2
-  } else {
-    result
-  } where {
-    invariant: result >= 0 && val >= 1,
-    reasoning: (
-      #|INVARIANT (highest_bit loop):
-      #|val == floor(x / 2^result) and val >= 1 while looping.
-      #|MAINTENANCE:
-      #|Divide val by 2 and increment result, preserving the relation.
-      #|TERMINATION:
-      #|When val <= 1, result is floor(log2(x)).
-    ),
+  let mut result = 0
+  let mut val = x
+  while val > 1 {
+    result = result + 1
+    val = val / 2
   }
+  result
 }
 
 ///|
