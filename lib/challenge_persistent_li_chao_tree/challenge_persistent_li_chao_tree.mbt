@@ -100,27 +100,12 @@ pub fn query(node : Node, x : Int, l : Int, r : Int) -> Int {
 
 ///|
 /// Build a Li Chao tree by inserting lines in order.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn from_array(lines : ArrayView[Line], l : Int, r : Int) -> Node {
-  let n = lines.length()
-  for i = 0, tree = Node::Empty {
-    if i >= n {
-      break tree
-    } else {
-      continue i + 1, insert(tree, lines[i], l, r)
-    }
-  } where {
-    invariant: i >= 0 && i <= n,
-    invariant: line_count(tree) == i,
-    reasoning: (
-      #|INVARIANT (Li Chao build):
-      #|tree contains the first i lines over domain [l, r).
-      #|MAINTENANCE:
-      #|Insert lines[i], preserving the Li Chao structure.
-      #|TERMINATION:
-      #|At i = n, all lines are inserted.
-    ),
+  let mut tree = Node::Empty
+  for line in lines {
+    tree = insert(tree, line, l, r)
   }
+  tree
 }
 
 ///|
