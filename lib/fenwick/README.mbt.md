@@ -14,6 +14,18 @@ It's simpler and more cache-friendly than segment trees for sum queries.
 - Prefix sum walks **down** by subtracting lowbit; updates walk **up** by adding it.
 - Each value participates in O(log n) nodes, giving O(log n) updates/queries.
 
+## Indexing Note (0-indexed API, 1-indexed Internals)
+
+```
+Externally:
+  - You call add(i, delta) with i in [0, n-1]
+  - prefix_sum(i) returns sum of [0..i]
+
+Internally:
+  - The tree uses indices 1..n
+  - We map i -> i+1 for all operations
+```
+
 ## The Key Insight: Lowbit
 
 The magic of Fenwick Trees lies in the **lowbit** function:
@@ -87,6 +99,20 @@ Step 4: Done!
 All ranges containing index 3 are updated!
 ```
 
+## Range Sum = Two Prefix Sums
+
+```
+range_sum(l, r) = prefix_sum(r) - prefix_sum(l - 1)
+
+Example:
+  arr = [3, 1, 4, 1, 5, 9]
+  prefix_sum(5) = 23
+  prefix_sum(1) = 4
+
+  range_sum(2, 5) = 23 - 4 = 19
+  (4 + 1 + 5 + 9 = 19)
+```
+
 ## Worked Example
 
 Array: `[3, 1, 4, 1, 5, 9, 2, 6]` (0-indexed input)
@@ -107,6 +133,19 @@ Internal: sum[1..6]
   tree[4] = 9  (covers [1,4])
   4 - 4 = 0, done
 Total = 14 + 9 = 23
+```
+
+## Building in O(n)
+
+```
+Instead of doing n point updates (O(n log n)),
+we can build in O(n) by propagating each index once.
+
+For each i:
+  parent = i + lowbit(i)
+  tree[parent] += tree[i]
+
+Because parent > i, each value is pushed upward only once.
 ```
 
 ## Use Cases
@@ -151,24 +190,36 @@ test "fenwick tree complete example" {
 
 Update a range [l, r] with +delta, query single points:
 
-```mbt check
-///|
-test "range update example" {
-  // Uses difference array internally
-  // Add 10 to range [1, 3], query individual positions
-}
+```
+Example (n = 5):
+  add 10 to [1, 3]
+  query(0) = 0
+  query(1) = 10
+  query(2) = 10
+  query(3) = 10
+  query(4) = 0
+
+Idea:
+  Keep a BIT over a difference array.
+  Range add becomes two point adds:
+    diff[l] += delta
+    diff[r+1] -= delta
 ```
 
 ### 2. Range Update + Range Query
 
 Both range updates and range sum queries:
 
-```mbt check
-///|
-test "range-range example" {
-  // Uses two BITs internally
-  // Supports both range add and range sum
-}
+```
+Example:
+  add 5 to [1, 3]
+  add 2 to [0, 2]
+  range_sum(0, 3) = (2+7+7+5) = 21
+
+Idea:
+  Use two BITs (bit1, bit2) to convert
+  range updates into prefix sums:
+    prefix(i) = bit1.sum(i) * i - bit2.sum(i)
 ```
 
 ### 3. 2D Fenwick Tree
@@ -182,6 +233,10 @@ Grid:    1 2 3
 
 Query rectangle (1,1) to (2,2):
   = 5 + 6 + 8 + 9 = 28
+
+Point update:
+  add 10 at (0,0)
+  rectangle (0,0) to (1,1) increases by 10
 ```
 
 ## Complexity Analysis
@@ -192,6 +247,13 @@ Query rectangle (1,1) to (2,2):
 | Point Update  | O(log n) | -     |
 | Prefix Sum    | O(log n) | -     |
 | Range Sum     | O(log n) | -     |
+
+## Common Pitfalls
+
+- **Off-by-one**: internal indices are 1-based; external are 0-based.
+- **Negative indices**: prefix_sum(-1) should return 0.
+- **Overflow**: use `Int64` if sums can exceed `Int`.
+- **Wrong range formula**: remember `range_sum(l, r) = pref(r) - pref(l - 1)`.
 
 ## Fenwick vs Segment Tree
 

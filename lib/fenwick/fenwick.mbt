@@ -64,37 +64,16 @@ pub fn FenwickTree::from_array(arr : Array[Int64]) -> FenwickTree {
   let tree = Array::make(n + 1, 0L)
 
   // Copy array values (convert to 1-indexed)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     tree[i + 1] = arr[i]
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (copy to tree):
-      #|tree[1..i] equals arr[0..i) in 1-indexed form; later cells are untouched.
-      #|MAINTENANCE:
-      #|Assign tree[i+1] = arr[i], extending the copied prefix by one element.
-      #|TERMINATION:
-      #|At i = n, tree[1..n] matches arr[0..n).
-    ),
   }
 
   // Build tree in O(n) by propagating each element to its parent
-  for i = 1; i <= n; i = i + 1 {
+  for i in 1 ..<= n {
     let parent = i + (i & -i)
     if parent <= n {
       tree[parent] = tree[parent] + tree[i]
     }
-  } where {
-    invariant: i >= 1 && i <= n + 1,
-    reasoning: (
-      #|INVARIANT (build BIT):
-      #|tree[1..i) already holds the correct partial sums for their ranges.
-      #|MAINTENANCE:
-      #|Compute parent = i + lowbit(i) and add tree[i] to tree[parent], which
-      #|extends the parent's covered range. Since parent > i, tree[i] is final.
-      #|TERMINATION:
-      #|At i = n + 1, every tree[j] stores the sum of its lowbit range.
-    ),
   }
   { n, tree }
 }
@@ -118,10 +97,14 @@ pub fn FenwickTree::add(self : FenwickTree, i : Int, delta : Int64) -> Unit {
   }
 
   // Convert to 1-indexed
-  let mut idx = i + 1
-  while idx <= self.n {
-    self.tree[idx] = self.tree[idx] + delta
-    idx = idx + lowbit(idx)
+  loop i + 1 {
+    idx => {
+      if idx > self.n {
+        break ()
+      }
+      self.tree[idx] = self.tree[idx] + delta
+      continue idx + lowbit(idx)
+    }
   }
 }
 
@@ -139,21 +122,13 @@ pub fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int64 {
 
   // Convert to 1-indexed and clamp
   let idx_start = if i >= self.n { self.n } else { i + 1 }
-  for idx = idx_start, sum = 0L; idx > 0; {
-    continue idx - lowbit(idx), sum + self.tree[idx]
-  } else {
-    sum
-  } where {
-    invariant: idx >= 0 && idx <= idx_start,
-    reasoning: (
-      #|INVARIANT (prefix_sum walk):
-      #|sum is the total of tree nodes already visited on the path from idx_start
-      #|down to idx; remaining idx values still cover the uncounted prefix.
-      #|MAINTENANCE:
-      #|Add tree[idx] and jump to idx - lowbit(idx), the next covering node.
-      #|TERMINATION:
-      #|At idx = 0, all covering nodes have been accumulated.
-    ),
+  loop (idx_start, 0L) {
+    (idx, sum) => {
+      if idx <= 0 {
+        break sum
+      }
+      continue (idx - lowbit(idx), sum + self.tree[idx])
+    }
   }
 }
 
@@ -204,18 +179,8 @@ priv struct FenwickTree2D {
 ///|
 fn FenwickTree2D::new(rows : Int, cols : Int) -> FenwickTree2D {
   let tree : Array[Array[Int64]] = []
-  for i = 0; i <= rows; i = i + 1 {
+  for _ in 0 ..<= rows {
     tree.push(Array::make(cols + 1, 0L))
-  } where {
-    invariant: i >= 0 && i <= rows + 1,
-    reasoning: (
-      #|INVARIANT (2D tree alloc):
-      #|tree has rows [0..i) allocated, each with cols+1 zero entries.
-      #|MAINTENANCE:
-      #|Push a new zero row for index i.
-      #|TERMINATION:
-      #|At i = rows + 1, all 1-indexed rows are allocated.
-    ),
   }
   { rows, cols, tree }
 }
@@ -231,14 +196,22 @@ fn FenwickTree2D::add(
   if r < 0 || r >= self.rows || c < 0 || c >= self.cols {
     return
   }
-  let mut i = r + 1
-  while i <= self.rows {
-    let mut j = c + 1
-    while j <= self.cols {
-      self.tree[i][j] = self.tree[i][j] + delta
-      j = j + lowbit(j)
+  loop r + 1 {
+    i => {
+      if i > self.rows {
+        break ()
+      }
+      loop c + 1 {
+        j => {
+          if j > self.cols {
+            break ()
+          }
+          self.tree[i][j] = self.tree[i][j] + delta
+          continue j + lowbit(j)
+        }
+      }
+      continue i + lowbit(i)
     }
-    i = i + lowbit(i)
   }
 }
 
@@ -250,17 +223,22 @@ fn FenwickTree2D::prefix_sum(self : FenwickTree2D, r : Int, c : Int) -> Int64 {
   }
   let ri = if r >= self.rows { self.rows } else { r + 1 }
   let ci = if c >= self.cols { self.cols } else { c + 1 }
-  let mut sum = 0L
-  let mut i = ri
-  while i > 0 {
-    let mut j = ci
-    while j > 0 {
-      sum = sum + self.tree[i][j]
-      j = j - lowbit(j)
+  loop (ri, 0L) {
+    (i, sum) => {
+      if i <= 0 {
+        break sum
+      }
+      let row_sum = loop (ci, 0L) {
+        (j, acc) => {
+          if j <= 0 {
+            break acc
+          }
+          continue (j - lowbit(j), acc + self.tree[i][j])
+        }
+      }
+      continue (i - lowbit(i), sum + row_sum)
     }
-    i = i - lowbit(i)
   }
-  sum
 }
 
 ///|
@@ -309,10 +287,14 @@ fn FenwickTreeRangeUpdate::point_add(
   if i < 0 || i >= self.n {
     return
   }
-  let mut idx = i + 1
-  while idx <= self.n {
-    self.tree[idx] = self.tree[idx] + delta
-    idx = idx + lowbit(idx)
+  loop i + 1 {
+    idx => {
+      if idx > self.n {
+        break ()
+      }
+      self.tree[idx] = self.tree[idx] + delta
+      continue idx + lowbit(idx)
+    }
   }
 }
 
@@ -343,13 +325,14 @@ fn FenwickTreeRangeUpdate::query(
   if i < 0 || i >= self.n {
     return 0L
   }
-  let mut idx = i + 1
-  let mut sum = 0L
-  while idx > 0 {
-    sum = sum + self.tree[idx]
-    idx = idx - lowbit(idx)
+  loop (i + 1, 0L) {
+    (idx, sum) => {
+      if idx <= 0 {
+        break sum
+      }
+      continue (idx - lowbit(idx), sum + self.tree[idx])
+    }
   }
-  sum
 }
 
 // ============================================================================
@@ -372,22 +355,27 @@ fn FenwickTreeRangeRange::new(n : Int) -> FenwickTreeRangeRange {
 
 ///|
 fn add_internal(arr : Array[Int64], n : Int, i : Int, delta : Int64) -> Unit {
-  let mut idx = i
-  while idx <= n {
-    arr[idx] = arr[idx] + delta
-    idx = idx + lowbit(idx)
+  loop i {
+    idx => {
+      if idx > n {
+        break ()
+      }
+      arr[idx] = arr[idx] + delta
+      continue idx + lowbit(idx)
+    }
   }
 }
 
 ///|
 fn query_internal(arr : Array[Int64], i : Int) -> Int64 {
-  let mut idx = i
-  let mut sum = 0L
-  while idx > 0 {
-    sum = sum + arr[idx]
-    idx = idx - lowbit(idx)
+  loop (i, 0L) {
+    (idx, sum) => {
+      if idx <= 0 {
+        break sum
+      }
+      continue (idx - lowbit(idx), sum + arr[idx])
+    }
   }
-  sum
 }
 
 ///|
