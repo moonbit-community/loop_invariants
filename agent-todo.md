@@ -179,7 +179,7 @@
 - [x] lib/rolling_hash
 - [x] lib/rotating_calipers_diameter
 - [x] lib/sam
-- [ ] lib/scc
+- [x] lib/scc
 - [ ] lib/segment_tree
 - [ ] lib/segment_tree_beats
 - [ ] lib/skiplist

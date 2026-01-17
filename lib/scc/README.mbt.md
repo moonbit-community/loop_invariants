@@ -1,134 +1,125 @@
 # Strongly Connected Components (SCC)
 
-## Overview
+This package finds **strongly connected components** in a directed graph.
+It implements:
 
-A **Strongly Connected Component** is a maximal set of vertices where every
-vertex can reach every other vertex. This package implements both **Tarjan's**
-and **Kosaraju's** algorithms.
+- **Tarjan** (one DFS pass)
+- **Kosaraju** (two DFS passes)
 
-- **Time**: O(V + E)
-- **Space**: O(V)
+It also includes a **2‑SAT solver** built on SCCs.
 
-## Core Idea
+---
 
-- Use DFS to discover **cycles of mutual reachability**.
-- Tarjan tracks **low-link** values to find SCC roots in one pass.
-- Kosaraju uses **reverse finish order** on the transposed graph.
+## 1. What is an SCC?
 
-## Visual Example
+An SCC is a **maximal set of vertices** where every vertex can reach every
+other vertex.
 
-```
-Graph:                    SCCs:
-    0 ──→ 1              ┌─────────┐    ┌───┐
-    ↑     │              │ 0  1  2 │    │ 3 │
-    │     ↓              │  (cycle)│    │   │
-    └──── 2 ──→ 3        └─────────┘    └───┘
-          ↑
-          │              SCC 1: {0,1,2} - all can reach each other
-          └──────────    SCC 2: {3} - no outgoing edges back
-```
+If you compress each SCC into one node, the graph becomes a **DAG**.
 
-## Why SCCs Matter
+---
 
-When you contract each SCC to a single node, you get a **DAG** (Directed Acyclic Graph):
+## 2. Tiny visual example
 
 ```
-Original:                   Condensation DAG:
-    0 → 1                       [0,1,2]
-    ↑   ↓                          │
-    └── 2 → 3                      ↓
-                                  [3]
+Graph:
+  0 → 1
+  ↑   ↓
+  2 ←─┘
+  2 → 3
 
-The DAG enables:
-- Topological sorting of components
-- DP on the component graph
-- Identifying bottlenecks in connectivity
+SCCs:
+  {0,1,2}  (cycle)
+  {3}
 ```
 
-## Tarjan's Algorithm
-
-Uses a single DFS with discovery times and low-link values.
-
-### Key Concepts
+Condensation DAG:
 
 ```
-disc[v] = Discovery time (when first visited)
-low[v]  = Lowest discovery time reachable from v's subtree
-
-A vertex v is the ROOT of its SCC when: disc[v] == low[v]
+ [0,1,2]  →  [3]
 ```
 
-### Algorithm Walkthrough
+---
+
+## 3. Why SCCs matter
+
+SCCs let you:
+
+- detect cycles,
+- topologically sort components,
+- solve 2‑SAT,
+- simplify reachability problems by compressing the graph.
+
+---
+
+## 4. Tarjan’s algorithm (one‑pass DFS)
+
+Tarjan uses two arrays:
 
 ```
-Graph: 0 → 1 → 2 → 0, 2 → 3
-
-DFS from 0:
-
-Visit 0: disc[0]=0, low[0]=0, push 0
-         Stack: [0]
-
-Visit 1: disc[1]=1, low[1]=1, push 1
-         Stack: [0, 1]
-
-Visit 2: disc[2]=2, low[2]=2, push 2
-         Stack: [0, 1, 2]
-
-  Edge 2→0: 0 is on stack!
-           low[2] = min(2, disc[0]) = 0
-
-  Edge 2→3:
-    Visit 3: disc[3]=3, low[3]=3, push 3
-             Stack: [0, 1, 2, 3]
-
-    No outgoing edges from 3
-    disc[3] == low[3], so 3 is SCC root
-    Pop until 3: SCC = {3}
-    Stack: [0, 1, 2]
-
-  Back to 2: low[2] = 0
-
-Back to 1: low[1] = min(1, low[2]) = 0
-
-Back to 0: low[0] = 0
-          disc[0] == low[0], so 0 is SCC root
-          Pop until 0: SCC = {2, 1, 0}
-
-Result: 2 SCCs: {0,1,2} and {3}
+disc[v] = discovery time
+low[v]  = lowest discovery time reachable from v
 ```
 
-### The Stack Invariant
+A vertex `v` is the **root** of an SCC if:
 
 ```
-Stack contains exactly:
-1. Current DFS path (root to current node)
-2. Nodes that can still reach back to the path
-
-When disc[v] == low[v]:
-- v cannot reach any earlier node
-- All nodes above v in stack form v's SCC
-- Pop them all and assign to same component
+disc[v] == low[v]
 ```
 
-## Kosaraju's Algorithm
+Then all vertices on the stack up to `v` form one SCC.
 
-Uses two DFS passes with graph transposition.
+---
+
+## 5. Tarjan step‑by‑step (small example)
+
+Graph:
 
 ```
-Pass 1: DFS on original graph
-        Record finish times in post-order
+0 → 1 → 2 → 0
+2 → 3
+```
 
-Pass 2: Transpose graph (reverse all edges)
-        DFS in reverse finish order
+DFS order:
+
+```
+visit 0: disc=0, low=0
+visit 1: disc=1, low=1
+visit 2: disc=2, low=2
+  edge 2→0 gives low[2]=0
+visit 3: disc=3, low=3
+  no back edge, so {3} is an SCC
+
+backtrack:
+low[1] = min(low[1], low[2]) = 0
+low[0] = min(low[0], low[1]) = 0
+
+disc[0] == low[0] -> pop {2,1,0} as SCC
+```
+
+Result: two SCCs {0,1,2} and {3}.
+
+---
+
+## 6. Kosaraju’s algorithm (two passes)
+
+Steps:
+
+1. DFS on original graph, record finish order.
+2. Reverse all edges (transpose).
+3. DFS in **reverse finish order** on the transpose.
+
+Each DFS tree in pass 2 is one SCC.
 
 Why it works:
-- If u can reach v in original graph
-- Then v can reach u in transposed graph
-- Processing in reverse finish order ensures
-  we start from "sink" SCCs first
-```
 
-## Example Usage
+- SCCs become nodes in a DAG.
+- Finishing order puts sink SCCs last.
+- Reversing edges lets us reach exactly one SCC at a time.
+
+---
+
+## 7. Example usage (public API)
 
 ```mbt check
 ///|
@@ -148,85 +139,80 @@ test "scc example" {
 }
 ```
 
-## Common Applications
+---
 
-### 1. 2-SAT Problem
-
-```
-Variables: x₀, x₁, x₂, ...
-Clauses: (x₀ OR x₁), (NOT x₁ OR x₂), ...
-
-Build implication graph:
-  (a OR b) becomes: NOT a → b, NOT b → a
-
-Satisfiable iff: For all i, xᵢ and NOT xᵢ are in different SCCs
-
-Assignment: xᵢ = true if xᵢ's SCC comes after NOT xᵢ's SCC
-```
-
-### 2. Condensation Graph
+## 8. What `SCCResult` contains
 
 ```
-Contract each SCC to a single node.
-Result is a DAG - enables:
-- Topological sort
-- Shortest/longest paths
-- DP on components
+num_sccs    = number of components
+component   = component index for each vertex
+scc_sizes   = size of each SCC
+scc_adj     = DAG of SCCs (condensation graph)
 ```
 
-### 3. Reachability Analysis
+---
+
+## 9. 2‑SAT with SCC (friendly version)
+
+Each clause `(a OR b)` becomes implications:
 
 ```
-Within an SCC: Everyone can reach everyone
-Between SCCs: Follow the DAG structure
-
-Use case: Finding critical connections in networks
+NOT a → b
+NOT b → a
 ```
 
-### 4. Compiler Optimization
+Then:
 
 ```
-Call graph analysis:
-- Functions in same SCC are mutually recursive
-- SCCs in DAG order = safe compilation order
+If x and NOT x are in the same SCC, the formula is unsatisfiable.
 ```
 
-## Algorithm Comparison
+If it is satisfiable, the topological order of SCCs gives an assignment.
 
-| Algorithm | Passes | Space | Best For |
-|-----------|--------|-------|----------|
-| **Tarjan** | 1 DFS | O(V) | Single pass, online |
-| **Kosaraju** | 2 DFS | O(V+E)* | Conceptually simpler |
+---
 
-*Kosaraju needs space for transposed graph.
+## 10. Example: 2‑SAT usage
 
-## Complexity Analysis
+```mbt check
+///|
+test "two sat example" {
+  let ts = @scc.TwoSAT::new(2)
 
-```
-Tarjan's Algorithm:
-- Each vertex pushed/popped once: O(V)
-- Each edge examined once: O(E)
-- Total: O(V + E)
+  // (x0 OR x1)
+  ts.add_clause(0, true, 1, true)
 
-Kosaraju's Algorithm:
-- First DFS: O(V + E)
-- Build transpose: O(V + E)
-- Second DFS: O(V + E)
-- Total: O(V + E)
+  // (NOT x0 OR x1)
+  ts.add_clause(0, false, 1, true)
+  let ans = ts.solve()
+  inspect(ans is Some(_), content="true")
+}
 ```
 
-## The SCCResult Structure
+---
+
+## 11. Complexity
 
 ```
-num_sccs:    Number of strongly connected components
-component[v]: Which SCC vertex v belongs to
-scc_sizes[i]: Size of SCC i
-scc_adj:     Condensation graph (DAG of SCCs)
+Tarjan:    O(V + E)
+Kosaraju:  O(V + E)
+Space:     O(V + E)
 ```
 
-## Implementation Tips
+---
 
-- Tarjan: Use iterative version for very deep graphs
-- Stack overflow: Consider explicit stack for large graphs
-- 2-SAT: Component indices give topological order (reversed)
-- Condensation: Remember to handle multi-edges
+## 12. Beginner checklist
+
+1. SCC only applies to **directed** graphs.
+2. SCCs form a **DAG** when compressed.
+3. Tarjan uses low‑link values and a stack.
+4. Kosaraju uses a second DFS on the transpose.
+5. 2‑SAT reduces directly to SCC.
+
+---
+
+## 13. Summary
+
+SCCs reveal the “cycle structure” of a directed graph.
+
+Tarjan is one‑pass and fast; Kosaraju is conceptually simple.
+Both are linear time and are essential for 2‑SAT and graph compression.
