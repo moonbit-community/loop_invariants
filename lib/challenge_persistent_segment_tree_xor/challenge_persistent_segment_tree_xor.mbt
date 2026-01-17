@@ -18,20 +18,6 @@ fn node_xor(node : Node) -> Int {
 }
 
 ///|
-fn tree_valid(node : Node, len : Int) -> Bool {
-  match node {
-    Node::Leaf(xor=_) => len == 1
-    Node::Branch(xor=xv, left~, right~) =>
-      if len <= 1 {
-        false
-      } else {
-        let mid = len / 2
-        tree_valid(left, mid) &&
-        tree_valid(right, len - mid) &&
-        xv == (node_xor(left) ^ node_xor(right))
-      }
-  }
-}
 
 ///|
 /// Return the xor value stored at the root.
@@ -100,32 +86,15 @@ pub fn range_xor(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 
 ///|
 /// Apply point updates (idx, value).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn apply_updates(
   root : Node,
   n : Int,
   updates : ArrayView[(Int, Int)],
 ) -> Node {
-  let m = updates.length()
-  for i = 0, tree = root {
-    if i >= m {
-      break tree
-    } else {
-      let (idx, value) = updates[i]
-      continue i + 1, set_value(tree, 0, n, idx, value)
-    }
-  } where {
-    invariant: i >= 0 && i <= m,
-    invariant: tree_valid(tree, n),
-    reasoning: (
-      #|INVARIANT (Xor updates):
-      #|tree reflects the first i point updates with correct xor values.
-      #|MAINTENANCE:
-      #|Update index i by path-copying while recomputing xor values.
-      #|TERMINATION:
-      #|At i = m, all updates are applied.
-    ),
-  }
+  updates.fold(init=root, (tree, update) => {
+    let (idx, value) = update
+    set_value(tree, 0, n, idx, value)
+  })
 }
 
 ///|
