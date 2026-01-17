@@ -51,8 +51,8 @@
 - [x] lib/challenge_edit_distance
 - [x] lib/challenge_edmonds_karp
 - [x] lib/challenge_fenwick_2d
-- [ ] lib/challenge_floyd_warshall (in progress)
-- [ ] lib/challenge_interval_scheduling
+- [x] lib/challenge_floyd_warshall
+- [ ] lib/challenge_interval_scheduling (in progress)
 - [ ] lib/challenge_knapsack_01
 - [ ] lib/challenge_knapsack_unbounded
 - [ ] lib/challenge_lca_binary_lift

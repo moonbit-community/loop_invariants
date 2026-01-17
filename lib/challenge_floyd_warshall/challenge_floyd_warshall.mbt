@@ -5,7 +5,6 @@
 ///|
 /// Compute all-pairs shortest paths for a weighted graph.
 /// matrix[i][j] is edge weight or inf if no edge.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn floyd_warshall(
   matrix : Array[Array[Int]],
   inf : Int,
