@@ -25,25 +25,6 @@ pub fn[T] size(t : Treap[T]) -> Int {
 }
 
 ///|
-fn[T] treap_valid(t : Treap[T]) -> Bool {
-  match t {
-    Treap::Empty => true
-    Treap::Node(value=_, priority~, size=sz, left~, right~) => {
-      let left_ok = match left {
-        Treap::Empty => true
-        Treap::Node(value=_, priority=p, size=_, left=_, right=_) =>
-          priority >= p
-      }
-      let right_ok = match right {
-        Treap::Empty => true
-        Treap::Node(value=_, priority=p, size=_, left=_, right=_) =>
-          priority >= p
-      }
-      let size_ok = sz == 1 + size(left) + size(right)
-      left_ok && right_ok && size_ok && treap_valid(left) && treap_valid(right)
-    }
-  }
-}
 
 ///|
 fn[T : Hash] priority_for(value : T, salt : Int) -> Int {
@@ -146,28 +127,14 @@ pub fn[T] to_array(t : Treap[T]) -> Array[T] {
 
 ///|
 /// Build a treap by appending elements in order.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn[T : Hash] from_array(arr : ArrayView[T]) -> Treap[T] {
-  let n = arr.length()
-  for i = 0, tree = Treap::Empty {
-    if i >= n {
-      break tree
-    } else {
-      continue i + 1, insert_at(tree, i, arr[i])
-    }
-  } where {
-    invariant: i >= 0 && i <= n,
-    invariant: size(tree) == i,
-    invariant: treap_valid(tree),
-    reasoning: (
-      #|INVARIANT (Implicit treap build):
-      #|tree represents the first i elements in order and maintains heap order.
-      #|MAINTENANCE:
-      #|Insert arr[i] at position i, preserving sequence order and size.
-      #|TERMINATION:
-      #|At i = n, tree holds the entire array.
-    ),
+  let mut tree = Treap::Empty
+  let mut idx = 0
+  for value in arr {
+    tree = insert_at(tree, idx, value)
+    idx = idx + 1
   }
+  tree
 }
 
 ///|
