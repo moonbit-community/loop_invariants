@@ -187,7 +187,7 @@
 - [x] lib/sparse_table
 - [x] lib/splay
 - [x] lib/splay_tree
-- [ ] lib/sqrt
+- [x] lib/sqrt
 - [ ] lib/sqrt_decomposition
 - [ ] lib/stoer_wagner_min_cut
 - [ ] lib/string

@@ -1,187 +1,181 @@
-# Sqrt Decomposition
+# Sqrt Decomposition (Block Decomposition)
 
-## Overview
+Sqrt decomposition splits an array into blocks of size about √n.
+It gives **O(√n)** queries and updates with very simple code.
 
-**Sqrt Decomposition** is a technique that divides an array into √n blocks,
-enabling O(√n) queries and updates. It's simpler than segment trees while
-still being efficient for many range query problems.
+This is a great tool when:
 
-- **Time**: O(√n) per query/update
-- **Space**: O(n)
-- **Key Feature**: Simple to implement, works for many aggregate functions
+- you want something simpler than a segment tree,
+- O(√n) is fast enough,
+- the data is mostly static or updates are local.
 
-## The Key Insight
+---
 
-```
-Problem: Range queries on an array (sum, min, max, etc.)
+## 1. Big idea (beginner friendly)
 
-Segment Tree: O(log n) but complex to implement
-Sqrt Decomposition: O(√n) but much simpler!
+Split the array into equal‑size blocks and store a summary per block.
 
-The insight: Split array into √n blocks of size √n
-
-Array: [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9]
-       |-------|-------|-------|-------|-------|
-       Block 0 Block 1 Block 2 Block 3 Block 4
-
-Block sums: [9,    16,     14,     16,    25]
-
-Query [2, 11]:
-  - Partial block 0: elements [2] = 4
-  - Full blocks 1,2: sums = 16 + 14 = 30
-  - Partial block 3: elements [9,10,11] = 3 + 5 + 8 = 16
-  Total = 4 + 30 + 16 = 50
-
-At most √n elements scanned + √n blocks checked = O(√n)
-```
-
-## Visual: Block Structure
+Example:
 
 ```
-Array indices:    0   1   2   3   4   5   6   7   8   9  10  11
-Array values:   [ 3 | 1 | 4 | 1 | 5 | 9 | 2 | 6 | 5 | 3 | 5 | 8 ]
-                |-----------|-----------|-----------|-----------|
-                  Block 0     Block 1     Block 2     Block 3
-                  sum=9       sum=16      sum=14      sum=16
+Array: [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8]
+Index:  0  1  2  3  4  5  6  7  8  9 10 11
 
-block_size = ceil(sqrt(12)) = 4
+Block size = 4 (≈ √12)
 
-For index i: block_id = i / block_size
-
-Query range_sum(3, 9):
-  Left partial:   i=3 (Block 0)     → scan element 3: value=1
-  Middle blocks:  Block 1, Block 2  → use precomputed: 16+14=30
-  Right partial:  i=9 (Block 3)     → scan element 9: value=3
-
-  Answer: 1 + 30 + 3 = 34
+Block 0: [3, 1, 4, 1]  sum = 9
+Block 1: [5, 9, 2, 6]  sum = 22
+Block 2: [5, 3, 5, 8]  sum = 21
 ```
 
-## Algorithm: Range Query
+Now a range query can add:
+
+- partial elements at the edges
+- full block sums in the middle
+
+---
+
+## 2. Range sum example
+
+Query sum of [2, 9]:
 
 ```
-range_sum(l, r):
-  sum = 0
+Array: [3, 1, 4, 1 | 5, 9, 2, 6 | 5, 3, 5, 8]
+         ^     ^     ^           ^
+         l=2         full block   r=9
+```
 
-  // Phase 1: Left partial block
-  while l <= r AND l % block_size != 0:
+Steps:
+
+1. Left partial: indices 2..3 → 4 + 1 = 5
+2. Full blocks: block 1 → 22
+3. Right partial: indices 8..9 → 5 + 3 = 8
+
+Total = 5 + 22 + 8 = 35
+
+Only a few operations instead of scanning the whole range.
+
+---
+
+## 3. Why √n is optimal
+
+Let block size = B.
+
+Cost:
+
+```
+partial scan = O(B)
+full blocks = O(n / B)
+total = O(B + n/B)
+```
+
+Minimized when B = √n.
+
+---
+
+## 4. Range query pseudocode
+
+```mbt nocheck
+///|
+fn range_sum(l : Int, r : Int) -> Int {
+  let mut sum = 0
+  while l <= r && l % block_size != 0 {
     sum += arr[l]
-    l++
-
-  // Phase 2: Full blocks in the middle
-  while l + block_size - 1 <= r:
+    l += 1
+  }
+  while l + block_size - 1 <= r {
     sum += block_sum[l / block_size]
     l += block_size
-
-  // Phase 3: Right partial block
-  while l <= r:
+  }
+  while l <= r {
     sum += arr[l]
-    l++
-
-  return sum
+    l += 1
+  }
+  sum
+}
 ```
 
-## Algorithm: Point Update
+---
+
+## 5. Point update
+
+To update a single index:
 
 ```
-update(i, new_val):
-  old_val = arr[i]
-  arr[i] = new_val
-
-  block_id = i / block_size
-  block_sum[block_id] += (new_val - old_val)
+arr[i] = new_val
+block_sum[block_id] += (new_val - old_val)
 ```
 
-## Common Patterns
+Only the block summary changes, so O(1).
 
-### 1. Range Sum with Point Update
+---
 
-```
-Precompute: block_sum[b] = sum of all elements in block b
-Query: O(√n) using partial + full blocks
-Update: O(1) - adjust one block sum
-```
+## 6. Other patterns
 
-### 2. Range Minimum with Point Update
+### Range minimum query
 
-```
-Precompute: block_min[b] = minimum in block b
-Query: O(√n) - check partial elements + block minimums
-Update: O(√n) - may need to recompute entire block minimum
-```
+Store `block_min` instead of `block_sum`.
 
-### 3. Range Update with Point Query
+Query scans:
 
-```
-Precompute: block_add[b] = value added to entire block b
-Range Update [l,r] += v:
-  - Partial blocks: update individual elements
-  - Full blocks: update block_add[b]
-Point Query: arr[i] + block_add[block_of(i)]
-```
+- partial elements at edges,
+- block minima in the middle.
 
-## Why √n is Optimal
+Point update may require recomputing the whole block → O(√n).
+
+### Range add + point query
+
+Store `block_add` (lazy tag):
 
 ```
-With block size B:
-  - Partial block scan: O(B) elements
-  - Full blocks to check: O(n/B) blocks
+range_add(l, r, v):
+  update partial elements
+  add v to full blocks
 
-Total: O(B + n/B)
-
-Minimize by calculus: derivative = 1 - n/B² = 0
-  → B² = n → B = √n
-
-So O(√n + n/√n) = O(2√n) = O(√n)
+point_query(i):
+  arr[i] + block_add[block_id]
 ```
 
-## Common Applications
+---
 
-### 1. Range Queries
-```
-Sum, min, max, GCD over ranges.
-Simpler than segment tree for basic operations.
-```
+## 7. Example usage (conceptual)
 
-### 2. Mo's Algorithm
-```
-Answer offline range queries by sorting queries
-and using sqrt decomposition on query order.
-```
+This package is tutorial‑only; it does not export a concrete API.
 
-### 3. Heavy-Light Decomposition Alternative
-```
-For simple tree path queries, sqrt decomposition
-on the flattened tree can be easier to implement.
+```mbt nocheck
+///|
+let sd = SqrtDecomp::new([3,1,4,1,5,9,2,6,5,3,5,8])
+sd.range_sum(2, 9)   // 35
+sd.update(5, 0)
+sd.range_sum(2, 9)   // 26
 ```
 
-## Complexity Analysis
+---
 
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Build | O(n) | Compute block aggregates |
-| Range Query | O(√n) | At most 2√n elements + √n blocks |
-| Point Update | O(1) or O(√n) | Depends on aggregate |
-| Range Update | O(√n) | Touch at most 2 partial blocks |
+## 8. Complexity
 
-## Sqrt Decomposition vs Segment Tree
+```
+Build:  O(n)
+Query:  O(√n)
+Update: O(1) to O(√n) depending on aggregate
+Space:  O(n)
+```
 
-| Feature | Sqrt Decomposition | Segment Tree |
-|---------|-------------------|--------------|
-| Query Time | O(√n) | O(log n) |
-| Update Time | O(1) to O(√n) | O(log n) |
-| Implementation | Simple | Moderate |
-| Memory | O(n) | O(n) |
-| Lazy Propagation | Harder | Built-in |
+---
 
-**Choose Sqrt Decomposition when**:
-- O(√n) is acceptable and you want simple code
-- Building Mo's algorithm for offline queries
-- Quick prototyping before optimizing to segment tree
+## 9. Beginner checklist
 
-## Implementation Notes
+1. Choose block size ≈ √n.
+2. Use half‑open blocks internally (simpler math).
+3. For min/max, updates may need block rebuild.
+4. For sum, updates are constant time.
 
-- Block size: use `(n + block_size - 1) / block_size` to get number of blocks
-- Handle edge cases: empty ranges, single element ranges
-- For non-associative operations, may need different approach
-- Can combine with other techniques (e.g., lazy propagation per block)
+---
 
+## 10. Summary
+
+Sqrt decomposition is a simple trade‑off:
+
+- slower than segment tree,
+- much easier to implement,
+- great for medium‑sized inputs and quick solutions.
