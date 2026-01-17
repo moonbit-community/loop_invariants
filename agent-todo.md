@@ -174,7 +174,7 @@
 - [x] lib/pollard_rho
 - [x] lib/polygon_triangulation
 - [x] lib/prufer_code
-- [ ] lib/push_relabel_max_flow
+- [x] lib/push_relabel_max_flow
 - [ ] lib/rabin_karp
 - [ ] lib/rolling_hash
 - [ ] lib/rotating_calipers_diameter
