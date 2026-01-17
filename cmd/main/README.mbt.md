@@ -1,44 +1,72 @@
-# Command Line Entry (Mini Tutorial)
+# Command-Line Entry (Mini Tutorial)
 
-## Problem
+This package is the **executable entry point** for the repository. It is meant
+for quick, manual experiments without touching tests.
 
-"I want a quick way to run a small demo or sanity check without editing tests."
+## Why it exists
 
-## Simple Solution
+When you are learning or debugging, it is useful to run a tiny program:
 
-Use the `cmd/main` package. It is the executable entry point. You can print a message, call a library function, or run a tiny example.
+- print a value
+- call a library function
+- verify a small idea without editing tests
 
-## How It Works
+`cmd/main` provides that lightweight sandbox.
 
-- `cmd/main/main.mbt` is the program entry
-- The file is intentionally small
-- Most real logic stays in `lib/` packages
+## How to run it
 
-## Try It
+From the repo root:
 
 ```mbt nocheck
 moon run cmd/main
 ```
 
-You should see a short message telling you to run tests.
+You should see the message from `cmd/main/main.mbt`.
 
-## How to Add a Small Demo
+## What to edit
 
-1. Open `cmd/main/main.mbt`
-2. Import a package in `cmd/main/moon.pkg.json` (if needed)
-3. Call the function and print its result
+- `cmd/main/main.mbt` contains `fn main`.
+- Keep it **small**. Real algorithms and documentation live in `lib/`.
 
-Example shape:
+## Example: call a library function
+
+Suppose you want to try `@avl_tree.avl_sorted` quickly.
+
+1. Add the package to `cmd/main/moon.pkg.json`:
+
+```mbt nocheck
+{
+  "import": [
+    "bobzhang/loop_invariants/lib/avl_tree"
+  ]
+}
+```
+
+2. Call it in `cmd/main/main.mbt`:
 
 ```mbt nocheck
 ///|
 fn main {
-  println("Demo")
-  // println(@some_pkg.some_function(...))
+  let sorted = @avl_tree.avl_sorted([3L, 1L, 4L, 1L][:])
+  println("sorted = \{sorted}")
 }
 ```
 
-## Notes
+3. Run:
 
-- Keep demos tiny so tests stay fast
-- The real tutorials live in each `lib/<package>/README.mbt.md`
+```mbt nocheck
+moon run cmd/main
+```
+
+## Example output
+
+```
+sorted = [1, 1, 3, 4]
+```
+
+## Notes and best practices
+
+- Keep demos tiny and focused.
+- Avoid heavy computations or long output here.
+- Use tests (`moon test`) for real verification.
+- Remove temporary imports when you are done.

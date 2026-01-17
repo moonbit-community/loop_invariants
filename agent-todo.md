@@ -6,7 +6,7 @@
 - Note: Work one package at a time; do not pause to ask for confirmation—just continue.
 
 - [x] . (root)
-- [ ] cmd/main (in progress)
+- [x] cmd/main
 - [x] lib/aho_corasick
 - [x] lib/avl_tree
 - [x] lib/bellman_ford
