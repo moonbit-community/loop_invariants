@@ -39,8 +39,8 @@ pub fn longest_common_substring(a : String, b : String) -> LCSResult {
   let mut curr = Array::make(m + 1, 0)
   let mut best_len = 0
   let mut best_end = 0
-  for i = 1; i <= n; i = i + 1 {
-    for j = 1; j <= m; j = j + 1 {
+  for i in 1 ..<= n {
+    for j in 1 ..<= m {
       if a[i - 1] == b[j - 1] {
         curr[j] = prev[j - 1] + 1
         if curr[j] > best_len {
@@ -50,33 +50,11 @@ pub fn longest_common_substring(a : String, b : String) -> LCSResult {
       } else {
         curr[j] = 0
       }
-    } where {
-      invariant: j >= 1 && j <= m + 1,
-      reasoning: (
-        #|INVARIANT (row update):
-        #|curr[1..j) stores longest common suffix lengths for a[0..i) and
-        #|b[0..j), and best_len/best_end track the best substring seen so far.
-        #|MAINTENANCE:
-        #|If a[i-1] == b[j-1], extend the suffix; otherwise reset to 0.
-        #|TERMINATION:
-        #|At j = m, the entire row for i is computed.
-      ),
     }
     let tmp = prev
     prev = curr
     curr = tmp
     curr.fill(0)
-  } where {
-    invariant: i >= 1 && i <= n + 1,
-    reasoning: (
-      #|INVARIANT (outer DP):
-      #|prev holds the DP row for a[0..i), and best_len/best_end record the
-      #|longest common substring within prefixes a[0..i) and b[0..m).
-      #|MAINTENANCE:
-      #|Compute the next row into curr, then swap into prev.
-      #|TERMINATION:
-      #|At i = n, best_len/best_end describe the global LCS.
-    ),
   }
   if best_len == 0 {
     { substring: "", length: 0 }

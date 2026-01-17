@@ -1,118 +1,191 @@
 # Longest Common Substring (DP)
 
-## Overview
+## 1. Problem statement (what we want)
 
-The **Longest Common Substring** problem finds the longest contiguous sequence
-of characters that appears in both input strings. This implementation uses
-dynamic programming with space optimization.
+Given two strings `a` and `b`, find the longest **contiguous** substring that
+appears in **both** strings.
 
-- **Time**: O(n × m)
-- **Space**: O(m) with rolling array optimization
-- **Output**: The actual substring and its length
+- If multiple substrings tie for the maximum length, this implementation keeps
+  the first one it discovers while scanning rows left to right.
+- If there is no common substring, the answer is the empty string with length 0.
 
-## The Key Insight
+This package returns both the substring itself and its length.
 
-```
-Problem: Find the longest contiguous match between two strings
+## 2. Substring vs subsequence (do not mix these up)
 
-Longest Common Subsequence: Characters don't need to be adjacent
-Longest Common Substring: Characters MUST be adjacent (contiguous)
+A **substring** is contiguous. A **subsequence** can skip characters.
 
 Example:
-  a = "abcdef"
-  b = "zbcdf"
-
-  LCS (subsequence): "bcdf" (length 4)
-  LCS (substring):   "bcd"  (length 3)
-
-The key: When characters match, extend the match.
-         When they don't, reset to 0 (not skip like LCS).
-```
-
-## Understanding the DP Recurrence
 
 ```
-Let dp[i][j] = length of longest common suffix ending at a[i-1] and b[j-1]
+String A:  a b c d e f
+String B:  z b c d f
 
+Common subsequence (can skip): "bcdf" (length 4)
+Common substring  (contiguous): "bcd" (length 3)
+```
+
+The key rule for longest common substring is:
+
+- Match: extend the diagonal (previous match).
+- Mismatch: reset to 0 (contiguity is broken).
+
+## 3. Naive idea (why we do DP)
+
+A brute-force approach tries every pair of start positions and extends while
+characters match. That is often O(n * m * L) where L is the length of the match.
+For long strings, this is too slow.
+
+Dynamic programming reduces the work to O(n * m).
+
+## 4. DP idea: longest common suffix ending here
+
+Define:
+
+```
+dp[i][j] = length of the longest common suffix
+           of a[0..i) and b[0..j)
+           that ends exactly at a[i-1] and b[j-1]
+```
+
+Recurrence:
+
+```
 if a[i-1] == b[j-1]:
-  dp[i][j] = dp[i-1][j-1] + 1   // extend the match
+  dp[i][j] = dp[i-1][j-1] + 1
 else:
-  dp[i][j] = 0                   // no common suffix here
-
-The answer is the maximum value in the entire DP table.
+  dp[i][j] = 0
 ```
 
-## Visual: DP Table Construction
+The answer is the maximum value in the DP table.
+
+Why this works:
+
+- `dp[i-1][j-1]` is the best suffix ending one step diagonally up-left.
+- If the current characters match, we can extend that suffix by 1.
+- If they do not match, the common suffix ending here is forced to 0.
+
+## 5. Match grid: diagonals are the only places that grow
+
+Think of a grid where rows are characters of `a`, columns are characters of `b`.
+A match places an `X`, and only diagonals of `X` can grow into longer substrings.
+
+```
+a = "ababa"
+b = "baba"
+
+      b   a   b   a
+    +---+---+---+---+
+a |  . | X | . | X |
+    +---+---+---+---+
+b |  X | . | X | . |
+    +---+---+---+---+
+a |  . | X | . | X |
+    +---+---+---+---+
+b |  X | . | X | . |
+    +---+---+---+---+
+a |  . | X | . | X |
+    +---+---+---+---+
+
+A contiguous substring corresponds to a diagonal streak of Xs.
+```
+
+## 6. Concrete DP table example
+
+Example strings:
 
 ```
 a = "abab"
 b = "baba"
-
-DP table (dp[i][j] = common suffix length ending at a[i-1], b[j-1]):
-
-        ""   b   a   b   a
-    ""   0   0   0   0   0
-     a   0   0   1   0   1
-     b   0   1   0   2   0
-     a   0   0   2   0   3  ← maximum!
-     b   0   1   0   3   0
-
-Maximum = 3, ending at a[3], b[4]
-Substring = "aba" (positions 1-3 in a, positions 2-4 in b)
 ```
 
-## Algorithm Walkthrough
+DP table (rows = `a`, columns = `b`):
+
+```
+        ""  b  a  b  a
+    ""   0  0  0  0  0
+     a   0  0  1  0  1
+     b   0  1  0  2  0
+     a   0  0  2  0  3  <-- maximum = 3
+     b   0  1  0  3  0
+```
+
+Maximum length is 3, ending at `a[3]`, so the substring is `"aba"`.
+
+## 7. Walkthrough: "banana" vs "ananas"
+
+We compute row by row. A few highlights:
+
+- When `a[i-1]` and `b[j-1]` do not match, the cell is 0.
+- When they match, the value is the diagonal + 1.
+
+Selected steps:
+
+```
+Row for a[1] = 'a':
+  b[0] = 'a' -> dp = 1
+  b[1] = 'n' -> dp = 0
+  b[2] = 'a' -> dp = 1
+
+Row for a[2] = 'n':
+  b[1] = 'n' -> dp = 2 (extends "a" to "an")
+  b[3] = 'n' -> dp = 2
+
+Row for a[5] = 'a':
+  b[4] = 'a' -> dp = 5 ("anana")
+```
+
+The maximum value 5 gives substring "anana".
+
+## 8. Space optimization (rolling rows)
+
+The recurrence only depends on `dp[i-1][j-1]`, so we do not need the full table.
+We keep two rows:
+
+```
+prev_row: dp for i-1
+curr_row: dp for i
+```
+
+After finishing a row, we swap and clear `curr_row`.
+
+This reduces space from O(n * m) to O(m).
+
+## 9. Reconstructing the substring
+
+While filling the table we track:
+
+- `best_len`: maximum length seen so far
+- `best_end`: the index in `a` where that maximum ends (1-based in the DP loop)
+
+After the DP ends:
+
+```
+start = best_end - best_len
+substring = a[start : best_end]
+```
+
+Example:
 
 ```
 a = "banana"
-b = "ananas"
-
-Building the DP table row by row:
-
-Row for a[0] = 'b':
-  b[0]='a': 'b'≠'a' → 0
-  b[1]='n': 'b'≠'n' → 0
-  ... all zeros
-
-Row for a[1] = 'a':
-  b[0]='a': 'a'='a' → dp[0][0]+1 = 1
-  b[1]='n': 'a'≠'n' → 0
-  b[2]='a': 'a'='a' → dp[0][1]+1 = 1
-  ...
-
-Row for a[2] = 'n':
-  b[0]='a': 'n'≠'a' → 0
-  b[1]='n': 'n'='n' → dp[1][0]+1 = 2  (extends "a" to "an")
-  ...
-
-Continue until max = 5 is found ("anana")
+best_len = 5
+best_end = 6
+substring = a[1:6] = "anana"
 ```
 
-## Why O(m) Space?
+If `best_len` stays 0, the answer is the empty string.
 
-```
-Standard DP uses O(n × m) space for the full table.
+## 10. MoonBit details (strings and indices)
 
-Observation: dp[i][j] only depends on dp[i-1][j-1]
+MoonBit `String` is UTF-16. Indexing like `s[i]` accesses a code unit.
+The DP uses those code units directly. If you need substring logic over full
+Unicode grapheme clusters, you would need a different representation.
 
-We only need the previous row!
+This implementation constructs the output substring with a `StringBuilder`
+so the result is a fresh `String`.
 
-Rolling array technique:
-  prev_row = [0] * (m+1)
-  curr_row = [0] * (m+1)
-
-  for i in 1..n:
-    for j in 1..m:
-      if a[i-1] == b[j-1]:
-        curr_row[j] = prev_row[j-1] + 1
-      else:
-        curr_row[j] = 0
-    swap(prev_row, curr_row)
-
-Space: O(m) instead of O(n × m)!
-```
-
-## Example Usage
+## 11. Worked examples (runnable)
 
 ```mbt check
 ///|
@@ -124,8 +197,6 @@ test "lcs banana ananas" {
   inspect(result.length, content="5")
 }
 ```
-
-## More Examples
 
 ```mbt check
 ///|
@@ -147,72 +218,46 @@ test "lcs identical strings" {
 }
 ```
 
-## Common Applications
-
-### 1. Plagiarism Detection
-```
-Find the longest copied passage between two documents.
-Long common substrings suggest copying.
-```
-
-### 2. DNA Sequence Analysis
-```
-Find common gene sequences between organisms.
-Long matches indicate evolutionary relationships.
+```mbt check
+///|
+test "lcs inside a longer word" {
+  let result = @longest_common_substring.longest_common_substring(
+    "mississippi", "sipp",
+  )
+  inspect(result.substring, content="sipp")
+  inspect(result.length, content="4")
+}
 ```
 
-### 3. File Diff
-```
-Find unchanged sections between file versions.
-Common substrings don't need to be shown as changes.
-```
-
-### 4. Autocomplete
-```
-Find the best partial match for user input.
-Longest substring match often indicates intent.
-```
-
-## Complexity Analysis
-
-| Operation | Time |
-|-----------|------|
-| Find LCS | O(n × m) |
-| Space (optimized) | O(m) |
-| Space (full table) | O(n × m) |
-
-## LCS Substring vs Other String Algorithms
-
-| Algorithm | Problem | Time |
-|-----------|---------|------|
-| **LCS Substring (DP)** | Longest contiguous match | O(nm) |
-| LCS Subsequence | Longest (not contiguous) match | O(nm) |
-| Suffix Array + LCP | Longest repeated substring | O(n log n) |
-| Rolling Hash | Pattern matching | O(n + m) |
-
-**Choose LCS Substring when**: You need the actual longest contiguous match,
-not just its length.
-
-## Implementation Notes
-
-- Uses rolling row optimization for O(m) space
-- Track position of maximum to reconstruct the substring
-- Handle edge cases: empty strings, no match
-- Can be parallelized row-by-row
-- For very long strings, consider suffix array approach
-
-## Recovering the Substring
-
-```
-While computing max, track:
-  - max_len: maximum dp value seen
-  - end_pos: position in string a where max_len ends
-
-After DP completes:
-  substring = a[end_pos - max_len : end_pos]
-
-Example:
-  a = "banana", max_len = 5, end_pos = 6
-  substring = a[1:6] = "anana"
+```mbt check
+///|
+test "lcs short overlap" {
+  let result = @longest_common_substring.longest_common_substring(
+    "xyzab", "tabc",
+  )
+  inspect(result.substring, content="ab")
+  inspect(result.length, content="2")
+}
 ```
 
+## 12. Common pitfalls
+
+- Confusing substring with subsequence.
+- Forgetting to reset to 0 on mismatches.
+- Mixing index bases (`dp` is 1-based, strings are 0-based).
+- Expecting a specific answer when there are multiple longest substrings.
+
+## 13. Complexity and when to use this
+
+```
+Time:  O(n * m)
+Space: O(m)
+```
+
+Use this DP when:
+
+- You need the actual longest contiguous match.
+- Input sizes are moderate (O(n * m) is acceptable).
+
+For very large inputs, suffix automaton or suffix array methods can be faster,
+but they are more complex to implement.

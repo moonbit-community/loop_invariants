@@ -154,7 +154,7 @@
 - [x] lib/linear_recurrence
 - [x] lib/linear_sieve
 - [x] lib/linkcut
-- [ ] lib/longest_common_substring (in progress)
+- [x] lib/longest_common_substring
 - [ ] lib/lucas_theorem
 - [ ] lib/manacher
 - [ ] lib/math

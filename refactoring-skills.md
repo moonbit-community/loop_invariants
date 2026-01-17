@@ -254,3 +254,24 @@ for edge in edges {
   let (u, v, w) = edge
   add_edge(u, v, w)
 }
+
+## 2026-01-22: Prefer for-in Ranges for Simple DP Rows
+- Problem: DP row loops used indexed `for i = ...` forms and loop specs even when
+  the state was straightforward.
+- Change: Use `for i in 1..=n` and `for j in 1..=m` range loops for row-by-row
+  DP table fills when invariants are not needed.
+- Result: Clearer iteration without changing complexity or behavior.
+- Example:
+// Before
+for i = 1; i <= n; i = i + 1 {
+  for j = 1; j <= m; j = j + 1 {
+    update(i, j)
+  } where { ... }
+} where { ... }
+
+// After
+for i in 1..=n {
+  for j in 1..=m {
+    update(i, j)
+  }
+}
