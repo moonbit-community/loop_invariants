@@ -1,87 +1,124 @@
 # Linear Recurrence (Kitamasa Method)
 
-## Overview
+## What It Solves
 
-This package computes the **n-th term** of a linear recurrence in **O(k² log n)**
-time using the Kitamasa method (polynomial doubling). It's faster than matrix
-exponentiation for computing a single term.
+Given a linear recurrence of order `k`:
 
 ```
-f(n) = c₀·f(n-1) + c₁·f(n-2) + ... + c_{k-1}·f(n-k)  (mod M)
+f(n) = c0*f(n-1) + c1*f(n-2) + ... + c_{k-1}*f(n-k)
 ```
 
-- **Time**: O(k² log n)
-- **Space**: O(k)
-- **Key Feature**: No matrix multiplication needed
+this module computes **f(n) mod M** in **O(k^2 log n)** time.
 
-## The Key Insight
+It is faster than matrix exponentiation if you only need **one term**.
 
-```
-Matrix exponentiation approach:
-  [f(n)  ]   [c₀ c₁ ... c_{k-1}]^n   [f(k-1)]
-  [f(n-1)] = [1  0  ...    0   ]   · [f(k-2)]
-  [  ⋮   ]   [⋮        ⋱      ]     [  ⋮   ]
-  [f(n-k+1)] [0  0  ... 1  0   ]     [f(0)  ]
+## Big Picture
 
-Time: O(k³ log n) for matrix exponentiation
-
-Kitamasa insight:
-  We don't need the full matrix, just how to express f(n) in terms
-  of f(0), f(1), ..., f(k-1)!
-
-  f(n) = a₀·f(0) + a₁·f(1) + ... + a_{k-1}·f(k-1)
-
-  Find coefficients [a₀, a₁, ..., a_{k-1}] directly!
-  Time: O(k² log n)
-```
-
-## Visual: Polynomial Representation
+Matrix exponentiation treats the recurrence as a k×k matrix:
 
 ```
-Recurrence: f(n) = f(n-1) + f(n-2)  (Fibonacci, k=2)
-Initial: f(0) = 0, f(1) = 1
-
-Express f(n) as: a₀·f(0) + a₁·f(1)
-
-f(0) = 1·f(0) + 0·f(1)  →  [1, 0]
-f(1) = 0·f(0) + 1·f(1)  →  [0, 1]
-f(2) = 1·f(0) + 1·f(1)  →  [1, 1]  (using recurrence)
-f(3) = 1·f(1) + 1·f(2) = f(1) + f(0) + f(1) = f(0) + 2·f(1)  →  [1, 2]
-f(4) = f(2) + f(3) = 2·f(0) + 3·f(1)  →  [2, 3]
-...
-
-Key: We're tracking coefficients, not computing values directly!
+[f(n)    ]   [c0 c1 ... c_{k-1}]^n   [f(k-1)]
+[f(n-1)  ] = [1  0  ...    0   ]   · [f(k-2)]
+[  ...   ]   [0  1  ...    0   ]     [  ...  ]
+[f(n-k+1)]   [0  0  ...    1   ]     [f(0)  ]
 ```
 
-## Algorithm: Polynomial Doubling
+That is **O(k^3 log n)**.
+
+**Kitamasa** skips the matrix and directly computes coefficients that express
+`f(n)` as a linear combination of the initial terms.
+
+## Key Insight
+
+There exists a vector `A` such that:
 
 ```
-Key operations on coefficient vectors [a₀, ..., a_{k-1}]:
+f(n) = A0*f(0) + A1*f(1) + ... + A_{k-1}*f(k-1)
+```
 
-1. DOUBLE: Compute coefficients for f(2n) from coefficients for f(n)
-   - Multiply polynomial by itself
-   - Reduce modulo the characteristic polynomial
+Kitamasa computes these coefficients by doing polynomial exponentiation and
+reducing modulo the **characteristic polynomial**:
 
-2. INCREMENT: Compute coefficients for f(n+1) from f(n)
-   - Shift polynomial
-   - Reduce modulo the characteristic polynomial
+```
+P(x) = x^k - c0*x^{k-1} - c1*x^{k-2} - ... - c_{k-1}
+```
 
-Using binary representation of n:
-  n = 13 = 1101₂
+## Fibonacci Example (k=2)
 
-  Start: f(1) = [0, 1]
-  Double: f(2)
-  Double: f(4)
-  Double + Inc: f(9)   (bit 3 = 1)
-  Double: f(18)... wait, let's do this right
+```
+f(n) = f(n-1) + f(n-2)
+coeffs = [1, 1]
+initial = [f(0)=0, f(1)=1]
+```
 
-  Actually process bits from high to low:
-  n = 13 = 1101₂
+We want coefficients `[a0, a1]` such that:
 
-  Start with f(1)
-  For each bit after the leading 1:
-    - Always double (square the polynomial)
-    - If bit is 1, also increment (shift polynomial)
+```
+f(n) = a0*f(0) + a1*f(1)
+```
+
+For small n:
+
+```
+f(0) => [1, 0]
+f(1) => [0, 1]
+f(2) => [1, 1]
+f(3) => [1, 2]
+f(4) => [2, 3]
+```
+
+## Visual: Coefficient Growth
+
+```
+Fibonacci coefficient vectors (a0, a1):
+
+n=0: (1, 0)
+n=1: (0, 1)
+n=2: (1, 1)
+n=3: (1, 2)
+n=4: (2, 3)
+n=5: (3, 5)
+
+These are exactly Fibonacci pairs.
+```
+
+## Algorithm Outline (Binary Exponentiation on Polynomials)
+
+We treat `x^n mod P(x)` as a coefficient vector of length k.
+
+```
+res  = representation of x^0
+base = representation of x^1
+
+while n > 0:
+  if n is odd: res = combine(res, base)
+  base = combine(base, base)
+  n >>= 1
+
+answer = sum(res[i] * initial[i])
+```
+
+`combine` multiplies two coefficient vectors and reduces them modulo `P(x)`.
+
+## Worked Example: Fibonacci f(7)
+
+Binary: `7 = 111₂`
+
+```
+start: res = x^0, base = x^1
+
+bit1:
+  res = res * base   => x^1
+  base = base^2      => x^2 = x + 1
+
+bit2:
+  res = x^1 * x^2    => x^3 = 2x + 1
+  base = (x^2)^2     => x^4 = 3x + 2
+
+bit3:
+  res = (2x+1)*(3x+2) => x^7 = 13x + 8
+
+f(7) = 8*f(0) + 13*f(1) = 13
 ```
 
 ## Example Usage
@@ -90,8 +127,8 @@ Using binary representation of n:
 ///|
 test "linear recurrence fibonacci" {
   let m = 1000000007L
-  let coeffs : Array[Int64] = [1L, 1L] // f(n) = 1*f(n-1) + 1*f(n-2)
-  let initial : Array[Int64] = [0L, 1L] // f(0)=0, f(1)=1
+  let coeffs : Array[Int64] = [1L, 1L]
+  let initial : Array[Int64] = [0L, 1L]
   inspect(
     @linear_recurrence.linear_recurrence_nth(coeffs, initial, 7L, m),
     content="13",
@@ -104,8 +141,7 @@ test "linear recurrence fibonacci" {
 test "linear recurrence geometric" {
   let m = 1000000007L
   let coeffs : Array[Int64] = [2L] // f(n) = 2*f(n-1)
-  let initial : Array[Int64] = [1L] // f(0) = 1
-  // f(n) = 2^n, so f(5) = 32
+  let initial : Array[Int64] = [1L]
   inspect(
     @linear_recurrence.linear_recurrence_nth(coeffs, initial, 5L, m),
     content="32",
@@ -113,16 +149,12 @@ test "linear recurrence geometric" {
 }
 ```
 
-## More Examples
-
 ```mbt check
 ///|
-test "tribonacci sequence" {
+test "tribonacci" {
   let m = 1000000007L
-  // f(n) = f(n-1) + f(n-2) + f(n-3)
   let coeffs : Array[Int64] = [1L, 1L, 1L]
-  let initial : Array[Int64] = [0L, 0L, 1L] // f(0)=0, f(1)=0, f(2)=1
-  // f(3)=1, f(4)=2, f(5)=4, f(6)=7, f(7)=13
+  let initial : Array[Int64] = [0L, 0L, 1L]
   inspect(
     @linear_recurrence.linear_recurrence_nth(coeffs, initial, 7L, m),
     content="13",
@@ -130,110 +162,28 @@ test "tribonacci sequence" {
 }
 ```
 
-## Algorithm Walkthrough
-
-```
-Fibonacci: f(n) = f(n-1) + f(n-2)
-Compute f(7):
-
-Characteristic polynomial: x² - x - 1 = 0
-  (or equivalently: x² = x + 1)
-
-Binary of 7 = 111₂
-
-Step 1: Start with x¹ (represents f(1))
-  coeffs = [0, 1]  meaning 0·f(0) + 1·f(1)
-
-Step 2: Process bit 1 (second bit of 111):
-  Double: x² = x + 1, so coeffs = [1, 1]  (represents f(2))
-  Bit is 1, so increment: x³ = x² + x = (x+1) + x = 2x + 1
-    coeffs = [1, 2]  (represents f(3))
-
-Step 3: Process bit 2 (third bit of 111):
-  Double: x⁶ = (x³)² = (2x+1)² = 4x² + 4x + 1
-    Reduce: x² = x + 1, so 4x² = 4x + 4
-    x⁶ = 4x + 4 + 4x + 1 = 8x + 5
-    coeffs = [5, 8]  (represents f(6))
-  Bit is 1, so increment: x⁷ = x · x⁶ = x(8x + 5) = 8x² + 5x
-    Reduce: x² = x + 1, so 8x² = 8x + 8
-    x⁷ = 8x + 8 + 5x = 13x + 8
-    coeffs = [8, 13]  (represents f(7))
-
-Final: f(7) = 8·f(0) + 13·f(1) = 8·0 + 13·1 = 13 ✓
-```
-
-## Why O(k² log n)?
-
-```
-Operations:
-  - Double: Polynomial squaring + reduction = O(k²)
-  - Increment: Polynomial shift + reduction = O(k)
-
-Number of operations: O(log n) bits to process
-
-Total: O(k² log n)
-
-Compare to matrix exponentiation:
-  - Matrix multiply: O(k³)
-  - Number of multiplies: O(log n)
-  - Total: O(k³ log n)
-
-Kitamasa saves a factor of k!
-```
-
-## Common Applications
-
-### 1. Fibonacci-like Sequences
-```
-Any linear recurrence: f(n) = c₀f(n-1) + c₁f(n-2) + ...
-Compute f(10^18) in milliseconds.
-```
-
-### 2. Counting Problems
-```
-Many counting problems reduce to linear recurrences.
-E.g., count tilings, paths, arrangements.
-```
-
-### 3. Polynomial Hash Computation
-```
-Compute x^n mod P(x) for polynomial hashing.
-```
-
-### 4. Sequence Generation
-```
-Generate pseudorandom numbers following a linear recurrence.
-```
-
-## Complexity Analysis
+## Complexity
 
 | Method | Time | Space |
 |--------|------|-------|
 | Naive iteration | O(n) | O(k) |
-| Matrix exponentiation | O(k³ log n) | O(k²) |
-| **Kitamasa** | **O(k² log n)** | **O(k)** |
+| Matrix exponentiation | O(k^3 log n) | O(k^2) |
+| **Kitamasa** | **O(k^2 log n)** | **O(k)** |
 
-## Kitamasa vs Matrix Exponentiation
+## Common Pitfalls
 
-```
-Kitamasa advantages:
-  - Faster by factor of k
-  - Less memory (O(k) vs O(k²))
-  - Simpler implementation
+- `coeffs` and `initial` must have the same length `k`.
+- Use a modulus `m` to prevent overflow.
+- This method returns **only** f(n), not the full state vector.
 
-Matrix advantages:
-  - Gives full state vector, not just f(n)
-  - Easier to extend to matrix recurrences
+## When to Use Kitamasa
 
-Choose Kitamasa when:
-  - You only need f(n), not the full state
-  - k is large (saves factor of k)
-```
+- You need a **single term** of a large‑index recurrence.
+- The order `k` is large (saves a factor of `k`).
+- You are working modulo a number.
 
-## Implementation Notes
+## Implementation Notes (This Package)
 
-- `coeffs` and `initial` must have the same length k
-- Work in modular arithmetic to avoid overflow
-- Binary exponentiation on the coefficient vector
-- Polynomial multiplication and reduction are the core operations
-
+- Uses polynomial multiplication + reduction (`combine`).
+- Binary exponentiation drives the doubling.
+- Handles k=1 as a fast power special case.
