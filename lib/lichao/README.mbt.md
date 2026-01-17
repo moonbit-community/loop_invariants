@@ -1,222 +1,222 @@
-# Li Chao Tree
+# Li Chao Tree (Line Container)
 
-## Overview
+## What It Solves
 
-A **Li Chao Tree** maintains a dynamic set of lines and supports queries for
-the minimum (or maximum) y-value at any x-coordinate. It's a specialized
-segment tree for the "line container" problem.
-
-- **Insert**: O(log C) where C is the coordinate range
-- **Query**: O(log C)
-- **Space**: O(n) or O(log C × lines)
-
-## The Problem
+A **Li Chao Tree** maintains a set of lines
 
 ```
-Maintain a set of lines y = mx + b.
-Query: What is the minimum y at x = k?
+ y = m x + b
+```
 
+and answers queries:
+
+```
+What is the minimum (or maximum) y at x = k?
+```
+
+It supports **arbitrary insert order** and **arbitrary query order** in
+**O(log C)** time, where `C` is the x‑coordinate range.
+
+## Why Not Just Check All Lines?
+
+If you have `n` lines and `q` queries, the naive solution is O(n) per query.
+Li Chao brings it down to O(log C) per query.
+
+Example:
+
+```
 Lines: y = 2x + 1, y = -x + 5, y = 0.5x + 2
 
-At x = 1: min(3, 4, 2.5) = 2.5  (from line y = 0.5x + 2)
-At x = 4: min(9, 1, 4) = 1      (from line y = -x + 5)
-
-Naive: O(n) per query (check all lines)
-Li Chao: O(log C) per query!
+x = 1: values = 3, 4, 2.5  => min = 2.5
+x = 4: values = 9, 1, 4    => min = 1
 ```
 
-## The Key Insight
+## Core Insight (Winner vs Loser)
+
+For an interval `[l, r]`, compare two lines at the midpoint `m`:
+
+- The **winner** is better at `m` and stays in this node.
+- The **loser** might still win on **one side** and is pushed there.
+
+Why only one side?
 
 ```
-Build segment tree over x-coordinates.
-Each node stores ONE "dominating" line for its interval.
-
-When inserting line L into node [l, r]:
-1. Compare L with current line at midpoint m = (l+r)/2
-2. Keep the better line at m as "winner"
-3. The "loser" might still win on one side — recurse there!
-
-Key observation: The loser can only win on at most ONE side.
+If line A is better at mid, and line B is better at left endpoint,
+then B can only win on the left half. It cannot win on both halves
+because A dominates at the mid.
 ```
 
-## Algorithm Walkthrough
+## Visual: Two Lines on an Interval
 
 ```
-Coordinate range: [0, 4]
-Insert lines: A: y = -x + 4, B: y = x
+Line A (dashed), Line B (solid)
 
-Tree structure (before inserts):
-      [0,4]
-     /     \
-  [0,2]   [2,4]
-  /   \   /   \
-[0,1][1,2][2,3][3,4]
+ y
+ 4 |  A
+ 3 |   \       B
+ 2 |    \     /
+ 1 |     \   /
+ 0 |------\-/-------- x
+      0    2    4
 
-Insert A: y = -x + 4 (winner at all levels initially)
-
-Insert B: y = x into [0,4]:
-  Midpoint = 2
-  A at 2: -2 + 4 = 2
-  B at 2: 2
-  Tie! Keep A (or B), recurse other
-
-  At [0,2]: A still wins at mid=1 (A=3, B=1), B wins at left
-  At [0,1]: B now wins (at mid=0.5: A=3.5, B=0.5)
-
-Query x=1:
-  [0,4]: A gives 3
-  [0,2]: A gives 3
-  [0,1]: B gives 1
-  Answer: min(3, 3, 1) = 1 ✓
+A wins at mid=2, B wins at left end, so B is pushed to the left child.
 ```
 
-## Visual: Line Dominance
-
-```
-Lines: A (dashed), B (solid)
-
-y
-4 |  A
-3 |   \     /B
-2 |    \   /
-1 |     \/      ← intersection
-0 |─────X────────→ x
-      0 1 2 3 4
-
-A dominates [0, 1], B dominates [1, ∞]
-
-In Li Chao tree:
-  Root stores one line (say A)
-  But we recurse to track B where it wins
-```
-
-## Example Usage
-
-```mbt nocheck
-// Create Li Chao tree for x in [0, 1000000]
-let lc = LiChaoTree::new(0, 1000000)
-
-// Insert lines: y = mx + b
-lc.insert(2, 1)   // y = 2x + 1
-lc.insert(-1, 5)  // y = -x + 5
-
-// Query minimum y at x = 3
-let min_y = lc.query(3)  // Returns min(7, 2) = 2
-```
-
-## The Insert Algorithm
+## Insert Algorithm (High Level)
 
 ```
 insert(line, node [l, r]):
-    mid = (l + r) / 2
+  mid = (l + r) / 2
 
-    if node has no line:
-        node.line = line
-        return
+  if node has no line:
+      node.line = line; return
 
-    # Compare at midpoint
-    new_better_at_mid = line(mid) < node.line(mid)
+  if line better at mid:
+      swap(line, node.line)
 
-    if new_better_at_mid:
-        swap(line, node.line)  # new line stays here
+  if l == r: return
 
-    # The "loser" might win on one side
-    if l == r:
-        return
+  if line better at l:
+      insert(line, left child)
+  else:
+      insert(line, right child)
+```
 
-    left_wins = line(l) < node.line(l)
-    if left_wins:
-        insert(line, left_child)
-    else:
-        insert(line, right_child)
+## Query Algorithm
+
+To query at x:
+
+```
+Start at root:
+  evaluate node.line at x
+  move to child containing x
+  take min/max along the path
+```
+
+The true answer is always on the root‑to‑leaf path for that x.
+
+## Example Walkthrough
+
+Range: `[0, 4]`
+Lines:
+
+```
+A: y = -x + 4
+B: y = x
+```
+
+Insert A (first line becomes root).
+Insert B:
+
+```
+mid = 2
+A(2) = 2
+B(2) = 2 (tie)
+keep A at root
+
+compare at left endpoint:
+A(0)=4, B(0)=0 -> B wins on left
+push B to left child
+```
+
+Query x=1:
+
+```
+root: A(1)=3
+left: B(1)=1
+answer = 1
+```
+
+## API Examples
+
+### Maximum queries
+
+```mbt check
+///|
+test "lichao max" {
+  let lc = @lichao.LiChaoTree::new(0, 10)
+  lc.insert(2, 1) // y = 2x + 1
+  lc.insert(-1, 5) // y = -x + 5
+  inspect(lc.query(3), content="7") // max(7, 2)
+}
+```
+
+### Minimum queries
+
+```mbt check
+///|
+test "lichao min" {
+  let lc = @lichao.LiChaoTreeMin::new(0, 10)
+  lc.insert(2, 1) // y = 2x + 1
+  lc.insert(-1, 5) // y = -x + 5
+  inspect(lc.query(3), content="2") // min(7, 2)
+}
 ```
 
 ## Common Applications
 
-### 1. Convex Hull Trick (Offline)
+### 1) Convex Hull Trick (Dynamic)
+
 ```
-DP optimization where transitions are lines.
-dp[i] = min(dp[j] + cost(j, i))
-
-If cost(j, i) = a[j] * b[i] + c[j]:
-  This is a line y = a[j] * x + c[j] queried at x = b[i]
-
-Li Chao handles dynamic (online) insertions!
+DP form: dp[i] = min_j (a[j] * x[i] + b[j])
+Insert line (a[j], b[j]), query at x[i].
 ```
 
-### 2. Shortest Path with Linear Costs
+### 2) Shortest Path with Linear Costs
+
 ```
-Edge cost = mx + b where x is current "state"
-Use Li Chao to find cheapest edge at any state.
+Edge cost depends linearly on a state value x.
+Li Chao picks cheapest line at that x.
 ```
 
-### 3. Dynamic Programming Optimization
-```
-Many DP problems with form:
-  dp[i] = min over j of (f(j) * g(i) + h(j))
+### 3) Lower/Upper Envelope of Lines
 
-Insert line (f(j), h(j)), query at g(i).
+```
+Maintain minimum (or maximum) over all lines at any x.
 ```
 
-### 4. Computational Geometry
+## Handling Line Segments (Conceptual)
+
+You can restrict a line to an interval `[L, R]`:
+
 ```
-Lower envelope of lines.
-Useful for various geometric optimization problems.
+insert_segment(line, node interval):
+  if no overlap: return
+  if fully covered: insert(line)
+  else recurse both children
 ```
 
-## Complexity Analysis
+This costs O(log^2 C) per segment.
+
+## Complexity
 
 | Operation | Time | Space |
-|-----------|------|-------|
-| Insert line | O(log C) | O(1) amortized |
-| Query min at x | O(log C) | O(1) |
-| Total with n lines | O(n log C) | O(n + log C) or O(4C) |
+|----------|------|-------|
+| Insert | O(log C) | O(n log C) nodes created |
+| Query | O(log C) | O(1) extra |
+
+## Common Pitfalls
+
+- **Coordinate range**: must cover all query x values.
+- **Overflow**: line evaluation uses `Int64`.
+- **Ties**: consistent tie handling keeps correctness.
+- **Min vs max**: use the correct tree (`LiChaoTreeMin` for min).
 
 ## Li Chao vs Convex Hull Trick
 
-| Feature | Li Chao | Convex Hull Trick |
-|---------|---------|-------------------|
-| Insert order | Any | Sorted by slope |
-| Query order | Any | Often sorted |
-| Complexity | O(log C) | O(log n) or O(1) amortized |
-| Implementation | Simpler | More complex |
+| Feature | Li Chao | CHT (sorted slopes) |
+|---------|---------|---------------------|
+| Insert order | any | sorted by slope |
+| Query order | any | often sorted |
+| Complexity | O(log C) | O(log n) or amortized O(1) |
+| Implementation | simpler | trickier |
 
-**Choose Li Chao when**: You need arbitrary insert/query order or simpler code.
+Li Chao is usually the best choice when operations are online and order is
+arbitrary.
 
-## Line Segments
+## Implementation Notes (This Package)
 
-```
-Li Chao can also handle line segments [l, r]:
-Insert segment only into nodes fully contained in [l, r].
-
-insert_segment(line, node [nl, nr], seg [l, r]):
-    if nr < l or r < nl:
-        return  # no overlap
-    if l <= nl and nr <= r:
-        insert(line, node)  # fully contained
-        return
-    insert_segment(line, left_child, seg)
-    insert_segment(line, right_child, seg)
-
-Time: O(log² C) per segment
-```
-
-## Dynamic Variant
-
-```
-For unknown coordinate range, use dynamic segment tree:
-- Start with a small tree
-- Create nodes on demand when inserting
-
-Or use coordinate compression if all queries are known.
-```
-
-## Implementation Notes
-
-- Use 1e18 or similar for "no line" sentinel
-- For maximum instead of minimum, flip comparison
-- Be careful with floating-point precision
-- Can use persistent Li Chao for versioned queries
-- Space-efficient: only O(n log C) nodes ever created
-- For small C, use array-based segment tree
-
+- `LiChaoTree` answers **maximum** queries.
+- `LiChaoTreeMin` answers **minimum** queries.
+- Uses a dynamic node array (nodes created on demand).
+- Sentinel lines represent “no line yet”.

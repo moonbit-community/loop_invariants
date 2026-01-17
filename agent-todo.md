@@ -149,8 +149,8 @@
 - [x] lib/lazy_segtree
 - [x] lib/lca
 - [x] lib/lct
-- [ ] lib/lichao (in progress)
-- [ ] lib/line_segment_intersection
+- [x] lib/lichao
+- [ ] lib/line_segment_intersection (in progress)
 - [ ] lib/linear_recurrence
 - [ ] lib/linear_sieve
 - [ ] lib/linkcut
