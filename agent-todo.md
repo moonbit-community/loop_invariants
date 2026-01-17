@@ -88,8 +88,8 @@
 - [x] lib/challenge_persistent_pairing_heap
 - [x] lib/challenge_persistent_queue
 - [x] lib/challenge_persistent_queue_min
-- [ ] lib/challenge_persistent_rope (in progress)
-- [ ] lib/challenge_persistent_segment_tree
+- [x] lib/challenge_persistent_rope
+- [ ] lib/challenge_persistent_segment_tree (in progress)
 - [ ] lib/challenge_persistent_segment_tree_assign
 - [ ] lib/challenge_persistent_segment_tree_gcd
 - [ ] lib/challenge_persistent_segment_tree_lazy

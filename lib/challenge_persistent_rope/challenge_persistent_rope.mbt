@@ -53,35 +53,13 @@ pub fn to_string(r : Rope) -> String {
 }
 
 ///|
-fn prefix_length(ropes : ArrayView[Rope], n : Int) -> Int {
-  if n <= 0 {
-    0
-  } else {
-    prefix_length(ropes, n - 1) + length(ropes[n - 1])
-  }
-}
 
 ///|
 /// Concatenate a list of ropes in order.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn concat_many(ropes : ArrayView[Rope]) -> Rope {
-  let n = ropes.length()
-  for i = 0, acc = Rope::Empty {
-    if i >= n {
-      break acc
-    } else {
-      continue i + 1, concat(acc, ropes[i])
-    }
-  } where {
-    invariant: i >= 0 && i <= n,
-    invariant: length(acc) == prefix_length(ropes, i),
-    reasoning: (
-      #|INVARIANT (Rope fold):
-      #|acc equals the concatenation of the first i ropes in order.
-      #|MAINTENANCE:
-      #|Append ropes[i] to acc, preserving order and total length.
-      #|TERMINATION:
-      #|At i = n, acc is the full concatenation.
-    ),
+  let mut acc = Rope::Empty
+  for r in ropes {
+    acc = concat(acc, r)
   }
+  acc
 }
