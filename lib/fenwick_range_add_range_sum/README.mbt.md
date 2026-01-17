@@ -11,6 +11,16 @@ range updates and range queries efficiently.
 - **Space**: O(n)
 - **Key Feature**: Both range updates AND range queries
 
+## Indexing Note
+
+```
+External indices are 0-based:
+  range_add(l, r, v) applies to l..r inclusive
+  range_sum(l, r) returns sum on l..r inclusive
+
+Internally, the BIT uses 1-based indices.
+```
+
 ## The Key Insight
 
 ```
@@ -74,22 +84,24 @@ Query prefix(4):
 ## Algorithm Walkthrough
 
 ```
-Array: [1, 2, 3, 4, 5], Operation: range_add(1, 3, 2)
+Zero array of size 5, Operation: range_add(1, 3, 2)
 
-Initial array: [1, 2, 3, 4, 5]
-After add:     [1, 4, 5, 6, 5]  (added 2 to positions 1,2,3)
+After add: [0, 2, 2, 2, 0]
 
 Implementation:
-  bit1.update(1, +2)   // start adding 2 at position 1
-  bit1.update(4, -2)   // stop adding 2 after position 3
-  bit2.update(1, +2*0) // constant term at l
-  bit2.update(4, -2*3) // constant term at r+1
+  bit1.add(1, +2)   // start adding 2 at position 1
+  bit1.add(4, -2)   // stop after position 3
+  bit2.add(1, +2*0) // constant term at l
+  bit2.add(4, -2*3) // constant term at r+1
 
 Query range_sum(1, 3):
   = prefix(3) - prefix(0)
   = (sum(bit1,3)*3 - sum(bit2,3)) - (sum(bit1,0)*0 - sum(bit2,0))
-  = (2*3 - 0) - (0 - 0) + original_prefix
-  = 6 + (2+3+4) = 6 + 9 = 15  ✓
+  = 6 - 0
+  = 6  ✓  (2 + 2 + 2)
+
+If you start from a non-zero array, build it first with from_array,
+then apply range_add. The formula stays the same.
 ```
 
 ## Quick Start
@@ -185,6 +197,13 @@ Where:
 bit1 maintains A(x), bit2 maintains B(x)
 ```
 
+## Common Pitfalls
+
+- **Wrong indexing**: API is 0-based, BIT internals are 1-based.
+- **Forgetting r+1**: range add must stop at r+1 (when in bounds).
+- **Off-by-one in formula**: use `x` as 1-based in prefix calculation.
+- **Empty range**: if l > r, do nothing / return 0.
+
 ## Implementation Notes
 
 - Uses 0-indexed arrays (adjust for 1-indexed problems)
@@ -192,4 +211,3 @@ bit1 maintains A(x), bit2 maintains B(x)
 - Need to handle the "end" marker at r+1 carefully
 - Two Fenwick trees of the same size
 - Can combine with other Fenwick tricks (2D, etc.)
-

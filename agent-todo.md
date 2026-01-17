@@ -133,8 +133,8 @@
 - [x] lib/eulerian_path
 - [x] lib/fenwick
 - [x] lib/fenwick2d
-- [ ] lib/fenwick_range_add_range_sum (in progress)
-- [ ] lib/fft
+- [x] lib/fenwick_range_add_range_sum
+- [ ] lib/fft (in progress)
 - [ ] lib/floor_sum
 - [ ] lib/fwht
 - [ ] lib/gauss

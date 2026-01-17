@@ -49,43 +49,28 @@ fn FenwickRangeAddRangeSum::add_bit(
   idx : Int,
   delta : Int64,
 ) -> Unit {
-  let mut i = idx
   let limit = self.n + 1
-  for ; i <= limit; {
-    bit[i] = bit[i] + delta
-    i = i + lowbit(i)
-  } where {
-    invariant: i >= 1 && i <= limit,
-    reasoning: (
-      #|INVARIANT (BIT update path):
-      #|i walks upward along Fenwick parent links (i += lowbit(i)). Every
-      #|visited index's covered range contains the original position idx,
-      #|so adding delta preserves prefix sums for that position.
-      #|TERMINATION:
-      #|i strictly increases and eventually exceeds limit.
-    ),
+  loop idx {
+    i => {
+      if i > limit {
+        break ()
+      }
+      bit[i] = bit[i] + delta
+      continue i + lowbit(i)
+    }
   }
 }
 
 ///|
 fn sum_bit(bit : Array[Int64], idx : Int) -> Int64 {
-  let mut i = idx
-  let mut acc = 0L
-  for ; i > 0; {
-    acc = acc + bit[i]
-    i = i - lowbit(i)
-  } where {
-    invariant: i >= 0,
-    reasoning: (
-      #|INVARIANT (BIT prefix sum):
-      #|acc equals the sum of all Fenwick segments fully covered so far
-      #|in the prefix [1..idx]. Each step removes lowbit(i), shrinking the
-      #|remaining prefix while preserving the accumulated total.
-      #|TERMINATION:
-      #|i decreases to 0, so the full prefix sum is accumulated.
-    ),
+  loop (idx, 0L) {
+    (i, acc) => {
+      if i <= 0 {
+        break acc
+      }
+      continue (i - lowbit(i), acc + bit[i])
+    }
   }
-  acc
 }
 
 ///|
