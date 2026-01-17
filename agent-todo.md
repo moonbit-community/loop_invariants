@@ -124,8 +124,8 @@
 - [x] lib/dinic
 - [x] lib/disjoint_sparse
 - [x] lib/dominator_tree
-- [ ] lib/dp (in progress)
-- [ ] lib/dsu_on_tree
+- [x] lib/dp
+- [ ] lib/dsu_on_tree (in progress)
 - [ ] lib/duval_lyndon
 - [ ] lib/edmonds_arborescence
 - [ ] lib/eertree

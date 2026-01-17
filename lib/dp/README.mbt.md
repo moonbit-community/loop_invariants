@@ -8,6 +8,34 @@ subproblems and storing solutions to avoid redundant computation.
 - **Key insight**: Optimal substructure + overlapping subproblems
 - **Approach**: Bottom-up (tabulation) or top-down (memoization)
 
+## What This Package Contains
+
+This package is a **collection of worked DP implementations**. The functions
+are kept internal to emphasize learning and to avoid exposing a large public
+API. Use the code as a reference or copy patterns into your own solutions.
+
+Algorithms included (see `dp.mbt`):
+
+- 0/1 Knapsack, Unbounded Knapsack
+- LIS (binary search optimization)
+- Coin Change (min coins, number of ways)
+- LCS, Edit Distance
+- Matrix Chain Multiplication
+- Palindrome cuts and longest palindromic subsequence
+- Grid path DPs (unique paths, min path sum)
+- Word break, House robber, Egg drop, Kadane's DP
+
+### Mini Example (Pseudocode)
+
+```mbt nocheck
+///|
+// dp[i] = best value up to i
+dp[0] = base
+for i in 1..n-1 {
+  dp[i] = f(dp[i-1], dp[i-2], ..., input[i])
+}
+```
+
 ## The DP Pattern
 
 ```
@@ -224,4 +252,3 @@ Reduces O(n³) to O(n²)
 3. **Draw the DAG**: Visualize dependencies between subproblems
 4. **Check overlapping**: Are subproblems computed multiple times?
 5. **Optimize**: Can you reduce dimensions or use monotonicity?
-
