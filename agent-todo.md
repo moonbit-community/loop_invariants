@@ -132,8 +132,8 @@
 - [x] lib/euler_tour
 - [x] lib/eulerian_path
 - [x] lib/fenwick
-- [ ] lib/fenwick2d (in progress)
-- [ ] lib/fenwick_range_add_range_sum
+- [x] lib/fenwick2d
+- [ ] lib/fenwick_range_add_range_sum (in progress)
 - [ ] lib/fft
 - [ ] lib/floor_sum
 - [ ] lib/fwht

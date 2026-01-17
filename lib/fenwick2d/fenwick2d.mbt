@@ -41,7 +41,7 @@ pub struct Fenwick2D {
 pub fn Fenwick2D::new(rows : Int, cols : Int) -> Fenwick2D {
   // Use 1-indexed arrays (index 0 unused)
   let tree : Array[Array[Int64]] = []
-  for _ in 0..=rows {
+  for _ in 0..<=rows {
     tree.push(Array::make(cols + 1, 0L))
   }
   { tree, rows, cols }
@@ -67,37 +67,22 @@ pub fn Fenwick2D::update(
   if x <= 0 || x > self.rows || y <= 0 || y > self.cols {
     return
   }
-
-  // INVARIANT: We process all row positions i that cover x
-  // i ranges over x, x + lowbit(x), x + lowbit(x + lowbit(x)), ...
-  for i = x; i <= self.rows; i = i + lowbit(i) {
-    // For each row position i, update all column positions j that cover y
-    // INVARIANT: j ranges over y, y + lowbit(y), y + lowbit(y + lowbit(y)), ...
-    for j = y; j <= self.cols; j = j + lowbit(j) {
-      self.tree[i][j] = self.tree[i][j] + delta
-    } where {
-      invariant: j > 0 && j <= self.cols + 1,
-      reasoning: (
-        #|INVARIANT (column update):
-        #|j iterates over the Fenwick indices that cover column y for this row i.
-        #|MAINTENANCE:
-        #|Advance by lowbit(j), which strictly increases j while preserving the
-        #|Fenwick coverage pattern.
-        #|TERMINATION:
-        #|j eventually exceeds cols, so all covering column indices are updated.
-      ),
+  loop x {
+    i => {
+      if i > self.rows {
+        break ()
+      }
+      loop y {
+        j => {
+          if j > self.cols {
+            break ()
+          }
+          self.tree[i][j] = self.tree[i][j] + delta
+          continue j + lowbit(j)
+        }
+      }
+      continue i + lowbit(i)
     }
-  } where {
-    invariant: i > 0 && i <= self.rows + 1,
-    reasoning: (
-      #|INVARIANT (row update):
-      #|i iterates over the Fenwick indices that cover row x.
-      #|MAINTENANCE:
-      #|Advance by lowbit(i), which strictly increases i while preserving the
-      #|Fenwick coverage pattern.
-      #|TERMINATION:
-      #|i eventually exceeds rows, so all covering row indices are updated.
-    ),
   }
 }
 
@@ -111,42 +96,21 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, x : Int, y : Int) -> Int64 {
   }
   let x_clamped = if x > self.rows { self.rows } else { x }
   let y_clamped = if y > self.cols { self.cols } else { y }
-
-  // INVARIANT: We collect contributions from row positions
-  // i ranges over x, x - lowbit(x), x - lowbit(x - lowbit(x)), ..., 0
-  for i = x_clamped, sum = 0L; i > 0; i = i - lowbit(i) {
-    // For each row position, collect column contributions
-    // INVARIANT: j ranges over y, y - lowbit(y), ..., 0
-    let row_sum = for j = y_clamped, row_sum = 0L; j > 0; j = j - lowbit(j) {
-      continue j - lowbit(j), row_sum + self.tree[i][j]
-    } else {
-      row_sum
-    } where {
-      invariant: j >= 0 && j <= y_clamped,
-      reasoning: (
-        #|INVARIANT (prefix columns):
-        #|row_sum aggregates contributions from column indices already visited
-        #|along the BIT path from y_clamped down to j.
-        #|MAINTENANCE:
-        #|Add tree[i][j] and move to j - lowbit(j) to cover the next segment.
-        #|TERMINATION:
-        #|At j = 0, row_sum holds the full column contribution for row i.
-      ),
+  loop (x_clamped, 0L) {
+    (i, sum) => {
+      if i <= 0 {
+        break sum
+      }
+      let row_sum = loop (y_clamped, 0L) {
+        (j, acc) => {
+          if j <= 0 {
+            break acc
+          }
+          continue (j - lowbit(j), acc + self.tree[i][j])
+        }
+      }
+      continue (i - lowbit(i), sum + row_sum)
     }
-    continue i - lowbit(i), sum + row_sum
-  } else {
-    sum
-  } where {
-    invariant: i >= 0 && i <= x_clamped,
-    reasoning: (
-      #|INVARIANT (prefix rows):
-      #|sum aggregates row_sum for row indices already visited from x_clamped
-      #|down to i in the BIT path.
-      #|MAINTENANCE:
-      #|Add the current row_sum and move to i - lowbit(i).
-      #|TERMINATION:
-      #|At i = 0, sum equals the prefix sum up to (x_clamped, y_clamped).
-    ),
   }
 }
 
@@ -223,7 +187,7 @@ priv struct Fenwick2DRange {
 ///|
 fn Fenwick2DRange::new(rows : Int, cols : Int) -> Fenwick2DRange {
   let tree : Array[Array[Int64]] = []
-  for _ in 0..=rows {
+  for _ in 0..<=rows {
     tree.push(Array::make(cols + 1, 0L))
   }
   { tree, rows, cols }
@@ -240,30 +204,22 @@ fn Fenwick2DRange::internal_update(
   if x <= 0 || x > self.rows || y <= 0 || y > self.cols {
     return
   }
-  for i = x; i <= self.rows; i = i + lowbit(i) {
-    for j = y; j <= self.cols; j = j + lowbit(j) {
-      self.tree[i][j] = self.tree[i][j] + delta
-    } where {
-      invariant: j > 0 && j <= self.cols + 1,
-      reasoning: (
-        #|INVARIANT (range column update):
-        #|j traverses all Fenwick column indices that cover y for row i.
-        #|MAINTENANCE:
-        #|Update tree[i][j], then advance by lowbit(j) to the next covering node.
-        #|TERMINATION:
-        #|At j > cols, all covering column nodes are updated.
-      ),
+  loop x {
+    i => {
+      if i > self.rows {
+        break ()
+      }
+      loop y {
+        j => {
+          if j > self.cols {
+            break ()
+          }
+          self.tree[i][j] = self.tree[i][j] + delta
+          continue j + lowbit(j)
+        }
+      }
+      continue i + lowbit(i)
     }
-  } where {
-    invariant: i > 0 && i <= self.rows + 1,
-    reasoning: (
-      #|INVARIANT (range row update):
-      #|i traverses all Fenwick row indices that cover x.
-      #|MAINTENANCE:
-      #|Update columns for row i, then advance by lowbit(i).
-      #|TERMINATION:
-      #|At i > rows, all covering row nodes are updated.
-    ),
   }
 }
 
@@ -279,37 +235,21 @@ fn Fenwick2DRange::internal_prefix(
   }
   let x_clamped = if x > self.rows { self.rows } else { x }
   let y_clamped = if y > self.cols { self.cols } else { y }
-  for i = x_clamped, sum = 0L; i > 0; i = i - lowbit(i) {
-    let row_sum = for j = y_clamped, row_sum = 0L; j > 0; j = j - lowbit(j) {
-      continue j - lowbit(j), row_sum + self.tree[i][j]
-    } else {
-      row_sum
-    } where {
-      invariant: j >= 0 && j <= y_clamped,
-      reasoning: (
-        #|INVARIANT (range prefix columns):
-        #|row_sum aggregates contributions from column indices already visited
-        #|along the BIT path from y_clamped down to j.
-        #|MAINTENANCE:
-        #|Add tree[i][j] and move to j - lowbit(j).
-        #|TERMINATION:
-        #|At j = 0, row_sum holds the full column contribution for row i.
-      ),
+  loop (x_clamped, 0L) {
+    (i, sum) => {
+      if i <= 0 {
+        break sum
+      }
+      let row_sum = loop (y_clamped, 0L) {
+        (j, acc) => {
+          if j <= 0 {
+            break acc
+          }
+          continue (j - lowbit(j), acc + self.tree[i][j])
+        }
+      }
+      continue (i - lowbit(i), sum + row_sum)
     }
-    continue i - lowbit(i), sum + row_sum
-  } else {
-    sum
-  } where {
-    invariant: i >= 0 && i <= x_clamped,
-    reasoning: (
-      #|INVARIANT (range prefix rows):
-      #|sum aggregates row_sum for row indices already visited from x_clamped
-      #|down to i in the BIT path.
-      #|MAINTENANCE:
-      #|Add the current row_sum and move to i - lowbit(i).
-      #|TERMINATION:
-      #|At i = 0, sum equals the internal prefix sum.
-    ),
   }
 }
 
@@ -425,18 +365,8 @@ test "fenwick2d larger grid" {
   let ft = Fenwick2D::new(5, 5)
 
   // Fill diagonal
-  for i = 1; i <= 5; i = i + 1 {
+  for i in 1 ..<= 5 {
     ft.update(i, i, i.to_int64())
-  } where {
-    invariant: i >= 1 && i <= 6,
-    reasoning: (
-      #|INVARIANT (diagonal fill):
-      #|Entries (k,k) for k in [1..i) have been updated with value k.
-      #|MAINTENANCE:
-      #|Update (i,i) with i to extend the filled diagonal.
-      #|TERMINATION:
-      #|At i = 6, all 1..5 diagonal entries are updated.
-    ),
   }
 
   // Sum of diagonal: 1 + 2 + 3 + 4 + 5 = 15

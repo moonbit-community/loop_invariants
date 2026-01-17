@@ -9,6 +9,16 @@ and 2D prefix/rectangle sum queries. It achieves O(log² n) per operation.
 - **Query**: O(log n × log m)
 - **Space**: O(n × m)
 
+## Indexing Note
+
+```
+This API uses 1-indexed coordinates:
+  update(1,1,delta) modifies the top-left cell.
+  prefix_sum(r,c) returns sum of rows 1..r and cols 1..c.
+
+If your data is 0-indexed, convert by adding 1 to row/col.
+```
+
 ## The Key Insight
 
 ```
@@ -104,6 +114,18 @@ test "fenwick2d example" {
 }
 ```
 
+```mbt check
+///|
+test "fenwick2d prefix and single cell" {
+  let fw = @fenwick2d.Fenwick2D::new(3, 3)
+  fw.update(1, 1, 4)
+  fw.update(1, 2, 1)
+  fw.update(2, 1, 2)
+  inspect(fw.prefix_sum(2, 2), content="7") // 4+1+2
+  inspect(fw.get(1, 2), content="1")
+}
+```
+
 ## Rectangle Sum via Inclusion-Exclusion
 
 ```
@@ -131,6 +153,26 @@ prefix(r1-1,c1-1) = A
 
 query = (A+B+C+query) - (A+B) - (A+C) + A
       = prefix(r2,c2) - prefix(r1-1,c2) - prefix(r2,c1-1) + prefix(r1-1,c1-1)
+```
+
+### Numeric Example
+
+```
+Grid (1-indexed):
+  1  2  3
+  4  5  6
+  7  8  9
+
+Query rectangle (2,2) to (3,3):
+  values = 5 + 6 + 8 + 9 = 28
+
+Using inclusion-exclusion:
+  prefix(3,3) = 45
+  prefix(1,3) = 1 + 2 + 3 = 6
+  prefix(3,1) = 1 + 4 + 7 = 12
+  prefix(1,1) = 1
+
+  45 - 6 - 12 + 1 = 28
 ```
 
 ## Common Applications
@@ -194,6 +236,13 @@ To support range updates and point queries:
 3. Point query(r, c) = prefix(r, c)
 ```
 
+## Common Pitfalls
+
+- **Off-by-one**: internal coordinates are 1-based.
+- **Large grids**: memory is O(n×m); for sparse data, use coordinate compression.
+- **Negative updates**: allowed, but keep sums in `Int64`.
+- **Empty rectangles**: handle r1 > r2 or c1 > c2 as sum 0.
+
 ## Implementation Notes
 
 - Use 1-indexed arrays for clean lowbit operations
@@ -201,4 +250,3 @@ To support range updates and point queries:
 - For range sum, handle r1=0 or c1=0 edge cases
 - Can be generalized to higher dimensions (3D, etc.)
 - Memory access pattern: column-major for inner loop often faster
-
