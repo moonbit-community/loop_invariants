@@ -92,25 +92,12 @@ pub fn make(n : Int) -> DSU {
 
 ///|
 /// Find the representative of x without path compression.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn find(dsu : DSU, x : Int) -> Int {
-  for cur = x {
-    let p = array_get(dsu.parent, cur)
-    if p == cur {
-      break cur
-    } else {
-      continue p
-    }
-  } where {
-    invariant: cur >= 0 && cur < dsu.parent.n,
-    reasoning: (
-      #|INVARIANT (Find root):
-      #|cur stays on the parent chain of x and remains within bounds.
-      #|MAINTENANCE:
-      #|Move to parent; the chain strictly approaches a root.
-      #|TERMINATION:
-      #|When cur == parent[cur], cur is the root.
-    ),
+  let p = array_get(dsu.parent, x)
+  if p == x {
+    x
+  } else {
+    find(dsu, p)
   }
 }
 

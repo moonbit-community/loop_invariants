@@ -104,8 +104,8 @@
 - [x] lib/challenge_persistent_treap_map
 - [x] lib/challenge_persistent_treap_set
 - [x] lib/challenge_persistent_trie_string
-- [ ] lib/challenge_persistent_union_find (in progress)
-- [ ] lib/challenge_prefix_sum
+- [x] lib/challenge_persistent_union_find
+- [ ] lib/challenge_prefix_sum (in progress)
 - [ ] lib/challenge_scc_kosaraju
 - [ ] lib/challenge_scc_tarjan
 - [ ] lib/challenge_sliding_window_min
