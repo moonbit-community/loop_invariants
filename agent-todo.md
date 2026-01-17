@@ -20,6 +20,7 @@
 - [x] lib/centroid
 - [x] lib/challenge_bfs_grid
 - [x] lib/splay_tree
+- [x] lib/splay
 
 ## Initial pass
 

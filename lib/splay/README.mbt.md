@@ -95,7 +95,7 @@ That is what gives splay trees their amortized O(log n) guarantee.
 
 ---
 
-## 5. Step‑by‑step example
+## 5. Step-by-step example
 
 Tree before splay(30):
 
@@ -109,7 +109,7 @@ Tree before splay(30):
         27   40
 ```
 
-30 is a **right child** of 25, and 25 is a **left child** of 50 → zig‑zag.
+30 is a **right child** of 25, and 25 is a **left child** of 50 -> zig-zag.
 
 After zig‑zag:
 
@@ -123,7 +123,7 @@ After zig‑zag:
    10   27
 ```
 
-Now 30’s parent is root → zig:
+Now 30's parent is root -> zig:
 
 ```
         30
@@ -139,9 +139,86 @@ Now 30’s parent is root → zig:
 
 ---
 
-## 6. Amortized O(log n) intuition
+## 6. Access on a miss (important detail)
 
-Splaying may take O(depth) rotations, but it also **improves** the tree:
+If a key is not found, splay the **last accessed** node on the search path.
+This still helps future queries because nearby keys become faster.
+
+Example: search for 26 in the tree above.
+
+- The search ends at node 27 (closest greater key on the path).
+- Splay 27 to root.
+- The tree becomes better for keys around 26-30.
+
+Think of it as "cache the boundary" even when the target is missing.
+
+---
+
+## 7. Access sequence example (adaptive behavior)
+
+Start with the same tree and access keys: **30, 27, 30, 30**.
+
+```
+Access 30 -> 30 becomes root
+Access 27 -> 27 becomes root, 30 becomes child
+Access 30 -> 30 is near root, fast
+Access 30 -> already root, near zero cost
+```
+
+Repeated access patterns naturally move hot keys near the top.
+
+---
+
+## 8. Split and join, step by step
+
+Split by key `k`:
+
+1. Find `k` (or the last node on its path).
+2. Splay that node to root.
+3. Left subtree is `< k`, right subtree is `> k`.
+
+```
+Before split:
+        (root)
+        /    \
+     < k     > k
+
+After splay(k):
+        k
+      /   \
+   < k   > k
+```
+
+Join two trees A and B where all keys in A are smaller:
+
+1. Splay the maximum node in A to root.
+2. Attach B as the right subtree.
+
+```
+A max to root:        Join:
+     max                max
+    /   \              /   \
+  ...  (nil)   +      A     B
+```
+
+---
+
+## 9. Deletion example (intuitive)
+
+To delete key `x`:
+
+1. Splay `x` to root.
+2. Remove the root.
+3. Join the left and right subtrees.
+
+If `x` is not present, the last accessed node is splayed instead. That still
+improves the tree for nearby keys.
+
+---
+
+## 10. Amortized O(log n) intuition
+
+Splaying may take O(depth) rotations, but it also improves the tree:
 
 ```
 deep nodes move up
@@ -152,7 +229,7 @@ Over many operations, total cost averages to O(log n).
 
 ---
 
-## 7. Typical operations
+## 11. Typical operations
 
 1. **Search**: find node, splay it to root.
 2. **Insert**: BST insert, then splay new node.
@@ -161,7 +238,30 @@ Over many operations, total cost averages to O(log n).
 
 ---
 
-## 8. Common applications
+## 12. Example usage (conceptual)
+
+This package is tutorial-only; it does not export a concrete API.
+
+```mbt nocheck
+///|
+let tree = SplayTree::new()
+
+tree.insert(5)
+tree.insert(3)
+tree.insert(7)
+tree.insert(1)
+
+tree.find(1) // splayed to root
+
+tree.delete(3)
+
+let (left, right) = tree.split(4)
+tree = left.join(right)
+```
+
+---
+
+## 13. Common applications
 
 1. **Dynamic sequences** (split, join, reverse)
 2. **Link‑cut trees** (splay trees inside)
@@ -169,17 +269,17 @@ Over many operations, total cost averages to O(log n).
 
 ---
 
-## 9. Complexity
+## 14. Complexity
 
 ```
 Search / Insert / Delete: O(log n) amortized
-Worst‑case for one op:    O(n)
+Worst-case for one op:    O(n)
 Space:                   O(n)
 ```
 
 ---
 
-## 10. Beginner checklist
+## 15. Beginner checklist
 
 1. Always splay after access.
 2. Zig‑zig: rotate grandparent first.
@@ -188,7 +288,7 @@ Space:                   O(n)
 
 ---
 
-## 11. Summary
+## 16. Summary
 
 Splay trees are simple, adaptive BSTs:
 
