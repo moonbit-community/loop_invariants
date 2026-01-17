@@ -128,8 +128,8 @@
 - [x] lib/dsu_on_tree
 - [x] lib/duval_lyndon
 - [x] lib/edmonds_arborescence
-- [ ] lib/eertree (in progress)
-- [ ] lib/euler_tour
+- [x] lib/eertree
+- [ ] lib/euler_tour (in progress)
 - [ ] lib/eulerian_path
 - [ ] lib/fenwick
 - [ ] lib/fenwick2d

@@ -89,30 +89,18 @@ fn Eertree::new() -> Eertree {
 fn Eertree::get_suffix_link(self : Eertree, v : Int, i : Int, c : Int) -> Int {
   // INVARIANT: We're looking for longest palindrome ending at position i-1
   // such that character before it equals c (so we can extend to position i)
-  for cur = v {
-    let len = self.nodes[cur].len
-    // Check if we can extend this palindrome with c
-    // Position of character before this palindrome is i - len - 1
-    let prev_pos = i - len - 1
-    if prev_pos >= 0 && self.text[prev_pos] == c {
-      break cur
+  loop v {
+    cur => {
+      let len = self.nodes[cur].len
+      // Check if we can extend this palindrome with c
+      // Position of character before this palindrome is i - len - 1
+      let prev_pos = i - len - 1
+      if prev_pos >= 0 && self.text[prev_pos] == c {
+        break cur
+      }
+      // Follow suffix link to try shorter palindrome
+      continue self.nodes[cur].suffix_link
     }
-    // Follow suffix link to try shorter palindrome
-    continue self.nodes[cur].suffix_link
-  } where {
-    invariant: cur >= 0 && cur < self.nodes.length(),
-    reasoning: (
-      #|INVARIANT (suffix search):
-      #|cur is a palindromic suffix of text[0..i), and all longer suffix
-      #|palindromes have already been checked and cannot be extended by c.
-      #|MAINTENANCE:
-      #|If the character before this palindrome is not c, move to the suffix
-      #|link, which is the next shorter palindromic suffix.
-      #|TERMINATION:
-      #|Lengths strictly decrease along suffix links and eventually reach the
-      #|odd root (len = -1), for which prev_pos = i and text[i] == c, so the
-      #|loop always finds a valid extendable suffix.
-    ),
   }
 }
 
@@ -181,7 +169,8 @@ fn Eertree::count_distinct(self : Eertree) -> Int {
 fn Eertree::propagate_counts(self : Eertree) -> Unit {
   // Process nodes in reverse order (children before parents in suffix tree)
   // This ensures when we process a node, all its suffix-children are already processed
-  for i in self.nodes.length() >.. 2 {
+  let start = self.nodes.length() - 1
+  for i in start >=.. 2 {
     let suffix = self.nodes[i].suffix_link
     self.nodes[suffix].count = self.nodes[suffix].count + self.nodes[i].count
   }
@@ -210,18 +199,14 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
       // Build palindrome string
       let len = tree.nodes[node].len
       let sb = StringBuilder::new()
-      // First half (including middle for odd length)
-      for c in current {
-        sb.write_char(Int::unsafe_to_char(c))
+      // current holds characters from center outward.
+      // Left half is reverse(current); right half is current (skip center if odd).
+      let last = current.length() - 1
+      for i in last >=.. 0 {
+        sb.write_char(Int::unsafe_to_char(current[i]))
       }
-      // Second half (reverse, skip middle for odd length)
-      let start = if len % 2 == 0 {
-        current.length() - 1
-      } else {
-        current.length() - 2
-      }
-      let start_exclusive = start + 1
-      for i in start_exclusive >.. 0 {
+      let start = if len % 2 == 0 { 0 } else { 1 }
+      for i in start..<current.length() {
         sb.write_char(Int::unsafe_to_char(current[i]))
       }
       result.push(sb.to_string())
@@ -270,7 +255,6 @@ fn Eertree::contains_palindrome(self : Eertree, p : String) -> Bool {
   // Navigate tree: edges from node with palindrome P and char c lead to cPc
   // So we traverse from inside out: start from center, add chars outward
   let start = if p.length() % 2 == 1 { 0 } else { 1 }
-  let mut node = start
 
   // For odd length: traverse from center outward
   // For even length: traverse from middle pair outward
@@ -278,14 +262,21 @@ fn Eertree::contains_palindrome(self : Eertree, p : String) -> Bool {
   let start_idx = if p.length() % 2 == 1 { mid } else { mid - 1 }
 
   // Navigate outward from center
-  let start_exclusive = start_idx + 1
-  for i in start_exclusive >.. 0 {
-    let c = p[i].to_int()
-    let next = self.nodes[node].edges[c]
-    if next < 0 {
-      return false
+  let node = loop (start_idx, start) {
+    (i, cur) => {
+      if i < 0 {
+        break cur
+      }
+      let c = p[i].to_int()
+      let next = self.nodes[cur].edges[c]
+      if next < 0 {
+        break -1
+      }
+      continue (i - 1, next)
     }
-    node = next
+  }
+  if node < 0 {
+    return false
   }
 
   // Check if we reached a node with correct length
@@ -337,16 +328,12 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
   // Build palindrome string
   let len = self.nodes[node_idx].len
   let sb = StringBuilder::new()
-  for c in path {
-    sb.write_char(Int::unsafe_to_char(c))
+  let last = path.length() - 1
+  for i in last >=.. 0 {
+    sb.write_char(Int::unsafe_to_char(path[i]))
   }
-  let rev_start = if len % 2 == 0 {
-    path.length() - 1
-  } else {
-    path.length() - 2
-  }
-  let rev_exclusive = rev_start + 1
-  for i in rev_exclusive >.. 0 {
+  let start = if len % 2 == 0 { 0 } else { 1 }
+  for i in start..<path.length() {
     sb.write_char(Int::unsafe_to_char(path[i]))
   }
   sb.to_string()
@@ -402,12 +389,7 @@ test "eertree all different" {
 test "eertree abacaba" {
   let tree = Eertree::from_string("abacaba")
 
-  // Palindromes: "a", "b", "c", "aba", "aca", "bacab"... wait let me count
-  // Actually: "a"(4), "b"(2), "c"(1), "aba"(2), "bacab"(1), "abacaba"(1)
-  // But distinct count doesn't include "aca" as it's not a substring
-  // Let me reconsider: "a", "b", "c", "aba", "bacab", "abacaba" = 6
-  // Wait, is "aca" in "abacaba"? Position 2-4: "aca" yes!
-  // So: "a", "b", "c", "aba", "aca", "bacab", "abacaba" = 7
+  // Distinct palindromes: "a", "b", "c", "aba", "aca", "bacab", "abacaba"
   inspect(tree.count_distinct(), content="7")
 }
 

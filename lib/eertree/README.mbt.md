@@ -10,11 +10,35 @@ structure that combines features of suffix trees and automata.
 - **Space**: O(n)
 - **Distinct palindromes**: At most n
 
+## Warm-up: Palindrome vs Substring
+
+```
+Substring means "contiguous":
+  "abac" contains "aba" (positions 0..2)
+  "abac" does NOT contain "aac" (not contiguous)
+
+Palindrome means "reads the same forward and backward":
+  "aba" is a palindrome
+  "ab" is not
+
+Eertree stores palindromic substrings only.
+```
+
 ## Core Idea
 
 - Each node represents a **distinct palindrome** with a suffix link.
 - Extending the current longest palindrome gives at most **one new node**.
 - Suffix links allow amortized O(1) extension per character.
+
+## What Each Node Stores
+
+```
+For each palindrome node:
+  - length of the palindrome
+  - suffix link (longest proper palindromic suffix)
+  - edges by character: c -> palindrome cPc
+  - occurrence count (if you choose to track it)
+```
 
 ## The Key Insight
 
@@ -33,27 +57,36 @@ Each node = one distinct palindrome.
 
 ```
 Two special roots:
-  - Root -1: imaginary palindrome of length -1 (for building odd palindromes)
-  - Root 0: empty string (for building even palindromes)
+  - Root -1: imaginary palindrome of length -1 (odd-length starter)
+  - Root 0: empty string of length 0 (even-length starter)
 
-For string "abaab":
+Example string: "ababa"
+Distinct palindromes: "a", "b", "aba", "bab", "ababa"
 
-       Root(-1)
-          ↓ suffix link
-       Root(0)
-          ↓
-         "a" ←──────┐ suffix link
-          ↓         │
-        "aba" ──────┘
-          ↓
-      "abaab"? No, not a palindrome
+Edges (adding a character on both ends):
 
-         "b"
-          ↓
-        "bab"? No
-        "baab"? No
+Root(-1) --a--> "a" --b--> "bab"
+Root(-1) --b--> "b" --a--> "aba" --b--> "ababa"
 
-        "aa"
+Suffix links (longest proper palindromic suffix):
+  "ababa" → "aba" → "a" → Root(-1)
+  "bab"   → "b"   → Root(-1)
+
+Even-length palindromes would hang off Root(0).
+```
+
+## Why Two Roots?
+
+```
+Odd-length palindromes need a center character.
+Even-length palindromes have an empty center.
+
+Root(-1) lets us "match" any character at the start:
+  len = -1 => i - len - 1 = i
+  So any character can extend it.
+
+Root(0) lets us build even-length palindromes:
+  "aa", "bb", "abba", ...
 ```
 
 ## Building the Eertree
@@ -77,6 +110,50 @@ Position 6 'e': palindrome "ee" (already exists)
 Distinct palindromes: {e, ee, r, t} = 4
 ```
 
+## Pseudocode
+
+```
+init tree with two roots (-1 and 0)
+last = root(0)
+
+for each character c at position i:
+  cur = last
+  while s[i - len(cur) - 1] != c:
+    cur = suffix_link[cur]
+
+  if edge(cur, c) exists:
+    last = edge(cur, c)
+    count[last]++
+  else:
+    create node new with len = len(cur) + 2
+    edge(cur, c) = new
+    if len(new) == 1:
+      suffix_link[new] = root(0)
+    else:
+      link_candidate = suffix_link[cur]
+      while s[i - len(link_candidate) - 1] != c:
+        link_candidate = suffix_link[link_candidate]
+      suffix_link[new] = edge(link_candidate, c)
+    last = new
+```
+
+## Step-by-Step Build (ababa)
+
+```
+Index: 0 1 2 3 4
+Char : a b a b a
+
+i  s[i]  longest pal ending at i   new palindrome?
+-- ----- ------------------------ ---------------
+0   a    "a"                       yes
+1   b    "b"                       yes
+2   a    "aba"                     yes
+3   b    "bab"                     yes
+4   a    "ababa"                   yes
+
+Distinct palindromes: {a, b, aba, bab, ababa}
+```
+
 ## Suffix Links
 
 ```
@@ -91,6 +168,21 @@ Example:
   [abacaba] ──suffix──→ [aba] ──suffix──→ [a] ──→ root(-1)
 
 Suffix links are used to find where to extend next.
+```
+
+## Finding an Extendable Suffix
+
+```
+At position i with new character c = s[i]:
+We need the longest palindrome P ending at i-1
+such that the character just before P equals c.
+
+We try:
+  cur = last
+  while s[i - len(cur) - 1] != c:
+    cur = suffix_link[cur]
+
+The first match tells us we can build c + P + c.
 ```
 
 ## Algorithm Walkthrough
@@ -124,16 +216,33 @@ Step 4: Process 'a' at position 3
 Final tree nodes: {a, b, bb, abba} = 4 distinct palindromes
 ```
 
+## Even-Length Example (abba)
+
+```
+Distinct palindromes:
+  "a", "b", "bb", "abba"
+
+Structure (simplified):
+
+Root(-1) --a--> "a"
+Root(-1) --b--> "b"
+Root(0)  --b--> "bb" --a--> "abba"
+
+Suffix links:
+  "bb"   -> Root(0)
+  "abba" -> "bb" -> Root(0)
+```
+
 ## Visual: Complete Eertree
 
 ```
 String: "eertree"
 
-        Root(-1)
-       /   |   \
-      e    r    t
-     /
-    ee
+        Root(-1)            Root(0)
+       /   |   \               |
+      e    r    t              e
+      |                        |
+     "e"                      "ee"
 
 Suffix links:
   ee → e → root(-1)
@@ -143,6 +252,20 @@ Suffix links:
 Edges labeled by the character that extends the palindrome.
 ```
 
+## Node Table (ababa)
+
+```
+String: "ababa"
+
+Node | Palindrome | Length | Suffix link
+-----+------------+--------+------------
+  2  | "a"        |   1    | Root(-1)
+  3  | "b"        |   1    | Root(-1)
+  4  | "aba"      |   3    | "a"
+  5  | "bab"      |   3    | "b"
+  6  | "ababa"    |   5    | "aba"
+```
+
 ## Example Usage
 
 ```mbt check
@@ -150,6 +273,36 @@ Edges labeled by the character that extends the palindrome.
 test "eertree example" {
   inspect(@eertree.distinct_count("ababa"), content="5")
   inspect(@eertree.longest_length("abacaba"), content="7")
+}
+```
+
+```mbt check
+///|
+test "eertree palindromes list" {
+  let pals = @eertree.palindromes("aba")
+  inspect(pals.length(), content="3")
+  inspect(pals.contains("a"), content="true")
+  inspect(pals.contains("b"), content="true")
+  inspect(pals.contains("aba"), content="true")
+}
+```
+
+```mbt check
+///|
+test "eertree edge cases" {
+  inspect(@eertree.distinct_count(""), content="0")
+  inspect(@eertree.distinct_count("aaaa"), content="4")
+  inspect(@eertree.longest_length("abba"), content="4")
+}
+```
+
+```mbt check
+///|
+test "eertree even palindromes" {
+  let pals = @eertree.palindromes("abba")
+  inspect(@eertree.distinct_count("abba"), content="4")
+  inspect(pals.contains("bb"), content="true")
+  inspect(pals.contains("abba"), content="true")
 }
 ```
 
@@ -193,6 +346,22 @@ Therefore: each position contributes ≤ 1 new palindrome.
 Total distinct palindromes ≤ n.
 ```
 
+## Edge Cases to Remember
+
+```
+Empty string:
+  "" -> 0 palindromes
+
+All equal characters:
+  "aaaa" -> "a", "aa", "aaa", "aaaa"
+
+No repeats:
+  "abcd" -> only single letters
+
+Even-length only:
+  "abccba" includes "cc", "bccb", "abccba"
+```
+
 ## Complexity Analysis
 
 | Operation | Time |
@@ -201,6 +370,20 @@ Total distinct palindromes ≤ n.
 | Count distinct palindromes | O(1) after build |
 | Find longest palindrome | O(n) or O(1) with tracking |
 | Count occurrences | O(n) |
+
+## Why O(n) Time?
+
+```
+At each new character:
+  - We move along suffix links until we can extend.
+  - Each move strictly decreases the palindrome length.
+
+Across the entire build:
+  - The total number of suffix-link jumps is O(n)
+  - Each character adds at most one new node
+
+So the overall build is linear.
+```
 
 ## Eertree vs Other Palindrome Algorithms
 
@@ -213,6 +396,13 @@ Total distinct palindromes ≤ n.
 
 **Choose Eertree when**: You need to work with all distinct palindromic substrings.
 
+## Common Pitfalls
+
+- **Forgetting the two roots**: both odd and even palindromes are needed.
+- **Wrong link target**: suffix link must be the longest proper palindromic suffix.
+- **Order of palindromes**: `palindromes()` returns in DFS order, not sorted.
+- **Counting occurrences**: you must propagate counts via suffix links.
+
 ## Counting Occurrences
 
 ```
@@ -222,16 +412,19 @@ To count how many times each palindrome appears:
 2. After build, propagate counts via suffix links (in reverse order)
 
 For string "aaa":
-  "a" appears 3 times
-  "aa" appears 2 times (positions 0-1 and 1-2)
+  Longest-palindrome counts after build:
+    cnt["a"] = 1   (from position 0)
+    cnt["aa"] = 1  (from position 1)
+    cnt["aaa"] = 1 (from position 2)
+
+  Propagate from long to short:
+    cnt["aa"] += cnt["aaa"]  => 2
+    cnt["a"]  += cnt["aa"]   => 3
+
+Final totals:
+  "a"  appears 3 times
+  "aa" appears 2 times
   "aaa" appears 1 time
-
-Propagation:
-  cnt["aaa"] = 1
-  cnt["aa"] += cnt["aaa"] → 2 + 1 = 3? No, just 2
-
-Actually: each node's count = occurrences as longest palindrome
-Propagate to get total occurrences.
 ```
 
 ## Implementation Notes
