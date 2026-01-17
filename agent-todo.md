@@ -202,7 +202,7 @@
 - [x] lib/treap
 - [x] lib/tree
 - [x] lib/trie
-- [ ] lib/two_sat
+- [x] lib/two_sat
 - [ ] lib/union_find
 - [ ] lib/virtual_tree
 - [ ] lib/wavelet

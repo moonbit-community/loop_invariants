@@ -1,224 +1,281 @@
-# 2-SAT (2-Satisfiability)
+# 2-SAT (Beginner-Friendly Guide)
 
-## Overview
+2-SAT solves boolean formulas where **each clause has exactly two literals**.
+Unlike general SAT, 2-SAT can be solved in **linear time** using graphs.
 
-**2-SAT** solves boolean satisfiability where each clause has exactly two literals.
-Unlike general SAT (NP-complete), 2-SAT is solvable in **linear time** O(n + m)
-using the implication graph and strongly connected components.
+This package includes an internal solver (`TwoSat`), demonstrated in tests.
+All code snippets here are `mbt nocheck` because the type is private.
 
-- **Time**: O(n + m)
-- **Space**: O(n + m)
+---
 
-## The Problem
+## 1) What is a 2-SAT clause?
 
-```
-Variables: x₀, x₁, x₂, ...
-Clauses: Each is (a ∨ b) where a, b are literals
+A literal is either:
 
-Example:
-  (x₀ ∨ x₁) ∧ (¬x₀ ∨ x₂) ∧ (¬x₁ ∨ ¬x₂)
+- `x` (variable is true), or
+- `¬x` (variable is false).
 
-Goal: Find assignment of true/false to variables
-      such that all clauses are satisfied.
-```
-
-## The Key Insight: Implication Graph
+A clause is a pair joined by OR:
 
 ```
-(a ∨ b) is equivalent to two implications:
-  ¬a → b   "if not a, then b"
-  ¬b → a   "if not b, then a"
-
-Build a graph with 2n nodes (x and ¬x for each variable):
-
-Example: (x₀ ∨ x₁) ∧ (¬x₀ ∨ x₂) ∧ (¬x₁ ∨ ¬x₂)
-
-Implications:
-  ¬x₀ → x₁,  ¬x₁ → x₀    from (x₀ ∨ x₁)
-  x₀ → x₂,   ¬x₂ → ¬x₀   from (¬x₀ ∨ x₂)
-  x₁ → ¬x₂,  x₂ → ¬x₁    from (¬x₁ ∨ ¬x₂)
-
-Graph:
-  ¬x₀ ──→ x₁ ──→ ¬x₂ ──→ ¬x₁ ──→ x₀
-    ↑                              │
-    └──────────────────────────────┘
+(x ∨ y)
+(¬x ∨ y)
+(x ∨ ¬y)
+(¬x ∨ ¬y)
 ```
 
-## Satisfiability Condition
+The full formula is an AND of clauses:
 
 ```
-THEOREM: 2-SAT is satisfiable if and only if
-         no variable x and ¬x are in the same SCC.
+ (x0 ∨ x1) ∧ (¬x0 ∨ x2) ∧ (¬x1 ∨ ¬x2)
+```
+
+---
+
+## 2) Key trick: turn a clause into implications
+
+The most important identity:
+
+```
+(a ∨ b)  is equivalent to  (¬a → b) AND (¬b → a)
+```
 
 Why?
-- If x → ... → ¬x (path exists), setting x=true forces ¬x=true (contradiction)
-- If ¬x → ... → x (path exists), setting x=false forces x=true (contradiction)
-- If both paths exist, they form a cycle containing x and ¬x in same SCC
 
-Example of unsatisfiable:
-  (x₀) ∧ (¬x₀)
+- If `a` is false, then `b` must be true.
+- If `b` is false, then `a` must be true.
 
-  Implications: ¬x₀ → x₀, x₀ → ¬x₀
+This lets us build a directed graph of implications.
 
-  x₀ → ¬x₀ → x₀ (cycle!)
+---
 
-  x₀ and ¬x₀ in same SCC → unsatisfiable
-```
+## 3) Implication graph
 
-## Algorithm Walkthrough
+For each variable `x`, we create two nodes:
 
 ```
-Formula: (x₀ ∨ x₁) ∧ (¬x₁ ∨ x₂)
-
-Step 1: Build implication graph
-  From (x₀ ∨ x₁): ¬x₀ → x₁, ¬x₁ → x₀
-  From (¬x₁ ∨ x₂): x₁ → x₂, ¬x₂ → ¬x₁
-
-  Nodes: x₀, ¬x₀, x₁, ¬x₁, x₂, ¬x₂
-
-Step 2: Find SCCs (using Kosaraju/Tarjan)
-  SCC 0: {¬x₀}
-  SCC 1: {x₁, x₂}
-  SCC 2: {¬x₂, ¬x₁, x₀}
-
-Step 3: Check x and ¬x in different SCCs
-  x₀ in SCC 2, ¬x₀ in SCC 0  ✓
-  x₁ in SCC 1, ¬x₁ in SCC 2  ✓
-  x₂ in SCC 1, ¬x₂ in SCC 2  ✓
-  All different → satisfiable!
-
-Step 4: Assign values (reverse topological order)
-  Higher SCC number = earlier in reverse topo order
-
-  x₀: SCC(x₀)=2 > SCC(¬x₀)=0 → x₀ = true
-  x₁: SCC(x₁)=1 < SCC(¬x₁)=2 → x₁ = false
-  x₂: SCC(x₂)=1 < SCC(¬x₂)=2 → x₂ = false
-
-Verify: (x₀ ∨ x₁) = (T ∨ F) = T  ✓
-        (¬x₁ ∨ x₂) = (T ∨ F) = T  ✓
+x   and   ¬x
 ```
 
-## Visual: Implication Graph
+Each clause adds **two directed edges**:
 
 ```
-Formula: (x₀ ∨ ¬x₁) ∧ (x₁ ∨ x₂) ∧ (¬x₂ ∨ ¬x₀)
-
-Implication edges:
-  ¬x₀ → ¬x₁,  x₁ → x₀     from (x₀ ∨ ¬x₁)
-  ¬x₁ → x₂,   ¬x₂ → x₁    from (x₁ ∨ x₂)
-  x₂ → ¬x₀,   x₀ → ¬x₂    from (¬x₂ ∨ ¬x₀)
-
-Graph visualization:
-         ┌──────────────────┐
-         ↓                  │
-  x₀ ──→ ¬x₂ ──→ x₁ ──→ x₀ │  (cycle within SCC)
-         │
-         ↓
-  ¬x₁ ←── ... ←── ¬x₀
-
-SCCs found: {x₀, ¬x₂, x₁}, {¬x₁, x₂, ¬x₀}
-
-x₀ and ¬x₀ in different SCCs → satisfiable
+(a ∨ b) -> edges: (¬a -> b) and (¬b -> a)
 ```
 
-## Example Usage
+Example: (x ∨ ¬y)
 
-```mbt check
+```
+¬x -> ¬y
+y  -> x
+```
+
+---
+
+## 4) When is the formula impossible?
+
+If a variable and its negation are in the **same strongly connected component**
+(SCC), then:
+
+```
+x -> ... -> ¬x  and  ¬x -> ... -> x
+```
+
+So both must be true at the same time, which is impossible.
+
+That means the formula is **unsatisfiable**.
+
+---
+
+## 5) How do we assign values?
+
+If no contradictions exist, we can assign values by SCC order:
+
+```
+If SCC(x) comes AFTER SCC(¬x) in topological order,
+then x = true.
+Else x = false.
+```
+
+This ensures all implications are respected.
+
+---
+
+## 6) Visual example (satisfiable)
+
+Formula:
+
+```
+(x0 ∨ x1) ∧ (¬x0 ∨ x1)
+```
+
+Implications:
+
+```
+¬x0 -> x1
+¬x1 -> x0
+x0  -> x1
+¬x1 -> ¬x0
+```
+
+A valid assignment:
+
+```
+x1 = true
+x0 = either true or false
+```
+
+---
+
+## 7) Visual example (unsatisfiable)
+
+Formula:
+
+```
+(x0) ∧ (¬x0)
+```
+
+This is:
+
+```
+(x0 ∨ x0) ∧ (¬x0 ∨ ¬x0)
+```
+
+Implications:
+
+```
+¬x0 -> x0
+x0  -> ¬x0
+```
+
+So `x0` and `¬x0` are in the same SCC → no solution.
+
+---
+
+## 8) How to encode clauses in this implementation
+
+Each literal is represented by:
+
+```
+(var_index, negated)
+```
+
+So:
+
+- `x0` = `(0, false)`
+- `¬x0` = `(0, true)`
+
+Then a clause `(a ∨ b)` is:
+
+```
+add_clause(var_a, neg_a, var_b, neg_b)
+```
+
+---
+
+## 9) Example: basic satisfiable instance
+
+```mbt nocheck
 ///|
-test "2-sat concept" {
-  // 2-SAT converts clauses to implication graph
-  // (a ∨ b) → edges ¬a → b and ¬b → a
-
-  // Example: (x₀ ∨ x₁) ∧ (¬x₀ ∨ x₁)
-  // Implications: ¬x₀ → x₁, ¬x₁ → x₀
-  //              x₀ → x₁, ¬x₁ → ¬x₀
-
-  // Solution: x₁ = true (forced by both clauses)
-
-  inspect(true, content="true")
+test "two sat basic" {
+  let sat = TwoSat::new(2)
+  // (x0 ∨ x1) ∧ (¬x0 ∨ x1)
+  sat.add_clause(0, false, 1, false)
+  sat.add_clause(0, true, 1, false)
+  match sat.solve() {
+    Some(assign) => {
+      // x1 must be true
+      inspect(assign[1], content="true")
+      inspect(sat.verify(assign), content="true")
+    }
+    None => fail("should be satisfiable")
+  }
 }
 ```
 
-## Common Applications
+---
 
-### 1. Scheduling with Conflicts
-```
-Problem: Schedule n events, each at time A or B.
-         Some pairs conflict if scheduled together.
+## 10) Example: unsatisfiable instance
 
-Variables: xᵢ = true means event i at time A
-Clauses: If events i and j conflict at (A,A):
-         add clause (¬xᵢ ∨ ¬xⱼ)
-```
-
-### 2. Graph 2-Coloring with Constraints
-```
-Problem: Color vertices with 2 colors, some pairs
-         must be same color, others must differ.
-
-Variables: xᵢ = true means color 1
-Same color: (xᵢ ∨ ¬xⱼ) ∧ (¬xᵢ ∨ xⱼ)
-Diff color: (xᵢ ∨ xⱼ) ∧ (¬xᵢ ∨ ¬xⱼ)
+```mbt nocheck
+///|
+test "two sat unsatisfiable" {
+  let sat = TwoSat::new(1)
+  // x0 and ¬x0
+  sat.add_clause(0, false, 0, false) // x0
+  sat.add_clause(0, true, 0, true) // ¬x0
+  inspect(sat.solve() is None, content="true")
+}
 ```
 
-### 3. Implication Chains
-```
-Problem: If xᵢ then xⱼ must also hold.
+---
 
-Implication xᵢ → xⱼ:
-  Equivalent to (¬xᵢ ∨ xⱼ)
-```
+## 11) Example: using implications and forced values
 
-### 4. At Most One True
-```
-Problem: At most one of x₁, x₂, ..., xₖ is true.
-
-Clauses: (¬xᵢ ∨ ¬xⱼ) for all pairs i < j
-Warning: O(k²) clauses, consider alternatives for large k
-```
-
-## Complexity Analysis
-
-| Operation | Time |
-|-----------|------|
-| Build graph | O(m) |
-| Find SCCs | O(n + m) |
-| Assign values | O(n) |
-| **Total** | **O(n + m)** |
-
-## 2-SAT vs General SAT
-
-| Property | 2-SAT | 3-SAT | General SAT |
-|----------|-------|-------|-------------|
-| Clause size | ≤ 2 | ≤ 3 | Any |
-| Complexity | P (linear) | NP-complete | NP-complete |
-| Algorithm | SCC | Backtracking/DPLL | SAT solvers |
-
-**Choose 2-SAT when**: All clauses have at most 2 literals.
-
-## The Assignment Rule
-
-```
-After finding SCCs, assign values based on topological order:
-
-For each variable x:
-  if SCC_order(x) > SCC_order(¬x):
-    x = true
-  else:
-    x = false
-
-Why this works:
-- If a → b (implication), then SCC_order(a) ≤ SCC_order(b)
-- We process in reverse topological order
-- Assigning based on SCC order ensures:
-  If x is true and x → y exists, then y is also true
+```mbt nocheck
+///|
+test "two sat implication" {
+  let sat = TwoSat::new(2)
+  // x0 -> x1
+  sat.add_implication(0, false, 1, false)
+  // force x0 = true
+  sat.set_value(0, true)
+  match sat.solve() {
+    Some(assign) => {
+      inspect(assign[0], content="true")
+      inspect(assign[1], content="true")
+    }
+    None => fail("should be satisfiable")
+  }
+}
 ```
 
-## Implementation Notes
+---
 
-- Nodes: use 2i for xᵢ, 2i+1 for ¬xᵢ
-- Negation: flip last bit (n ^ 1)
-- For "force x = true", add clause (x ∨ x)
-- For "force x = false", add clause (¬x ∨ ¬x)
-- Verify solution by checking all implications
+## 12) Common modeling patterns
 
+### A) At least one of a or b
+
+```
+a OR b
+```
+
+Add clause `(a ∨ b)`.
+
+### B) At most one of a or b
+
+```
+¬(a AND b)  ->  (¬a ∨ ¬b)
+```
+
+Add clause `(¬a ∨ ¬b)`.
+
+### C) Exactly one of a or b
+
+```
+(a ∨ b) AND (¬a ∨ ¬b)
+```
+
+Two clauses: one "at least one", one "at most one".
+
+---
+
+## 13) Complexity
+
+```
+Build graph: O(n + m)
+SCC (Kosaraju): O(n + m)
+Assignment: O(n)
+
+Total: O(n + m)
+```
+
+`n` = number of variables, `m` = number of clauses.
+
+---
+
+## 14) Common pitfalls
+
+- Forgetting that each clause adds **two** directed edges.
+- Mixing up `x` and `¬x` when encoding.
+- Using 2-SAT for clauses longer than 2 literals (not supported).
