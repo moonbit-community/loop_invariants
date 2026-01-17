@@ -117,8 +117,8 @@
 - [x] lib/challenge_two_pointers
 - [x] lib/challenge_union_find_rollback
 - [x] lib/closest_pair
-- [ ] lib/convex_hull (in progress)
-- [ ] lib/convex_hull_trick
+- [x] lib/convex_hull
+- [ ] lib/convex_hull_trick (in progress)
 - [ ] lib/dial_shortest_path
 - [ ] lib/dijkstra
 - [ ] lib/dinic

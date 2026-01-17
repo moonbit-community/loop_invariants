@@ -99,7 +99,7 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
   // Build lower hull
   // INVARIANT: hull contains lower hull points in left-to-right order
   // Each consecutive triple makes a right turn (or is collinear)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     // While last two points and sorted[i] don't make a right turn, remove last
     while hull.length() >= 2 {
       let top = hull[hull.length() - 1]
@@ -112,17 +112,6 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
       }
     }
     hull.push(sorted[i])
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (lower hull):
-      #|hull contains the lower hull for points in sorted[0..i).
-      #|MAINTENANCE:
-      #|Pop while the last three points make a non-right turn, then push sorted[i].
-      #|Removed points are interior or collinear and cannot be on the lower hull.
-      #|TERMINATION:
-      #|At i = n, hull is the full lower hull in left-to-right order.
-    ),
   }
 
   // Build upper hull
@@ -175,21 +164,11 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
   // Find bottom-most point (and leftmost if tied)
   let pts = points.copy()
   let mut pivot_idx = 0
-  for i = 1; i < n; i = i + 1 {
+  for i in 1..<n {
     if pts[i].y < pts[pivot_idx].y ||
       (pts[i].y == pts[pivot_idx].y && pts[i].x < pts[pivot_idx].x) {
       pivot_idx = i
     }
-  } where {
-    invariant: i >= 1 && i <= n,
-    reasoning: (
-      #|INVARIANT (pivot scan):
-      #|pivot_idx is the lowest (then leftmost) point among pts[0..i).
-      #|MAINTENANCE:
-      #|Compare pts[i] to the current pivot and update if it is lower/leftmost.
-      #|TERMINATION:
-      #|At i = n, pivot_idx is the lowest-leftmost point.
-    ),
   }
 
   // Swap pivot to first position
@@ -267,21 +246,11 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
 
   // Find leftmost point
   let mut leftmost = 0
-  for i = 1; i < n; i = i + 1 {
+  for i in 1..<n {
     if points[i].x < points[leftmost].x ||
       (points[i].x == points[leftmost].x && points[i].y < points[leftmost].y) {
       leftmost = i
     }
-  } where {
-    invariant: i >= 1 && i <= n,
-    reasoning: (
-      #|INVARIANT (leftmost scan):
-      #|leftmost is the leftmost point among points[0..i).
-      #|MAINTENANCE:
-      #|Compare points[i] to the current leftmost and update if needed.
-      #|TERMINATION:
-      #|At i = n, leftmost is the leftmost (then lowest) point.
-    ),
   }
   let hull : Array[Point] = []
   let mut current = leftmost
@@ -296,7 +265,7 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
     if current == 0 {
       next = 1
     }
-    for i = 0; i < n; i = i + 1 {
+    for i in 0..<n {
       if i == current {
         continue
       }
@@ -317,16 +286,6 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
           next = i
         }
       }
-    } where {
-      invariant: i >= 0 && i <= n,
-      reasoning: (
-        #|INVARIANT (next candidate):
-        #|next is the best candidate among points[0..i) for the next hull point.
-        #|MAINTENANCE:
-        #|Compare points[i] to next using orientation and distance for collinear.
-        #|TERMINATION:
-        #|At i = n, next is the most counterclockwise choice.
-      ),
     }
     current = next
 
@@ -384,7 +343,7 @@ pub fn point_in_hull(hull : Array[Point], p : Point) -> Int {
 
   // Check if point is on the same side of all edges
   let mut on_boundary = false
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let j = (i + 1) % n
     let cp = cross(hull[i], hull[j], p)
     if cp < 0L {
@@ -399,16 +358,6 @@ pub fn point_in_hull(hull : Array[Point], p : Point) -> Int {
         on_boundary = true
       }
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (point-in-hull):
-      #|p has been checked against edges in [0, i) and is on the left side.
-      #|MAINTENANCE:
-      #|Check edge (i, i+1); if p is to the right, return outside.
-      #|TERMINATION:
-      #|At i = n, p lies inside or on all hull edges.
-    ),
   }
   if on_boundary {
     0
