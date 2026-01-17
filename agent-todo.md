@@ -54,8 +54,8 @@
 - [x] lib/challenge_floyd_warshall
 - [x] lib/challenge_interval_scheduling
 - [x] lib/challenge_knapsack_01
-- [ ] lib/challenge_knapsack_unbounded (in progress)
-- [ ] lib/challenge_lca_binary_lift
+- [x] lib/challenge_knapsack_unbounded
+- [ ] lib/challenge_lca_binary_lift (in progress)
 - [ ] lib/challenge_lcs
 - [ ] lib/challenge_line_sweep
 - [ ] lib/challenge_lis_nlogn
