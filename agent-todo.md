@@ -119,8 +119,8 @@
 - [x] lib/closest_pair
 - [x] lib/convex_hull
 - [x] lib/convex_hull_trick
-- [ ] lib/dial_shortest_path (in progress)
-- [ ] lib/dijkstra
+- [x] lib/dial_shortest_path
+- [ ] lib/dijkstra (in progress)
 - [ ] lib/dinic
 - [ ] lib/disjoint_sparse
 - [ ] lib/dominator_tree

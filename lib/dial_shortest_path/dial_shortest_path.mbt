@@ -75,9 +75,11 @@ pub fn dial_shortest_paths(graph : Graph, source : Int) -> Array[Int] {
   let buckets : Array[Array[Int]] = Array::makei(max_dist + 1, _ => [])
   dist[source] = 0
   buckets[0].push(source)
-  for d = 0; d <= max_dist; d = d + 1 {
-    for idx = 0; idx < buckets[d].length(); idx = idx + 1 {
+  for d in 0..<(max_dist + 1) {
+    let mut idx = 0
+    while idx < buckets[d].length() {
       let u = buckets[d][idx]
+      idx = idx + 1
       if dist[u] != d {
         continue
       }
@@ -88,35 +90,7 @@ pub fn dial_shortest_paths(graph : Graph, source : Int) -> Array[Int] {
           buckets[nd].push(e.to)
         }
       }
-    } where {
-      invariant: idx >= 0 && idx <= buckets[d].length(),
-      reasoning: (
-        #|INVARIANT (bucket scan):
-        #|All vertices in buckets[d][0..idx) have been processed and their
-        #|outgoing edges relaxed. Any new vertex added to buckets[d] is appended,
-        #|so increasing idx eventually processes it as well.
-        #|MAINTENANCE:
-        #|Process buckets[d][idx], relax its edges, and increment idx. Newly
-        #|inserted entries are appended to the end, preserving completeness.
-        #|TERMINATION:
-        #|At idx == buckets[d].length(), every vertex with tentative distance d
-        #|has been processed.
-      ),
     }
-  } where {
-    invariant: d >= 0 && d <= max_dist + 1,
-    reasoning: (
-      #|INVARIANT (distance layers):
-      #|Before processing distance d, all vertices with final shortest distance
-      #|< d have been settled, and any vertex in buckets[d] has current
-      #|distance exactly d. Outdated entries are skipped via dist[u] != d.
-      #|MAINTENANCE:
-      #|Processing bucket d relaxes edges to distances >= d, placing vertices
-      #|into the appropriate later buckets while preserving minimality.
-      #|TERMINATION:
-      #|After d > max_dist, all reachable vertices have been processed and dist
-      #|stores their shortest path lengths.
-    ),
   }
   dist
 }
