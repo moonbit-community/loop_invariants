@@ -40,7 +40,6 @@ pub struct DisjointSparseTable {
 
 ///|
 /// Build a disjoint sparse table for range minimum queries.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable {
   let n = arr.length()
   if n == 0 {
