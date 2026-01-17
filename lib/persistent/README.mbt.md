@@ -76,6 +76,29 @@ This is why each update is O(log n) for balanced trees.
 
 ---
 
+## 3b. Path copying in a segment tree (diagram)
+
+Suppose we store an array of length 8 in a segment tree:
+
+```
+root [0..7]
+  /         \
+[0..3]     [4..7]
+ /   \      /   \
+[0..1][2..3][4..5][6..7]
+```
+
+Update index 2:
+
+```
+Copied nodes: [0..7], [0..3], [2..3], [2..2]
+Shared nodes: everything else
+```
+
+So each update only copies **O(log n)** nodes.
+
+---
+
 ## 4. Example: a persistent stack (purely functional)
 
 A linked stack is **naturally persistent**: pushing just adds a new head.
@@ -172,6 +195,20 @@ query(v1, 1..3) -> 2 + 10 + 4 = 16
 ```
 
 Only the path to index 2 is copied.
+
+---
+
+## 6b. Time‑travel query example
+
+```
+v0: [1, 2, 3, 4]
+v1: [1, 2, 9, 4]   // update index 2
+
+sum(v0, 0..3) = 1+2+3+4 = 10
+sum(v1, 0..3) = 1+2+9+4 = 16
+```
+
+The two versions answer different queries without interfering.
 
 ---
 
