@@ -10,6 +10,27 @@ incoming edge, and all nodes are reachable from the root.
 - **Space**: O(V + E)
 - **Key Feature**: Handles cycles through contraction
 
+## What Is an Arborescence?
+
+```
+Think of a directed version of a spanning tree:
+
+  - The root has no incoming edge.
+  - Every other vertex has exactly ONE incoming edge.
+  - All vertices are reachable from the root by following edges.
+
+Example (root = 0):
+
+    0
+   / \
+  1   2
+  |
+  3
+
+Edges: 0→1, 0→2, 1→3
+Each node (except 0) has exactly one incoming edge.
+```
+
 ## The Key Insight
 
 ```
@@ -32,6 +53,30 @@ Weight adjustment for edge u → v entering cycle:
 
   This ensures choosing this edge "pays for" removing
   the edge we selected inside the cycle.
+```
+
+## Why Greedy Alone Fails
+
+```
+Root = 0
+Edges:
+  0→1 (10)
+  0→2 (10)
+  1→2 (1)
+  2→1 (1)
+
+Greedy pick for each v ≠ 0:
+  in(1) = 2→1 (1)
+  in(2) = 1→2 (1)
+
+This creates a 1↔2 cycle with total cost 2,
+but the root cannot reach either node through the cycle alone.
+
+We must break the cycle by taking one expensive edge from the root:
+  0→1 (10) + 1→2 (1) = 11
+  or 0→2 (10) + 2→1 (1) = 11
+
+Cycle contraction + weight adjustment is what makes this correct.
 ```
 
 ## Visual: Cycle Contraction
@@ -82,6 +127,30 @@ After contraction, pick 0→C (cost 3).
 Total = 3 + 1 = 4 (0→1→2, keeping 1→2)
 ```
 
+## Contraction and Expansion, Step by Step
+
+```
+Cycle example:
+  0→1 (10), 0→2 (10), 1→2 (1), 2→1 (1)
+
+Step 1: Greedy in-edges (ignoring root)
+  in(1) = 2→1 (1)
+  in(2) = 1→2 (1)
+  Cycle C = {1, 2}, cycle_cost = 2
+
+Step 2: Contract C into supernode X
+  Adjust edges entering C:
+    0→1 (10) becomes 0→X with cost 10 - in(1) = 9
+    0→2 (10) becomes 0→X with cost 10 - in(2) = 9
+
+Step 3: Solve on contracted graph
+  The only way to reach X is cost 9.
+
+Step 4: Expand
+  Contracted cost 9 + cycle_cost 2 = 11
+  Choose one entry edge (say 0→1) and keep the other cycle edge (1→2).
+```
+
 ## The Algorithm
 
 ```
@@ -109,6 +178,10 @@ edmonds(n, edges, root):
 
     // Recurse with contracted graph
     contract_and_recurse()
+
+  // During expansion, restore the original edge
+  // that enters the cycle, and keep all other
+  // in-edges from the cycle itself.
 ```
 
 ## Example Usage
@@ -141,6 +214,53 @@ test "arborescence with cycle resolution" {
   // Must break the 1↔2 cycle by using 0→1
   inspect(res.cost, content="16")
 }
+```
+
+## More Examples
+
+```mbt check
+///|
+test "arborescence unreachable" {
+  let edges : Array[@edmonds_arborescence.Edge] = [
+    { from: 0, to: 1, weight: 1 },
+    { from: 2, to: 3, weight: 1 },
+  ]
+  let res = @edmonds_arborescence.min_arborescence(4, edges[:], 0)
+  inspect(res is None, content="true")
+}
+```
+
+```mbt check
+///|
+test "arborescence direct vs indirect" {
+  let edges : Array[@edmonds_arborescence.Edge] = [
+    { from: 0, to: 1, weight: 1 },
+    { from: 0, to: 2, weight: 2 },
+    { from: 1, to: 2, weight: 3 },
+  ]
+  let res = @edmonds_arborescence.min_arborescence(3, edges[:], 0).unwrap()
+  // Picks 0→1 and 0→2 instead of 0→1→2
+  inspect(res.cost, content="3")
+  inspect(res.parent[2], content="0")
+}
+```
+
+## Reading the Output
+
+```
+The algorithm returns:
+  - cost: total weight of the chosen edges
+  - parent[v]: the predecessor of v in the arborescence
+
+Example:
+  parent = [-1, 0, 1, 2]
+
+Meaning:
+  0 is the root
+  0→1, 1→2, 2→3 are the chosen edges
+
+You can rebuild the edge list by taking (parent[v], v)
+for each v ≠ root.
 ```
 
 ## Algorithm Walkthrough
@@ -191,6 +311,24 @@ For edge e: u → v where v ∈ C:
 After finding optimal arborescence in contracted graph:
   - Total cost = contracted_cost + cycle_internal_cost
   - The adjustment ensures this equals the true cost
+```
+
+## How Cycle Detection Works
+
+```
+We follow parent pointers (the chosen in-edges):
+
+Example parent array (root = 0):
+  parent = [-1, 2, 1, 2]
+
+Follow from 1:
+  1 -> parent[1] = 2
+  2 -> parent[2] = 1
+  back to 1  => cycle {1, 2}
+
+We mark nodes visited in the current traversal.
+If we reach a node marked with the same traversal ID,
+we found a cycle.
 ```
 
 ## Common Applications
@@ -262,6 +400,13 @@ The algorithm first checks if all nodes are
 reachable from the root using BFS/DFS.
 ```
 
+## Common Pitfalls
+
+- **Unreachable vertices**: always check reachability first.
+- **Self-loops**: they never help (a node cannot be its own parent).
+- **Parallel edges**: keep all of them; the minimum incoming edge may change after contraction.
+- **Negative weights**: allowed, but be careful when adjusting weights during contraction.
+
 ## Implementation Notes
 
 - First verify all vertices are reachable from root
@@ -269,4 +414,3 @@ reachable from the root using BFS/DFS.
 - Uncontract carefully to recover original edge indices
 - Handle self-loops (ignore them)
 - Multiple edges between same pair: keep track of all
-

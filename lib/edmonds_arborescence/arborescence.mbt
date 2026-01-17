@@ -133,22 +133,10 @@ pub fn min_arborescence(
   // Case A: No cycle - selected edges form valid arborescence
   if cycle.length() == 0 {
     let mut total = 0L
-    for v = 0; v < n; v = v + 1 {
+    for v in 0..<n {
       if v != root {
         total = total + in_cost[v]
       }
-    } where {
-      invariant: v >= 0 && v <= n,
-      reasoning: (
-        #|INVARIANT (cost summation):
-        #|  total = Σ in_cost[u] for u in [0..v) where u ≠ root
-        #|
-        #|MAINTENANCE:
-        #|  Add in_cost[v] for non-root vertices.
-        #|
-        #|TERMINATION:
-        #|  At v = n, total is complete arborescence cost.
-      ),
     }
     return Some({ cost: total, parent })
   }
@@ -164,26 +152,13 @@ pub fn min_arborescence(
   }
   let mut new_index = 1
   let comp = Array::make(n, -1)
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     if cycle_id[v] == 0 {
       comp[v] = 0
     } else {
       comp[v] = new_index
       new_index = new_index + 1
     }
-  } where {
-    invariant: v >= 0 && v <= n,
-    reasoning: (
-      #|INVARIANT (component assignment):
-      #|  Vertices [0..v) are assigned to components.
-      #|  Cycle vertices → 0, others → sequential IDs.
-      #|
-      #|MAINTENANCE:
-      #|  Assign component ID to vertex v.
-      #|
-      #|TERMINATION:
-      #|  At v = n, all vertices have component assignments.
-    ),
   }
 
   // Step 4: Build contracted graph

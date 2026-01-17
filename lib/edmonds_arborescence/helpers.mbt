@@ -44,7 +44,7 @@
 fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
   // seen[v] = ID of the vertex that started this traversal (-1 = unvisited)
   let seen = Array::make(n, -1)
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     // Skip root and unreachable vertices
     guard v != root && parent[v] != -1 else { continue }
 
@@ -68,26 +68,6 @@ fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
       }
       return cycle
     }
-  } where {
-    invariant: v >= 0 && v <= n,
-    reasoning: (
-      #|INVARIANT (cycle detection):
-      #|  Vertices [0..v) have been checked for cycles.
-      #|  If a cycle exists involving any vertex < v, it has been found.
-      #|
-      #|THE KEY INSIGHT:
-      #|  We mark vertices with the current starting vertex's ID.
-      #|  If during traversal we hit a vertex with OUR ID, we've found
-      #|  a cycle. If we hit a vertex with a different ID, that path
-      #|  was already explored and found no cycle.
-      #|
-      #|MAINTENANCE:
-      #|  Follow parent pointers from v, marking vertices.
-      #|  If we return to a v-marked vertex, extract and return cycle.
-      #|
-      #|TERMINATION:
-      #|  At v = n, all vertices checked. Return empty if no cycle.
-    ),
   }
   [] // No cycle found
 }
@@ -123,7 +103,8 @@ fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
   let seen = Array::make(n, false)
   let stack : Array[Int] = [root]
   seen[root] = true
-  for idx = 0; idx < stack.length(); idx = idx + 1 {
+  let mut idx = 0
+  while idx < stack.length() {
     let u = stack[idx]
     for v in adj[u] {
       if not(seen[v]) {
@@ -131,24 +112,7 @@ fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
         stack.push(v)
       }
     }
-  } where {
-    invariant: idx >= 0 && idx <= stack.length(),
-    reasoning: (
-      #|INVARIANT (BFS reachability):
-      #|  Vertices in stack[0..idx) are fully processed.
-      #|  seen[v] = true iff v is reachable via some path using
-      #|  only vertices in stack[0..idx).
-      #|
-      #|NOTE: We use stack as a queue (FIFO via index iteration).
-      #|This is valid because we only care about reachability,
-      #|not shortest paths.
-      #|
-      #|MAINTENANCE:
-      #|  Process stack[idx], adding unseen neighbors.
-      #|
-      #|TERMINATION:
-      #|  At idx = stack.length(), all reachable vertices found.
-    ),
+    idx = idx + 1
   }
   seen
 }
