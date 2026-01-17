@@ -2,9 +2,9 @@
 
 - [x] . (root)
 - [x] cmd/main
-- [ ] lib/aho_corasick (in progress)
-- [ ] lib/avl_tree
-- [ ] lib/bellman_ford
+- [x] lib/aho_corasick
+- [x] lib/avl_tree
+- [ ] lib/bellman_ford (in progress)
 - [ ] lib/berlekamp_massey
 - [ ] lib/biconnected_components
 - [ ] lib/binary_trie_xor
