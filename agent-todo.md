@@ -37,8 +37,8 @@
 - [x] lib/centroid
 - [x] lib/challenge_bfs_grid
 - [x] lib/challenge_binary_lifting
-- [ ] lib/challenge_binary_search_answer (in progress)
-- [ ] lib/challenge_bipartite_matching_kuhn
+- [x] lib/challenge_binary_search_answer
+- [ ] lib/challenge_bipartite_matching_kuhn (in progress)
 - [ ] lib/challenge_bitmask_dp
 - [ ] lib/challenge_bitmask_tsp
 - [ ] lib/challenge_centroid_decomposition

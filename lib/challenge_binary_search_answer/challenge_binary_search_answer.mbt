@@ -5,7 +5,6 @@
 
 ///|
 /// Check if weights can be shipped within days using the given capacity.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
   if days <= 0 {
     return false
@@ -38,7 +37,6 @@ pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
 
 ///|
 /// Minimum capacity to ship all weights within the given days.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
   let mut lo = 0
   let mut hi = 0
