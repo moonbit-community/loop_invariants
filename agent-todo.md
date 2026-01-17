@@ -182,7 +182,7 @@
 - [x] lib/scc
 - [x] lib/segment_tree
 - [x] lib/segment_tree_beats
-- [ ] lib/skiplist
+- [x] lib/skiplist
 - [ ] lib/sliding_window
 - [ ] lib/sparse_table
 - [ ] lib/splay
