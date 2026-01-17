@@ -1,116 +1,122 @@
-# Minimum s-t Cut
+# Minimum s-t Cut (via Max Flow)
 
-## Overview
+This package computes the **minimum s-t cut** of a directed graph by running
+max flow and reading the residual graph.
 
-The **Minimum s-t Cut** finds the minimum total capacity of edges that must
-be removed to disconnect source s from sink t. By the max-flow min-cut theorem,
-this equals the maximum flow from s to t.
+If you are new to flows, think of each edge as a pipe with capacity. The min
+cut is the cheapest set of pipes you must cut to stop all flow from `s` to `t`.
 
-- **Time**: O(V²E) using Dinic's algorithm
-- **Space**: O(V + E)
-- **Key Feature**: Identifies the bottleneck edges in a network
+## 1. What is an s-t cut?
 
-## The Key Insight
+An **s-t cut** is a partition of vertices into two groups `(S, T)` such that:
 
-```
-Max-Flow Min-Cut Theorem:
-  max_flow(s, t) = min_cut_capacity(s, t)
+- `s` is in `S`
+- `t` is in `T`
+- the cut capacity is the sum of capacities of edges from `S` to `T`
 
-The minimum cut divides vertices into two sets:
-  S = vertices reachable from s in residual graph
-  T = all other vertices (including t)
-
-Cut edges = edges from S to T
-These edges are fully saturated by max flow!
-
-Algorithm:
-  1. Run max flow algorithm
-  2. In residual graph, find all vertices reachable from s
-  3. Cut capacity = sum of original capacities of edges crossing S → T
-```
-
-## Visual: Min Cut from Max Flow
+Tiny warm-up example:
 
 ```
-Original graph:              After max flow (flow/capacity):
+0 --3--> 1 --2--> 2
+ \--1---------------->
 
-    ┌──3──►B──2──┐             ┌──3/3─►B──2/2─┐
-    │      │     │             │      │       │
-    A      2     ▼             A     2/2      ▼
-    │      │     D             │      │       D
-    │      ▼     ▲             │      ▼       ▲
-    └──2──►C──3──┘             └──2/2►C──2/3──┘
-
-Max flow = 4                 Residual graph:
-
-                                 ┌◄─3──B──2─►┐
-                                 │     │     │
-                                 A    2/0    D
-                                 │     ▼     │
-                                 └◄─2──C─1─►─┘
-
-Reachable from A: {A}
-Not reachable: {B, C, D}
-
-Min cut edges: A→B (cap 3), A→C (cap 2)
-Min cut capacity: 3 + 2 = 5... wait, that doesn't match.
-
-Let me reconsider. If flow = 4:
-  A→B: 3/3 (saturated)
-  A→C: 1/2 (not saturated)
-  B→D: 2/2 (saturated)
-  B→C: 1/2 (used 1)
-  C→D: 2/3 (used 2)
-
-Residual from A:
-  A→B: 0 remaining, can't go
-  A→C: 1 remaining, can go to C
-  C→D: 1 remaining, can go to D
-
-So reachable from A = {A, C, D}
-Cut = edges from {A,C,D} to {B}
-But there are no such edges...
-
-Actually min-cut is on SOURCE side:
-  If we can reach D from A, then s-t is not disconnected!
-
-Let me redo: source = A, sink = D
-After max flow, if there's no augmenting path, we can't reach D from A.
-
-Residual graph (only positive capacity edges):
-  Can we reach D from A?
-  A→C: yes (1 remaining)
-  C→D: yes (1 remaining)
-  So we CAN reach D! Contradiction with max flow = 4?
-
-The example needs fixing. Let's use the code's example instead.
+s = 0, t = 2
 ```
 
-## The Algorithm
+Two possible cuts:
+
+- `S = {0}`, `T = {1, 2}`:
+  cut edges = `0->1 (3)` and `0->2 (1)` => capacity `4`
+- `S = {0, 1}`, `T = {2}`:
+  cut edges = `1->2 (2)` and `0->2 (1)` => capacity `3`
+
+So the minimum s-t cut here has capacity `3`.
+
+## 2. Why max flow gives the min cut
+
+The **max-flow min-cut theorem** says:
 
 ```
-min_cut_st(graph, s, t):
-  // Step 1: Compute max flow
-  max_flow_value = dinic_max_flow(graph, s, t)
-
-  // Step 2: Find reachable vertices from s in residual graph
-  // (edges with remaining capacity > 0)
-  reachable = BFS from s using residual edges
-
-  // Step 3: Return result
-  return {
-    value: max_flow_value,
-    source_side: reachable
-  }
-
-  // Cut edges are: original edges from reachable to non-reachable
+max_flow(s, t) = min_cut_capacity(s, t)
 ```
 
-## Example Usage
+Intuition: if you push as much flow as possible, every remaining path from `s`
+to `t` must be blocked by a fully saturated edge. Those saturated edges form
+the bottleneck that is exactly the min cut.
+
+## 3. Residual graph refresher
+
+For each edge `u -> v` with capacity `c` and current flow `f`:
+
+```
+Residual forward  capacity = c - f
+Residual backward capacity = f
+```
+
+You can traverse an edge in the residual graph only if its residual capacity is
+positive.
+
+## 4. The algorithm (step by step)
+
+1. Build the flow network from `n` and `edges`.
+2. Run max flow (Dinic).
+3. Do a BFS/DFS from `s` in the residual graph.
+4. Let `S` be all reachable vertices; let `T` be the rest.
+5. Return:
+   - `value = max_flow`
+   - `source_side = S`
+
+The cut edges are **all original edges from `S` to `T`**.
+
+## 5. Example A: balanced branches
+
+Edges:
+
+```
+0 -> 1 (cap 3)
+0 -> 2 (cap 2)
+1 -> 3 (cap 2)
+2 -> 3 (cap 3)
+```
+
+Diagram:
+
+```
+    0
+   / \
+ 3/   \2
+ /     \
+1       2
+ \     /
+  \2  /3
+    3
+```
+
+Max flow from 0 to 3:
+
+- Path `0->1->3` sends 2
+- Path `0->2->3` sends 2
+
+Total flow = 4, so the min cut must also be 4.
+
+Residual reachability from 0:
+
+- `0->1` still has capacity 1, so 1 is reachable
+- `0->2` is saturated, so 2 is not reachable
+- `1->3` is saturated, so 3 is not reachable
+
+Therefore:
+
+```
+S = {0, 1}
+T = {2, 3}
+```
+
+Cut edges are `0->2 (2)` and `1->3 (2)`, total capacity 4.
 
 ```mbt check
 ///|
-test "min cut st basic" {
+test "min cut st balanced branches" {
   let edges : Array[(Int, Int, Int64)] = [
     (0, 1, 3L),
     (0, 2, 2L),
@@ -122,6 +128,117 @@ test "min cut st basic" {
 }
 ```
 
+## 6. Example B: a narrow bottleneck into the sink
+
+Here the bottleneck is obvious: only two unit edges enter the sink.
+
+```
+0 --5--> 1 --1--> 3
+ \--5--> 2 --1--> 3
+```
+
+The min cut is the two edges into `3`, so capacity `2`.
+
+```mbt check
+///|
+test "min cut st bottleneck into sink" {
+  let edges : Array[(Int, Int, Int64)] = [
+    (0, 1, 5L),
+    (0, 2, 5L),
+    (1, 3, 1L),
+    (2, 3, 1L),
+  ]
+  let result = @min_cut_st.min_cut_st(4, edges[:], 0, 3).unwrap()
+  inspect(result.value, content="2")
+}
+```
+
+## 7. Input format and return value
+
+Signature (from `pkg.generated.mbti`):
+
+- `min_cut_st(n, edges, source, sink) -> MinCutSTResult?`
+
+Parameters:
+
+- `n`: number of vertices, labeled `0 .. n-1`
+- `edges`: `ArrayView[(Int, Int, Int64)]` of `(from, to, capacity)`
+- `source`, `sink`: vertex indices
+
+Returns `None` if:
+
+- `n <= 0`
+- any vertex index is out of range
+- `source == sink`
+
+On success, you get:
+
+- `value`: min cut capacity (equals max flow)
+- `source_side`: vertices in `S` (reachable from `source` in residual graph)
+
+## 8. Listing the actual cut edges
+
+The package does not list cut edges directly, but it gives you `source_side`,
+which is enough to compute them.
+
+The fast method builds a boolean lookup table so membership is O(1). This uses
+mutation for performance, which is appropriate when you have many edges.
+
+```mbt check
+///|
+fn cut_edges_fast(
+  n : Int,
+  edges : ArrayView[(Int, Int, Int64)],
+  source_side : Array[Int],
+) -> Array[(Int, Int, Int64)] {
+  let in_source = Array::make(n, false)
+  for v in source_side {
+    if v >= 0 && v < n {
+      in_source[v] = true
+    }
+  }
+  let cut : Array[(Int, Int, Int64)] = []
+  for edge in edges {
+    let (u, v, cap) = edge
+    if in_source[u] && not(in_source[v]) {
+      cut.push((u, v, cap))
+    }
+  }
+  cut
+}
+
+///|
+fn sum_cap(acc : Int64, edge : (Int, Int, Int64)) -> Int64 {
+  let (_, _, cap) = edge
+  acc + cap
+}
+
+///|
+test "cut edges sum to min cut value" {
+  let edges : Array[(Int, Int, Int64)] = [
+    (0, 1, 3L),
+    (0, 2, 2L),
+    (1, 3, 2L),
+    (2, 3, 3L),
+  ]
+  let result = @min_cut_st.min_cut_st(4, edges[:], 0, 3).unwrap()
+  let cut = cut_edges_fast(4, edges[:], result.source_side)
+  let sum = cut.fold(init=0L, sum_cap)
+  inspect(sum, content="4")
+}
+```
+
+For very small graphs, a simpler (but slower) check is also fine:
+
+```
+edge (u -> v) is in the cut if
+  source_side.contains(u) && not(source_side.contains(v))
+```
+
+## 9. Example C: no path from s to t
+
+If `t` is unreachable, the max flow (and min cut) is `0`.
+
 ```mbt check
 ///|
 test "min cut st no path" {
@@ -131,142 +248,30 @@ test "min cut st no path" {
 }
 ```
 
-## Algorithm Walkthrough
+## 10. Complexity
+
+The heavy part is Dinic's algorithm:
 
 ```
-Graph: 4 nodes
-Edges: 0→1(3), 0→2(2), 1→3(2), 2→3(3)
-
-    0 ──3──► 1
-    │        │
-    2        2
-    │        │
-    ▼        ▼
-    2 ──3──► 3
-
-Step 1: Run Dinic's max flow from 0 to 3
-  Path 0→1→3: flow 2
-  Path 0→2→3: flow 2
-  Total flow: 4
-
-Step 2: Build residual graph
-  0→1: 1 remaining (3-2)
-  0→2: 0 remaining (2-2) ← saturated
-  1→3: 0 remaining (2-2) ← saturated
-  2→3: 1 remaining (3-2)
-  Plus reverse edges: 1→0(2), 2→0(2), 3→1(2), 3→2(2)
-
-Step 3: BFS from 0 in residual graph
-  From 0: can reach 1 (via 0→1, capacity 1)
-  From 1: can't reach 3 (1→3 has 0 capacity)
-  From 0: can't reach 2 (0→2 has 0 capacity)
-
-  Reachable from 0: {0, 1}
-
-Step 4: Identify cut edges
-  Edges from {0,1} to {2,3}:
-    0→2 (capacity 2) ← saturated
-    1→3 (capacity 2) ← saturated
-
-  Min cut capacity: 2 + 2 = 4 ✓
+Time:  O(V^2 * E)   (worst case for general graphs)
+Space: O(V + E)
 ```
 
-## Why It Works
+The final residual BFS is just `O(V + E)`.
 
-```
-After max flow, no augmenting path exists from s to t.
-This means: in residual graph, t is unreachable from s.
+## 11. s-t min cut vs global min cut
 
-Define:
-  S = vertices reachable from s in residual graph
-  T = V - S (all other vertices)
+- **s-t min cut**: source and sink are fixed (this package)
+- **global min cut**: minimum cut over all pairs of vertices
 
-Properties:
-  1. s ∈ S, t ∈ T (by definition)
-  2. All edges from S to T have 0 residual capacity
-  3. These edges are fully saturated by the flow
+Global min cut uses other algorithms (e.g., Stoer-Wagner).
 
-The total capacity of edges from S to T equals:
-  - Flow going out of S
-  - = Flow reaching t (by conservation)
-  - = Max flow value
+## 12. Summary
 
-So min cut = max flow!
-```
+This package gives you:
 
-## Common Applications
+- the min cut value (equal to max flow),
+- and the source-side set that defines the cut.
 
-### 1. Network Reliability
-```
-Find minimum edges to cut to disconnect two nodes.
-Identifies vulnerabilities in networks.
-```
-
-### 2. Image Segmentation
-```
-Graph cuts for separating foreground/background.
-Each pixel is a node, edges encode similarity.
-```
-
-### 3. Bipartite Vertex Cover
-```
-König's theorem: Min vertex cover = max matching.
-Related to min cut in bipartite graphs.
-```
-
-### 4. Project Selection
-```
-Choose projects to maximize profit with dependencies.
-Model as min cut problem.
-```
-
-## Complexity Analysis
-
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Dinic's max flow | O(V²E) | General graphs |
-| BFS for reachable | O(V + E) | Single traversal |
-| **Total** | **O(V²E)** | Dominated by max flow |
-
-## Special Cases
-
-```
-Unit capacity graphs: O(E · min(V^(2/3), E^(1/2)))
-Bipartite graphs: O(E · √V)
-DAGs: O(VE)
-```
-
-## Min Cut vs Global Min Cut
-
-```
-s-t Min Cut (this package):
-  Find minimum cut separating specific s from specific t.
-  Requires s and t as input.
-
-Global Min Cut:
-  Find minimum cut separating ANY two vertices.
-  Algorithms: Stoer-Wagner, Karger's randomized.
-```
-
-## Finding the Actual Cut Edges
-
-```
-After getting source_side set:
-
-cut_edges = []
-for each edge (u, v, capacity) in graph:
-  if u in source_side and v not in source_side:
-    cut_edges.append((u, v, capacity))
-
-These are exactly the edges that, when removed,
-disconnect source from sink.
-```
-
-## Implementation Notes
-
-- Run any max flow algorithm (Dinic, Push-Relabel, etc.)
-- BFS in residual graph to find reachable vertices
-- Only traverse edges with positive residual capacity
-- Source side includes all vertices reachable from s
-- Cut edges are saturated (residual = 0 for forward direction)
-
+With those two pieces, you can easily list cut edges, visualize the cut, or
+confirm the bottleneck in your network.
