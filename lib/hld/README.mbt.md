@@ -1,227 +1,229 @@
 # Heavy-Light Decomposition (HLD)
 
-## Overview
+## What HLD Solves
 
-**Heavy-Light Decomposition** decomposes a tree into chains to reduce path queries
-to O(log² n) segment tree operations. Any root-to-leaf path crosses at most
-O(log n) light edges.
+**Heavy-Light Decomposition** turns tree path queries into a small number of
+contiguous ranges. Once you map each node to a position, path queries become a
+handful of segment-tree queries.
 
-- **Preprocessing**: O(n)
-- **Path Query**: O(log² n)
-- **Space**: O(n)
+Typical tasks:
 
-## The Key Insight
+- Sum / min / max on the path between `u` and `v`
+- Update all values on a path
+- Query a whole subtree in one contiguous range
 
-Each node has a **heavy child** (largest subtree). Heavy edges form **heavy paths**,
-light edges connect paths. Crossing a light edge halves the subtree size!
+HLD works on **static trees** (topology does not change).
 
-```
-Tree:           Heavy/Light Classification:
-      0                    0
-     /|\                  /|\
-    1 2 3                1 2 3
-   /|   |              [H]L  L
-  4 5   6              4 5   6
- /                    [H]
-7                     7
+## Big Picture
 
-Heavy path: 0 → 1 → 4 → 7
-Light edges: 0→2, 0→3, 1→5, 3→6
+HLD labels each node with:
 
-Why O(log n) light edges?
-- Crossing light edge → subtree size ≤ n/2
-- Can only halve log n times before reaching leaf
-```
+- `heavy_child[u]`: the child with the largest subtree
+- `chain_head[u]`: top node of u's heavy chain
+- `position[u]`: a linear index for segment tree use
 
-## Algorithm Walkthrough
+**Key property**: heavy edges form chains, and each chain is contiguous in the
+`position` order.
 
-### Step 1: Compute Subtree Sizes
+That means **any path** breaks into **O(log n) chain segments**.
+
+## The Heavy/Light Idea (Why It Is O(log n))
+
+A light edge always jumps into a subtree of **at most half** the size.
+Therefore, on any root-to-leaf path, you can only cross about `log2(n)` light
+edges before the subtree size drops to 1.
 
 ```
-DFS to find sizes and heavy children:
+Start at subtree size n
+Light edge -> size <= n/2
+Light edge -> size <= n/4
+Light edge -> size <= n/8
+...
+After k light edges: size <= n / 2^k
+```
 
-      0 (size=8)
+So there are at most O(log n) light edges, and thus only O(log n) chain jumps.
+
+## Step 1: Compute Subtree Sizes and Heavy Children
+
+We do a DFS to get sizes and pick the heaviest child at each node.
+
+Example tree:
+
+```
+      0
      /|\
     1 2 3
    /|   |
   4 5   6
  /
 7
+```
 
+Subtree sizes and heavy child:
+
+```
 Node:  0  1  2  3  4  5  6  7
 Size:  8  4  1  2  2  1  1  1
 Heavy: 1  4  -  6  7  -  -  -
-       ↑  ↑     ↑  ↑
-    largest child at each node
 ```
 
-### Step 2: Decompose into Chains
+Heaviest edges: `0-1`, `1-4`, `4-7`, and `3-6`.
+
+## Step 2: Build Chains and Positions
+
+We run a second DFS, always visiting the heavy child first.
+This makes each heavy path **contiguous** in the linear order.
+
+Chains (head -> nodes):
 
 ```
-DFS again, prioritizing heavy children:
+Chain A (head=0): 0 -> 1 -> 4 -> 7
+Chain B (head=2): 2
+Chain C (head=5): 5
+Chain D (head=3): 3 -> 6
+```
 
-Chain 0: [0, 1, 4, 7]  head=0, positions 0-3
-Chain 1: [2]           head=2, position 4
-Chain 2: [5]           head=5, position 5
-Chain 3: [3, 6]        head=3, positions 6-7
+Positions (used by a segment tree):
 
-Position array (for segment tree):
+```
 Node:     0  1  4  7  2  5  3  6
 Position: 0  1  2  3  4  5  6  7
-                ↑
-         Heavy paths are contiguous!
 ```
 
-### Step 3: Answer Path Queries
+Notice each chain is a continuous slice.
+
+## Step 3: Decompose a Path into Ranges
+
+To query `u -> v`, you repeatedly climb the deeper chain head.
+Each climb produces one **contiguous** range in the segment tree.
+
+Example: `u=7`, `v=6`
 
 ```
-Query path(7, 6):
+Chains: 7 in head=0, 6 in head=3
+Depth(head 0) < depth(head 3) -> climb v side
 
-      0 ←─────────────┐
-     /|\              │
-    1 2 3─────────────┤
-   /|   |             │
-  4 5   6 ←───────────┤
- /                    │
-7 ←───────────────────┘
-
-Walk up chains until same chain:
-1. Node 7 in chain(head=0), node 6 in chain(head=3)
-2. depth[0]=0 < depth[3]=2, so climb from 6
-3. Jump to parent of chain head: parent[3] = 0
-4. Query segment tree for chain segment [6,7]
-5. Now both in chain(head=0)
-6. Query segment tree for path in chain
-
-Total: 2 segment tree queries
+Ranges touched:
+1) chain D segment: pos[3]..pos[6] = [6..7]
+2) now v jumps to parent(head 3) = 0
+3) u and v now in same chain (head 0)
+4) final segment: pos[0]..pos[7] = [0..3]
 ```
 
-## Visual: Why Light Edges are Limited
+Total = 2 segment tree queries.
+
+## Subtree Queries Are One Range
+
+Because the heavy-first DFS assigns positions in a subtree contiguously:
 
 ```
-Starting from leaf, going up:
-
-      ●───────────────────── After 0 light edges: subtree ≤ n
-     /
-    ●─┐
-      └────────────────────── After 1 light edge: subtree ≤ n/2
-     /
-    ●─┐
-      └────────────────────── After 2 light edges: subtree ≤ n/4
-     /
-    ...
-      └────────────────────── After log n light edges: subtree ≤ 1
-
-Key insight: Light edge means going to NON-heavy child,
-which has subtree size ≤ half of parent's subtree.
+subtree(u) == [position[u], position[u] + subtree_size[u] - 1]
 ```
 
-## Example Usage
+So subtree sums or subtree updates are just one range in the segment tree.
 
-```mbt check
+## Edge vs Vertex Values
+
+HLD can handle both, but the mapping differs:
+
+### Vertex values
+Store value at `position[u]` directly.
+
+### Edge values
+Store the edge `(parent[u], u)` at `position[u]` (the deeper endpoint).
+When querying a path:
+
+- compute LCA
+- **exclude** `position[lca]` if you only want edge values
+
+## LCA via HLD
+
+```
+while head[u] != head[v]:
+  if depth[head[u]] < depth[head[v]]: v = parent[head[v]]
+  else: u = parent[head[u]]
+return (deeper of u,v)
+```
+
+This finds the LCA in O(log n) chain jumps.
+
+## Example Usage (Conceptual)
+
+```mbt nocheck
 ///|
-test "hld basic usage" {
-  // Build a simple tree:
-  //       0
-  //      / \
-  //     1   2
-  //    /|   |\
-  //   3 4   5 6
-  //
-  // HLD will identify heavy paths and enable efficient queries
-
-  // Path queries reduce to O(log n) chain segments
-  // Each chain segment maps to contiguous segment tree range
-
-  inspect(true, content="true") // HLD enables O(log² n) path queries
+// Build a tree
+let hld = HLD::new(n)
+for (u, v) in edges {
+  hld.add_edge(u, v)
 }
+
+// Decompose
+hld.build(0)
+
+// Build a segment tree on values ordered by position[]
+for u in 0..<n {
+  segtree.set(hld.get_position(u), value[u])
+}
+
+// Path query u-v
+let mut ans = 0
+let mut a = u
+let mut b = v
+while hld.get_chain_head(a) != hld.get_chain_head(b) {
+  if depth[head[a]] < depth[head[b]] { swap(a, b) }
+  let head = hld.get_chain_head(a)
+  ans += segtree.query(pos[head]..pos[a])
+  a = parent[head]
+}
+// Final segment in same chain
+ans += segtree.query(min(pos[a],pos[b])..max(pos[a],pos[b]))
 ```
 
-## Common Applications
+## Concrete Range Decomposition Example (Hardcoded)
 
-### 1. Path Maximum/Minimum
 ```
-Query: Max edge weight on path from u to v
-Solution:
-- Store edge weights in segment tree at positions
-- Walk up chains, query max on each chain segment
-- Combine results
-```
+Given the earlier tree:
+head = [0,0,2,3,0,5,3,0]
+pos  = [0,1,4,6,2,5,7,3]
 
-### 2. Path Sum with Updates
-```
-Update: Set edge weight on path
-Query: Sum of weights on path
-Solution:
-- Segment tree with range update + query
-- Break path into O(log n) chain segments
+Path 7 -> 6 produces ranges:
+- [6..7]  (chain head 3 to node 6)
+- [0..3]  (chain head 0 to node 7)
 ```
 
-### 3. Subtree Queries
-```
-Observation: Subtree of v has contiguous positions!
-  Subtree positions: [pos[v], pos[v] + size[v] - 1]
+## Common Pitfalls
 
-Query: Sum of values in subtree of v
-Solution: Single segment tree range query
-```
+- **Wrong heavy child**: pick the child with the largest subtree.
+- **Edge values**: store on the deeper endpoint and exclude LCA.
+- **Disconnected graph**: HLD is for a tree; handle components separately.
+- **Root choice**: any root works, but arrays depend on the root.
+- **Indices**: be consistent with 0-based indexing in arrays.
 
-### 4. LCA (Lowest Common Ancestor)
-```
-Walk up chains until same chain:
-while chain_head[u] != chain_head[v]:
-    if depth[chain_head[u]] < depth[chain_head[v]]:
-        v = parent[chain_head[v]]
-    else:
-        u = parent[chain_head[u]]
-return shallower of (u, v)
-```
+## Complexity
 
-## Complexity Analysis
+| Step | Time | Space |
+|------|------|-------|
+| Compute sizes + heavy child | O(n) | O(n) |
+| Decompose and assign positions | O(n) | O(n) |
+| Path query | O(log^2 n) | O(1) extra |
+| Subtree query | O(log n) | O(1) extra |
 
-| Operation | Time | Space |
-|-----------|------|-------|
-| Build decomposition | O(n) | O(n) |
-| Path query | O(log² n)* | - |
-| Subtree query | O(log n) | - |
-| LCA | O(log n) | - |
+## HLD vs Other Techniques
 
-*O(log n) chains × O(log n) per segment tree query
-
-## HLD vs Other Approaches
-
-| Method | Path Query | Subtree Query | Space |
+| Method | Path Query | Subtree Query | Notes |
 |--------|------------|---------------|-------|
-| **HLD** | O(log² n) | O(log n) | O(n) |
-| Euler Tour + Seg Tree | O(n) | O(log n) | O(n) |
-| Link-Cut Tree | O(log n)* | O(n) | O(n) |
-| Binary Lifting | O(log n)** | O(n) | O(n log n) |
+| HLD | O(log^2 n) | O(log n) | supports updates + queries |
+| Euler Tour | O(n) | O(log n) | good for subtree only |
+| Binary Lifting | O(log n) | - | LCA only |
+| Link-Cut Tree | O(log n) | - | dynamic trees |
 
-*Amortized. **For LCA only, not aggregates.
+## Implementation Notes (This Package)
 
-**Choose HLD when**: You need both path and subtree queries with updates.
+- `HLD::build(root)` runs both DFS passes
+- `HLD::lca(u, v)` uses chain heads
+- `HLD::path_length(u, v)` is provided for convenience
+- `HLD::count_chains(u, v)` shows the logarithmic chain jump property
 
-## The Chain Head Invariant
-
-```
-For any node v:
-  chain_head[v] = topmost node in v's heavy chain
-
-Property: All nodes in a heavy chain share the same head.
-
-When querying path(u, v):
-  if chain_head[u] == chain_head[v]:
-    → u and v in same chain, single segment query
-  else:
-    → climb the deeper chain, query its segment
-    → repeat until same chain
-```
-
-## Implementation Notes
-
-- Store chain heads, positions, and depths
-- Segment tree indexed by HLD position
-- For edge weights: store at lower endpoint
-- For vertex weights: store at vertex position
-- Handle LCA specially for edge queries (exclude LCA's edge)
-
+This package provides the decomposition and helper queries. You provide the
+segment tree (or Fenwick) on top of `position[]` to answer your own queries.

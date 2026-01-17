@@ -141,8 +141,8 @@
 - [x] lib/gomory_hu_tree
 - [x] lib/graph
 - [x] lib/halfplane_intersection
-- [ ] lib/hld (in progress)
-- [ ] lib/implicit_treap
+- [x] lib/hld
+- [ ] lib/implicit_treap (in progress)
 - [ ] lib/johnson_all_pairs
 - [ ] lib/k_shortest_paths_yen
 - [ ] lib/kmp

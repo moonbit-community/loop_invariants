@@ -212,3 +212,28 @@ let _ = loop 0 {
     }
   }
 }
+
+## 2026-01-20: Replace while + mut Chain Climb With loop
+- Problem: HLD LCA and chain-count routines used `mut` variables and `while`.
+- Change: Use a `loop` with a `(u, v, count)` state to perform chain jumps.
+- Result: Same logic, fewer mutations, consistent with functional loop style.
+- Example:
+// Before
+let mut a = u
+let mut b = v
+while head[a] != head[b] {
+  if depth[head[a]] < depth[head[b]] { b = parent[head[b]] }
+  else { a = parent[head[a]] }
+}
+
+// After
+loop (u, v) {
+  (a, b) => {
+    if head[a] == head[b] { break a }
+    if depth[head[a]] < depth[head[b]] {
+      continue (a, parent[head[b]])
+    } else {
+      continue (parent[head[a]], b)
+    }
+  }
+}
