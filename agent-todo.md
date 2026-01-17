@@ -40,8 +40,8 @@
 - [x] lib/challenge_binary_search_answer
 - [x] lib/challenge_bipartite_matching_kuhn
 - [x] lib/challenge_bitmask_dp
-- [ ] lib/challenge_bitmask_tsp (in progress)
-- [ ] lib/challenge_centroid_decomposition
+- [x] lib/challenge_bitmask_tsp
+- [ ] lib/challenge_centroid_decomposition (in progress)
 - [ ] lib/challenge_coin_change_min
 - [ ] lib/challenge_coordinate_compress
 - [ ] lib/challenge_dag_shortest_path

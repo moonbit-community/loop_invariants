@@ -8,7 +8,6 @@ const INF : Int = 0x3fffffff
 
 ///|
 /// Return minimal tour cost visiting all nodes and returning to 0.
-#warnings("+missing_invariant+missing_reasoning")
 pub fn tsp_min_cycle(dist : Array[Array[Int]]) -> Int {
   let n = dist.length()
   if n <= 1 {
