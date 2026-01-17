@@ -1,5 +1,24 @@
 # Package tutorial progress
 
+## Revision pass (more descriptive, more examples)
+
+- [x] . (root)
+- [ ] cmd/main (in progress)
+- [x] lib/aho_corasick
+- [ ] lib/avl_tree (in progress)
+- [ ] lib/bellman_ford
+- [ ] lib/berlekamp_massey
+- [ ] lib/biconnected_components
+- [ ] lib/binary_trie_xor
+- [ ] lib/bipartite_matching
+- [ ] lib/block_cut_tree
+- [ ] lib/bridges
+- [ ] lib/cartesian_tree
+- [ ] lib/centroid
+- [ ] lib/challenge_bfs_grid
+
+## Initial pass
+
 - [x] . (root)
 - [x] cmd/main
 - [x] lib/aho_corasick
@@ -13,8 +32,8 @@
 - [x] lib/bridges
 - [x] lib/cartesian_tree
 - [x] lib/centroid
-- [ ] lib/challenge_bfs_grid (in progress)
-- [ ] lib/challenge_binary_lifting
+- [x] lib/challenge_bfs_grid
+- [ ] lib/challenge_binary_lifting (in progress)
 - [ ] lib/challenge_binary_search_answer
 - [ ] lib/challenge_bipartite_matching_kuhn
 - [ ] lib/challenge_bitmask_dp

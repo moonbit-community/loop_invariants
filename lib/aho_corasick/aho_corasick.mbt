@@ -42,16 +42,19 @@
 // - Search: O(n + z) where n is text length, z is number of matches
 
 ///|
+const AC_ALPHABET : Int = 256
+
+///|
 /// A state in the Aho-Corasick automaton
 priv struct ACState {
-  children : Array[Int] // Transitions for each character (size 256)
+  children : Array[Int] // Transitions for each byte
   mut failure : Int // Failure link (-1 for root)
   output : Array[Int] // Pattern indices that end at this state
 }
 
 ///|
 fn ACState::new() -> ACState {
-  { children: Array::make(256, -1), failure: -1, output: [] }
+  { children: Array::make(AC_ALPHABET, -1), failure: -1, output: [] }
 }
 
 ///|
@@ -113,21 +116,21 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
   let queue : Array[Int] = []
 
   // Initialize: children of root have failure link to root
-  for c = 0; c < 256; c = c + 1 {
+  for c = 0; c < AC_ALPHABET; c = c + 1 {
     let child = self.states[0].children[c]
     if child >= 0 {
       self.states[child].failure = 0
       queue.push(child)
     }
   } where {
-    invariant: 0 <= c && c < 256,
+    invariant: 0 <= c && c < AC_ALPHABET,
     reasoning: (
       #|INVARIANT (root transitions):
       #|All byte transitions for characters in [0, c) are processed.
       #|MAINTENANCE:
       #|If a child exists, set its failure to root and enqueue it.
       #|TERMINATION:
-      #|At c = 256, all root transitions are initialized.
+      #|At c = AC_ALPHABET, all root transitions are initialized.
     ),
   }
 
@@ -136,7 +139,7 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
   // have their failure links correctly computed
   let mut front = 0
   while queue.get(front) is Some(state) {
-    for c = 0; c < 256; c = c + 1 {
+    for c = 0; c < AC_ALPHABET; c = c + 1 {
       let child = self.states[state].children[c]
       if child < 0 {
         continue
@@ -182,14 +185,14 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
         self.states[child].output.push(pattern_idx)
       }
     } where {
-      invariant: 0 <= c && c < 256,
+      invariant: 0 <= c && c < AC_ALPHABET,
       reasoning: (
         #|INVARIANT (state transitions):
         #|All byte transitions for characters in [0, c) are processed for state.
         #|MAINTENANCE:
         #|Process transition c and compute its failure link/output.
         #|TERMINATION:
-        #|At c = 256, all transitions from this state are handled.
+        #|At c = AC_ALPHABET, all transitions from this state are handled.
       ),
     }
     front = front + 1
