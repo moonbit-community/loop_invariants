@@ -8,15 +8,14 @@ const INF : Int = 0x3fffffff
 ///|
 /// Minimum scalar multiplications for matrix chain.
 /// dims has length n+1, where matrix i is dims[i] x dims[i+1].
-#warnings("+missing_invariant+missing_reasoning")
 pub fn matrix_chain_min_cost(dims : ArrayView[Int]) -> Int {
   let n = dims.length() - 1
   if n <= 0 {
     return 0
   }
   let dp : Array[Array[Int]] = Array::makei(n, _ => Array::make(n, 0))
-  for len in 2..=n {
-    for i in 0..=(n - len) {
+  for len in 2..<(n + 1) {
+    for i in 0..<(n - len + 1) {
       let j = i + len - 1
       dp[i][j] = INF
       for k in i..<j {

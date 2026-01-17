@@ -59,8 +59,8 @@
 - [x] lib/challenge_lcs
 - [x] lib/challenge_line_sweep
 - [x] lib/challenge_lis_nlogn
-- [ ] lib/challenge_matrix_chain (in progress)
-- [ ] lib/challenge_meet_in_middle
+- [x] lib/challenge_matrix_chain
+- [ ] lib/challenge_meet_in_middle (in progress)
 - [ ] lib/challenge_mo_algorithm_sum
 - [ ] lib/challenge_mst_kruskal
 - [ ] lib/challenge_mst_prim
