@@ -48,8 +48,8 @@
 - [x] lib/challenge_dfs_subtree
 - [x] lib/challenge_difference_array
 - [x] lib/challenge_disjoint_sparse_table
-- [ ] lib/challenge_edit_distance (in progress)
-- [ ] lib/challenge_edmonds_karp
+- [x] lib/challenge_edit_distance
+- [ ] lib/challenge_edmonds_karp (in progress)
 - [ ] lib/challenge_fenwick_2d
 - [ ] lib/challenge_floyd_warshall
 - [ ] lib/challenge_interval_scheduling
