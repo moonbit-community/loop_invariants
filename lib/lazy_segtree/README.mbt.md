@@ -1,113 +1,116 @@
-# Lazy Segment Tree
+# Lazy Segment Tree (Range Update + Range Query)
 
-## Overview
+## What It Solves
 
-A **Lazy Segment Tree** extends the regular segment tree to support efficient
-range updates. Instead of updating every element in a range, it defers updates
-using "lazy" propagation.
+A **lazy segment tree** supports **range updates** and **range queries** on an
+array in **O(log n)** time. It is the standard data structure for problems like:
 
-- **Range Update**: O(log n)
-- **Range Query**: O(log n)
-- **Space**: O(n)
+- Add `x` to all values in a range
+- Set all values in a range
+- Query sum/min/max over a range
 
-## Core Idea
+A normal segment tree would require O(n) for range updates; lazy propagation
+avoids that by deferring work.
 
-- Store **aggregate values** in segment nodes (sum/min/max, etc.).
-- Keep a **lazy tag** for deferred updates and push it only when needed.
-- Range update touches O(log n) nodes, not every element.
+## Indexing Convention (Important)
 
-## The Problem
+This implementation uses **inclusive indices**:
 
 ```
-Regular segment tree: O(n) for range update (must touch every element)
-Lazy segment tree: O(log n) for range update!
-
-Operation: Add 5 to all elements in range [2, 5]
-
-Before: [1, 3, 2, 7, 4, 6, 1, 8]
-After:  [1, 3, 7, 12, 9, 11, 1, 8]
-              ↑   ↑   ↑   ↑
-            +5  +5  +5  +5
+range_add(l, r, val)  updates l..r (inclusive)
+range_sum(l, r)       queries l..r (inclusive)
 ```
 
-## The Key Insight
+So `[l, r]` is closed, not half‑open.
+
+## Core Idea in One Picture
+
+When a segment is fully covered by an update, store the update at that node and
+**do not** immediately touch its children.
 
 ```
-Don't update nodes immediately. Store pending updates
-and propagate them only when needed.
+Update: add +5 to [0, 3]
 
-Range add [0, 3] with value 5:
+          [0..7]
+            |
+          [0..3]  <-- fully covered
+            |
+        lazy += 5
 
-           [0-7]           ← Don't update children yet!
-          lazy=0
-         /      \
-      [0-3]    [4-7]
-     lazy=5   lazy=0       ← Mark lazy=5, done!
-     /    \
-  [0-1]  [2-3]             ← Never touched
-
-When querying [1, 2] later, push lazy value down.
+Children of [0..3] are not updated yet.
+When a query descends into them, we push the lazy value down.
 ```
 
-## Lazy Propagation
+## Why It Works
+
+Every node represents a segment `[L..R]` and stores an aggregate (here: sum).
+If we add `x` to the entire segment:
 
 ```
-Before query or update on a node, push lazy value to children:
-
-push_down(node):
-    if lazy[node] != 0:
-        # Apply to left child
-        sum[left] += lazy[node] * size[left]
-        lazy[left] += lazy[node]
-
-        # Apply to right child
-        sum[right] += lazy[node] * size[right]
-        lazy[right] += lazy[node]
-
-        # Clear lazy
-        lazy[node] = 0
+sum += x * (R - L + 1)
 ```
 
-## Algorithm Walkthrough
+So we can update the node **without** touching leaves. The lazy tag remembers
+what to push to children later.
+
+## Build and Query Structure
+
+Example array: `[1, 2, 3, 4]`
 
 ```
-Array: [1, 2, 3, 4]  →  Initial tree:
-
-         [0-3]
-         sum=10
-        /      \
-     [0-1]    [2-3]
-     sum=3    sum=7
-     /   \    /   \
-   [0]  [1] [2]  [3]
-   s=1  s=2 s=3  s=4
-
-Operation: range_add(0, 2, 5)  (add 5 to indices 0,1,2)
-
-Step 1: Visit [0-3], not fully covered, push down (nothing to push)
-Step 2: Visit [0-1], fully covered!
-        sum[0-1] += 5 * 2 = 10  →  sum = 13
-        lazy[0-1] = 5
-        Return (don't go to children)
-Step 3: Visit [2-3], not fully covered
-Step 4: Visit [2], fully covered!
-        sum[2] += 5 * 1 = 5  →  sum = 8
-        lazy[2] = 5
-Step 5: Back to [2-3]: update sum = 8 + 4 = 12
-Step 6: Back to [0-3]: update sum = 13 + 12 = 25
-
-After:
-         [0-3]
-         sum=25
-        /      \
-     [0-1]    [2-3]
-     sum=13   sum=12
-     lazy=5   lazy=0
-     /   \    /   \
-   [0]  [1] [2]  [3]
-   s=1  s=2 s=8  s=4
-         lazy=5
+          [0..3] sum=10
+         /               \
+   [0..1] sum=3       [2..3] sum=7
+   /     \            /     \
+[0]1    [1]2        [2]3    [3]4
 ```
+
+## Step‑by‑Step Update Example
+
+Operation: `range_add(0, 2, +5)`
+
+```
+Step 1: Visit [0..3] (partial overlap)
+        -> push_down (nothing pending)
+
+Step 2: Visit [0..1] (fully covered)
+        sum += 5 * 2 = 10 => sum becomes 13
+        lazy += 5
+
+Step 3: Visit [2..3] (partial)
+        -> visit [2] (fully covered)
+           sum += 5 * 1 => 3 -> 8, lazy += 5
+        -> visit [3] (no overlap)
+
+Step 4: Recompute parents
+```
+
+Resulting sums:
+
+```
+          [0..3] sum=25
+         /               \
+   [0..1] sum=13      [2..3] sum=12
+   lazy=5                lazy=0
+```
+
+The children of `[0..1]` still look unchanged, but the lazy tag stores the
+pending update.
+
+## Push Down (Lazy Propagation)
+
+Before we go deeper from a node, we apply its pending update to its children:
+
+```
+if lazy[node] != 0:
+  tree[left]  += lazy * size(left)
+  tree[right] += lazy * size(right)
+  lazy[left]  += lazy
+  lazy[right] += lazy
+  lazy[node] = 0
+```
+
+This makes sure children are correct whenever you need to read them.
 
 ## Example Usage
 
@@ -116,127 +119,101 @@ After:
 test "lazy segtree example" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L]
   let st = @lazy_segtree.LazySegTreeSum::new(arr)
-  let _ = st.range_add(1, 3, 2L)
+
+  // add 2 to indices 1..3
+  st.range_add(1, 3, 2L)
   inspect(st.range_sum(0, 3), content="Some(16)")
   inspect(st.point_query(2), content="Some(5)")
 }
 ```
 
-## Types of Lazy Updates
+```mbt check
+///|
+test "lazy segtree multiple updates" {
+  let st = @lazy_segtree.LazySegTreeSum::new([5L, 1L, 4L, 2L, 3L])
 
-### Range Add
-```
-lazy[node] = pending addition
-Apply: sum += lazy * size
-Combine: new_lazy = old_lazy + update
-```
+  // add +3 to [0..2]
+  st.range_add(0, 2, 3L)
+  // add +1 to [2..4]
+  st.range_add(2, 4, 1L)
 
-### Range Assign (Set)
-```
-lazy[node] = assigned value (use sentinel for "no update")
-Apply: sum = lazy * size
-Combine: new_lazy = update (overwrites)
-```
-
-### Range Multiply
-```
-lazy[node] = pending multiplier
-Apply: sum *= lazy
-Combine: new_lazy = old_lazy * update
+  // array becomes [8, 4, 8, 3, 4]
+  inspect(st.range_sum(0, 4), content="Some(27)")
+  inspect(st.point_query(3), content="Some(3)")
+}
 ```
 
-## Common Applications
+## What This Package Implements
 
-### 1. Range Add, Range Sum
-```
-Add value to all elements in range.
-Query sum of any range.
-```
+This package exposes a **range‑add / range‑sum** lazy segment tree:
 
-### 2. Range Assign, Range Min
-```
-Set all elements in range to a value.
-Query minimum in any range.
-```
+- `LazySegTreeSum::new(arr)`
+- `range_add(l, r, val)`
+- `range_sum(l, r) -> Int64?`
+- `point_query(i)`
+- `point_set(i, val)`
+- `length()`
 
-### 3. Interval Scheduling
-```
-Mark intervals as occupied.
-Query if an interval is free.
-```
+Internally, it also has a range‑assign variant (private).
 
-### 4. Lazy Tag Composition
-```
-Multiple update types (add AND multiply).
-Compose lazy tags carefully!
+## Types of Lazy Tags (Conceptual)
 
-For ax + b transformations:
-(a₁x + b₁) then (a₂x + b₂) = a₁a₂x + a₂b₁ + b₂
+### Range Add (this package)
+
+```
+lazy = pending addition
+sum  = sum + lazy * size
+compose: lazy = lazy + new_add
 ```
 
-## Complexity Analysis
+### Range Assign (conceptual)
 
-| Operation | Regular Segtree | Lazy Segtree |
-|-----------|-----------------|--------------|
-| Point update | O(log n) | O(log n) |
-| Range update | O(n) | O(log n) |
-| Range query | O(log n) | O(log n) |
+```
+lazy = pending assignment
+sum  = lazy * size
+compose: new assignment overrides old
+```
+
+### Range Multiply + Add (conceptual)
+
+```
+(x -> x*m + b)
+compose: (m1, b1) then (m2, b2)
+        = (m1*m2, b1*m2 + b2)
+```
+
+## Common Pitfalls
+
+- **Inclusive ranges**: `[l, r]` not `[l, r)`.
+- **Forgetting push_down**: children become stale.
+- **Overflow**: sum uses `Int64`; guard large updates.
+- **Empty tree**: this implementation returns `None` for queries.
+- **Recomputing parent**: always update after recursing to children.
+
+## Complexity
+
+| Operation | Time | Space |
+|----------|------|-------|
 | Build | O(n) | O(n) |
+| Range add | O(log n) | O(n) |
+| Range sum | O(log n) | O(n) |
+| Point query | O(log n) | O(n) |
 
-## Visual: Push Down
+## When to Use Lazy Segment Tree
 
-```
-Before push_down on node with lazy=5:
+Use it when you need **range updates** plus **range queries** on the same array.
+If you only need prefix sums, a Fenwick tree is simpler.
 
-    [0-3]
-   lazy=5
-   sum=10
-   /    \
-[0-1]  [2-3]
- s=3    s=7
-
-After push_down:
-
-    [0-3]
-   lazy=0       ← cleared
-   sum=10
-   /    \
-[0-1]  [2-3]
- s=13   s=17    ← updated
-lazy=5 lazy=5   ← received
-```
-
-## Lazy Segment Tree vs Alternatives
-
-| Structure | Update | Query | Use Case |
-|-----------|--------|-------|----------|
-| **Lazy Segtree** | O(log n) | O(log n) | Range updates |
-| Regular Segtree | O(n) range | O(log n) | Point updates |
-| Fenwick + diff | O(log n) | O(log n) | Range add, point query |
-| Sqrt decomposition | O(√n) | O(√n) | Simpler code |
-
-**Choose Lazy Segment Tree when**: You need both range updates and range queries.
-
-## Multiple Lazy Tags
+## Visual Summary
 
 ```
-For range add + range multiply:
-Store lazy as (multiplier, addend).
+Lazy segment tree = segment tree + delayed updates
 
-Composition: (m₁, a₁) then (m₂, a₂)
-           = (m₁ * m₂, a₁ * m₂ + a₂)
+Update range:
+  fully covered node -> update node sum + store lazy
+  partial overlap    -> push_down + recurse
 
-Apply to sum: sum = sum * m + a * size
-
-Order matters! Usually: multiply first, then add.
+Query range:
+  fully covered node -> return sum
+  partial overlap    -> push_down + combine children
 ```
-
-## Implementation Notes
-
-- Push down before accessing children
-- Push down in both query and update
-- Update parent sum after modifying children
-- Use 0 (or identity) for "no pending update"
-- For range assign, use sentinel (e.g., -∞) for "no update"
-- Careful with lazy tag composition order
-- 4n space is typically enough (2n nodes, each with value + lazy)

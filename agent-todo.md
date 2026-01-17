@@ -146,8 +146,8 @@
 - [x] lib/johnson_all_pairs
 - [x] lib/k_shortest_paths_yen
 - [x] lib/kmp
-- [ ] lib/lazy_segtree (in progress)
-- [ ] lib/lca
+- [x] lib/lazy_segtree
+- [ ] lib/lca (in progress)
 - [ ] lib/lct
 - [ ] lib/lichao
 - [ ] lib/line_segment_intersection
