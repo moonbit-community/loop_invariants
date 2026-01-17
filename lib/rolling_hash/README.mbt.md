@@ -47,6 +47,21 @@ Check directly: 2*31 + 3 = 65 ✓
 
 ---
 
+## 2b. Off-by-one clarity (substring ranges)
+
+This README uses half-open ranges `[l, r)`:
+
+```
+"abcd"
+ index: 0 1 2 3
+
+substring[1, 3) = "bc"
+```
+
+So `r` is not included.
+
+---
+
 ## 3. Visual sliding window
 
 ```
@@ -90,6 +105,20 @@ Matches at [0, 4, 8].
 
 ---
 
+## 4b. Double hashing intuition
+
+Two different strings can collide under one modulus.  
+Using two moduli makes collision probability extremely small:
+
+```
+P(collision) ≈ 1 / MOD1 + 1 / MOD2
+```
+
+This package uses single hashing, so it is recommended to **verify**
+matches when collisions matter.
+
+---
+
 ## 5. Example usage (public API)
 
 ```mbt check
@@ -101,6 +130,19 @@ test "rolling hash pattern search" {
     @rolling_hash.count_pattern_rabin_karp("mississippi", "issi"),
     content="2",
   )
+}
+```
+
+---
+
+## 5b. Another example: overlapping matches
+
+```mbt check
+///|
+test "rolling hash overlapping" {
+  let hits = @rolling_hash.find_pattern_rabin_karp("aaaaa", "aa")
+  // Overlaps allowed: positions 0,1,2,3
+  inspect(hits, content="[0, 1, 2, 3]")
 }
 ```
 
@@ -146,6 +188,16 @@ Pattern search:           O(n + m) expected
 3. Precompute powers of base.
 4. If hash difference is negative, add MOD.
 5. For security‑critical uses, always verify matches.
+
+### Common beginner mistake
+
+Forgetting to normalize substring hashes to the same power of `b`:
+
+```
+hash(l, r) = prefix[r] - prefix[l] * b^(r-l)
+```
+
+If you skip the multiplication, different positions won't compare correctly.
 
 ---
 
