@@ -1,291 +1,504 @@
-# Algorithmic Techniques
+# Algorithmic Techniques (Beginner-Friendly, Example-Heavy)
 
-## Overview
+This chapter is a practical "how to recognize the pattern" guide. It does not
+expose a public API. Instead, it teaches the most common problem-solving
+templates with small, concrete examples you can copy into your own solutions.
 
-A collection of fundamental algorithmic techniques that form the building blocks
-for solving complex problems. These techniques are patterns that appear across
-many different problem types.
+If you are new to algorithms, read this guide in order. Each section follows
+the same flow:
 
-- **Two Pointers**: O(n) for sorted/sequential data
-- **Sliding Window**: O(n) for contiguous subarrays
-- **Monotonic Stack/Queue**: O(n) for next greater/smaller
-- **Binary Search on Answer**: O(n log M) for optimization
+1) A plain-English description of the technique.
+2) A visual diagram or step-by-step walkthrough.
+3) A small MoonBit example you can run with `mbt check`.
+4) Common pitfalls and "when to use this".
 
-## Core Idea
+All diagrams and code are ASCII only for clarity and portability.
 
-- Recognize a **structure or monotonicity** that restricts how state changes.
-- Use **invariants** (window validity, monotonic stacks, sorted order) to avoid
-  rework and keep updates O(1).
-- Turn the problem into a **template**: pointer moves, stack pops, or feasibility checks.
+## Quick pattern map
 
-## The Key Insight
+Use this as a fast "what should I try first?" checklist.
 
 ```
-Most algorithmic problems fall into a few technique categories.
-Recognizing the pattern leads directly to the solution!
-
-Given problem → Identify technique → Apply template → Solve
-
-Examples:
-  "Find pair with sum = k"     → Two pointers (sorted) or Hash
-  "Max sum subarray of size k" → Sliding window
-  "Next greater element"       → Monotonic stack
-  "Minimum time to complete"   → Binary search on answer
+Signal in the problem                         -> Likely technique
+------------------------------------------------------------------------
+Sorted array + pair/triple finding             -> Two pointers
+Contiguous subarray, update as it moves        -> Sliding window
+Next greater/smaller, nearest boundary         -> Monotonic stack
+Window max/min with many queries               -> Monotonic queue
+Answer is "smallest X that works"              -> Binary search on answer
+Many offline range queries                     -> Mo's algorithm
+Subset problems with n around 30 to 40         -> Meet in the middle
 ```
 
-## Two Pointers
+## 1. Two pointers
+
+### Intuition
+
+Two pointers move across the array so that every element is touched only a
+constant number of times. This is how you turn many O(n^2) scans into O(n).
+
+There are two main styles:
+
+1) **Both ends inward** (sorted arrays).
+2) **Slow and fast** (same direction).
+
+### Style A: Both ends inward (sorted two-sum)
+
+Example: find two numbers that sum to 9 in a sorted list.
+
+Array:
 
 ```
-Use two pointers that move based on a condition.
-Works when the search space can be pruned by pointer movement.
-
-Pattern 1: Start from both ends (sorted array)
-  left = 0, right = n-1
-  while left < right:
-    if condition: left++
-    else: right--
-
-Pattern 2: Slow and fast pointer
-  slow = 0, fast = 0
-  while fast < n:
-    process and move fast
-    move slow when needed
-
-Example: Two Sum in sorted array
-  [1, 2, 4, 7, 11, 15], target = 9
-   ↑              ↑
-   L              R    sum = 16 > 9, move R
-   ↑         ↑
-   L         R         sum = 12 > 9, move R
-   ↑    ↑
-   L    R              sum = 8 < 9, move L
-      ↑ ↑
-      L R              sum = 6 < 9, move L
-        ↑↑
-        LR             sum = 11 > 9, done? No!
-        Actually: L=2, R=3 gives 4+7=11 still too big
-  Hmm, let me redo:
-  target = 9: 2 + 7 = 9 ✓ (indices 1 and 3)
+index: 0 1 2 3 4  5
+value: 1 2 4 7 11 15
 ```
 
-## Sliding Window
+We start with `L` at the left and `R` at the right:
 
 ```
-Maintain a window that slides through the array.
-Track window state efficiently during movement.
-
-Fixed-size window:
-  for i in 0..n-k+1:
-    process window [i, i+k)
-    add element i+k, remove element i
-
-Variable-size window:
-  left = 0
-  for right in 0..n:
-    expand: add arr[right] to window
-    while window invalid:
-      shrink: remove arr[left], left++
-    update answer
-
-Example: Max sum of subarray of size 3
-  [2, 1, 5, 1, 3, 2]
-   └──┘        window sum = 8
-      └──┘     window sum = 7 (8 - 2 + 1)
-         └──┘  window sum = 9 ← maximum
-            └──┘ window sum = 6
+L -> 1, R -> 15, sum = 16 (too big, move R)
+L -> 1, R -> 11, sum = 12 (too big, move R)
+L -> 1, R -> 7,  sum = 8  (too small, move L)
+L -> 2, R -> 7,  sum = 9  (found)
 ```
 
-## Monotonic Stack
+The key invariant:
+- If the sum is too small, moving `L` right is the only way to increase it.
+- If the sum is too big, moving `R` left is the only way to decrease it.
 
-```
-Stack that maintains monotonic order (increasing or decreasing).
-Elements are pushed/popped to maintain the invariant.
+```mbt check
+///|
+fn two_sum_sorted(xs : ArrayView[Int], target : Int) -> (Int, Int)? {
+  let n = xs.length()
+  if n < 2 {
+    return None
+  }
+  let mut left = 0
+  let mut right = n - 1
+  while left < right {
+    let sum = xs[left] + xs[right]
+    if sum == target {
+      return Some((left, right))
+    }
+    if sum < target {
+      left = left + 1
+    } else {
+      right = right - 1
+    }
+  }
+  None
+}
 
-Find next greater element for each position:
-  Stack stores indices of elements waiting for their "next greater"
-
-Process: [4, 5, 2, 25]
-  i=0: stack=[], push 0        stack=[0]
-  i=1: 5 > arr[0]=4, pop, result[0]=5, push 1   stack=[1]
-  i=2: 2 < arr[1]=5, push 2    stack=[1,2]
-  i=3: 25 > arr[2]=2, pop, result[2]=25
-       25 > arr[1]=5, pop, result[1]=25
-       push 3                  stack=[3]
-  end: remaining have no next greater, result[3]=-1
-
-Result: [5, 25, 25, -1]
-```
-
-## Monotonic Queue
-
-```
-Deque that maintains monotonic order.
-Supports efficient min/max queries for sliding windows.
-
-Max in sliding window of size 3:
-  [1, 3, -1, -3, 5, 3, 6, 7]
-
-Deque stores indices, values are decreasing:
-  i=0: deque=[0]                    (1)
-  i=1: 3>1, pop 0, push 1           (3)
-  i=2: -1<3, push 2                 (3,-1)  window max=3
-  i=3: -3<-1, push 3, remove 0      (3,-1,-3) → (3,-1,-3) max=3
-       but index 0 is out, remove it first
-       Actually: deque=[1,2,3] → max=arr[1]=3
-  i=4: 5>all, clear, push 4         (5)     max=5
-  ...
-
-Key: Front of deque is always the maximum in current window.
+///|
+test "two pointers: sorted two sum" {
+  let xs = [1, 2, 4, 7, 11, 15]
+  inspect(two_sum_sorted(xs, 9), content="Some((1, 3))")
+}
 ```
 
-## Binary Search on Answer
+### Style B: Slow and fast (same direction)
+
+Think of `fast` as the scout and `slow` as the builder. `fast` moves every
+step, `slow` moves only when a condition is met.
+
+Common uses:
+
+- Remove duplicates in-place in a sorted array.
+- Longest subarray with a property.
+- Partition arrays (e.g., all zeros to the end).
+
+Visual idea:
 
 ```
-When the answer has monotonic property (feasible/infeasible threshold),
-binary search to find the boundary.
+slow marks the end of the "clean" prefix
+fast scans the full array
 
-Pattern:
-  lo, hi = answer_bounds
-  while lo < hi:
-    mid = (lo + hi) / 2
-    if is_feasible(mid):
-      hi = mid      // or lo = mid + 1 for max
-    else:
-      lo = mid + 1  // or hi = mid - 1 for max
+[1, 1, 2, 2, 3, 3]
+ s
+ f
 
-Example: Minimum time to complete tasks
-  Tasks: [3, 1, 2], Workers: 2
-
-  Can complete in time T?
-    Greedily assign tasks, check if 2 workers enough
-
-  Binary search on T:
-    T=1: [3] can't fit → infeasible
-    T=2: [3] can't fit → infeasible
-    T=3: [3], [1,2] → feasible! ✓
-    T=4: also feasible
-
-  Answer: T = 3
+After scanning, slow trails behind fast and the prefix [0..slow] is clean.
 ```
 
-## Mo's Algorithm
+## 2. Sliding window
+
+### Intuition
+
+A sliding window is just two pointers that always keep a contiguous segment.
+You update the answer as the segment moves, rather than recomputing from
+scratch each time.
+
+There are two variants:
+
+- Fixed-size window
+- Variable-size window (expand and shrink)
+
+### Fixed-size window example
+
+Find the maximum sum of any 3 consecutive elements.
 
 ```
-Process offline range queries in O((n+q)√n) time.
-Order queries by (block of left, right) to minimize pointer movement.
+Array: [2, 1, 5, 1, 3, 2]
+Window size k = 3
 
-Queries on [l, r]:
-  1. Sort queries by (l/√n, r)
-  2. Maintain current answer for [cur_l, cur_r]
-  3. For each query, move cur_l and cur_r
-
-Movement analysis:
-  - Right pointer moves O(n) per block, O(n√n) total
-  - Left pointer moves O(√n) per query, O(q√n) total
-  - Total: O((n+q)√n)
-
-Works for: distinct count, frequency queries, XOR queries
+Start: [2, 1, 5] sum = 8
+Slide: [1, 5, 1] sum = 7  (8 - 2 + 1)
+Slide: [5, 1, 3] sum = 9  (7 - 1 + 3)  <-- best
+Slide: [1, 3, 2] sum = 6
 ```
 
-## Meet in the Middle
+```mbt check
+///|
+fn max_sum_k(xs : ArrayView[Int], k : Int) -> Int? {
+  let n = xs.length()
+  if k <= 0 || k > n {
+    return None
+  }
+  let mut sum = 0
+  for i in 0..<k {
+    sum = sum + xs[i]
+  }
+  let mut best = sum
+  for i in k..<n {
+    sum = sum - xs[i - k] + xs[i]
+    if sum > best {
+      best = sum
+    }
+  }
+  Some(best)
+}
 
-```
-Split problem in half, solve each half, combine results.
-Reduces O(2^n) to O(2^(n/2)).
-
-Example: Subset sum
-  Array: [1, 2, 3, 4, 5, 6] (n=6), target = 10
-
-  Split: [1,2,3] and [4,5,6]
-  Left sums:  {0,1,2,3,3,4,5,6}
-  Right sums: {0,4,5,6,9,10,11,15}
-
-  For each left sum s, check if (target-s) in right sums.
-  s=0: need 10 ✓ (in right)
-  s=1: need 9 ✓
-  s=2: need 8 ✗
-  ...
-
-  O(2^3) + O(2^3) instead of O(2^6)
-```
-
-## Algorithm Walkthrough: Sliding Window
-
-```
-Find minimum length subarray with sum >= target
-
-Array: [2, 3, 1, 2, 4, 3], target = 7
-
-left=0, right=0, sum=0, min_len=∞
-
-right=0: sum=2 < 7
-right=1: sum=5 < 7
-right=2: sum=6 < 7
-right=3: sum=8 >= 7
-  → shrink: left=0, sum=8, len=4 → min_len=4
-  → left++, sum=6 < 7, stop shrinking
-right=4: sum=10 >= 7
-  → shrink: len=4, left=1, sum=7 >= 7, len=3 → min_len=3
-  → left++, sum=4 < 7, stop
-right=5: sum=7 >= 7
-  → shrink: len=3, left=2, sum=4 < 7, stop
-
-Answer: min_len = 2 (subarray [4,3])
-Wait, let me recheck...
-  [4,3] at indices 4-5: sum=7, len=2 ✓
+///|
+test "sliding window: max sum of size k" {
+  let xs = [2, 1, 5, 1, 3, 2]
+  inspect(max_sum_k(xs, 3), content="Some(9)")
+}
 ```
 
-## Common Applications
+### Variable-size window example
 
-### 1. Two Pointers
-```
-- Two sum / Three sum
-- Container with most water
-- Trapping rain water
-- Remove duplicates from sorted array
-- Merge sorted arrays
-```
+Find the shortest subarray with sum >= 7.
 
-### 2. Sliding Window
 ```
-- Maximum/minimum in window
-- Longest substring without repeating characters
-- Minimum window substring
-- Subarray with sum = k
-```
+Array:  [2, 3, 1, 2, 4, 3]
+Target: 7
 
-### 3. Monotonic Stack/Queue
-```
-- Next greater/smaller element
-- Largest rectangle in histogram
-- Stock span problem
-- Sliding window maximum
-```
+Expand right:
+[2,3,1,2] sum=8  len=4
 
-### 4. Binary Search on Answer
-```
-- Minimum time to complete
-- Maximum minimum distance
-- Allocate minimum pages
-- Capacity to ship packages
+Shrink left:
+[3,1,2]   sum=6  (stop)
+
+Expand:
+[3,1,2,4] sum=10 len=4
+Shrink:
+[1,2,4]   sum=7  len=3
+Shrink:
+[2,4]     sum=6  (stop)
+
+Expand:
+[2,4,3]   sum=9  len=3
+Shrink:
+[4,3]     sum=7  len=2  <-- best
 ```
 
-## Complexity Summary
+Key rule: each element enters the window once and leaves once, so total work
+is O(n).
 
-| Technique | Time | Space | When to Use |
-|-----------|------|-------|-------------|
-| Two Pointers | O(n) | O(1) | Sorted data, pair/triplet finding |
-| Sliding Window | O(n) | O(k) | Contiguous subarray problems |
-| Monotonic Stack | O(n) | O(n) | Next greater/smaller queries |
-| Monotonic Queue | O(n) | O(k) | Sliding window min/max |
-| Binary Search Answer | O(n log M) | O(1) | Optimization with monotonic check |
-| Mo's Algorithm | O((n+q)√n) | O(n) | Offline range queries |
-| Meet in Middle | O(2^(n/2)) | O(2^(n/2)) | Exponential with small n |
+## 3. Monotonic stack
 
-## Implementation Notes
+### Intuition
 
-- For two pointers: ensure the invariant that justifies pointer movement
-- For sliding window: track add/remove operations separately
-- For monotonic stack: decide increasing vs decreasing based on query type
-- For binary search: carefully handle boundary (lo < hi vs lo <= hi)
-- For Mo's: handle add/remove in both directions for correctness
+Maintain a stack that is always increasing or always decreasing. This lets you
+find "next greater", "next smaller", or nearest boundary in O(n).
+
+Example: next greater element.
+
+```
+Input:  [4, 5, 2, 25]
+Output: [5, 25, 25, -1]
+
+Process steps:
+stack = []
+4 -> push 0
+5 -> pop 0, result[0] = 5, push 1
+2 -> push 2
+25 -> pop 2 (result[2]=25), pop 1 (result[1]=25), push 3
+done -> result[3] stays -1
+```
+
+```mbt check
+///|
+fn next_greater(xs : ArrayView[Int]) -> Array[Int] {
+  let n = xs.length()
+  let result = Array::make(n, -1)
+  let stack : Array[Int] = []
+  for i in 0..<n {
+    let x = xs[i]
+    while stack.length() > 0 {
+      let j = stack[stack.length() - 1]
+      if xs[j] < x {
+        ignore(stack.pop())
+        result[j] = x
+      } else {
+        break
+      }
+    }
+    stack.push(i)
+  }
+  result
+}
+
+///|
+test "monotonic stack: next greater" {
+  let xs = [4, 5, 2, 25]
+  inspect(next_greater(xs), content="[5, 25, 25, -1]")
+}
+```
+
+When to use:
+- "Next greater/smaller element"
+- "Largest rectangle in histogram"
+- "Nearest boundary to left/right"
+
+## 4. Monotonic queue (deque trick)
+
+### Intuition
+
+For sliding window max/min, you want:
+- O(1) to add a new element,
+- O(1) to remove the element that slides out,
+- O(1) to query the max/min.
+
+A deque of indices maintained in monotonic order gives exactly that.
+
+Example: max in each window of size 3.
+
+```
+Array: [1, 3, -1, -3, 5, 3, 6, 7]
+Deque stores indices with decreasing values:
+
+window [1, 3, -1] -> deque values [3, -1] -> max 3
+window [3, -1, -3] -> deque values [3, -1, -3] -> max 3
+window [-1, -3, 5] -> deque values [5] -> max 5
+window [-3, 5, 3] -> deque values [5, 3] -> max 5
+window [5, 3, 6] -> deque values [6] -> max 6
+window [3, 6, 7] -> deque values [7] -> max 7
+```
+
+The front of the deque is always the current maximum.
+
+Pseudocode outline:
+
+```mbt nocheck
+for i in 0..<n {
+  // 1) Pop from back while new element is larger
+  // 2) Push new index
+  // 3) Pop from front if it falls out of the window
+  // 4) Front is the max
+}
+```
+
+## 5. Binary search on answer
+
+### Intuition
+
+Sometimes you do not know the answer directly, but you can check whether a
+candidate answer is feasible. If "feasible" is monotonic, you can binary search
+over the answer.
+
+Classic shape:
+
+```
+False False False True True True
+                ^
+          first True (the minimum answer)
+```
+
+### Example: minimum capacity to ship in D days
+
+Problem:
+- You have weights shipped in order.
+- You need to finish in D days.
+- Find the smallest ship capacity that works.
+
+Feasibility check:
+- Given capacity C, simulate loading until full, count days.
+- If days <= D, capacity is feasible.
+
+```mbt check
+///|
+fn can_ship(weights : ArrayView[Int], days : Int, cap : Int) -> Bool {
+  if days <= 0 {
+    return false
+  }
+  let mut used = 1
+  let mut cur = 0
+  for w in weights {
+    if w > cap {
+      return false
+    }
+    if cur + w <= cap {
+      cur = cur + w
+    } else {
+      used = used + 1
+      if used > days {
+        return false
+      }
+      cur = w
+    }
+  }
+  true
+}
+
+///|
+fn max_and_sum(weights : ArrayView[Int]) -> (Int, Int) {
+  let mut max_w = 0
+  let mut sum = 0
+  for w in weights {
+    if w > max_w {
+      max_w = w
+    }
+    sum = sum + w
+  }
+  (max_w, sum)
+}
+
+///|
+fn min_capacity(weights : ArrayView[Int], days : Int) -> Int? {
+  if weights.length() == 0 || days <= 0 {
+    return None
+  }
+  let (lo, hi) = max_and_sum(weights)
+  let mut low = lo
+  let mut high = hi
+  while low < high {
+    let mid = low + (high - low) / 2
+    if can_ship(weights, days, mid) {
+      high = mid
+    } else {
+      low = mid + 1
+    }
+  }
+  Some(low)
+}
+
+///|
+test "binary search on answer: shipping" {
+  let weights = [3, 2, 2, 4, 1, 4]
+  inspect(min_capacity(weights, 3), content="Some(6)")
+}
+```
+
+## 6. Mo's algorithm (offline queries)
+
+### Intuition
+
+You have many range queries over the same array. If you answer them in a smart
+order, you can update the answer by only adding or removing a few elements each
+time.
+
+Split the array into blocks of size sqrt(n). Sort queries by:
+1) block of left endpoint, then
+2) right endpoint.
+
+Example with block size 3:
+
+```
+Query list (l, r):
+(0, 4) (2, 6) (3, 8) (1, 3) (5, 7)
+
+Blocks: [0..2], [3..5], [6..8]
+
+Sorted order by block(l), then r:
+(0, 4) (1, 3) (2, 6) (3, 8) (5, 7)
+```
+
+As you move from one query to the next, the window shifts only a little.
+
+Works well for:
+- Distinct count in ranges
+- Frequency queries
+- XOR or sum over ranges with add/remove updates
+
+## 7. Meet in the middle
+
+### Intuition
+
+If n is around 30 to 40, brute force 2^n is too big. Split into two halves:
+2^(n/2) on each side is small enough.
+
+Example: subset sum.
+
+```
+Array: [1, 2, 3, 4, 5, 6]
+Split: [1, 2, 3] and [4, 5, 6]
+
+Left sums:  0 1 2 3 3 4 5 6
+Right sums: 0 4 5 6 9 10 11 15
+
+Target 10 can be made by:
+  0 + 10
+  1 + 9
+  4 + 6
+```
+
+```mbt check
+///|
+fn subset_sums(xs : ArrayView[Int]) -> Array[Int] {
+  let n = xs.length()
+  let sums : Array[Int] = []
+  for mask in 0..<(1 << n) {
+    let mut sum = 0
+    for i in 0..<n {
+      if ((mask >> i) & 1) == 1 {
+        sum = sum + xs[i]
+      }
+    }
+    sums.push(sum)
+  }
+  sums
+}
+
+///|
+test "meet in the middle: subset sum" {
+  let left = [1, 2, 3]
+  let right = [4, 5, 6]
+  let target = 10
+  let left_sums = subset_sums(left)
+  let right_sums = subset_sums(right)
+  for s in left_sums {
+    for t in right_sums {
+      if s + t == target {
+        inspect(true, content="true")
+        return
+      }
+    }
+  }
+  fail("expected to find target sum")
+}
+```
+
+## Common pitfalls
+
+- Two pointers on unsorted data: the direction rule no longer holds.
+- Sliding window on non-contiguous problems: window only applies to ranges.
+- Monotonic stack with wrong monotonicity: pick increasing or decreasing based
+  on "next greater" vs "next smaller".
+- Binary search without monotonic feasibility: if feasibility is not monotonic,
+  binary search will lie to you.
+- Mo's algorithm used online: it is strictly offline.
+
+## Summary table (with intuition)
+
+```
+Technique            Time (typical)     Why it works
+-------------------------------------------------------------------
+Two pointers         O(n)              Each pointer moves at most n
+Sliding window       O(n)              Each element enters/leaves once
+Monotonic stack      O(n)              Each index pushed/popped once
+Monotonic queue      O(n)              Deque ops are amortized O(1)
+Binary search answer O(n log M)        Feasible/infeasible boundary
+Mo's algorithm       O((n+q)*sqrt(n))  Small window movement per query
+Meet in the middle   O(2^(n/2))        Split exponential in half
+```

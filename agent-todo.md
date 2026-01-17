@@ -197,7 +197,7 @@
 - [x] lib/suffix_automaton
 - [x] lib/suffix_tree
 - [x] lib/suurballe_disjoint_paths
-- [ ] lib/techniques
+- [x] lib/techniques
 - [ ] lib/topological_sort_dfs
 - [ ] lib/treap
 - [ ] lib/tree
