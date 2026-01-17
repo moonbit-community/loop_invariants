@@ -152,8 +152,8 @@
 - [x] lib/lichao
 - [x] lib/line_segment_intersection
 - [x] lib/linear_recurrence
-- [ ] lib/linear_sieve (in progress)
-- [ ] lib/linkcut
+- [x] lib/linear_sieve
+- [ ] lib/linkcut (in progress)
 - [ ] lib/longest_common_substring
 - [ ] lib/lucas_theorem
 - [ ] lib/manacher
