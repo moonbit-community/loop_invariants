@@ -129,6 +129,25 @@ test "dsu on tree example" {
 }
 ```
 
+```mbt check
+///|
+test "dsu on tree tie" {
+  let adj : Array[Array[Int]] = []
+  for _ in 0..<3 {
+    adj.push([])
+  }
+  adj[0].push(1)
+  adj[1].push(0)
+  adj[1].push(2)
+  adj[2].push(1)
+  let colors : Array[Int] = [5, 5, 7]
+  let result = @dsu_on_tree.subtree_color_mode_sum(adj, colors)
+  // Node 1's subtree has colors {5,7} so max frequency is 1, sum = 12
+  // Node 0's subtree includes all nodes, max frequency is 2 for color 5
+  inspect(result, content="[5, 12, 7]")
+}
+```
+
 ## Why O(n log n)?
 
 ```
@@ -209,4 +228,3 @@ This is exactly what happens with light/heavy children:
 - Use a global data structure, clear when keep=false
 - Track maximum frequency and sum separately
 - Be careful with root's keep parameter (usually false)
-

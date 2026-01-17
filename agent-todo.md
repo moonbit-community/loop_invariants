@@ -125,8 +125,8 @@
 - [x] lib/disjoint_sparse
 - [x] lib/dominator_tree
 - [x] lib/dp
-- [ ] lib/dsu_on_tree (in progress)
-- [ ] lib/duval_lyndon
+- [x] lib/dsu_on_tree
+- [ ] lib/duval_lyndon (in progress)
 - [ ] lib/edmonds_arborescence
 - [ ] lib/eertree
 - [ ] lib/euler_tour
