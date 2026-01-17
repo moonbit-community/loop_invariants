@@ -1,124 +1,151 @@
-# Pollard's Rho Factorization
+# Pollard's Rho Factorization (with Miller–Rabin)
 
-## Overview
+This package factors 64‑bit integers quickly using:
 
-**Pollard's Rho** is a probabilistic algorithm for integer factorization. Combined
-with **Miller-Rabin primality testing**, it can factor 64-bit integers very efficiently.
+- **Miller–Rabin** for primality,
+- **Pollard's Rho** for non‑trivial factors.
 
-- **Time**: Expected O(n^(1/4)) for finding a factor
-- **Space**: O(1) extra
-- **Key Feature**: Fast factorization of large numbers
+It is practical for numbers up to about 10^18.
 
-## The Key Insight
+---
 
-```
-Problem: Factor a large number n
+## 1. The problem
 
-Trial division: Check all primes up to √n → O(√n) → too slow for large n
+Given a number `n`, find its prime factors.
 
-Pollard's Rho insight:
-  - Generate a pseudorandom sequence: x_{i+1} = x_i² + c (mod n)
-  - If n = p × q, the sequence "cycles" modulo p before cycling modulo n
-  - Use cycle detection to find gcd(|x - y|, n) > 1
-
-Expected time: O(√p) ≈ O(n^(1/4)) for smallest prime factor p
-```
-
-## Understanding the Birthday Paradox Connection
+Brute force trial division is too slow:
 
 ```
-The algorithm exploits the birthday paradox:
-
-In a group of √n random values, likely two are equal (mod √n).
-
-If n = p × q with p ≈ √n:
-  - Our sequence visits √p values before repeating (mod p)
-  - √p ≈ n^(1/4)
-  - When x_i ≡ x_j (mod p), we have gcd(|x_i - x_j|, n) divisible by p
-
-This gives us a factor!
+trial division up to √n  ->  O(√n)
 ```
 
-## The Pseudorandom Sequence
+For `n = 10^18`, √n is 10^9 checks — too big.
+
+---
+
+## 2. Pollard's Rho in one sentence
+
+**Generate a pseudo‑random sequence modulo n, detect a cycle, and use gcd to
+extract a non‑trivial factor.**
+
+The magic is that cycles appear sooner **modulo a factor** than modulo n.
+
+---
+
+## 3. The sequence
+
+We iterate:
 
 ```
-x_{i+1} = x_i² + c (mod n)
+f(x) = x² + c  (mod n)
+```
 
-Example: n = 91 (= 7 × 13), c = 1, x_0 = 2
+Choose a random start `x0` and random constant `c`.
 
-x_0 = 2
-x_1 = 2² + 1 = 5
-x_2 = 5² + 1 = 26
-x_3 = 26² + 1 = 677 = 586 (mod 91)
-x_4 = 586² + 1 = 343397 = 37 (mod 91)
+Example with n = 91 (= 7 × 13), c = 1, x0 = 2:
+
+```
+x0 = 2
+x1 = 2² + 1 = 5
+x2 = 5² + 1 = 26
+x3 = 26² + 1 = 677 = 586 (mod 91)
+x4 = 586² + 1 = 37 (mod 91)
 ...
-
-The sequence eventually cycles, and the cycle has special structure
-related to the factors of n.
 ```
 
-## Floyd's Cycle Detection (Tortoise and Hare)
+The sequence eventually cycles.
+
+---
+
+## 4. Why a cycle reveals a factor
+
+Suppose n = p × q.
+
+If two values are equal modulo **p**, then their difference is divisible by p:
 
 ```
-To detect the cycle without storing the sequence:
-
-Tortoise: moves 1 step at a time (x)
-Hare: moves 2 steps at a time (y)
-
-x = f(x)        // tortoise: one step
-y = f(f(y))     // hare: two steps
-
-Eventually they meet: x_i = x_{2i} (mod p)
-Then gcd(|x - y|, n) might give us a factor!
-
-  ┌────────────────────┐
-  │                    │
-  ↓                    │
-  ○ → ○ → ○ → ○ → ○ → ○
-  ^         ^
-  │         │
-  x       y (moves faster)
+x_i ≡ x_j (mod p)  =>  p | (x_i - x_j)
 ```
 
-## Algorithm Walkthrough
+So:
 
 ```
-Factor n = 91 (= 7 × 13):
+gcd(|x_i - x_j|, n)  returns p (or q).
+```
 
-Choose c = 1, x = y = 2
+We do not know p, but the gcd reveals it!
+
+This is a classic **birthday paradox** effect: with about √p steps, collisions
+mod p become likely, so expected time is roughly O(n^(1/4)).
+
+---
+
+## 5. Cycle detection (tortoise & hare)
+
+We do not store the whole sequence. We use Floyd’s cycle detection:
+
+```
+x = f(x)          // tortoise, 1 step
+y = f(f(y))       // hare, 2 steps
+d = gcd(|x - y|, n)
+```
+
+Diagram:
+
+```
+○ → ○ → ○ → ○ → ○ → ○
+^         ^
+x         y (moves faster)
+```
+
+When x and y meet modulo a factor, gcd gives that factor.
+
+---
+
+## 6. A full tiny walkthrough
+
+Factor n = 91:
+
+```
+f(x) = x² + 1 (mod 91), x = y = 2
 
 Iteration 1:
-  x = x² + 1 = 5
-  y = (y² + 1)² + 1 = 5² + 1 = 26
-  gcd(|5 - 26|, 91) = gcd(21, 91) = 7 ← Found a factor!
-
-91 = 7 × 13
-
-Let's verify:
-  x_1 = 5, x_2 = 26
-  5 mod 7 = 5
-  26 mod 7 = 5
-  5 ≡ 26 (mod 7) ✓
-  So gcd(26-5, 91) = gcd(21, 91) = 7 ✓
+  x = 5
+  y = f(f(2)) = f(5) = 26
+  gcd(|5 - 26|, 91) = gcd(21, 91) = 7
 ```
 
-## Miller-Rabin Primality Test
+We found factor 7, and 91 = 7 × 13.
+
+---
+
+## 7. Miller–Rabin (fast primality)
+
+Before factoring, we check if n is already prime.
+
+For 64‑bit integers, Miller–Rabin can be made **deterministic** by using a
+fixed list of bases.
+
+So:
 
 ```
-Before factoring, check if n is prime!
-
-Miller-Rabin: Fast probabilistic primality test
-  - Write n-1 = 2^s × d (d odd)
-  - For witness a: compute a^d mod n
-  - Square s times, looking for ±1 patterns
-
-For 64-bit integers, testing specific witnesses is DETERMINISTIC:
-  Witnesses: 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37
-
-If n passes all these witnesses, n is definitely prime (for 64-bit n).
+if is_prime(n) -> n is prime, stop
+else -> use Pollard's Rho
 ```
 
-## Quick Start
+---
+
+## 8. Public API
+
+From `pkg.generated.mbti`:
+
+- `is_prime(n : Int64) -> Bool`
+- `factorize(n : Int64) -> Array[Int64]`  (list of prime factors)
+- `factorize_with_counts(n : Int64) -> Array[(Int64, Int)]`
+
+---
+
+## 9. Quick start examples
 
 ```mbt check
 ///|
@@ -128,11 +155,9 @@ test "pollard rho quick start" {
 }
 ```
 
-## More Examples
-
 ```mbt check
 ///|
-test "pollard rho is_prime" {
+test "pollard rho primes" {
   inspect(@pollard_rho.is_prime(2L), content="true")
   inspect(@pollard_rho.is_prime(97L), content="true")
   inspect(@pollard_rho.is_prime(221L), content="false")
@@ -141,102 +166,101 @@ test "pollard rho is_prime" {
 
 ```mbt check
 ///|
-test "pollard rho large factor" {
-  // Factor 1000003 × 1000033
+test "pollard rho large semiprime" {
   let n = 1000003L * 1000033L
   let factors = @pollard_rho.factorize_with_counts(n)
   inspect(factors, content="[(1000003, 1), (1000033, 1)]")
 }
 ```
 
-## The Complete Algorithm
+---
+
+## 10. Example: repeated factors
+
+```
+360 = 2^3 × 3^2 × 5
+```
+
+```mbt check
+///|
+test "pollard rho repeated factors" {
+  let factors = @pollard_rho.factorize_with_counts(360L)
+  inspect(factors, content="[(2, 3), (3, 2), (5, 1)]")
+}
+```
+
+---
+
+## 11. Algorithm summary (pseudocode)
 
 ```
 factorize(n):
   if n <= 1: return []
   if is_prime(n): return [n]
 
-  // Find a non-trivial factor
   d = pollard_rho(n)
-
-  // Recursively factor both parts
-  return factorize(d) + factorize(n/d)
+  return factorize(d) + factorize(n / d)
 
 pollard_rho(n):
-  x = y = random start
-  c = random constant
-
-  while true:
-    x = x² + c (mod n)
-    y = (y² + c)² + c (mod n)   // two steps
-
-    d = gcd(|x - y|, n)
-
-    if 1 < d < n:
-      return d  // found a factor!
-
-    if d == n:
-      // bad luck, restart with different c
-      restart with new c
+  loop:
+    choose random x, c
+    x = y = x
+    while d == 1:
+      x = f(x)
+      y = f(f(y))
+      d = gcd(|x - y|, n)
+    if d != n: return d
+    // else restart with different parameters
 ```
 
-## Common Applications
+---
 
-### 1. Cryptography Analysis
-```
-Breaking RSA requires factoring n = p × q.
-Pollard's Rho works when one factor is "small" (< 10^12).
-```
+## 12. Diagram: where gcd appears
 
-### 2. Number Theory
 ```
-Compute Euler's totient φ(n) = n × ∏(1 - 1/p).
-Need prime factorization first.
-```
+Sequence mod n:
+  x0 → x1 → x2 → x3 → ...
 
-### 3. Competitive Programming
-```
-Factor numbers up to 10^18 quickly.
-Combined with primality test, very practical.
+Sequence mod p (hidden factor):
+  x0 → x1 → x2 → x1 → x2 → ... (cycle)
+
+When x_i == x_j (mod p),
+gcd(|x_i - x_j|, n) reveals p.
 ```
 
-### 4. Discrete Logarithm
-```
-Pollard's Rho for discrete log uses similar ideas.
-Find x such that g^x ≡ h (mod p).
-```
+---
 
-## Complexity Analysis
+## 13. Complexity (rule of thumb)
 
-| Operation | Expected Time |
-|-----------|---------------|
-| Miller-Rabin (64-bit) | O(log³ n) |
-| Find one factor | O(n^(1/4)) |
-| Complete factorization | O(n^(1/4) × k) for k factors |
+| Step | Expected Time |
+|------|----------------|
+| Miller–Rabin | O(log^3 n) |
+| One factor | O(n^(1/4)) |
+| Full factorization | O(n^(1/4) × k) |
 
-## Pollard's Rho vs Other Methods
+It is extremely fast for 64‑bit integers in practice.
 
-| Method | Time | Use Case |
-|--------|------|----------|
-| **Pollard's Rho** | O(n^(1/4)) | General factorization |
-| Trial Division | O(√n) | Very small numbers |
-| Quadratic Sieve | O(exp(√(ln n ln ln n))) | Large semiprimes |
-| GNFS | O(exp(...)) | Very large numbers |
+---
 
-**Choose Pollard's Rho when**: Factoring numbers up to ~10^18 or when factors are moderate size.
+## 14. Common applications
 
-## Factorization Tips
+1. **Cryptography**: check RSA moduli when factors are small.
+2. **Number theory**: compute Euler’s totient φ(n) or divisors.
+3. **Competitive programming**: factor up to 10^18 quickly.
 
-- The factor list is sorted and includes repeats (e.g. `12 -> [2, 2, 3]`)
-- For `(prime, exponent)` pairs, use `factorize_with_counts`
-- Input `n <= 1` returns an empty list
-- For n = 1, returns empty (no prime factors)
+---
 
-## Implementation Notes
+## 15. Tips and pitfalls
 
-- Always test primality before trying to factor
-- If gcd returns n, the sequence cycled badly; restart with different c
-- Brent's improvement: vary the cycle detection for ~25% speedup
-- Use Montgomery multiplication for faster modular arithmetic
-- For 64-bit, use 128-bit intermediate values to avoid overflow
+1. If gcd returns n, restart with a new constant c.
+2. Always test primality before recursing.
+3. Use 128‑bit intermediates for safe multiplication (implementation detail).
+4. The algorithm is randomized — but for 64‑bit numbers it is extremely reliable.
 
+---
+
+## 16. Summary
+
+- Miller–Rabin tells you if n is prime.
+- Pollard’s Rho quickly finds a non‑trivial factor.
+- The combination is the standard tool for 64‑bit factorization.

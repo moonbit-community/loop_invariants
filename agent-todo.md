@@ -171,7 +171,7 @@
 - [x] lib/persistent
 - [x] lib/persistent_segtree
 - [x] lib/point_in_polygon
-- [ ] lib/pollard_rho
+- [x] lib/pollard_rho
 - [ ] lib/polygon_triangulation
 - [ ] lib/prufer_code
 - [ ] lib/push_relabel_max_flow
