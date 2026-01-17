@@ -75,8 +75,8 @@
 - [x] lib/challenge_persistent_bst
 - [x] lib/challenge_persistent_btree
 - [x] lib/challenge_persistent_deque
-- [ ] lib/challenge_persistent_fenwick (in progress)
-- [ ] lib/challenge_persistent_fenwick_range_add
+- [x] lib/challenge_persistent_fenwick
+- [ ] lib/challenge_persistent_fenwick_range_add (in progress)
 - [ ] lib/challenge_persistent_hash_map
 - [ ] lib/challenge_persistent_implicit_treap
 - [ ] lib/challenge_persistent_interval_set

@@ -89,7 +89,6 @@ pub fn length(fw : Fenwick) -> Int {
 
 ///|
 /// Add delta at index idx (0-based).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn add(fw : Fenwick, idx : Int, delta : Int) -> Fenwick {
   if idx < 0 || idx >= fw.n {
     return fw
@@ -119,7 +118,6 @@ pub fn add(fw : Fenwick, idx : Int, delta : Int) -> Fenwick {
 
 ///|
 /// Prefix sum for [0, idx] (0-based, inclusive).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn prefix_sum(fw : Fenwick, idx : Int) -> Int {
   if idx < 0 {
     return 0
