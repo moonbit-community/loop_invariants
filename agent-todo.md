@@ -155,7 +155,7 @@
 - [x] lib/linear_sieve
 - [x] lib/linkcut
 - [x] lib/longest_common_substring
-- [ ] lib/lucas_theorem
+- [x] lib/lucas_theorem
 - [ ] lib/manacher
 - [ ] lib/math
 - [ ] lib/matrix_exp
