@@ -5,7 +5,6 @@
 
 ///|
 /// Build prefix sums where prefix[i] = sum(arr[0..i)).
-#warnings("+missing_invariant+missing_reasoning")
 pub fn build_prefix_sum(arr : ArrayView[Int]) -> Array[Int] {
   let n = arr.length()
   let prefix : Array[Int] = Array::make(n + 1, 0)
