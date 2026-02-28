@@ -271,7 +271,7 @@ fn DinicNetwork::dfs_dinic(
     }
     self.iter[u] = idx + 1
     continue idx + 1
-  } else {
+  } nobreak {
     0
   } where {
     invariant: idx >= 0 && idx <= self.adj[u].length(),

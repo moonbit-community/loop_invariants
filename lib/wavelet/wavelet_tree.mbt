@@ -386,7 +386,7 @@ fn WaveletTree::select(
     } else {
       continue mid + 1, hi
     }
-  } else {
+  } nobreak {
     // Verify this position has value v
     let cnt_at_lo = self.count(lo, lo + 1, v)
     if cnt_at_lo > 0 {

@@ -110,7 +110,7 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
       } else {
         break last_popped
       }
-    } else {
+    } nobreak {
       last_popped
     } where {
       invariant: last_popped >= -1,
@@ -212,7 +212,7 @@ fn highest_bit(x : Int) -> Int {
   }
   for result = 0, val = x; val > 1; {
     continue result + 1, val / 2
-  } else {
+  } nobreak {
     result
   } where {
     invariant: val > 0 && result >= 0,
@@ -245,7 +245,7 @@ fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
   let u = for k = 0, u = u; k < self.log_n; {
     let new_u = if ((diff >> k) & 1) == 1 { self.ancestors[k][u] } else { u }
     continue k + 1, new_u
-  } else {
+  } nobreak {
     u
   } where {
     invariant: k >= 0 && k <= self.log_n,
@@ -271,7 +271,7 @@ fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
       (u, v)
     }
     continue k - 1, new_u, new_v
-  } else {
+  } nobreak {
     (u, v)
   } where {
     invariant: k >= -1 && k < self.log_n,

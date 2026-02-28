@@ -439,7 +439,7 @@ test "eertree get palindromes" {
       if p[j] != p[p.length() - 1 - j] {
         break false
       }
-    } else {
+    } nobreak {
       true
     }
     guard is_palindrome else { fail("Not a palindrome: " + p) }

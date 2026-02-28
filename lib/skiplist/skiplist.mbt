@@ -99,7 +99,7 @@ fn[K, V] SkipList::random_level(self : SkipList[K, V]) -> Int {
     } else {
       break lvl
     }
-  } else {
+  } nobreak {
     max_level - 1
   } where {
     invariant: lvl >= 0 && lvl < max_level,
@@ -152,7 +152,7 @@ fn[K : Compare, V] SkipList::search(self : SkipList[K, V], key : K) -> V? {
         // Drop down one level
         continue current, lvl - 1
     }
-  } else {
+  } nobreak {
     // We've descended through all levels
     // Now check if the next node at level 0 has our key
     match current.forward[0] {
@@ -222,7 +222,7 @@ fn[K : Compare, V] SkipList::insert(
         continue current, lvl - 1
       }
     }
-  } else {
+  } nobreak {
     // Check if key already exists
     match current.forward[0] {
       Some(existing) if existing.key is Some(existing_key) &&
@@ -314,7 +314,7 @@ fn[K : Compare, V] SkipList::delete(self : SkipList[K, V], key : K) -> Bool {
         continue current, lvl - 1
       }
     }
-  } else {
+  } nobreak {
     // Check if key exists
     match current.forward[0] {
       Some(target) if target.key is Some(target_key) && target_key == key => {
@@ -337,7 +337,7 @@ fn[K : Compare, V] SkipList::delete(self : SkipList[K, V], key : K) -> Bool {
             None => continue // Level is empty, reduce
             _ => break // Found a non-empty level, stop
           }
-        } else {
+        } nobreak {
           ()
         } where {
           invariant: self.level >= 0,
@@ -408,7 +408,7 @@ fn[K : Compare, V] SkipList::range_query(
         continue next, lvl
       _ => continue current, lvl - 1
     }
-  } else {
+  } nobreak {
     // Now traverse at level 0 collecting all keys in range
     for node = current.forward[0] {
       match node {
@@ -497,7 +497,7 @@ fn[K, V] SkipList::max(self : SkipList[K, V]) -> (K, V)? {
       Some(next) => continue next, lvl // Move right at same level
       None => continue current, lvl - 1 // Drop down
     }
-  } else {
+  } nobreak {
     // current is now the rightmost node
     if current.key is None {
       None // Empty list, current is header
@@ -543,7 +543,7 @@ fn[K : Compare, V] SkipList::ceil(self : SkipList[K, V], key : K) -> (K, V)? {
         continue next, lvl
       _ => continue current, lvl - 1
     }
-  } else {
+  } nobreak {
     match current.forward[0] {
       Some(node) =>
         match (node.key, node.value) {
@@ -577,7 +577,7 @@ fn[K : Compare, V] SkipList::floor(self : SkipList[K, V], key : K) -> (K, V)? {
         continue next, lvl
       _ => continue current, lvl - 1
     }
-  } else {
+  } nobreak {
     // current is the largest node <= key (or header if none exists)
     if current.key is None {
       None
@@ -888,7 +888,7 @@ fn[K, V] MultiSkipList::random_level(self : MultiSkipList[K, V]) -> Int {
     } else {
       break lvl
     }
-  } else {
+  } nobreak {
     max_level - 1
   } where {
     invariant: lvl >= 0 && lvl < max_level,
@@ -920,7 +920,7 @@ fn[K : Compare, V] MultiSkipList::insert(
         continue current, lvl - 1
       }
     }
-  } else {
+  } nobreak {
     // Check if key exists - if so, append to values
     match current.forward[0] {
       Some(existing) if existing.key is Some(existing_key) &&
@@ -980,7 +980,7 @@ fn[K : Compare, V] MultiSkipList::search(
         continue next, lvl
       _ => continue current, lvl - 1
     }
-  } else {
+  } nobreak {
     match current.forward[0] {
       Some(node) if node.key is Some(node_key) && node_key == key =>
         Some(node.values)

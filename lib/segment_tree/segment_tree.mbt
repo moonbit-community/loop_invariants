@@ -330,7 +330,7 @@ fn IterativeSegTree::query(self : IterativeSegTree, l : Int, r : Int) -> Int64 {
       (right, sum1)
     }
     continue new_left / 2, new_right / 2, sum2
-  } else {
+  } nobreak {
     sum
   } where {
     invariant: left >= 0 && right >= 0 && left <= right,

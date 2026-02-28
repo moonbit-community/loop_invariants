@@ -224,7 +224,7 @@ fn LinkCutTree::push_down_path(self : LinkCutTree, x : Int) -> Unit {
   for node = x; not(self.is_splay_root(node)); {
     path.push(node)
     continue self.nodes[node].parent
-  } else {
+  } nobreak {
     path.push(node) // Include the splay root
   } where {
     invariant: node >= 0 && node < self.nodes.length(),

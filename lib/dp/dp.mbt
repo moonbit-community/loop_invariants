@@ -193,7 +193,7 @@ fn lower_bound_lis(arr : ArrayView[Int], target : Int) -> Int {
     } else {
       continue lo, mid
     }
-  } else {
+  } nobreak {
     lo
   } where {
     invariant: lo >= 0 && hi >= 0 && lo <= hi + 1,
@@ -418,7 +418,7 @@ fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
       max_so_far
     }
     continue i + 1, new_max_ending, new_max_so_far
-  } else {
+  } nobreak {
     max_so_far
   } where {
     invariant: i >= 1 && i <= n,
@@ -470,7 +470,7 @@ fn house_robber(nums : ArrayView[Int]) -> Int {
       skip_current
     }
     continue i + 1, prev1, current
-  } else {
+  } nobreak {
     prev1
   } where {
     invariant: i >= 2 && i <= n,
@@ -679,7 +679,7 @@ fn matches_word(chars : Array[Char], start : Int, word : Array[Char]) -> Bool {
     if chars[start + i] != word[i] {
       return false
     }
-  } else {
+  } nobreak {
     true
   } where {
     invariant: i >= 0 && i <= word_len,
@@ -842,7 +842,7 @@ fn egg_drop(eggs : Int, floors : Int) -> Int {
       // Plus the current floor
       dp[k] = 1 + dp[k - 1] + dp[k]
     }
-  } else {
+  } nobreak {
     trials - 1
   } where {
     invariant: trials >= 1,

@@ -135,7 +135,7 @@ fn BiconnectedFinder::dfs(
     } else {
       continue i + 1, children
     }
-  } else {
+  } nobreak {
     children
   } where {
     invariant: i >= 0 && i <= self.adj[u].length(),

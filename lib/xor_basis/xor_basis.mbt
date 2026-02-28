@@ -53,7 +53,7 @@ pub fn XorBasis::can_represent(self : XorBasis, value : Int64) -> Bool {
       reduced
     }
     continue bit - 1, new_reduced
-  } else {
+  } nobreak {
     reduced == 0L
   } where {
     invariant: bit >= -1 && bit <= MAX_BITS,
@@ -75,7 +75,7 @@ pub fn XorBasis::max_xor(self : XorBasis, value : Int64) -> Int64 {
   for bit = MAX_BITS, x = value; bit >= 0; {
     let candidate = x ^ self.basis[bit]
     continue bit - 1, if candidate > x { candidate } else { x }
-  } else {
+  } nobreak {
     x
   } where {
     invariant: bit >= -1 && bit <= MAX_BITS,

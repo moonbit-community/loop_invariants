@@ -46,7 +46,7 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
       }
     }
     continue i + 1, next_node
-  } else {
+  } nobreak {
     node.prefix_count = node.prefix_count + 1
     node.is_end = true
     node.count = node.count + 1
@@ -78,7 +78,7 @@ fn Trie::search(self : Trie, word : String) -> Bool {
       Some(child) => continue i + 1, child
       None => break false
     }
-  } else {
+  } nobreak {
     node.is_end
   } where {
     invariant: i <= n,
@@ -106,7 +106,7 @@ fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
       Some(child) => continue i + 1, child
       None => break false
     }
-  } else {
+  } nobreak {
     true
   } where {
     invariant: i <= n,
@@ -133,7 +133,7 @@ fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
       Some(child) => continue i + 1, child
       None => break 0
     }
-  } else {
+  } nobreak {
     node.prefix_count
   } where {
     invariant: i <= n,
@@ -207,7 +207,7 @@ fn AhoCorasick::add_pattern(
       self.nodes[node_idx].children[child_idx]
     }
     continue i + 1, next_idx
-  } else {
+  } nobreak {
     // Mark pattern ending at this node
     let new_output = self.nodes[node_idx].output.copy()
     new_output.push(pattern_idx)
@@ -355,7 +355,7 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[ACMatch] {
     // Collect all matches at this state
     self.collect_matches(next_state, i + 1, matches)
     continue i + 1, next_state
-  } else {
+  } nobreak {
     matches
   } where {
     invariant: i <= n && state >= 0,
@@ -482,7 +482,7 @@ fn XORTrie::insert(self : XORTrie, num : Int) -> Unit {
       }
     }
     continue bit - 1, next_node
-  } else {
+  } nobreak {
     node.count = node.count + 1
   } where {
     invariant: bit >= -1 && bit < self.bits,
@@ -530,7 +530,7 @@ fn XORTrie::max_xor(self : XORTrie, num : Int) -> Int {
     }
     let new_result = result | ((b ^ got_bit) << bit)
     continue bit - 1, next_node, new_result
-  } else {
+  } nobreak {
     result
   } where {
     invariant: bit >= -1 && bit < self.bits,
@@ -613,7 +613,7 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
       }
     }
     continue i + 1, next_node
-  } else {
+  } nobreak {
     // Mark as end - need to ensure this node is from current version
     // (already guaranteed by loop invariant)
 
@@ -660,7 +660,7 @@ fn PersistentTrie::search_version(
           Some(child) => continue i + 1, child
           None => break false
         }
-      } else {
+      } nobreak {
         node.is_end
       } where {
         invariant: i <= n,
@@ -716,7 +716,7 @@ fn common_prefix_length(s1 : String, s2 : String) -> Int {
     if chars1[i] != chars2[i] {
       break i
     }
-  } else {
+  } nobreak {
     n
   } where {
     invariant: i >= 0 && i <= n,
@@ -738,7 +738,7 @@ fn RadixNode::find_child(self : RadixNode, c : Char) -> (Int, RadixNode?) {
     if first_char == c {
       break (i, Some(child))
     }
-  } else {
+  } nobreak {
     (-1, None)
   } where {
     invariant: i >= 0 && i <= self.children.length(),
@@ -834,7 +834,7 @@ fn edge_matches(
     if chars[pos + i] != edge_chars[i] {
       break false
     }
-  } else {
+  } nobreak {
     true
   } where {
     invariant: i >= 0 && i <= edge_len,
@@ -879,7 +879,7 @@ fn RadixTree::search(self : RadixTree, word : String) -> Bool {
         }
       }
     }
-  } else {
+  } nobreak {
     node.is_end
   } where {
     invariant: pos <= chars.length(),

@@ -54,7 +54,7 @@ fn Hungarian::dfs(self : Hungarian, u : Int) -> Bool {
       self.match_right[v] = u
       break true
     }
-  } else {
+  } nobreak {
     false
   }
 }
@@ -67,7 +67,7 @@ pub fn Hungarian::max_matching(self : Hungarian) -> Int {
     self.visited.fill(false)
     let new_matching = if self.dfs(u) { matching + 1 } else { matching }
     continue u + 1, new_matching
-  } else {
+  } nobreak {
     matching
   } where {
     invariant: u >= 0 && u <= self.graph.n_left,

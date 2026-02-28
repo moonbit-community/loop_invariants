@@ -52,7 +52,7 @@ fn bit_reverse(x_in : Int, bits : Int) -> Int {
     let new_result = (result << 1) | (x & 1)
     let new_x = x >> 1
     continue i + 1, new_x, new_result
-  } else {
+  } nobreak {
     result
   } where {
     invariant: result < 1 << i && i <= bits,
@@ -123,7 +123,7 @@ fn fft_sin(x_in : Double) -> Double {
   let x0 = x_in
   let x = for x = x0; x > fft_pi; {
     continue x - two_pi
-  } else {
+  } nobreak {
     x
   } where {
     invariant: x <= x0,
@@ -140,7 +140,7 @@ fn fft_sin(x_in : Double) -> Double {
   let x1 = x
   let x = for x = x1; x < -fft_pi; {
     continue x + two_pi
-  } else {
+  } nobreak {
     x
   } where {
     invariant: x >= x1,
@@ -172,7 +172,7 @@ fn fft_cos(x_in : Double) -> Double {
   let x0 = x_in
   let x = for x = x0; x > fft_pi; {
     continue x - two_pi
-  } else {
+  } nobreak {
     x
   } where {
     invariant: x <= x0,
@@ -189,7 +189,7 @@ fn fft_cos(x_in : Double) -> Double {
   let x1 = x
   let x = for x = x1; x < -fft_pi; {
     continue x + two_pi
-  } else {
+  } nobreak {
     x
   } where {
     invariant: x >= x1,
@@ -219,7 +219,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
   // Compute log2(n)
   let log_n = for i = 0, temp = n; temp > 1; i = i + 1, temp = temp >> 1 {
 
-  } else {
+  } nobreak {
     i
   } where {
     invariant: i >= 0,
@@ -344,7 +344,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
   let result_len = n1 + n2 - 1
   let n = for size = 1; size < result_len; size = size * 2 {
 
-  } else {
+  } nobreak {
     size
   } where {
     invariant: size >= 1,
@@ -447,7 +447,7 @@ fn ntt_mod_pow(base_in : Int64, exp_in : Int64, m : Int64) -> Int64 {
     exp = exp / 2L
     base = base * base % m
     continue new_result
-  } else {
+  } nobreak {
     result
   } where {
     invariant: exp >= 0L,
@@ -485,7 +485,7 @@ fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
   // Compute log2(n)
   let log_n = for i = 0, temp = n; temp > 1; i = i + 1, temp = temp >> 1 {
 
-  } else {
+  } nobreak {
     i
   } where {
     invariant: i >= 0,
@@ -621,7 +621,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
   // Find smallest power of 2 >= result_len
   let n = for size = 1; size < result_len; size = size * 2 {
 
-  } else {
+  } nobreak {
     size
   } where {
     invariant: size >= 1,

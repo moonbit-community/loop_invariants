@@ -204,7 +204,7 @@ fn[T] AVLTree::find_min(self : AVLTree[T], node : Int) -> Int {
   }
   for cur = node; self.nodes[cur].left >= 0; {
     continue self.nodes[cur].left
-  } else {
+  } nobreak {
     cur
   } where {
     invariant: cur >= 0 && cur < self.nodes.length(),
@@ -285,7 +285,7 @@ fn[T : Compare] AVLTree::search(self : AVLTree[T], key : T) -> Bool {
     } else {
       continue self.nodes[node].right
     }
-  } else {
+  } nobreak {
     false
   } where {
     invariant: node >= -1,
@@ -317,7 +317,7 @@ fn[T] AVLTree::max(self : AVLTree[T]) -> T? {
   }
   let cur = for cur = self.root; self.nodes[cur].right >= 0; {
     continue self.nodes[cur].right
-  } else {
+  } nobreak {
     cur
   } where {
     invariant: cur >= 0 && cur < self.nodes.length(),

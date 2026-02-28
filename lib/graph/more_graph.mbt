@@ -623,7 +623,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
     } else {
       continue i + 1
     }
-  } else {
+  } nobreak {
     total_weight
   } where {
     invariant: i >= 0 && edges_added >= 0 && edges_added <= n - 1,
@@ -651,7 +651,7 @@ fn find_root(parent : Array[Int], x : Int) -> Int {
     // Path compression
     parent[p] = parent[parent[p]]
     continue parent[p]
-  } else {
+  } nobreak {
     p
   } where {
     invariant: p >= 0 && p < parent.length(),

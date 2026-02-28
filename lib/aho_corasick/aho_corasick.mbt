@@ -157,7 +157,7 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
           break self.states[f].children[c]
         }
         continue self.states[f].failure
-      } else {
+      } nobreak {
         // Reached root, check if root has transition on c
         let root_child = self.states[0].children[c]
         if root_child >= 0 && root_child != child {

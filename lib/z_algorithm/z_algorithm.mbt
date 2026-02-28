@@ -194,7 +194,7 @@ fn longest_prefix_suffix(s : String) -> Int {
     } else {
       continue i + 1, best
     }
-  } else {
+  } nobreak {
     best
   } where {
     invariant: i >= 1 && i <= n,
