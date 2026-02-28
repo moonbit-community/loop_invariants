@@ -49,7 +49,7 @@ pub struct LCA {
 fn compute_log(n : Int) -> Int {
   for val = 1, log = 0; val < n; {
     continue val * 2, log + 1
-  } else {
+  } nobreak {
     log + 1
   } where {
     invariant: log >= 0,

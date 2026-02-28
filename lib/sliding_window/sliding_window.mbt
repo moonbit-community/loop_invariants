@@ -222,7 +222,7 @@ fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
     let new_sum = sum + arr[i] - arr[i - k]
     result.push(new_sum)
     continue i + 1, new_sum
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= k && i <= n,

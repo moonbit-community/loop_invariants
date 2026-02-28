@@ -208,7 +208,7 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
     let width = (next_smaller[i] - prev_smaller[i] - 1).to_int64()
     let area = heights[i] * width
     continue i + 1, if area > max_area { area } else { max_area }
-  } else {
+  } nobreak {
     max_area
   } where {
     invariant: i >= 0 && i <= n,
@@ -382,7 +382,7 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
       right[i].to_int64() %
       mod_val
     continue i + 1, (result + contribution) % mod_val
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= 0 && i <= n,

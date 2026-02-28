@@ -114,7 +114,7 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
         count
       }
       continue u + 1, new_count
-    } else {
+    } nobreak {
       count
     } where {
       invariant: u >= 0 && u <= self.graph.n_left,
@@ -129,7 +129,7 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
       ),
     }
     continue matching + phase_matches
-  } else {
+  } nobreak {
     matching
   } where {
     invariant: matching >= 0,

@@ -98,7 +98,7 @@ pub fn ImplicitTreap::get(self : ImplicitTreap, pos : Int) -> Int64? {
     } else {
       continue self.nodes[node].right, target - left_size - 1
     }
-  } else {
+  } nobreak {
     None
   } where {
     invariant: node >= 0 && node < self.nodes.length(),

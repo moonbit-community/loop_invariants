@@ -96,7 +96,7 @@ fn BridgeFinder::dfs(self : BridgeFinder, u : Int, p : Int) -> Unit {
     } else {
       continue i + 1, children
     }
-  } else {
+  } nobreak {
     children
   } where {
     invariant: i >= 0 && i <= self.adj[u].length(),

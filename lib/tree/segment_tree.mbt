@@ -776,7 +776,7 @@ fn IterativeSegmentTree::range_sum(
     }
     // Move to parent level
     continue l2 / 2, r2 / 2, result3
-  } else {
+  } nobreak {
     result
   } where {
     invariant: l >= 0 && r >= 0 && l <= r + 1,
@@ -896,7 +896,7 @@ fn MaxCountSegmentTree::range_query(
       (r, result2)
     }
     continue l2 / 2, r2 / 2, result3
-  } else {
+  } nobreak {
     result
   } where {
     invariant: l >= 0 && r >= 0,
@@ -1096,7 +1096,7 @@ fn SegmentTree2D::range_sum(
       (row_r, result2)
     }
     continue row_l2 / 2, row_r2 / 2, result3
-  } else {
+  } nobreak {
     result
   } where {
     invariant: row_l >= 0 && row_r >= 0,
@@ -1134,7 +1134,7 @@ fn SegmentTree2D::col_sum(
       (r, result2)
     }
     continue l2 / 2, r2 / 2, result3
-  } else {
+  } nobreak {
     result
   } where {
     invariant: l >= 0 && r >= 0,

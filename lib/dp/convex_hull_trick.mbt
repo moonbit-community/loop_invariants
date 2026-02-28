@@ -83,7 +83,7 @@ fn ConvexHullTrick::query_min(self : ConvexHullTrick, x : Int64) -> Int64 {
     } else {
       continue lo, mid
     }
-  } else {
+  } nobreak {
     eval_line(self.lines[lo], x)
   } where {
     invariant: lo >= 0 && hi < n && lo <= hi,

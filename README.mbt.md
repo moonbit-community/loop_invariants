@@ -64,7 +64,7 @@ test "invariant sum example" {
   let n = xs.length()
   let total = for i = 0, sum = 0; i < n; {
     continue i + 1, sum + xs[i]
-  } else {
+  } nobreak {
     sum
   } where {
     invariant: 0 <= i && i <= n,
@@ -88,7 +88,7 @@ test "invariant max example" {
   let best = for i = 0, best = xs[0]; i < n; {
     let v = xs[i]
     continue i + 1, if v > best { v } else { best }
-  } else {
+  } nobreak {
     best
   } where {
     invariant: 0 <= i && i <= n,

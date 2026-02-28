@@ -16,7 +16,7 @@
 fn count_set_bits(n : Int) -> Int {
   for num = n, count = 0; num > 0; {
     continue num & (num - 1), count + 1
-  } else {
+  } nobreak {
     count
   } where {
     invariant: num >= 0 && count >= 0,
@@ -70,7 +70,7 @@ test "power of two" {
 fn single_number(nums : ArrayView[Int]) -> Int {
   for i = 0, result = 0; i < nums.length(); i = i + 1 {
     continue i + 1, result ^ nums[i]
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= 0 && i <= nums.length(),
@@ -103,7 +103,7 @@ fn missing_number(nums : ArrayView[Int]) -> Int {
   let n = nums.length()
   for i = 0, result = n; i < n; i = i + 1 {
     continue i + 1, result ^ i ^ nums[i]
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= 0 && i <= n,
@@ -140,7 +140,7 @@ fn reverse_bits(n : Int) -> Int {
     let bit = num & 1
     let new_result = (result << 1) | bit
     continue i + 1, new_result, num >> 1
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= 0 && i <= 32,
@@ -279,7 +279,7 @@ fn nim_winner(piles : ArrayView[Int]) -> String {
 fn nim_xor(piles : ArrayView[Int]) -> Int {
   for i = 0, result = 0; i < piles.length(); i = i + 1 {
     continue i + 1, result ^ piles[i]
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= 0 && i <= piles.length(),
@@ -410,7 +410,7 @@ fn mex(values : ArrayView[Int]) -> Int {
     if not(present[i]) {
       return i
     }
-  } else {
+  } nobreak {
     present.length()
   } where {
     invariant: i >= 0 && i <= present.length(),
@@ -547,7 +547,7 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
     }
     dvd = dvd - temp
     quotient = quotient + multiple
-  } else {
+  } nobreak {
     if negative {
       0 - quotient
     } else {

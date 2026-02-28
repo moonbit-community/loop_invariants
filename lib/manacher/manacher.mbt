@@ -268,7 +268,7 @@ fn ManacherResult::longest_palindrome(self : ManacherResult) -> String {
     } else {
       continue i + 1, best
     }
-  } else {
+  } nobreak {
     best
   } where {
     invariant: i >= 0 && i <= self.radii.length(),
@@ -382,7 +382,7 @@ pub fn longest_palindrome_len(s : String) -> Int {
     let max_at_i = if odd > even { odd } else { even }
     let new_best = if max_at_i > best { max_at_i } else { best }
     continue i + 1, new_best
-  } else {
+  } nobreak {
     best
   } where {
     invariant: i >= 0 && i <= d1.length(),

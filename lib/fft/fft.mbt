@@ -42,7 +42,7 @@ fn mod_pow(base : Int64, exp : Int64, m : Int64) -> Int64 {
   for e = exp, result = 1L, b = base % m; e > 0L; {
     let next_result = if e % 2L == 1L { result * b % m } else { result }
     continue e / 2L, next_result, b * b % m
-  } else {
+  } nobreak {
     result
   } where {
     invariant: e >= 0L,
@@ -96,7 +96,7 @@ fn NTT::new(size : Int) -> NTT {
   // Find smallest power of 2 >= size
   let (n, log_n) = for n = 1, log_n = 0; n < size; {
     continue n * 2, log_n + 1
-  } else {
+  } nobreak {
     (n, log_n)
   } where {
     invariant: n >= 1,

@@ -398,7 +398,7 @@ fn binary_search(arr : Array[Int], value : Int) -> Int {
     } else {
       continue lo, mid - 1
     }
-  } else {
+  } nobreak {
     -1
   } where {
     invariant: lo >= 0 && hi < arr.length(),

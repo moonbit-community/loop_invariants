@@ -72,7 +72,7 @@ fn isqrt(n : Int) -> Int {
   // INVARIANT: result^2 <= n < (result+1)^2
   for result = 1; result * result <= n; result = result + 1 {
 
-  } else {
+  } nobreak {
     result - 1
   } where {
     invariant: result >= 1 && (result - 1) * (result - 1) <= n,

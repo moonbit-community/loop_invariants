@@ -27,7 +27,7 @@ fn two_sum_two_pointer(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
       // Need smaller sum, move right pointer left
       continue left, right - 1
     }
-  } else {
+  } nobreak {
     None
   } where {
     invariant: left >= 0 && right < arr.length() && left <= right,
@@ -134,7 +134,7 @@ fn skip_duplicates_forward(
 ) -> Int {
   for l = left + 1; l < right && arr[l] == arr[left]; {
     continue l + 1
-  } else {
+  } nobreak {
     l
   } where {
     invariant: l >= left + 1,
@@ -157,7 +157,7 @@ fn skip_duplicates_backward(
 ) -> Int {
   for r = right - 1; r > left && arr[r] == arr[right]; {
     continue r - 1
-  } else {
+  } nobreak {
     r
   } where {
     invariant: r <= right - 1,
@@ -204,7 +204,7 @@ fn max_water_container(heights : ArrayView[Int]) -> Int {
     } else {
       continue left, right - 1, new_max
     }
-  } else {
+  } nobreak {
     max_area
   } where {
     invariant: left >= 0 && right < heights.length() && max_area >= 0,
@@ -267,7 +267,7 @@ fn trap_water_two_pointer(height : ArrayView[Int]) -> Int {
       let trapped = new_right_max - height[right]
       continue left, right - 1, left_max, new_right_max, water + trapped
     }
-  } else {
+  } nobreak {
     water
   } where {
     invariant: left >= 0 && right < n && water >= 0,
@@ -463,7 +463,7 @@ fn min_window_substring(s : String, t : String) -> String {
     } else {
       continue left, right + 1, new_formed, min_len, min_left
     }
-  } else {
+  } nobreak {
     if min_len > s_len {
       ""
     } else {
@@ -537,7 +537,7 @@ fn contract_window(
       f
     }
     continue l + 1, new_f, new_mlen, new_mleft
-  } else {
+  } nobreak {
     (l, f, mlen, mleft)
   } where {
     invariant: l >= left && f >= 0,
@@ -581,7 +581,7 @@ fn longest_unique_substring(s : String) -> Int {
     let current_len = i - new_start + 1
     let new_max = if current_len > max_len { current_len } else { max_len }
     continue i + 1, new_start, new_max
-  } else {
+  } nobreak {
     max_len
   } where {
     invariant: i >= 0 && start >= 0 && max_len >= 0,
@@ -637,7 +637,7 @@ fn subarray_sum_equals_k(nums : ArrayView[Int], k : Int) -> Int {
       count[idx] = count[idx] + 1
     }
     continue i + 1, new_prefix, result + matches
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= 0 && i <= n,
@@ -703,7 +703,7 @@ fn character_replacement(s : String, k : Int) -> Int {
       }
       continue left, right + 1, new_max_count, new_max_len
     }
-  } else {
+  } nobreak {
     max_len
   } where {
     invariant: left >= 0 && right >= 0 && max_count >= 0,
@@ -770,7 +770,7 @@ fn fruit_into_baskets(fruits : ArrayView[Int]) -> Int {
       // This is simplified; a full implementation would track properly
       continue left + 1, right, distinct, max_len
     }
-  } else {
+  } nobreak {
     max_len
   } where {
     invariant: left >= 0 && right >= 0 && distinct >= 0 && distinct <= 2,
@@ -805,7 +805,7 @@ fn remove_duplicates(nums : Array[Int]) -> Int {
     } else {
       continue read + 1, write
     }
-  } else {
+  } nobreak {
     write
   } where {
     invariant: read >= 1 && write >= 1 && write <= read,
@@ -957,7 +957,7 @@ fn partition(arr : Array[Int], lo : Int, hi : Int) -> Int {
     } else {
       continue i, j + 1
     }
-  } else {
+  } nobreak {
     // Place pivot in correct position
     let temp = arr[i]
     arr[i] = arr[hi]

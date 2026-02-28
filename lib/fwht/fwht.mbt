@@ -71,7 +71,7 @@ pub fn xor_convolution(
   }
   let n = for n = 1; n < target; {
     continue n * 2
-  } else {
+  } nobreak {
     n
   } where {
     invariant: n > 0 && n <= 2 * target,
