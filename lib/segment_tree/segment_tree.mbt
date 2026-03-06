@@ -284,7 +284,7 @@ fn IterativeSegTree::new(arr : Array[Int64]) -> IterativeSegTree {
   }
 
   // Build internal nodes from bottom up
-  for i in n >.. 1 {
+  for i in n>..1 {
     tree[i] = tree[2 * i] + tree[2 * i + 1]
   }
   { n, tree }
@@ -330,7 +330,7 @@ fn IterativeSegTree::query(self : IterativeSegTree, l : Int, r : Int) -> Int64 {
       (right, sum1)
     }
     continue new_left / 2, new_right / 2, sum2
-  } else {
+  } nobreak {
     sum
   } where {
     invariant: left >= 0 && right >= 0 && left <= right,

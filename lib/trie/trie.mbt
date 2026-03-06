@@ -270,7 +270,6 @@ fn collect_words(
         current.push(('a'.to_int() + c).unsafe_to_char())
         collect_words(child, current, result)
         let _ = current.pop()
-
       }
       None => ()
     }
@@ -356,7 +355,7 @@ fn Trie::longest_prefix(self : Trie, word : String) -> String {
       #|maximum prefix length present in the trie.
     ),
   }
-  (try? word[0:last_end]).or("").to_string()
+  word[0:last_end].to_string()
 }
 
 // ============================================================================
@@ -411,12 +410,12 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
         child.is_end = true
       } else if common_len == label.length() {
         // Word extends beyond label
-        insert_into_node(child, (try? word[common_len:]).or("").to_string())
+        insert_into_node(child, word[common_len:].to_string())
       } else {
         // Need to split
         let new_internal = CompressedTrieNode::new()
-        let suffix_label = (try? label[common_len:]).or("").to_string()
-        let suffix_word = (try? word[common_len:]).or("").to_string()
+        let suffix_label = label[common_len:].to_string()
+        let suffix_word = word[common_len:].to_string()
 
         // Move original child under new internal node
         let first_suffix_char = if suffix_label.length() > 0 {
@@ -443,7 +442,7 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
         }
 
         // Update root's child
-        let common_prefix = (try? word[0:common_len]).or("").to_string()
+        let common_prefix = word[0:common_len].to_string()
         self.root.children[first_char] = Some((common_prefix, new_internal))
       }
     }
@@ -471,12 +470,12 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
       if common_len == label.length() && common_len == word.length() {
         child.is_end = true
       } else if common_len == label.length() {
-        insert_into_node(child, (try? word[common_len:]).or("").to_string())
+        insert_into_node(child, word[common_len:].to_string())
       } else {
         // Split node (similar logic as above)
         let new_internal = CompressedTrieNode::new()
-        let suffix_label = (try? label[common_len:]).or("").to_string()
-        let suffix_word = (try? word[common_len:]).or("").to_string()
+        let suffix_label = label[common_len:].to_string()
+        let suffix_word = word[common_len:].to_string()
         let first_suffix_char = if suffix_label.length() > 0 {
           suffix_label[0].to_int() - 'a'.to_int()
         } else {
@@ -497,7 +496,7 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
             )
           }
         }
-        let common_prefix = (try? word[0:common_len]).or("").to_string()
+        let common_prefix = word[0:common_len].to_string()
         node.children[first_char] = Some((common_prefix, new_internal))
       }
     }
@@ -575,7 +574,7 @@ fn search_in_node(
   }
 
   // Continue searching
-  let remaining = (try? word[label_len:]).or("").to_string()
+  let remaining = word[label_len:].to_string()
   if remaining.length() == 0 {
     return node.is_end
   }

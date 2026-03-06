@@ -106,7 +106,6 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
       let second = hull[hull.length() - 2]
       if cross(second, top, sorted[i]) <= 0L {
         let _ = hull.pop()
-
       } else {
         break
       }
@@ -118,13 +117,12 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
   let lower_len = hull.length()
   // INVARIANT: hull[lower_len:] contains upper hull in right-to-left order
   let start_exclusive = n - 1
-  for i in start_exclusive >.. 0 {
+  for i in start_exclusive>..0 {
     while hull.length() > lower_len {
       let top = hull[hull.length() - 1]
       let second = hull[hull.length() - 2]
       if cross(second, top, sorted[i]) <= 0L {
         let _ = hull.pop()
-
       } else {
         break
       }
@@ -211,7 +209,6 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
       let second = hull[hull.length() - 2]
       if cross(second, top, point) <= 0L {
         let _ = hull.pop()
-
       } else {
         break
       }
@@ -257,7 +254,7 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
 
   // INVARIANT: hull contains points on the convex hull in CCW order
   // current is the index of the most recently added hull point
-  for {
+  for ;; {
     hull.push(points[current])
 
     // Find the point that is most counterclockwise from current
@@ -390,7 +387,7 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
     let mut curr_j = j
 
     // Advance j while it increases distance
-    for {
+    for ;; {
       let j_next = (curr_j + 1) % n
       let area_curr = cross(hull[i], hull[i_next], hull[curr_j])
       let area_next = cross(hull[i], hull[i_next], hull[j_next])

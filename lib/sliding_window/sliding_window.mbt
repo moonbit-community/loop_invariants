@@ -43,7 +43,6 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
     while dq.front() is Some(front) {
       if front <= i - k {
         let _ = dq.pop_front()
-
       } else {
         break
       }
@@ -53,7 +52,6 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
     while dq.back() is Some(back) {
       if arr[back] <= arr[i] {
         let _ = dq.pop_back()
-
       } else {
         break
       }
@@ -136,7 +134,6 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
     while dq.front() is Some(front) {
       if front <= i - k {
         let _ = dq.pop_front()
-
       } else {
         break
       }
@@ -144,7 +141,6 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
     while dq.back() is Some(back) {
       if arr[back] >= arr[i] {
         let _ = dq.pop_back()
-
       } else {
         break
       }
@@ -222,7 +218,7 @@ fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
     let new_sum = sum + arr[i] - arr[i - k]
     result.push(new_sum)
     continue i + 1, new_sum
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= k && i <= n,

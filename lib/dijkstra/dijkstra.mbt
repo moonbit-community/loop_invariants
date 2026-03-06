@@ -85,7 +85,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
     // Bubble down
     let mut i = 0
     let len = self.data.length()
-    for {
+    for ;; {
       let left = 2 * i + 1
       let right = 2 * i + 2
       let mut smallest = i
@@ -210,7 +210,7 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
   pq.push({ dist: 0L, vertex: source })
 
   // Main Dijkstra loop - process vertices in order of increasing distance
-  for {
+  for ;; {
     match pq.pop() {
       None => break
       Some(entry) => {
@@ -412,7 +412,7 @@ pub fn bidirectional_dijkstra(
 
   // INVARIANT: best_dist is the shortest known path through a vertex
   // visited by both searches
-  for {
+  for ;; {
     // Alternate between forward and backward search
     let forward_done = pq_forward.is_empty()
     let backward_done = pq_backward.is_empty()

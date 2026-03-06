@@ -123,7 +123,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
     // LOOP INVARIANT: sum contains sum of arr[l..i)
     let result = for i = l, sum = 0; i <= r; i = i + 1 {
       continue i + 1, sum + self.arr[i]
-    } else {
+    } nobreak {
       sum
     } where {
       invariant: i >= l && i <= r + 1,
@@ -143,7 +143,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
   let left_block_end = (left_block + 1) * self.block_size - 1
   let left_sum = for i = l, sum = 0; i <= left_block_end; i = i + 1 {
     continue i + 1, sum + self.arr[i]
-  } else {
+  } nobreak {
     sum
   } where {
     invariant: i >= l && i <= left_block_end + 1,
@@ -163,7 +163,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
   // INVARIANT: sum contains sum of all complete blocks from left_block+1 to b-1
   let middle_sum = for b = left_block + 1, sum = 0; b < right_block; b = b + 1 {
     continue b + 1, sum + self.blocks[b]
-  } else {
+  } nobreak {
     sum
   } where {
     invariant: b >= left_block + 1 && b <= right_block,
@@ -181,7 +181,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
   let right_block_start = right_block * self.block_size
   let right_sum = for i = right_block_start, sum = 0; i <= r; i = i + 1 {
     continue i + 1, sum + self.arr[i]
-  } else {
+  } nobreak {
     sum
   } where {
     invariant: i >= right_block_start && i <= r + 1,
@@ -319,7 +319,7 @@ fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int) -> Unit {
     } else {
       continue i + 1, m
     }
-  } else {
+  } nobreak {
     m
   } where {
     invariant: i >= start && i <= end,
@@ -354,7 +354,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
       } else {
         continue i + 1, m
       }
-    } else {
+    } nobreak {
       m
     } where {
       invariant: i >= l && i <= r + 1,
@@ -380,7 +380,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     } else {
       continue i + 1, m
     }
-  } else {
+  } nobreak {
     m
   } where {
     invariant: i >= l && i <= left_block_end + 1,
@@ -405,7 +405,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     } else {
       continue b + 1, m
     }
-  } else {
+  } nobreak {
     m
   } where {
     invariant: b >= left_block + 1 && b <= right_block,
@@ -430,7 +430,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     } else {
       continue i + 1, m
     }
-  } else {
+  } nobreak {
     m
   } where {
     invariant: i >= right_block_start && i <= r + 1,
@@ -604,7 +604,7 @@ fn MoSolver::solve_distinct(
     } else {
       continue i + 1, m
     }
-  } else {
+  } nobreak {
     m
   } where {
     invariant: i >= 0 && i <= n,
@@ -627,11 +627,13 @@ fn MoSolver::solve_distinct(
   // Sort queries by (l / block_size, r)
   // This is the key to Mo's algorithm efficiency
   let block_size = self.block_size
-  mo_queries.sort_by((a, b) => if a.l / block_size != b.l / block_size {
-    a.l / block_size - b.l / block_size
-  } else {
-    // Alternate direction for better cache behavior (optional optimization)
-    a.r - b.r
+  mo_queries.sort_by((a, b) => {
+    if a.l / block_size != b.l / block_size {
+      a.l / block_size - b.l / block_size
+    } else {
+      // Alternate direction for better cache behavior (optional optimization)
+      a.r - b.r
+    }
   })
   let results = Array::make(q, 0)
   let count = Array::make(max_val + 1, 0) // count[v] = occurrences of value v
@@ -805,7 +807,7 @@ fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
     } else {
       break Some(mid)
     }
-  } else {
+  } nobreak {
     None
   } where {
     invariant: lo >= 0 && hi >= -1,
@@ -873,7 +875,7 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
                       i < self.intervals.length() && self.intervals[i].l <= r
                       i = i + 1 {
     continue i + 1
-  } else {
+  } nobreak {
     i - 1
   } where {
     invariant: i >= left_idx && i <= self.intervals.length() + 1,
@@ -894,7 +896,6 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
     let num_to_remove = right_idx - left_idx + 1
     for j = 0; j < num_to_remove; j = j + 1 {
       let _ = self.intervals.remove(left_idx)
-
     } where {
       invariant: j >= 0 && j <= num_to_remove,
       reasoning: (
@@ -928,7 +929,7 @@ fn IntervalTree::query_sum(self : IntervalTree, l : Int, r : Int) -> Int {
     let right_bound = if interval.r < r { interval.r } else { r }
     let cnt = right_bound - left_bound + 1
     continue i + 1, s + cnt * interval.v
-  } else {
+  } nobreak {
     s
   } where {
     invariant: i >= 0 && i <= self.intervals.length(),

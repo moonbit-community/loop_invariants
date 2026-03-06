@@ -71,7 +71,7 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
       if self.text[edge.start] == p[i] {
         break idx
       }
-    } else {
+    } nobreak {
       break outer~ false
     }
 
@@ -180,7 +180,7 @@ pub fn SuffixTree::count_occurrences(
       if self.text[edge.start] == p[i] {
         break idx
       }
-    } else {
+    } nobreak {
       break outer~ 0
     }
 

@@ -105,14 +105,17 @@ fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
   let inf = 2147483647 / 2 // Avoid overflow
 
   // Initialize distance matrix using makei
-  let dist : Array[Array[Int]] = Array::makei(n, i => Array::makei(n, j => if i ==
-    j {
-    0
-  } else if adj[i][j] != 0 {
-    adj[i][j]
-  } else {
-    inf
-  }))
+  let dist : Array[Array[Int]] = Array::makei(n, i => {
+    Array::makei(n, j => {
+      if i == j {
+        0
+      } else if adj[i][j] != 0 {
+        adj[i][j]
+      } else {
+        inf
+      }
+    })
+  })
 
   // Main algorithm: consider each vertex as intermediate
   for k = 0; k < n; k = k + 1 {
@@ -274,7 +277,6 @@ fn is_bipartite(n : Int, adj : Array[Array[Int]]) -> Bool {
             }
           }
       }
-
     }
   } where {
     invariant: start >= 0 && start <= n,
@@ -418,7 +420,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
   // Second pass: count SCCs
   let visited2 = Array::make(n, false)
   let mut scc_count = 0
-  for i in n >.. 0 {
+  for i in n>..0 {
     let v = order[i]
     if not(visited2[v]) {
       dfs_mark(rev_adj, visited2, v)
@@ -623,7 +625,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
     } else {
       continue i + 1
     }
-  } else {
+  } nobreak {
     total_weight
   } where {
     invariant: i >= 0 && edges_added >= 0 && edges_added <= n - 1,
@@ -651,7 +653,7 @@ fn find_root(parent : Array[Int], x : Int) -> Int {
     // Path compression
     parent[p] = parent[parent[p]]
     continue parent[p]
-  } else {
+  } nobreak {
     p
   } where {
     invariant: p >= 0 && p < parent.length(),

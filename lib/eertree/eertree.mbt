@@ -170,7 +170,7 @@ fn Eertree::propagate_counts(self : Eertree) -> Unit {
   // Process nodes in reverse order (children before parents in suffix tree)
   // This ensures when we process a node, all its suffix-children are already processed
   let start = self.nodes.length() - 1
-  for i in start >=.. 2 {
+  for i in start>=..2 {
     let suffix = self.nodes[i].suffix_link
     self.nodes[suffix].count = self.nodes[suffix].count + self.nodes[i].count
   }
@@ -202,7 +202,7 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
       // current holds characters from center outward.
       // Left half is reverse(current); right half is current (skip center if odd).
       let last = current.length() - 1
-      for i in last >=.. 0 {
+      for i in last>=..0 {
         sb.write_char(Int::unsafe_to_char(current[i]))
       }
       let start = if len % 2 == 0 { 0 } else { 1 }
@@ -219,7 +219,6 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
         current.push(c)
         dfs(tree, child, current, result)
         let _ = current.pop()
-
       }
     }
   }
@@ -315,7 +314,6 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
           return true
         }
         let _ = path.pop()
-
       }
     }
     false
@@ -329,7 +327,7 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
   let len = self.nodes[node_idx].len
   let sb = StringBuilder::new()
   let last = path.length() - 1
-  for i in last >=.. 0 {
+  for i in last>=..0 {
     sb.write_char(Int::unsafe_to_char(path[i]))
   }
   let start = if len % 2 == 0 { 0 } else { 1 }
@@ -439,7 +437,7 @@ test "eertree get palindromes" {
       if p[j] != p[p.length() - 1 - j] {
         break false
       }
-    } else {
+    } nobreak {
       true
     }
     guard is_palindrome else { fail("Not a palindrome: " + p) }

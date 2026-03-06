@@ -101,7 +101,7 @@ fn mos_algorithm_range_sum(
     // Expand right
     let (curr_r2, sum2) = for r = curr_r, s = curr_sum; r < qr; {
       continue r + 1, s + arr[r]
-    } else {
+    } nobreak {
       (r, s)
     } where {
       invariant: r >= curr_r && r <= qr,
@@ -118,7 +118,7 @@ fn mos_algorithm_range_sum(
     // Shrink right
     let (curr_r3, sum3) = for r = curr_r2, s = sum2; r > qr; {
       continue r - 1, s - arr[r - 1]
-    } else {
+    } nobreak {
       (r, s)
     } where {
       invariant: r >= qr && r <= curr_r2,
@@ -135,7 +135,7 @@ fn mos_algorithm_range_sum(
     // Shrink left
     let (curr_l2, sum4) = for l = curr_l, s = sum3; l < ql; {
       continue l + 1, s - arr[l]
-    } else {
+    } nobreak {
       (l, s)
     } where {
       invariant: l >= curr_l && l <= ql,
@@ -152,7 +152,7 @@ fn mos_algorithm_range_sum(
     // Expand left
     let (curr_l3, sum5) = for l = curr_l2, s = sum4; l > ql; {
       continue l - 1, s + arr[l - 1]
-    } else {
+    } nobreak {
       (l, s)
     } where {
       invariant: l >= ql && l <= curr_l2,
@@ -167,7 +167,7 @@ fn mos_algorithm_range_sum(
     }
     results[query_idx] = sum5
     continue i + 1, curr_l3, curr_r3, sum5
-  } else {
+  } nobreak {
     ()
   } where {
     invariant: i >= 0 && i <= q,
@@ -259,7 +259,7 @@ fn SqrtDecomposition::query_min(
       let new_result = @cmp.minimum(result, self.arr[i])
       continue i + 1, new_result
     }
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= l && i <= r,
@@ -374,7 +374,7 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
         continue i + 1, i, freq[i]
       }
       continue i + 1, best, best_freq
-    } else {
+    } nobreak {
       best
     } where {
       invariant: i >= 0 && i <= max_val + 1,
@@ -465,7 +465,7 @@ fn BlockSum::query_sum(self : BlockSum, l : Int, r : Int) -> Int {
       // Partial
       continue i + 1, result + self.arr[i]
     }
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= l && i <= r,
@@ -525,7 +525,7 @@ fn MoUnionFind::find_mo(self : MoUnionFind, x : Int) -> Int {
     let grandparent = self.parent[self.parent[curr]]
     self.parent[curr] = grandparent
     continue grandparent
-  } else {
+  } nobreak {
     curr
   } where {
     invariant: curr >= 0 && curr < self.parent.length(),
@@ -664,7 +664,7 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
       }
     }
   }
-  for i in order.length() >.. 0 {
+  for i in order.length()>..0 {
     let node = order[i]
     subtree_size[node] = 1
     for child in adj[node] {
@@ -691,7 +691,7 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
       continue n, node
     }
     continue i + 1, centroid
-  } else {
+  } nobreak {
     centroid
   } where {
     invariant: i >= 0 && i <= n,
@@ -738,7 +738,7 @@ fn build_euler_tour(adj : Array[Array[Int]], root : Int) -> EulerTour {
       tour.push(node)
       time[0] = time[0] + 1
       stack.push((node, par, 1))
-      for i in adj[node].length() >.. 0 {
+      for i in adj[node].length()>..0 {
         let child = adj[node][i]
         if child != par {
           stack.push((child, node, 0))
@@ -856,7 +856,7 @@ fn BinaryLifting::lca_binary_lifting(
   if u == v {
     return u
   }
-  for k in self.log_n >.. 0 {
+  for k in self.log_n>..0 {
     if self.up[u][k] != self.up[v][k] {
       u = self.up[u][k]
       v = self.up[v][k]

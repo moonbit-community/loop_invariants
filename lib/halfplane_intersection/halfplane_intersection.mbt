@@ -139,7 +139,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
   let deque : Array[HalfPlane] = []
   let mut head = 0
   for line in unique {
-    for {
+    for ;; {
       if deque.length() - head >= 2 {
         let p = line_intersection(
           deque[deque.length() - 2],
@@ -164,7 +164,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
         #|When the intersection is inside the new line, the back is stable.
       ),
     }
-    for {
+    for ;; {
       if deque.length() - head >= 2 {
         let p = line_intersection(deque[head], deque[head + 1])
         if not(is_inside(line, p)) {
@@ -187,7 +187,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
     }
     deque.push(line)
   }
-  for {
+  for ;; {
     if deque.length() - head >= 3 {
       let p = line_intersection(
         deque[deque.length() - 2],
@@ -210,7 +210,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
       #|When the back intersection is inside the front half-plane, closure holds.
     ),
   }
-  for {
+  for ;; {
     if deque.length() - head >= 3 {
       let p = line_intersection(deque[head], deque[head + 1])
       if not(is_inside(deque[deque.length() - 1], p)) {

@@ -87,7 +87,7 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
   for p = self.last; p >= 0 && self.states[p].trans[c] < 0; {
     self.states[p].trans[c] = cur
     continue self.states[p].link
-  } else {
+  } nobreak {
     if p < 0 {
       // No suffix has transition on c - link to initial
       self.states[cur].link = 0
@@ -188,7 +188,7 @@ fn SuffixAutomaton::contains(self : SuffixAutomaton, pattern : String) -> Bool {
     } else {
       continue next, i + 1
     }
-  } else {
+  } nobreak {
     true
   } where {
     invariant: state >= 0 && state < self.states.length(),
@@ -215,7 +215,7 @@ fn SuffixAutomaton::count_distinct_substrings(self : SuffixAutomaton) -> Int {
     let state = self.states[i]
     let link_len = if state.link >= 0 { self.states[state.link].len } else { 0 }
     continue i + 1, count + state.len - link_len
-  } else {
+  } nobreak {
     count
   } where {
     invariant: i >= 0 && count >= 0,
@@ -292,7 +292,7 @@ fn SuffixAutomaton::compute_counts(self : SuffixAutomaton) -> Unit {
   }
 
   // Propagate counts (longest to shortest)
-  for i in n >.. 0 {
+  for i in n>..0 {
     let state_idx = sorted[i]
     let link = self.states[state_idx].link
     if link >= 0 {
@@ -315,7 +315,7 @@ fn SuffixAutomaton::count_occurrences(
     } else {
       continue next, i + 1
     }
-  } else {
+  } nobreak {
     self.states[state].cnt
   } where {
     invariant: state >= 0,
@@ -353,7 +353,7 @@ fn SuffixAutomaton::longest_common_substring_length(
       let result = find_suffix_match(self, state, c)
       continue result.0, result.1, best_len, i + 1
     }
-  } else {
+  } nobreak {
     best_len
   } where {
     invariant: state >= 0 && cur_len >= 0 && best_len >= 0,
@@ -386,7 +386,7 @@ fn find_suffix_match(
     } else {
       continue sam.states[st].link
     }
-  } else {
+  } nobreak {
     (0, 0)
   } where {
     invariant: st >= -1,
@@ -423,7 +423,7 @@ fn SuffixAutomaton::longest_common_substring(
       let result = find_suffix_match(self, state, c)
       continue result.0, result.1, i + 1, best_len, best_end
     }
-  } else {
+  } nobreak {
     (best_len, best_end)
   } where {
     invariant: state >= 0 && cur_len >= 0 && i >= 0,

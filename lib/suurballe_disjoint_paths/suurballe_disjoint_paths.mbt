@@ -70,7 +70,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
     self.data[0] = last
     let mut i = 0
     let len = self.data.length()
-    for {
+    for ;; {
       let left = 2 * i + 1
       let right = 2 * i + 2
       let mut smallest = i
@@ -441,7 +441,6 @@ pub fn suurballe_disjoint_paths(
       let orig_u = from[e.orig_id]
       let orig_v = to[e.orig_id]
       let _ = remove_edge(combined_adj, orig_u, orig_v)
-
     } else {
       combined_adj[u].push(e.to)
     }

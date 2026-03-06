@@ -257,7 +257,7 @@ fn tarjan_dfs(
     let mut size = 0
 
     // Pop all vertices until v (inclusive) → they form the SCC
-    for {
+    for ;; {
       let u = stack[stack.length() - 1]
       let _ = stack.pop()
       on_stack[u] = false

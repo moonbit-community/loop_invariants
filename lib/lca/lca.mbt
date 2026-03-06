@@ -49,7 +49,7 @@ pub struct LCA {
 fn compute_log(n : Int) -> Int {
   for val = 1, log = 0; val < n; {
     continue val * 2, log + 1
-  } else {
+  } nobreak {
     log + 1
   } where {
     invariant: log >= 0,
@@ -200,7 +200,7 @@ pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
   }
 
   // Binary search for LCA - jump both nodes while their 2^k ancestors are different
-  for k in self.log_n >.. 0 {
+  for k in self.log_n>..0 {
     if self.up[curr_u][k] != self.up[curr_v][k] {
       curr_u = self.up[curr_u][k]
       curr_v = self.up[curr_v][k]

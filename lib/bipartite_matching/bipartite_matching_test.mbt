@@ -53,7 +53,7 @@ test "hopcroft_karp larger" {
   ..add_edge(2, 2)
   ..add_edge(2, 3)
   ..add_edge(3, 0)
-  ..add_edge(3, 3)
+  .add_edge(3, 3)
   let matcher = graph.hopcroft_karp()
   inspect(matcher.max_matching(), content="4")
   inspect(matcher.get_matching().length(), content="4")

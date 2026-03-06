@@ -81,7 +81,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
     self.data[0] = last
     let mut i = 0
     let len = self.data.length()
-    for {
+    for ;; {
       let left = 2 * i + 1
       let right = 2 * i + 2
       let mut smallest = i

@@ -34,7 +34,7 @@ fn knapsack_01(
     let value = values[i]
 
     // Process weights in reverse to avoid using same item twice
-    for w in capacity >=.. weight {
+    for w in capacity>=..weight {
       let without_item = dp[w]
       let with_item = dp[w - weight] + value
       dp[w] = if with_item > without_item { with_item } else { without_item }
@@ -193,7 +193,7 @@ fn lower_bound_lis(arr : ArrayView[Int], target : Int) -> Int {
     } else {
       continue lo, mid
     }
-  } else {
+  } nobreak {
     lo
   } where {
     invariant: lo >= 0 && hi >= 0 && lo <= hi + 1,
@@ -369,7 +369,7 @@ fn longest_common_subsequence(s1 : String, s2 : String) -> Int {
       ),
     }
     // Swap rows
-    for k in 0 ..<= n {
+    for k in 0..<=n {
       prev[k] = curr[k]
     }
   } where {
@@ -418,7 +418,7 @@ fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
       max_so_far
     }
     continue i + 1, new_max_ending, new_max_so_far
-  } else {
+  } nobreak {
     max_so_far
   } where {
     invariant: i >= 1 && i <= n,
@@ -470,7 +470,7 @@ fn house_robber(nums : ArrayView[Int]) -> Int {
       skip_current
     }
     continue i + 1, prev1, current
-  } else {
+  } nobreak {
     prev1
   } where {
     invariant: i >= 2 && i <= n,
@@ -679,7 +679,7 @@ fn matches_word(chars : Array[Char], start : Int, word : Array[Char]) -> Bool {
     if chars[start + i] != word[i] {
       return false
     }
-  } else {
+  } nobreak {
     true
   } where {
     invariant: i >= 0 && i <= word_len,
@@ -762,7 +762,7 @@ fn min_palindrome_cuts(s : String) -> Int {
 
   // dp[i] = min cuts for s[0..i)
   let dp = Array::make(n + 1, 0)
-  for i in 0 ..<= n {
+  for i in 0..<=n {
     dp[i] = i - 1 // Maximum cuts = i - 1
   }
   for i = 1; i <= n; i = i + 1 {
@@ -835,14 +835,14 @@ fn egg_drop(eggs : Int, floors : Int) -> Int {
   let dp = Array::make(eggs + 1, 0)
   for trials = 1; dp[eggs] < floors; trials = trials + 1 {
     // Update dp in reverse to avoid using updated values
-    for k in eggs >=.. 1 {
+    for k in eggs>=..1 {
       // With k eggs and t trials:
       // If egg breaks: we checked dp[k-1] floors below
       // If egg survives: we can check dp[k] floors above
       // Plus the current floor
       dp[k] = 1 + dp[k - 1] + dp[k]
     }
-  } else {
+  } nobreak {
     trials - 1
   } where {
     invariant: trials >= 1,
@@ -953,7 +953,7 @@ fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
 
   // dp[i][j] = min cost to multiply matrices i..j (1-indexed)
   let dp : Array[Array[Int]] = []
-  for _ in 0 ..<= n {
+  for _ in 0..<=n {
     dp.push(Array::make(n + 1, 0))
   }
 

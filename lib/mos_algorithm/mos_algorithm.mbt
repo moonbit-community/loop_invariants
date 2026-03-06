@@ -72,7 +72,7 @@ fn isqrt(n : Int) -> Int {
   // INVARIANT: result^2 <= n < (result+1)^2
   for result = 1; result * result <= n; result = result + 1 {
 
-  } else {
+  } nobreak {
     result - 1
   } where {
     invariant: result >= 1 && (result - 1) * (result - 1) <= n,
@@ -126,11 +126,12 @@ fn MoDistinct::answer_queries(
 
   // Sort queries by (left_block, right)
   // INVARIANT: After sort, queries in same block have increasing right
-  mo_queries.sort_by((a, b) => if a.left / self.block_size !=
-    b.left / self.block_size {
-    a.left / self.block_size - b.left / self.block_size
-  } else {
-    a.right - b.right
+  mo_queries.sort_by((a, b) => {
+    if a.left / self.block_size != b.left / self.block_size {
+      a.left / self.block_size - b.left / self.block_size
+    } else {
+      a.right - b.right
+    }
   })
 
   // Initialize frequency count map
@@ -148,7 +149,7 @@ fn MoDistinct::answer_queries(
 
     // Expand right
     if cur_r < target_r {
-      for r in (cur_r + 1)..=target_r {
+      for r in (cur_r + 1)..<=target_r {
         let val = self.arr[r]
         if freq[val] == 0 {
           distinct = distinct + 1
@@ -160,7 +161,7 @@ fn MoDistinct::answer_queries(
 
     // Shrink right
     if cur_r > target_r {
-      for r in (target_r + 1)..=cur_r {
+      for r in (target_r + 1)..<=cur_r {
         let val = self.arr[r]
         freq[val] = freq[val] - 1
         if freq[val] == 0 {
@@ -172,7 +173,7 @@ fn MoDistinct::answer_queries(
 
     // Expand left
     if cur_l > target_l {
-      for l in target_l..=(cur_l - 1) {
+      for l in target_l..<=(cur_l - 1) {
         let val = self.arr[l]
         if freq[val] == 0 {
           distinct = distinct + 1
@@ -184,7 +185,7 @@ fn MoDistinct::answer_queries(
 
     // Shrink left
     if cur_l < target_l {
-      for l in cur_l..=(target_l - 1) {
+      for l in cur_l..<=(target_l - 1) {
         let val = self.arr[l]
         freq[val] = freq[val] - 1
         if freq[val] == 0 {
@@ -281,11 +282,12 @@ fn MoSum::answer_queries(
     let (l, r) = queries[i]
     { left: l, right: r, index: i }
   })
-  mo_queries.sort_by((a, b) => if a.left / self.block_size !=
-    b.left / self.block_size {
-    a.left / self.block_size - b.left / self.block_size
-  } else {
-    a.right - b.right
+  mo_queries.sort_by((a, b) => {
+    if a.left / self.block_size != b.left / self.block_size {
+      a.left / self.block_size - b.left / self.block_size
+    } else {
+      a.right - b.right
+    }
   })
   let mut current_sum = 0L
   let mut cur_l = 0
@@ -296,25 +298,25 @@ fn MoSum::answer_queries(
     let target_l = query.left
     let target_r = query.right
     if cur_r < target_r {
-      for r in (cur_r + 1)..=target_r {
+      for r in (cur_r + 1)..<=target_r {
         current_sum = current_sum + self.arr[r]
       }
       cur_r = target_r
     }
     if cur_r > target_r {
-      for r in (target_r + 1)..=cur_r {
+      for r in (target_r + 1)..<=cur_r {
         current_sum = current_sum - self.arr[r]
       }
       cur_r = target_r
     }
     if cur_l > target_l {
-      for l in target_l..=(cur_l - 1) {
+      for l in target_l..<=(cur_l - 1) {
         current_sum = current_sum + self.arr[l]
       }
       cur_l = target_l
     }
     if cur_l < target_l {
-      for l in cur_l..=(target_l - 1) {
+      for l in cur_l..<=(target_l - 1) {
         current_sum = current_sum - self.arr[l]
       }
       cur_l = target_l
@@ -416,11 +418,12 @@ fn MoRangeCount::answer_queries(
   })
 
   // Sort by Mo ordering
-  mo_queries.sort_by((a, b) => if a.0.left / self.block_size !=
-    b.0.left / self.block_size {
-    a.0.left / self.block_size - b.0.left / self.block_size
-  } else {
-    a.0.right - b.0.right
+  mo_queries.sort_by((a, b) => {
+    if a.0.left / self.block_size != b.0.left / self.block_size {
+      a.0.left / self.block_size - b.0.left / self.block_size
+    } else {
+      a.0.right - b.0.right
+    }
   })
   let mut cur_l = 0
   let mut cur_r = -1
@@ -430,28 +433,28 @@ fn MoRangeCount::answer_queries(
     let target_l = query.left
     let target_r = query.right
     if cur_r < target_r {
-      for r in (cur_r + 1)..=target_r {
+      for r in (cur_r + 1)..<=target_r {
         let val = self.arr[r]
         freq[val] = freq[val] + 1
       }
       cur_r = target_r
     }
     if cur_r > target_r {
-      for r in (target_r + 1)..=cur_r {
+      for r in (target_r + 1)..<=cur_r {
         let val = self.arr[r]
         freq[val] = freq[val] - 1
       }
       cur_r = target_r
     }
     if cur_l > target_l {
-      for l in target_l..=(cur_l - 1) {
+      for l in target_l..<=(cur_l - 1) {
         let val = self.arr[l]
         freq[val] = freq[val] + 1
       }
       cur_l = target_l
     }
     if cur_l < target_l {
-      for l in cur_l..=(target_l - 1) {
+      for l in cur_l..<=(target_l - 1) {
         let val = self.arr[l]
         freq[val] = freq[val] - 1
       }
@@ -558,11 +561,12 @@ fn MoMode::answer_queries(
     let (l, r) = queries[i]
     { left: l, right: r, index: i }
   })
-  mo_queries.sort_by((a, b) => if a.left / self.block_size !=
-    b.left / self.block_size {
-    a.left / self.block_size - b.left / self.block_size
-  } else {
-    a.right - b.right
+  mo_queries.sort_by((a, b) => {
+    if a.left / self.block_size != b.left / self.block_size {
+      a.left / self.block_size - b.left / self.block_size
+    } else {
+      a.right - b.right
+    }
   })
   let mut cur_l = 0
   let mut cur_r = -1
@@ -616,7 +620,7 @@ fn MoMode::answer_queries(
     let target_l = query.left
     let target_r = query.right
     if cur_r < target_r {
-      for r in (cur_r + 1)..=target_r {
+      for r in (cur_r + 1)..<=target_r {
         let val = self.arr[r]
         freq[val] = freq[val] + 1
         if freq[val] > max_freq || (freq[val] == max_freq && val < mode) {
@@ -627,14 +631,14 @@ fn MoMode::answer_queries(
       cur_r = target_r
     }
     if cur_r > target_r {
-      for r in (target_r + 1)..=cur_r {
+      for r in (target_r + 1)..<=cur_r {
         let val = self.arr[r]
         freq[val] = freq[val] - 1
       }
       cur_r = target_r
     }
     if cur_l > target_l {
-      for l in target_l..=(cur_l - 1) {
+      for l in target_l..<=(cur_l - 1) {
         let val = self.arr[l]
         freq[val] = freq[val] + 1
         if freq[val] > max_freq || (freq[val] == max_freq && val < mode) {
@@ -645,7 +649,7 @@ fn MoMode::answer_queries(
       cur_l = target_l
     }
     if cur_l < target_l {
-      for l in cur_l..=(target_l - 1) {
+      for l in cur_l..<=(target_l - 1) {
         let val = self.arr[l]
         freq[val] = freq[val] - 1
       }

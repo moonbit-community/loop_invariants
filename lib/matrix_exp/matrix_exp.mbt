@@ -177,7 +177,7 @@ fn Matrix::power(self : Matrix, exp : Int64) -> Matrix {
   for e = exp, result = Matrix::identity(n), base = self.copy(); e > 0L; {
     let new_result = if e % 2L == 1L { result.multiply(base) } else { result }
     continue e / 2L, new_result, base.multiply(base)
-  } else {
+  } nobreak {
     result
   } where {
     invariant: e >= 0L,
@@ -279,7 +279,7 @@ fn solve_recurrence(
   // Compute answer using fold over coefficients and initial values
   for j = 0, ans = 0L; j < k; {
     continue j + 1, (ans + result.data[0][j] * initial[k - 1 - j]) % MATRIX_MOD
-  } else {
+  } nobreak {
     ans
   } where {
     invariant: j >= 0 && j <= k,

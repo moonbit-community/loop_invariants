@@ -442,7 +442,7 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
     } else {
       continue lo, mid - 1, result
     }
-  } else {
+  } nobreak {
     result
   } where {
     invariant: lo >= 0 && hi <= max_len && result >= 0,
@@ -537,7 +537,7 @@ fn count_distinct_substrings(s : String) -> Int {
     } else {
       continue i + 1, count
     }
-  } else {
+  } nobreak {
     count
   } where {
     invariant: i >= 1 && i <= seen.length() && count >= 1,

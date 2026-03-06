@@ -146,7 +146,7 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
   if self.disc[v] == self.low[v] {
     // Pop all vertices until v to form this SCC
     let scc : Array[Int] = []
-    for {
+    for ;; {
       match self.stack.pop() {
         Some(w) => {
           self.on_stack[w] = false

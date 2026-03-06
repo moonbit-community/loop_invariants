@@ -254,7 +254,7 @@ pub fn longest_palindrome_range(s : ArrayView[Char]) -> (Int, Int) {
     } else {
       continue i + 1, best
     }
-  } else {
+  } nobreak {
     best
   } where {
     invariant: i >= 0 && i <= p.length(),

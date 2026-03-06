@@ -197,7 +197,7 @@ fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
     }
 
     // Find blocking flow
-    for {
+    for ;; {
       let pushed = self.dfs(source, sink, FLOW_INF)
       if pushed == 0L {
         break

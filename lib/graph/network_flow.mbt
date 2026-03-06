@@ -90,7 +90,7 @@ fn FlowNetwork::edmonds_karp(
   sink : Int,
 ) -> Int {
   let mut max_flow = 0
-  for {
+  for ;; {
     let (has_path, parent) = self.bfs_find_path(source, sink)
     if not(has_path) {
       break max_flow
@@ -271,7 +271,7 @@ fn DinicNetwork::dfs_dinic(
     }
     self.iter[u] = idx + 1
     continue idx + 1
-  } else {
+  } nobreak {
     0
   } where {
     invariant: idx >= 0 && idx <= self.adj[u].length(),
@@ -297,7 +297,7 @@ fn DinicNetwork::dinic_max_flow(
   sink : Int,
 ) -> Int {
   let mut max_flow = 0
-  for {
+  for ;; {
     if not(self.bfs_dinic(source, sink)) {
       break max_flow
     }
@@ -441,7 +441,7 @@ fn MCMFNetwork::min_cost_max_flow(
   let mut min_cost = 0
   let dist : Array[Int] = Array::make(self.n, 0)
   let parent : Array[(Int, Int)?] = Array::make(self.n, None)
-  for {
+  for ;; {
     if not(self.spfa_mcmf(source, sink, dist, parent)) {
       break (max_flow, min_cost)
     }
@@ -582,7 +582,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
 
     // Find augmenting path
     let mut done = false
-    for {
+    for ;; {
       if done {
         break
       }

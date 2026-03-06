@@ -57,7 +57,6 @@ fn MinHeap::push(self : MinHeap, entry : HeapEntry) -> Unit {
       break ()
     }
   }
-
 }
 
 ///|
@@ -94,7 +93,6 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
         continue smallest
       }
     }
-
   }
   Some(result)
 }
@@ -114,7 +112,7 @@ fn dijkstra(
   dist[src] = 0L
   let heap = MinHeap::new()
   heap.push({ dist: 0L, node: src })
-  for {
+  for ;; {
     match heap.pop() {
       None => break
       Some(entry) => {

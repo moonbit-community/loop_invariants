@@ -706,7 +706,7 @@ fn iterative_segment_tree_build(arr : ArrayView[Int]) -> IterativeSegmentTree {
   }
 
   // Build internal nodes bottom-up
-  for i in n >.. 1 {
+  for i in n>..1 {
     tree[i] = tree[2 * i] + tree[2 * i + 1]
   }
   { n, tree }
@@ -776,7 +776,7 @@ fn IterativeSegmentTree::range_sum(
     }
     // Move to parent level
     continue l2 / 2, r2 / 2, result3
-  } else {
+  } nobreak {
     result
   } where {
     invariant: l >= 0 && r >= 0 && l <= r + 1,
@@ -869,7 +869,7 @@ fn max_count_segment_tree_build(arr : ArrayView[Int]) -> MaxCountSegmentTree {
   }
 
   // Build internal nodes
-  for i in n >.. 1 {
+  for i in n>..1 {
     tree[i] = max_count_combine(tree[2 * i], tree[2 * i + 1])
   }
   { n, tree }
@@ -896,7 +896,7 @@ fn MaxCountSegmentTree::range_query(
       (r, result2)
     }
     continue l2 / 2, r2 / 2, result3
-  } else {
+  } nobreak {
     result
   } where {
     invariant: l >= 0 && r >= 0,
@@ -978,7 +978,7 @@ fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
       ),
     }
     // Build inner tree for this row
-    for j in cols >.. 1 {
+    for j in cols>..1 {
       st.tree[rows + i][j] = st.tree[rows + i][2 * j] +
         st.tree[rows + i][2 * j + 1]
     }
@@ -995,7 +995,7 @@ fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
   }
 
   // Build internal rows
-  for i in rows >.. 1 {
+  for i in rows>..1 {
     for j = 0; j < 2 * cols; j = j + 1 {
       st.tree[i][j] = st.tree[2 * i][j] + st.tree[2 * i + 1][j]
     } where {
@@ -1096,7 +1096,7 @@ fn SegmentTree2D::range_sum(
       (row_r, result2)
     }
     continue row_l2 / 2, row_r2 / 2, result3
-  } else {
+  } nobreak {
     result
   } where {
     invariant: row_l >= 0 && row_r >= 0,
@@ -1134,7 +1134,7 @@ fn SegmentTree2D::col_sum(
       (r, result2)
     }
     continue l2 / 2, r2 / 2, result3
-  } else {
+  } nobreak {
     result
   } where {
     invariant: l >= 0 && r >= 0,

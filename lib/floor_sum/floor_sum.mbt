@@ -21,7 +21,7 @@ pub fn floor_sum(n : Int64, m : Int64, a : Int64, b : Int64) -> Int64 {
   let mut a0 = a
   let mut b0 = b
   let mut ans = 0L
-  for {
+  for ;; {
     if a0 >= m0 {
       let q = a0 / m0
       ans = ans + (n0 - 1L) * n0 / 2L * q

@@ -30,7 +30,7 @@ pub fn min_cyclic_rotation_index(s : String) -> Int {
   let mut i = 0
   let mut j = 1
   let mut k = 0
-  for {
+  for ;; {
     if i >= n || j >= n || k >= n {
       break
     }

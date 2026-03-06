@@ -140,7 +140,7 @@ pub fn eulerian_path_directed(
   let next_index = Array::make(n, 0)
   let stack : Array[Int] = [start]
   let path : Array[Int] = []
-  for {
+  for ;; {
     if stack.length() == 0 {
       break
     }
@@ -153,7 +153,6 @@ pub fn eulerian_path_directed(
     } else {
       path.push(v)
       let _ = stack.pop()
-
     }
   } where {
     invariant: path.length() + stack.length() >= 1,
@@ -250,7 +249,7 @@ pub fn eulerian_path_undirected(
   let cursor = Array::make(n, 0)
   let stack : Array[Int] = [start]
   let path : Array[Int] = []
-  for {
+  for ;; {
     if stack.length() == 0 {
       break
     }
@@ -275,7 +274,6 @@ pub fn eulerian_path_undirected(
     } else {
       path.push(v)
       let _ = stack.pop()
-
     }
   } where {
     invariant: path.length() + stack.length() >= 1,

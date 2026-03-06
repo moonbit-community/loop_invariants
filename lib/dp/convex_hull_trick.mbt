@@ -51,7 +51,6 @@ fn ConvexHullTrick::add_line(
     let b_line = self.lines[n - 1]
     if is_bad(a, b_line, (m, b)) {
       let _ = self.lines.pop()
-
     } else {
       break
     }
@@ -83,7 +82,7 @@ fn ConvexHullTrick::query_min(self : ConvexHullTrick, x : Int64) -> Int64 {
     } else {
       continue lo, mid
     }
-  } else {
+  } nobreak {
     eval_line(self.lines[lo], x)
   } where {
     invariant: lo >= 0 && hi < n && lo <= hi,
@@ -520,7 +519,6 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
         ),
       }
       let _ = deque.pop()
-
     }
 
     // dp[i] = dp[front] + arr[i]
@@ -529,7 +527,6 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
     // Maintain monotonicity: remove worse candidates from back
     while deque.length() > 0 && dp[deque[deque.length() - 1]] >= dp[i] {
       let _ = deque.pop()
-
     }
     deque.push(i)
   } where {
@@ -611,12 +608,14 @@ fn aliens_trick(
 test "aliens trick structure" {
   // Simple test: just verify the structure works
   // Simplified: more penalty means fewer items
-  let compute = lambda => if lambda < 0L {
-    (100L, 5)
-  } else if lambda < 10L {
-    (50L, 3)
-  } else {
-    (20L, 1)
+  let compute = lambda => {
+    if lambda < 0L {
+      (100L, 5)
+    } else if lambda < 10L {
+      (50L, 3)
+    } else {
+      (20L, 1)
+    }
   }
   let result = aliens_trick(10, 3, compute)
   // Should find lambda around 0-10 where k=3

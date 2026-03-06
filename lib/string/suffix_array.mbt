@@ -73,7 +73,7 @@ fn compare_suffixes(chars : Array[Char], i : Int, j : Int) -> Int {
     if chars[i + k] > chars[j + k] {
       return 1
     }
-  } else {
+  } nobreak {
     // Shorter suffix is smaller
     n - i - (n - j)
   } where {
@@ -219,7 +219,7 @@ fn count_distinct_substrings(s : String) -> Int {
     let suffix_len = n - sa[i]
     let duplicates = lcp[i]
     continue i + 1, total + suffix_len - duplicates
-  } else {
+  } nobreak {
     total
   } where {
     invariant: i >= 0 && i <= n && total >= 0,
@@ -269,7 +269,7 @@ fn longest_repeated_substring(s : String) -> String {
     } else {
       continue i + 1, max_lcp, max_idx
     }
-  } else {
+  } nobreak {
     if max_lcp == 0 {
       ""
     } else {
@@ -340,7 +340,7 @@ fn search_lower_bound(
     } else {
       continue lo, mid
     }
-  } else {
+  } nobreak {
     lo
   } where {
     invariant: lo >= 0 && hi >= 0 && lo <= hi + 1,
@@ -369,7 +369,7 @@ fn search_upper_bound(
     } else {
       continue lo, mid
     }
-  } else {
+  } nobreak {
     lo
   } where {
     invariant: lo >= 0 && hi >= 0 && lo <= hi + 1,
@@ -395,7 +395,7 @@ fn compare_with_pattern(s : Array[Char], start : Int, p : Array[Char]) -> Int {
     if s[start + i] > p[i] {
       return 1
     }
-  } else {
+  } nobreak {
     // All compared characters match
     // If suffix is shorter than pattern, it's "less"
     if start + m > n {
@@ -461,7 +461,7 @@ fn longest_common_substring_sa(s1 : String, s2 : String) -> String {
     } else {
       continue i + 1, max_lcp, max_idx
     }
-  } else {
+  } nobreak {
     if max_lcp == 0 {
       ""
     } else {
@@ -608,7 +608,7 @@ fn smallest_rotation(s : String) -> String {
       let result = Array::makei(n, j => chars[(sa[i] + j) % n])
       return String::from_array(result)
     }
-  } else {
+  } nobreak {
     s // Should not reach here
   } where {
     invariant: i >= 0 && i <= 2 * n,

@@ -92,7 +92,7 @@ fn BiconnectedFinder::dfs(
       // When low[v] >= disc[u], edges from (u,v) to stack top form a block
       if self.low[v] >= self.disc[u] {
         let comp : Array[(Int, Int)] = []
-        for {
+        for ;; {
           match self.edge_stack.pop() {
             Some(e) => {
               comp.push(e)
@@ -135,7 +135,7 @@ fn BiconnectedFinder::dfs(
     } else {
       continue i + 1, children
     }
-  } else {
+  } nobreak {
     children
   } where {
     invariant: i >= 0 && i <= self.adj[u].length(),

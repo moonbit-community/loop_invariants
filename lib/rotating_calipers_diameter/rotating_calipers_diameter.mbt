@@ -58,7 +58,7 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
   let mut best = dist2(points[0], points[1])
   for i = 0; i < n; i = i + 1 {
     let next_i = (i + 1) % n
-    for {
+    for ;; {
       let next_j = (j + 1) % n
       let area_now = cross(points[i], points[next_i], points[j])
       let area_next = cross(points[i], points[next_i], points[next_j])

@@ -381,7 +381,6 @@ fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
     // Add 1 to position rank
     let old_val = pst.get(prev_ver, rank)
     let _ = pst.update(prev_ver, rank, old_val + 1L)
-
   }
   { pst, sorted_values: unique, n: arr.length() }
 }
@@ -398,7 +397,7 @@ fn binary_search(arr : Array[Int], value : Int) -> Int {
     } else {
       continue lo, mid - 1
     }
-  } else {
+  } nobreak {
     -1
   } where {
     invariant: lo >= 0 && hi < arr.length(),

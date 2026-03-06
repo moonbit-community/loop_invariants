@@ -94,7 +94,6 @@ fn previous_greater_element(arr : Array[Int64]) -> Array[Int] {
     // Pop elements smaller than or equal to current
     while stack.length() > 0 && arr[stack[stack.length() - 1]] <= arr[i] {
       let _ = stack.pop()
-
     }
     // Top of stack (if exists) is previous greater
     if stack.length() > 0 {
@@ -126,7 +125,6 @@ fn previous_smaller_element(arr : Array[Int64]) -> Array[Int] {
   for i = 0; i < n; i = i + 1 {
     while stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i] {
       let _ = stack.pop()
-
     }
     if stack.length() > 0 {
       result[i] = stack[stack.length() - 1]
@@ -170,7 +168,6 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
   for i = 0; i < n; i = i + 1 {
     while stack.length() > 0 && heights[stack[stack.length() - 1]] >= heights[i] {
       let _ = stack.pop()
-
     }
     if stack.length() > 0 {
       prev_smaller[i] = stack[stack.length() - 1]
@@ -192,10 +189,9 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
 
   // Compute next smaller
   stack.clear()
-  for i in n >.. 0 {
+  for i in n>..0 {
     while stack.length() > 0 && heights[stack[stack.length() - 1]] >= heights[i] {
       let _ = stack.pop()
-
     }
     if stack.length() > 0 {
       next_smaller[i] = stack[stack.length() - 1]
@@ -208,7 +204,7 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
     let width = (next_smaller[i] - prev_smaller[i] - 1).to_int64()
     let area = heights[i] * width
     continue i + 1, if area > max_area { area } else { max_area }
-  } else {
+  } nobreak {
     max_area
   } where {
     invariant: i >= 0 && i <= n,
@@ -288,7 +284,6 @@ fn stock_span(prices : Array[Int64]) -> Array[Int] {
     // Pop days with price <= current
     while stack.length() > 0 && prices[stack[stack.length() - 1]] <= prices[i] {
       let _ = stack.pop()
-
     }
     // Span is distance to previous greater element (or i+1 if none)
     span[i] = if stack.length() == 0 {
@@ -337,7 +332,6 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
   for i = 0; i < n; i = i + 1 {
     while stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i] {
       let _ = stack.pop()
-
     }
     left[i] = if stack.length() == 0 {
       i + 1
@@ -361,10 +355,9 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
 
   // Next smaller or equal (to handle duplicates correctly)
   stack.clear()
-  for i in n >.. 0 {
+  for i in n>..0 {
     while stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i] {
       let _ = stack.pop()
-
     }
     right[i] = if stack.length() == 0 {
       n - i
@@ -382,7 +375,7 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
       right[i].to_int64() %
       mod_val
     continue i + 1, (result + contribution) % mod_val
-  } else {
+  } nobreak {
     result
   } where {
     invariant: i >= 0 && i <= n,
