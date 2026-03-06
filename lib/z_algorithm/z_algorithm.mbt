@@ -186,35 +186,14 @@ fn longest_prefix_suffix(s : String) -> Int {
   }
   let z = compute_z(s)
 
-  // Find longest i where Z[i] + i = n (s[i..] matches prefix)
-  // INVARIANT: Result is length of longest proper prefix that is also suffix
-  for i = 1, best = 0; i < n; {
+  for i in 1..<n; best = 0 {
     if z[i] + i == n && z[i] > best {
-      continue i + 1, z[i]
+      continue z[i]
     } else {
-      continue i + 1, best
+      continue best
     }
   } nobreak {
     best
-  } where {
-    invariant: i >= 1 && i <= n,
-    reasoning: (
-      #|INVARIANT (border scan):
-      #|Positions in [1..i) are scanned; any border ending at n has been considered.
-      #|MAINTENANCE:
-      #|When z[i] + i == n, update best with z[i] if it is larger.
-      #|TERMINATION:
-      #|At i = n, all candidate borders are examined.
-    ),
-    invariant: best >= 0,
-    reasoning: (
-      #|INVARIANT (best border):
-      #|best equals the maximum border length found among scanned positions.
-      #|MAINTENANCE:
-      #|Only increase best when a longer border is discovered.
-      #|TERMINATION:
-      #|The returned best is the longest proper prefix that is also a suffix.
-    ),
   }
 }
 
