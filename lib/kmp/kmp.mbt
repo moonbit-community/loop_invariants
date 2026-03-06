@@ -46,7 +46,7 @@ pub fn compute_failure(pattern : String) -> Array[Int] {
     return []
   }
   let fail = Array::make(m, 0)
-  for i = 1, k = 0; i < m; {
+  for i in 1..<m; k = 0 {
     let mut curr_k = k
     while curr_k > 0 && pattern[curr_k] != pattern[i] {
       curr_k = fail[curr_k - 1]
@@ -55,20 +55,7 @@ pub fn compute_failure(pattern : String) -> Array[Int] {
       curr_k = curr_k + 1
     }
     fail[i] = curr_k
-    continue i + 1, curr_k
-  } where {
-    invariant: i >= 1 && i <= m,
-    reasoning: (
-      #|INVARIANT (failure function):
-      #|fail[0..i) is correct; k is the length of the longest border for
-      #|pattern[0..i).
-      #|MAINTENANCE:
-      #|Try to extend the border with pattern[i]; on mismatch, fall back to the
-      #|next candidate border via fail[k-1].
-      #|TERMINATION:
-      #|At i = m, fail stores the longest proper prefix that is also a suffix
-      #|for each prefix of the pattern.
-    ),
+    continue curr_k
   }
   fail
 }
@@ -89,7 +76,7 @@ pub fn kmp_search(text : String, pattern : String) -> Array[Int] {
     return matches
   }
   let fail = compute_failure(pattern)
-  for i = 0, j = 0; i < n; {
+  for i in 0..<n; j = 0 {
     let mut curr_j = j
     while curr_j > 0 && pattern[curr_j] != text[i] {
       curr_j = fail[curr_j - 1]
@@ -101,18 +88,7 @@ pub fn kmp_search(text : String, pattern : String) -> Array[Int] {
       matches.push(i - m + 1)
       curr_j = fail[curr_j - 1]
     }
-    continue i + 1, curr_j
-  } where {
-    invariant: i >= 0 && i <= n && j >= 0 && j <= m,
-    reasoning: (
-      #|INVARIANT (KMP scan):
-      #|pattern[0..j) matches text[i-j..i), so j is the current match length.
-      #|MAINTENANCE:
-      #|On match, increment j; on mismatch, fall back using fail[j-1] to the
-      #|next viable border without rechecking characters.
-      #|TERMINATION:
-      #|When i reaches n, all matches are reported; the scan is linear time.
-    ),
+    continue curr_j
   }
   matches
 }
@@ -148,7 +124,7 @@ pub fn compute_z_function(s : String) -> Array[Int] {
   }
   let z = Array::make(n, 0)
   z[0] = n
-  for i = 1, l = 0, r = 0; i < n; {
+  for i in 1..<n; l = 0, r = 0 {
     let mut curr_l = l
     let mut curr_r = r
     let mut z_i = 0
@@ -163,18 +139,7 @@ pub fn compute_z_function(s : String) -> Array[Int] {
       curr_l = i
       curr_r = i + z_i
     }
-    continue i + 1, curr_l, curr_r
-  } where {
-    invariant: i >= 1 && i <= n && l <= r && r <= n,
-    reasoning: (
-      #|INVARIANT (Z-function):
-      #|For all positions < i, z is correct, and [l, r) is the current Z-box.
-      #|MAINTENANCE:
-      #|If i < r, initialize z[i] from the mirror; then extend by comparisons.
-      #|Update [l, r) when a longer match is found.
-      #|TERMINATION:
-      #|At i = n, all z-values are computed in linear time.
-    ),
+    continue curr_l, curr_r
   }
   z
 }
