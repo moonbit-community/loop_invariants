@@ -188,7 +188,7 @@ fn longest_prefix_suffix(s : String) -> Int {
 
   // Find longest i where Z[i] + i = n (s[i..] matches prefix)
   // INVARIANT: Result is length of longest proper prefix that is also suffix
-  for i = 1, best = 0; i < n; i = i + 1 {
+  for i = 1, best = 0; i < n; {
     if z[i] + i == n && z[i] > best {
       continue i + 1, z[i]
     } else {
