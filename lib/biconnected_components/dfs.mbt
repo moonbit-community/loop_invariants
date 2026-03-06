@@ -69,11 +69,11 @@ fn BiconnectedFinder::dfs(
   self.low[u] = self.timer
   self.timer = self.timer + 1
   self.parent_edge[u] = p_edge
-  let children = for i = 0, children = 0; i < self.adj[u].length(); {
+  let children = for i in 0..<self.adj[u].length(); children = 0 {
     let (v, eid) = self.adj[u][i]
 
     // Skip the parent edge (don't go back immediately)
-    guard eid != p_edge else { continue i + 1, children }
+    guard eid != p_edge else { continue children }
     if self.disc[v] == -1 {
       // Case 1: Tree edge - v is unvisited
       self.edge_stack.push((u, v))
@@ -125,38 +125,18 @@ fn BiconnectedFinder::dfs(
           self.components.push(comp)
         }
       }
-      continue i + 1, children + 1
+      continue children + 1
     } else if self.disc[v] < self.disc[u] {
       // Case 2: Back edge - v is ancestor of u
       // Only process if disc[v] < disc[u] to avoid duplicate processing
       self.edge_stack.push((u, v))
       self.low[u] = min(self.low[u], self.disc[v])
-      continue i + 1, children
+      continue children
     } else {
-      continue i + 1, children
+      continue children
     }
   } nobreak {
     children
-  } where {
-    invariant: i >= 0 && i <= self.adj[u].length(),
-    reasoning: (
-      #|INVARIANT (neighbor processing):
-      #|  Neighbors adj[u][0..i) are fully processed.
-      #|  low[u] reflects minimum reachable disc through those neighbors.
-      #|  edge_stack contains edges not yet assigned to components.
-      #|
-      #|LOW-LINK UPDATE RULES:
-      #|  - Tree edge (u,v): low[u] = min(low[u], low[v])
-      #|    Because v's reachable ancestors are also u's.
-      #|  - Back edge (u,w): low[u] = min(low[u], disc[w])
-      #|    Because we can reach w directly.
-      #|
-      #|MAINTENANCE:
-      #|  Process adj[u][i], updating low and extracting components.
-      #|
-      #|TERMINATION:
-      #|  At i = deg(u), all neighbors processed.
-    ),
   }
 
   // Root articulation check
