@@ -88,12 +88,7 @@ pub fn[T] merge(a : Treap[T], b : Treap[T]) -> Treap[T] {
 /// Insert a value at index idx and return the new treap.
 pub fn[T : Hash] insert_at(t : Treap[T], idx : Int, value : T) -> Treap[T] {
   let (l, r) = split(t, idx)
-  let node = make_node(
-    value,
-    priority_for(value, idx),
-    Empty,
-    Empty,
-  )
+  let node = make_node(value, priority_for(value, idx), Empty, Empty)
   merge(merge(l, node), r)
 }
 

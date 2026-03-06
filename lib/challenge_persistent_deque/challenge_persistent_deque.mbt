@@ -33,8 +33,7 @@ pub fn[T] size(d : Deque[T]) -> Int {
 fn[T] reverse_stack_acc(cur : Stack[T], acc : Stack[T]) -> Stack[T] {
   match cur {
     Nil => acc
-    Cons(head~, tail~) =>
-      reverse_stack_acc(tail, Cons(head~, tail=acc))
+    Cons(head~, tail~) => reverse_stack_acc(tail, Cons(head~, tail=acc))
   }
 }
 

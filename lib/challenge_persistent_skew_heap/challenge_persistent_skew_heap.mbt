@@ -37,10 +37,7 @@ pub fn[T : Compare] merge(a : Heap[T], b : Heap[T]) -> Heap[T] {
   match (a, b) {
     (Empty, _) => b
     (_, Empty) => a
-    (
-      Node(value=va, left=la, right=ra),
-      Node(value=vb, left=lb, right=rb),
-    ) =>
+    (Node(value=va, left=la, right=ra), Node(value=vb, left=lb, right=rb)) =>
       if va <= vb {
         let merged = merge(ra, b)
         Node(value=va, left=merged, right=la)

@@ -13,8 +13,7 @@ pub enum Tree {
 fn inorder(t : Tree) -> Array[(Int, Int)] {
   match t {
     Empty => []
-    Node(start=s, end=e, left=l, right=r) =>
-      inorder(l) + [(s, e)] + inorder(r)
+    Node(start=s, end=e, left=l, right=r) => inorder(l) + [(s, e)] + inorder(r)
   }
 }
 
@@ -25,12 +24,7 @@ fn build(arr : ArrayView[(Int, Int)], l : Int, r : Int) -> Tree {
   } else {
     let mid = (l + r) / 2
     let (s, e) = arr[mid]
-    Node(
-      start=s,
-      end=e,
-      left=build(arr, l, mid),
-      right=build(arr, mid + 1, r),
-    )
+    Node(start=s, end=e, left=build(arr, l, mid), right=build(arr, mid + 1, r))
   }
 }
 

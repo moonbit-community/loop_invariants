@@ -44,18 +44,10 @@ fn insert(node : Node, l : Int, r : Int, value : Int) -> Node {
       Node(count=_, left~, right~) =>
         if value < mid {
           let new_left = insert(left, l, mid, value)
-          Node(
-            count=count(new_left) + count(right),
-            left=new_left,
-            right~,
-          )
+          Node(count=count(new_left) + count(right), left=new_left, right~)
         } else {
           let new_right = insert(right, mid, r, value)
-          Node(
-            count=count(left) + count(new_right),
-            left~,
-            right=new_right,
-          )
+          Node(count=count(left) + count(new_right), left~, right=new_right)
         }
     }
   }

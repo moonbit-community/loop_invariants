@@ -126,11 +126,7 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
         g.adj[pu][ei] = { to: e.to, rev: e.rev, cap: e.cap - aug }
         let rev = e.rev
         let back = g.adj[cur][rev]
-        g.adj[cur][rev] = {
-          to: back.to,
-          rev: back.rev,
-          cap: back.cap + aug,
-        }
+        g.adj[cur][rev] = { to: back.to, rev: back.rev, cap: back.cap + aug }
         continue pu
       }
     } where {

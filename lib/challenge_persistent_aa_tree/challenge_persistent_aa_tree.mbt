@@ -48,8 +48,7 @@ fn[T : Compare] aa_valid(t : Aa[T], lo : T?, hi : T?) -> Bool {
       let right_ok = level(r) <= lv
       let rr_ok = match r {
         Empty => true
-        Node(key=_, level=rv, left=_, right=rr) =>
-          level(rr) < lv && rv <= lv
+        Node(key=_, level=rv, left=_, right=rr) => level(rr) < lv && rv <= lv
       }
       within_bounds(k, lo, hi) &&
       left_ok &&

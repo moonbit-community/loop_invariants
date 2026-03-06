@@ -98,7 +98,7 @@ Old version:               New version:
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty() -> Node
 
 ///| pub fn insert(tree : Node, line : Line, l : Int, r : Int) -> Node
@@ -141,24 +141,9 @@ test "persistent li chao" {
 ///|
 test "persistent li chao insert" {
   let t0 = @challenge_persistent_li_chao_tree.empty()
-  let t1 = @challenge_persistent_li_chao_tree.insert(
-    t0,
-    { m: 1, b: 0 },
-    0,
-    5,
-  )
-  let t2 = @challenge_persistent_li_chao_tree.insert(
-    t1,
-    { m: -1, b: 4 },
-    0,
-    5,
-  )
-  let t3 = @challenge_persistent_li_chao_tree.insert(
-    t2,
-    { m: 0, b: 1 },
-    0,
-    5,
-  )
+  let t1 = @challenge_persistent_li_chao_tree.insert(t0, { m: 1, b: 0 }, 0, 5)
+  let t2 = @challenge_persistent_li_chao_tree.insert(t1, { m: -1, b: 4 }, 0, 5)
+  let t3 = @challenge_persistent_li_chao_tree.insert(t2, { m: 0, b: 1 }, 0, 5)
   inspect(@challenge_persistent_li_chao_tree.query(t2, 2, 0, 5), content="2")
   inspect(@challenge_persistent_li_chao_tree.query(t3, 2, 0, 5), content="1")
 }
@@ -170,18 +155,8 @@ test "persistent li chao insert" {
 ///|
 test "persistent li chao versions" {
   let t0 = @challenge_persistent_li_chao_tree.empty()
-  let t1 = @challenge_persistent_li_chao_tree.insert(
-    t0,
-    { m: 2, b: 0 },
-    0,
-    6,
-  )
-  let t2 = @challenge_persistent_li_chao_tree.insert(
-    t1,
-    { m: -1, b: 7 },
-    0,
-    6,
-  )
+  let t1 = @challenge_persistent_li_chao_tree.insert(t0, { m: 2, b: 0 }, 0, 6)
+  let t2 = @challenge_persistent_li_chao_tree.insert(t1, { m: -1, b: 7 }, 0, 6)
   inspect(
     @challenge_persistent_li_chao_tree.query(t0, 3, 0, 6),
     content="1073741823",

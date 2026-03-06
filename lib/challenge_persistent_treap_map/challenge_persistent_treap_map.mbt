@@ -133,13 +133,7 @@ pub fn[K : Compare + Hash, V] insert_or_update(
     update_value(t, key, value)
   } else {
     let (l, r) = split(t, key)
-    let node = make_node(
-      key,
-      value,
-      priority_for(key),
-      Empty,
-      Empty,
-    )
+    let node = make_node(key, value, priority_for(key), Empty, Empty)
     merge(merge(l, node), r)
   }
 }

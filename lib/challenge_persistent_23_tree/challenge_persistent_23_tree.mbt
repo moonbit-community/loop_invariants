@@ -67,30 +67,21 @@ fn[T : Compare] tree_valid(t : Tree[T], lo : T?, hi : T?) -> Bool {
 ///|
 fn[T : Compare] insert_inner(t : Tree[T], key : T) -> InsertResult[T] {
   match t {
-    Empty =>
-      Done(
-        tree=Two(key~, left=Empty, right=Empty),
-      )
+    Empty => Done(tree=Two(key~, left=Empty, right=Empty))
     Two(key=k, left=l, right=r) =>
       if key == k {
         Done(tree=t)
       } else if key < k {
         match insert_inner(l, key) {
-          Done(tree=new_left) =>
-            Done(tree=Two(key=k, left=new_left, right=r))
+          Done(tree=new_left) => Done(tree=Two(key=k, left=new_left, right=r))
           Split(key=pk, left=pl, right=pr) =>
-            Done(
-              tree=Three(key1=pk, key2=k, left=pl, middle=pr, right=r),
-            )
+            Done(tree=Three(key1=pk, key2=k, left=pl, middle=pr, right=r))
         }
       } else {
         match insert_inner(r, key) {
-          Done(tree=new_right) =>
-            Done(tree=Two(key=k, left=l, right=new_right))
+          Done(tree=new_right) => Done(tree=Two(key=k, left=l, right=new_right))
           Split(key=pk, left=pl, right=pr) =>
-            Done(
-              tree=Three(key1=k, key2=pk, left=l, middle=pl, right=pr),
-            )
+            Done(tree=Three(key1=k, key2=pk, left=l, middle=pl, right=pr))
         }
       }
     Three(key1=k1, key2=k2, left=l, middle=m, right=r) =>
@@ -99,15 +90,7 @@ fn[T : Compare] insert_inner(t : Tree[T], key : T) -> InsertResult[T] {
       } else if key < k1 {
         match insert_inner(l, key) {
           Done(tree=new_left) =>
-            Done(
-              tree=Three(
-                key1=k1,
-                key2=k2,
-                left=new_left,
-                middle=m,
-                right=r,
-              ),
-            )
+            Done(tree=Three(key1=k1, key2=k2, left=new_left, middle=m, right=r))
           Split(key=pk, left=pl, right=pr) => {
             let left_node = Two(key=pk, left=pl, right=pr)
             let right_node = Two(key=k2, left=m, right=r)
@@ -117,15 +100,7 @@ fn[T : Compare] insert_inner(t : Tree[T], key : T) -> InsertResult[T] {
       } else if key < k2 {
         match insert_inner(m, key) {
           Done(tree=new_mid) =>
-            Done(
-              tree=Three(
-                key1=k1,
-                key2=k2,
-                left=l,
-                middle=new_mid,
-                right=r,
-              ),
-            )
+            Done(tree=Three(key1=k1, key2=k2, left=l, middle=new_mid, right=r))
           Split(key=pk, left=pl, right=pr) => {
             let left_node = Two(key=k1, left=l, right=pl)
             let right_node = Two(key=k2, left=pr, right=r)
@@ -136,13 +111,7 @@ fn[T : Compare] insert_inner(t : Tree[T], key : T) -> InsertResult[T] {
         match insert_inner(r, key) {
           Done(tree=new_right) =>
             Done(
-              tree=Three(
-                key1=k1,
-                key2=k2,
-                left=l,
-                middle=m,
-                right=new_right,
-              ),
+              tree=Three(key1=k1, key2=k2, left=l, middle=m, right=new_right),
             )
           Split(key=pk, left=pl, right=pr) => {
             let left_node = Two(key=k1, left=l, right=m)
@@ -165,8 +134,7 @@ pub fn[T] empty() -> Tree[T] {
 pub fn[T : Compare] insert(t : Tree[T], key : T) -> Tree[T] {
   match insert_inner(t, key) {
     Done(tree~) => tree
-    Split(key=k, left=l, right=r) =>
-      Two(key=k, left=l, right=r)
+    Split(key=k, left=l, right=r) => Two(key=k, left=l, right=r)
   }
 }
 

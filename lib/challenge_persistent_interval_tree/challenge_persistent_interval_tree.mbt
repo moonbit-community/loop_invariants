@@ -54,8 +54,7 @@ pub fn empty() -> Tree {
 /// Insert an interval and return the new tree.
 pub fn insert(t : Tree, start : Int, end : Int) -> Tree {
   match t {
-    Empty =>
-      Node(start~, end~, max_end=end, left=Empty, right=Empty)
+    Empty => Node(start~, end~, max_end=end, left=Empty, right=Empty)
     Node(start=s, end=e, left=l, right=r, max_end=_) =>
       if start == s {
         let new_end = if end > e { end } else { e }

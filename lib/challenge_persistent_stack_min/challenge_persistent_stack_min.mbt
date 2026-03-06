@@ -38,12 +38,7 @@ pub fn[T] min_value(s : MinStack[T]) -> T? {
 pub fn[T : Compare] push(s : MinStack[T], value : T) -> MinStack[T] {
   let new_min = match s {
     Nil => value
-    Cons(value=_, min~, tail=_) =>
-      if value < min {
-        value
-      } else {
-        min
-      }
+    Cons(value=_, min~, tail=_) => if value < min { value } else { min }
   }
   Cons(value~, min=new_min, tail=s)
 }

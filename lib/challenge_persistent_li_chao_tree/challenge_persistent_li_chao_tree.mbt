@@ -110,11 +110,7 @@ pub fn from_array(lines : ArrayView[Line], l : Int, r : Int) -> Node {
 
 ///|
 test "persistent_li_chao_tree" {
-  let lines = [
-    { m: 1, b: 0 },
-    { m: -1, b: 10 },
-    { m: 2, b: -5 },
-  ]
+  let lines = [{ m: 1, b: 0 }, { m: -1, b: 10 }, { m: 2, b: -5 }]
   let tree = from_array(lines[:], 0, 10)
   assert_eq(query(tree, 0, 0, 10), -5)
   assert_eq(query(tree, 5, 0, 10), 5)

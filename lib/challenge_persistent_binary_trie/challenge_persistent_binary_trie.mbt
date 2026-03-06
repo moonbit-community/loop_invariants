@@ -30,25 +30,16 @@ pub fn insert(node : Node, value : Int, bit : Int) -> Node {
   if bit < 0 {
     match node {
       Empty => Node(count=1, zero=Empty, one=Empty)
-      Node(count=c, zero=z, one=o) =>
-        Node(count=c + 1, zero=z, one=o)
+      Node(count=c, zero=z, one=o) => Node(count=c + 1, zero=z, one=o)
     }
   } else {
     let b = (value >> bit) & 1
     match node {
       Empty =>
         if b == 0 {
-          Node(
-            count=1,
-            zero=insert(Empty, value, bit - 1),
-            one=Empty,
-          )
+          Node(count=1, zero=insert(Empty, value, bit - 1), one=Empty)
         } else {
-          Node(
-            count=1,
-            zero=Empty,
-            one=insert(Empty, value, bit - 1),
-          )
+          Node(count=1, zero=Empty, one=insert(Empty, value, bit - 1))
         }
       Node(count=c, zero=z, one=o) =>
         if b == 0 {
@@ -65,7 +56,7 @@ pub fn insert(node : Node, value : Int, bit : Int) -> Node {
 pub fn max_xor(root : Node, value : Int, max_bit : Int) -> Int {
   let mut cur = root
   let mut acc = 0
-  for bit in max_bit >=.. 0 {
+  for bit in max_bit>=..0 {
     match cur {
       Empty => break
       Node(count=_, zero=z, one=o) => {

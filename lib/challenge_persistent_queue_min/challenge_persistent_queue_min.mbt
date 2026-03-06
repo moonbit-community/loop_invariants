@@ -47,12 +47,7 @@ fn[T] min_value(s : MinStack[T]) -> T? {
 fn[T : Compare] push(s : MinStack[T], value : T) -> MinStack[T] {
   let new_min = match s {
     Nil => value
-    Cons(value=_, min~, tail=_) =>
-      if value < min {
-        value
-      } else {
-        min
-      }
+    Cons(value=_, min~, tail=_) => if value < min { value } else { min }
   }
   Cons(value~, min=new_min, tail=s)
 }
@@ -66,8 +61,7 @@ fn[T : Compare] reverse_stack_acc(
 ) -> MinStack[T] {
   match cur {
     Nil => acc
-    Cons(value~, min=_, tail~) =>
-      reverse_stack_acc(tail, push(acc, value))
+    Cons(value~, min=_, tail~) => reverse_stack_acc(tail, push(acc, value))
   }
 }
 
