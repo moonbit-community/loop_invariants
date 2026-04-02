@@ -121,6 +121,6 @@ If the array has negative values, you need different methods (e.g., prefix sums
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn count_subarrays_leq(arr : ArrayView[Int], k : Int) -> Int
 ```

@@ -141,7 +141,7 @@ If you need updates, consider a Fenwick tree or segment tree instead.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build_prefix_sum(arr : ArrayView[Int]) -> Array[Int]
 
 ///| pub fn range_sum(prefix : ArrayView[Int], l : Int, r : Int) -> Int

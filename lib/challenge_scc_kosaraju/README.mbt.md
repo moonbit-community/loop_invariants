@@ -111,6 +111,6 @@ algorithms (e.g., Tarjan for one-pass SCC).
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]
 ```

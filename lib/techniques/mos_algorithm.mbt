@@ -593,7 +593,7 @@ fn offline_lca_simple(
   let mut front = 0
   while queue.get(front) is Some(node) {
     for child in adj[node] {
-      if not(visited[child]) {
+      if !visited[child] {
         visited[child] = true
         parent[child] = node
         depth[child] = depth[node] + 1
@@ -784,7 +784,7 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
   let mut front = 0
   while queue.get(front) is Some(node) {
     for child in adj[node] {
-      if not(visited[child]) {
+      if !visited[child] {
         visited[child] = true
         depth[child] = depth[node] + 1
         up[child][0] = node

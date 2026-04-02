@@ -22,9 +22,9 @@ pub fn lcs_length(a : ArrayView[Char], b : ArrayView[Char]) -> Int {
   }
   let mut prev : Array[Int] = Array::make(n + 1, 0)
   let mut curr : Array[Int] = Array::make(n + 1, 0)
-  for i in 1 ..<= m {
+  for i in 1..<=m {
     curr[0] = 0
-    for j in 1 ..<= n {
+    for j in 1..<=n {
       if a[i - 1] == b[j - 1] {
         curr[j] = prev[j - 1] + 1
       } else {

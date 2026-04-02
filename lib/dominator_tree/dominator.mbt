@@ -58,7 +58,7 @@ fn DominatorWork::compute_idom(self : DominatorWork, root_idx : Int) -> Unit {
   // Phase 1: Process vertices in reverse DFS order
   // Compute semi-dominators and tentative immediate dominators
   let start_exclusive = n + 1
-  for i in start_exclusive >.. 1 {
+  for i in start_exclusive>..1 {
     // Step 1: Compute semi-dominator
     // sdom[i] = min { sdom[eval(p)] : p is a predecessor of i }
     for p in self.pred[i] {

@@ -256,7 +256,7 @@ fn prim(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
     in_tree[v] = true
     total = total + w
     for (to, w2) in adj[v] {
-      if not(in_tree[to]) {
+      if !(in_tree[to]) {
         pq.push((w2, to))
       }
     }

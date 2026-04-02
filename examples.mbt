@@ -464,12 +464,11 @@ test "dutch_flag" {
     let seen_equal2 = seen_equal || x == 5
     let seen_greater2 = seen_greater || x > 5
     // Once we see ==5, no more <5
-    assert_true(not(seen_equal2) || x >= 5)
+    assert_true(!seen_equal2 || x >= 5)
     // Once we see >5, no more <=5
-    assert_true(not(seen_greater2) || x > 5)
+    assert_true(!seen_greater2 || x > 5)
     (seen_equal2, seen_greater2)
   })
-
 }
 
 // ============================================================================
@@ -887,8 +886,9 @@ fn majority_element(arr : ArrayView[Int]) -> Int? {
     ),
   }
   // Phase 2: Verify candidate is actually majority
-  let verify_count = arr.fold(init=0, (acc, x) => acc +
-    (if x == candidate { 1 } else { 0 }))
+  let verify_count = arr.fold(init=0, (acc, x) => {
+    acc + (if x == candidate { 1 } else { 0 })
+  })
   if verify_count > arr.length() / 2 {
     Some(candidate)
   } else {
@@ -1324,7 +1324,7 @@ test "next_permutation" {
   assert_true(next_permutation(arr1))
   assert_eq(arr1, [2, 1, 3])
   let arr2 : Array[Int] = [3, 2, 1]
-  assert_true(not(next_permutation(arr2))) // wraps around
+  assert_true(!next_permutation(arr2)) // wraps around
   assert_eq(arr2, [1, 2, 3])
 }
 

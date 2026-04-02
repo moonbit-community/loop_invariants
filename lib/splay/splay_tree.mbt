@@ -389,7 +389,7 @@ fn[T : Compare] SplayTree::insert(self : SplayTree[T], key : T) -> Bool {
 /// Delete key from splay tree
 /// Returns true if key was found and deleted
 fn[T : Compare] SplayTree::delete(self : SplayTree[T], key : T) -> Bool {
-  if not(self.search(key)) {
+  if !self.search(key) {
     return false
   }
 
@@ -670,9 +670,8 @@ test "splay tree basic operations" {
 ///|
 test "splay tree delete" {
   let st : SplayTree[Int] = SplayTree::new()
-  for i in 1 ..<= 5 {
+  for i in 1..<=5 {
     let _ = st.insert(i)
-
   }
   inspect(st.size(), content="5")
 
@@ -712,7 +711,6 @@ test "splay tree order statistics" {
   // Insert 1, 3, 5, 7, 9
   for i in 0..<5 {
     let _ = st.insert(i * 2 + 1)
-
   }
 
   // k-th element (1-indexed)
@@ -746,7 +744,6 @@ test "splay tree stress" {
   // Insert 100 elements
   for i in 0..<100 {
     let _ = st.insert(i)
-
   }
   inspect(st.size(), content="100")
 
@@ -767,9 +764,8 @@ test "splay tree stress" {
 ///|
 test "splay tree split join" {
   let st : SplayTree[Int] = SplayTree::new()
-  for i in 1 ..<= 10 {
+  for i in 1..<=10 {
     let _ = st.insert(i)
-
   }
 
   // Split at 5: left has 1-5, right has 6-10

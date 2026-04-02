@@ -124,6 +124,6 @@ If the array is not unimodal, ternary search is not correct.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn find_min_unimodal(arr : ArrayView[Int]) -> Int
 ```

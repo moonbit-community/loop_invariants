@@ -125,7 +125,7 @@ The answers in the **original query order** are:
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn mo_range_sum(arr : ArrayView[Int], queries : ArrayView[(Int, Int)]) -> Array[Int]
 ```
 

@@ -159,13 +159,15 @@ fn MoDistinct::process_queries(
 
   // Sort by Mo's order: block of left endpoint, then right endpoint
   let block_size = self.block_size
-  mo_queries.sort_by((a, b) => if a.l / block_size != b.l / block_size {
-    a.l / block_size - b.l / block_size
-    // Alternate direction for better cache performance
-  } else if a.l / block_size % 2 == 0 {
-    a.r - b.r
-  } else {
-    b.r - a.r
+  mo_queries.sort_by((a, b) => {
+    if a.l / block_size != b.l / block_size {
+      a.l / block_size - b.l / block_size
+      // Alternate direction for better cache performance
+    } else if a.l / block_size % 2 == 0 {
+      a.r - b.r
+    } else {
+      b.r - a.r
+    }
   })
   let results = Array::make(q, 0)
   for i = 0; i < q; i = i + 1 {
@@ -268,12 +270,14 @@ fn MoSum::process_queries(
     ),
   }
   let block_size = self.block_size
-  mo_queries.sort_by((a, b) => if a.l / block_size != b.l / block_size {
-    a.l / block_size - b.l / block_size
-  } else if a.l / block_size % 2 == 0 {
-    a.r - b.r
-  } else {
-    b.r - a.r
+  mo_queries.sort_by((a, b) => {
+    if a.l / block_size != b.l / block_size {
+      a.l / block_size - b.l / block_size
+    } else if a.l / block_size % 2 == 0 {
+      a.r - b.r
+    } else {
+      b.r - a.r
+    }
   })
   let results = Array::make(q, 0L)
   for i = 0; i < q; i = i + 1 {

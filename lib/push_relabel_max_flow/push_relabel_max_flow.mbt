@@ -95,7 +95,7 @@ fn PushRelabel::enqueue(
   sink : Int,
   active : Array[Int],
 ) -> Unit {
-  if v != source && v != sink && self.excess[v] > 0L && not(self.in_active[v]) {
+  if v != source && v != sink && self.excess[v] > 0L && !self.in_active[v] {
     active.push(v)
     self.in_active[v] = true
   }

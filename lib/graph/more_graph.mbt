@@ -33,7 +33,7 @@ fn bellman_ford_with_neg_cycle(
       }
     }
     // Early termination if no changes
-    if not(changed) {
+    if !changed {
       break
     }
   } where {
@@ -380,7 +380,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
   let visited = Array::make(n, false)
   let order : Array[Int] = []
   for i = 0; i < n; i = i + 1 {
-    if not(visited[i]) {
+    if !visited[i] {
       dfs_order(adj, visited, order, i)
     }
   } where {
@@ -422,7 +422,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
   let mut scc_count = 0
   for i in n>..0 {
     let v = order[i]
-    if not(visited2[v]) {
+    if !visited2[v] {
       dfs_mark(rev_adj, visited2, v)
       scc_count = scc_count + 1
     }
@@ -439,7 +439,7 @@ fn dfs_order(
 ) -> Unit {
   visited[u] = true
   for v in adj[u] {
-    if not(visited[v]) {
+    if !visited[v] {
       dfs_order(adj, visited, order, v)
     }
   }
@@ -450,7 +450,7 @@ fn dfs_order(
 fn dfs_mark(adj : Array[Array[Int]], visited : Array[Bool], u : Int) -> Unit {
   visited[u] = true
   for v in adj[u] {
-    if not(visited[v]) {
+    if !visited[v] {
       dfs_mark(adj, visited, v)
     }
   }
@@ -484,7 +484,7 @@ fn prim_mst(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
     let mut min_key = inf
     let mut u = -1
     for v = 0; v < n; v = v + 1 {
-      if not(in_mst[v]) && key[v] < min_key {
+      if !in_mst[v] && key[v] < min_key {
         min_key = key[v]
         u = v
       }
@@ -511,7 +511,7 @@ fn prim_mst(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
     // Update keys of adjacent vertices
     for edge in adj[u] {
       let (v, weight) = edge
-      if not(in_mst[v]) && weight < key[v] {
+      if !in_mst[v] && weight < key[v] {
         key[v] = weight
       }
     }

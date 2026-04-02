@@ -45,7 +45,7 @@ pub fn SparseTableMin::new(arr : Array[Int64]) -> SparseTableMin {
 
   // Precompute log values
   let log_table = Array::make(n + 1, 0)
-  for i in 2..=n {
+  for i in 2..<=n {
     log_table[i] = log_table[i / 2] + 1
   }
   let k = log_table[n] + 1
@@ -102,7 +102,7 @@ fn SparseTableMax::new(arr : Array[Int64]) -> SparseTableMax {
     return { table: [], log_table: [], n: 0 }
   }
   let log_table = Array::make(n + 1, 0)
-  for i in 2..=n {
+  for i in 2..<=n {
     log_table[i] = log_table[i / 2] + 1
   }
   let k = log_table[n] + 1
@@ -168,7 +168,7 @@ fn SparseTableGCD::new(arr : Array[Int64]) -> SparseTableGCD {
     return { table: [], log_table: [], n: 0 }
   }
   let log_table = Array::make(n + 1, 0)
-  for i in 2..=n {
+  for i in 2..<=n {
     log_table[i] = log_table[i / 2] + 1
   }
   let k = log_table[n] + 1

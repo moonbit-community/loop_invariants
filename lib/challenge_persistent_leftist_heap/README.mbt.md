@@ -74,7 +74,7 @@ The heap always keeps the smallest element at the root.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Heap[T]
 
 ///| pub fn[T : Compare] merge(a : Heap[T], b : Heap[T]) -> Heap[T]

@@ -137,7 +137,7 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       guard comp_u != comp_v else { continue }
 
       // Check for duplicate edge using contains
-      if not(scc_adj[comp_u][:].contains(comp_v)) {
+      if !scc_adj[comp_u][:].contains(comp_v) {
         scc_adj[comp_u].push(comp_v)
       }
     } where {

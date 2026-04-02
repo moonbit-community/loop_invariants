@@ -74,7 +74,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   let visited = Array::make(n, false)
   let order : Array[Int] = []
   for v = 0; v < n; v = v + 1 {
-    if not(visited[v]) {
+    if !visited[v] {
       dfs_order(v, adj, visited, order)
     }
   } where {
@@ -137,7 +137,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   let component = Array::make(n, -1)
   let scc_sizes : Array[Int] = []
   let mut scc_count = 0
-  for i in n >.. 0 {
+  for i in n>..0 {
     let v = order[i]
     if component[v] == -1 {
       let size : Counter = { val: 0 }
@@ -159,7 +159,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       guard comp_u != comp_v else { continue }
 
       // Check for duplicate edge using contains
-      if not(scc_adj[comp_u][:].contains(comp_v)) {
+      if !scc_adj[comp_u][:].contains(comp_v) {
         scc_adj[comp_u].push(comp_v)
       }
     } where {
@@ -202,7 +202,7 @@ fn dfs_order(
   visited[v] = true
   for i = 0; i < adj[v].length(); i = i + 1 {
     let u = adj[v][i]
-    if not(visited[u]) {
+    if !visited[u] {
       dfs_order(u, adj, visited, order)
     }
   } where {

@@ -115,7 +115,7 @@ test "is_balanced_parens_star" {
   assert_true(is_balanced_parens_star(['(', '*', ')', ')'][:])) // * = '('
   assert_true(is_balanced_parens_star(['(', '*', '(', ')'][:])) // * = ')'
   assert_true(is_balanced_parens_star(['*'][:])) // * = empty
-  assert_true(not(is_balanced_parens_star([')', '*', '('][:])))
-  assert_true(not(is_balanced_parens_star(['(', ')', ')', '*'][:])))
-  assert_true(not(is_balanced_parens_star(['(', '(', '*'][:])))
+  assert_true(!is_balanced_parens_star([')', '*', '('][:]))
+  assert_true(!is_balanced_parens_star(['(', ')', ')', '*'][:]))
+  assert_true(!is_balanced_parens_star(['(', '(', '*'][:]))
 }

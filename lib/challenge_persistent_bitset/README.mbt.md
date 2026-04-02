@@ -74,7 +74,7 @@ To count ones in `[ql, qr)`, we walk the tree just like a segment tree query:
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn make(n : Int) -> Bitset
 
 ///| pub fn set(bs : Bitset, idx : Int, value : Int) -> Bitset

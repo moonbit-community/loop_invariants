@@ -46,7 +46,7 @@ fn is_connected_undirected(
   for idx = 0; idx < stack.length(); idx = idx + 1 {
     let u = stack[idx]
     for v in adj[u] {
-      if not(seen[v]) {
+      if !seen[v] {
         seen[v] = true
         stack.push(v)
       }
@@ -64,7 +64,7 @@ fn is_connected_undirected(
     ),
   }
   for i in 0..<n {
-    if has_degree[i] && not(seen[i]) {
+    if has_degree[i] && !seen[i] {
       return false
     }
   }
@@ -131,10 +131,10 @@ pub fn eulerian_path_directed(
   if start == -1 {
     return Some([])
   }
-  if not(is_connected_undirected(n, undirected, has_degree, start)) {
+  if !is_connected_undirected(n, undirected, has_degree, start) {
     return None
   }
-  if end != -1 && not(has_degree[end]) {
+  if end != -1 && !has_degree[end] {
     return None
   }
   let next_index = Array::make(n, 0)
@@ -242,7 +242,7 @@ pub fn eulerian_path_undirected(
       undirected[v].push(u)
     }
   }
-  if not(is_connected_undirected(n, undirected, has_degree, start)) {
+  if !is_connected_undirected(n, undirected, has_degree, start) {
     return None
   }
   let used = Array::make(edges.length(), false)
@@ -265,7 +265,7 @@ pub fn eulerian_path_undirected(
     cursor[v] = idx
     if idx < adj[v].length() {
       let e = adj[v][idx]
-      if not(used[e]) {
+      if !used[e] {
         used[e] = true
         let (a, b) = edges[e]
         let next = if a == v { b } else { a }
@@ -316,7 +316,7 @@ fn consume_edge_directed(
   v : Int,
 ) -> Bool {
   for i in 0..<edges.length() {
-    if not(used[i]) {
+    if !used[i] {
       let (a, b) = edges[i]
       if a == u && b == v {
         used[i] = true
@@ -335,7 +335,7 @@ fn consume_edge_undirected(
   v : Int,
 ) -> Bool {
   for i in 0..<edges.length() {
-    if not(used[i]) {
+    if !used[i] {
       let (a, b) = edges[i]
       if (a == u && b == v) || (a == v && b == u) {
         used[i] = true
@@ -359,7 +359,7 @@ fn valid_path_directed(
   }
   let used = Array::make(edges.length(), false)
   for i in 0..<(path.length() - 1) {
-    if not(consume_edge_directed(edges, used, path[i], path[i + 1])) {
+    if !consume_edge_directed(edges, used, path[i], path[i + 1]) {
       return false
     }
   }
@@ -379,7 +379,7 @@ fn valid_path_undirected(
   }
   let used = Array::make(edges.length(), false)
   for i in 0..<(path.length() - 1) {
-    if not(consume_edge_undirected(edges, used, path[i], path[i + 1])) {
+    if !consume_edge_undirected(edges, used, path[i], path[i + 1]) {
       return false
     }
   }

@@ -231,7 +231,7 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
     head = head + 1
     for i = 0; i < self.adj[u].length(); i = i + 1 {
       let e = self.adj[u][i]
-      if not(visited[e.to]) && e.capacity > e.flow {
+      if !visited[e.to] && e.capacity > e.flow {
         visited[e.to] = true
         queue.push(e.to)
       }
@@ -254,7 +254,7 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
     if visited[u] {
       for i = 0; i < self.adj[u].length(); i = i + 1 {
         let e = self.adj[u][i]
-        if not(visited[e.to]) && e.capacity > 0L {
+        if !visited[e.to] && e.capacity > 0L {
           cut.push((u, e.to, e.capacity))
         }
       } where {

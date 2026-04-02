@@ -141,7 +141,7 @@ If you do not need rollback, a normal DSU with path compression is faster.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn RollbackDSU::new(n : Int) -> RollbackDSU
 
 ///| pub fn RollbackDSU::find(self : RollbackDSU, x : Int) -> Int

@@ -250,7 +250,7 @@ pub fn SuffixAutomaton::count_occurrences(
     by_len[self.states[i].len].push(i)
   }
   let len_start = max_len + 1
-  for len in len_start >.. 0 {
+  for len in len_start>..0 {
     for j in 0..<by_len[len].length() {
       order.push(by_len[len][j])
     }

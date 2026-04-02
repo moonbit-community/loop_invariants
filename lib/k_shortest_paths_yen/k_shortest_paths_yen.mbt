@@ -151,7 +151,7 @@ fn path_cost(adj : Array[Array[(Int, Int64)]], nodes : Array[Int]) -> Int64? {
 ///|
 fn prefix_nodes(nodes : Array[Int], end_idx : Int) -> Array[Int] {
   let prefix : Array[Int] = []
-  for i in 0 ..<= end_idx {
+  for i in 0..<=end_idx {
     prefix.push(nodes[i])
   }
   prefix
@@ -193,9 +193,9 @@ fn shortest_path_filtered(
       return None
     }
     if u >= 0 && u < n && v >= 0 && v < n {
-      if not(blocked_nodes[u]) &&
-        not(blocked_nodes[v]) &&
-        not(is_blocked_edge(blocked_edges, u, v)) {
+      if !blocked_nodes[u] &&
+        !blocked_nodes[v] &&
+        !is_blocked_edge(blocked_edges, u, v) {
         graph.add_edge(u, v, w)
       }
     }
@@ -270,8 +270,8 @@ pub fn yen_k_shortest_paths(
       if spur is Some(spur_path) {
         let total_nodes = combine_paths(root, spur_path.nodes)
         let candidate = { nodes: total_nodes, cost: root_cost + spur_path.cost }
-        if not(path_in_list(b_candidates, candidate.nodes)) &&
-          not(path_in_list(a_paths, candidate.nodes)) {
+        if !path_in_list(b_candidates, candidate.nodes) &&
+          !path_in_list(a_paths, candidate.nodes) {
           b_candidates.push(candidate)
         }
       }
@@ -285,7 +285,6 @@ pub fn yen_k_shortest_paths(
     }
     a_paths.push(b_candidates[idx])
     let _ = b_candidates.remove(idx)
-
   }
   a_paths
 }

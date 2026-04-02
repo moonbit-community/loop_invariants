@@ -75,7 +75,7 @@ fixed, so choose it based on expected size.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[K, V] make(capacity : Int) -> HashMap[K, V]
 
 ///| pub fn[K : Hash + Eq, V] get(map : HashMap[K, V], key : K) -> V?

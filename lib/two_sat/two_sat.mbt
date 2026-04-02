@@ -129,7 +129,7 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
 
   // First DFS: compute finish order
   for i = 0; i < num_nodes; i = i + 1 {
-    if not(visited[i]) {
+    if !visited[i] {
       dfs1(self.adj, visited, order, i)
     }
   } where {
@@ -147,7 +147,7 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
   // Second DFS: find SCCs in reverse finish order
   let comp = Array::make(num_nodes, -1)
   let mut num_scc = 0
-  for i in num_nodes >.. 0 {
+  for i in num_nodes>..0 {
     let node = order[i]
     if comp[node] < 0 {
       dfs2(self.radj, comp, num_scc, node)
@@ -190,7 +190,7 @@ fn dfs1(
 ) -> Unit {
   visited[u] = true
   for v in adj[u] {
-    if not(visited[v]) {
+    if !visited[v] {
       dfs1(adj, visited, order, v)
     }
   }
@@ -218,18 +218,14 @@ fn TwoSat::verify(self : TwoSat, assignment : Array[Bool]) -> Bool {
   for u = 0; u < 2 * self.n; u = u + 1 {
     let var_u = u / 2
     let neg_u = u % 2 == 1
-    let val_u = if neg_u { not(assignment[var_u]) } else { assignment[var_u] }
+    let val_u = if neg_u { !assignment[var_u] } else { assignment[var_u] }
     if val_u {
       // If u is true, all nodes reachable from u must be true
       for v in self.adj[u] {
         let var_v = v / 2
         let neg_v = v % 2 == 1
-        let val_v = if neg_v {
-          not(assignment[var_v])
-        } else {
-          assignment[var_v]
-        }
-        if not(val_v) {
+        let val_v = if neg_v { !assignment[var_v] } else { assignment[var_v] }
+        if !val_v {
           return false
         }
       }

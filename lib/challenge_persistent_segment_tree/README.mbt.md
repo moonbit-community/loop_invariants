@@ -64,7 +64,7 @@ This is `O(log n)`.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node
 
 ///| pub fn add(node : Node, l : Int, r : Int, idx : Int, delta : Int) -> Node

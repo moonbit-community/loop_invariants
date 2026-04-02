@@ -53,7 +53,6 @@ pub fn ConvexHullTrick::add_line(
     let l2 = self.lines[self.lines.length() - 1]
     if is_bad(l1, l2, line) {
       let _ = self.lines.pop()
-
     } else {
       break
     }

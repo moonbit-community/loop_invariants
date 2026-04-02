@@ -284,7 +284,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
     let mut u = -1
     let mut best = DIJK_INF_INT
     for i = 0; i < n; i = i + 1 {
-      if not(used[i]) && dist[i] < best {
+      if !used[i] && dist[i] < best {
         u = i
         best = dist[i]
       }
@@ -307,7 +307,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
     for j = 0; j < neighbors.length(); j = j + 1 {
       let (v, w) = neighbors[j]
       let cand = dist[u] + w
-      if not(used[v]) && cand < dist[v] {
+      if !used[v] && cand < dist[v] {
         dist[v] = cand
       }
     } where {
@@ -421,11 +421,11 @@ pub fn bidirectional_dijkstra(
     }
 
     // Forward step
-    if not(forward_done) {
+    if !forward_done {
       match pq_forward.pop() {
         Some(entry) => {
           let u = entry.vertex
-          if not(visited_forward[u]) {
+          if !visited_forward[u] {
             visited_forward[u] = true
 
             // Check if we met backward search
@@ -469,11 +469,11 @@ pub fn bidirectional_dijkstra(
     }
 
     // Backward step
-    if not(backward_done) {
+    if !backward_done {
       match pq_backward.pop() {
         Some(entry) => {
           let u = entry.vertex
-          if not(visited_backward[u]) {
+          if !visited_backward[u] {
             visited_backward[u] = true
 
             // Check if we met forward search

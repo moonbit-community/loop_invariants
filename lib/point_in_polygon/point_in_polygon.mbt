@@ -57,7 +57,7 @@ pub fn point_in_polygon(poly : Array[Point], p : Point) -> Location {
       let rhs = (p.x - a.x) * (b.y - a.y)
       let intersects = if b.y > a.y { lhs > rhs } else { lhs < rhs }
       if intersects {
-        inside = not(inside)
+        inside = !inside
       }
     }
     a = b

@@ -150,7 +150,7 @@ fn build_tree(
   for idx = 0; idx < queue.length(); idx = idx + 1 {
     let u = queue[idx]
     for v in adj[u] {
-      if not(seen_nodes[v]) {
+      if !seen_nodes[v] {
         seen_nodes[v] = true
         queue.push(v)
       }
@@ -168,7 +168,7 @@ fn build_tree(
     ),
   }
   for v in 0..<n {
-    if not(seen_nodes[v]) {
+    if !seen_nodes[v] {
       return None
     }
   }

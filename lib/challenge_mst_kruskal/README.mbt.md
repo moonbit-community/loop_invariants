@@ -99,7 +99,7 @@ first, and DSU ensures we only take those that do not form a cycle.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn mst_weight(n : Int, edges : ArrayView[(Int, Int, Int)]) -> Int? { ... }
 ```
 

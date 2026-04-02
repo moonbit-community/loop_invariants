@@ -76,7 +76,7 @@ Old version:               New version:
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn make(lo : Int, hi : Int) -> OrderStat
 
 ///| pub fn add(os : OrderStat, value : Int) -> OrderStat

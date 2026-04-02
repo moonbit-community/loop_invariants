@@ -81,7 +81,7 @@ same axis decisions.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty() -> Kd
 
 ///| pub fn insert(t : Kd, p : Point) -> Kd

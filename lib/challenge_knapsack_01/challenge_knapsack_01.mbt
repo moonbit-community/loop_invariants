@@ -18,7 +18,7 @@ pub fn knapsack_01(
   for i in 0..<n {
     let w_i = weights[i]
     let v_i = values[i]
-    for w in capacity >=.. w_i {
+    for w in capacity>=..w_i {
       let cand = dp[w - w_i] + v_i
       if cand > dp[w] {
         dp[w] = cand

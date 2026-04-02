@@ -44,7 +44,7 @@ for i = mid - 1; i >= block_start; i = i - 1 {
 - Result: Loops are shorter and avoid unwraps while preserving behavior.
 - Example:
 // Before
-while not(dq.is_empty()) && dq.front().unwrap() <= i - k {
+while !(dq.is_empty()) && dq.front().unwrap() <= i - k {
   let _ = dq.pop_front()
 }
 
@@ -109,7 +109,7 @@ for val in values {
 - Result: Removes unwraps while keeping deque logic and invariants intact.
 - Example:
 // Before
-while not(deque.is_empty()) && deque.front().unwrap() <= i - k {
+while !(deque.is_empty()) && deque.front().unwrap() <= i - k {
   let _ = deque.pop_front()
 }
 

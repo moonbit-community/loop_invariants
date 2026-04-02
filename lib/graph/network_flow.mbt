@@ -63,7 +63,7 @@ fn FlowNetwork::bfs_find_path(
           }
           for i, edge in self.adj[u] {
             let residual = edge.capacity - edge.flow
-            if residual > 0 && not(visited[edge.to]) {
+            if residual > 0 && !visited[edge.to] {
               visited[edge.to] = true
               parent[edge.to] = Some((u, i))
               queue.push(edge.to)
@@ -92,7 +92,7 @@ fn FlowNetwork::edmonds_karp(
   let mut max_flow = 0
   for ;; {
     let (has_path, parent) = self.bfs_find_path(source, sink)
-    if not(has_path) {
+    if !has_path {
       break max_flow
     }
     // Find minimum residual capacity along path
@@ -298,7 +298,7 @@ fn DinicNetwork::dinic_max_flow(
 ) -> Int {
   let mut max_flow = 0
   for ;; {
-    if not(self.bfs_dinic(source, sink)) {
+    if !self.bfs_dinic(source, sink) {
       break max_flow
     }
     for i in 0..<self.n {
@@ -418,7 +418,7 @@ fn MCMFNetwork::spfa_mcmf(
             if residual > 0 && dist[u] + edge.cost < dist[edge.to] {
               dist[edge.to] = dist[u] + edge.cost
               parent[edge.to] = Some((u, i))
-              if not(in_queue[edge.to]) {
+              if !in_queue[edge.to] {
                 queue.push(edge.to)
                 in_queue[edge.to] = true
               }
@@ -442,7 +442,7 @@ fn MCMFNetwork::min_cost_max_flow(
   let dist : Array[Int] = Array::make(self.n, 0)
   let parent : Array[(Int, Int)?] = Array::make(self.n, None)
   for ;; {
-    if not(self.spfa_mcmf(source, sink, dist, parent)) {
+    if !self.spfa_mcmf(source, sink, dist, parent) {
       break (max_flow, min_cost)
     }
     // Find minimum residual capacity
@@ -591,7 +591,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
       let mut delta = inf
       let mut j1 = 0
       for j = 1; j <= m; j = j + 1 {
-        if not(used[j]) {
+        if !used[j] {
           let cur = cost[i0 - 1][j - 1] - u[i0] - v[j]
           if cur < minv[j] {
             minv[j] = cur

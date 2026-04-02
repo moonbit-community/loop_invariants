@@ -145,7 +145,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
           deque[deque.length() - 2],
           deque[deque.length() - 1],
         )
-        if not(is_inside(line, p)) {
+        if !is_inside(line, p) {
           let _ = deque.pop()
           continue
         }
@@ -167,7 +167,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
     for ;; {
       if deque.length() - head >= 2 {
         let p = line_intersection(deque[head], deque[head + 1])
-        if not(is_inside(line, p)) {
+        if !is_inside(line, p) {
           head = head + 1
           continue
         }
@@ -193,7 +193,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
         deque[deque.length() - 2],
         deque[deque.length() - 1],
       )
-      if not(is_inside(deque[head], p)) {
+      if !is_inside(deque[head], p) {
         let _ = deque.pop()
         continue
       }
@@ -213,7 +213,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
   for ;; {
     if deque.length() - head >= 3 {
       let p = line_intersection(deque[head], deque[head + 1])
-      if not(is_inside(deque[deque.length() - 1], p)) {
+      if !is_inside(deque[deque.length() - 1], p) {
         head = head + 1
         continue
       }

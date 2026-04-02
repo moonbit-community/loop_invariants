@@ -157,7 +157,7 @@ If you do not need persistence, a mutable array-based stack might be simpler.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty[T]() -> Stack[T]
 
 ///| pub fn is_empty[T](s : Stack[T]) -> Bool

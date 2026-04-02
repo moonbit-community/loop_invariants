@@ -98,7 +98,7 @@ MST total weight = 6.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build_adj(n : Int, edges : ArrayView[(Int, Int, Int)]) -> Array[Array[(Int, Int)]]
 
 ///| pub fn mst_weight(adj : Array[Array[(Int, Int)]]) -> Int?

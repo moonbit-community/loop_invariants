@@ -63,7 +63,7 @@ This is `O(log n)` per update.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node
 
 ///| pub fn range_assign(node : Node, l : Int, r : Int, ql : Int, qr : Int, value : Int) -> Node

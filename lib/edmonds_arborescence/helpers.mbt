@@ -107,7 +107,7 @@ fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
   while idx < stack.length() {
     let u = stack[idx]
     for v in adj[u] {
-      if not(seen[v]) {
+      if !seen[v] {
         seen[v] = true
         stack.push(v)
       }

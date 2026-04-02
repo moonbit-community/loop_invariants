@@ -101,7 +101,7 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
       // suffix[i] = arr[i] + arr[i+1] + ... + arr[mid]
       if mid < n {
         row[mid] = arr[mid]
-        for i in mid >.. block_start {
+        for i in mid>..block_start {
           row[i] = arr[i] + row[i + 1]
         }
       }
@@ -212,7 +212,7 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
       // Suffix XOR
       if mid < n {
         row[mid] = arr[mid]
-        for i in mid >.. block_start {
+        for i in mid>..block_start {
           row[i] = arr[i] ^ row[i + 1]
         }
       }
@@ -320,7 +320,7 @@ fn DisjointSparseProd::new(
       // Suffix product
       if mid < n {
         row[mid] = arr[mid] % modulo
-        for i in mid >.. block_start {
+        for i in mid>..block_start {
           row[i] = arr[i] * row[i + 1] % modulo
         }
       }

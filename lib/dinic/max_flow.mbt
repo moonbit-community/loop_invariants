@@ -127,7 +127,7 @@ pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
   while queue.get(front) is Some(u) {
     result.push(u)
     for e in self.adj[u] {
-      if e.cap > e.flow && not(visited[e.to]) {
+      if e.cap > e.flow && !visited[e.to] {
         visited[e.to] = true
         queue.push(e.to)
       }

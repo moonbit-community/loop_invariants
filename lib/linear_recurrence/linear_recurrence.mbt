@@ -69,7 +69,7 @@ fn combine(
     }
   }
   let start_exclusive = 2 * k - 1
-  for i in start_exclusive >.. k {
+  for i in start_exclusive>..k {
     let val = tmp[i]
     if val != 0L {
       for j in 1..<(k + 1) {

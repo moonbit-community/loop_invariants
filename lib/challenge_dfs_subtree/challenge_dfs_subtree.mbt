@@ -36,7 +36,7 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
     ),
   }
   let size : Array[Int] = Array::make(n, 0)
-  for i in order.length() >.. 0 {
+  for i in order.length()>..0 {
     let u = order[i]
     size[u] = 1
     for v in adj[u] {

@@ -69,7 +69,7 @@ new back:  z -> x -> y
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Queue[T]
 
 ///| pub fn[T] enqueue(q : Queue[T], value : T) -> Queue[T]

@@ -41,11 +41,11 @@ pub fn build_block_cut_tree(
     let vertices : Array[Int] = []
     for edge in comp_edges {
       let (u, v) = edge
-      if not(in_comp[u]) {
+      if !in_comp[u] {
         in_comp[u] = true
         vertices.push(u)
       }
-      if not(in_comp[v]) {
+      if !in_comp[v] {
         in_comp[v] = true
         vertices.push(v)
       }

@@ -253,7 +253,7 @@ If you do not need historical versions, a normal segment tree is simpler.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node
 
 ///| pub fn set_value(

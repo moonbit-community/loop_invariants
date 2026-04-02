@@ -182,7 +182,7 @@ fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] 
     result.push(u)
     for i = 0; i < self.adj[u].length(); i = i + 1 {
       let e = self.adj[u][i]
-      if e.cap > e.flow && not(visited[e.to]) {
+      if e.cap > e.flow && !visited[e.to] {
         visited[e.to] = true
         queue.push(e.to)
       }
@@ -264,7 +264,7 @@ fn cut_capacity(
   for edge in edges {
     let (u, v, cap) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
-      if in_source[u] && not(in_source[v]) {
+      if in_source[u] && !in_source[v] {
         total = total + cap
       }
     }

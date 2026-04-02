@@ -72,7 +72,7 @@ Both cost `O(log n)` time.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] from_array(arr : ArrayView[T]) -> PArray[T]
 
 ///| pub fn[T] get_at(arr : PArray[T], idx : Int) -> T?

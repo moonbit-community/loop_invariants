@@ -137,7 +137,7 @@ pub fn rabin_karp_multi(
     let m = pat.length()
     if m > 0 && m <= n {
       let h = compute_hash(pat, 0, m)
-      if not(by_length.contains(m)) {
+      if !by_length.contains(m) {
         by_length[m] = []
       }
       by_length[m].push((i, h))

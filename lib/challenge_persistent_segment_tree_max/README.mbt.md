@@ -48,7 +48,7 @@ Old version:               New version:
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node
 
 ///| pub fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node

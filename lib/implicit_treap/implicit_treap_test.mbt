@@ -215,7 +215,6 @@ test "implicit treap rope operations" {
   // Split simulation: delete elements
   for _ in 0..<3 {
     let _ = treap1.pop_front()
-
   }
   inspect(treap1.to_array(), content="[4, 5, 6]")
 }

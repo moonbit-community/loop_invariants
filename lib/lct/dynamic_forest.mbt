@@ -62,7 +62,7 @@ pub fn DynamicForest::link(self : DynamicForest, u : Int, v : Int) -> Bool {
 ///   - false: u and v not connected (no edge to cut)
 pub fn DynamicForest::cut(self : DynamicForest, u : Int, v : Int) -> Bool {
   // Check if connected
-  if not(self.lct.connected(u, v)) {
+  if !self.lct.connected(u, v) {
     return false
   }
   self.lct.cut_edge(u, v)

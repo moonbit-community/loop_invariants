@@ -123,7 +123,7 @@ pub fn ImplicitTreap::reverse(self : ImplicitTreap, l : Int, r : Int) -> Unit {
 
   // Toggle reversal flag (lazy)
   if mid >= 0 {
-    self.nodes[mid].rev = not(self.nodes[mid].rev)
+    self.nodes[mid].rev = !self.nodes[mid].rev
   }
   self.root = self.merge(left, self.merge(mid, right))
 }

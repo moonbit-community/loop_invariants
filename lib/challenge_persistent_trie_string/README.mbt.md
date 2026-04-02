@@ -179,7 +179,7 @@ mapping and child storage.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty() -> Node
 
 ///| pub fn add(root : Node, s : String) -> Node

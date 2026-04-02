@@ -119,7 +119,6 @@ fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
       while deque.front() is Some(front) {
         if front <= i - k {
           let _ = deque.pop_front()
-
         } else {
           break
         }
@@ -129,7 +128,6 @@ fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
       while deque.back() is Some(back) {
         if arr[back] < arr[i] {
           let _ = deque.pop_back()
-
         } else {
           break
         }
@@ -455,7 +453,6 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
   for i = 0; i < n; i = i + 1 {
     while stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i] {
       let _ = stack.pop()
-
     }
     left[i] = if stack.length() == 0 {
       i + 1
@@ -480,10 +477,9 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
 
   // Compute right distances using monotonic stack (process right to left)
   stack.clear()
-  for i in n >.. 0 {
+  for i in n>..0 {
     while stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i] {
       let _ = stack.pop()
-
     }
     right[i] = if stack.length() == 0 {
       n - i
@@ -568,7 +564,6 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
       // Pop prices smaller than current
       while stack.length() > 0 && prices[stack[stack.length() - 1]] <= prices[i] {
         let _ = stack.pop()
-
       }
 
       // Span extends back to previous larger price (or to start)

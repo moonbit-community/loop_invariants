@@ -76,7 +76,7 @@ pub fn MinCostMaxFlow::spfa(
         self.prev_e[e.to] = i
 
         // Add to queue if not already there
-        if not(self.in_queue[e.to]) {
+        if !self.in_queue[e.to] {
           queue.push(e.to)
           self.in_queue[e.to] = true
         }

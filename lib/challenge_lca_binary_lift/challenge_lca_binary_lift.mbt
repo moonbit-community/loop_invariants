@@ -104,7 +104,7 @@ pub fn lca(tree : Lca, u : Int, v : Int) -> Int {
   if a == b {
     return a
   }
-  for k in log >.. 0 {
+  for k in log>..0 {
     let upa = tree.up[k][a]
     let upb = tree.up[k][b]
     if upa != upb {

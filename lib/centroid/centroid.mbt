@@ -64,7 +64,7 @@ fn CentroidTree::compute_size(
 ) -> Int {
   self.subtree_size[u] = 1
   for v in self.adj[u] {
-    if v != parent && not(self.removed[v]) {
+    if v != parent && !self.removed[v] {
       self.subtree_size[u] = self.subtree_size[u] + self.compute_size(v, u)
     }
   }
@@ -81,9 +81,7 @@ fn CentroidTree::find_centroid(
 ) -> Int {
   // Check if any child subtree has more than half the nodes
   for v in self.adj[u] {
-    if v != parent &&
-      not(self.removed[v]) &&
-      self.subtree_size[v] > tree_size / 2 {
+    if v != parent && !self.removed[v] && self.subtree_size[v] > tree_size / 2 {
       return self.find_centroid(v, u, tree_size)
     }
   }
@@ -105,9 +103,8 @@ fn CentroidTree::decompose(
   self.centroid_parent[centroid] = parent
   self.centroid_depth[centroid] = depth
   for v in self.adj[centroid] {
-    if not(self.removed[v]) {
+    if !self.removed[v] {
       let _ = self.decompose(v, centroid, depth + 1)
-
     }
   }
   centroid
@@ -117,7 +114,6 @@ fn CentroidTree::decompose(
 fn CentroidTree::build(self : CentroidTree) -> Unit {
   if self.n > 0 {
     let _ = self.decompose(0, -1, 0)
-
   }
 }
 

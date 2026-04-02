@@ -44,7 +44,7 @@ pub fn BinaryTrie::size(self : BinaryTrie) -> Int {
 pub fn BinaryTrie::insert(self : BinaryTrie, x : Int64) -> Unit {
   let mut node = 0
   self.nodes[node].count = self.nodes[node].count + 1
-  for bit in self.max_bits >=.. 0 {
+  for bit in self.max_bits>=..0 {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let next = if b == 0 {
       self.nodes[node].next0
@@ -77,7 +77,7 @@ pub fn BinaryTrie::remove(self : BinaryTrie, x : Int64) -> Bool {
   }
   let path : Array[Int] = [0]
   let mut node = 0
-  for bit in self.max_bits >=.. 0 {
+  for bit in self.max_bits>=..0 {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let next = if b == 0 {
       self.nodes[node].next0
@@ -108,7 +108,7 @@ pub fn BinaryTrie::max_xor(self : BinaryTrie, x : Int64) -> Int64 {
   // Traverse trie, preferring the opposite bit to maximize XOR
   let mut node = 0
   let mut result = 0L
-  for bit in self.max_bits >=.. 0 {
+  for bit in self.max_bits>=..0 {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let preferred = if b == 0 { 1 } else { 0 }
     let preferred_child = if preferred == 0 {
@@ -142,7 +142,7 @@ pub fn BinaryTrie::min_xor(self : BinaryTrie, x : Int64) -> Int64 {
   // Traverse trie, preferring the same bit to minimize XOR
   let mut node = 0
   let mut result = 0L
-  for bit in self.max_bits >=.. 0 {
+  for bit in self.max_bits>=..0 {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let preferred = if b == 0 { 0 } else { 1 }
     let preferred_child = if preferred == 0 {

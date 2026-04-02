@@ -90,7 +90,7 @@ This gives `O(log n)` extra memory per insertion.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Tree[T]
 
 ///| pub fn[T : Compare] insert(t : Tree[T], key : T) -> Tree[T]

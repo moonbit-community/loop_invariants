@@ -182,7 +182,7 @@ So dp[0][2] = 88 (best parenthesization is A0 (A1 A2)).
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn matrix_chain_min_cost(dims : ArrayView[Int]) -> Int { ... }
 ```
 

@@ -17,7 +17,7 @@ fn is_power_of_two(n : Int) -> Bool {
 /// XOR FWHT. When inverse=true, divides each value by n.
 pub fn fwht_xor(values : ArrayView[Int64], inverse : Bool) -> Array[Int64] {
   let n = values.length()
-  if not(is_power_of_two(n)) {
+  if !is_power_of_two(n) {
     return []
   }
   let a = values.to_array()

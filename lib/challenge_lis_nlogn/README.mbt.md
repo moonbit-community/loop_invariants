@@ -135,7 +135,7 @@ value `> x` instead. That tiny change lets equal values extend the length.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn lis_length(nums : ArrayView[Int]) -> Int { ... }
 ```
 

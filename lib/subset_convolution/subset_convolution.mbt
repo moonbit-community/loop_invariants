@@ -45,7 +45,7 @@ pub fn subset_convolution(
   g : ArrayView[Int64],
 ) -> Array[Int64] {
   let size = if f.length() > g.length() { f.length() } else { g.length() }
-  if size == 0 || not(is_power_of_two(size)) {
+  if size == 0 || !is_power_of_two(size) {
     return []
   }
   let n = log2_pow2(size)

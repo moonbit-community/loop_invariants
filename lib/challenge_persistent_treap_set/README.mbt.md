@@ -157,7 +157,7 @@ If you do not need persistence, a mutable tree set may be simpler.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty[T]() -> Treap[T]
 
 ///| pub fn size[T](t : Treap[T]) -> Int

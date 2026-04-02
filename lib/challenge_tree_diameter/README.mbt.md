@@ -106,6 +106,6 @@ graphs, diameter is harder).
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn tree_diameter(n : Int, edges : ArrayView[(Int, Int)]) -> Int
 ```

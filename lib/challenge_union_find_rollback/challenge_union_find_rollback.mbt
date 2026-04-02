@@ -87,7 +87,7 @@ test "rollback_dsu" {
   let _ = dsu.union(1, 2)
   assert_true(dsu.same(0, 3))
   dsu.rollback(snap)
-  assert_true(not(dsu.same(0, 3)))
+  assert_true(!dsu.same(0, 3))
   assert_true(dsu.same(0, 1))
   assert_true(dsu.same(2, 3))
 }

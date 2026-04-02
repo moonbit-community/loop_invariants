@@ -48,7 +48,7 @@ fn TopoSorter::dfs(self : TopoSorter, u : Int) -> Bool {
   for v in self.adj[u] {
     if ok {
       if self.state[v] == 0 {
-        if not(self.dfs(v)) {
+        if !self.dfs(v) {
           ok = false
         }
       } else if self.state[v] == 1 {
@@ -56,7 +56,7 @@ fn TopoSorter::dfs(self : TopoSorter, u : Int) -> Bool {
       }
     }
   }
-  if not(ok) {
+  if !ok {
     return false
   }
   self.state[u] = 2
@@ -69,7 +69,7 @@ fn TopoSorter::sort(self : TopoSorter) -> Array[Int]? {
   let mut ok = true
   for v = 0; v < self.n; v = v + 1 {
     if self.state[v] == 0 {
-      if not(self.dfs(v)) {
+      if !self.dfs(v) {
         ok = false
         break
       }
@@ -86,7 +86,7 @@ fn TopoSorter::sort(self : TopoSorter) -> Array[Int]? {
       #|At v = n, all vertices are processed or ok=false indicates a cycle.
     ),
   }
-  if not(ok) {
+  if !ok {
     None
   } else {
     self.order.rev_in_place()

@@ -125,7 +125,7 @@ insert_at(1, 15) -> [10, 15, 20]
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Treap[T]
 
 ///| pub fn[T] split(t : Treap[T], k : Int) -> (Treap[T], Treap[T])

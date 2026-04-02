@@ -86,7 +86,7 @@ If you need guaranteed `O(log n)`, use a balanced persistent tree
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Tree[T]
 
 ///| pub fn[T : Compare] insert(t : Tree[T], value : T) -> Tree[T]
