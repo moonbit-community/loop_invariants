@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants/lib/verified_division"
+
+// Values
+pub fn div_mod_nonneg(Int, Int) -> (Int, Int)
+
+pub fn div_nonneg(Int, Int) -> Int
+
+pub fn mod_nonneg(Int, Int) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

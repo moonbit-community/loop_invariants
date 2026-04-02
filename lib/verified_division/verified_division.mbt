@@ -1,0 +1,77 @@
+///|
+/// Formalized version of the repeated-subtraction division example.
+pub fn div_nonneg(
+  n : Int,
+  d : Int,
+) -> Int where {
+  proof_require: valid_division_args(n, d),
+  proof_ensure: result => div_ok(n, d, result),
+} {
+  for q = 0, r = n; q < n + 1; {
+    if r < d {
+      break q
+    } else {
+      continue q + 1, r - d
+    }
+  } nobreak {
+    q
+  } where {
+    proof_invariant: 0 <= q,
+    proof_invariant: q <= n,
+    proof_invariant: 0 <= r,
+    proof_invariant: n == q * d + r,
+    proof_yield: res => div_ok(n, d, res),
+    reasoning: (
+      #| This loop mirrors repeated subtraction exactly: `q` counts how many
+      #| full copies of `d` have been removed from `n`, while `r` is the
+      #| remaining amount.
+      #|
+      #| The core arithmetic invariant is `n == q * d + r`. It starts true at
+      #| `(q, r) = (0, n)` and is preserved because each iteration changes the
+      #| state to `(q + 1, r - d)`.
+      #|
+      #| The guard `r < d` identifies the first point at which another full
+      #| subtraction is impossible. Together with `0 <= r`, that means
+      #| `q * d <= n < (q + 1) * d`, so yielding `q` is correct.
+      #|
+      #| The auxiliary bound `q <= n` keeps the synthetic loop guard
+      #| `q < n + 1` proof-friendly without changing the mathematical argument:
+      #| when `d > 0`, every successful subtraction increases `q` by one and
+      #| removes at least one unit from `r`.
+    ),
+  }
+}
+
+///|
+pub fn mod_nonneg(
+  n : Int,
+  d : Int,
+) -> Int where {
+  proof_require: valid_division_args(n, d),
+  proof_ensure: result => mod_ok(n, d, result),
+} {
+  let q = div_nonneg(n, d)
+  let r = n - q * d
+  proof_assert mod_ok(n, d, r)
+  r
+}
+
+///|
+pub fn div_mod_nonneg(
+  n : Int,
+  d : Int,
+) -> (Int, Int) where {
+  proof_require: valid_division_args(n, d),
+} {
+  let q = div_nonneg(n, d)
+  let r = mod_nonneg(n, d)
+  (q, r)
+}
+
+///|
+test "verified_division_examples" {
+  assert_eq(div_nonneg(10, 3), 3)
+  assert_eq(mod_nonneg(10, 3), 1)
+  assert_eq(div_mod_nonneg(25, 5), (5, 0))
+  assert_eq(div_mod_nonneg(0, 7), (0, 0))
+}

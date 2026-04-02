@@ -1,0 +1,4 @@
+///|
+pub predicate count_bounded(xs : FixedArray[Int], count : Int) {
+  0 <= count && count <= xs.length()
+}
