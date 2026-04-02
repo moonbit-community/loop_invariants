@@ -185,9 +185,9 @@ pub fn HopcroftKarp::min_vertex_cover(
     }
     visited_left[u] = true
     for v in graph.adj[u] {
-      if not(visited_right[v]) {
+      if !visited_right[v] {
         visited_right[v] = true
-        if match_right[v] >= 0 && not(visited_left[match_right[v]]) {
+        if match_right[v] >= 0 && !visited_left[match_right[v]] {
           dfs_cover(
             graph,
             match_right,
@@ -211,7 +211,7 @@ pub fn HopcroftKarp::min_vertex_cover(
   let left_cover : Array[Int] = []
   let right_cover : Array[Int] = []
   for u in 0..<graph.n_left {
-    if not(visited_left[u]) {
+    if !visited_left[u] {
       left_cover.push(u)
     }
   }

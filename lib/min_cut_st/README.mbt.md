@@ -200,7 +200,7 @@ fn cut_edges_fast(
   let cut : Array[(Int, Int, Int64)] = []
   for edge in edges {
     let (u, v, cap) = edge
-    if in_source[u] && not(in_source[v]) {
+    if in_source[u] && !in_source[v] {
       cut.push((u, v, cap))
     }
   }
@@ -232,7 +232,7 @@ For very small graphs, a simpler (but slower) check is also fine:
 
 ```
 edge (u -> v) is in the cut if
-  source_side.contains(u) && not(source_side.contains(v))
+  source_side.contains(u) && !(source_side.contains(v))
 ```
 
 ## 9. Example C: no path from s to t

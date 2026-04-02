@@ -88,7 +88,7 @@ slow. For guaranteed `O(log n)`, you would need a balanced BST.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty() -> Tree
 
 ///| pub fn insert(t : Tree, start : Int, end : Int) -> Tree

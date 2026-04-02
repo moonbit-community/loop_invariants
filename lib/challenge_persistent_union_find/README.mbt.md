@@ -150,7 +150,7 @@ faster.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn make(n : Int) -> DSU
 
 ///| pub fn find(dsu : DSU, x : Int) -> Int

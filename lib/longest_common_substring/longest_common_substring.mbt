@@ -39,8 +39,8 @@ pub fn longest_common_substring(a : String, b : String) -> LCSResult {
   let mut curr = Array::make(m + 1, 0)
   let mut best_len = 0
   let mut best_end = 0
-  for i in 1 ..<= n {
-    for j in 1 ..<= m {
+  for i in 1..<=n {
+    for j in 1..<=m {
       if a[i - 1] == b[j - 1] {
         curr[j] = prev[j - 1] + 1
         if curr[j] > best_len {

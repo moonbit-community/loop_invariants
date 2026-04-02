@@ -69,7 +69,7 @@ pub fn FenwickTree::from_array(arr : Array[Int64]) -> FenwickTree {
   }
 
   // Build tree in O(n) by propagating each element to its parent
-  for i in 1 ..<= n {
+  for i in 1..<=n {
     let parent = i + (i & -i)
     if parent <= n {
       tree[parent] = tree[parent] + tree[i]
@@ -179,7 +179,7 @@ priv struct FenwickTree2D {
 ///|
 fn FenwickTree2D::new(rows : Int, cols : Int) -> FenwickTree2D {
   let tree : Array[Array[Int64]] = []
-  for _ in 0 ..<= rows {
+  for _ in 0..<=rows {
     tree.push(Array::make(cols + 1, 0L))
   }
   { rows, cols, tree }

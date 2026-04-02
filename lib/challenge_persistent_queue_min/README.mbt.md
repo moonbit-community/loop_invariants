@@ -66,7 +66,7 @@ while sharing old ones. Past versions remain valid.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> MinQueue[T]
 
 ///| pub fn[T : Compare] enqueue(q : MinQueue[T], value : T) -> MinQueue[T]

@@ -173,7 +173,7 @@ Tree remains balanced.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Aa[T]
 
 ///| pub fn[T : Compare] insert(t : Aa[T], key : T) -> Aa[T]

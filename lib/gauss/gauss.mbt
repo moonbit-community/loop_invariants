@@ -78,11 +78,9 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let m = a[0].length()
 
   // Create augmented matrix [A|b]
-  let aug = Array::makei(n, i => Array::makei(m + 1, j => if j < m {
-    a[i][j]
-  } else {
-    b[i]
-  }))
+  let aug = Array::makei(n, i => {
+    Array::makei(m + 1, j => if j < m { a[i][j] } else { b[i] })
+  })
   let mut rank = 0
   let mut row = 0
 
@@ -341,11 +339,15 @@ fn gauss_mod(
   let m = a[0].length()
 
   // Create augmented matrix
-  let aug = Array::makei(n, i => Array::makei(m + 1, j => if j < m {
-    (a[i][j] % p + p) % p
-  } else {
-    (b[i] % p + p) % p
-  }))
+  let aug = Array::makei(n, i => {
+    Array::makei(m + 1, j => {
+      if j < m {
+        (a[i][j] % p + p) % p
+      } else {
+        (b[i] % p + p) % p
+      }
+    })
+  })
   let mut row = 0
 
   // Forward elimination
@@ -519,11 +521,9 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
   let m = a[0].length()
 
   // Create augmented matrix
-  let aug = Array::makei(n, i => Array::makei(m + 1, j => if j < m {
-    a[i][j] % 2
-  } else {
-    b[i] % 2
-  }))
+  let aug = Array::makei(n, i => {
+    Array::makei(m + 1, j => if j < m { a[i][j] % 2 } else { b[i] % 2 })
+  })
   let mut row = 0
   for col = 0; col < m && row < n; col = col + 1 {
     // Find pivot

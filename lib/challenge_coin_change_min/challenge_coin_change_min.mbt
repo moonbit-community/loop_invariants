@@ -18,7 +18,7 @@ pub fn min_coins(coins : ArrayView[Int], amount : Int) -> Int? {
     if c <= 0 {
       continue
     }
-    for a in c ..<= amount {
+    for a in c..<=amount {
       if dp[a - c] != INF {
         let cand = dp[a - c] + 1
         if cand < dp[a] {

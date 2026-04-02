@@ -144,7 +144,7 @@ fn dfs_build(
   depth[v] = d
   up[v][0] = parent
   for u in adj[v] {
-    if not(visited[u]) {
+    if !visited[u] {
       dfs_build(u, v, d + 1, adj, depth, up, visited)
     }
   }
@@ -363,7 +363,7 @@ fn dfs_dist(
   dist[v] = d
   for neighbor in wadj[v] {
     let (u, w) = neighbor
-    if not(visited[u]) {
+    if !visited[u] {
       dfs_dist(u, d + w, wadj, dist, visited)
     }
   }

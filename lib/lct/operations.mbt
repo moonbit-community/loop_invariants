@@ -251,7 +251,7 @@ pub fn LinkCutTree::lca(self : LinkCutTree, u : Int, v : Int) -> Int {
 pub fn LinkCutTree::make_root(self : LinkCutTree, v : Int) -> Unit {
   self.access(v)
   // Toggle reversal flag (will flip the path orientation)
-  self.nodes[v].reversed = not(self.nodes[v].reversed)
+  self.nodes[v].reversed = !self.nodes[v].reversed
   self.push_down(v) // Apply immediately to maintain invariants
 }
 

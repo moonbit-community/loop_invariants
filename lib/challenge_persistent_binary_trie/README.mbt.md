@@ -90,7 +90,7 @@ The trie stores only those bits. Queries should use the same `max_bit`.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty() -> Node
 
 ///| pub fn count(node : Node) -> Int

@@ -150,7 +150,7 @@ fn is_prime_32(n : Int) -> Bool {
       let a = witnesses[i]
       if a >= n64 {
         continue i + 1
-      } else if not(is_strong_probable_prime(n64, a)) {
+      } else if !is_strong_probable_prime(n64, a) {
         break false
       } else {
         continue i + 1
@@ -180,11 +180,11 @@ test "is_prime_32" {
   assert_true(is_prime_32(17))
   assert_true(is_prime_32(997))
   assert_true(is_prime_32(7919))
-  assert_true(not(is_prime_32(1)))
-  assert_true(not(is_prime_32(4)))
-  assert_true(not(is_prime_32(100)))
-  assert_true(not(is_prime_32(561))) // Carmichael number
-  assert_true(not(is_prime_32(1105))) // Another Carmichael number
+  assert_true(!is_prime_32(1))
+  assert_true(!is_prime_32(4))
+  assert_true(!is_prime_32(100))
+  assert_true(!is_prime_32(561)) // Carmichael number
+  assert_true(!is_prime_32(1105)) // Another Carmichael number
 }
 
 // ============================================================================
@@ -777,9 +777,9 @@ test "is_perfect_power" {
   assert_true(is_perfect_power(16)) // 2^4 or 4^2
   assert_true(is_perfect_power(27)) // 3^3
   assert_true(is_perfect_power(125)) // 5^3
-  assert_true(not(is_perfect_power(2)))
-  assert_true(not(is_perfect_power(3)))
-  assert_true(not(is_perfect_power(5)))
-  assert_true(not(is_perfect_power(6)))
-  assert_true(not(is_perfect_power(10)))
+  assert_true(!is_perfect_power(2))
+  assert_true(!is_perfect_power(3))
+  assert_true(!is_perfect_power(5))
+  assert_true(!is_perfect_power(6))
+  assert_true(!is_perfect_power(10))
 }

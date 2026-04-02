@@ -70,7 +70,7 @@ fn select_max_vertex(
   let mut sel = -1
   let mut best = -1L
   for v in 0..<w.length() {
-    if alive[v] && not(added[v]) {
+    if alive[v] && !added[v] {
       if sel == -1 || w[v] > best {
         sel = v
         best = w[v]

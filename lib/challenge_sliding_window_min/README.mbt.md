@@ -121,6 +121,6 @@ If you only need one window, a simple scan is enough.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn sliding_window_min(arr : ArrayView[Int], k : Int) -> Array[Int]
 ```

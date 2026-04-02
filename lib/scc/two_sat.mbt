@@ -125,12 +125,12 @@ pub fn TwoSAT::add_clause(
   neg_b : Bool,
 ) -> Unit {
   // Implication 1: (NOT a) => b
-  let from_a = var_to_vertex(self.n, a, not(neg_a))
+  let from_a = var_to_vertex(self.n, a, !neg_a)
   let to_b = var_to_vertex(self.n, b, neg_b)
   self.adj[from_a].push(to_b)
 
   // Implication 2: (NOT b) => a
-  let from_b = var_to_vertex(self.n, b, not(neg_b))
+  let from_b = var_to_vertex(self.n, b, !neg_b)
   let to_a = var_to_vertex(self.n, a, neg_a)
   self.adj[from_b].push(to_a)
 }

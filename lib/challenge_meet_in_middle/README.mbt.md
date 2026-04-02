@@ -143,7 +143,7 @@ This is exactly what we need for `remaining = target - L`.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int { ... }
 ```
 

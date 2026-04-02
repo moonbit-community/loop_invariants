@@ -50,7 +50,7 @@ When querying `[ql, qr)`:
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node
 
 ///| pub fn range_add(node : Node, l : Int, r : Int, ql : Int, qr : Int, delta : Int) -> Node

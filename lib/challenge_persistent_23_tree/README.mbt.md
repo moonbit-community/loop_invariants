@@ -126,7 +126,7 @@ This is `O(log n)` because the tree is balanced.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Tree[T]
 
 ///| pub fn[T : Compare] insert(t : Tree[T], key : T) -> Tree[T]

@@ -228,7 +228,7 @@ pub fn MinCostFlowPotentials::compute_with_limit(
   let mut total_flow = 0L
   let mut total_cost = 0L
   for iter = 0; total_flow < flow_limit; iter = iter + 1 {
-    if not(self.dijkstra(source, sink, potential)) {
+    if !self.dijkstra(source, sink, potential) {
       break
     }
 

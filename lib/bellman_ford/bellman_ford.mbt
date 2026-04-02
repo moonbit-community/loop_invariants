@@ -80,7 +80,7 @@ pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
       }
     }
     // Early termination if no relaxation happened
-    if not(any_relaxed) {
+    if !any_relaxed {
       break
     }
   }
@@ -217,7 +217,7 @@ fn SPFA::compute(self : SPFA, source : Int) -> Array[Int64]? {
       let (v, w) = edge
       if self.dist[u] + w < self.dist[v] {
         self.dist[v] = self.dist[u] + w
-        if not(self.in_queue[v]) {
+        if !self.in_queue[v] {
           queue.push(v)
           self.in_queue[v] = true
           self.count[v] = self.count[v] + 1

@@ -178,7 +178,7 @@ fn Trie::find_node(self : Trie, s : String) -> TrieNode? {
 /// Delete a word from trie (decrement count)
 /// Returns true if word was found and deleted
 fn Trie::delete(self : Trie, word : String) -> Bool {
-  if not(self.search(word)) {
+  if !self.search(word) {
     return false
   }
   let mut current = self.root

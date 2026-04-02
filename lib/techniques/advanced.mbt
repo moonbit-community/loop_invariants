@@ -41,7 +41,7 @@ fn floyd_cycle_detect(nodes : ArrayView[ListNode], head : Int) -> (Bool, Int) {
     if next_fast < 0 || next_fast_1 < 0 {
       // Fast pointer reached end - no cycle
       break None
-    } else if not(first_step) && slow == fast {
+    } else if !first_step && slow == fast {
       // They met! Cycle exists
       break Some(slow)
     } else {
@@ -179,7 +179,7 @@ test "floyd_cycle_detect" {
     { next: -1 }, // end
   ]
   let (has_cycle2, _) = floyd_cycle_detect(nodes_no_cycle[:], 0)
-  assert_true(not(has_cycle2))
+  assert_true(!has_cycle2)
 }
 
 // ============================================================================
@@ -643,7 +643,6 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
             ) <=
             0 {
         let _ = hull.pop()
-
       }
       hull.push(points[i])
       continue i + 1
@@ -714,7 +713,6 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
             ) <=
             0 {
         let _ = hull.pop()
-
       }
       hull.push(points[i])
       continue i - 1

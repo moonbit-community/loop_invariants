@@ -111,7 +111,7 @@ pub fn min_arborescence(
   // Step 0: Check reachability
   let reachable = build_reachable(n, edge_list, root)
   for v in 0..<n {
-    if not(reachable[v]) {
+    if !reachable[v] {
       return None // Arborescence impossible
     }
   }

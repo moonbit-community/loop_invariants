@@ -191,7 +191,7 @@ worst-case guarantees, consider a binomial heap or pairing heap.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty[T]() -> Heap[T]
 
 ///| pub fn size[T](h : Heap[T]) -> Int

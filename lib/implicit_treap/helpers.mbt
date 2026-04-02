@@ -180,7 +180,7 @@ fn ImplicitTreap::update(self : ImplicitTreap, node : Int) -> Unit {
 ///   This enables O(log n) range reversal.
 /// ```
 fn ImplicitTreap::push_down(self : ImplicitTreap, node : Int) -> Unit {
-  if node < 0 || not(self.nodes[node].rev) {
+  if node < 0 || !self.nodes[node].rev {
     return
   }
 
@@ -193,10 +193,10 @@ fn ImplicitTreap::push_down(self : ImplicitTreap, node : Int) -> Unit {
   let left = self.nodes[node].left
   let right = self.nodes[node].right
   if left >= 0 {
-    self.nodes[left].rev = not(self.nodes[left].rev)
+    self.nodes[left].rev = !self.nodes[left].rev
   }
   if right >= 0 {
-    self.nodes[right].rev = not(self.nodes[right].rev)
+    self.nodes[right].rev = !self.nodes[right].rev
   }
   self.nodes[node].rev = false
 }

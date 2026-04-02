@@ -106,7 +106,7 @@ range_sum(2, 4) = 12
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn make(n : Int) -> RangeFenwick
 
 ///| pub fn range_add(rf : RangeFenwick, l : Int, r : Int, delta : Int) -> RangeFenwick

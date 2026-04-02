@@ -106,10 +106,10 @@ fn LinkCutTree::push_down(self : LinkCutTree, x : Int) -> Unit {
     let l = self.nodes[x].left
     let r = self.nodes[x].right
     if l >= 0 {
-      self.nodes[l].reversed = not(self.nodes[l].reversed)
+      self.nodes[l].reversed = !self.nodes[l].reversed
     }
     if r >= 0 {
-      self.nodes[r].reversed = not(self.nodes[r].reversed)
+      self.nodes[r].reversed = !self.nodes[r].reversed
     }
     self.nodes[x].reversed = false
   }
@@ -221,7 +221,7 @@ fn LinkCutTree::rotate(self : LinkCutTree, x : Int) -> Unit {
 fn LinkCutTree::push_down_path(self : LinkCutTree, x : Int) -> Unit {
   // Collect ancestors (need to push from top down)
   let path : Array[Int] = []
-  for node = x; not(self.is_splay_root(node)); {
+  for node = x; !self.is_splay_root(node); {
     path.push(node)
     continue self.nodes[node].parent
   } nobreak {
@@ -277,7 +277,7 @@ fn LinkCutTree::splay(self : LinkCutTree, x : Int) -> Unit {
   self.push_down_path(x)
 
   // Splay until x is root of its splay tree
-  for ; not(self.is_splay_root(x)); {
+  for ; !self.is_splay_root(x); {
     let y = self.nodes[x].parent
     if self.is_splay_root(y) {
       // Zig: y is splay root, single rotation

@@ -122,7 +122,7 @@ If you want a DFS-based approach, use topological sort via DFS instead.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn topo_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]?
 
 ///| pub fn is_topo(order : Array[Int], n : Int, edges : ArrayView[(Int, Int)]) -> Bool

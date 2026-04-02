@@ -317,7 +317,7 @@ If you do not need historical versions, a normal lazy segment tree is simpler.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node
 
 ///| pub fn range_add(

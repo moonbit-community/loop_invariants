@@ -109,10 +109,10 @@ fn LinkCutTree::push_down(self : LinkCutTree, v : Int) -> Unit {
 
     // Propagate flip to children
     if node.left >= 0 {
-      self.nodes[node.left].flip = not(self.nodes[node.left].flip)
+      self.nodes[node.left].flip = !self.nodes[node.left].flip
     }
     if node.right >= 0 {
-      self.nodes[node.right].flip = not(self.nodes[node.right].flip)
+      self.nodes[node.right].flip = !self.nodes[node.right].flip
     }
     self.nodes[v].flip = false
   }
@@ -199,22 +199,22 @@ fn LinkCutTree::splay(self : LinkCutTree, v : Int) -> Unit {
   // First push down from root to v
   let path : Array[Int] = []
   let mut curr = v
-  while not(self.is_splay_root(curr)) {
+  while !self.is_splay_root(curr) {
     path.push(curr)
     curr = self.nodes[curr].parent
   }
   path.push(curr)
 
   // Push down along path from root to v
-  for i in path.length() >.. 0 {
+  for i in path.length()>..0 {
     self.push_down(path[i])
   }
 
   // Splay v to root
   // INVARIANT: Each iteration moves v closer to root
-  while not(self.is_splay_root(v)) {
+  while !self.is_splay_root(v) {
     let p = self.nodes[v].parent
-    if not(self.is_splay_root(p)) {
+    if !self.is_splay_root(p) {
       let g = self.nodes[p].parent
       let v_is_left = self.nodes[p].left == v
       let p_is_left = self.nodes[g].left == p
@@ -296,7 +296,7 @@ fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
 fn LinkCutTree::make_root(self : LinkCutTree, v : Int) -> Unit {
   let _ = self.access(v)
   // Flip the path (reverse it)
-  self.nodes[v].flip = not(self.nodes[v].flip)
+  self.nodes[v].flip = !self.nodes[v].flip
   self.push_down(v)
 }
 
@@ -576,7 +576,6 @@ test "linkcut star topology" {
   // Build star: 0 is center, 1-5 are leaves
   for i = 1; i < 6; i = i + 1 {
     let _ = lct.link(i, 0)
-
   } where {
     invariant: i >= 1 && i <= 6,
     reasoning: (

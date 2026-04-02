@@ -72,7 +72,7 @@ Only one new node is created.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Deque[T]
 
 ///| pub fn[T] push_front(d : Deque[T], value : T) -> Deque[T]

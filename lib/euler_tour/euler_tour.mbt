@@ -287,7 +287,7 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
   let m = self.euler.length()
 
   // Precompute log values
-  for i in 2 ..<= m {
+  for i in 2..<=m {
     self.log[i] = self.log[i / 2] + 1
   }
 

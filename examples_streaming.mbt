@@ -168,8 +168,8 @@ fn is_balanced_parens(chars : ArrayView[Char]) -> Bool {
 test "is_balanced_parens" {
   assert_true(is_balanced_parens(['(', ')'][:]))
   assert_true(is_balanced_parens(['(', '(', ')', ')'][:]))
-  assert_true(not(is_balanced_parens(['(', ')', ')'][:])))
-  assert_true(not(is_balanced_parens(['(', '('][:])))
+  assert_true(!is_balanced_parens(['(', ')', ')'][:]))
+  assert_true(!is_balanced_parens(['(', '('][:]))
   let empty : Array[Char] = []
   assert_true(is_balanced_parens(empty[:]))
 }

@@ -18,7 +18,7 @@ pub fn knapsack_unbounded(
   for i in 0..<n {
     let w_i = weights[i]
     let v_i = values[i]
-    for w in w_i ..<= capacity {
+    for w in w_i..<=capacity {
       let cand = dp[w - w_i] + v_i
       if cand > dp[w] {
         dp[w] = cand

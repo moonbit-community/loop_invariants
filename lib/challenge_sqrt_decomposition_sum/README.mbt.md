@@ -115,7 +115,7 @@ If you need `O(log n)` queries, use a Fenwick tree or segment tree instead.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build_sqrt_decomp(arr : ArrayView[Int]) -> SqrtDecomp
 
 ///| pub fn range_sum(sd : SqrtDecomp, l : Int, r : Int) -> Int

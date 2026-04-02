@@ -112,6 +112,6 @@ Kosaraju is simpler to explain, while Tarjan is more efficient in practice.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]
 ```

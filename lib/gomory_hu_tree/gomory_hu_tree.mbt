@@ -114,7 +114,7 @@ pub fn GomoryHuTree::min_cut(self : GomoryHuTree, u : Int, v : Int) -> Int64 {
         }
       }
   }
-  if not(found) || parent[v] == -1 {
+  if !found || parent[v] == -1 {
     return 0L
   }
   loop (v, GH_INF) {

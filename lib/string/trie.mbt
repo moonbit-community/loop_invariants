@@ -870,7 +870,7 @@ fn RadixTree::search(self : RadixTree, word : String) -> Bool {
         }
         // Check if edge matches
         let edge_chars = child.edge_label.to_array()
-        if not(edge_matches(chars, pos, edge_chars)) {
+        if !edge_matches(chars, pos, edge_chars) {
           break false
         }
         if pos + edge_len == chars.length() {

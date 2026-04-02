@@ -50,10 +50,12 @@ pub fn mo_range_sum(
     let (l, r) = queries[i]
     { l, r, idx: i }
   })
-  qs.sort_by((a, b) => if a.l / block != b.l / block {
-    a.l / block - b.l / block
-  } else {
-    a.r - b.r
+  qs.sort_by((a, b) => {
+    if a.l / block != b.l / block {
+      a.l / block - b.l / block
+    } else {
+      a.r - b.r
+    }
   })
   let ans = Array::make(q, 0)
   let mut cur_l = 0
@@ -61,7 +63,7 @@ pub fn mo_range_sum(
   let mut sum = 0
   for target in qs {
     if cur_l > target.l {
-      for i in cur_l >.. target.l {
+      for i in cur_l>..target.l {
         sum = sum + arr[i]
       }
     } else if cur_l < target.l {
@@ -75,7 +77,7 @@ pub fn mo_range_sum(
         sum = sum + arr[i]
       }
     } else if cur_r > target.r {
-      for i in cur_r >.. target.r {
+      for i in cur_r>..target.r {
         sum = sum - arr[i]
       }
     }

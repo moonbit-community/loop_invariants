@@ -166,7 +166,7 @@ pub fn stoer_wagner_min_cut(
 
       // Not last iteration: update w[] for remaining vertices
       for v in 0..<n {
-        if alive[v] && not(added[v]) {
+        if alive[v] && !added[v] {
           w[v] = w[v] + adj[sel][v]
         }
       }

@@ -81,7 +81,7 @@ Because `3 <= 2 + 1`, they merge into `[1, 5]`.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty() -> Tree
 
 ///| pub fn insert_interval(t : Tree, start : Int, end : Int) -> Tree

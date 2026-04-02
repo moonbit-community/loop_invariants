@@ -407,7 +407,7 @@ fn mex(values : ArrayView[Int]) -> Int {
     }
   }
   for i = 0; i < present.length(); i = i + 1 {
-    if not(present[i]) {
+    if !present[i] {
       return i
     }
   } nobreak {

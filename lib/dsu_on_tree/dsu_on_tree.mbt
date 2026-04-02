@@ -172,7 +172,7 @@ pub fn subtree_color_mode_sum(
     // Now counts represent exactly the subtree of u.
     add_color(counts, max_freq, sum_ref, colors[u])
     result[u] = sum_ref.val
-    if not(keep) {
+    if !keep {
       counts.clear()
       max_freq.val = 0
       sum_ref.val = 0L

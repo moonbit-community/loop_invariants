@@ -45,7 +45,7 @@ pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
   }
 
-  for idx in order.length() >.. 0 {
+  for idx in order.length()>..0 {
     let v = order[idx]
     if comp[v] == -1 {
       dfs2(v, cid)

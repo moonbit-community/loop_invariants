@@ -178,7 +178,7 @@ fn dijkstra(graph : Array[Array[(Int, Int)]], source : Int) -> Array[Int] {
       let u = for i = 0, min_dist = inf, min_vertex = -1 {
         if i >= n {
           break min_vertex
-        } else if not(visited[i]) && dist[i] < min_dist {
+        } else if !visited[i] && dist[i] < min_dist {
           continue i + 1, dist[i], i
         } else {
           continue i + 1, min_dist, min_vertex
@@ -405,7 +405,7 @@ fn bellman_ford(
           changed = true
         }
       }
-      if not(changed) {
+      if !changed {
         break // Early termination if no changes
       }
       continue i + 1

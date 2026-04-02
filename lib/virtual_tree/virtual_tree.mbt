@@ -89,7 +89,7 @@ fn lca(up : Array[Array[Int]], depth : Array[Int], a0 : Int, b0 : Int) -> Int {
   }
   let target_depth = depth[b]
   let mut diff = depth[a] - target_depth
-  for k in log >.. 0 {
+  for k in log>..0 {
     let step = 1 << k
     if diff >= step {
       a = up[k][a]
@@ -99,7 +99,7 @@ fn lca(up : Array[Array[Int]], depth : Array[Int], a0 : Int, b0 : Int) -> Int {
   if a == b {
     return a
   }
-  for k in log >.. 0 {
+  for k in log>..0 {
     if up[k][a] != up[k][b] {
       a = up[k][a]
       b = up[k][b]

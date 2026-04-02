@@ -159,7 +159,7 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
       }
     } where {
       invariant: self.on_stack[v],
-      invariant: scc.all(x => not(self.on_stack[x])),
+      invariant: scc.all(x => !self.on_stack[x]),
       invariant: scc.all(x => self.disc[x] >= self.disc[v]),
       invariant: self.stack.length() + scc.length() <= self.n,
       reasoning: (
@@ -326,7 +326,7 @@ fn KosarajuSCC::dfs1(self : KosarajuSCC, v : Int) -> Unit {
       break
     } else {
       let w = neighbors[i]
-      if not(self.visited[w]) {
+      if !self.visited[w] {
         self.dfs1(w)
       }
       continue i + 1
@@ -373,7 +373,7 @@ fn KosarajuSCC::dfs2(self : KosarajuSCC, v : Int, scc : Array[Int]) -> Unit {
       break
     } else {
       let w = neighbors[i]
-      if not(self.visited[w]) {
+      if !self.visited[w] {
         self.dfs2(w, scc)
       }
       continue i + 1
@@ -416,7 +416,7 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
     if v >= self.n {
       break
     } else {
-      if not(self.visited[v]) {
+      if !self.visited[v] {
         self.dfs1(v)
       }
       continue v + 1
@@ -461,7 +461,7 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
       break
     } else {
       let v = self.finish_order[i]
-      if not(self.visited[v]) {
+      if !self.visited[v] {
         let scc : Array[Int] = []
         self.dfs2(v, scc)
         self.sccs.push(scc)

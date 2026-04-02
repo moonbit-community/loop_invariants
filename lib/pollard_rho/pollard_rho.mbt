@@ -140,7 +140,7 @@ pub fn is_prime(n : Int64) -> Bool {
     if a % n == 0L {
       continue
     }
-    if not(miller_test(n, a, d, s)) {
+    if !miller_test(n, a, d, s) {
       return false
     }
   }

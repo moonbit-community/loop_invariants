@@ -101,7 +101,7 @@ Answer: 1 cut.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn min_palindrome_cuts(s : String) -> Int { ... }
 ```
 

@@ -70,7 +70,7 @@ The range query follows the usual segment tree pattern:
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn gcd(a : Int, b : Int) -> Int
 
 ///| pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node

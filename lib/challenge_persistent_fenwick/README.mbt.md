@@ -114,7 +114,7 @@ These paths cover exactly the ranges needed for correct sums.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn make(n : Int) -> Fenwick
 
 ///| pub fn add(fw : Fenwick, idx : Int, delta : Int) -> Fenwick

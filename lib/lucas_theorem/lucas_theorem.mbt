@@ -82,7 +82,7 @@ pub fn nck_mod_prime_lucas(n : Int64, k : Int64, p : Int64) -> Int64 {
   let inv_fact = Array::make(prime, 1L)
   inv_fact[prime - 1] = pow_mod(fact[prime - 1], p - 2L, p)
   let start_exclusive = prime - 1
-  for i in start_exclusive >.. 0 {
+  for i in start_exclusive>..0 {
     inv_fact[i] = mod_mul(inv_fact[i + 1], (i + 1).to_int64(), p)
   }
   let mut nn = n

@@ -259,6 +259,6 @@ the approach.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int, Int)
 ```

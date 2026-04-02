@@ -72,7 +72,7 @@ balanced ropes or rope rebalancing are useful.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty() -> Rope
 
 ///| pub fn leaf(value : String) -> Rope

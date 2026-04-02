@@ -149,7 +149,7 @@ The AVL balance keeps this in `O(log n)` time.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Avl[T]
 
 ///| pub fn[T : Compare] insert(t : Avl[T], key : T) -> Avl[T]

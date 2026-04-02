@@ -136,7 +136,7 @@ event list.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| priv struct Event { pos : Int, delta : Int }
 
 ///| pub fn max_overlap(intervals : ArrayView[(Int, Int)]) -> Int { ... }

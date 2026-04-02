@@ -93,7 +93,7 @@ Old versions remain valid forever.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn[T] empty() -> Heap[T]
 
 ///| pub fn[T : Compare] merge(a : Heap[T], b : Heap[T]) -> Heap[T]

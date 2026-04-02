@@ -20,5 +20,5 @@ test "binary trie duplicates" {
   assert_eq(trie.size(), 1)
   assert_true(trie.remove(5L))
   assert_eq(trie.size(), 0)
-  assert_true(not(trie.remove(5L)))
+  assert_true(!trie.remove(5L))
 }

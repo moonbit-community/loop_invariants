@@ -167,7 +167,7 @@ If you do not need persistence, a mutable balanced tree map may be simpler.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty[K, V]() -> TreapMap[K, V]
 
 ///| pub fn size[K, V](t : TreapMap[K, V]) -> Int

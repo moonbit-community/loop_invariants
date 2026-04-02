@@ -101,7 +101,6 @@ fn prev_smaller_left(a : ArrayView[Int]) -> Array[Int] {
     let ai = a[i]
     while stack.length() > 0 && a[stack[stack.length() - 1]] >= ai {
       let _ = stack.pop()
-
     }
     if stack.length() > 0 {
       let top = stack[stack.length() - 1]
@@ -143,7 +142,6 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
     let p = prices[i]
     while stack.length() > 0 && prices[stack[stack.length() - 1]] <= p {
       let _ = stack.pop()
-
     }
     if stack.length() == 0 {
       span[i] = i + 1

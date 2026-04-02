@@ -128,7 +128,7 @@ If you need updates, use a segment tree instead.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn build_sparse_table(arr : ArrayView[Int]) -> SparseTable
 
 ///| pub fn range_min(st : SparseTable, l : Int, r : Int) -> Int

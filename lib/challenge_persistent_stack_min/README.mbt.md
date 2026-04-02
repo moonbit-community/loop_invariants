@@ -155,7 +155,7 @@ If you do not need persistence, a mutable min-stack can be simpler.
 
 ## Reference implementation
 
-```mbt
+```mbt nocheck
 ///| pub fn empty[T]() -> MinStack[T]
 
 ///| pub fn size[T](s : MinStack[T]) -> Int

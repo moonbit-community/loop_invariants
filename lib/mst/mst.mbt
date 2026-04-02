@@ -112,12 +112,14 @@ fn MST::kruskal(self : MST) -> (Array[Edge], Int64) {
 
   // Sort edges by weight
   let sorted_edges = self.edges.copy()
-  sorted_edges.sort_by((a, b) => if a.weight < b.weight {
-    -1
-  } else if a.weight > b.weight {
-    1
-  } else {
-    0
+  sorted_edges.sort_by((a, b) => {
+    if a.weight < b.weight {
+      -1
+    } else if a.weight > b.weight {
+      1
+    } else {
+      0
+    }
   })
   let uf = UF::new(self.n)
   let mst_edges : Array[Edge] = []
@@ -198,7 +200,7 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
     let mut u = -1
     let mut min_w = PRIM_INF
     for i = 0; i < self.n; i = i + 1 {
-      if not(in_mst[i]) && min_edge[i] < min_w {
+      if !in_mst[i] && min_edge[i] < min_w {
         min_w = min_edge[i]
         u = i
       }
@@ -228,7 +230,7 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
     // Update min_edge for neighbors
     for neighbor in self.adj[u] {
       let (v, w) = neighbor
-      if not(in_mst[v]) && w < min_edge[v] {
+      if !in_mst[v] && w < min_edge[v] {
         min_edge[v] = w
       }
     }
