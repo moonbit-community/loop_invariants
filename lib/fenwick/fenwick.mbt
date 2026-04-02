@@ -97,11 +97,10 @@ pub fn FenwickTree::add(self : FenwickTree, i : Int, delta : Int64) -> Unit {
   }
 
   // Convert to 1-indexed
-  loop i + 1 {
-    idx => {
-      if idx > self.n {
-        break ()
-      }
+  for idx = i + 1 {
+    if idx > self.n {
+      break
+    } else {
       self.tree[idx] = self.tree[idx] + delta
       continue idx + lowbit(idx)
     }
@@ -122,12 +121,11 @@ pub fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int64 {
 
   // Convert to 1-indexed and clamp
   let idx_start = if i >= self.n { self.n } else { i + 1 }
-  loop (idx_start, 0L) {
-    (idx, sum) => {
-      if idx <= 0 {
-        break sum
-      }
-      continue (idx - lowbit(idx), sum + self.tree[idx])
+  for idx = idx_start, sum = 0L {
+    if idx <= 0 {
+      break sum
+    } else {
+      continue idx - lowbit(idx), sum + self.tree[idx]
     }
   }
 }
@@ -196,16 +194,14 @@ fn FenwickTree2D::add(
   if r < 0 || r >= self.rows || c < 0 || c >= self.cols {
     return
   }
-  loop r + 1 {
-    i => {
-      if i > self.rows {
-        break ()
-      }
-      loop c + 1 {
-        j => {
-          if j > self.cols {
-            break ()
-          }
+  for i = r + 1 {
+    if i > self.rows {
+      break
+    } else {
+      for j = c + 1 {
+        if j > self.cols {
+          break
+        } else {
           self.tree[i][j] = self.tree[i][j] + delta
           continue j + lowbit(j)
         }
@@ -223,20 +219,18 @@ fn FenwickTree2D::prefix_sum(self : FenwickTree2D, r : Int, c : Int) -> Int64 {
   }
   let ri = if r >= self.rows { self.rows } else { r + 1 }
   let ci = if c >= self.cols { self.cols } else { c + 1 }
-  loop (ri, 0L) {
-    (i, sum) => {
-      if i <= 0 {
-        break sum
-      }
-      let row_sum = loop (ci, 0L) {
-        (j, acc) => {
-          if j <= 0 {
-            break acc
-          }
-          continue (j - lowbit(j), acc + self.tree[i][j])
+  for i = ri, sum = 0L {
+    if i <= 0 {
+      break sum
+    } else {
+      let row_sum = for j = ci, acc = 0L {
+        if j <= 0 {
+          break acc
+        } else {
+          continue j - lowbit(j), acc + self.tree[i][j]
         }
       }
-      continue (i - lowbit(i), sum + row_sum)
+      continue i - lowbit(i), sum + row_sum
     }
   }
 }
@@ -287,11 +281,10 @@ fn FenwickTreeRangeUpdate::point_add(
   if i < 0 || i >= self.n {
     return
   }
-  loop i + 1 {
-    idx => {
-      if idx > self.n {
-        break ()
-      }
+  for idx = i + 1 {
+    if idx > self.n {
+      break
+    } else {
       self.tree[idx] = self.tree[idx] + delta
       continue idx + lowbit(idx)
     }
@@ -325,12 +318,11 @@ fn FenwickTreeRangeUpdate::query(
   if i < 0 || i >= self.n {
     return 0L
   }
-  loop (i + 1, 0L) {
-    (idx, sum) => {
-      if idx <= 0 {
-        break sum
-      }
-      continue (idx - lowbit(idx), sum + self.tree[idx])
+  for idx = i + 1, sum = 0L {
+    if idx <= 0 {
+      break sum
+    } else {
+      continue idx - lowbit(idx), sum + self.tree[idx]
     }
   }
 }
@@ -355,11 +347,10 @@ fn FenwickTreeRangeRange::new(n : Int) -> FenwickTreeRangeRange {
 
 ///|
 fn add_internal(arr : Array[Int64], n : Int, i : Int, delta : Int64) -> Unit {
-  loop i {
-    idx => {
-      if idx > n {
-        break ()
-      }
+  for idx = i {
+    if idx > n {
+      break
+    } else {
       arr[idx] = arr[idx] + delta
       continue idx + lowbit(idx)
     }
@@ -368,12 +359,11 @@ fn add_internal(arr : Array[Int64], n : Int, i : Int, delta : Int64) -> Unit {
 
 ///|
 fn query_internal(arr : Array[Int64], i : Int) -> Int64 {
-  loop (i, 0L) {
-    (idx, sum) => {
-      if idx <= 0 {
-        break sum
-      }
-      continue (idx - lowbit(idx), sum + arr[idx])
+  for idx = i, sum = 0L {
+    if idx <= 0 {
+      break sum
+    } else {
+      continue idx - lowbit(idx), sum + arr[idx]
     }
   }
 }

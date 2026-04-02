@@ -155,3 +155,11 @@ pub fn range_sum(fw : Fenwick, l : Int, r : Int) -> Int {
     prefix_sum(fw, r) - left
   }
 }
+
+///|
+test "persistent fenwick tree shape" {
+  let fw = make(4)
+  assert_true(tree_shape(fw.root, fw.n + 1))
+  let fw2 = add(fw, 1, 5)
+  assert_true(tree_shape(fw2.root, fw2.n + 1))
+}

@@ -50,11 +50,10 @@ fn FenwickRangeAddRangeSum::add_bit(
   delta : Int64,
 ) -> Unit {
   let limit = self.n + 1
-  loop idx {
-    i => {
-      if i > limit {
-        break ()
-      }
+  for i = idx {
+    if i > limit {
+      break
+    } else {
       bit[i] = bit[i] + delta
       continue i + lowbit(i)
     }
@@ -63,12 +62,11 @@ fn FenwickRangeAddRangeSum::add_bit(
 
 ///|
 fn sum_bit(bit : Array[Int64], idx : Int) -> Int64 {
-  loop (idx, 0L) {
-    (i, acc) => {
-      if i <= 0 {
-        break acc
-      }
-      continue (i - lowbit(i), acc + bit[i])
+  for i = idx, acc = 0L {
+    if i <= 0 {
+      break acc
+    } else {
+      continue i - lowbit(i), acc + bit[i]
     }
   }
 }

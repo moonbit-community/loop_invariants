@@ -207,3 +207,9 @@ pub fn[T : Compare] delete_min(h : Heap[T]) -> Heap[T]? {
       }
   }
 }
+
+///|
+test "persistent binomial heap rank invariant" {
+  let heap = insert(insert(empty(), 3), 1)
+  assert_true(valid_prefix(heap.trees, heap.trees.length()))
+}

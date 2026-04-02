@@ -197,3 +197,11 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Aa[T] {
     ),
   }
 }
+
+///|
+test "persistent aa tree invariants" {
+  let tree = from_array([3, 1, 4, 2][:])
+  let none : Int? = None
+  assert_true(aa_valid(tree, none, none))
+  assert_true(contains(tree, 1))
+}

@@ -53,25 +53,24 @@ fn FlowNetwork::bfs_find_path(
   let queue : Array[Int] = []
   queue.push(source)
   visited[source] = true
-  let _ = loop 0 {
-    front =>
-      match queue.get(front) {
-        None => break ()
-        Some(u) => {
-          if visited[sink] {
-            break ()
-          }
-          for i, edge in self.adj[u] {
-            let residual = edge.capacity - edge.flow
-            if residual > 0 && !visited[edge.to] {
-              visited[edge.to] = true
-              parent[edge.to] = Some((u, i))
-              queue.push(edge.to)
-            }
-          }
-          continue front + 1
+  let _ = for front = 0 {
+    match queue.get(front) {
+      None => break ()
+      Some(u) => {
+        if visited[sink] {
+          break ()
         }
+        for i, edge in self.adj[u] {
+          let residual = edge.capacity - edge.flow
+          if residual > 0 && !visited[edge.to] {
+            visited[edge.to] = true
+            parent[edge.to] = Some((u, i))
+            queue.push(edge.to)
+          }
+        }
+        continue front + 1
       }
+    }
   }
   (visited[sink], parent)
 }
@@ -225,21 +224,20 @@ fn DinicNetwork::bfs_dinic(
   self.level[source] = 0
   let queue : Array[Int] = []
   queue.push(source)
-  let _ = loop 0 {
-    front =>
-      match queue.get(front) {
-        None => break ()
-        Some(u) => {
-          for edge in self.adj[u] {
-            let residual = edge.capacity - edge.flow
-            if residual > 0 && self.level[edge.to] < 0 {
-              self.level[edge.to] = self.level[u] + 1
-              queue.push(edge.to)
-            }
+  let _ = for front = 0 {
+    match queue.get(front) {
+      None => break ()
+      Some(u) => {
+        for edge in self.adj[u] {
+          let residual = edge.capacity - edge.flow
+          if residual > 0 && self.level[edge.to] < 0 {
+            self.level[edge.to] = self.level[u] + 1
+            queue.push(edge.to)
           }
-          continue front + 1
         }
+        continue front + 1
       }
+    }
   }
   self.level[sink] >= 0
 }
@@ -407,26 +405,25 @@ fn MCMFNetwork::spfa_mcmf(
   let queue : Array[Int] = []
   queue.push(source)
   in_queue[source] = true
-  let _ = loop 0 {
-    front =>
-      match queue.get(front) {
-        None => break ()
-        Some(u) => {
-          in_queue[u] = false
-          for i, edge in self.adj[u] {
-            let residual = edge.capacity - edge.flow
-            if residual > 0 && dist[u] + edge.cost < dist[edge.to] {
-              dist[edge.to] = dist[u] + edge.cost
-              parent[edge.to] = Some((u, i))
-              if !in_queue[edge.to] {
-                queue.push(edge.to)
-                in_queue[edge.to] = true
-              }
+  let _ = for front = 0 {
+    match queue.get(front) {
+      None => break ()
+      Some(u) => {
+        in_queue[u] = false
+        for i, edge in self.adj[u] {
+          let residual = edge.capacity - edge.flow
+          if residual > 0 && dist[u] + edge.cost < dist[edge.to] {
+            dist[edge.to] = dist[u] + edge.cost
+            parent[edge.to] = Some((u, i))
+            if !in_queue[edge.to] {
+              queue.push(edge.to)
+              in_queue[edge.to] = true
             }
           }
-          continue front + 1
         }
+        continue front + 1
       }
+    }
   }
   dist[sink] < inf
 }

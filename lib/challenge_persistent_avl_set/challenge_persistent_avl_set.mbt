@@ -220,3 +220,11 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Avl[T] {
     ),
   }
 }
+
+///|
+test "persistent avl invariants" {
+  let tree = from_array([3, 1, 4, 2][:])
+  let none : Int? = None
+  assert_true(avl_valid(tree, none, none))
+  assert_true(contains(tree, 2))
+}

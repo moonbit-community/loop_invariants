@@ -99,4 +99,5 @@ test "horner_eval" {
   assert_eq(horner_eval([2, -3, 5][:], 4), 25)
   assert_eq(horner_eval([1][:], 10), 1)
   assert_eq(horner_eval([3, 0, 0][:], 2), 12) // 3x^2
+  assert_eq(poly_prefix([2, -3, 5][:], 3, 4), 25)
 }

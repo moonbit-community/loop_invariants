@@ -42,18 +42,17 @@ fn MinHeap::new() -> MinHeap {
 ///|
 fn MinHeap::push(self : MinHeap, entry : HeapEntry) -> Unit {
   self.data.push(entry)
-  let _ = loop self.data.length() - 1 {
-    i => {
-      if i <= 0 {
-        break ()
-      }
-      let p = (i - 1) / 2
-      if self.data[i].dist < self.data[p].dist {
-        let tmp = self.data[i]
-        self.data[i] = self.data[p]
-        self.data[p] = tmp
-        continue p
-      }
+  let _ = for i = self.data.length() - 1 {
+    if i <= 0 {
+      break ()
+    }
+    let p = (i - 1) / 2
+    if self.data[i].dist < self.data[p].dist {
+      let tmp = self.data[i]
+      self.data[i] = self.data[p]
+      self.data[p] = tmp
+      continue p
+    } else {
       break ()
     }
   }
@@ -73,20 +72,19 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
   if self.data.length() > 0 {
     self.data[0] = last
     let len = self.data.length()
-    let _ = loop 0 {
-      i => {
-        let left = 2 * i + 1
-        let right = 2 * i + 2
-        let mut smallest = i
-        if left < len && self.data[left].dist < self.data[smallest].dist {
-          smallest = left
-        }
-        if right < len && self.data[right].dist < self.data[smallest].dist {
-          smallest = right
-        }
-        if smallest == i {
-          break ()
-        }
+    let _ = for i = 0 {
+      let left = 2 * i + 1
+      let right = 2 * i + 2
+      let mut smallest = i
+      if left < len && self.data[left].dist < self.data[smallest].dist {
+        smallest = left
+      }
+      if right < len && self.data[right].dist < self.data[smallest].dist {
+        smallest = right
+      }
+      if smallest == i {
+        break ()
+      } else {
         let tmp = self.data[i]
         self.data[i] = self.data[smallest]
         self.data[smallest] = tmp
