@@ -87,6 +87,7 @@ test "max_profit_single" {
   assert_eq(max_profit_single([7, 1, 5, 3, 6, 4][:]), 5) // buy 1, sell 6
   assert_eq(max_profit_single([7, 6, 4, 3, 1][:]), 0) // no profit
   assert_eq(max_profit_single([1][:]), 0)
+  assert_eq(max_profit_prefix([7, 1, 5, 3, 6, 4][:], 6), 5)
 }
 
 // ============================================================================
@@ -172,4 +173,5 @@ test "is_balanced_parens" {
   assert_true(!is_balanced_parens(['(', '('][:]))
   let empty : Array[Char] = []
   assert_true(is_balanced_parens(empty[:]))
+  assert_eq(balance_prefix(['(', 'a', ')', ')'][:], 4), -1)
 }

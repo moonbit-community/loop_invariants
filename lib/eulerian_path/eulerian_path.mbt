@@ -254,11 +254,10 @@ pub fn eulerian_path_undirected(
       break
     }
     let v = stack[stack.length() - 1]
-    let idx = loop cursor[v] {
-      i => {
-        if i < adj[v].length() && used[adj[v][i]] {
-          continue i + 1
-        }
+    let idx = for i = cursor[v] {
+      if i < adj[v].length() && used[adj[v][i]] {
+        continue i + 1
+      } else {
         break i
       }
     }

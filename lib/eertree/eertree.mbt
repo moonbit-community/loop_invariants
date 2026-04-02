@@ -89,15 +89,14 @@ fn Eertree::new() -> Eertree {
 fn Eertree::get_suffix_link(self : Eertree, v : Int, i : Int, c : Int) -> Int {
   // INVARIANT: We're looking for longest palindrome ending at position i-1
   // such that character before it equals c (so we can extend to position i)
-  loop v {
-    cur => {
-      let len = self.nodes[cur].len
-      // Check if we can extend this palindrome with c
-      // Position of character before this palindrome is i - len - 1
-      let prev_pos = i - len - 1
-      if prev_pos >= 0 && self.text[prev_pos] == c {
-        break cur
-      }
+  for cur = v {
+    let len = self.nodes[cur].len
+    // Check if we can extend this palindrome with c
+    // Position of character before this palindrome is i - len - 1
+    let prev_pos = i - len - 1
+    if prev_pos >= 0 && self.text[prev_pos] == c {
+      break cur
+    } else {
       // Follow suffix link to try shorter palindrome
       continue self.nodes[cur].suffix_link
     }
@@ -261,17 +260,16 @@ fn Eertree::contains_palindrome(self : Eertree, p : String) -> Bool {
   let start_idx = if p.length() % 2 == 1 { mid } else { mid - 1 }
 
   // Navigate outward from center
-  let node = loop (start_idx, start) {
-    (i, cur) => {
-      if i < 0 {
-        break cur
-      }
-      let c = p[i].to_int()
-      let next = self.nodes[cur].edges[c]
-      if next < 0 {
-        break -1
-      }
-      continue (i - 1, next)
+  let node = for i = start_idx, cur = start {
+    if i < 0 {
+      break cur
+    }
+    let c = p[i].to_int()
+    let next = self.nodes[cur].edges[c]
+    if next < 0 {
+      break -1
+    } else {
+      continue i - 1, next
     }
   }
   if node < 0 {

@@ -213,23 +213,22 @@ fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? 
     }
   }
   let result : Array[Int] = []
-  let _ = loop 0 {
-    front =>
-      match queue.get(front) {
-        None => break ()
-        Some(u) => {
-          result.push(u)
+  let _ = for front = 0 {
+    match queue.get(front) {
+      None => break ()
+      Some(u) => {
+        result.push(u)
 
-          // Reduce in-degree of neighbors
-          for v in adj[u] {
-            in_degree[v] = in_degree[v] - 1
-            if in_degree[v] == 0 {
-              queue.push(v)
-            }
+        // Reduce in-degree of neighbors
+        for v in adj[u] {
+          in_degree[v] = in_degree[v] - 1
+          if in_degree[v] == 0 {
+            queue.push(v)
           }
-          continue front + 1
         }
+        continue front + 1
       }
+    }
   }
   if result.length() == n {
     Some(result)
@@ -260,22 +259,21 @@ fn is_bipartite(n : Int, adj : Array[Array[Int]]) -> Bool {
       // BFS from this vertex
       let queue : Array[Int] = [start]
       color[start] = 0
-      let _ = loop 0 {
-        front =>
-          match queue.get(front) {
-            None => break ()
-            Some(u) => {
-              for v in adj[u] {
-                if color[v] == -1 {
-                  color[v] = 1 - color[u]
-                  queue.push(v)
-                } else if color[v] == color[u] {
-                  return false // Same color = odd cycle = not bipartite
-                }
+      let _ = for front = 0 {
+        match queue.get(front) {
+          None => break ()
+          Some(u) => {
+            for v in adj[u] {
+              if color[v] == -1 {
+                color[v] = 1 - color[u]
+                queue.push(v)
+              } else if color[v] == color[u] {
+                return false // Same color = odd cycle = not bipartite
               }
-              continue front + 1
             }
+            continue front + 1
           }
+        }
       }
     }
   } where {

@@ -486,6 +486,7 @@ test "binary_gcd" {
   assert_eq(binary_gcd(1024, 512), 512)
   assert_eq(binary_gcd(7, 7), 7)
   assert_eq(binary_gcd(1, 1000), 1)
+  assert_eq(gcd_spec(48, 18), 6)
 }
 
 // ============================================================================

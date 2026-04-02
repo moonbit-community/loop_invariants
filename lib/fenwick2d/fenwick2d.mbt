@@ -67,16 +67,14 @@ pub fn Fenwick2D::update(
   if x <= 0 || x > self.rows || y <= 0 || y > self.cols {
     return
   }
-  loop x {
-    i => {
-      if i > self.rows {
-        break ()
-      }
-      loop y {
-        j => {
-          if j > self.cols {
-            break ()
-          }
+  for i = x {
+    if i > self.rows {
+      break
+    } else {
+      for j = y {
+        if j > self.cols {
+          break
+        } else {
           self.tree[i][j] = self.tree[i][j] + delta
           continue j + lowbit(j)
         }
@@ -96,20 +94,18 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, x : Int, y : Int) -> Int64 {
   }
   let x_clamped = if x > self.rows { self.rows } else { x }
   let y_clamped = if y > self.cols { self.cols } else { y }
-  loop (x_clamped, 0L) {
-    (i, sum) => {
-      if i <= 0 {
-        break sum
-      }
-      let row_sum = loop (y_clamped, 0L) {
-        (j, acc) => {
-          if j <= 0 {
-            break acc
-          }
-          continue (j - lowbit(j), acc + self.tree[i][j])
+  for i = x_clamped, sum = 0L {
+    if i <= 0 {
+      break sum
+    } else {
+      let row_sum = for j = y_clamped, acc = 0L {
+        if j <= 0 {
+          break acc
+        } else {
+          continue j - lowbit(j), acc + self.tree[i][j]
         }
       }
-      continue (i - lowbit(i), sum + row_sum)
+      continue i - lowbit(i), sum + row_sum
     }
   }
 }
@@ -204,16 +200,14 @@ fn Fenwick2DRange::internal_update(
   if x <= 0 || x > self.rows || y <= 0 || y > self.cols {
     return
   }
-  loop x {
-    i => {
-      if i > self.rows {
-        break ()
-      }
-      loop y {
-        j => {
-          if j > self.cols {
-            break ()
-          }
+  for i = x {
+    if i > self.rows {
+      break
+    } else {
+      for j = y {
+        if j > self.cols {
+          break
+        } else {
           self.tree[i][j] = self.tree[i][j] + delta
           continue j + lowbit(j)
         }
@@ -235,20 +229,18 @@ fn Fenwick2DRange::internal_prefix(
   }
   let x_clamped = if x > self.rows { self.rows } else { x }
   let y_clamped = if y > self.cols { self.cols } else { y }
-  loop (x_clamped, 0L) {
-    (i, sum) => {
-      if i <= 0 {
-        break sum
-      }
-      let row_sum = loop (y_clamped, 0L) {
-        (j, acc) => {
-          if j <= 0 {
-            break acc
-          }
-          continue (j - lowbit(j), acc + self.tree[i][j])
+  for i = x_clamped, sum = 0L {
+    if i <= 0 {
+      break sum
+    } else {
+      let row_sum = for j = y_clamped, acc = 0L {
+        if j <= 0 {
+          break acc
+        } else {
+          continue j - lowbit(j), acc + self.tree[i][j]
         }
       }
-      continue (i - lowbit(i), sum + row_sum)
+      continue i - lowbit(i), sum + row_sum
     }
   }
 }

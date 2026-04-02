@@ -112,19 +112,18 @@ fn HLD::build(self : HLD, root : Int) -> Unit {
 ///|
 /// Find LCA using HLD
 fn HLD::lca(self : HLD, u : Int, v : Int) -> Int {
-  loop (u, v) {
-    (a, b) =>
-      if self.chain_head[a] == self.chain_head[b] {
-        if self.depth[a] < self.depth[b] {
-          break a
-        } else {
-          break b
-        }
-      } else if self.depth[self.chain_head[a]] < self.depth[self.chain_head[b]] {
-        continue (a, self.parent[self.chain_head[b]])
+  for a = u, b = v {
+    if self.chain_head[a] == self.chain_head[b] {
+      if self.depth[a] < self.depth[b] {
+        break a
       } else {
-        continue (self.parent[self.chain_head[a]], b)
+        break b
       }
+    } else if self.depth[self.chain_head[a]] < self.depth[self.chain_head[b]] {
+      continue a, self.parent[self.chain_head[b]]
+    } else {
+      continue self.parent[self.chain_head[a]], b
+    }
   }
 }
 
@@ -138,15 +137,14 @@ fn HLD::path_length(self : HLD, u : Int, v : Int) -> Int {
 ///|
 /// Count number of chain switches on path (for complexity analysis)
 fn HLD::count_chains(self : HLD, u : Int, v : Int) -> Int {
-  loop (u, v, 0) {
-    (a, b, count) =>
-      if self.chain_head[a] == self.chain_head[b] {
-        break count + 1 // Include final chain
-      } else if self.depth[self.chain_head[a]] < self.depth[self.chain_head[b]] {
-        continue (a, self.parent[self.chain_head[b]], count + 1)
-      } else {
-        continue (self.parent[self.chain_head[a]], b, count + 1)
-      }
+  for a = u, b = v, count = 0 {
+    if self.chain_head[a] == self.chain_head[b] {
+      break count + 1 // Include final chain
+    } else if self.depth[self.chain_head[a]] < self.depth[self.chain_head[b]] {
+      continue a, self.parent[self.chain_head[b]], count + 1
+    } else {
+      continue self.parent[self.chain_head[a]], b, count + 1
+    }
   }
 }
 

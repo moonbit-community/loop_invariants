@@ -94,38 +94,36 @@ pub fn GomoryHuTree::min_cut(self : GomoryHuTree, u : Int, v : Int) -> Int64 {
   let parent_w = Array::make(self.n, 0L)
   let queue : Array[Int] = [u]
   parent[u] = u
-  let found = loop 0 {
-    front =>
-      match queue.get(front) {
-        None => break false
-        Some(x) => {
-          if x == v {
-            break true
-          }
-          for edge in self.adj[x] {
-            let (to, w) = edge
-            if parent[to] == -1 {
-              parent[to] = x
-              parent_w[to] = w
-              queue.push(to)
-            }
-          }
-          continue front + 1
+  let found = for front = 0 {
+    match queue.get(front) {
+      None => break false
+      Some(x) => {
+        if x == v {
+          break true
         }
+        for edge in self.adj[x] {
+          let (to, w) = edge
+          if parent[to] == -1 {
+            parent[to] = x
+            parent_w[to] = w
+            queue.push(to)
+          }
+        }
+        continue front + 1
       }
+    }
   }
   if !found || parent[v] == -1 {
     return 0L
   }
-  loop (v, GH_INF) {
-    (cur, min_w) => {
-      if cur == u {
-        break min_w
-      }
+  for cur = v, min_w = GH_INF {
+    if cur == u {
+      break min_w
+    } else {
       let w = parent_w[cur]
       let next = parent[cur]
       let new_min = if w < min_w { w } else { min_w }
-      continue (next, new_min)
+      continue next, new_min
     }
   }
 }

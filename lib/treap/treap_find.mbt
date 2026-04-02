@@ -7,15 +7,17 @@ pub fn[T : Compare] Treap::contains(self : Treap[T], key : T) -> Bool {
 ///|
 /// Find a node by key using the BST property.
 fn[T : Compare] find_node(node : TreapNode[T]?, key : T) -> TreapNode[T]? {
-  loop node {
-    None => None
-    Some(n) =>
-      if key < n.key {
-        continue n.left
-      } else if key > n.key {
-        continue n.right
-      } else {
-        Some(n)
-      }
+  for current = node {
+    match current {
+      None => break None
+      Some(n) =>
+        if key < n.key {
+          continue n.left
+        } else if key > n.key {
+          continue n.right
+        } else {
+          break Some(n)
+        }
+    }
   }
 }

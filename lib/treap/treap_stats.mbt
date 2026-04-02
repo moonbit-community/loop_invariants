@@ -7,14 +7,16 @@ pub fn[T : Compare] Treap::count_less_than(self : Treap[T], key : T) -> Int {
 ///|
 /// Accumulate counts by skipping whole subtrees when possible.
 fn[T : Compare] count_less_helper(node : TreapNode[T]?, key : T) -> Int {
-  loop (node, 0) {
-    (None, acc) => acc
-    (Some(n), acc) =>
-      if n.key < key {
-        continue (n.right, acc + 1 + get_size(n.left))
-      } else {
-        continue (n.left, acc)
-      }
+  for current = node, acc = 0 {
+    match current {
+      None => break acc
+      Some(n) =>
+        if n.key < key {
+          continue n.right, acc + 1 + get_size(n.left)
+        } else {
+          continue n.left, acc
+        }
+    }
   }
 }
 
@@ -33,13 +35,15 @@ pub fn[T] Treap::min(self : Treap[T]) -> T? {
 ///|
 /// Descend left until the smallest key is found.
 fn[T] min_helper(node : TreapNode[T]?) -> T? {
-  loop node {
-    None => None
-    Some(n) =>
-      match n.left {
-        None => Some(n.key)
-        Some(left) => continue Some(left)
-      }
+  for current = node {
+    match current {
+      None => break None
+      Some(n) =>
+        match n.left {
+          None => break Some(n.key)
+          Some(left) => continue Some(left)
+        }
+    }
   }
 }
 
@@ -52,13 +56,15 @@ pub fn[T] Treap::max(self : Treap[T]) -> T? {
 ///|
 /// Descend right until the largest key is found.
 fn[T] max_helper(node : TreapNode[T]?) -> T? {
-  loop node {
-    None => None
-    Some(n) =>
-      match n.right {
-        None => Some(n.key)
-        Some(right) => continue Some(right)
-      }
+  for current = node {
+    match current {
+      None => break None
+      Some(n) =>
+        match n.right {
+          None => break Some(n.key)
+          Some(right) => continue Some(right)
+        }
+    }
   }
 }
 

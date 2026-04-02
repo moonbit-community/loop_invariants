@@ -202,3 +202,11 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Tree[T] {
     ),
   }
 }
+
+///|
+test "persistent 2-3 tree invariants" {
+  let tree = from_array([3, 1, 4, 2][:])
+  let none : Int? = None
+  assert_true(tree_valid(tree, none, none))
+  assert_true(contains(tree, 4))
+}
