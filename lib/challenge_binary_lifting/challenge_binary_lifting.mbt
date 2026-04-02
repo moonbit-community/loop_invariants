@@ -16,7 +16,7 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
       continue k + 1, pow << 1
     }
   } where {
-    invariant: k >= 1 && pow >= 1,
+    proof_invariant: k >= 1 && pow >= 1,
     reasoning: (
       #|INVARIANT (Log growth):
       #|pow = 2^(k-1) and grows until it covers n.
@@ -58,7 +58,7 @@ pub fn lift(up : Array[Array[Int]], v : Int, dist : Int) -> Int {
       continue k + 1, cur, d >> 1
     }
   } where {
-    invariant: k >= 0 && k <= levels,
+    proof_invariant: k >= 0 && k <= levels,
     reasoning: (
       #|INVARIANT (Bit lifting):
       #|cur equals the ancestor of v after applying the first k bits of dist.

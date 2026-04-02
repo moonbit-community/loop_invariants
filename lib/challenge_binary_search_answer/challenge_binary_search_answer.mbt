@@ -9,6 +9,9 @@ pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
   if days <= 0 {
     return false
   }
+  if capacity < 0 {
+    return false
+  }
   for i = 0, used = 1, load = 0 {
     if i >= weights.length() {
       break used <= days
@@ -20,8 +23,8 @@ pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
       continue i + 1, used, load + weights[i]
     }
   } where {
-    invariant: i >= 0 && i <= weights.length(),
-    invariant: used >= 1 && load >= 0 && load <= capacity,
+    proof_invariant: i >= 0 && i <= weights.length(),
+    proof_invariant: used >= 1 && load >= 0 && load <= capacity,
     reasoning: (
       #|INVARIANT (Shipping state):
       #|The first i items are assigned to 'used' days, and load is the total
@@ -58,7 +61,7 @@ pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
       }
     }
   } where {
-    invariant: lo <= low && low <= high && high <= hi,
+    proof_invariant: lo <= low && low <= high && high <= hi,
     reasoning: (
       #|INVARIANT (Binary search bounds):
       #|The feasible capacity lies in [low, high].

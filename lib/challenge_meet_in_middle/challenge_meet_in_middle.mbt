@@ -20,27 +20,34 @@ fn subset_sums(arr : ArrayView[Int]) -> Array[Int] {
 }
 
 ///|
-fn upper_bound(arr : ArrayView[Int], target : Int) -> Int {
-  for lo = 0, hi = arr.length() {
-    if lo >= hi {
-      break lo
+fn upper_bound_fixed(
+  arr : FixedArray[Int],
+  target : Int,
+) -> Int where {
+  proof_require: sorted(arr),
+  proof_ensure: result => upper_bound_ok(arr, target, result),
+} {
+  for lo = 0, hi = arr.length(); lo < hi; {
+    let mid = lo + (hi - lo) / 2
+    if arr[mid] <= target {
+      continue mid + 1, hi
     } else {
-      let mid = lo + (hi - lo) / 2
-      if arr[mid] <= target {
-        continue mid + 1, hi
-      } else {
-        continue lo, mid
-      }
+      continue lo, mid
     }
+  } nobreak {
+    lo
   } where {
-    invariant: lo >= 0 && lo <= hi && hi <= arr.length(),
+    proof_invariant: 0 <= lo,
+    proof_invariant: lo <= hi,
+    proof_invariant: hi <= arr.length(),
+    proof_invariant: all_leq_before(arr, target, lo),
+    proof_invariant: all_gt_from(arr, target, hi),
     reasoning: (
-      #|INVARIANT (Upper bound):
-      #|All indices < lo are <= target and all indices >= hi are > target.
-      #|MAINTENANCE:
-      #|Shrink [lo, hi) based on mid comparison.
-      #|TERMINATION:
-      #|At lo = hi, lo is the first index with arr[lo] > target.
+      #|This is the package's proof-carrying upper-bound kernel.
+      #|Every index before `lo` is already known to be `<= target`, and every
+      #|index from `hi` onward is already known to be `> target`.
+      #|The midpoint comparison extends one side of that proven partition while
+      #|shrinking the candidate window.
     ),
   }
 }
@@ -55,12 +62,16 @@ pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int {
   let left_sums = subset_sums(left)
   let right_sums = subset_sums(right)
   right_sums.sort_by_key(x => x)
+  let right_sums_fixed = FixedArray::make(right_sums.length(), 0)
+  for i, val in right_sums {
+    right_sums_fixed[i] = val
+  }
   let mut best = 0
   for val in left_sums {
     let remaining = target - val
-    let idx = upper_bound(right_sums[:], remaining)
+    let idx = upper_bound_fixed(right_sums_fixed, remaining)
     if idx > 0 {
-      let cand = val + right_sums[idx - 1]
+      let cand = val + right_sums_fixed[idx - 1]
       if cand > best {
         best = cand
       }
