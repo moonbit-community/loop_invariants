@@ -637,59 +637,59 @@ fn MoSolver::solve_distinct(
   })
   let results = Array::make(q, 0)
   let count = Array::make(max_val + 1, 0) // count[v] = occurrences of value v
-  let mut distinct = 0
-  let mut cur_l = 0
-  let mut cur_r = -1 // Start with empty range
 
   // Process queries in sorted order
   // INVARIANT: distinct = number of distinct values in arr[cur_l..cur_r]
   //            count[v] = occurrences of v in arr[cur_l..cur_r]
-  for i = 0; i < q; i = i + 1 {
+  for i = 0, distinct = 0, cur_l = 0, cur_r = -1; i < q; {
     let query = mo_queries[i]
     let l = query.l
     let r = query.r
 
     // Extend right
     // INVARIANT: Each step adds one element, updating count and distinct
-    while cur_r < r {
-      cur_r = cur_r + 1
-      let v = self.arr[cur_r]
-      if count[v] == 0 {
-        distinct = distinct + 1
-      }
+    let (cur_r, distinct) = for cur_r = cur_r, distinct = distinct; cur_r < r; {
+      let next_r = cur_r + 1
+      let v = self.arr[next_r]
+      let distinct = if count[v] == 0 { distinct + 1 } else { distinct }
       count[v] = count[v] + 1
+      continue next_r, distinct
+    } nobreak {
+      (cur_r, distinct)
     }
 
     // Shrink right
-    while cur_r > r {
+    let (cur_r, distinct) = for cur_r = cur_r, distinct = distinct; cur_r > r; {
       let v = self.arr[cur_r]
       count[v] = count[v] - 1
-      if count[v] == 0 {
-        distinct = distinct - 1
-      }
-      cur_r = cur_r - 1
+      let distinct = if count[v] == 0 { distinct - 1 } else { distinct }
+      continue cur_r - 1, distinct
+    } nobreak {
+      (cur_r, distinct)
     }
 
     // Shrink left
-    while cur_l < l {
+    let (cur_l, distinct) = for cur_l = cur_l, distinct = distinct; cur_l < l; {
       let v = self.arr[cur_l]
       count[v] = count[v] - 1
-      if count[v] == 0 {
-        distinct = distinct - 1
-      }
-      cur_l = cur_l + 1
+      let distinct = if count[v] == 0 { distinct - 1 } else { distinct }
+      continue cur_l + 1, distinct
+    } nobreak {
+      (cur_l, distinct)
     }
 
     // Extend left
-    while cur_l > l {
-      cur_l = cur_l - 1
-      let v = self.arr[cur_l]
-      if count[v] == 0 {
-        distinct = distinct + 1
-      }
+    let (cur_l, distinct) = for cur_l = cur_l, distinct = distinct; cur_l > l; {
+      let next_l = cur_l - 1
+      let v = self.arr[next_l]
+      let distinct = if count[v] == 0 { distinct + 1 } else { distinct }
       count[v] = count[v] + 1
+      continue next_l, distinct
+    } nobreak {
+      (cur_l, distinct)
     }
     results[query.idx] = distinct
+    continue i + 1, distinct, cur_l, cur_r
   } where {
     invariant: cur_l >= 0 && cur_l <= n,
     reasoning: (
@@ -760,12 +760,14 @@ fn IntervalTree::new(arr : Array[Int]) -> IntervalTree {
 
   // Initially, each element is its own interval
   // We can compress consecutive equal elements
-  let mut start = 0
-  for i = 1; i <= arr.length(); i = i + 1 {
-    if i == arr.length() || arr[i] != arr[start] {
+  for i = 1, start = 0; i <= arr.length(); {
+    let start = if i == arr.length() || arr[i] != arr[start] {
       intervals.push({ l: start, r: i - 1, v: arr[start] })
-      start = i
+      i
+    } else {
+      start
     }
+    continue i + 1, start
   } where {
     invariant: i >= 1 && i <= arr.length() + 1,
     reasoning: (
@@ -1096,6 +1098,14 @@ test "mo algorithm empty" {
   let solver2 = MoSolver::new(arr2)
   let results2 = solver2.solve_distinct([])
   inspect(results2, content="[]")
+}
+
+///|
+test "mo algorithm left expansion path" {
+  let arr = [1, 2, 1, 3, 2, 4, 4, 5, 1]
+  let solver = MoSolver::new(arr)
+  let queries = [(4, 5), (3, 8), (6, 6)]
+  inspect(solver.solve_distinct(queries), content="[2, 5, 1]")
 }
 
 ///|
