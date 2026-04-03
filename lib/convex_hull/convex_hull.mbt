@@ -161,12 +161,16 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
 
   // Find bottom-most point (and leftmost if tied)
   let pts = points.copy()
-  let mut pivot_idx = 0
-  for i in 1..<n {
-    if pts[i].y < pts[pivot_idx].y ||
+  let pivot_idx = for i = 1, pivot_idx = 0; i < n; {
+    let pivot_idx = if pts[i].y < pts[pivot_idx].y ||
       (pts[i].y == pts[pivot_idx].y && pts[i].x < pts[pivot_idx].x) {
-      pivot_idx = i
+      i
+    } else {
+      pivot_idx
     }
+    continue i + 1, pivot_idx
+  } nobreak {
+    pivot_idx
   }
 
   // Swap pivot to first position
@@ -242,34 +246,32 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
   }
 
   // Find leftmost point
-  let mut leftmost = 0
-  for i in 1..<n {
-    if points[i].x < points[leftmost].x ||
+  let leftmost = for i = 1, leftmost = 0; i < n; {
+    let leftmost = if points[i].x < points[leftmost].x ||
       (points[i].x == points[leftmost].x && points[i].y < points[leftmost].y) {
-      leftmost = i
+      i
+    } else {
+      leftmost
     }
+    continue i + 1, leftmost
+  } nobreak {
+    leftmost
   }
   let hull : Array[Point] = []
-  let mut current = leftmost
 
   // INVARIANT: hull contains points on the convex hull in CCW order
   // current is the index of the most recently added hull point
-  for ;; {
+  for current = leftmost {
     hull.push(points[current])
 
     // Find the point that is most counterclockwise from current
-    let mut next = 0
-    if current == 0 {
-      next = 1
-    }
-    for i in 0..<n {
+    let next = for i = 0, next = (if current == 0 { 1 } else { 0 }); i < n; {
       if i == current {
-        continue
+        continue i + 1, next
       }
       let cp = cross(points[current], points[next], points[i])
-      if cp < 0L {
-        // points[i] is more counterclockwise
-        next = i
+      let next = if cp < 0L {
+        i
       } else if cp == 0L {
         // Collinear: choose the farther point
         let dist_next = (points[next].x - points[current].x) *
@@ -280,16 +282,23 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
           (points[i].x - points[current].x) +
           (points[i].y - points[current].y) * (points[i].y - points[current].y)
         if dist_i > dist_next {
-          next = i
+          i
+        } else {
+          next
         }
+      } else {
+        next
       }
+      continue i + 1, next
+    } nobreak {
+      next
     }
-    current = next
 
     // Stop when we return to the starting point
-    if current == leftmost {
+    if next == leftmost {
       break
     }
+    continue next
   } where {
     invariant: current >= 0 && current < n && hull.length() <= n,
     reasoning: (
@@ -339,22 +348,29 @@ pub fn point_in_hull(hull : Array[Point], p : Point) -> Int {
   }
 
   // Check if point is on the same side of all edges
-  let mut on_boundary = false
-  for i in 0..<n {
+  let on_boundary = for i = 0, on_boundary = false; i < n; {
     let j = (i + 1) % n
     let cp = cross(hull[i], hull[j], p)
     if cp < 0L {
       return -1 // Outside
-    } else if cp == 0L {
+    }
+    let on_boundary = if cp == 0L {
       // Check if point is on the edge segment
       let min_x = if hull[i].x < hull[j].x { hull[i].x } else { hull[j].x }
       let max_x = if hull[i].x > hull[j].x { hull[i].x } else { hull[j].x }
       let min_y = if hull[i].y < hull[j].y { hull[i].y } else { hull[j].y }
       let max_y = if hull[i].y > hull[j].y { hull[i].y } else { hull[j].y }
       if p.x >= min_x && p.x <= max_x && p.y >= min_y && p.y <= max_y {
-        on_boundary = true
+        true
+      } else {
+        on_boundary
       }
+    } else {
+      on_boundary
     }
+    continue i + 1, on_boundary
+  } nobreak {
+    on_boundary
   }
   if on_boundary {
     0
@@ -380,27 +396,25 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
 
   // Rotating calipers algorithm
   // INVARIANT: For edge (i, i+1), j is the antipodal vertex
-  let mut max_dist = 0L
-  for i = 0, j = 1; i < n; {
+  let max_dist = for i = 0, j = 1, max_dist = 0L; i < n; {
     // Find the farthest point from edge (i, i+1)
     let i_next = (i + 1) % n
-    let mut curr_j = j
 
     // Advance j while it increases distance
-    for ;; {
-      let j_next = (curr_j + 1) % n
-      let area_curr = cross(hull[i], hull[i_next], hull[curr_j])
+    let j = for j = j {
+      let j_next = (j + 1) % n
+      let area_curr = cross(hull[i], hull[i_next], hull[j])
       let area_next = cross(hull[i], hull[i_next], hull[j_next])
       if area_next > area_curr {
-        curr_j = j_next
+        continue j_next
       } else {
-        break
+        break j
       }
     } where {
-      invariant: curr_j >= 0 && curr_j < n,
+      invariant: j >= 0 && j < n,
       reasoning: (
         #|INVARIANT (advance antipodal):
-        #|curr_j stays a valid hull index; it is the best antipodal candidate so far.
+        #|j stays a valid hull index; it is the best antipodal candidate so far.
         #|MAINTENANCE:
         #|Advance to j_next only when the area (distance proxy) increases.
         #|TERMINATION:
@@ -409,19 +423,17 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
     }
 
     // Check distances from both endpoints of edge to antipodal point
-    let dx1 = hull[curr_j].x - hull[i].x
-    let dy1 = hull[curr_j].y - hull[i].y
+    let dx1 = hull[j].x - hull[i].x
+    let dy1 = hull[j].y - hull[i].y
     let dist1 = dx1 * dx1 + dy1 * dy1
-    let dx2 = hull[curr_j].x - hull[i_next].x
-    let dy2 = hull[curr_j].y - hull[i_next].y
+    let dx2 = hull[j].x - hull[i_next].x
+    let dy2 = hull[j].y - hull[i_next].y
     let dist2 = dx2 * dx2 + dy2 * dy2
-    if dist1 > max_dist {
-      max_dist = dist1
-    }
-    if dist2 > max_dist {
-      max_dist = dist2
-    }
-    continue i + 1, curr_j
+    let edge_max = if dist1 > dist2 { dist1 } else { dist2 }
+    let max_dist = if edge_max > max_dist { edge_max } else { max_dist }
+    continue i + 1, j, max_dist
+  } nobreak {
+    max_dist
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
