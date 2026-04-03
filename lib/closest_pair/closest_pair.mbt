@@ -57,20 +57,23 @@ const CP_INF : Double = 1.0e18
 /// Find closest pair using brute force (for small inputs)
 fn brute_force_closest(points : ArrayView[Point]) -> (Double, Int, Int) {
   let n = points.length()
-  let mut min_dist = CP_INF
-  let mut p1 = -1
-  let mut p2 = -1
-  for i in 0..<n {
-    for j in (i + 1)..<n {
+  for i in 0..<n; min_dist = CP_INF, p1 = -1, p2 = -1 {
+    let (min_dist, p1, p2) = for
+      j in (i + 1)..<n
+      min_dist = min_dist, p1 = p1, p2 = p2 {
       let d = distance(points[i], points[j])
       if d < min_dist {
-        min_dist = d
-        p1 = points[i].idx
-        p2 = points[j].idx
+        continue d, points[i].idx, points[j].idx
+      } else {
+        continue min_dist, p1, p2
       }
+    } nobreak {
+      (min_dist, p1, p2)
     }
+    continue min_dist, p1, p2
+  } nobreak {
+    (min_dist, p1, p2)
   }
-  (min_dist, p1, p2)
 }
 
 ///|
@@ -82,27 +85,28 @@ fn strip_closest(
   best_p2 : Int,
 ) -> (Double, Int, Int) {
   let n = strip.length()
-  let mut min_dist = delta
-  let mut p1 = best_p1
-  let mut p2 = best_p2
 
   // Sort strip by y coordinate
   strip.sort_by((a, b) => if a.y < b.y { -1 } else if a.y > b.y { 1 } else { 0 })
 
   // Check each point against at most 6 points below it
-  for i in 0..<n {
-    let mut j = i + 1
-    while j < n && strip[j].y - strip[i].y < min_dist {
+  for i in 0..<n; min_dist = delta, p1 = best_p1, p2 = best_p2 {
+    let (min_dist, p1, p2) = for j = i + 1, min_dist = min_dist, p1 = p1, p2 = p2; j <
+                                n &&
+                                strip[j].y - strip[i].y < min_dist; {
       let d = distance(strip[i], strip[j])
       if d < min_dist {
-        min_dist = d
-        p1 = strip[i].idx
-        p2 = strip[j].idx
+        continue j + 1, d, strip[i].idx, strip[j].idx
+      } else {
+        continue j + 1, min_dist, p1, p2
       }
-      j = j + 1
+    } nobreak {
+      (min_dist, p1, p2)
     }
+    continue min_dist, p1, p2
+  } nobreak {
+    (min_dist, p1, p2)
   }
-  (min_dist, p1, p2)
 }
 
 ///|
@@ -136,13 +140,10 @@ fn closest_pair_rec(
   let (d_right, r1, r2) = closest_pair_rec(points_x[mid:], right_y)
 
   // Find minimum of the two
-  let mut delta = d_left
-  let mut p1 = l1
-  let mut p2 = l2
-  if d_right < delta {
-    delta = d_right
-    p1 = r1
-    p2 = r2
+  let (delta, p1, p2) = if d_right < d_left {
+    (d_right, r1, r2)
+  } else {
+    (d_left, l1, l2)
   }
 
   // Build strip of points within delta of mid line
@@ -195,22 +196,25 @@ fn closest_pair_naive(points : Array[(Double, Double)]) -> (Double, Int, Int) {
   if n < 2 {
     return (CP_INF, -1, -1)
   }
-  let mut min_dist = CP_INF
-  let mut p1 = -1
-  let mut p2 = -1
-  for i in 0..<n {
-    for j in (i + 1)..<n {
+  for i in 0..<n; min_dist = CP_INF, p1 = -1, p2 = -1 {
+    let (min_dist, p1, p2) = for
+      j in (i + 1)..<n
+      min_dist = min_dist, p1 = p1, p2 = p2 {
       let dx = points[i].0 - points[j].0
       let dy = points[i].1 - points[j].1
       let d = sqrt_f64(dx * dx + dy * dy)
       if d < min_dist {
-        min_dist = d
-        p1 = i
-        p2 = j
+        continue d, i, j
+      } else {
+        continue min_dist, p1, p2
       }
+    } nobreak {
+      (min_dist, p1, p2)
     }
+    continue min_dist, p1, p2
+  } nobreak {
+    (min_dist, p1, p2)
   }
-  (min_dist, p1, p2)
 }
 
 // ============================================================================
