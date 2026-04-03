@@ -29,23 +29,27 @@ fn slice_string(s : String, start : Int, end : Int) -> String {
 pub fn duval_factorization(s : String) -> Array[String] {
   let n = s.length()
   let factors : Array[String] = []
-  let mut i = 0
-  while i < n {
-    let mut j = i + 1
-    let mut k = i
-    while j < n && s[k] <= s[j] {
+  let _ = for i = 0 {
+    if i >= n {
+      break ()
+    }
+    let (j, k) = for j = i + 1, k = i; j < n && s[k] <= s[j]; {
       if s[k] < s[j] {
-        k = i
+        continue j + 1, i
       } else {
-        k = k + 1
+        continue j + 1, k + 1
       }
-      j = j + 1
+    } nobreak {
+      (j, k)
     }
     let period = j - k
-    while i <= k {
-      factors.push(slice_string(s, i, i + period))
-      i = i + period
+    let next_i = for curr_i = i; curr_i <= k; {
+      factors.push(slice_string(s, curr_i, curr_i + period))
+      continue curr_i + period
+    } nobreak {
+      curr_i
     }
+    continue next_i
   }
   factors
 }

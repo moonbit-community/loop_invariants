@@ -80,8 +80,7 @@ fn AhoCorasick::add_pattern(self : AhoCorasick, pattern : String) -> Unit {
 
   // INVARIANT: state points to the node representing the current prefix
   // After processing character i, state represents pattern[0..i]
-  let mut state = 0
-  for i = 0; i < pattern.length(); i = i + 1 {
+  let state = for i in 0..<pattern.length(); state = 0 {
     let c = pattern[i].to_int()
     if self.states[state].children[c] < 0 {
       // Create new state for this character
@@ -89,7 +88,9 @@ fn AhoCorasick::add_pattern(self : AhoCorasick, pattern : String) -> Unit {
       self.states.push(ACState::new())
       self.states[state].children[c] = new_state
     }
-    state = self.states[state].children[c]
+    continue self.states[state].children[c]
+  } nobreak {
+    state
   } where {
     invariant: 0 <= i && i < pattern.length(),
     reasoning: (
@@ -137,65 +138,69 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
   // BFS to compute failure links
   // INVARIANT: When processing state s, all states with depth < depth(s)
   // have their failure links correctly computed
-  let mut front = 0
-  while queue.get(front) is Some(state) {
-    for c = 0; c < AC_ALPHABET; c = c + 1 {
-      let child = self.states[state].children[c]
-      if child < 0 {
-        continue
-      }
-      queue.push(child)
+  let _ = for front = 0 {
+    match queue.get(front) {
+      None => break ()
+      Some(state) => {
+        for c = 0; c < AC_ALPHABET; c = c + 1 {
+          let child = self.states[state].children[c]
+          if child < 0 {
+            continue
+          }
+          queue.push(child)
 
-      // Find failure link for child
-      // Follow failure links from parent until we find a state with
-      // transition on c, or reach root
-      //
-      // INVARIANT: f represents suffix of child's string (without last char)
-      // We're looking for longest suffix that also has transition on c
-      let failure = for f = self.states[state].failure; f >= 0; {
-        if self.states[f].children[c] >= 0 {
-          break self.states[f].children[c]
-        }
-        continue self.states[f].failure
-      } nobreak {
-        // Reached root, check if root has transition on c
-        let root_child = self.states[0].children[c]
-        if root_child >= 0 && root_child != child {
-          root_child
-        } else {
-          0
-        }
-      } where {
-        invariant: f >= -1 && f < self.states.length(),
-        reasoning: (
-          #|INVARIANT (failure chain):
-          #|f is a valid state index or -1; it represents a proper suffix state.
-          #|MAINTENANCE:
-          #|Move to failure[f], which strictly shortens the suffix each step.
-          #|TERMINATION:
-          #|The chain reaches the root sentinel after finitely many steps.
-        ),
-      }
-      self.states[child].failure = failure
+          // Find failure link for child
+          // Follow failure links from parent until we find a state with
+          // transition on c, or reach root
+          //
+          // INVARIANT: f represents suffix of child's string (without last char)
+          // We're looking for longest suffix that also has transition on c
+          let failure = for f = self.states[state].failure; f >= 0; {
+            if self.states[f].children[c] >= 0 {
+              break self.states[f].children[c]
+            }
+            continue self.states[f].failure
+          } nobreak {
+            // Reached root, check if root has transition on c
+            let root_child = self.states[0].children[c]
+            if root_child >= 0 && root_child != child {
+              root_child
+            } else {
+              0
+            }
+          } where {
+            invariant: f >= -1 && f < self.states.length(),
+            reasoning: (
+              #|INVARIANT (failure chain):
+              #|f is a valid state index or -1; it represents a proper suffix state.
+              #|MAINTENANCE:
+              #|Move to failure[f], which strictly shortens the suffix each step.
+              #|TERMINATION:
+              #|The chain reaches the root sentinel after finitely many steps.
+            ),
+          }
+          self.states[child].failure = failure
 
-      // Merge output: patterns ending at failure state also end here
-      // (they are suffixes of current string)
-      let failure_output = self.states[failure].output.copy()
-      for pattern_idx in failure_output {
-        self.states[child].output.push(pattern_idx)
+          // Merge output: patterns ending at failure state also end here
+          // (they are suffixes of current string)
+          let failure_output = self.states[failure].output.copy()
+          for pattern_idx in failure_output {
+            self.states[child].output.push(pattern_idx)
+          }
+        } where {
+          invariant: 0 <= c && c < AC_ALPHABET,
+          reasoning: (
+            #|INVARIANT (state transitions):
+            #|All byte transitions for characters in [0, c) are processed for state.
+            #|MAINTENANCE:
+            #|Process transition c and compute its failure link/output.
+            #|TERMINATION:
+            #|At c = AC_ALPHABET, all transitions from this state are handled.
+          ),
+        }
+        continue front + 1
       }
-    } where {
-      invariant: 0 <= c && c < AC_ALPHABET,
-      reasoning: (
-        #|INVARIANT (state transitions):
-        #|All byte transitions for characters in [0, c) are processed for state.
-        #|MAINTENANCE:
-        #|Process transition c and compute its failure link/output.
-        #|TERMINATION:
-        #|At c = AC_ALPHABET, all transitions from this state are handled.
-      ),
     }
-    front = front + 1
   }
 }
 
@@ -207,29 +212,34 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[(Int, Int)] {
 
   // INVARIANT: state represents the longest suffix of text[0..i] that is
   // a prefix of some pattern
-  let mut state = 0
-  for i = 0; i < text.length(); i = i + 1 {
+  let _ = for i in 0..<text.length(); state = 0 {
     let c = text[i].to_int()
 
     // Follow failure links until we find a transition on c or reach root
     // INVARIANT: Each iteration moves to a shorter suffix
-    while state > 0 && self.states[state].children[c] < 0 {
-      state = self.states[state].failure
+    let state = for state = state; state > 0 &&
+                   self.states[state].children[c] < 0; {
+      continue self.states[state].failure
+    } nobreak {
+      state
     }
 
     // Take transition if possible
-    if self.states[state].children[c] >= 0 {
-      state = self.states[state].children[c]
+    let next_state = if self.states[state].children[c] >= 0 {
+      self.states[state].children[c]
+    } else {
+      state
     }
 
     // Report all patterns ending at current position
     // Output contains indices of all patterns that are suffixes of current match
-    let outputs = self.states[state].output
+    let outputs = self.states[next_state].output
     for pattern_idx in outputs {
       let pattern_len = self.patterns[pattern_idx].length()
       let match_start = i - pattern_len + 1
       matches.push((match_start, pattern_idx))
     }
+    continue next_state
   } where {
     invariant: 0 <= i && i < text.length(),
     reasoning: (
@@ -279,18 +289,26 @@ fn AhoCorasick::from_patterns(patterns : Array[String]) -> AhoCorasick {
 ///|
 /// Check if text contains any of the patterns
 fn AhoCorasick::contains_any(self : AhoCorasick, text : String) -> Bool {
-  let mut state = 0
-  for i = 0; i < text.length(); i = i + 1 {
+  for i in 0..<text.length(); state = 0 {
     let c = text[i].to_int()
-    while state > 0 && self.states[state].children[c] < 0 {
-      state = self.states[state].failure
+    let state = for state = state; state > 0 &&
+                   self.states[state].children[c] < 0; {
+      continue self.states[state].failure
+    } nobreak {
+      state
     }
-    if self.states[state].children[c] >= 0 {
-      state = self.states[state].children[c]
+    let next_state = if self.states[state].children[c] >= 0 {
+      self.states[state].children[c]
+    } else {
+      state
     }
-    if self.states[state].output.length() > 0 {
-      return true
+    if self.states[next_state].output.length() > 0 {
+      break true
+    } else {
+      continue next_state
     }
+  } nobreak {
+    false
   } where {
     invariant: 0 <= i && i < text.length(),
     reasoning: (
@@ -302,7 +320,6 @@ fn AhoCorasick::contains_any(self : AhoCorasick, text : String) -> Bool {
       #|At i = text.length(), no pattern occurs in text.
     ),
   }
-  false
 }
 
 ///|
