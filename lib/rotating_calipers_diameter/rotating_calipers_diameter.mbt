@@ -52,21 +52,20 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
   if n == 2 {
     return Some({ i: 0, j: 1, dist2: dist2(points[0], points[1]) })
   }
-  let mut j = 1
-  let mut best_i = 0
-  let mut best_j = 1
-  let mut best = dist2(points[0], points[1])
-  for i = 0; i < n; i = i + 1 {
+  let (best_i, best_j, best) = for i = 0, j = 1, best_i = 0, best_j = 1, best = dist2(
+                                       points[0],
+                                       points[1],
+                                     ); i < n; {
     let next_i = (i + 1) % n
-    for ;; {
+    let j = for j = j {
       let next_j = (j + 1) % n
       let area_now = cross(points[i], points[next_i], points[j])
       let area_next = cross(points[i], points[next_i], points[next_j])
       if area_next > area_now {
-        j = next_j
-        continue
+        continue next_j
+      } else {
+        break j
       }
-      break
     } where {
       invariant: j >= 0 && j < n,
       reasoning: (
@@ -82,11 +81,14 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
       ),
     }
     let d = dist2(points[i], points[j])
-    if d > best {
-      best = d
-      best_i = i
-      best_j = j
+    let (best_i, best_j, best) = if d > best {
+      (i, j, d)
+    } else {
+      (best_i, best_j, best)
     }
+    continue i + 1, j, best_i, best_j, best
+  } nobreak {
+    (best_i, best_j, best)
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
@@ -135,4 +137,35 @@ test "diameter two points" {
   let points : Array[Point] = [{ x: -1L, y: 0L }, { x: 2L, y: 0L }]
   let result = convex_diameter(points).unwrap()
   inspect(result.dist2, content="9")
+}
+
+///|
+test "diameter hexagon advances antipodal pointer multiple times" {
+  let points : Array[Point] = [
+    { x: 1L, y: 0L },
+    { x: 2L, y: 1L },
+    { x: 1L, y: 2L },
+    { x: 0L, y: 2L },
+    { x: -1L, y: 1L },
+    { x: 0L, y: 0L },
+  ]
+  let result = convex_diameter(points).unwrap()
+  inspect(result.dist2, content="9")
+}
+
+///|
+test "diameter keeps antipodal state across outer iterations" {
+  let points : Array[Point] = [
+    { x: -22L, y: 6L },
+    { x: -14L, y: -23L },
+    { x: 18L, y: -26L },
+    { x: 24L, y: 21L },
+    { x: 1L, y: 18L },
+  ]
+  let result = convex_diameter(points).unwrap()
+  inspect(result.dist2, content="3380")
+  inspect(
+    (result.i == 1 && result.j == 3) || (result.i == 3 && result.j == 1),
+    content="true",
+  )
 }
