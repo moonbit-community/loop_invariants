@@ -234,13 +234,13 @@ fn trap_rain_water(heights : Array[Int64]) -> Int64 {
 
   // Method 1: Using monotonic stack
   let stack : Array[Int] = []
-  let mut water = 0L
-  for i = 0; i < n; i = i + 1 {
-    while stack.length() > 0 && heights[stack[stack.length() - 1]] < heights[i] {
+  let water = for i = 0, water = 0L; i < n; {
+    let water = for water = water; stack.length() > 0 &&
+                   heights[stack[stack.length() - 1]] < heights[i]; {
       let mid = stack[stack.length() - 1]
       let _ = stack.pop()
       if stack.length() == 0 {
-        break
+        break water
       }
       let left = stack[stack.length() - 1]
       let width = (i - left - 1).to_int64()
@@ -250,9 +250,14 @@ fn trap_rain_water(heights : Array[Int64]) -> Int64 {
           heights[i]
         }) -
         heights[mid]
-      water = water + width * bounded_height
+      continue water + width * bounded_height
+    } nobreak {
+      water
     }
     stack.push(i)
+    continue i + 1, water
+  } nobreak {
+    water
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
