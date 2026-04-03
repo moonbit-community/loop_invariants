@@ -53,9 +53,11 @@ pub fn compute_z(s : String) -> Array[Int] {
   for i = 1, l = 0, r = 0; i < n; i = i + 1 {
     if i > r {
       // Case 1: i is outside Z-box, compute naively
-      let mut match_len = 0
-      while i + match_len < n && s[match_len] == s[i + match_len] {
-        match_len = match_len + 1
+      let match_len = for match_len = 0; i + match_len < n &&
+                         s[match_len] == s[i + match_len]; {
+        continue match_len + 1
+      } nobreak {
+        match_len
       }
       z[i] = match_len
       if match_len > 0 {
@@ -74,9 +76,11 @@ pub fn compute_z(s : String) -> Array[Int] {
         continue i + 1, l, r
       } else {
         // Case 2b: Need to extend beyond Z-box
-        let mut match_len = remaining
-        while i + match_len < n && s[match_len] == s[i + match_len] {
-          match_len = match_len + 1
+        let match_len = for match_len = remaining; i + match_len < n &&
+                           s[match_len] == s[i + match_len]; {
+          continue match_len + 1
+        } nobreak {
+          match_len
         }
         z[i] = match_len
         continue i + 1, i, i + match_len - 1

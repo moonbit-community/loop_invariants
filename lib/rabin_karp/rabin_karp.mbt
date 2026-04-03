@@ -31,28 +31,23 @@ const RK_MOD : Int64 = 1000000007L
 ///|
 /// Compute hash of string
 fn compute_hash(s : String, start : Int, len : Int) -> Int64 {
-  let mut h = 0L
-  for offset in 0..<len {
+  for offset in 0..<len; h = 0L {
     let c = s[start + offset].to_int() - 96 // 'a' = 97, so 'a' -> 1
-    h = (h * RK_BASE + c.to_int64()) % RK_MOD
+    continue (h * RK_BASE + c.to_int64()) % RK_MOD
+  } nobreak {
+    h
   }
-  h
 }
 
 ///|
 /// Compute base^exp mod m
 fn pow_mod(base : Int64, exp : Int, m : Int64) -> Int64 {
-  let mut result = 1L
-  let mut b = base % m
-  let mut e = exp
-  while e > 0 {
-    if e % 2 == 1 {
-      result = result * b % m
-    }
-    b = b * b % m
-    e = e / 2
+  for result = 1L, b = base % m, e = exp; e > 0; {
+    let next_result = if e % 2 == 1 { result * b % m } else { result }
+    continue next_result, b * b % m, e / 2
+  } nobreak {
+    result
   }
-  result
 }
 
 ///|
@@ -65,17 +60,16 @@ pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
     return result
   }
   let pattern_hash = compute_hash(pattern, 0, m)
-  let mut text_hash = compute_hash(text, 0, m)
   let base_pow = pow_mod(RK_BASE, m - 1, RK_MOD) // base^(m-1)
-  for i = 0; i <= n - m; i = i + 1 {
+  for i = 0, text_hash = compute_hash(text, 0, m); i <= n - m; {
     if text_hash == pattern_hash {
       // Verify match to handle collisions
-      let mut match_found = true
-      for j in 0..<m {
+      let match_found = for j in 0..<m {
         if text[i + j] != pattern[j] {
-          match_found = false
-          break
+          break false
         }
+      } nobreak {
+        true
       }
       if match_found {
         result.push(i)
@@ -83,15 +77,15 @@ pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
     }
 
     // Roll hash to next position
-    if i < n - m {
+    let next_hash = if i < n - m {
       let old_char = (text[i].to_int() - 96).to_int64()
       let new_char = (text[i + m].to_int() - 96).to_int64()
-      text_hash = (
-          (text_hash - old_char * base_pow % RK_MOD + RK_MOD) * RK_BASE +
-          new_char
-        ) %
-        RK_MOD
+      ((text_hash - old_char * base_pow % RK_MOD + RK_MOD) * RK_BASE + new_char) %
+      RK_MOD
+    } else {
+      text_hash
     }
+    continue i + 1, next_hash
   } where {
     invariant: i >= 0 && i <= n - m + 1,
     reasoning: (
@@ -147,19 +141,18 @@ pub fn rabin_karp_multi(
   // For each pattern length, do rolling hash
   for len, pattern_list in by_length {
     let base_pow = pow_mod(RK_BASE, len - 1, RK_MOD)
-    let mut text_hash = compute_hash(text, 0, len)
-    for i = 0; i <= n - len; i = i + 1 {
+    for i = 0, text_hash = compute_hash(text, 0, len); i <= n - len; {
       // Check against all patterns of this length
       for j = 0; j < pattern_list.length(); j = j + 1 {
         let (pat_idx, pat_hash) = pattern_list[j]
         if text_hash == pat_hash {
           // Verify
-          let mut match_found = true
-          for k in 0..<len {
+          let match_found = for k in 0..<len {
             if text[i + k] != patterns[pat_idx][k] {
-              match_found = false
-              break
+              break false
             }
+          } nobreak {
+            true
           }
           if match_found {
             result.push((pat_idx, i))
@@ -179,15 +172,18 @@ pub fn rabin_karp_multi(
       }
 
       // Roll hash
-      if i < n - len {
+      let next_hash = if i < n - len {
         let old_char = (text[i].to_int() - 96).to_int64()
         let new_char = (text[i + len].to_int() - 96).to_int64()
-        text_hash = (
-            (text_hash - old_char * base_pow % RK_MOD + RK_MOD) * RK_BASE +
-            new_char
-          ) %
-          RK_MOD
+        (
+          (text_hash - old_char * base_pow % RK_MOD + RK_MOD) * RK_BASE +
+          new_char
+        ) %
+        RK_MOD
+      } else {
+        text_hash
       }
+      continue i + 1, next_hash
     } where {
       invariant: i >= 0 && i <= n - len + 1,
       reasoning: (
