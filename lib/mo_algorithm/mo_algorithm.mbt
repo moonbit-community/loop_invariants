@@ -64,22 +64,20 @@ fn isqrt(n : Int) -> Int {
   if n <= 0 {
     return 0
   }
-  let mut x = n
-  let mut y = (x + 1) / 2
-  while y < x {
-    x = y
-    y = (x + n / x) / 2
+  for x = n, y = (n + 1) / 2; y < x; {
+    continue y, (y + n / y) / 2
+  } nobreak {
+    x
   }
-  x
 }
 
 ///|
 fn max_element(arr : Array[Int]) -> Int {
-  let mut mx = 0
-  for i = 0; i < arr.length(); i = i + 1 {
-    if arr[i] > mx {
-      mx = arr[i]
-    }
+  let mx = for i = 0, mx = 0; i < arr.length(); {
+    let mx = if arr[i] > mx { arr[i] } else { mx }
+    continue i + 1, mx
+  } nobreak {
+    mx
   } where {
     invariant: i >= 0 && i <= arr.length(),
     reasoning: (
