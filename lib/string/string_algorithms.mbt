@@ -25,9 +25,10 @@ fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
       break z
     } else if i >= r {
       // Case 1: i is outside current Z-box, compute from scratch
-      let mut len = 0
-      while i + len < n && s[len] == s[i + len] {
-        len = len + 1
+      let len = for len = 0; i + len < n && s[len] == s[i + len]; {
+        continue len + 1
+      } nobreak {
+        len
       }
       z[i] = len
       if len > 0 {
@@ -47,9 +48,12 @@ fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
       } else {
         // Case 2b: Z[k] reaches or exceeds Z-box boundary
         // Need to extend by comparing beyond r
-        let mut len = remaining
-        while r + len - i < n && i + len < n && s[r - i + len] == s[i + len] {
-          len = len + 1
+        let len = for len = remaining; r + len - i < n &&
+                     i + len < n &&
+                     s[r - i + len] == s[i + len]; {
+          continue len + 1
+        } nobreak {
+          len
         }
         z[i] = len
         continue i + 1, i, i + len
@@ -165,13 +169,15 @@ fn manacher(s : ArrayView[Char]) -> Array[Int] {
       }
 
       // Try to expand palindrome centered at i
-      let mut left = i - p[i] - 1
-      let mut right = i + p[i] + 1
-      while left >= 0 && right < t_len && get_char(left) == get_char(right) {
-        p[i] = p[i] + 1
-        left = left - 1
-        right = right + 1
+      let radius = for left = i - p[i] - 1, right = i + p[i] + 1, radius = p[i]; left >=
+                      0 &&
+                      right < t_len &&
+                      get_char(left) == get_char(right); {
+        continue left - 1, right + 1, radius + 1
+      } nobreak {
+        radius
       }
+      p[i] = radius
 
       // Update center and right boundary if we expanded past r
       if i + p[i] > r {
@@ -374,12 +380,10 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
       // Check if hashes match
       if th == pattern_hash {
         // Verify actual match (to handle hash collisions)
-        let mut match_found = true
-        for j = 0; j < m; j = j + 1 {
-          if text[i + j] != pattern[j] {
-            match_found = false
-            break
-          }
+        let match_found = for j = 0, match_found = true; j < m && match_found; {
+          continue j + 1, text[i + j] == pattern[j]
+        } nobreak {
+          match_found
         } where {
           invariant: j >= 0 && j <= m,
           reasoning: (
@@ -403,8 +407,10 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
         let old_char = text[i].to_int()
         let new_char = text[i + m].to_int()
         // rolling_hash = (old_hash - old_char * h) * base + new_char
-        let mut new_th = (th - old_char * h % modulus + modulus) % modulus
-        new_th = (new_th * base + new_char) % modulus
+        let new_th = (
+            (th - old_char * h % modulus + modulus) % modulus * base + new_char
+          ) %
+          modulus
         continue i + 1, new_th
       } else {
         continue i + 1, th
@@ -476,9 +482,9 @@ pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
   let m = s1.length()
   let n = s2.length()
   guard m > 0 && n > 0 else { return 0 }
-  let mut prev : Array[Int] = Array::make(n + 1, 0)
-  let mut curr : Array[Int] = Array::make(n + 1, 0)
-  for i = 1 {
+  let prev0 : Array[Int] = Array::make(n + 1, 0)
+  let curr0 : Array[Int] = Array::make(n + 1, 0)
+  for i = 1, prev = prev0, curr = curr0 {
     if i > m {
       break prev[n]
     } else {
@@ -507,11 +513,8 @@ pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
           #|At j == n + 1, row i is fully computed in curr.
         ),
       }
-      let tmp = prev
-      prev = curr
-      curr = tmp
-      curr[0] = 0 // Reset first element for next row
-      continue i + 1
+      prev[0] = 0 // Reset first element for the buffer reused as next curr
+      continue i + 1, curr, prev
     }
   } where {
     invariant: i >= 1 && i <= m + 1,

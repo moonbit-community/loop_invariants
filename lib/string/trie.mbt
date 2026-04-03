@@ -232,16 +232,17 @@ fn AhoCorasick::add_pattern(
 fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
   // Queue for BFS
   let queue : Array[Int] = Array::make(self.node_count, 0)
-  let mut front = 0
-  let mut back = 0
   // Initialize: all depth-1 nodes have fail link to root
-  for c = 0; c < 26; c = c + 1 {
+  let back = for c = 0, back = 0; c < 26; c = c + 1 {
     let child = self.nodes[0].children[c]
     if child != -1 {
       self.nodes[child].fail = 0
       queue[back] = child
-      back = back + 1
+      continue c + 1, back + 1
     }
+    continue c + 1, back
+  } nobreak {
+    back
   } where {
     invariant: c >= 0 && c <= 26,
     reasoning: (
@@ -262,9 +263,8 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
     ),
   }
   // BFS to build failure links
-  while front < back {
+  let _ = for front = 0, back = back; front < back; {
     let curr = queue[front]
-    front = front + 1
     // Set suffix_output: closest ancestor with output via fail links
     let fail_node = self.nodes[curr].fail
     if self.nodes[fail_node].output.length() > 0 {
@@ -273,15 +273,18 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
       self.nodes[curr].suffix_output = self.nodes[fail_node].suffix_output
     }
     // Process children
-    for c = 0; c < 26; c = c + 1 {
+    let back = for c = 0, back = back; c < 26; c = c + 1 {
       let child = self.nodes[curr].children[c]
       if child != -1 {
         // Find failure link for child
         let fail = self.find_fail_link(curr, c)
         self.nodes[child].fail = fail
         queue[back] = child
-        back = back + 1
+        continue c + 1, back + 1
       }
+      continue c + 1, back
+    } nobreak {
+      back
     } where {
       invariant: c >= 0 && c <= 26,
       reasoning: (
@@ -302,6 +305,7 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
         #|Queue range remains valid until BFS finishes.
       ),
     }
+    continue front + 1, back
   }
 }
 
