@@ -193,7 +193,7 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
   let min_edge = Array::make(self.n, PRIM_INF)
   min_edge[0] = 0L
   let (total_weight, edges_added) = for iter = 0, total_weight = 0L, edges_added = 0; iter <
-       self.n; {
+                                       self.n; {
     // Find minimum edge to non-MST vertex
     let (u, min_w) = for i = 0, u = -1, min_w = PRIM_INF; i < self.n; i = i + 1 {
       if !in_mst[i] && min_edge[i] < min_w {
