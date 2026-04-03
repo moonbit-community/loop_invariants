@@ -203,10 +203,12 @@ struct Query {
   idx : Int
 }
 
+///|
 fn block_of(i : Int, block_size : Int) -> Int {
   i / block_size
 }
 
+///|
 fn mo_order(qs : ArrayView[Query], block_size : Int) -> Array[Query] {
   let sorted = qs.to_array()
   sorted.sort_by((a, b) => {
@@ -221,55 +223,74 @@ fn mo_order(qs : ArrayView[Query], block_size : Int) -> Array[Query] {
   sorted
 }
 
+///|
 fn process_queries(a : ArrayView[Int], qs : ArrayView[Query]) -> Array[Int] {
   let n = a.length()
-  let block_size = (n.to_float().sqrt().to_int()).max(1)
+  let block_size = n.to_float().sqrt().to_int().max(1)
   let ordered = mo_order(qs, block_size)
 
   let answers : Array[Int] = Array::make(qs.length(), 0)
-  let mut l = 0
-  let mut r = -1
-
-  // state for distinct count:
-  let mut distinct = 0
   let freq : Map[Int, Int] = {}
 
-  let add = (i : Int) => {
+  let add = (i : Int, distinct : Int) => {
     let x = a[i]
     let c = freq.get(x).unwrap_or(0)
-    if c == 0 { distinct = distinct + 1 }
     freq[x] = c + 1
+    if c == 0 {
+      distinct + 1
+    } else {
+      distinct
+    }
   }
 
-  let remove = (i : Int) => {
+  let remove = (i : Int, distinct : Int) => {
     let x = a[i]
     let c = freq[x]
     freq[x] = c - 1
-    if c - 1 == 0 { distinct = distinct - 1 }
+    if c - 1 == 0 {
+      distinct - 1
+    } else {
+      distinct
+    }
   }
 
-  for q in ordered {
-    loop {
-      if l <= q.l { break }
-      l = l - 1
-      add(l)
+  let _ = for q in ordered; l = 0, r = -1, distinct = 0 {
+    let (l1, distinct1) = loop (l, distinct) {
+      (l, distinct) => {
+        if l <= q.l {
+          break (l, distinct)
+        }
+        let next_l = l - 1
+        continue (next_l, add(next_l, distinct))
+      }
     }
-    loop {
-      if r >= q.r { break }
-      r = r + 1
-      add(r)
+    let (r1, distinct2) = loop (r, distinct1) {
+      (r, distinct) => {
+        if r >= q.r {
+          break (r, distinct)
+        }
+        let next_r = r + 1
+        continue (next_r, add(next_r, distinct))
+      }
     }
-    loop {
-      if l >= q.l { break }
-      remove(l)
-      l = l + 1
+    let (l2, distinct3) = loop (l1, distinct2) {
+      (l, distinct) => {
+        if l >= q.l {
+          break (l, distinct)
+        }
+        continue (l + 1, remove(l, distinct))
+      }
     }
-    loop {
-      if r <= q.r { break }
-      remove(r)
-      r = r - 1
+    let (r2, distinct4) = loop (r1, distinct3) {
+      (r, distinct) => {
+        if r <= q.r {
+          break (r, distinct)
+        }
+        continue (r - 1, remove(r, distinct))
+      }
     }
-    answers[q.idx] = distinct
+    answers[q.idx] = distinct4
+    continue l2, r2, distinct4
   }
   answers
 }
