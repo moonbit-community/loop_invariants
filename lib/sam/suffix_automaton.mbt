@@ -475,12 +475,12 @@ fn SuffixAutomaton::compute_path_counts(self : SuffixAutomaton) -> Array[Int64] 
     if memo[state] >= 0L {
       return memo[state]
     }
-    let mut cnt : Int64 = 1L
-    for c = 0; c < alphabet_size; c = c + 1 {
+    let cnt = for c = 0, cnt = 1L; c < alphabet_size; {
       let next = sam.states[state].trans[c]
-      if next >= 0 {
-        cnt = cnt + dfs(sam, next, memo)
-      }
+      let cnt = if next >= 0 { cnt + dfs(sam, next, memo) } else { cnt }
+      continue c + 1, cnt
+    } nobreak {
+      cnt
     } where {
       invariant: c >= 0 && c <= alphabet_size,
       reasoning: (
@@ -509,17 +509,18 @@ fn find_next_transition(
   remaining : Int64,
   path_cnt : Array[Int64],
 ) -> (Int, Int64, Int)? {
-  let mut rem = remaining - 1L // Account for "stop here" option
-  for c = 0; c < alphabet_size; c = c + 1 {
+  for c = 0, rem = remaining - 1L; c < alphabet_size; {
     let next = sam.states[state].trans[c]
     if next >= 0 {
       let cnt = path_cnt[next]
       if rem <= cnt {
-        return Some((next, rem, c))
-      } else {
-        rem = rem - cnt
+        break Some((next, rem, c))
       }
+      continue c + 1, rem - cnt
     }
+    continue c + 1, rem
+  } nobreak {
+    None
   } where {
     invariant: c >= 0 && c <= alphabet_size && rem >= 0L,
     reasoning: (
@@ -531,7 +532,6 @@ fn find_next_transition(
       #|If no transition fits by c = alphabet_size, no substring matches rem.
     ),
   }
-  None
 }
 
 ///|

@@ -75,10 +75,8 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
   }
   self.level[source] = 0
   let queue : Array[Int] = [source]
-  let mut front = 0
-  while front < queue.length() {
+  for front = 0; front < queue.length(); {
     let u = queue[front]
-    front = front + 1
     for i = 0; i < self.adj[u].length(); i = i + 1 {
       let e = self.adj[u][i]
       if e.cap > e.flow && self.level[e.to] < 0 {
@@ -97,6 +95,7 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
         #|At i = deg(u), all outgoing edges from u are processed.
       ),
     }
+    continue front + 1
   }
   self.level[sink] >= 0
 }
@@ -134,8 +133,7 @@ fn FlowGraph::dfs(
 
 ///|
 fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
-  let mut flow = 0L
-  while self.bfs(source, sink) {
+  for flow = 0L; self.bfs(source, sink); {
     for i = 0; i < self.n; i = i + 1 {
       self.iter[i] = 0
     } where {
@@ -149,9 +147,11 @@ fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
         #|At i = n, all iter pointers are reset.
       ),
     }
-    for pushed = self.dfs(source, sink, INF64); pushed > 0L; {
-      flow = flow + pushed
-      continue self.dfs(source, sink, INF64)
+    let flow = for pushed = self.dfs(source, sink, INF64), flow = flow; pushed >
+                  0L; {
+      continue self.dfs(source, sink, INF64), flow + pushed
+    } nobreak {
+      flow
     } where {
       invariant: flow >= 0L,
       reasoning: (
@@ -165,20 +165,20 @@ fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
         #|When DFS returns 0, the current level graph is blocked.
       ),
     }
+    continue flow
+  } nobreak {
+    flow
   }
-  flow
 }
 
 ///|
 fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] {
   let visited = Array::make(self.n, false)
   let queue : Array[Int] = [source]
-  let mut front = 0
   visited[source] = true
   let result : Array[Int] = []
-  while front < queue.length() {
+  for front = 0; front < queue.length(); {
     let u = queue[front]
-    front = front + 1
     result.push(u)
     for i = 0; i < self.adj[u].length(); i = i + 1 {
       let e = self.adj[u][i]
@@ -200,6 +200,7 @@ fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] 
         #|At i = deg(u), all outgoing residual edges are processed.
       ),
     }
+    continue front + 1
   }
   result
 }
@@ -260,16 +261,17 @@ fn cut_capacity(
       in_source[v] = true
     }
   }
-  let mut total = 0L
-  for edge in edges {
+  for edge in edges; total = 0L {
     let (u, v, cap) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       if in_source[u] && !in_source[v] {
-        total = total + cap
+        continue total + cap
       }
     }
+    continue total
+  } nobreak {
+    total
   }
-  total
 }
 
 ///|
