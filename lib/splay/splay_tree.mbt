@@ -64,15 +64,11 @@ fn[T] SplayTree::update_size(self : SplayTree[T], x : Int) -> Unit {
   if x < 0 {
     return
   }
-  let mut sz = 1
   let l = self.nodes[x].left
   let r = self.nodes[x].right
-  if l >= 0 {
-    sz = sz + self.nodes[l].size
-  }
-  if r >= 0 {
-    sz = sz + self.nodes[r].size
-  }
+  let sz = 1 +
+    (if l >= 0 { self.nodes[l].size } else { 0 }) +
+    (if r >= 0 { self.nodes[r].size } else { 0 })
   self.nodes[x].size = sz
 }
 

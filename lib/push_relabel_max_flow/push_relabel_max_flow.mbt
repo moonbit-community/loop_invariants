@@ -126,11 +126,13 @@ fn PushRelabel::push_edge(
 
 ///|
 fn PushRelabel::relabel(self : PushRelabel, u : Int) -> Unit {
-  let mut min_height = 1000000000
-  for e in self.adj[u] {
+  let min_height = for e in self.adj[u]; min_height = 1000000000 {
     if e.cap > e.flow && self.height[e.to] < min_height {
-      min_height = self.height[e.to]
+      continue self.height[e.to]
     }
+    continue min_height
+  } nobreak {
+    min_height
   }
   if min_height < 1000000000 {
     self.height[u] = min_height + 1
