@@ -348,16 +348,16 @@ fn divide_conquer_dp(
       return
     }
     let mid = (lo + hi) / 2
-    let mut best_val = 9223372036854775807L
-    let mut best_opt = opt_lo
-
-    // Find optimal decision for mid in range [opt_lo, min(opt_hi, mid-1)]
-    for j = opt_lo; j <= opt_hi && j < mid; j = j + 1 {
+    let (best_val, best_opt) = for j = opt_lo, best_val = 9223372036854775807L, best_opt = opt_lo; j <=
+                                  opt_hi &&
+                                  j < mid; {
       let val = dp[j] + cost(j, mid)
       if val < best_val {
-        best_val = val
-        best_opt = j
+        continue j + 1, val, j
       }
+      continue j + 1, best_val, best_opt
+    } nobreak {
+      (best_val, best_opt)
     } where {
       invariant: j >= opt_lo && j <= opt_hi + 1,
       reasoning: (
@@ -369,6 +369,8 @@ fn divide_conquer_dp(
         #|At j = opt_hi + 1 (or mid), best_opt is the optimal decision for mid.
       ),
     }
+
+    // Find optimal decision for mid in range [opt_lo, min(opt_hi, mid-1)]
     if best_val < dp[mid] {
       dp[mid] = best_val
     }
@@ -575,18 +577,17 @@ fn aliens_trick(
   compute_dp : (Int64) -> (Int64, Int),
 ) -> Int64 {
   let _ = n
-  let mut lo = -1000000000L
-  let mut hi = 1000000000L
-
   // Binary search for the right penalty
-  for iter = 0; iter < 100; iter = iter + 1 {
+  let hi = for iter = 0, lo = -1000000000L, hi = 1000000000L; iter < 100; {
     let mid = (lo + hi) / 2L
     let (_, k) = compute_dp(mid)
     if k <= target_k {
-      hi = mid
+      continue iter + 1, lo, mid
     } else {
-      lo = mid
+      continue iter + 1, mid, hi
     }
+  } nobreak {
+    hi
   } where {
     invariant: iter >= 0 && iter <= 100,
     reasoning: (
@@ -644,14 +645,13 @@ fn SlopeTrick::new() -> SlopeTrick {
 fn SlopeTrick::push_left(self : SlopeTrick, x : Int64) -> Unit {
   self.left_slopes.push(x)
   // Bubble up (max-heap)
-  let mut i = self.left_slopes.length() - 1
-  while i > 0 {
+  let _ = for i = self.left_slopes.length() - 1; i > 0; {
     let parent = (i - 1) / 2
     if self.left_slopes[i] > self.left_slopes[parent] {
       let temp = self.left_slopes[i]
       self.left_slopes[i] = self.left_slopes[parent]
       self.left_slopes[parent] = temp
-      i = parent
+      continue parent
     } else {
       break
     }
@@ -662,14 +662,13 @@ fn SlopeTrick::push_left(self : SlopeTrick, x : Int64) -> Unit {
 fn SlopeTrick::push_right(self : SlopeTrick, x : Int64) -> Unit {
   self.right_slopes.push(x)
   // Bubble up (min-heap)
-  let mut i = self.right_slopes.length() - 1
-  while i > 0 {
+  let _ = for i = self.right_slopes.length() - 1; i > 0; {
     let parent = (i - 1) / 2
     if self.right_slopes[i] < self.right_slopes[parent] {
       let temp = self.right_slopes[i]
       self.right_slopes[i] = self.right_slopes[parent]
       self.right_slopes[parent] = temp
-      i = parent
+      continue parent
     } else {
       break
     }
@@ -689,24 +688,26 @@ fn SlopeTrick::pop_left(self : SlopeTrick) -> Int64 {
   if self.left_slopes.length() > 0 {
     self.left_slopes[0] = last
     // Bubble down
-    let mut i = 0
-    while true {
+    let _ = for i = 0 {
       let left = 2 * i + 1
       let right = 2 * i + 2
-      let mut largest = i
-      if left < self.left_slopes.length() &&
-        self.left_slopes[left] > self.left_slopes[largest] {
-        largest = left
+      let largest = if left < self.left_slopes.length() &&
+        self.left_slopes[left] > self.left_slopes[i] {
+        left
+      } else {
+        i
       }
-      if right < self.left_slopes.length() &&
+      let largest = if right < self.left_slopes.length() &&
         self.left_slopes[right] > self.left_slopes[largest] {
-        largest = right
+        right
+      } else {
+        largest
       }
       if largest != i {
         let temp = self.left_slopes[i]
         self.left_slopes[i] = self.left_slopes[largest]
         self.left_slopes[largest] = temp
-        i = largest
+        continue largest
       } else {
         break
       }
@@ -728,24 +729,26 @@ fn SlopeTrick::pop_right(self : SlopeTrick) -> Int64 {
   if self.right_slopes.length() > 0 {
     self.right_slopes[0] = last
     // Bubble down
-    let mut i = 0
-    while true {
+    let _ = for i = 0 {
       let left = 2 * i + 1
       let right = 2 * i + 2
-      let mut smallest = i
-      if left < self.right_slopes.length() &&
-        self.right_slopes[left] < self.right_slopes[smallest] {
-        smallest = left
+      let smallest = if left < self.right_slopes.length() &&
+        self.right_slopes[left] < self.right_slopes[i] {
+        left
+      } else {
+        i
       }
-      if right < self.right_slopes.length() &&
+      let smallest = if right < self.right_slopes.length() &&
         self.right_slopes[right] < self.right_slopes[smallest] {
-        smallest = right
+        right
+      } else {
+        smallest
       }
       if smallest != i {
         let temp = self.right_slopes[i]
         self.right_slopes[i] = self.right_slopes[smallest]
         self.right_slopes[smallest] = temp
-        i = smallest
+        continue smallest
       } else {
         break
       }
