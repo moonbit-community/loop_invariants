@@ -58,20 +58,26 @@ fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
     }
   }
   self.dist[self.graph.n_left] = HK_INF // Sentinel for unmatched
-  while queue.pop() is Some(u) {
-    if self.dist[u] < self.dist[self.graph.n_left] {
-      for v in self.graph.adj[u] {
-        let next = if self.match_right[v] < 0 {
-          self.graph.n_left
-        } else {
-          self.match_right[v]
-        }
-        if self.dist[next] == HK_INF {
-          self.dist[next] = self.dist[u] + 1
-          if next < self.graph.n_left {
-            queue.push(next)
+  let _ = for popped = queue.pop() {
+    match popped {
+      None => break ()
+      Some(u) => {
+        if self.dist[u] < self.dist[self.graph.n_left] {
+          for v in self.graph.adj[u] {
+            let next = if self.match_right[v] < 0 {
+              self.graph.n_left
+            } else {
+              self.match_right[v]
+            }
+            if self.dist[next] == HK_INF {
+              self.dist[next] = self.dist[u] + 1
+              if next < self.graph.n_left {
+                queue.push(next)
+              }
+            }
           }
         }
+        continue queue.pop()
       }
     }
   }

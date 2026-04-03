@@ -122,33 +122,39 @@ fn dijkstra_original(
   dist[source] = 0L
   let heap = MinHeap::new()
   heap.push({ dist: 0L, vertex: source })
-  while heap.pop() is Some(entry) {
-    let u = entry.vertex
-    if entry.dist != dist[u] {
-      continue
-    }
-    if u == sink {
-      break
-    }
-    for i = 0; i < adj[u].length(); i = i + 1 {
-      let edge_id = adj[u][i]
-      let v = to[edge_id]
-      let nd = dist[u] + weight[edge_id]
-      if nd < dist[v] {
-        dist[v] = nd
-        prev_edge[v] = edge_id
-        heap.push({ dist: nd, vertex: v })
+  let _ = for popped = heap.pop() {
+    match popped {
+      None => break ()
+      Some(entry) => {
+        let u = entry.vertex
+        if entry.dist != dist[u] {
+          continue heap.pop()
+        }
+        if u == sink {
+          break ()
+        }
+        for i = 0; i < adj[u].length(); i = i + 1 {
+          let edge_id = adj[u][i]
+          let v = to[edge_id]
+          let nd = dist[u] + weight[edge_id]
+          if nd < dist[v] {
+            dist[v] = nd
+            prev_edge[v] = edge_id
+            heap.push({ dist: nd, vertex: v })
+          }
+        } where {
+          invariant: i >= 0 && i <= adj[u].length(),
+          reasoning: (
+            #|INVARIANT (relax edges):
+            #|Edges adj[u][0..i) have been considered for relaxation.
+            #|MAINTENANCE:
+            #|Relax edge i if it improves the shortest known distance.
+            #|TERMINATION:
+            #|At i = deg(u), all outgoing edges are processed.
+          ),
+        }
+        continue heap.pop()
       }
-    } where {
-      invariant: i >= 0 && i <= adj[u].length(),
-      reasoning: (
-        #|INVARIANT (relax edges):
-        #|Edges adj[u][0..i) have been considered for relaxation.
-        #|MAINTENANCE:
-        #|Relax edge i if it improves the shortest known distance.
-        #|TERMINATION:
-        #|At i = deg(u), all outgoing edges are processed.
-      ),
     }
   }
   if dist[sink] >= SD_INF {
@@ -179,33 +185,39 @@ fn dijkstra_modified(
   dist[source] = 0L
   let heap = MinHeap::new()
   heap.push({ dist: 0L, vertex: source })
-  while heap.pop() is Some(entry) {
-    let u = entry.vertex
-    if entry.dist != dist[u] {
-      continue
-    }
-    if u == sink {
-      break
-    }
-    for i = 0; i < adj[u].length(); i = i + 1 {
-      let e = adj[u][i]
-      let nd = dist[u] + e.weight
-      if nd < dist[e.to] {
-        dist[e.to] = nd
-        prev_v[e.to] = u
-        prev_e[e.to] = i
-        heap.push({ dist: nd, vertex: e.to })
+  let _ = for popped = heap.pop() {
+    match popped {
+      None => break ()
+      Some(entry) => {
+        let u = entry.vertex
+        if entry.dist != dist[u] {
+          continue heap.pop()
+        }
+        if u == sink {
+          break ()
+        }
+        for i = 0; i < adj[u].length(); i = i + 1 {
+          let e = adj[u][i]
+          let nd = dist[u] + e.weight
+          if nd < dist[e.to] {
+            dist[e.to] = nd
+            prev_v[e.to] = u
+            prev_e[e.to] = i
+            heap.push({ dist: nd, vertex: e.to })
+          }
+        } where {
+          invariant: i >= 0 && i <= adj[u].length(),
+          reasoning: (
+            #|INVARIANT (relax modified edges):
+            #|Edges adj[u][0..i) have been relaxed under reduced weights.
+            #|MAINTENANCE:
+            #|Relax edge i if it improves the tentative distance.
+            #|TERMINATION:
+            #|At i = deg(u), all modified edges are processed.
+          ),
+        }
+        continue heap.pop()
       }
-    } where {
-      invariant: i >= 0 && i <= adj[u].length(),
-      reasoning: (
-        #|INVARIANT (relax modified edges):
-        #|Edges adj[u][0..i) have been relaxed under reduced weights.
-        #|MAINTENANCE:
-        #|Relax edge i if it improves the tentative distance.
-        #|TERMINATION:
-        #|At i = deg(u), all modified edges are processed.
-      ),
     }
   }
   if dist[sink] >= SD_INF {
