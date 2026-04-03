@@ -137,8 +137,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
     }
   }
   let deque : Array[HalfPlane] = []
-  let mut head = 0
-  for line in unique {
+  let head = for line in unique; head = 0 {
     for ;; {
       if deque.length() - head >= 2 {
         let p = line_intersection(
@@ -164,15 +163,16 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
         #|When the intersection is inside the new line, the back is stable.
       ),
     }
-    for ;; {
+    let head = for head = head; deque.length() - head >= 2; {
       if deque.length() - head >= 2 {
         let p = line_intersection(deque[head], deque[head + 1])
         if !is_inside(line, p) {
-          head = head + 1
-          continue
+          continue head + 1
         }
       }
-      break
+      break head
+    } nobreak {
+      head
     } where {
       invariant: head >= 0 && head <= deque.length(),
       reasoning: (
@@ -186,6 +186,9 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
       ),
     }
     deque.push(line)
+    continue head
+  } nobreak {
+    head
   }
   for ;; {
     if deque.length() - head >= 3 {
@@ -210,15 +213,16 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
       #|When the back intersection is inside the front half-plane, closure holds.
     ),
   }
-  for ;; {
+  let head = for head = head; deque.length() - head >= 3; {
     if deque.length() - head >= 3 {
       let p = line_intersection(deque[head], deque[head + 1])
       if !is_inside(deque[deque.length() - 1], p) {
-        head = head + 1
-        continue
+        continue head + 1
       }
     }
-    break
+    break head
+  } nobreak {
+    head
   } where {
     invariant: head >= 0 && head <= deque.length(),
     reasoning: (
@@ -277,4 +281,22 @@ test "halfplane empty" {
     HalfPlane::from_points({ x: 0.0, y: 1.0 }, { x: 1.0, y: 1.0 }),
   ]
   guard halfplane_intersection(planes) is None else { fail("expected None") }
+}
+
+///|
+test "halfplane keeps most restrictive parallel line" {
+  let planes : Array[HalfPlane] = [
+    HalfPlane::from_points({ x: 0.0, y: 2.0 }, { x: 0.0, y: 0.0 }),
+    HalfPlane::from_points({ x: 1.0, y: 2.0 }, { x: 1.0, y: 0.0 }),
+    HalfPlane::from_points({ x: 3.0, y: 0.0 }, { x: 3.0, y: 2.0 }),
+    HalfPlane::from_points({ x: 0.0, y: 0.0 }, { x: 1.0, y: 0.0 }),
+    HalfPlane::from_points({ x: 3.0, y: 2.0 }, { x: 0.0, y: 2.0 }),
+  ]
+  let poly = halfplane_intersection(planes).unwrap()
+  let min_x = poly[:].iter().map(p => p.x).minimum().unwrap()
+  let max_x = poly[:].iter().map(p => p.x).maximum().unwrap()
+  let min_y = poly[:].iter().map(p => p.y).minimum().unwrap()
+  let max_y = poly[:].iter().map(p => p.y).maximum().unwrap()
+  inspect(approx(min_x, 1.0) && approx(max_x, 3.0), content="true")
+  inspect(approx(min_y, 0.0) && approx(max_y, 2.0), content="true")
 }
