@@ -45,22 +45,17 @@ fn[T] valid_prefix(arr : Array[Tree[T]?], i : Int) -> Bool {
 fn[T : Compare] merge_heaps(a : Heap[T], b : Heap[T]) -> Heap[T] {
   let len = max2(a.trees.length(), b.trees.length()) + 1
   let out : Array[Tree[T]?] = Array::make(len, None)
-  let mut carry : Tree[T]? = None
-  for i = 0; i < len; i = i + 1 {
+  let _ = for i = 0, carry = None; i < len; {
     let t1 = if i < a.trees.length() { a.trees[i] } else { None }
     let t2 = if i < b.trees.length() { b.trees[i] } else { None }
-    let mut count = 0
-    if t1 is Some(_) {
-      count = count + 1
-    }
-    if t2 is Some(_) {
-      count = count + 1
-    }
-    if carry is Some(_) {
-      count = count + 1
-    }
-    match count {
-      0 => out[i] = None
+    let count = (if t1 is Some(_) { 1 } else { 0 }) +
+      (if t2 is Some(_) { 1 } else { 0 }) +
+      (if carry is Some(_) { 1 } else { 0 })
+    let new_carry = match count {
+      0 => {
+        out[i] = None
+        None
+      }
       1 => {
         out[i] = if t1 is Some(_) {
           t1
@@ -69,32 +64,28 @@ fn[T : Compare] merge_heaps(a : Heap[T], b : Heap[T]) -> Heap[T] {
         } else {
           carry
         }
-        carry = None
+        None
       }
       2 => {
         let a_tree = if t1 is Some(_) { t1 } else { t2 }
         let b_tree = if t1 is Some(_) && t2 is Some(_) { t2 } else { carry }
+        out[i] = None
         match (a_tree, b_tree) {
-          (Some(x), Some(y)) => {
-            carry = Some(link(x, y))
-            out[i] = None
-          }
-          _ => {
-            out[i] = None
-            carry = None
-          }
+          (Some(x), Some(y)) => Some(link(x, y))
+          _ => None
         }
       }
       _ => {
-        let first = t1
-        let second = t2
         out[i] = carry
-        match (first, second) {
-          (Some(x), Some(y)) => carry = Some(link(x, y))
-          _ => carry = None
+        match (t1, t2) {
+          (Some(x), Some(y)) => Some(link(x, y))
+          _ => None
         }
       }
     }
+    continue i + 1, new_carry
+  } nobreak {
+    carry
   } where {
     invariant: i >= 0 && i <= len,
     invariant: valid_prefix(out, i),
@@ -147,16 +138,18 @@ pub fn[T : Compare] insert(h : Heap[T], value : T) -> Heap[T] {
 ///|
 /// Return the minimum value in the heap, or None if empty.
 pub fn[T : Compare] find_min(h : Heap[T]) -> T? {
-  let mut min_val : T? = None
-  for tree in h.trees {
+  let min_val : T? = for tree in h.trees; min_val = None {
     match tree {
-      None => ()
+      None => continue min_val
       Some(t) =>
         match min_val {
-          None => min_val = Some(t.value)
-          Some(best) => if t.value < best { min_val = Some(t.value) }
+          None => continue Some(t.value)
+          Some(best) =>
+            continue if t.value < best { Some(t.value) } else { min_val }
         }
     }
+  } nobreak {
+    min_val
   }
   min_val
 }
@@ -173,28 +166,22 @@ fn[T] heap_from_children(children : Array[Tree[T]], rank : Int) -> Heap[T] {
 ///|
 /// Delete the minimum element and return the new heap.
 pub fn[T : Compare] delete_min(h : Heap[T]) -> Heap[T]? {
-  let mut min_idx : Int? = None
-  let mut min_val : T? = None
-  for i, tree in h.trees {
+  let min : (Int, T)? = for i, tree in h.trees; min = None {
     match tree {
-      None => ()
+      None => continue min
       Some(t) =>
-        match min_val {
-          None => {
-            min_idx = Some(i)
-            min_val = Some(t.value)
-          }
-          Some(best) =>
-            if t.value < best {
-              min_idx = Some(i)
-              min_val = Some(t.value)
-            }
+        match min {
+          None => continue Some((i, t.value))
+          Some((_, best)) =>
+            continue if t.value < best { Some((i, t.value)) } else { min }
         }
     }
+  } nobreak {
+    min
   }
-  match min_idx {
+  match min {
     None => None
-    Some(idx) =>
+    Some((idx, _)) =>
       match h.trees[idx] {
         None => None
         Some(tree) => {
@@ -212,4 +199,14 @@ pub fn[T : Compare] delete_min(h : Heap[T]) -> Heap[T]? {
 test "persistent binomial heap rank invariant" {
   let heap = insert(insert(empty(), 3), 1)
   assert_true(valid_prefix(heap.trees, heap.trees.length()))
+}
+
+///|
+test "persistent binomial heap keeps earlier minimum" {
+  let h1 = insert(empty(), 1)
+  let h2 = insert(insert(empty(), 10), 20)
+  let merged = merge(h1, h2)
+  assert_eq(find_min(merged), Some(1))
+  guard delete_min(merged) is Some(rest) else { fail("expected delete_min") }
+  assert_eq(find_min(rest), Some(10))
 }

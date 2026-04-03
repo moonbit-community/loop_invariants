@@ -18,8 +18,6 @@ pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
   let onstack = Array::make(n, false)
   let stack : Array[Int] = []
   let comp = Array::make(n, -1)
-  let mut time = 0
-  let mut comp_id = 0
   fn pop_component(root : Int, id : Int) -> Unit {
     match stack.pop() {
       Some(w) => {
@@ -33,35 +31,46 @@ pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
   }
 
-  fn dfs(v : Int) -> Unit {
+  fn dfs(v : Int, time : Int, comp_id : Int) -> (Int, Int) {
     index[v] = time
     low[v] = time
-    time = time + 1
     stack.push(v)
     onstack[v] = true
-    let neighbors = adj[v]
-    for to in neighbors {
+    let (time, comp_id) = for to in adj[v]; time = time + 1, comp_id = comp_id {
       if index[to] == -1 {
-        dfs(to)
+        let (time1, comp1) = dfs(to, time, comp_id)
         if low[to] < low[v] {
           low[v] = low[to]
         }
+        continue time1, comp1
       } else if onstack[to] {
         if index[to] < low[v] {
           low[v] = index[to]
         }
+        continue time, comp_id
+      } else {
+        continue time, comp_id
       }
+    } nobreak {
+      (time, comp_id)
     }
     if low[v] == index[v] {
       pop_component(v, comp_id)
-      comp_id = comp_id + 1
+      (time, comp_id + 1)
+    } else {
+      (time, comp_id)
     }
   }
 
-  for i in 0..<n {
+  let _ = for i in 0..<n; time = 0, comp_id = 0 {
     if index[i] == -1 {
-      dfs(i)
+      let (time1, comp1) = dfs(i, time, comp_id)
+      continue time1, comp1
+    } else {
+      continue time, comp_id
     }
+  } nobreak {
+    (time, comp_id)
   }
   comp
 }

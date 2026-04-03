@@ -58,31 +58,48 @@ pub fn mo_range_sum(
     }
   })
   let ans = Array::make(q, 0)
-  let mut cur_l = 0
-  let mut cur_r = 0
-  let mut sum = 0
-  for target in qs {
-    if cur_l > target.l {
-      for i in cur_l>..target.l {
-        sum = sum + arr[i]
+  let _ = for target in qs; cur_l = 0, cur_r = 0, sum = 0 {
+    let sum1 = if cur_l > target.l {
+      for i in cur_l>..target.l; acc = sum {
+        continue acc + arr[i]
+      } nobreak {
+        acc
       }
     } else if cur_l < target.l {
-      for i in cur_l..<target.l {
-        sum = sum - arr[i]
+      for i in cur_l..<target.l; acc = sum {
+        continue acc - arr[i]
+      } nobreak {
+        acc
       }
+    } else {
+      sum
     }
-    cur_l = target.l
-    if cur_r < target.r {
-      for i in cur_r..<target.r {
-        sum = sum + arr[i]
+    let sum2 = if cur_r < target.r {
+      for i in cur_r..<target.r; acc = sum1 {
+        continue acc + arr[i]
+      } nobreak {
+        acc
       }
     } else if cur_r > target.r {
-      for i in cur_r>..target.r {
-        sum = sum - arr[i]
+      for i in cur_r>..target.r; acc = sum1 {
+        continue acc - arr[i]
+      } nobreak {
+        acc
       }
+    } else {
+      sum1
     }
-    cur_r = target.r
-    ans[target.idx] = sum
+    ans[target.idx] = sum2
+    continue target.l, target.r, sum2
+  } nobreak {
+    (cur_l, cur_r, sum)
   }
   ans
+}
+
+///|
+test "mo_range_sum_shrinks_right_boundary" {
+  let arr : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8]
+  let queries : Array[(Int, Int)] = [(0, 6), (3, 4)]
+  assert_eq(mo_range_sum(arr[:], queries[:]), [21, 4])
 }
