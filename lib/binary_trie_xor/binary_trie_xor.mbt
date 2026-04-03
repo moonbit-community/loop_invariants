@@ -42,9 +42,8 @@ pub fn BinaryTrie::size(self : BinaryTrie) -> Int {
 ///|
 /// Insert a value into the trie.
 pub fn BinaryTrie::insert(self : BinaryTrie, x : Int64) -> Unit {
-  let mut node = 0
-  self.nodes[node].count = self.nodes[node].count + 1
-  for bit in self.max_bits>=..0 {
+  self.nodes[0].count = self.nodes[0].count + 1
+  let _ = for bit in self.max_bits>=..0; node = 0 {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let next = if b == 0 {
       self.nodes[node].next0
@@ -64,8 +63,10 @@ pub fn BinaryTrie::insert(self : BinaryTrie, x : Int64) -> Unit {
     } else {
       next
     }
-    node = child
-    self.nodes[node].count = self.nodes[node].count + 1
+    self.nodes[child].count = self.nodes[child].count + 1
+    continue child
+  } nobreak {
+    node
   }
 }
 
@@ -76,8 +77,7 @@ pub fn BinaryTrie::remove(self : BinaryTrie, x : Int64) -> Bool {
     return false
   }
   let path : Array[Int] = [0]
-  let mut node = 0
-  for bit in self.max_bits>=..0 {
+  let node = for bit in self.max_bits>=..0; node = 0 {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let next = if b == 0 {
       self.nodes[node].next0
@@ -85,12 +85,14 @@ pub fn BinaryTrie::remove(self : BinaryTrie, x : Int64) -> Bool {
       self.nodes[node].next1
     }
     if next == -1 {
-      return false
+      break -1
     }
     path.push(next)
-    node = next
+    continue next
+  } nobreak {
+    node
   }
-  if self.nodes[node].count == 0 {
+  if node == -1 || self.nodes[node].count == 0 {
     return false
   }
   for idx in path {
@@ -106,9 +108,7 @@ pub fn BinaryTrie::max_xor(self : BinaryTrie, x : Int64) -> Int64 {
     return 0L
   }
   // Traverse trie, preferring the opposite bit to maximize XOR
-  let mut node = 0
-  let mut result = 0L
-  for bit in self.max_bits>=..0 {
+  for bit in self.max_bits>=..0; node = 0, result = 0L {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let preferred = if b == 0 { 1 } else { 0 }
     let preferred_child = if preferred == 0 {
@@ -122,15 +122,15 @@ pub fn BinaryTrie::max_xor(self : BinaryTrie, x : Int64) -> Int64 {
       self.nodes[node].next0
     }
     if preferred_child != -1 && self.nodes[preferred_child].count > 0 {
-      node = preferred_child
-      result = result | (1L << bit)
+      continue preferred_child, result | (1L << bit)
     } else if other_child != -1 && self.nodes[other_child].count > 0 {
-      node = other_child
+      continue other_child, result
     } else {
-      break
+      break result
     }
+  } nobreak {
+    result
   }
-  result
 }
 
 ///|
@@ -140,9 +140,7 @@ pub fn BinaryTrie::min_xor(self : BinaryTrie, x : Int64) -> Int64 {
     return 0L
   }
   // Traverse trie, preferring the same bit to minimize XOR
-  let mut node = 0
-  let mut result = 0L
-  for bit in self.max_bits>=..0 {
+  for bit in self.max_bits>=..0; node = 0, result = 0L {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let preferred = if b == 0 { 0 } else { 1 }
     let preferred_child = if preferred == 0 {
@@ -156,13 +154,13 @@ pub fn BinaryTrie::min_xor(self : BinaryTrie, x : Int64) -> Int64 {
       self.nodes[node].next0
     }
     if preferred_child != -1 && self.nodes[preferred_child].count > 0 {
-      node = preferred_child
+      continue preferred_child, result
     } else if other_child != -1 && self.nodes[other_child].count > 0 {
-      node = other_child
-      result = result | (1L << bit)
+      continue other_child, result | (1L << bit)
     } else {
-      break
+      break result
     }
+  } nobreak {
+    result
   }
-  result
 }

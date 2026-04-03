@@ -12,11 +12,12 @@
 
 ///|
 fn mod_norm(x : Int64, m : Int64) -> Int64 {
-  let mut v = x % m
+  let v = x % m
   if v < 0L {
-    v = v + m
+    v + m
+  } else {
+    v
   }
-  v
 }
 
 ///|
@@ -26,15 +27,11 @@ fn mod_mul(a : Int64, b : Int64, m : Int64) -> Int64 {
 
 ///|
 fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
-  let mut result = 1L % m
-  let mut b = mod_norm(base, m)
-  let mut e = exp
-  for ; e > 0L; {
-    if (e & 1L) == 1L {
-      result = mod_mul(result, b, m)
-    }
-    b = mod_mul(b, b, m)
-    e = e / 2L
+  for e = exp, result = 1L % m, b = mod_norm(base, m); e > 0L; {
+    let new_result = if (e & 1L) == 1L { mod_mul(result, b, m) } else { result }
+    continue e / 2L, new_result, mod_mul(b, b, m)
+  } nobreak {
+    result
   } where {
     invariant: e >= 0L,
     reasoning: (
@@ -45,7 +42,6 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
       #|When e = 0, result holds base^exp mod m.
     ),
   }
-  result
 }
 
 ///|
@@ -85,18 +81,17 @@ pub fn nck_mod_prime_lucas(n : Int64, k : Int64, p : Int64) -> Int64 {
   for i in start_exclusive>..0 {
     inv_fact[i] = mod_mul(inv_fact[i + 1], (i + 1).to_int64(), p)
   }
-  let mut nn = n
-  let mut kk = k
-  let mut result = 1L
-  for ; kk > 0L; {
+  let result = for nn = n, kk = k, result = 1L; kk > 0L; {
     let ni = nn % p
     let ki = kk % p
     if ki > ni {
-      return 0L
+      break 0L
     }
-    result = mod_mul(result, nck_small(ni, ki, fact, inv_fact, p), p)
-    nn = nn / p
-    kk = kk / p
+    continue nn / p,
+      kk / p,
+      mod_mul(result, nck_small(ni, ki, fact, inv_fact, p), p)
+  } nobreak {
+    result
   } where {
     invariant: kk >= 0L,
     reasoning: (

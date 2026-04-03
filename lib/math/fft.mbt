@@ -440,13 +440,9 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
 ///|
 /// Modular exponentiation: base^exp mod m
 fn ntt_mod_pow(base_in : Int64, exp_in : Int64, m : Int64) -> Int64 {
-  let mut base = base_in
-  let mut exp = exp_in
-  for result = 1L; exp > 0L; result = result {
+  for exp = exp_in, result = 1L, base = base_in; exp > 0L; {
     let new_result = if exp % 2L == 1L { result * base % m } else { result }
-    exp = exp / 2L
-    base = base * base % m
-    continue new_result
+    continue exp / 2L, new_result, base * base % m
   } nobreak {
     result
   } where {

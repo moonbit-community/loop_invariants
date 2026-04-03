@@ -35,26 +35,32 @@ pub fn longest_common_substring(a : String, b : String) -> LCSResult {
   if n == 0 || m == 0 {
     return { substring: "", length: 0 }
   }
-  let mut prev = Array::make(m + 1, 0)
-  let mut curr = Array::make(m + 1, 0)
-  let mut best_len = 0
-  let mut best_end = 0
-  for i in 1..<=n {
-    for j in 1..<=m {
+  let init_prev = Array::make(m + 1, 0)
+  let init_curr = Array::make(m + 1, 0)
+  let (best_len, best_end) = for
+    i in 1..<=n
+    prev = init_prev, curr = init_curr, best_len = 0, best_end = 0 {
+    let (best_len, best_end) = for
+      j in 1..<=m
+      best_len = best_len, best_end = best_end {
       if a[i - 1] == b[j - 1] {
         curr[j] = prev[j - 1] + 1
         if curr[j] > best_len {
-          best_len = curr[j]
-          best_end = i
+          continue curr[j], i
+        } else {
+          continue best_len, best_end
         }
       } else {
         curr[j] = 0
+        continue best_len, best_end
       }
+    } nobreak {
+      (best_len, best_end)
     }
-    let tmp = prev
-    prev = curr
-    curr = tmp
-    curr.fill(0)
+    prev.fill(0)
+    continue curr, prev, best_len, best_end
+  } nobreak {
+    (best_len, best_end)
   }
   if best_len == 0 {
     { substring: "", length: 0 }
@@ -80,4 +86,11 @@ test "lcs no match" {
   let result = longest_common_substring("abc", "xyz")
   inspect(result.substring, content="")
   inspect(result.length, content="0")
+}
+
+///|
+test "lcs identical strings" {
+  let result = longest_common_substring("hello", "hello")
+  inspect(result.substring, content="hello")
+  inspect(result.length, content="5")
 }
