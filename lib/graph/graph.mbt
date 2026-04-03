@@ -397,13 +397,15 @@ fn bellman_ford(
     if i >= n - 1 {
       break
     } else {
-      let mut changed = false
-      for edge in edges {
+      let changed = for edge in edges; changed = false {
         let (u, v, w) = edge
         if dist[u] != inf && dist[u] + w < dist[v] {
           dist[v] = dist[u] + w
-          changed = true
+          continue true
         }
+        continue changed
+      } nobreak {
+        changed
       }
       if !changed {
         break // Early termination if no changes
@@ -664,10 +666,9 @@ fn kruskal(
   sort_edge_tuples(edges)
   let uf = make_union_find(n)
   let mst : Array[(Int, Int, Int)] = []
-  let mut total_weight = 0
-  for i = 0 {
+  let total_weight = for i = 0, total_weight = 0 {
     if i >= edges.length() || mst.length() >= n - 1 {
-      break (mst, total_weight)
+      break total_weight
     } else {
       let edge = edges[i]
       let (u, v, w) = edge
@@ -676,9 +677,9 @@ fn kruskal(
       if uf_find(uf, u) != uf_find(uf, v) {
         uf_union(uf, u, v)
         mst.push(edge)
-        total_weight = total_weight + w
+        continue i + 1, total_weight + w
       }
-      continue i + 1
+      continue i + 1, total_weight
     }
   } where {
     invariant: i >= 0 && i <= edges.length() && mst.length() <= n - 1,
@@ -709,6 +710,7 @@ fn kruskal(
       #|The loop stops when mst has n-1 edges or edges are exhausted.
     ),
   }
+  (mst, total_weight)
 }
 
 ///|
