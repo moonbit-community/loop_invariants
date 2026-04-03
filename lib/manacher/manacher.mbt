@@ -70,13 +70,10 @@ fn manacher(s : String) -> ManacherResult {
   }
   let p = Array::make(t_len, 0) // p[i] = radius of palindrome centered at i
   for i = 0, c = 0, r = 0; i < t_len; {
-    let mut curr_c = c
-    let mut curr_r = r
-
     // Use mirror property if inside known palindrome
-    let mirror = 2 * curr_c - i
-    if i < curr_r {
-      p[i] = min(curr_r - i, if mirror >= 0 { p[mirror] } else { 0 })
+    let mirror = 2 * c - i
+    if i < r {
+      p[i] = min(r - i, if mirror >= 0 { p[mirror] } else { 0 })
     }
 
     // Expand around center i
@@ -87,11 +84,8 @@ fn manacher(s : String) -> ManacherResult {
     }
 
     // Update rightmost boundary
-    if i + p[i] > curr_r {
-      curr_c = i
-      curr_r = i + p[i]
-    }
-    continue i + 1, curr_c, curr_r
+    let (c, r) = if i + p[i] > r { (i, i + p[i]) } else { (c, r) }
+    continue i + 1, c, r
   } where {
     invariant: i >= 0 && i <= t_len && c >= 0 && r >= 0 && r <= t_len,
     reasoning: (
@@ -130,13 +124,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
   }
   let d1 = Array::make(n, 0)
   for i = 0, l = 0, r = -1; i < n; {
-    let mut curr_l = l
-    let mut curr_r = r
-    let k = if i > curr_r {
-      1
-    } else {
-      min(d1[curr_l + curr_r - i], curr_r - i + 1)
-    }
+    let k = if i > r { 1 } else { min(d1[l + r - i], r - i + 1) }
     let len = for t = k {
       if i - t >= 0 && i + t < n && s[i - t] == s[i + t] {
         continue t + 1
@@ -156,11 +144,8 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
     }
     d1[i] = len
     let right = i + len - 1
-    if right > curr_r {
-      curr_l = i - len + 1
-      curr_r = right
-    }
-    continue i + 1, curr_l, curr_r
+    let (l, r) = if right > r { (i - len + 1, right) } else { (l, r) }
+    continue i + 1, l, r
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
@@ -192,13 +177,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
   }
   let d2 = Array::make(n, 0)
   for i = 0, l = 0, r = -1; i < n; {
-    let mut curr_l = l
-    let mut curr_r = r
-    let k = if i > curr_r {
-      0
-    } else {
-      min(d2[curr_l + curr_r - i + 1], curr_r - i + 1)
-    }
+    let k = if i > r { 0 } else { min(d2[l + r - i + 1], r - i + 1) }
     let len = for t = k {
       if i - t - 1 >= 0 && i + t < n && s[i - t - 1] == s[i + t] {
         continue t + 1
@@ -218,11 +197,8 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
     }
     d2[i] = len
     let right = i + len - 1
-    if right > curr_r {
-      curr_l = i - len
-      curr_r = right
-    }
-    continue i + 1, curr_l, curr_r
+    let (l, r) = if right > r { (i - len, right) } else { (l, r) }
+    continue i + 1, l, r
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
