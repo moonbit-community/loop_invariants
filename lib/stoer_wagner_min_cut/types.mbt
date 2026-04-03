@@ -67,15 +67,15 @@ fn select_max_vertex(
   added : Array[Bool],
   w : Array[Int64],
 ) -> Int {
-  let mut sel = -1
-  let mut best = -1L
-  for v in 0..<w.length() {
+  let (sel, _) = for v in 0..<w.length(); sel = -1, best = -1L {
     if alive[v] && !added[v] {
       if sel == -1 || w[v] > best {
-        sel = v
-        best = w[v]
+        continue v, w[v]
       }
     }
+    continue sel, best
+  } nobreak {
+    (sel, best)
   }
   sel
 }

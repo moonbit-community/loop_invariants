@@ -17,14 +17,16 @@ fn cut_weight(
       in_cut[v] = true
     }
   }
-  let mut total = 0L
-  for edge in edges {
+  let total = for edge in edges; total = 0L {
     let (u, v, w) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       if in_cut[u] != in_cut[v] {
-        total = total + w
+        continue total + w
       }
     }
+    continue total
+  } nobreak {
+    total
   }
   total
 }
