@@ -662,12 +662,18 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
   let stack : Array[(Int, Int)] = []
   let order : Array[Int] = []
   stack.push((root, -1))
-  while stack.pop() is Some((node, par)) {
-    parent[node] = par
-    order.push(node)
-    for child in adj[node] {
-      if child != par {
-        stack.push((child, node))
+  let _ = for popped = stack.pop() {
+    match popped {
+      None => break ()
+      Some((node, par)) => {
+        parent[node] = par
+        order.push(node)
+        for child in adj[node] {
+          if child != par {
+            stack.push((child, node))
+          }
+        }
+        continue stack.pop()
       }
     }
   }
@@ -742,20 +748,26 @@ fn build_euler_tour(adj : Array[Array[Int]], root : Int) -> EulerTour {
   let stack : Array[(Int, Int, Int)] = []
   stack.push((root, -1, 0))
   let time = Array::make(1, 0)
-  while stack.pop() is Some((node, par, state)) {
-    if state == 0 {
-      enter[node] = time[0]
-      tour.push(node)
-      time[0] = time[0] + 1
-      stack.push((node, par, 1))
-      for i in adj[node].length()>..0 {
-        let child = adj[node][i]
-        if child != par {
-          stack.push((child, node, 0))
+  let _ = for popped = stack.pop() {
+    match popped {
+      None => break ()
+      Some((node, par, state)) => {
+        if state == 0 {
+          enter[node] = time[0]
+          tour.push(node)
+          time[0] = time[0] + 1
+          stack.push((node, par, 1))
+          for i in adj[node].length()>..0 {
+            let child = adj[node][i]
+            if child != par {
+              stack.push((child, node, 0))
+            }
+          }
+        } else {
+          exit[node] = time[0]
         }
+        continue stack.pop()
       }
-    } else {
-      exit[node] = time[0]
     }
   }
   { enter, exit, tour }

@@ -172,37 +172,43 @@ fn MinCostFlowPotentials::dijkstra(
   let heap = MinHeap::new()
   self.dist[source] = 0L
   heap.push({ dist: 0L, vertex: source })
-  while heap.pop() is Some(entry) {
-    let u = entry.vertex
-    if entry.dist != self.dist[u] {
-      continue
-    }
-    if u == sink {
-      break
-    }
-    for i = 0; i < self.adj[u].length(); i = i + 1 {
-      let e = self.adj[u][i]
-      if e.cap > e.flow {
-        let reduced = e.cost + potential[u] - potential[e.to]
-        let nd = self.dist[u] + reduced
-        if nd < self.dist[e.to] {
-          self.dist[e.to] = nd
-          self.prev_v[e.to] = u
-          self.prev_e[e.to] = i
-          heap.push({ dist: nd, vertex: e.to })
+  let _ = for popped = heap.pop() {
+    match popped {
+      None => break ()
+      Some(entry) => {
+        let u = entry.vertex
+        if entry.dist != self.dist[u] {
+          continue heap.pop()
         }
+        if u == sink {
+          break ()
+        }
+        for i = 0; i < self.adj[u].length(); i = i + 1 {
+          let e = self.adj[u][i]
+          if e.cap > e.flow {
+            let reduced = e.cost + potential[u] - potential[e.to]
+            let nd = self.dist[u] + reduced
+            if nd < self.dist[e.to] {
+              self.dist[e.to] = nd
+              self.prev_v[e.to] = u
+              self.prev_e[e.to] = i
+              heap.push({ dist: nd, vertex: e.to })
+            }
+          }
+        } where {
+          invariant: i >= 0 && i <= self.adj[u].length(),
+          reasoning: (
+            #|INVARIANT (relax edges):
+            #|All edges adj[u][0..i) have been considered for relaxation.
+            #|MAINTENANCE:
+            #|Relax edge i if residual capacity exists and reduced cost improves
+            #|the tentative distance.
+            #|TERMINATION:
+            #|At i = deg(u), all outgoing residual edges are processed.
+          ),
+        }
+        continue heap.pop()
       }
-    } where {
-      invariant: i >= 0 && i <= self.adj[u].length(),
-      reasoning: (
-        #|INVARIANT (relax edges):
-        #|All edges adj[u][0..i) have been considered for relaxation.
-        #|MAINTENANCE:
-        #|Relax edge i if residual capacity exists and reduced cost improves
-        #|the tentative distance.
-        #|TERMINATION:
-        #|At i = deg(u), all outgoing residual edges are processed.
-      ),
     }
   }
   self.dist[sink] < MCF_INF

@@ -40,20 +40,30 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
   let dq : @deque.Deque[Int] = @deque.new()
   for i = 0; i < n; i = i + 1 {
     // Remove elements outside window
-    while dq.front() is Some(front) {
-      if front <= i - k {
-        let _ = dq.pop_front()
-      } else {
-        break
+    let _ = for front = dq.front() {
+      match front {
+        None => break ()
+        Some(front) =>
+          if front <= i - k {
+            let _ = dq.pop_front()
+            continue dq.front()
+          } else {
+            break ()
+          }
       }
     }
 
     // Remove smaller elements from back
-    while dq.back() is Some(back) {
-      if arr[back] <= arr[i] {
-        let _ = dq.pop_back()
-      } else {
-        break
+    let _ = for back = dq.back() {
+      match back {
+        None => break ()
+        Some(back) =>
+          if arr[back] <= arr[i] {
+            let _ = dq.pop_back()
+            continue dq.back()
+          } else {
+            break ()
+          }
       }
     }
 
@@ -131,18 +141,28 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
   let result : Array[Int64] = []
   let dq : @deque.Deque[Int] = @deque.new()
   for i = 0; i < n; i = i + 1 {
-    while dq.front() is Some(front) {
-      if front <= i - k {
-        let _ = dq.pop_front()
-      } else {
-        break
+    let _ = for front = dq.front() {
+      match front {
+        None => break ()
+        Some(front) =>
+          if front <= i - k {
+            let _ = dq.pop_front()
+            continue dq.front()
+          } else {
+            break ()
+          }
       }
     }
-    while dq.back() is Some(back) {
-      if arr[back] >= arr[i] {
-        let _ = dq.pop_back()
-      } else {
-        break
+    let _ = for back = dq.back() {
+      match back {
+        None => break ()
+        Some(back) =>
+          if arr[back] >= arr[i] {
+            let _ = dq.pop_back()
+            continue dq.back()
+          } else {
+            break ()
+          }
       }
     }
     dq.push_back(i)
