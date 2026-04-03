@@ -125,13 +125,9 @@ fn LinkCutTree::update(self : LinkCutTree, v : Int) -> Unit {
     return
   }
   let node = self.nodes[v]
-  let mut sum = node.value
-  if node.left >= 0 {
-    sum = sum + self.nodes[node.left].path_sum
-  }
-  if node.right >= 0 {
-    sum = sum + self.nodes[node.right].path_sum
-  }
+  let sum = node.value +
+    (if node.left >= 0 { self.nodes[node.left].path_sum } else { 0L }) +
+    (if node.right >= 0 { self.nodes[node.right].path_sum } else { 0L })
   self.nodes[v].path_sum = sum
 }
 
@@ -198,10 +194,11 @@ fn LinkCutTree::rotate(self : LinkCutTree, v : Int) -> Unit {
 fn LinkCutTree::splay(self : LinkCutTree, v : Int) -> Unit {
   // First push down from root to v
   let path : Array[Int] = []
-  let mut curr = v
-  while !self.is_splay_root(curr) {
+  let curr = for curr = v; !self.is_splay_root(curr); {
     path.push(curr)
-    curr = self.nodes[curr].parent
+    continue self.nodes[curr].parent
+  } nobreak {
+    curr
   }
   path.push(curr)
 
@@ -249,13 +246,8 @@ fn LinkCutTree::access(self : LinkCutTree, v : Int) -> Int {
     self.nodes[v].right = -1
     self.update(v)
   }
-  let mut last = v
-
-  // Walk up path-parents and merge splay trees
-  // INVARIANT: v is root of its splay tree
-  while self.nodes[v].path_parent >= 0 {
+  let last = for last = v; self.nodes[v].path_parent >= 0; {
     let w = self.nodes[v].path_parent
-    last = w
     self.splay(w)
 
     // Cut w's right child (old preferred path below w)
@@ -270,6 +262,9 @@ fn LinkCutTree::access(self : LinkCutTree, v : Int) -> Int {
     self.nodes[v].path_parent = -1
     self.update(w)
     self.splay(v)
+    continue w
+  } nobreak {
+    last
   }
   last
 }
@@ -281,11 +276,13 @@ fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
 
   // Root is leftmost node in splay tree
   // INVARIANT: Left child is higher in represented tree
-  let mut root = v
-  self.push_down(root)
-  while self.nodes[root].left >= 0 {
-    root = self.nodes[root].left
+  self.push_down(v)
+  let root = for root = v; self.nodes[root].left >= 0; {
+    let root = self.nodes[root].left
     self.push_down(root)
+    continue root
+  } nobreak {
+    root
   }
   self.splay(root)
   root
