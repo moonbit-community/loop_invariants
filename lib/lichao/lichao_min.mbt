@@ -84,11 +84,10 @@ fn insert_line_min(
   let new_at_mid = new_line.eval(mid)
 
   // For minimum, winner has SMALLER value at midpoint
-  let mut winner = node.line
-  let mut loser = new_line
-  if new_at_mid < curr_at_mid {
-    winner = new_line
-    loser = node.line
+  let (winner, loser) = if new_at_mid < curr_at_mid {
+    (new_line, node.line)
+  } else {
+    (node.line, new_line)
   }
   tree.nodes[node_idx].line = winner
   if lo == hi {
