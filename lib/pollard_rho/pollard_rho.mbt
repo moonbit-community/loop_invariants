@@ -9,11 +9,12 @@
 
 ///|
 fn mod_norm(x : Int64, m : Int64) -> Int64 {
-  let mut v = x % m
+  let v = x % m
   if v < 0L {
-    v = v + m
+    v + m
+  } else {
+    v
   }
-  v
 }
 
 ///|
@@ -27,17 +28,14 @@ fn add_mod(a : Int64, b : Int64, m : Int64) -> Int64 {
 
 ///|
 fn mul_mod(a : Int64, b : Int64, m : Int64) -> Int64 {
-  let mut res = 0L
-  let mut x = mod_norm(a, m)
-  let mut y = mod_norm(b, m)
-  while y > 0L {
-    if (y & 1L) == 1L {
-      res = add_mod(res, x, m)
+  for res = 0L, x = mod_norm(a, m), y = mod_norm(b, m) {
+    if y == 0L {
+      break res
+    } else {
+      let next_res = if (y & 1L) == 1L { add_mod(res, x, m) } else { res }
+      continue next_res, add_mod(x, x, m), y >> 1
     }
-    x = add_mod(x, x, m)
-    y = y >> 1
   }
-  res
 }
 
 ///|
@@ -66,26 +64,31 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
 
 ///|
 fn gcd(a : Int64, b : Int64) -> Int64 {
-  let mut x = if a < 0L { -a } else { a }
-  let mut y = if b < 0L { -b } else { b }
-  while y != 0L {
-    let t = x % y
-    x = y
-    y = t
+  for x = (if a < 0L { -a } else { a }), y = (if b < 0L { -b } else { b }) {
+    if y == 0L {
+      break x
+    } else {
+      continue y, x % y
+    }
   }
-  x
 }
 
 ///|
 fn miller_test(n : Int64, a : Int64, d : Int64, s : Int) -> Bool {
-  let mut x = pow_mod(a, d, n)
+  let x = pow_mod(a, d, n)
   if x == 1L || x == n - 1L {
     return true
   }
-  for r = 1; r < s; r = r + 1 {
-    x = mul_mod(x, x, n)
-    if x == n - 1L {
-      return true
+  for r = 1, x = x {
+    if r >= s {
+      break false
+    } else {
+      let x = mul_mod(x, x, n)
+      if x == n - 1L {
+        break true
+      } else {
+        continue r + 1, x
+      }
     }
   } where {
     invariant: r >= 1 && r <= s,
@@ -98,7 +101,6 @@ fn miller_test(n : Int64, a : Int64, d : Int64, s : Int) -> Bool {
       #|If x hits n-1, the base passes; otherwise composite is detected.
     ),
   }
-  false
 }
 
 ///|
@@ -155,15 +157,16 @@ fn pollard_rho(n : Int64) -> Int64 {
   let constants : Array[Int64] = [1L, 3L, 5L, 7L, 11L, 13L, 17L]
   for idx = 0; idx < constants.length(); idx = idx + 1 {
     let c = constants[idx]
-    let mut x = 2L
-    let mut y = 2L
-    let mut d = 1L
-    while d == 1L {
-      x = (mul_mod(x, x, n) + c) % n
-      y = (mul_mod(y, y, n) + c) % n
-      y = (mul_mod(y, y, n) + c) % n
-      let diff = if x > y { x - y } else { y - x }
-      d = gcd(diff, n)
+    let d = for x = 2L, y = 2L, d = 1L {
+      if d != 1L {
+        break d
+      } else {
+        let x = (mul_mod(x, x, n) + c) % n
+        let y = (mul_mod(y, y, n) + c) % n
+        let y = (mul_mod(y, y, n) + c) % n
+        let diff = if x > y { x - y } else { y - x }
+        continue x, y, gcd(diff, n)
+      }
     }
     if d != n {
       return d
@@ -217,16 +220,20 @@ pub fn factorize(n : Int64) -> Array[Int64] {
 pub fn factorize_with_counts(n : Int64) -> Array[(Int64, Int)] {
   let factors = factorize(n)
   let result : Array[(Int64, Int)] = []
-  let mut i = 0
-  while i < factors.length() {
-    let p = factors[i]
-    let mut cnt = 1
-    i = i + 1
-    while i < factors.length() && factors[i] == p {
-      cnt = cnt + 1
-      i = i + 1
+  for i = 0 {
+    if i >= factors.length() {
+      break result
+    } else {
+      let p = factors[i]
+      let (next_i, cnt) = for i = i + 1, cnt = 1 {
+        if i >= factors.length() || factors[i] != p {
+          break (i, cnt)
+        } else {
+          continue i + 1, cnt + 1
+        }
+      }
+      result.push((p, cnt))
+      continue next_i
     }
-    result.push((p, cnt))
   }
-  result
 }
