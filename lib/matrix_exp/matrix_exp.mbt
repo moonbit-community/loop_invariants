@@ -75,9 +75,10 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix::new(self.rows, other.cols)
   for i = 0; i < self.rows; i = i + 1 {
     for j = 0; j < other.cols; j = j + 1 {
-      let mut sum = 0L
-      for k = 0; k < self.cols; k = k + 1 {
-        sum = (sum + self.data[i][k] * other.data[k][j]) % MATRIX_MOD
+      let sum = for k = 0, sum = 0L; k < self.cols; {
+        continue k + 1, (sum + self.data[i][k] * other.data[k][j]) % MATRIX_MOD
+      } nobreak {
+        sum
       } where {
         invariant: k >= 0 && k <= self.cols,
         reasoning: (
@@ -125,9 +126,10 @@ fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix::new(self.rows, other.cols)
   for i = 0; i < self.rows; i = i + 1 {
     for j = 0; j < other.cols; j = j + 1 {
-      let mut sum = 0L
-      for k = 0; k < self.cols; k = k + 1 {
-        sum = sum + self.data[i][k] * other.data[k][j]
+      let sum = for k = 0, sum = 0L; k < self.cols; {
+        continue k + 1, sum + self.data[i][k] * other.data[k][j]
+      } nobreak {
+        sum
       } where {
         invariant: k >= 0 && k <= self.cols,
         reasoning: (

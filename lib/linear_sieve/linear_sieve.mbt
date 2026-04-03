@@ -91,22 +91,27 @@ pub fn LinearSieve::is_prime(self : LinearSieve, x : Int) -> Bool {
 ///|
 /// Factorize x using smallest prime factors.
 pub fn LinearSieve::factorize(self : LinearSieve, x : Int) -> Array[(Int, Int)] {
-  let mut v = x
   let result : Array[(Int, Int)] = []
-  while v > 1 {
+  let _ = for v = x {
+    if v <= 1 {
+      break ()
+    }
     if v > self.n {
-      break
+      break ()
     }
     let p = self.spf[v]
     if p == 0 {
-      break
+      break ()
     }
-    let mut cnt = 0
-    while v % p == 0 {
-      v = v / p
-      cnt = cnt + 1
+    let (next_v, cnt) = for curr = v, cnt = 0 {
+      if curr % p == 0 {
+        continue curr / p, cnt + 1
+      } else {
+        break (curr, cnt)
+      }
     }
     result.push((p, cnt))
+    continue next_v
   }
   result
 }

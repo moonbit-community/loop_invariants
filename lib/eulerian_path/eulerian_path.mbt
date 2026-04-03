@@ -101,32 +101,37 @@ pub fn eulerian_path_directed(
       has_degree[v] = true
     }
   }
-  let mut start = -1
-  let mut end = -1
-  for v in 0..<n {
+  let (start, end) = for v in 0..<n; start = -1, end = -1 {
     let diff = out_deg[v] - in_deg[v]
     if diff == 1 {
       if start != -1 {
         return None
       }
-      start = v
+      continue v, end
     } else if diff == -1 {
       if end != -1 {
         return None
       }
-      end = v
+      continue start, v
     } else if diff != 0 {
       return None
+    } else {
+      continue start, end
     }
+  } nobreak {
+    (start, end)
   }
-  if start == -1 {
+  let start = if start == -1 {
     // Eulerian circuit case: choose any vertex with outgoing edges
     for v in 0..<n {
       if out_deg[v] > 0 {
-        start = v
-        break
+        break v
       }
+    } nobreak {
+      -1
     }
+  } else {
+    start
   }
   if start == -1 {
     return Some([])
@@ -220,15 +225,15 @@ pub fn eulerian_path_undirected(
   if odd.length() != 0 && odd.length() != 2 {
     return None
   }
-  let mut start = -1
-  if odd.length() == 2 {
-    start = odd[0]
+  let start = if odd.length() == 2 {
+    odd[0]
   } else {
     for v in 0..<n {
       if deg[v] > 0 {
-        start = v
-        break
+        break v
       }
+    } nobreak {
+      -1
     }
   }
   if start == -1 {

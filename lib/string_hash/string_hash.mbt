@@ -158,17 +158,18 @@ fn DoubleHash::compare(
 /// Find longest common prefix length between substrings starting at i and j
 fn StringHash::lcp(self : StringHash, i : Int, j : Int) -> Int {
   let max_len = if self.n - i < self.n - j { self.n - i } else { self.n - j }
-  let mut lo = 0
-  let mut hi = max_len
-  while lo < hi {
-    let mid = (lo + hi + 1) / 2
-    if self.get_hash(i, i + mid) == self.get_hash(j, j + mid) {
-      lo = mid
+  for lo = 0, hi = max_len {
+    if lo < hi {
+      let mid = (lo + hi + 1) / 2
+      if self.get_hash(i, i + mid) == self.get_hash(j, j + mid) {
+        continue mid, hi
+      } else {
+        continue lo, mid - 1
+      }
     } else {
-      hi = mid - 1
+      break lo
     }
   }
-  lo
 }
 
 // ============================================================================
