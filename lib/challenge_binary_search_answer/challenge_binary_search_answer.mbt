@@ -66,13 +66,11 @@ pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
 ///|
 /// Minimum capacity to ship all weights within the given days.
 pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
-  let mut lo = 0
-  let mut hi = 0
-  for w in weights {
-    if w > lo {
-      lo = w
-    }
-    hi = hi + w
+  let (lo, hi) = for w in weights; lo = 0, hi = 0 {
+    let new_lo = if w > lo { w } else { lo }
+    continue new_lo, hi + w
+  } nobreak {
+    (lo, hi)
   }
   for low = lo, high = hi {
     if low >= high {

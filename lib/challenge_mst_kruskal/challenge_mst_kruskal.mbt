@@ -66,20 +66,27 @@ pub fn mst_weight(n : Int, edges : ArrayView[(Int, Int, Int)]) -> Int? {
   let sorted = edges.to_array()
   sorted.sort_by_key(e => e.2)
   let dsu = dsu_make(n)
-  let mut total = 0
-  let mut used = 0
-  for edge in sorted {
+  let (total, used) = for edge in sorted; total = 0, used = 0 {
     let (u, v, w) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
       if dsu_union(dsu, u, v) {
-        total = total + w
-        used = used + 1
+        continue total + w, used + 1
       }
     }
+    continue total, used
+  } nobreak {
+    (total, used)
   }
   if used == n - 1 {
     Some(total)
   } else {
     None
   }
+}
+
+///|
+test "mst_weight" {
+  let edges = [(0, 1, 1), (1, 2, 2), (0, 2, 4), (2, 3, 3), (1, 3, 5)]
+  assert_eq(mst_weight(4, edges[:]), Some(6))
+  assert_eq(mst_weight(4, [(0, 1, 1), (2, 3, 2)][:]), None)
 }

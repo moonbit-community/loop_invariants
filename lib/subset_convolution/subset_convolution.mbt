@@ -18,24 +18,20 @@ fn is_power_of_two(n : Int) -> Bool {
 
 ///|
 fn log2_pow2(n : Int) -> Int {
-  let mut bits = 0
-  let mut v = n
-  while v > 1 {
-    v = v / 2
-    bits = bits + 1
+  for v = n, bits = 0; v > 1; {
+    continue v / 2, bits + 1
+  } nobreak {
+    bits
   }
-  bits
 }
 
 ///|
 fn popcount(x : Int) -> Int {
-  let mut v = x
-  let mut cnt = 0
-  while v > 0 {
-    v = v & (v - 1)
-    cnt = cnt + 1
+  for v = x, cnt = 0; v > 0; {
+    continue v & (v - 1), cnt + 1
+  } nobreak {
+    cnt
   }
-  cnt
 }
 
 ///|
@@ -160,4 +156,11 @@ pub fn subset_convolution(
     h[s] = hpc[k][s]
   }
   h
+}
+
+///|
+test "subset_convolution" {
+  assert_eq(subset_convolution([1L, 1L, 1L, 1L][:], [1L, 1L, 1L, 1L][:]), [
+    1L, 2L, 2L, 4L,
+  ])
 }

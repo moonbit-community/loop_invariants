@@ -25,10 +25,10 @@ pub fn apply_range_add(
   }
   let result : Array[Int] = Array::make(n, 0)
   // Prefix-sum the difference array to reconstruct final values.
-  let mut run = 0
-  for i in 0..<n {
-    run = run + diff[i]
-    result[i] = base[i] + run
+  for i in 0..<n; run = 0 {
+    let new_run = run + diff[i]
+    result[i] = base[i] + new_run
+    continue new_run
   }
   result
 }

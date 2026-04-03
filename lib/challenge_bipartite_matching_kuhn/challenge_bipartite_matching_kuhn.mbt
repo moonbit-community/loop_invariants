@@ -49,12 +49,20 @@ fn try_kuhn(
 pub fn max_matching(adj : Array[Array[Int]], right_n : Int) -> Int {
   let left_n = adj.length()
   let match_r = Array::make(right_n, -1)
-  let mut matched = 0
-  for u in 0..<left_n {
+  for u in 0..<left_n; matched = 0 {
     let seen = Array::make(right_n, false)
     if try_kuhn(u, adj, seen, match_r) {
-      matched = matched + 1
+      continue matched + 1
+    } else {
+      continue matched
     }
+  } nobreak {
+    matched
   }
-  matched
+}
+
+///|
+test "max_matching" {
+  let adj = build_adj(3, 3, [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2)][:])
+  assert_eq(max_matching(adj, 3), 3)
 }

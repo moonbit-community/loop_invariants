@@ -8,13 +8,15 @@ fn subset_sums(arr : ArrayView[Int]) -> Array[Int] {
   let total = 1 << n
   let sums : Array[Int] = Array::make(total, 0)
   for mask in 0..<total {
-    let mut acc = 0
-    for i in 0..<n {
+    sums[mask] = for i in 0..<n; acc = 0 {
       if ((mask >> i) & 1) == 1 {
-        acc = acc + arr[i]
+        continue acc + arr[i]
+      } else {
+        continue acc
       }
+    } nobreak {
+      acc
     }
-    sums[mask] = acc
   }
   sums
 }
@@ -66,18 +68,23 @@ pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int {
   for i, val in right_sums {
     right_sums_fixed[i] = val
   }
-  let mut best = 0
-  for val in left_sums {
+  for val in left_sums; best = 0 {
     let remaining = target - val
     let idx = upper_bound_fixed(right_sums_fixed, remaining)
-    if idx > 0 {
+    let new_best = if idx > 0 {
       let cand = val + right_sums_fixed[idx - 1]
       if cand > best {
-        best = cand
+        cand
+      } else {
+        best
       }
+    } else {
+      best
     }
+    continue new_best
+  } nobreak {
+    best
   }
-  best
 }
 
 ///|

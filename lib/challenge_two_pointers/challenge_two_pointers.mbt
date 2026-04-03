@@ -7,20 +7,23 @@
 /// Count subarrays with sum <= k (requires non-negative values).
 pub fn count_subarrays_leq(arr : ArrayView[Int], k : Int) -> Int {
   let n = arr.length()
-  let mut left = 0
-  let mut sum = 0
-  let mut count = 0
-  for right in 0..<n {
-    sum = sum + arr[right]
-    while left <= right && sum > k {
-      sum = sum - arr[left]
-      left = left + 1
+  for right in 0..<n; left = 0, sum = 0, count = 0 {
+    let (new_left, new_sum) = for left1 = left, sum1 = sum + arr[right] {
+      if left1 <= right && sum1 > k {
+        continue left1 + 1, sum1 - arr[left1]
+      } else {
+        break (left1, sum1)
+      }
     }
-    if left <= right {
-      count = count + (right - left + 1)
+    let new_count = if new_left <= right {
+      count + (right - new_left + 1)
+    } else {
+      count
     }
+    continue new_left, new_sum, new_count
+  } nobreak {
+    count
   }
-  count
 }
 
 ///|

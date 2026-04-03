@@ -45,15 +45,17 @@ fn lower_bound_prefix(
 /// Return the length of the longest increasing subsequence.
 pub fn lis_length(nums : ArrayView[Int]) -> Int {
   let tails = FixedArray::make(nums.length(), 0)
-  let mut len = 0
-  for x in nums {
+  for x in nums; len = 0 {
     let pos = lower_bound_prefix(tails, len, x)
     tails[pos] = x
     if pos == len {
-      len = len + 1
+      continue len + 1
+    } else {
+      continue len
     }
+  } nobreak {
+    len
   }
-  len
 }
 
 ///|
