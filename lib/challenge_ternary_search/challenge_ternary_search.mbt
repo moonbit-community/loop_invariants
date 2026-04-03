@@ -36,19 +36,19 @@ fn scan_min_index(
 pub fn find_min_unimodal(arr : ArrayView[Int]) -> Int {
   let n = arr.length()
   guard n > 0 else { return -1 }
-  let mut lo = 0
-  let mut hi = n - 1
-  for _ in 0..<n {
+  let (lo, hi) = for _ in 0..<n; lo = 0, hi = n - 1 {
     if hi - lo <= 3 {
-      break
+      break (lo, hi)
     }
     let m1 = lo + (hi - lo) / 3
     let m2 = hi - (hi - lo) / 3
     if arr[m1] <= arr[m2] {
-      hi = m2 - 1
+      continue lo, m2 - 1
     } else {
-      lo = m1 + 1
+      continue m1 + 1, hi
     }
+  } nobreak {
+    (lo, hi)
   }
   // Linear scan for minimum in the small window
   let window_len = hi - lo + 1

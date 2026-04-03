@@ -40,13 +40,16 @@ fn bfs(adj : Array[Array[Int]], start : Int) -> (Int, Array[Int]) {
       #|At head = queue.length(), all reachable nodes are processed.
     ),
   }
-  let mut best_node = start
-  let mut best_dist = dist[start]
-  for i in 0..<n {
+  let (best_node, _) = for
+    i in 0..<n
+    best_node = start, best_dist = dist[start] {
     if dist[i] > best_dist {
-      best_dist = dist[i]
-      best_node = i
+      continue i, dist[i]
+    } else {
+      continue best_node, best_dist
     }
+  } nobreak {
+    (best_node, best_dist)
   }
   (best_node, dist)
 }

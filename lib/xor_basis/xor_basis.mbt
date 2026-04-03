@@ -28,19 +28,19 @@ pub fn XorBasis::new() -> XorBasis {
 ///|
 /// Insert a value into the basis. Returns true if it increases rank.
 pub fn XorBasis::insert(self : XorBasis, value : Int64) -> Bool {
-  let mut x = value
-  for bit in MAX_BITS>=..0 {
+  for bit = MAX_BITS, x = value; bit >= 0; {
     if ((x >> bit) & 1L) == 0L {
-      continue
+      continue bit - 1, x
     }
     if self.basis[bit] == 0L {
       self.basis[bit] = x
       self.size = self.size + 1
-      return true
+      break true
     }
-    x = x ^ self.basis[bit]
+    continue bit - 1, x ^ self.basis[bit]
+  } nobreak {
+    false
   }
-  false
 }
 
 ///|

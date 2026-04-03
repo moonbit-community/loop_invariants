@@ -34,7 +34,6 @@ pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
   }
   let comp = Array::make(n, -1)
-  let mut cid = 0
   fn dfs2(v : Int, id : Int) -> Unit {
     comp[v] = id
     let neighbors = rev[v]
@@ -45,12 +44,16 @@ pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
   }
 
-  for idx in order.length()>..0 {
+  let _ = for idx in order.length()>..0; cid = 0 {
     let v = order[idx]
     if comp[v] == -1 {
       dfs2(v, cid)
-      cid = cid + 1
+      continue cid + 1
+    } else {
+      continue cid
     }
+  } nobreak {
+    cid
   }
   comp
 }
