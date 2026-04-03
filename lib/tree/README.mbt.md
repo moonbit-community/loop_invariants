@@ -117,24 +117,24 @@ fn euler_tour(
   let tout = Array::make(n, -1)
   let order : Array[Int] = []
   let stack : Array[(Int, Int, Int)] = [(root, -1, 0)]
-  let mut timer = 0
-  while stack.length() > 0 {
+  let _ = for timer = 0 {
     let frame = stack.pop()
     match frame {
-      None => break
+      None => break ()
       Some((v, p, state)) =>
         if state == 0 {
           tin[v] = timer
           order.push(v)
-          timer = timer + 1
           stack.push((v, p, 1))
           for u in adj[v] {
             if u != p {
               stack.push((u, v, 0))
             }
           }
+          continue timer + 1
         } else {
           tout[v] = timer - 1
+          continue timer
         }
     }
   }
@@ -181,10 +181,10 @@ If values are static (no updates), a prefix sum is enough.
 fn prefix_sums(values : ArrayView[Int]) -> Array[Int] {
   let n = values.length()
   let pref = Array::make(n, 0)
-  let mut acc = 0
-  for i in 0..<n {
-    acc = acc + values[i]
-    pref[i] = acc
+  let _ = for i in 0..<n; acc = 0 {
+    let next_acc = acc + values[i]
+    pref[i] = next_acc
+    continue next_acc
   }
   pref
 }
@@ -228,19 +228,27 @@ This simple version is O(height), good for small trees.
 ```mbt check
 ///|
 fn lca_naive(u : Int, v : Int, parent : Array[Int], depth : Array[Int]) -> Int {
-  let mut a = u
-  let mut b = v
-  while depth[a] > depth[b] {
-    a = parent[a]
+  let a = for a = u {
+    if depth[a] > depth[v] {
+      continue parent[a]
+    } else {
+      break a
+    }
   }
-  while depth[b] > depth[a] {
-    b = parent[b]
+  let b = for b = v {
+    if depth[b] > depth[a] {
+      continue parent[b]
+    } else {
+      break b
+    }
   }
-  while a != b {
-    a = parent[a]
-    b = parent[b]
+  for a = a, b = b {
+    if a == b {
+      break a
+    } else {
+      continue parent[a], parent[b]
+    }
   }
-  a
 }
 
 ///|

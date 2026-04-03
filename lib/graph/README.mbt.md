@@ -102,14 +102,17 @@ fn bfs_levels(adj : Array[Array[Int]], source : Int) -> Array[Int] {
   let dist = Array::make(n, -1)
   dist[source] = 0
   let queue : Array[Int] = [source]
-  let mut head = 0
-  while head < queue.length() {
-    let u = queue[head]
-    head = head + 1
-    for v in adj[u] {
-      if dist[v] < 0 {
-        dist[v] = dist[u] + 1
-        queue.push(v)
+  let _ = for head = 0 {
+    match queue.get(head) {
+      None => break ()
+      Some(u) => {
+        for v in adj[u] {
+          if dist[v] < 0 {
+            dist[v] = dist[u] + 1
+            queue.push(v)
+          }
+        }
+        continue head + 1
       }
     }
   }

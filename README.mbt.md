@@ -106,9 +106,10 @@ For very simple loops, a `for .. in` loop is clearer and needs no invariant.
 ///|
 test "simple loop example" {
   let xs : Array[Int] = [1, 2, 3]
-  let mut sum = 0
-  for v in xs {
-    sum = sum + v
+  let sum = for v in xs; sum = 0 {
+    continue sum + v
+  } nobreak {
+    sum
   }
   inspect(sum, content="6")
 }

@@ -73,20 +73,20 @@ fn two_sum_sorted(xs : ArrayView[Int], target : Int) -> (Int, Int)? {
   if n < 2 {
     return None
   }
-  let mut left = 0
-  let mut right = n - 1
-  while left < right {
+  for left = 0, right = n - 1 {
+    if left >= right {
+      break None
+    }
     let sum = xs[left] + xs[right]
     if sum == target {
-      return Some((left, right))
+      break Some((left, right))
     }
     if sum < target {
-      left = left + 1
+      continue left + 1, right
     } else {
-      right = right - 1
+      continue left, right - 1
     }
   }
-  None
 }
 
 ///|
@@ -154,16 +154,16 @@ fn max_sum_k(xs : ArrayView[Int], k : Int) -> Int? {
   if k <= 0 || k > n {
     return None
   }
-  let mut sum = 0
-  for i in 0..<k {
-    sum = sum + xs[i]
+  let init_sum = for i in 0..<k; sum = 0 {
+    continue sum + xs[i]
+  } nobreak {
+    sum
   }
-  let mut best = sum
-  for i in k..<n {
-    sum = sum - xs[i - k] + xs[i]
-    if sum > best {
-      best = sum
-    }
+  let best = for i in k..<n; sum = init_sum, best = init_sum {
+    let next_sum = sum - xs[i - k] + xs[i]
+    continue next_sum, if next_sum > best { next_sum } else { best }
+  } nobreak {
+    best
   }
   Some(best)
 }
@@ -332,36 +332,31 @@ fn can_ship(weights : ArrayView[Int], days : Int, cap : Int) -> Bool {
   if days <= 0 {
     return false
   }
-  let mut used = 1
-  let mut cur = 0
-  for w in weights {
+  for w in weights; used = 1, cur = 0 {
     if w > cap {
-      return false
+      break false
     }
     if cur + w <= cap {
-      cur = cur + w
+      continue used, cur + w
     } else {
-      used = used + 1
-      if used > days {
-        return false
+      let next_used = used + 1
+      if next_used > days {
+        break false
       }
-      cur = w
+      continue next_used, w
     }
+  } nobreak {
+    true
   }
-  true
 }
 
 ///|
 fn max_and_sum(weights : ArrayView[Int]) -> (Int, Int) {
-  let mut max_w = 0
-  let mut sum = 0
-  for w in weights {
-    if w > max_w {
-      max_w = w
-    }
-    sum = sum + w
+  for w in weights; max_w = 0, sum = 0 {
+    continue if w > max_w { w } else { max_w }, sum + w
+  } nobreak {
+    (max_w, sum)
   }
-  (max_w, sum)
 }
 
 ///|
@@ -370,17 +365,17 @@ fn min_capacity(weights : ArrayView[Int], days : Int) -> Int? {
     return None
   }
   let (lo, hi) = max_and_sum(weights)
-  let mut low = lo
-  let mut high = hi
-  while low < high {
+  for low = lo, high = hi {
+    if low >= high {
+      break Some(low)
+    }
     let mid = low + (high - low) / 2
     if can_ship(weights, days, mid) {
-      high = mid
+      continue low, mid
     } else {
-      low = mid + 1
+      continue mid + 1, high
     }
   }
-  Some(low)
 }
 
 ///|
@@ -449,11 +444,10 @@ fn subset_sums(xs : ArrayView[Int]) -> Array[Int] {
   let n = xs.length()
   let sums : Array[Int] = []
   for mask in 0..<(1 << n) {
-    let mut sum = 0
-    for i in 0..<n {
-      if ((mask >> i) & 1) == 1 {
-        sum = sum + xs[i]
-      }
+    let sum = for i in 0..<n; sum = 0 {
+      continue if ((mask >> i) & 1) == 1 { sum + xs[i] } else { sum }
+    } nobreak {
+      sum
     }
     sums.push(sum)
   }
