@@ -60,8 +60,7 @@ pub fn MinCostMaxFlow::spfa(
   self.in_queue[source] = true
 
   // Main SPFA loop
-  let mut front = 0
-  while queue.get(front) is Some(u) {
+  for front = 0; queue.get(front) is Some(u); {
     self.in_queue[u] = false
 
     // Relax all outgoing edges
@@ -106,7 +105,7 @@ pub fn MinCostMaxFlow::spfa(
         #|  At i = deg(u), all edges from u are processed.
       ),
     }
-    front = front + 1
+    continue front + 1
   }
 
   // Return true if sink is reachable

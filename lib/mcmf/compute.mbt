@@ -45,27 +45,25 @@ pub fn MinCostMaxFlow::compute(
   source : Int,
   sink : Int,
 ) -> (Int64, Int64) {
-  let mut total_flow = 0L
-  let mut total_cost = 0L
-
   // Main loop: find and augment minimum cost paths
-  while self.spfa(source, sink) {
+  for total_flow = 0L, total_cost = 0L {
+    if !self.spfa(source, sink) {
+      break (total_flow, total_cost)
+    }
+
     // Step 1: Find minimum residual capacity along path
-    let mut path_flow = MCMF_INF
-    let mut v = sink
-    while v != source {
+    let path_flow = for v = sink, path_flow = MCMF_INF; v != source; {
       let u = self.prev_v[v]
       let e_idx = self.prev_e[v]
       let residual = self.adj[u][e_idx].cap - self.adj[u][e_idx].flow
-      if residual < path_flow {
-        path_flow = residual
-      }
-      v = u
+      let path_flow = if residual < path_flow { residual } else { path_flow }
+      continue u, path_flow
+    } nobreak {
+      path_flow
     }
 
     // Step 2: Augment flow along path
-    v = sink
-    while v != source {
+    let _ = for v = sink; v != source; {
       let u = self.prev_v[v]
       let e_idx = self.prev_e[v]
 
@@ -75,15 +73,13 @@ pub fn MinCostMaxFlow::compute(
       // Update reverse edge (for potential flow cancellation)
       let rev_idx = self.adj[u][e_idx].rev
       self.adj[v][rev_idx].flow = self.adj[v][rev_idx].flow - path_flow
-      v = u
+      continue u
     }
 
     // Step 3: Update totals
-    total_flow = total_flow + path_flow
     // dist[sink] is cost per unit of flow to reach sink
-    total_cost = total_cost + path_flow * self.dist[sink]
+    continue total_flow + path_flow, total_cost + path_flow * self.dist[sink]
   }
-  (total_flow, total_cost)
 }
 
 ///|
@@ -100,40 +96,40 @@ pub fn MinCostMaxFlow::compute_with_limit(
   sink : Int,
   max_flow_limit : Int64,
 ) -> (Int64, Int64) {
-  let mut total_flow = 0L
-  let mut total_cost = 0L
-  while total_flow < max_flow_limit && self.spfa(source, sink) {
-    // Limit path flow to not exceed remaining limit
-    let mut path_flow = MCMF_INF
-    let remaining = max_flow_limit - total_flow
-    if remaining < path_flow {
-      path_flow = remaining
+  for total_flow = 0L, total_cost = 0L {
+    if total_flow >= max_flow_limit {
+      break (total_flow, total_cost)
+    }
+    if !self.spfa(source, sink) {
+      break (total_flow, total_cost)
     }
 
-    // Find bottleneck
-    let mut v = sink
-    while v != source {
+    // Limit path flow to not exceed remaining limit
+    let remaining = max_flow_limit - total_flow
+    let path_flow = for v = sink, path_flow = (if remaining < MCMF_INF {
+                            remaining
+                          } else {
+                            MCMF_INF
+                          }); v != source; {
       let u = self.prev_v[v]
       let e_idx = self.prev_e[v]
       let residual = self.adj[u][e_idx].cap - self.adj[u][e_idx].flow
-      if residual < path_flow {
-        path_flow = residual
-      }
-      v = u
+      let path_flow = if residual < path_flow { residual } else { path_flow }
+      continue u, path_flow
+    } nobreak {
+      path_flow
     }
 
     // Augment flow
-    v = sink
-    while v != source {
+    let _ = for v = sink; v != source; {
       let u = self.prev_v[v]
       let e_idx = self.prev_e[v]
       self.adj[u][e_idx].flow = self.adj[u][e_idx].flow + path_flow
       let rev_idx = self.adj[u][e_idx].rev
       self.adj[v][rev_idx].flow = self.adj[v][rev_idx].flow - path_flow
-      v = u
+      continue u
     }
-    total_flow = total_flow + path_flow
-    total_cost = total_cost + path_flow * self.dist[sink]
+
+    continue total_flow + path_flow, total_cost + path_flow * self.dist[sink]
   }
-  (total_flow, total_cost)
 }
