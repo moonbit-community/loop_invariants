@@ -49,8 +49,7 @@ pub fn Dinic::bfs(self : Dinic, source : Int, sink : Int) -> Bool {
   let queue : Array[Int] = [source]
 
   // BFS loop
-  let mut front = 0
-  while queue.get(front) is Some(u) {
+  for front = 0; queue.get(front) is Some(u); {
     // Explore all edges from u
     for e in self.adj[u] {
       // Only consider edges with residual capacity to unvisited vertices
@@ -59,7 +58,7 @@ pub fn Dinic::bfs(self : Dinic, source : Int, sink : Int) -> Bool {
         queue.push(e.to)
       }
     }
-    front = front + 1
+    continue front + 1
   }
 
   // Return true if sink is reachable
