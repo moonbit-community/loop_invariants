@@ -20,9 +20,9 @@ pub fn lcs_length(a : ArrayView[Char], b : ArrayView[Char]) -> Int {
   if m == 0 || n == 0 {
     return 0
   }
-  let mut prev : Array[Int] = Array::make(n + 1, 0)
-  let mut curr : Array[Int] = Array::make(n + 1, 0)
-  for i in 1..<=m {
+  let prev : Array[Int] = for
+    i in 1..<=m
+    prev = Array::make(n + 1, 0), curr = Array::make(n + 1, 0) {
     curr[0] = 0
     for j in 1..<=n {
       if a[i - 1] == b[j - 1] {
@@ -31,9 +31,9 @@ pub fn lcs_length(a : ArrayView[Char], b : ArrayView[Char]) -> Int {
         curr[j] = max(prev[j], curr[j - 1])
       }
     }
-    let tmp = prev
-    prev = curr
-    curr = tmp
+    continue curr, prev
+  } nobreak {
+    prev
   }
   prev[n]
 }

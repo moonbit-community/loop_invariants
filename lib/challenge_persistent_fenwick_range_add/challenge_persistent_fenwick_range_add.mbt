@@ -180,10 +180,10 @@ pub fn apply_updates(
   rf : RangeFenwick,
   updates : ArrayView[(Int, Int, Int)],
 ) -> RangeFenwick {
-  let mut cur = rf
-  for update in updates {
+  for update in updates; cur = rf {
     let (l, r, delta) = update
-    cur = range_add(cur, l, r, delta)
+    continue range_add(cur, l, r, delta)
+  } nobreak {
+    cur
   }
-  cur
 }

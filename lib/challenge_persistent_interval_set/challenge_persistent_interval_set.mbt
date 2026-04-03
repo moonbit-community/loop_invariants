@@ -37,14 +37,17 @@ fn insert_sorted(
   let s = if s0 <= e0 { s0 } else { e0 }
   let e = if s0 <= e0 { e0 } else { s0 }
   let out = Array::new()
-  let mut inserted = false
-  for pair in arr {
+  let inserted = for pair in arr; inserted = false {
     let (s1, e1) = pair
     if !inserted && s < s1 {
       out.push((s, e))
-      inserted = true
+      out.push((s1, e1))
+      continue true
     }
     out.push((s1, e1))
+    continue inserted
+  } nobreak {
+    inserted
   }
   if !inserted {
     out.push((s, e))
@@ -120,4 +123,14 @@ test "persistent_interval_set" {
   assert_eq(contains_point(t3, 6), true)
   assert_eq(contains_point(t3, 10), false)
   assert_eq(contains_point(t1, 6), false)
+}
+
+///|
+test "persistent_interval_set_middle_insert" {
+  let t1 = insert_interval(Empty, 1, 2)
+  let t2 = insert_interval(t1, 5, 6)
+  let t3 = insert_interval(t2, 8, 9)
+  let t4 = insert_interval(t3, 3, 4)
+  assert_eq(to_array(t3), [(1, 2), (5, 6), (8, 9)])
+  assert_eq(to_array(t4), [(1, 6), (8, 9)])
 }

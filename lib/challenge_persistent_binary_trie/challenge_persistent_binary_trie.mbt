@@ -54,28 +54,25 @@ pub fn insert(node : Node, value : Int, bit : Int) -> Node {
 ///|
 /// Query the maximum xor with value (assumes trie is non-empty).
 pub fn max_xor(root : Node, value : Int, max_bit : Int) -> Int {
-  let mut cur = root
-  let mut acc = 0
-  for bit in max_bit>=..0 {
+  for bit in max_bit>=..0; cur = root, acc = 0 {
     match cur {
-      Empty => break
+      Empty => break acc
       Node(count=_, zero=z, one=o) => {
         let b = (value >> bit) & 1
         if b == 0 {
           if count(o) > 0 {
-            acc = acc | (1 << bit)
-            cur = o
+            continue o, acc | (1 << bit)
           } else {
-            cur = z
+            continue z, acc
           }
         } else if count(z) > 0 {
-          acc = acc | (1 << bit)
-          cur = z
+          continue z, acc | (1 << bit)
         } else {
-          cur = o
+          continue o, acc
         }
       }
     }
+  } nobreak {
+    acc
   }
-  acc
 }
