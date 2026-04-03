@@ -473,13 +473,13 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
 
   // Build a simple set of all numbers for lookup
   // (In production, use a trie for efficiency)
-  let mut max_xor = 0
-  for i = 0; i < n; i = i + 1 {
-    for j = i + 1; j < n; j = j + 1 {
+  let max_xor = for i = 0, max_xor = 0; i < n; {
+    let max_xor = for j = i + 1, max_xor = max_xor; j < n; {
       let xor_val = nums[i] ^ nums[j]
-      if xor_val > max_xor {
-        max_xor = xor_val
-      }
+      let max_xor = if xor_val > max_xor { xor_val } else { max_xor }
+      continue j + 1, max_xor
+    } nobreak {
+      max_xor
     } where {
       invariant: j >= i + 1 && j <= n,
       reasoning: (
@@ -491,6 +491,9 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
         #|At j == n, all pairs starting at i have been considered.
       ),
     }
+    continue i + 1, max_xor
+  } nobreak {
+    max_xor
   } where {
     invariant: i >= 0 && i <= n,
     reasoning: (
@@ -524,16 +527,15 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
     return 0
   }
   let negative = (dividend < 0) != (divisor < 0)
-  let mut dvd = if dividend < 0 { 0 - dividend } else { dividend }
+  let dvd = if dividend < 0 { 0 - dividend } else { dividend }
   let dvs = if divisor < 0 { 0 - divisor } else { divisor }
-  let mut quotient = 0
-  for ; dvd >= dvs; {
+  for dvd = dvd, quotient = 0; dvd >= dvs; {
     // Find the largest multiple of divisor that fits
-    let mut temp = dvs
-    let mut multiple = 1
-    for ; temp << 1 <= dvd && temp << 1 > 0; {
-      temp = temp << 1
-      multiple = multiple << 1
+    let (temp, multiple) = for temp = dvs, multiple = 1; temp << 1 <= dvd &&
+                              temp << 1 > 0; {
+      continue temp << 1, multiple << 1
+    } nobreak {
+      (temp, multiple)
     } where {
       invariant: multiple >= 1 && temp >= dvs,
       reasoning: (
@@ -545,8 +547,7 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
         #|When the loop ends, temp is the largest power-of-two multiple <= dvd.
       ),
     }
-    dvd = dvd - temp
-    quotient = quotient + multiple
+    continue dvd - temp, quotient + multiple
   } nobreak {
     if negative {
       0 - quotient
@@ -571,6 +572,7 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
 test "divide bit" {
   assert_eq(divide_bit(10, 3), 3)
   assert_eq(divide_bit(7, -3), -2)
+  assert_eq(divide_bit(1024, 7), 146)
 }
 
 ///|
