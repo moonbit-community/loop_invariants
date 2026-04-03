@@ -227,18 +227,17 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
 
   // Stack stores indices of bars in increasing height order
   let stack : Array[Int] = []
-  let mut max_area = 0
 
   // Process all bars, plus one "sentinel" bar of height 0
-  for i = 0 {
+  for i = 0, max_area = 0 {
     if i > n {
       break max_area
     } else {
       let curr_height = if i == n { 0 } else { heights[i] }
 
       // Pop bars taller than current - they can't extend further right
-      while stack.length() > 0 &&
-            heights[stack[stack.length() - 1]] > curr_height {
+      let max_area = for max_area = max_area; stack.length() > 0 &&
+                        heights[stack[stack.length() - 1]] > curr_height; {
         match stack.pop() {
           Some(h_idx) => {
             let height = heights[h_idx]
@@ -250,15 +249,16 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
               i - stack[stack.length() - 1] - 1
             }
             let area = height * width
-            if area > max_area {
-              max_area = area
-            }
+            let max_area = if area > max_area { area } else { max_area }
+            continue max_area
           }
-          None => break
+          None => break max_area
         }
+      } nobreak {
+        max_area
       }
       stack.push(i)
-      continue i + 1
+      continue i + 1, max_area
     }
   } where {
     invariant: i >= 0 && i <= n + 1 && max_area >= 0,
