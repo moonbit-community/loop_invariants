@@ -31,11 +31,11 @@ fn[T] node_size(node : BNode[T]) -> Int {
   if is_leaf(node) {
     node.keys.length()
   } else {
-    let mut sum = node.keys.length()
-    for child in node.children {
-      sum = sum + node_size(child)
+    for child in node.children; sum = node.keys.length() {
+      continue sum + node_size(child)
+    } nobreak {
+      sum
     }
-    sum
   }
 }
 
@@ -215,9 +215,9 @@ pub fn[T : Compare] contains(t : Tree[T], key : T) -> Bool {
 ///|
 /// Build a B-tree by inserting keys in order.
 pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Tree[T] {
-  let mut tree = Empty
-  for key in arr {
-    tree = insert(tree, key)
+  for key in arr; tree = Empty {
+    continue insert(tree, key)
+  } nobreak {
+    tree
   }
-  tree
 }
