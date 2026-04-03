@@ -40,14 +40,15 @@ fn edge_weight(edges : Array[(Int, Int, Int64)], u : Int, v : Int) -> Int64? {
 
 ///|
 fn path_cost(path : Array[Int], edges : Array[(Int, Int, Int64)]) -> Int64? {
-  let mut total = 0L
-  for i = 0; i + 1 < path.length(); i = i + 1 {
+  let total = for i = 0, total = 0L; i + 1 < path.length(); {
     let u = path[i]
     let v = path[i + 1]
     match edge_weight(edges, u, v) {
       None => return None
-      Some(w) => total = total + w
+      Some(w) => continue i + 1, total + w
     }
+  } nobreak {
+    total
   } where {
     invariant: i >= 0 && i + 1 <= path.length() && total >= 0L,
     reasoning: (
