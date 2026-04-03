@@ -81,20 +81,20 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let aug = Array::makei(n, i => {
     Array::makei(m + 1, j => if j < m { a[i][j] } else { b[i] })
   })
-  let mut rank = 0
-  let mut row = 0
 
   // Forward elimination
-  for col = 0; col < m && row < n; col = col + 1 {
+  let rank = for col = 0, rank = 0, row = 0; col < m && row < n; {
     // Find pivot (partial pivoting)
-    let mut best_row = row
-    let mut best_val = abs(aug[row][col])
-    for i = row + 1; i < n; i = i + 1 {
+    let (best_row, best_val) = for i = row + 1, best_row = row, best_val = abs(
+                                       aug[row][col],
+                                     ); i < n; {
       let val = abs(aug[i][col])
       if val > best_val {
-        best_val = val
-        best_row = i
+        continue i + 1, i, val
       }
+      continue i + 1, best_row, best_val
+    } nobreak {
+      (best_row, best_val)
     } where {
       invariant: i >= row + 1 && i <= n,
       reasoning: (
@@ -131,7 +131,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
 
     // Skip if column is zero
     if best_val < GAUSS_EPS {
-      continue
+      continue col + 1, rank, row
     }
 
     // Swap rows
@@ -212,8 +212,9 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
         #|Invariant holds throughout elimination for this column.
       ),
     }
-    rank = rank + 1
-    row = row + 1
+    continue col + 1, rank + 1, row + 1
+  } nobreak {
+    rank
   } where {
     invariant: 0 <= row && row <= n && 0 <= col && col <= m,
     reasoning: (
@@ -239,12 +240,13 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   }
 
   // Check for inconsistency (0 = non-zero)
-  let mut has_solution = true
-  for i = rank; i < n; i = i + 1 {
+  let has_solution = for i = rank; i < n; {
     if abs(aug[i][m]) > GAUSS_EPS {
-      has_solution = false
-      break
+      break false
     }
+    continue i + 1
+  } nobreak {
+    true
   } where {
     invariant: i >= rank && i <= n,
     reasoning: (
@@ -343,17 +345,16 @@ fn gauss_mod(
       }
     })
   })
-  let mut row = 0
-
   // Forward elimination
-  for col = 0; col < m && row < n; col = col + 1 {
+  let row = for col = 0, row = 0; col < m && row < n; {
     // Find pivot
-    let mut pivot_row = -1
-    for i = row; i < n; i = i + 1 {
+    let pivot_row = for i = row; i < n; {
       if aug[i][col] != 0L {
-        pivot_row = i
-        break
+        break i
       }
+      continue i + 1
+    } nobreak {
+      -1
     } where {
       invariant: i >= row && i <= n,
       reasoning: (
@@ -364,18 +365,9 @@ fn gauss_mod(
         #|TERMINATION:
         #|At i = n, no pivot exists in this column.
       ),
-      invariant: pivot_row == -1 || (pivot_row >= row && pivot_row < n),
-      reasoning: (
-        #|INVARIANT (pivot row):
-        #|pivot_row is -1 if no pivot found yet, otherwise a valid row in [row..n).
-        #|MAINTENANCE:
-        #|Set pivot_row only when a non-zero entry is found.
-        #|TERMINATION:
-        #|pivot_row indicates the first suitable pivot row, if any.
-      ),
     }
     if pivot_row < 0 {
-      continue
+      continue col + 1, row
     }
 
     // Swap rows
@@ -439,7 +431,9 @@ fn gauss_mod(
         #|Pivot entry is 1 when moving to the next column.
       ),
     }
-    row = row + 1
+    continue col + 1, row + 1
+  } nobreak {
+    row
   } where {
     invariant: 0 <= row && row <= n && 0 <= col && col <= m,
     reasoning: (
@@ -519,15 +513,15 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
   let aug = Array::makei(n, i => {
     Array::makei(m + 1, j => if j < m { a[i][j] % 2 } else { b[i] % 2 })
   })
-  let mut row = 0
-  for col = 0; col < m && row < n; col = col + 1 {
+  let row = for col = 0, row = 0; col < m && row < n; {
     // Find pivot
-    let mut pivot_row = -1
-    for i = row; i < n; i = i + 1 {
+    let pivot_row = for i = row; i < n; {
       if aug[i][col] == 1 {
-        pivot_row = i
-        break
+        break i
       }
+      continue i + 1
+    } nobreak {
+      -1
     } where {
       invariant: i >= row && i <= n,
       reasoning: (
@@ -538,18 +532,9 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
         #|TERMINATION:
         #|At i = n, no pivot exists in this column.
       ),
-      invariant: pivot_row == -1 || (pivot_row >= row && pivot_row < n),
-      reasoning: (
-        #|INVARIANT (pivot row xor):
-        #|pivot_row is -1 or a valid row index in [row..n).
-        #|MAINTENANCE:
-        #|Set pivot_row when aug[i][col] == 1.
-        #|TERMINATION:
-        #|pivot_row indicates the chosen pivot row, if any.
-      ),
     }
     if pivot_row < 0 {
-      continue
+      continue col + 1, row
     }
 
     // Swap rows
@@ -596,7 +581,9 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
         #|Pivot entry is 1 when moving to the next column.
       ),
     }
-    row = row + 1
+    continue col + 1, row + 1
+  } nobreak {
+    row
   } where {
     invariant: 0 <= row && row <= n && 0 <= col && col <= m,
     reasoning: (
