@@ -64,13 +64,13 @@ fn highest_bit(x : Int) -> Int {
   if x <= 0 {
     return 0
   }
-  let mut result = 0
-  let mut val = x
-  while val > 1 {
-    result = result + 1
-    val = val / 2
+  for val = x, result = 0 {
+    if val > 1 {
+      continue val / 2, result + 1
+    } else {
+      break result
+    }
   }
-  result
 }
 
 ///|

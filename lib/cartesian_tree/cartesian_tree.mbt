@@ -486,15 +486,14 @@ fn largest_rectangle_histogram(heights : Array[Int64]) -> Int64 {
   let right = nearest_smaller_right(heights)
 
   // For each position, width extends from left+1 to right-1
-  let mut max_area = 0L
-  for i in 0..<n {
+  let max_area = for i in 0..<n; max_area = 0L {
     let l = if left[i] == -1 { 0 } else { left[i] + 1 }
     let r = if right[i] == -1 { n - 1 } else { right[i] - 1 }
     let width = (r - l + 1).to_int64()
     let area = heights[i] * width
-    if area > max_area {
-      max_area = area
-    }
+    continue if area > max_area { area } else { max_area }
+  } nobreak {
+    max_area
   }
   max_area
 }
@@ -518,9 +517,10 @@ fn CartesianTree::tree_number(self : CartesianTree) -> Int64 {
   encode_tree(self.nodes, self.root, bits)
 
   // Convert to number
-  let mut result = 0L
-  for i in 0..<bits.length() {
-    result = result * 2L + bits[i].to_int64()
+  let result = for i in 0..<bits.length(); result = 0L {
+    continue result * 2L + bits[i].to_int64()
+  } nobreak {
+    result
   }
   result
 }
