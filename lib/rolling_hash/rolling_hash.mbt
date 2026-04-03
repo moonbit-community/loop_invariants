@@ -284,11 +284,10 @@ pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int] {
       Some(h) =>
         if h == target {
           // Verify match to handle collisions
-          let mut matches = true
-          for j = 0; j < m && matches; j = j + 1 {
-            if text[i + j] != pattern[j] {
-              matches = false
-            }
+          let matches = for j = 0, matches = true; j < m && matches; {
+            continue j + 1, text[i + j] == pattern[j]
+          } nobreak {
+            matches
           } where {
             invariant: j >= 0 && j <= m,
             reasoning: (
@@ -402,18 +401,23 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
         Some(h) => {
           // Binary search
           let (h1, h2) = h
-          let mut lo = 0
-          let mut hi = hashes.length() - 1
-          while lo <= hi {
-            let mid = (lo + hi) / 2
-            let (m1, m2) = hashes[mid]
-            if m1 == h1 && m2 == h2 {
-              return true
-            } else if m1 < h1 || (m1 == h1 && m2 < h2) {
-              lo = mid + 1
+          let found = for lo = 0, hi = hashes.length() - 1 {
+            if lo <= hi {
+              let mid = (lo + hi) / 2
+              let (m1, m2) = hashes[mid]
+              if m1 == h1 && m2 == h2 {
+                break true
+              } else if m1 < h1 || (m1 == h1 && m2 < h2) {
+                continue mid + 1, hi
+              } else {
+                continue lo, mid - 1
+              }
             } else {
-              hi = mid - 1
+              break false
             }
+          }
+          if found {
+            return true
           }
         }
         None => ()
