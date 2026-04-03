@@ -138,9 +138,9 @@ pub fn count_range(bs : Bitset, ql : Int, qr : Int) -> Int {
 ///|
 /// Build a bitset by setting indices to 1.
 pub fn from_indices(n : Int, idxs : ArrayView[Int]) -> Bitset {
-  let mut bs = make(n)
-  for idx in idxs {
-    bs = set(bs, idx, 1)
+  for idx in idxs; bs = make(n) {
+    continue set(bs, idx, 1)
+  } nobreak {
+    bs
   }
-  bs
 }

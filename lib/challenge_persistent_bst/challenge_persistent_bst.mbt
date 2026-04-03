@@ -66,11 +66,11 @@ pub fn[T : Compare] contains(t : Tree[T], value : T) -> Bool {
 ///|
 /// Build a BST by inserting elements in order.
 pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Tree[T] {
-  let mut tree = Empty
-  for value in arr {
-    tree = insert(tree, value)
+  for value in arr; tree = Empty {
+    continue insert(tree, value)
+  } nobreak {
+    tree
   }
-  tree
 }
 
 ///|
