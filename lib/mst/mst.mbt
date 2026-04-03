@@ -123,15 +123,14 @@ fn MST::kruskal(self : MST) -> (Array[Edge], Int64) {
   })
   let uf = UF::new(self.n)
   let mst_edges : Array[Edge] = []
-  let mut total_weight = 0L
-  for edge in sorted_edges {
-    if mst_edges.length() == self.n - 1 {
-      break
-    }
-    if uf.union(edge.u, edge.v) {
+  let total_weight = for edge in sorted_edges; total_weight = 0L {
+    if mst_edges.length() < self.n - 1 && uf.union(edge.u, edge.v) {
       mst_edges.push(edge)
-      total_weight = total_weight + edge.weight
+      continue total_weight + edge.weight
     }
+    continue total_weight
+  } nobreak {
+    total_weight
   }
   (mst_edges, total_weight)
 }
@@ -193,17 +192,16 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
   let in_mst = Array::make(self.n, false)
   let min_edge = Array::make(self.n, PRIM_INF)
   min_edge[0] = 0L
-  let mut total_weight = 0L
-  let mut edges_added = 0
-  for iter = 0; iter < self.n; iter = iter + 1 {
+  let (total_weight, edges_added) = for iter = 0, total_weight = 0L, edges_added = 0; iter <
+       self.n; {
     // Find minimum edge to non-MST vertex
-    let mut u = -1
-    let mut min_w = PRIM_INF
-    for i = 0; i < self.n; i = i + 1 {
+    let (u, min_w) = for i = 0, u = -1, min_w = PRIM_INF; i < self.n; i = i + 1 {
       if !in_mst[i] && min_edge[i] < min_w {
-        min_w = min_edge[i]
-        u = i
+        continue i + 1, i, min_edge[i]
       }
+      continue i + 1, u, min_w
+    } nobreak {
+      (u, min_w)
     } where {
       invariant: i >= 0 &&
       i <= self.n &&
@@ -219,13 +217,11 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
       ),
     }
     if u < 0 || min_w == PRIM_INF {
-      break // No more reachable vertices
+      break (total_weight, edges_added) // No more reachable vertices
     }
     in_mst[u] = true
-    total_weight = total_weight + min_w
-    if iter > 0 {
-      edges_added = edges_added + 1
-    }
+    let total_weight = total_weight + min_w
+    let edges_added = if iter > 0 { edges_added + 1 } else { edges_added }
 
     // Update min_edge for neighbors
     for neighbor in self.adj[u] {
@@ -234,6 +230,9 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
         min_edge[v] = w
       }
     }
+    continue iter + 1, total_weight, edges_added
+  } nobreak {
+    (total_weight, edges_added)
   } where {
     invariant: iter >= 0 && iter <= self.n && in_mst.length() == self.n,
     reasoning: (
