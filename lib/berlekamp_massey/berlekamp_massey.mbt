@@ -13,11 +13,12 @@
 
 ///|
 fn mod_norm(x : Int64, m : Int64) -> Int64 {
-  let mut v = x % m
+  let v = x % m
   if v < 0L {
-    v = v + m
+    v + m
+  } else {
+    v
   }
-  v
 }
 
 ///|
@@ -37,15 +38,15 @@ fn mod_mul(a : Int64, b : Int64, m : Int64) -> Int64 {
 
 ///|
 fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
-  let mut result = 1L % m
-  let mut b = mod_norm(base, m)
-  let mut e = exp
-  for ; e > 0L; {
-    if (e & 1L) == 1L {
-      result = mod_mul(result, b, m)
+  let result = for result = 1L % m, b = mod_norm(base, m), e = exp; e > 0L; {
+    let next_result = if (e & 1L) == 1L {
+      mod_mul(result, b, m)
+    } else {
+      result
     }
-    b = mod_mul(b, b, m)
-    e = e / 2L
+    continue next_result, mod_mul(b, b, m), e / 2L
+  } nobreak {
+    result
   } where {
     invariant: e >= 0L,
     reasoning: (
@@ -115,4 +116,18 @@ pub fn berlekamp_massey(seq : ArrayView[Int64], m : Int64) -> Array[Int64] {
     result.push(mod_norm(-c[i], m))
   }
   result
+}
+
+///|
+test "mod_norm handles negative input" {
+  inspect(mod_norm(-1L, 7L), content="6")
+  inspect(mod_norm(-15L, 7L), content="6")
+  inspect(mod_norm(15L, 7L), content="1")
+}
+
+///|
+test "pow_mod handles edge exponents and signs" {
+  inspect(pow_mod(5L, 0L, 7L), content="1")
+  inspect(pow_mod(-2L, 4L, 7L), content="2")
+  inspect(pow_mod(-2L, 5L, 7L), content="3")
 }

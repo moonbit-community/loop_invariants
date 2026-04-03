@@ -312,17 +312,12 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
 ///|
 /// Modular multiplicative inverse using Fermat's little theorem
 fn mod_inverse(a : Int64, m : Int64) -> Int64 {
-  let mut result = 1L
-  let mut base = a % m
-  let mut exp = m - 2L
-  while exp > 0L {
-    if exp % 2L == 1L {
-      result = result * base % m
-    }
-    base = base * base % m
-    exp = exp / 2L
+  for result = 1L, base = a % m, exp = m - 2L; exp > 0L; {
+    let next_result = if exp % 2L == 1L { result * base % m } else { result }
+    continue next_result, base * base % m, exp / 2L
+  } nobreak {
+    result
   }
-  result
 }
 
 ///|

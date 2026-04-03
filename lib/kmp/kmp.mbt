@@ -47,15 +47,14 @@ pub fn compute_failure(pattern : String) -> Array[Int] {
   }
   let fail = Array::make(m, 0)
   for i in 1..<m; k = 0 {
-    let mut curr_k = k
-    while curr_k > 0 && pattern[curr_k] != pattern[i] {
-      curr_k = fail[curr_k - 1]
+    let curr_k = for curr_k = k; curr_k > 0 && pattern[curr_k] != pattern[i]; {
+      continue fail[curr_k - 1]
+    } nobreak {
+      curr_k
     }
-    if pattern[curr_k] == pattern[i] {
-      curr_k = curr_k + 1
-    }
-    fail[i] = curr_k
-    continue curr_k
+    let next_k = if pattern[curr_k] == pattern[i] { curr_k + 1 } else { curr_k }
+    fail[i] = next_k
+    continue next_k
   }
   fail
 }
@@ -77,18 +76,19 @@ pub fn kmp_search(text : String, pattern : String) -> Array[Int] {
   }
   let fail = compute_failure(pattern)
   for i in 0..<n; j = 0 {
-    let mut curr_j = j
-    while curr_j > 0 && pattern[curr_j] != text[i] {
-      curr_j = fail[curr_j - 1]
+    let curr_j = for curr_j = j; curr_j > 0 && pattern[curr_j] != text[i]; {
+      continue fail[curr_j - 1]
+    } nobreak {
+      curr_j
     }
-    if pattern[curr_j] == text[i] {
-      curr_j = curr_j + 1
-    }
-    if curr_j == m {
+    let curr_j = if pattern[curr_j] == text[i] { curr_j + 1 } else { curr_j }
+    let next_j = if curr_j == m {
       matches.push(i - m + 1)
-      curr_j = fail[curr_j - 1]
+      fail[curr_j - 1]
+    } else {
+      curr_j
     }
-    continue curr_j
+    continue next_j
   }
   matches
 }
@@ -125,21 +125,26 @@ pub fn compute_z_function(s : String) -> Array[Int] {
   let z = Array::make(n, 0)
   z[0] = n
   for i in 1..<n; l = 0, r = 0 {
-    let mut curr_l = l
-    let mut curr_r = r
-    let mut z_i = 0
-    if i < curr_r {
-      z_i = if z[i - curr_l] < curr_r - i { z[i - curr_l] } else { curr_r - i }
+    let z_i = if i < r {
+      if z[i - l] < r - i {
+        z[i - l]
+      } else {
+        r - i
+      }
+    } else {
+      0
     }
-    while i + z_i < n && s[z_i] == s[i + z_i] {
-      z_i = z_i + 1
+    let z_i = for z_i = z_i; i + z_i < n && s[z_i] == s[i + z_i]; {
+      continue z_i + 1
+    } nobreak {
+      z_i
     }
     z[i] = z_i
-    if i + z_i > curr_r {
-      curr_l = i
-      curr_r = i + z_i
+    if i + z_i > r {
+      continue i, i + z_i
+    } else {
+      continue l, r
     }
-    continue curr_l, curr_r
   }
   z
 }

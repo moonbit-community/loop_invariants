@@ -164,20 +164,22 @@ pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
   }
 
   // Ensure u is deeper
-  let mut curr_u = u
-  let mut curr_v = v
-  if self.depth[curr_u] < self.depth[curr_v] {
-    let temp = curr_u
-    curr_u = curr_v
-    curr_v = temp
+  let (curr_u, curr_v) = if self.depth[u] < self.depth[v] {
+    (v, u)
+  } else {
+    (u, v)
   }
   let diff = self.depth[curr_u] - self.depth[curr_v]
 
   // Bring u to same level as v
-  for k = 0; k < self.log_n; k = k + 1 {
+  let curr_u = for k in 0..<self.log_n; curr_u = curr_u {
     if ((diff >> k) & 1) == 1 {
-      curr_u = self.up[curr_u][k]
+      continue self.up[curr_u][k]
+    } else {
+      continue curr_u
     }
+  } nobreak {
+    curr_u
   } where {
     invariant: k >= 0 && k <= self.log_n,
     reasoning: (
@@ -200,11 +202,14 @@ pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
   }
 
   // Binary search for LCA - jump both nodes while their 2^k ancestors are different
-  for k in self.log_n>..0 {
+  let (curr_u, _) = for k in self.log_n>..0; curr_u = curr_u, curr_v = curr_v {
     if self.up[curr_u][k] != self.up[curr_v][k] {
-      curr_u = self.up[curr_u][k]
-      curr_v = self.up[curr_v][k]
+      continue self.up[curr_u][k], self.up[curr_v][k]
+    } else {
+      continue curr_u, curr_v
     }
+  } nobreak {
+    (curr_u, curr_v)
   }
 
   // Parent of final position is LCA
@@ -236,14 +241,19 @@ fn LCA::kth_ancestor(self : LCA, v : Int, k : Int) -> Int {
   if v < 0 || v >= self.n || k < 0 {
     return -1
   }
-  let mut curr = v
-  for bit = 0; bit < self.log_n && curr != -1; bit = bit + 1 {
-    if ((k >> bit) & 1) == 1 {
-      curr = self.up[curr][bit]
+  for bit in 0..<self.log_n; curr = v {
+    if curr == -1 {
+      continue curr
+    } else if ((k >> bit) & 1) == 1 {
+      continue self.up[curr][bit]
+    } else {
+      continue curr
     }
+  } nobreak {
+    curr
   } where {
     invariant: bit >= 0 && bit <= self.log_n,
-    invariant: curr >= 0 && curr < self.n,
+    invariant: curr >= -1 && curr < self.n,
     reasoning: (
       #|INVARIANT (binary lifting):
       #|Bits [0..bit) of k are processed; curr is the ancestor after those jumps.
@@ -253,7 +263,6 @@ fn LCA::kth_ancestor(self : LCA, v : Int, k : Int) -> Int {
       #|At bit = log_n, curr is the k-th ancestor if it exists.
     ),
   }
-  curr
 }
 
 ///|
