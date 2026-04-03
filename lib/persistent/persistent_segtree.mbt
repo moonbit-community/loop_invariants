@@ -198,16 +198,19 @@ fn PersistentSegTree::query_rec(
   }
   let mid = (lo + hi) / 2
   let curr = self.nodes[node]
-  let mut result : Int64 = 0L
-  if l <= mid {
+  let left_sum = if l <= mid {
     // Query overlaps left child
-    result = result + self.query_rec(curr.left, lo, mid, l, r)
+    self.query_rec(curr.left, lo, mid, l, r)
+  } else {
+    0L
   }
-  if r > mid {
+  let right_sum = if r > mid {
     // Query overlaps right child
-    result = result + self.query_rec(curr.right, mid + 1, hi, l, r)
+    self.query_rec(curr.right, mid + 1, hi, l, r)
+  } else {
+    0L
   }
-  result
+  left_sum + right_sum
 }
 
 // ============================================================================
