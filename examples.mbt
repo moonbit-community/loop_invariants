@@ -997,10 +997,8 @@ fn sieve(n : Int) -> Array[Int] {
       break
     } else if is_prime[i] {
       // Mark all multiples of i as composite
-      let mut j = i * i
-      while j <= n {
+      for j = i * i; j <= n; j = j + i {
         is_prime[j] = false
-        j = j + i
       }
       continue i + 1
     } else {
