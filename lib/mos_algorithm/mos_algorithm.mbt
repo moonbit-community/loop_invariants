@@ -136,67 +136,77 @@ fn MoDistinct::answer_queries(
 
   // Initialize frequency count map
   let freq : Array[Int] = Array::make(100001, 0) // Assuming values 0-100000
-  let mut distinct = 0
-  let mut cur_l = 0
-  let mut cur_r = -1 // Empty range initially
   let answers = Array::make(q, 0)
 
   // Process queries in sorted order
-  for i = 0; i < q; i = i + 1 {
-    let query = mo_queries[i]
-    let target_l = query.left
-    let target_r = query.right
+  let _ = for i = 0, distinct = 0, cur_l = 0, cur_r = -1 {
+    if i >= q {
+      break ()
+    } else {
+      let query = mo_queries[i]
+      let target_l = query.left
+      let target_r = query.right
 
-    // Expand right
-    if cur_r < target_r {
-      for r in (cur_r + 1)..<=target_r {
-        let val = self.arr[r]
-        if freq[val] == 0 {
-          distinct = distinct + 1
+      let (cur_r, distinct) = if cur_r < target_r {
+        let distinct = for r = cur_r + 1, distinct = distinct
+                           r <= target_r
+                           r = r + 1 {
+          let val = self.arr[r]
+          let distinct = if freq[val] == 0 { distinct + 1 } else { distinct }
+          freq[val] = freq[val] + 1
+          continue r + 1, distinct
+        } nobreak {
+          distinct
         }
-        freq[val] = freq[val] + 1
-      }
-      cur_r = target_r
-    }
-
-    // Shrink right
-    if cur_r > target_r {
-      for r in (target_r + 1)..<=cur_r {
-        let val = self.arr[r]
-        freq[val] = freq[val] - 1
-        if freq[val] == 0 {
-          distinct = distinct - 1
+        (target_r, distinct)
+      } else if cur_r > target_r {
+        let distinct = for r = target_r + 1, distinct = distinct
+                           r <= cur_r
+                           r = r + 1 {
+          let val = self.arr[r]
+          freq[val] = freq[val] - 1
+          let distinct = if freq[val] == 0 { distinct - 1 } else { distinct }
+          continue r + 1, distinct
+        } nobreak {
+          distinct
         }
+        (target_r, distinct)
+      } else {
+        (cur_r, distinct)
       }
-      cur_r = target_r
-    }
 
-    // Expand left
-    if cur_l > target_l {
-      for l in target_l..<=(cur_l - 1) {
-        let val = self.arr[l]
-        if freq[val] == 0 {
-          distinct = distinct + 1
+      let (cur_l, distinct) = if cur_l > target_l {
+        let distinct = for l = target_l, distinct = distinct
+                           l <= cur_l - 1
+                           l = l + 1 {
+          let val = self.arr[l]
+          let distinct = if freq[val] == 0 { distinct + 1 } else { distinct }
+          freq[val] = freq[val] + 1
+          continue l + 1, distinct
+        } nobreak {
+          distinct
         }
-        freq[val] = freq[val] + 1
-      }
-      cur_l = target_l
-    }
-
-    // Shrink left
-    if cur_l < target_l {
-      for l in cur_l..<=(target_l - 1) {
-        let val = self.arr[l]
-        freq[val] = freq[val] - 1
-        if freq[val] == 0 {
-          distinct = distinct - 1
+        (target_l, distinct)
+      } else if cur_l < target_l {
+        let distinct = for l = cur_l, distinct = distinct
+                           l <= target_l - 1
+                           l = l + 1 {
+          let val = self.arr[l]
+          freq[val] = freq[val] - 1
+          let distinct = if freq[val] == 0 { distinct - 1 } else { distinct }
+          continue l + 1, distinct
+        } nobreak {
+          distinct
         }
+        (target_l, distinct)
+      } else {
+        (cur_l, distinct)
       }
-      cur_l = target_l
-    }
 
-    // Store answer at original query index
-    answers[query.index] = distinct
+      // Store answer at original query index
+      answers[query.index] = distinct
+      continue i + 1, distinct, cur_l, cur_r
+    }
   } where {
     invariant: i >= 0 && i <= q,
     reasoning: (
@@ -289,39 +299,59 @@ fn MoSum::answer_queries(
       a.right - b.right
     }
   })
-  let mut current_sum = 0L
-  let mut cur_l = 0
-  let mut cur_r = -1
   let answers = Array::make(q, 0L)
-  for i = 0; i < q; i = i + 1 {
-    let query = mo_queries[i]
-    let target_l = query.left
-    let target_r = query.right
-    if cur_r < target_r {
-      for r in (cur_r + 1)..<=target_r {
-        current_sum = current_sum + self.arr[r]
+  let _ = for i = 0, current_sum = 0L, cur_l = 0, cur_r = -1 {
+    if i >= q {
+      break ()
+    } else {
+      let query = mo_queries[i]
+      let target_l = query.left
+      let target_r = query.right
+      let (cur_r, current_sum) = if cur_r < target_r {
+        let current_sum = for r = cur_r + 1, current_sum = current_sum
+                              r <= target_r
+                              r = r + 1 {
+          continue r + 1, current_sum + self.arr[r]
+        } nobreak {
+          current_sum
+        }
+        (target_r, current_sum)
+      } else if cur_r > target_r {
+        let current_sum = for r = target_r + 1, current_sum = current_sum
+                              r <= cur_r
+                              r = r + 1 {
+          continue r + 1, current_sum - self.arr[r]
+        } nobreak {
+          current_sum
+        }
+        (target_r, current_sum)
+      } else {
+        (cur_r, current_sum)
       }
-      cur_r = target_r
-    }
-    if cur_r > target_r {
-      for r in (target_r + 1)..<=cur_r {
-        current_sum = current_sum - self.arr[r]
+      let (cur_l, current_sum) = if cur_l > target_l {
+        let current_sum = for l = target_l, current_sum = current_sum
+                              l <= cur_l - 1
+                              l = l + 1 {
+          continue l + 1, current_sum + self.arr[l]
+        } nobreak {
+          current_sum
+        }
+        (target_l, current_sum)
+      } else if cur_l < target_l {
+        let current_sum = for l = cur_l, current_sum = current_sum
+                              l <= target_l - 1
+                              l = l + 1 {
+          continue l + 1, current_sum - self.arr[l]
+        } nobreak {
+          current_sum
+        }
+        (target_l, current_sum)
+      } else {
+        (cur_l, current_sum)
       }
-      cur_r = target_r
+      answers[query.index] = current_sum
+      continue i + 1, current_sum, cur_l, cur_r
     }
-    if cur_l > target_l {
-      for l in target_l..<=(cur_l - 1) {
-        current_sum = current_sum + self.arr[l]
-      }
-      cur_l = target_l
-    }
-    if cur_l < target_l {
-      for l in cur_l..<=(target_l - 1) {
-        current_sum = current_sum - self.arr[l]
-      }
-      cur_l = target_l
-    }
-    answers[query.index] = current_sum
   } where {
     invariant: i >= 0 && i <= q,
     reasoning: (
@@ -425,59 +455,65 @@ fn MoRangeCount::answer_queries(
       a.0.right - b.0.right
     }
   })
-  let mut cur_l = 0
-  let mut cur_r = -1
   let answers = Array::make(q, 0)
-  for i = 0; i < q; i = i + 1 {
-    let (query, lo, hi) = mo_queries[i]
-    let target_l = query.left
-    let target_r = query.right
-    if cur_r < target_r {
-      for r in (cur_r + 1)..<=target_r {
-        let val = self.arr[r]
-        freq[val] = freq[val] + 1
+  let _ = for i = 0, cur_l = 0, cur_r = -1 {
+    if i >= q {
+      break ()
+    } else {
+      let (query, lo, hi) = mo_queries[i]
+      let target_l = query.left
+      let target_r = query.right
+      let cur_r = if cur_r < target_r {
+        for r in (cur_r + 1)..<=target_r {
+          let val = self.arr[r]
+          freq[val] = freq[val] + 1
+        }
+        target_r
+      } else if cur_r > target_r {
+        for r in (target_r + 1)..<=cur_r {
+          let val = self.arr[r]
+          freq[val] = freq[val] - 1
+        }
+        target_r
+      } else {
+        cur_r
       }
-      cur_r = target_r
-    }
-    if cur_r > target_r {
-      for r in (target_r + 1)..<=cur_r {
-        let val = self.arr[r]
-        freq[val] = freq[val] - 1
+      let cur_l = if cur_l > target_l {
+        for l in target_l..<=(cur_l - 1) {
+          let val = self.arr[l]
+          freq[val] = freq[val] + 1
+        }
+        target_l
+      } else if cur_l < target_l {
+        for l in cur_l..<=(target_l - 1) {
+          let val = self.arr[l]
+          freq[val] = freq[val] - 1
+        }
+        target_l
+      } else {
+        cur_l
       }
-      cur_r = target_r
-    }
-    if cur_l > target_l {
-      for l in target_l..<=(cur_l - 1) {
-        let val = self.arr[l]
-        freq[val] = freq[val] + 1
-      }
-      cur_l = target_l
-    }
-    if cur_l < target_l {
-      for l in cur_l..<=(target_l - 1) {
-        let val = self.arr[l]
-        freq[val] = freq[val] - 1
-      }
-      cur_l = target_l
-    }
 
-    // Count elements in [lo, hi]
-    // INVARIANT: freq[v] = count of v in current range [cur_l, cur_r]
-    let mut count = 0
-    for v = lo; v <= hi && v < 100001; v = v + 1 {
-      count = count + freq[v]
-    } where {
-      invariant: v >= lo && v <= hi && v < 100001,
-      reasoning: (
-        #|INVARIANT (range count):
-        #|count equals sum(freq[lo..v)) for the current range.
-        #|MAINTENANCE:
-        #|Add freq[v] and advance v, preserving the running sum.
-        #|TERMINATION:
-        #|At v = min(hi, 100000) + 1, count is the total in [lo..hi].
-      ),
+      // Count elements in [lo, hi]
+      // INVARIANT: freq[v] = count of v in current range [cur_l, cur_r]
+      let count = for v = lo, count = 0; v <= hi && v < 100001; v = v + 1 {
+        continue v + 1, count + freq[v]
+      } nobreak {
+        count
+      } where {
+        invariant: v >= lo && v <= hi && v < 100001,
+        reasoning: (
+          #|INVARIANT (range count):
+          #|count equals sum(freq[lo..v)) for the current range.
+          #|MAINTENANCE:
+          #|Add freq[v] and advance v, preserving the running sum.
+          #|TERMINATION:
+          #|At v = min(hi, 100000) + 1, count is the total in [lo..hi].
+        ),
+      }
+      answers[query.index] = count
+      continue i + 1, cur_l, cur_r
     }
-    answers[query.index] = count
   } where {
     invariant: i >= 0 && i <= q,
     reasoning: (
@@ -555,8 +591,6 @@ fn MoMode::answer_queries(
     return []
   }
   let freq : Array[Int] = Array::make(100001, 0)
-  let mut max_freq = 0
-  let mut mode = 0
   let mo_queries = Array::makei(q, i => {
     let (l, r) = queries[i]
     { left: l, right: r, index: i }
@@ -568,8 +602,6 @@ fn MoMode::answer_queries(
       a.right - b.right
     }
   })
-  let mut cur_l = 0
-  let mut cur_r = -1
   let answers = Array::make(q, (0, 0))
 
   // Helper to recalculate mode (needed after removals)
@@ -579,13 +611,16 @@ fn MoMode::answer_queries(
     cur_l : Int,
     cur_r : Int,
   ) -> (Int, Int) {
-    let mut max_f = 0
-    let mut m = 0
-    for i = cur_l; i <= cur_r; i = i + 1 {
-      let v = arr[i]
-      if freq[v] > max_f || (freq[v] == max_f && v < m) {
-        max_f = freq[v]
-        m = v
+    for i = cur_l, max_f = 0, m = 0 {
+      if i > cur_r {
+        break (m, max_f)
+      } else {
+        let v = arr[i]
+        if freq[v] > max_f || (freq[v] == max_f && v < m) {
+          continue i + 1, freq[v], v
+        } else {
+          continue i + 1, max_f, m
+        }
       }
     } where {
       invariant: i >= cur_l && i <= cur_r + 1,
@@ -612,55 +647,51 @@ fn MoMode::answer_queries(
         #|After i = cur_r + 1, max_f/m describe the mode for the full range.
       ),
     }
-    (m, max_f)
   }
 
-  for i = 0; i < q; i = i + 1 {
-    let query = mo_queries[i]
-    let target_l = query.left
-    let target_r = query.right
-    if cur_r < target_r {
-      for r in (cur_r + 1)..<=target_r {
-        let val = self.arr[r]
-        freq[val] = freq[val] + 1
-        if freq[val] > max_freq || (freq[val] == max_freq && val < mode) {
-          max_freq = freq[val]
-          mode = val
+  let _ = for i = 0, cur_l = 0, cur_r = -1 {
+    if i >= q {
+      break ()
+    } else {
+      let query = mo_queries[i]
+      let target_l = query.left
+      let target_r = query.right
+      let cur_r = if cur_r < target_r {
+        for r in (cur_r + 1)..<=target_r {
+          let val = self.arr[r]
+          freq[val] = freq[val] + 1
         }
-      }
-      cur_r = target_r
-    }
-    if cur_r > target_r {
-      for r in (target_r + 1)..<=cur_r {
-        let val = self.arr[r]
-        freq[val] = freq[val] - 1
-      }
-      cur_r = target_r
-    }
-    if cur_l > target_l {
-      for l in target_l..<=(cur_l - 1) {
-        let val = self.arr[l]
-        freq[val] = freq[val] + 1
-        if freq[val] > max_freq || (freq[val] == max_freq && val < mode) {
-          max_freq = freq[val]
-          mode = val
+        target_r
+      } else if cur_r > target_r {
+        for r in (target_r + 1)..<=cur_r {
+          let val = self.arr[r]
+          freq[val] = freq[val] - 1
         }
+        target_r
+      } else {
+        cur_r
       }
-      cur_l = target_l
-    }
-    if cur_l < target_l {
-      for l in cur_l..<=(target_l - 1) {
-        let val = self.arr[l]
-        freq[val] = freq[val] - 1
+      let cur_l = if cur_l > target_l {
+        for l in target_l..<=(cur_l - 1) {
+          let val = self.arr[l]
+          freq[val] = freq[val] + 1
+        }
+        target_l
+      } else if cur_l < target_l {
+        for l in cur_l..<=(target_l - 1) {
+          let val = self.arr[l]
+          freq[val] = freq[val] - 1
+        }
+        target_l
+      } else {
+        cur_l
       }
-      cur_l = target_l
-    }
 
-    // Recalculate mode after removals (can't efficiently track max decrease)
-    let (m, f) = recalc_mode(freq, self.arr, cur_l, cur_r)
-    max_freq = f
-    mode = m
-    answers[query.index] = (mode, max_freq)
+      // Recalculate mode after removals (can't efficiently track max decrease)
+      let (mode, max_freq) = recalc_mode(freq, self.arr, cur_l, cur_r)
+      answers[query.index] = (mode, max_freq)
+      continue i + 1, cur_l, cur_r
+    }
   } where {
     invariant: i >= 0 && i <= q,
     reasoning: (
@@ -684,17 +715,15 @@ fn MoMode::answer_queries(
       #|TERMINATION:
       #|After adjustments, the range matches the current query.
     ),
-    invariant: max_freq >= 0 &&
-    max_freq <= (if cur_r >= cur_l { cur_r - cur_l + 1 } else { 0 }),
+    invariant: freq.length() == 100001,
     reasoning: (
       #|INVARIANT 3 (State correctness):
       #|freq[v] counts occurrences in arr[cur_l..cur_r].
-      #|mode/max_freq represent the range's mode after the recalc step.
       #|
       #|MAINTENANCE:
-      #|- Expansions update freq and may update mode/max_freq optimistically.
-      #|- Shrinks can invalidate the mode, so we recompute with recalc_mode
-      #|  before storing the answer, restoring correctness.
+      #|- Each boundary move updates one value's frequency, preserving counts.
+      #|- recalc_mode then computes the exact mode for the adjusted range
+      #|  before the answer is stored.
       #|
       #|PROGRESS:
       #|- answers for mo_queries[0..i) are finalized in original order.
