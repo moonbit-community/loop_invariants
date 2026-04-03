@@ -18,8 +18,7 @@ pub fn total(Node) -> Int
 pub enum Node {
   Leaf(sum~ : Int, tag~ : Int)
   Branch(sum~ : Int, tag~ : Int, left~ : Node, right~ : Node)
-}
-pub impl Show for Node
+} derive(Show)
 
 // Type aliases
 

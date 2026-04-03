@@ -18,8 +18,7 @@ pub fn range_min(Node, Int, Int, Int, Int) -> Int
 pub enum Node {
   Leaf(min~ : Int, tag~ : Int)
   Branch(min~ : Int, tag~ : Int, left~ : Node, right~ : Node)
-}
-pub impl Show for Node
+} derive(Show)
 
 // Type aliases
 

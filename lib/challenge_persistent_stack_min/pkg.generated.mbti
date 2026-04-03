@@ -20,8 +20,7 @@ pub fn[T] size(MinStack[T]) -> Int
 pub enum MinStack[T] {
   Nil
   Cons(value~ : T, min~ : T, tail~ : MinStack[T])
-}
-pub impl[T : Show] Show for MinStack[T]
+} derive(Show)
 
 // Type aliases
 

@@ -4,14 +4,47 @@
 // ============================================================================
 
 ///|
+fn build_prefix_sum_fixed(
+  arr : FixedArray[Int],
+) -> FixedArray[Int] where {
+  proof_ensure: result => prefix_sum_ok(arr, result),
+} {
+  let n = arr.length()
+  let prefix = FixedArray::make(n + 1, 0)
+  for i = 0, sum = 0; i < n; {
+    let next = sum + arr[i]
+    prefix[i + 1] = next
+    continue i + 1, next
+  } nobreak {
+    prefix
+  } where {
+    proof_invariant: 0 <= i,
+    proof_invariant: i <= n,
+    proof_invariant: prefix_prefix_ok(arr, prefix, i, sum),
+    reasoning: (
+      #|This is the proof-carrying prefix-sum kernel.
+      #|
+      #|`sum` is the running prefix total for the first `i` elements, and
+      #|`prefix_prefix_ok` records the exact local equations that define a
+      #|prefix-sum array over the already processed region.
+      #|
+      #|Each step extends that relation by one position via
+      #|`prefix[i + 1] = prefix[i] + arr[i]`.
+    ),
+  }
+}
+
+///|
 /// Build prefix sums where prefix[i] = sum(arr[0..i)).
 pub fn build_prefix_sum(arr : ArrayView[Int]) -> Array[Int] {
-  let n = arr.length()
-  let prefix : Array[Int] = Array::make(n + 1, 0)
-  let mut sum = 0
+  let fixed = FixedArray::make(arr.length(), 0)
   for i, val in arr {
-    sum = sum + val
-    prefix[i + 1] = sum
+    fixed[i] = val
+  }
+  let prefix_fixed = build_prefix_sum_fixed(fixed)
+  let prefix : Array[Int] = Array::make(prefix_fixed.length(), 0)
+  for i in 0..<prefix_fixed.length() {
+    prefix[i] = prefix_fixed[i]
   }
   prefix
 }

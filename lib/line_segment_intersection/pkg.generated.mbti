@@ -10,9 +10,7 @@ pub fn segments_intersect(Point, Point, Point, Point) -> Bool
 pub(all) struct Point {
   x : Int64
   y : Int64
-}
-pub impl Eq for Point
-pub impl Show for Point
+} derive(Eq, Show)
 
 // Type aliases
 

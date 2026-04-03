@@ -17,14 +17,12 @@ pub fn[T] size(Heap[T]) -> Int
 // Errors
 
 // Types and methods
-type ChildList[T]
-pub impl[T : Show] Show for ChildList[T]
+type ChildList[T] derive(Show)
 
 pub enum Heap[T] {
   Empty
   Node(value~ : T, children~ : ChildList[T])
-}
-pub impl[T : Show] Show for Heap[T]
+} derive(Show)
 
 // Type aliases
 

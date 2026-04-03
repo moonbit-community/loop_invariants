@@ -16,14 +16,11 @@ pub fn union(DSU, Int, Int) -> DSU
 pub struct DSU {
   parent : PArray
   size : PArray
-}
-pub impl Show for DSU
+} derive(Show)
 
-type Node
-pub impl Show for Node
+type Node derive(Show)
 
-type PArray
-pub impl Show for PArray
+type PArray derive(Show)
 
 // Type aliases
 

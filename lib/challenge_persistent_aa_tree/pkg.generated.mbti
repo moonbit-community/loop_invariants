@@ -20,8 +20,7 @@ pub fn[T] size(Aa[T]) -> Int
 pub enum Aa[T] {
   Empty
   Node(key~ : T, level~ : Int, left~ : Aa[T], right~ : Aa[T])
-}
-pub impl[T : Show] Show for Aa[T]
+} derive(Show)
 
 // Type aliases
 

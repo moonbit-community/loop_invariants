@@ -17,18 +17,15 @@ pub fn range_sum(RangeFenwick, Int, Int) -> Int
 // Errors
 
 // Types and methods
-type Fenwick
-pub impl Show for Fenwick
+type Fenwick derive(Show)
 
-type Node
-pub impl Show for Node
+type Node derive(Show)
 
 pub struct RangeFenwick {
   bit1 : Fenwick
   bit2 : Fenwick
   n : Int
-}
-pub impl Show for RangeFenwick
+} derive(Show)
 
 // Type aliases
 

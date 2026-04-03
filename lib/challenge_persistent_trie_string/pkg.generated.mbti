@@ -14,8 +14,7 @@ pub fn empty() -> Node
 pub struct Node {
   end : Bool
   children : Array[Node?]
-}
-pub impl Show for Node
+} derive(Show)
 
 // Type aliases
 

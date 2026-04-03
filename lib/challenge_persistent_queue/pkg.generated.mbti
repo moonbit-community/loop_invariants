@@ -18,11 +18,9 @@ pub fn[T] size(Queue[T]) -> Int
 pub struct Queue[T] {
   front : Stack[T]
   back : Stack[T]
-}
-pub impl[T : Show] Show for Queue[T]
+} derive(Show)
 
-type Stack[T]
-pub impl[T : Show] Show for Stack[T]
+type Stack[T] derive(Show)
 
 // Type aliases
 

@@ -41,10 +41,35 @@ This worked well for:
 
 - [`lib/challenge_coordinate_compress`](./lib/challenge_coordinate_compress)
 - [`lib/challenge_meet_in_middle`](./lib/challenge_meet_in_middle)
+- [`lib/challenge_lis_nlogn`](./lib/challenge_lis_nlogn)
+- [`lib/challenge_ternary_search`](./lib/challenge_ternary_search)
+- [`lib/challenge_prefix_sum`](./lib/challenge_prefix_sum)
+- [`lib/challenge_binary_search_answer`](./lib/challenge_binary_search_answer)
 
 In both cases, the package stayed structurally the same, but the binary-search
 helper was rewritten as a proof-carrying `FixedArray` function and the runtime
 array was copied into a `FixedArray` before the proved call.
+
+After the next round of experiments, there is a better version of that pattern:
+
+- if the algorithm already maintains an internal table or small search window,
+  it is better to keep that state in a private `FixedArray` buffer and prove a
+  helper over that buffer directly
+
+This preserves complexity much better than repeatedly copying runtime arrays
+into new `FixedArray` values just to cross the proof boundary.
+
+Another useful result from this repo:
+
+- exact array-shape postconditions are possible without recursive logic
+  functions if the specification is written as local equations
+
+For example, prefix sums can be specified as:
+
+- `prefix[0] == 0`
+- `prefix[i + 1] == prefix[i] + arr[i]`
+
+rather than trying to define a separate recursive logical summation function.
 
 ## Highest-priority improvements
 
@@ -74,6 +99,8 @@ More specifically from this repo:
 - contracted functions whose bodies directly manipulate `ArrayView` also ran
   into unsupported-expression restrictions
 - `FixedArray` remains the practical proof boundary today
+- prefix-length reasoning over `FixedArray` does work well
+- witness-index proofs over `FixedArray` also work well
 
 Better logical support for:
 
@@ -147,6 +174,26 @@ for lo = 0, hi = n; lo < hi; {
 
 Supporting both forms equally well would lower migration cost a lot.
 
+Another concrete issue from this repo: when a loop updates multiple state
+variables with `continue`, proof generation seems much happier if array reads
+are first bound to locals.
+
+For example, this shape caused hard proof obligations:
+
+```moonbit
+continue i + 1, used + 1, weights[i]
+```
+
+while this shape proved cleanly:
+
+```moonbit
+let w = weights[i]
+continue i + 1, used + 1, w
+```
+
+The likely issue is not the algorithm but how tuple-style `continue` updates are
+lowered for proof obligations.
+
 ### 5. Support mixed-mode verification inside normal packages
 
 The ideal workflow is:
@@ -214,11 +261,13 @@ The prover would benefit from built-in support or canonical examples for:
 
 - binary search
 - lower / upper bound
+- lower / upper bound over a prefix `arr[0 .. len)`
 - prefix scans
 - accumulator bounds
 - witness-index proofs
 - monotonic stack patterns
 - queue / BFS invariants
+- local-equation specs for array construction
 
 These patterns appear repeatedly in this repo.
 

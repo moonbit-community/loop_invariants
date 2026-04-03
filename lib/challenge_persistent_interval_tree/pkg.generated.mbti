@@ -18,8 +18,7 @@ pub fn size(Tree) -> Int
 pub enum Tree {
   Empty
   Node(start~ : Int, end~ : Int, max_end~ : Int, left~ : Tree, right~ : Tree)
-}
-pub impl Show for Tree
+} derive(Show)
 
 // Type aliases
 

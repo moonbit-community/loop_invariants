@@ -15,17 +15,14 @@ pub fn[T] size(Tree[T]) -> Int
 // Errors
 
 // Types and methods
-type BNode[T]
-pub impl[T : Show] Show for BNode[T]
+type BNode[T] derive(Show)
 
-type InsertResult[T]
-pub impl[T : Show] Show for InsertResult[T]
+type InsertResult[T] derive(Show)
 
 pub enum Tree[T] {
   Empty
   Node(node~ : BNode[T])
-}
-pub impl[T : Show] Show for Tree[T]
+} derive(Show)
 
 // Type aliases
 

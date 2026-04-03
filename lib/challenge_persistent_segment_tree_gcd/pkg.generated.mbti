@@ -20,8 +20,7 @@ pub fn set_value(Node, Int, Int, Int, Int) -> Node
 pub enum Node {
   Leaf(g~ : Int)
   Branch(g~ : Int, left~ : Node, right~ : Node)
-}
-pub impl Show for Node
+} derive(Show)
 
 // Type aliases
 

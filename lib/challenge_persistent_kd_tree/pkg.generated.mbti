@@ -20,15 +20,12 @@ pub fn size(Kd) -> Int
 pub enum Kd {
   Empty
   Node(point~ : Point, axis~ : Int, left~ : Kd, right~ : Kd)
-}
-pub impl Show for Kd
+} derive(Show)
 
 pub(all) struct Point {
   x : Int
   y : Int
-}
-pub impl Eq for Point
-pub impl Show for Point
+} derive(Eq, Show)
 
 // Type aliases
 

@@ -15,15 +15,13 @@ pub fn[T] size(Tree[T]) -> Int
 // Errors
 
 // Types and methods
-type InsertResult[T]
-pub impl[T : Show] Show for InsertResult[T]
+type InsertResult[T] derive(Show)
 
 pub enum Tree[T] {
   Empty
   Two(key~ : T, left~ : Tree[T], right~ : Tree[T])
   Three(key1~ : T, key2~ : T, left~ : Tree[T], middle~ : Tree[T], right~ : Tree[T])
-}
-pub impl[T : Show] Show for Tree[T]
+} derive(Show)
 
 // Type aliases
 

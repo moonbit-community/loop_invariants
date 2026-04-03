@@ -20,11 +20,9 @@ pub fn set(Bitset, Int, Int) -> Bitset
 pub struct Bitset {
   root : Node
   n : Int
-}
-pub impl Show for Bitset
+} derive(Show)
 
-type Node
-pub impl Show for Node
+type Node derive(Show)
 
 // Type aliases
 

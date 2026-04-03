@@ -10,8 +10,7 @@ pub fn dial_shortest_paths(Graph, Int) -> Array[Int]
 pub struct Edge {
   to : Int
   weight : Int
-}
-pub impl Show for Edge
+} derive(Show)
 
 pub struct Graph {
   n : Int

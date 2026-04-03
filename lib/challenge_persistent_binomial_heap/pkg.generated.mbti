@@ -17,11 +17,9 @@ pub fn[T : Compare] merge(Heap[T], Heap[T]) -> Heap[T]
 // Types and methods
 pub struct Heap[T] {
   trees : Array[Tree[T]?]
-}
-pub impl[T : Show] Show for Heap[T]
+} derive(Show)
 
-type Tree[T]
-pub impl[T : Show] Show for Tree[T]
+type Tree[T] derive(Show)
 
 // Type aliases
 

@@ -11,13 +11,11 @@ pub fn max_flow(FlowGraph, Int, Int) -> Int
 // Errors
 
 // Types and methods
-type Edge
-pub impl Show for Edge
+type Edge derive(Show)
 
 pub struct FlowGraph {
   adj : Array[Array[Edge]]
-}
-pub impl Show for FlowGraph
+} derive(Show)
 
 // Type aliases
 

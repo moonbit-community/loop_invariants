@@ -22,8 +22,7 @@ pub fn[T : Compare] split(Treap[T], T) -> (Treap[T], Treap[T])
 pub enum Treap[T] {
   Empty
   Node(key~ : T, priority~ : Int, size~ : Int, left~ : Treap[T], right~ : Treap[T])
-}
-pub impl[T : Show] Show for Treap[T]
+} derive(Show)
 
 // Type aliases
 

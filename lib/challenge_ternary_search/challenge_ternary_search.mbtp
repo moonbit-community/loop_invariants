@@ -1,0 +1,17 @@
+predicate nonempty(arr : FixedArray[Int]) {
+  0 < arr.length()
+}
+
+predicate in_bounds(arr : FixedArray[Int], i : Int) {
+  0 <= i && i < arr.length()
+}
+
+predicate min_in_prefix(arr : FixedArray[Int], best : Int, end_ : Int) {
+  in_bounds(arr, best) && best < end_ && end_ <= arr.length() &&
+  (∀ i : Int, ((0 <= i) && (i < end_)) → arr[best] <= arr[i])
+}
+
+predicate is_min_index(arr : FixedArray[Int], result : Int) {
+  in_bounds(arr, result) &&
+  (∀ i : Int, in_bounds(arr, i) → arr[result] <= arr[i])
+}

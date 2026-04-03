@@ -24,11 +24,9 @@ pub fn[T] size(Deque[T]) -> Int
 pub struct Deque[T] {
   front : Stack[T]
   back : Stack[T]
-}
-pub impl[T : Show] Show for Deque[T]
+} derive(Show)
 
-type Stack[T]
-pub impl[T : Show] Show for Stack[T]
+type Stack[T] derive(Show)
 
 // Type aliases
 

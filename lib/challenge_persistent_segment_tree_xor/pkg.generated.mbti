@@ -18,8 +18,7 @@ pub fn xor_value(Node) -> Int
 pub enum Node {
   Leaf(xor~ : Int)
   Branch(xor~ : Int, left~ : Node, right~ : Node)
-}
-pub impl Show for Node
+} derive(Show)
 
 // Type aliases
 

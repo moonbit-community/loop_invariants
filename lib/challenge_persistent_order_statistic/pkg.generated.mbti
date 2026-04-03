@@ -13,15 +13,13 @@ pub fn size(OrderStat) -> Int
 // Errors
 
 // Types and methods
-type Node
-pub impl Show for Node
+type Node derive(Show)
 
 pub struct OrderStat {
   root : Node
   lo : Int
   hi : Int
-}
-pub impl Show for OrderStat
+} derive(Show)
 
 // Type aliases
 

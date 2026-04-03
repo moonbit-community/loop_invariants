@@ -11,16 +11,12 @@ pub enum Location {
   Inside
   Outside
   Boundary
-}
-pub impl Eq for Location
-pub impl Show for Location
+} derive(Eq, Show)
 
 pub(all) struct Point {
   x : Int64
   y : Int64
-}
-pub impl Eq for Point
-pub impl Show for Point
+} derive(Eq, Show)
 
 // Type aliases
 

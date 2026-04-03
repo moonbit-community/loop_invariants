@@ -14,8 +14,7 @@ pub(all) struct SCCResult {
   component : Array[Int]
   scc_sizes : Array[Int]
   scc_adj : Array[Array[Int]]
-}
-pub impl Show for SCCResult
+} derive(Show)
 
 pub(all) struct TwoSAT {
   n : Int
