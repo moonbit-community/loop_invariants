@@ -39,7 +39,39 @@
 // 4. Splay operations maintain BST property on depth
 
 ///|
-/// Link-Cut Tree node
+/// A single node in the Link-Cut Tree data structure.
+///
+/// Each node participates in two overlapping tree structures simultaneously:
+///
+/// 1. **Auxiliary splay tree** — the BST that stores one preferred path.
+///    The fields `parent`, `left`, and `right` describe this structure.
+///    In-order traversal of the splay tree gives the path nodes ordered
+///    from shallowest (root side) to deepest.
+///
+/// 2. **Represented tree** — the actual forest the caller cares about.
+///    When a node is the root of its splay tree (no `parent` inside the splay),
+///    `path_parent` points to the node in the *next* splay tree that sits
+///    immediately above the top of this preferred path in the represented tree.
+///
+/// Layout for a preferred path [1 - 2 - 4] with 2 as the splay root:
+///
+/// ```
+///         2  (splay root, path_parent -> nil or upper splay tree)
+///        / \
+///       1   4
+/// ```
+///
+/// Fields:
+/// - `parent` — parent in the splay tree; -1 if this node is the splay root
+/// - `left` — left child in the splay tree (shallower nodes in represented tree)
+/// - `right` — right child in the splay tree (deeper nodes in represented tree)
+/// - `path_parent` — the represented-tree parent of the *top* of this splay
+///   tree; only meaningful when `parent == -1` (i.e., this node is splay root)
+/// - `flip` — lazy reversal flag; when `true`, the left/right children of this
+///   node (and their subtrees) must be swapped before being read
+/// - `value` — caller-supplied value stored at this node
+/// - `path_sum` — sum of `value` for all nodes in this node's splay subtree;
+///   maintained by `update` after every structural change
 priv struct LCTNode {
   mut parent : Int // Parent in splay tree (-1 if root of splay tree)
   mut left : Int // Left child in splay tree
@@ -51,12 +83,30 @@ priv struct LCTNode {
 }
 
 ///|
-/// Link-Cut Tree forest
+/// A Link-Cut Tree that maintains a dynamic forest of up to `n` nodes.
+///
+/// The nodes are numbered 0 to n-1. Initially every node is an isolated tree
+/// (no edges). Edges can be added with `link` and removed with `cut`.
+///
+/// All operations run in **O(log n) amortized** time via the access lemma:
+/// the total number of preferred-path changes over any m operations on an
+/// n-node forest is O((m + n) log n).
+///
+/// This type is `priv`; it is used internally by other packages that expose
+/// higher-level graph algorithms.
 priv struct LinkCutTree {
   nodes : Array[LCTNode]
 }
 
 ///|
+/// Create a new Link-Cut Tree with `n` isolated nodes (0 to n-1).
+///
+/// Each node starts with `value = 0`, no edges, and no preferred paths.
+///
+/// Parameters:
+/// - `n` — the number of nodes; must be >= 0
+///
+/// Returns a `LinkCutTree` with `n` nodes all disconnected from each other.
 fn LinkCutTree::new(n : Int) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
   for _ in 0..<n {
@@ -74,7 +124,18 @@ fn LinkCutTree::new(n : Int) -> LinkCutTree {
 }
 
 ///|
-/// Check if node is root of its splay tree
+/// Return `true` when `v` is the root of its auxiliary splay tree.
+///
+/// A node is the splay root when it has no `parent` pointer inside the splay
+/// tree. Note that `parent == -1` alone is sufficient, but a node can also be
+/// a splay root when its parent exists yet does not recognise `v` as either
+/// child — that happens when the parent is in a *different* splay tree (i.e.,
+/// the `parent` field is actually carrying a path-parent relationship encoded
+/// via the splay structure).
+///
+/// Specifically, `v` is the splay root iff:
+/// - `parent < 0`, OR
+/// - `nodes[parent].left != v` AND `nodes[parent].right != v`
 fn LinkCutTree::is_splay_root(self : LinkCutTree, v : Int) -> Bool {
   let node = self.nodes[v]
   if node.parent < 0 {
@@ -85,7 +146,19 @@ fn LinkCutTree::is_splay_root(self : LinkCutTree, v : Int) -> Bool {
 }
 
 ///|
-/// Push down lazy flip flag
+/// Push the lazy `flip` flag of `v` one level down to its children.
+///
+/// The `flip` flag means "the left and right subtrees of `v` have been
+/// reversed but the swap has not been applied yet". Before reading either
+/// child of `v`, call `push_down(v)` to materialise the reversal.
+///
+/// After `push_down(v)`:
+/// - `nodes[v].flip` is `false`
+/// - If `v` had a left child, that child's `flip` flag is toggled
+/// - If `v` had a right child, that child's `flip` flag is toggled
+/// - `v`'s `left` and `right` pointers are physically swapped
+///
+/// This is the standard lazy-propagation mechanism used by `make_root`.
 fn LinkCutTree::push_down(self : LinkCutTree, v : Int) -> Unit {
   if v < 0 {
     return
@@ -109,7 +182,14 @@ fn LinkCutTree::push_down(self : LinkCutTree, v : Int) -> Unit {
 }
 
 ///|
-/// Update node's path_sum from children
+/// Recompute `v.path_sum` from `v.value` and its children's `path_sum`.
+///
+/// Must be called on `v` after any structural change to `v`'s splay subtree
+/// (rotations, child pointer updates). Children must be up-to-date before
+/// calling `update(v)`.
+///
+/// Invariant maintained: for every node v,
+///   `nodes[v].path_sum == sum of nodes[x].value for all x in v's splay subtree`
 fn LinkCutTree::update(self : LinkCutTree, v : Int) -> Unit {
   if v < 0 {
     return
@@ -122,8 +202,35 @@ fn LinkCutTree::update(self : LinkCutTree, v : Int) -> Unit {
 }
 
 ///|
-/// Rotate node v up (zig operation in splay tree)
-/// REASONING: Standard tree rotation preserving BST property
+/// Perform a single splay-tree rotation that moves `v` one level up toward
+/// the splay root (the "zig" step).
+///
+/// Let p = parent of v, g = parent of p.
+///
+/// If v is the left child of p (right rotation around p):
+/// ```
+///       p              v
+///      / \            / \
+///     v   R    -->   L   p
+///    / \                / \
+///   L   M              M   R
+/// ```
+/// If v is the right child of p (left rotation around p):
+/// ```
+///     p                  v
+///    / \                / \
+///   L   v      -->     p   R
+///      / \            / \
+///     M   R          L   M
+/// ```
+///
+/// After the rotation:
+/// - v takes p's position in the tree
+/// - `path_parent` is transferred from p to v (v inherits the connection to
+///   the represented tree segment above p's old splay tree)
+/// - `update` is called on p first, then v, to keep `path_sum` correct
+///
+/// Precondition: `v` must not be a splay-tree root (i.e., it has a parent).
 fn LinkCutTree::rotate(self : LinkCutTree, v : Int) -> Unit {
   let p = self.nodes[v].parent
   if p < 0 {
@@ -179,8 +286,24 @@ fn LinkCutTree::rotate(self : LinkCutTree, v : Int) -> Unit {
 }
 
 ///|
-/// Splay node v to the root of its splay tree
-/// REASONING: Standard splay operation with zig, zig-zig, zig-zag cases
+/// Splay `v` to the root of its auxiliary splay tree.
+///
+/// Uses the standard three-case splay strategy to achieve amortized O(log n):
+///
+/// - **Zig** — v's parent p is the splay root: single rotation of v.
+/// - **Zig-zig** — v and p are both left children (or both right): rotate p
+///   first, then rotate v. This "straightens" the path and pays for future
+///   operations.
+/// - **Zig-zag** — v and p are on opposite sides: rotate v twice.
+///
+/// Before splaying, the entire ancestor path from the splay root down to v is
+/// traversed and `push_down` is called top-to-bottom so that lazy `flip` flags
+/// are materialised before any rotation reads child pointers.
+///
+/// After `splay(v)`:
+/// - `v` is the root of its splay tree (`is_splay_root(v)` returns `true`)
+/// - The BST property (depth order) is preserved
+/// - `path_sum` is correct for every node on the path that was rotated
 fn LinkCutTree::splay(self : LinkCutTree, v : Int) -> Unit {
   // First push down from root to v
   let path : Array[Int] = []
@@ -223,10 +346,25 @@ fn LinkCutTree::splay(self : LinkCutTree, v : Int) -> Unit {
 }
 
 ///|
-/// Access operation: make path from v to root a preferred path
-/// Returns the last node accessed (useful for LCA)
-/// REASONING: We splay v, then walk up path-parent pointers,
-/// at each step making the upward edge preferred
+/// Make the path from `v` to the root of its represented tree the preferred
+/// path, and splay `v` to the root of the resulting auxiliary splay tree.
+///
+/// Returns the last node that was splayed during the walk up through
+/// path-parent pointers. This return value is the **LCA** of `v` and whatever
+/// node was accessed most recently before this call (used by `lca`).
+///
+/// Algorithm:
+/// 1. Splay `v` within its current splay tree and cut its right child
+///    (detaching any preferred path that continues below `v`).
+/// 2. Walk up via `path_parent` pointers. At each step:
+///    a. Splay the node `w` pointed to by `path_parent`.
+///    b. Cut `w`'s old right child (the previously preferred segment below w).
+///    c. Attach v's splay tree as `w`'s right child (new preferred edge).
+///    d. Splay `v` again to collect the extended path into one splay tree.
+/// 3. Stop when `path_parent` is -1 (we have reached the root's splay tree).
+///
+/// Each call to `access` does O(number of preferred-path changes) rotations.
+/// The amortized cost is O(log n) by the access lemma.
 fn LinkCutTree::access(self : LinkCutTree, v : Int) -> Int {
   self.splay(v)
 
@@ -261,7 +399,15 @@ fn LinkCutTree::access(self : LinkCutTree, v : Int) -> Int {
 }
 
 ///|
-/// Find root of the tree containing v
+/// Find and return the root of the represented tree that contains node `v`.
+///
+/// After `access(v)`, the splay tree holds exactly the path from the
+/// represented root down to `v`. The represented root is the shallowest node
+/// on that path, which is the **leftmost** node in the splay tree (smallest
+/// depth key). We walk left until no left child exists, then splay that node
+/// to the splay-tree root for amortized efficiency.
+///
+/// This operation has amortized O(log n) time.
 fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
   let _ = self.access(v)
 
@@ -280,7 +426,19 @@ fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
 }
 
 ///|
-/// Make v the root of its tree (path reversal)
+/// Reroot the represented tree at node `v`, making `v` the new tree root.
+///
+/// Internally, `access(v)` brings the path root-to-v into one splay tree.
+/// Setting `flip = true` on `v` (the splay root) lazily reverses the
+/// in-order sequence of that splay tree, which corresponds to reversing
+/// the direction of the root-to-v path so that v becomes the root and the
+/// old root becomes a leaf.
+///
+/// `push_down(v)` is called immediately to apply the flip to `v`'s direct
+/// children before any other operation reads them.
+///
+/// After `make_root(v)`, `find_root(w)` returns `v` for every node `w` in
+/// the same tree.
 fn LinkCutTree::make_root(self : LinkCutTree, v : Int) -> Unit {
   let _ = self.access(v)
   // Flip the path (reverse it)
@@ -289,8 +447,20 @@ fn LinkCutTree::make_root(self : LinkCutTree, v : Int) -> Unit {
 }
 
 ///|
-/// Link: make v a child of w in the forest
-/// Precondition: v and w are in different trees, v is root of its tree
+/// Add an edge between nodes `v` and `w`, merging their trees.
+///
+/// Returns `true` if the edge was added successfully.
+/// Returns `false` if `v` and `w` are already in the same tree (adding the
+/// edge would create a cycle).
+///
+/// Steps:
+/// 1. `make_root(v)` — make `v` the root of its tree.
+/// 2. `find_root(w)` — if the result equals `v`, they are already connected.
+/// 3. `access(w)` — bring `w` to the splay root of its path.
+/// 4. Attach `v` as `w`'s right (deeper) child in the splay tree, creating
+///    the represented-tree edge w -> v.
+///
+/// Precondition: both `v` and `w` must be valid node indices in `[0, n)`.
 fn LinkCutTree::link(self : LinkCutTree, v : Int, w : Int) -> Bool {
   // Make v root of its tree
   self.make_root(v)
@@ -311,7 +481,17 @@ fn LinkCutTree::link(self : LinkCutTree, v : Int, w : Int) -> Bool {
 }
 
 ///|
-/// Cut: remove edge between v and its parent in represented tree
+/// Remove the edge between `v` and the parent of `v` in the represented tree.
+///
+/// This is the "cut from parent" variant. It does not require knowing which
+/// node is the parent: after `access(v)`, `v`'s left child in the splay tree
+/// represents all ancestors of `v` on the root-to-v path. Detaching the left
+/// subtree removes exactly the edge between `v` and its immediate parent in
+/// the represented tree.
+///
+/// If `v` is already a tree root (no parent edge), this is a no-op.
+///
+/// Precondition: `v` must be a valid node index in `[0, n)`.
 fn LinkCutTree::cut_parent(self : LinkCutTree, v : Int) -> Unit {
   let _ = self.access(v)
 
@@ -324,7 +504,23 @@ fn LinkCutTree::cut_parent(self : LinkCutTree, v : Int) -> Unit {
 }
 
 ///|
-/// Cut edge between v and w (if exists)
+/// Remove the edge between nodes `v` and `w`.
+///
+/// Returns `true` if the edge existed and was removed.
+/// Returns `false` if no direct edge exists between `v` and `w`.
+///
+/// Steps:
+/// 1. `make_root(v)` — v becomes the root of its tree; the v-w edge now
+///    points upward from w to v (i.e., w is a child of v in the rooted tree).
+///    Wait — actually after make_root(v), w's parent chain goes up to v.
+///    After `access(w)`, the splay tree is [v, ..., w] and v must be w's
+///    immediate left child (adjacent in the represented tree) for the edge
+///    to exist without any intermediate node between them.
+/// 2. Verify: `nodes[w].left == v` and `nodes[v].right < 0` (no node between
+///    v and w in the splay tree).
+/// 3. Detach v from w's left pointer.
+///
+/// Precondition: both `v` and `w` must be valid node indices in `[0, n)`.
 fn LinkCutTree::cut(self : LinkCutTree, v : Int, w : Int) -> Bool {
   self.make_root(v)
   let _ = self.access(w)
@@ -340,7 +536,18 @@ fn LinkCutTree::cut(self : LinkCutTree, v : Int, w : Int) -> Bool {
 }
 
 ///|
-/// Check if v and w are in the same tree
+/// Return `true` when `v` and `w` are in the same represented tree.
+///
+/// Algorithm: `access(v)` brings v's path to the splay root. Then `access(w)`
+/// walks up from w. If v and w are connected, the walk from w will eventually
+/// encounter v's splay tree, leaving v with a non-negative `parent` or
+/// `path_parent` after the second access.
+///
+/// The check `nodes[v].path_parent >= 0 || nodes[v].parent >= 0` is true
+/// exactly when v ended up inside the splay tree that was built during
+/// `access(w)`, meaning v and w share a common root.
+///
+/// Time: O(log n) amortized.
 fn LinkCutTree::connected(self : LinkCutTree, v : Int, w : Int) -> Bool {
   if v == w {
     return true
@@ -352,8 +559,25 @@ fn LinkCutTree::connected(self : LinkCutTree, v : Int, w : Int) -> Bool {
 }
 
 ///|
-/// Find LCA of v and w in represented tree
-/// Returns -1 if they're in different trees
+/// Find the lowest common ancestor (LCA) of `v` and `w` in the represented
+/// tree with respect to a **fixed root**.
+///
+/// The caller must have established a fixed root via `make_root` before using
+/// this function. The LCA result depends on which node is the current root.
+///
+/// Returns the LCA node index, or -1 if `v` and `w` are in different trees.
+///
+/// Algorithm:
+/// 1. `access(v)` — the preferred path is now root-to-v.
+/// 2. `access(w)` — as this walk proceeds up from w, at some point it will
+///    enter the splay tree built in step 1. The **last node that was splayed**
+///    in step 1's splay tree before the two paths merged is the LCA.
+///    `access` returns exactly this node.
+///
+/// The "last node splayed" is the LCA because it is the deepest node that lies
+/// on both the root-to-v path and the root-to-w path.
+///
+/// Time: O(log n) amortized.
 fn LinkCutTree::lca(self : LinkCutTree, v : Int, w : Int) -> Int {
   if v == w {
     return v
@@ -370,7 +594,15 @@ fn LinkCutTree::lca(self : LinkCutTree, v : Int, w : Int) -> Int {
 }
 
 ///|
-/// Set value at node v
+/// Set the value stored at node `v` to `value` and update path aggregates.
+///
+/// After this call, `path_sum` on v and all ancestors in v's splay tree
+/// reflects the new value. Any subsequent `path_sum_to_root` query that
+/// includes `v` will see the updated value.
+///
+/// Parameters:
+/// - `v` — node index in `[0, n)`
+/// - `value` — new `Int64` value to store at node `v`
 fn LinkCutTree::set_value(self : LinkCutTree, v : Int, value : Int64) -> Unit {
   let _ = self.access(v)
   self.nodes[v].value = value
@@ -378,19 +610,42 @@ fn LinkCutTree::set_value(self : LinkCutTree, v : Int, value : Int64) -> Unit {
 }
 
 ///|
-/// Get value at node v
+/// Return the value stored at node `v`.
+///
+/// This is a direct read of `nodes[v].value` and does not require any splay
+/// operations.
+///
+/// Parameters:
+/// - `v` — node index in `[0, n)`
 fn LinkCutTree::get_value(self : LinkCutTree, v : Int) -> Int64 {
   self.nodes[v].value
 }
 
 ///|
-/// Query path sum from v to root of its tree
+/// Return the sum of values on the path from node `v` to the root of its
+/// represented tree (inclusive of both endpoints).
+///
+/// After `access(v)`, v is the splay root and the splay tree holds exactly
+/// the root-to-v path. Therefore `nodes[v].path_sum` equals the desired sum.
+///
+/// To query the sum of values on a path between two arbitrary nodes u and w:
+/// ```
+/// make_root(u)
+/// access(w)
+/// answer = nodes[w].path_sum
+/// ```
+///
+/// Parameters:
+/// - `v` — node index in `[0, n)`
+///
+/// Returns: `Int64` sum of `value` fields along the path from v to the root.
 fn LinkCutTree::path_sum_to_root(self : LinkCutTree, v : Int) -> Int64 {
   let _ = self.access(v)
   self.nodes[v].path_sum
 }
 
 ///|
+/// Return the number of nodes in this Link-Cut Tree.
 fn LinkCutTree::size(self : LinkCutTree) -> Int {
   self.nodes.length()
 }

@@ -6,6 +6,12 @@
 // ============================================================================
 
 ///|
+/// A single node in a prefix trie.
+///
+/// Each node stores up to 26 child pointers (one per lowercase ASCII letter),
+/// a flag marking whether any inserted word ends here, the count of words
+/// ending exactly at this node, and a count of all words whose prefix passes
+/// through this node.
 priv struct TrieNode {
   children : Array[TrieNode?]
   mut is_end : Bool
@@ -14,22 +20,39 @@ priv struct TrieNode {
 }
 
 ///|
+/// Create a fresh `TrieNode` with no children and zero counts.
 fn TrieNode::new() -> TrieNode {
   { children: Array::make(26, None), is_end: false, count: 0, prefix_count: 0 }
 }
 
 ///|
+/// A **Prefix Trie** (digital tree) over lowercase ASCII strings.
+///
+/// Supports O(|word|) insert, exact-word search, prefix existence check, and
+/// prefix count query.  Each node tracks both the number of words ending
+/// there and the number of words whose prefix passes through it.
 priv struct Trie {
   root : TrieNode
 }
 
 ///|
+/// Create an empty `Trie`.
 fn Trie::new() -> Trie {
   { root: TrieNode::new() }
 }
 
 ///|
-/// Insert a word into the trie
+/// Insert `word` into the trie.
+///
+/// Creates missing nodes along the path and increments `prefix_count` for
+/// every node visited (including the terminal node).  The terminal node is
+/// marked `is_end = true` and its `count` is incremented.
+///
+/// Duplicate insertions are counted separately: inserting the same word
+/// twice results in `count = 2` at the terminal node.
+///
+/// # Parameters
+/// - `word` — a string containing only lowercase ASCII letters (`'a'`..`'z'`)
 fn Trie::insert(self : Trie, word : String) -> Unit {
   let chars = word.to_array()
   let n = chars.length()
@@ -67,7 +90,14 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
 }
 
 ///|
-/// Search for exact word in trie
+/// Return `true` if `word` was previously inserted into the trie.
+///
+/// Follows the path spelled by `word` from the root.  Returns `false` as
+/// soon as a missing edge is encountered; returns `node.is_end` at the
+/// terminal node.
+///
+/// # Parameters
+/// - `word` — the exact word to look up
 fn Trie::search(self : Trie, word : String) -> Bool {
   let chars = word.to_array()
   let n = chars.length()
@@ -95,7 +125,13 @@ fn Trie::search(self : Trie, word : String) -> Bool {
 }
 
 ///|
-/// Check if any word starts with given prefix
+/// Return `true` if any word in the trie starts with `prefix`.
+///
+/// Unlike `search`, this does **not** require `is_end` at the terminal node —
+/// reaching the end of the prefix path is sufficient.
+///
+/// # Parameters
+/// - `prefix` — the prefix to check (may be a complete word)
 fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
   let chars = prefix.to_array()
   let n = chars.length()
@@ -122,7 +158,14 @@ fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
 }
 
 ///|
-/// Count words with given prefix
+/// Return the number of inserted words that start with `prefix`.
+///
+/// This is the `prefix_count` stored at the node reached by following the
+/// path for `prefix`.  Duplicate insertions are counted individually.
+/// Returns `0` if the prefix does not exist in the trie.
+///
+/// # Parameters
+/// - `prefix` — the prefix to count matches for
 fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
   let chars = prefix.to_array()
   let n = chars.length()
@@ -154,6 +197,15 @@ fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
 // ============================================================================
 
 ///|
+/// A node in the Aho-Corasick automaton.
+///
+/// - `children` — transition table indexed by character (`0` = `'a'`, ...,
+///   `25` = `'z'`); `-1` means no edge.
+/// - `fail` — failure (suffix) link: the longest proper suffix of the current
+///   state's label that is also a prefix of some pattern.
+/// - `output` — indices of patterns that end at this node.
+/// - `suffix_output` — index of the nearest ancestor (via failure links) that
+///   has a non-empty output, used to enumerate all overlapping matches.
 priv struct ACNode {
   children : Array[Int] // indices into nodes array, -1 = no child
   mut fail : Int // failure link
@@ -162,17 +214,47 @@ priv struct ACNode {
 }
 
 ///|
+/// Create a fresh `ACNode` with no children, failure link pointing to root,
+/// no output, and no suffix-output link.
 fn ACNode::new() -> ACNode {
   { children: Array::make(26, -1), fail: 0, output: [], suffix_output: -1 }
 }
 
 ///|
+/// The **Aho-Corasick automaton** for multi-pattern string matching.
+///
+/// Given a set of patterns, the automaton preprocesses them into a trie
+/// augmented with **failure links** (built via BFS) so that every text
+/// character is processed in O(1) amortised time.  All occurrences of all
+/// patterns in a text of length `n` are found in O(n + total_output) time
+/// after O(total_pattern_length) construction.
+///
+/// Construct with `AhoCorasick::new(patterns)` and search with
+/// `ac.search(text)`.
 priv struct AhoCorasick {
   nodes : Array[ACNode]
   mut node_count : Int
 }
 
 ///|
+/// Build an Aho-Corasick automaton from `patterns`.
+///
+/// The constructor:
+/// 1. Inserts every pattern into a trie (Goto function).
+/// 2. Computes failure links with a BFS over the trie.
+/// 3. Propagates suffix-output links so that overlapping matches can be
+///    reported without traversing the full failure-link chain at each step.
+///
+/// # Parameters
+/// - `patterns` — the set of patterns to match; each must contain only
+///   lowercase ASCII letters
+///
+/// # Example
+/// ```
+/// let ac = AhoCorasick::new(["he", "she", "his", "hers"])
+/// let matches = ac.search("ushers")
+/// // matches contain: "she" at 4, "he" at 4, "hers" at 6
+/// ```
 fn AhoCorasick::new(patterns : Array[String]) -> AhoCorasick {
   let max_nodes = 1 + patterns.fold(init=0, (acc, p) => acc + p.length())
   let nodes : Array[ACNode] = Array::makei(max_nodes, _ => ACNode::new())
@@ -187,7 +269,12 @@ fn AhoCorasick::new(patterns : Array[String]) -> AhoCorasick {
 }
 
 ///|
-/// Add a pattern to the trie
+/// Insert a single pattern into the trie portion of the automaton.
+///
+/// Creates trie nodes for any missing edges along `pattern`'s path and
+/// records `pattern_idx` in the output set of the terminal node.
+///
+/// This is called during construction before failure links are computed.
 fn AhoCorasick::add_pattern(
   self : AhoCorasick,
   pattern : String,
