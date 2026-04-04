@@ -14,7 +14,7 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
   let stack : Array[Int] = []
   parent[root] = root
   stack.push(root)
-  for idx = 0; idx < stack.length(); idx = idx + 1 {
+  for idx = 0; idx < stack.length(); {
     let u = stack[idx]
     order.push(u)
     for v in adj[u] {
@@ -23,6 +23,7 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
         stack.push(v)
       }
     }
+    continue idx + 1
   } where {
     invariant: idx >= 0 && idx <= stack.length(),
     reasoning: (

@@ -152,7 +152,7 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   let depth = Array::make(n, 0)
   let queue : Array[Int] = [root]
   depth[root] = 0
-  for head = 0; head < queue.length(); head = head + 1 {
+  for head = 0; head < queue.length(); {
     let v = queue[head]
     if nodes[v].left != -1 {
       let left = nodes[v].left
@@ -164,6 +164,7 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
       depth[right] = depth[v] + 1
       queue.push(right)
     }
+    continue head + 1
   } where {
     invariant: head >= 0 && head <= queue.length(),
     reasoning: (
