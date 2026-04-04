@@ -146,7 +146,7 @@ fn MaxFlow::dfs(self : MaxFlow, u : Int, sink : Int, pushed : Int64) -> Int64 {
   if u == sink {
     return pushed
   }
-  while self.iter[u] < self.adj[u].length() {
+  for next_edge = self.iter[u] < self.adj[u].length(); next_edge; {
     let idx = self.iter[u]
     let e = self.adj[u][idx]
     if self.level[u] + 1 == self.level[e.to] && e.capacity > e.flow {
@@ -160,6 +160,7 @@ fn MaxFlow::dfs(self : MaxFlow, u : Int, sink : Int, pushed : Int64) -> Int64 {
       }
     }
     self.iter[u] = self.iter[u] + 1
+    continue self.iter[u] < self.adj[u].length()
   }
   0L
 }

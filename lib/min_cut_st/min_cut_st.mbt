@@ -110,7 +110,7 @@ fn FlowGraph::dfs(
   if u == sink || pushed == 0L {
     return pushed
   }
-  while self.iter[u] < self.adj[u].length() {
+  for next_edge = self.iter[u] < self.adj[u].length(); next_edge; {
     let i = self.iter[u]
     let e = self.adj[u][i]
     if self.level[e.to] == self.level[u] + 1 && e.cap > e.flow {
@@ -127,6 +127,7 @@ fn FlowGraph::dfs(
       }
     }
     self.iter[u] = self.iter[u] + 1
+    continue self.iter[u] < self.adj[u].length()
   }
   0L
 }
