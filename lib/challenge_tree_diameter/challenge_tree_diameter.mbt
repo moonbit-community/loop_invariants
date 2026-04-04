@@ -20,13 +20,18 @@ fn bfs(adj : Array[Array[Int]], start : Int) -> (Int, Array[Int]) {
   let queue : Array[Int] = []
   dist[start] = 0
   queue.push(start)
-  for head = 0; head < queue.length(); head = head + 1 {
-    let u = queue[head]
-    for v in adj[u] {
-      if dist[v] == -1 {
-        dist[v] = dist[u] + 1
-        queue.push(v)
+  for head = 0 {
+    if head >= queue.length() {
+      break
+    } else {
+      let u = queue[head]
+      for v in adj[u] {
+        if dist[v] == -1 {
+          dist[v] = dist[u] + 1
+          queue.push(v)
+        }
       }
+      continue head + 1
     }
   } where {
     invariant: head >= 0 && head <= queue.length(),
