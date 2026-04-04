@@ -258,7 +258,7 @@ fn collect_words(
         #|path; s is ready to be pushed node.count times.
       ),
     }
-    for j = 0; j < node.count; j = j + 1 {
+    for j in 0..<node.count {
       result.push(s)
     } where {
       invariant: j >= 0 && j <= node.count,
@@ -273,7 +273,7 @@ fn collect_words(
       ),
     }
   }
-  for c = 0; c < 26; c = c + 1 {
+  for c in 0..<26 {
     match node.children[c] {
       Some(child) => {
         current.push(('a'.to_int() + c).unsafe_to_char())
@@ -306,7 +306,7 @@ fn Trie::autocomplete(self : Trie, prefix : String) -> Array[String] {
     None => result
     Some(node) => {
       let current : Array[Char] = []
-      for i = 0; i < prefix.length(); i = i + 1 {
+      for i in 0..<prefix.length() {
         match prefix.get_char(i) {
           Some(c) => current.push(c)
           None => ()
@@ -511,7 +511,7 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
 ///|
 fn common_prefix_len(a : String, b : String) -> Int {
   let min_len = if a.length() < b.length() { a.length() } else { b.length() }
-  for i = 0; i < min_len; i = i + 1 {
+  for i in 0..<min_len {
     if a[i] != b[i] {
       return i
     }
@@ -559,7 +559,7 @@ fn search_in_node(
   if word_len < label_len {
     return false
   }
-  for i = 0; i < label_len; i = i + 1 {
+  for i in 0..<label_len {
     if word[i] != label[i] {
       return false
     }

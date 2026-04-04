@@ -23,7 +23,7 @@ fn bellman_ford_with_neg_cycle(
   dist[source] = 0
 
   // Relax all edges n-1 times
-  for i = 0; i < n - 1; i = i + 1 {
+  for i in 0..<(n - 1) {
     let changed = for edge in edges; changed = false {
       let (u, v, w) = edge
       if dist[u] != inf && dist[u] + w < dist[v] {
@@ -120,9 +120,9 @@ fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
   })
 
   // Main algorithm: consider each vertex as intermediate
-  for k = 0; k < n; k = k + 1 {
-    for i = 0; i < n; i = i + 1 {
-      for j = 0; j < n; j = j + 1 {
+  for k in 0..<n {
+    for i in 0..<n {
+      for j in 0..<n {
         if dist[i][k] + dist[k][j] < dist[i][j] {
           dist[i][j] = dist[i][k] + dist[k][j]
         }
@@ -256,7 +256,7 @@ fn is_bipartite(n : Int, adj : Array[Array[Int]]) -> Bool {
   let color = Array::make(n, -1) // -1 = unvisited
 
   // Check each component
-  for start = 0; start < n; start = start + 1 {
+  for start in 0..<n {
     if color[start] == -1 {
       // BFS from this vertex
       let queue : Array[Int] = [start]
@@ -314,7 +314,7 @@ fn has_cycle_directed(n : Int, adj : Array[Array[Int]]) -> Bool {
   let gray = 1
   let black = 2
   let state = Array::make(n, white)
-  for start = 0; start < n; start = start + 1 {
+  for start in 0..<n {
     if state[start] == white {
       if dfs_has_cycle(adj, state, start, gray, black) {
         return true
@@ -379,7 +379,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
   // First pass: get finish order
   let visited = Array::make(n, false)
   let order : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     if !visited[i] {
       dfs_order(adj, visited, order, i)
     }
@@ -400,7 +400,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
 
   // Build reverse graph using makei
   let rev_adj : Array[Array[Int]] = Array::makei(n, _ => [])
-  for u = 0; u < n; u = u + 1 {
+  for u in 0..<n {
     for v in adj[u] {
       rev_adj[v].push(u)
     }
@@ -569,8 +569,8 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
   // Sort edges by weight - use insertion sort for simplicity
   let sorted_edges = edges.copy()
   // Simple bubble sort since sort_by_key may not work with tuples
-  for i = 0; i < sorted_edges.length(); i = i + 1 {
-    for j = i + 1; j < sorted_edges.length(); j = j + 1 {
+  for i in 0..<sorted_edges.length() {
+    for j in (i + 1)..<sorted_edges.length() {
       let (_, _, w1) = sorted_edges[i]
       let (_, _, w2) = sorted_edges[j]
       if w2 < w1 {

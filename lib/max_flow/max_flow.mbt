@@ -94,7 +94,7 @@ fn MaxFlow::add_undirected_edge(
 ///|
 /// BFS to build level graph
 fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
-  for i = 0; i < self.n; i = i + 1 {
+  for i in 0..<self.n {
     self.level[i] = -1
   } where {
     invariant: i >= 0 && i <= self.n,
@@ -118,7 +118,7 @@ fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
   // distance from source, or -1 if unreachable.
   for head = 0; head < queue.length(); {
     let u = queue[head]
-    for i = 0; i < self.adj[u].length(); i = i + 1 {
+    for i in 0..<self.adj[u].length() {
       let e = self.adj[u][i]
       if self.level[e.to] < 0 && e.capacity > e.flow {
         self.level[e.to] = self.level[u] + 1
@@ -180,7 +180,7 @@ fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
   // T: After at most n phases, sink becomes unreachable and flow equals maximum.
   for flow = 0L; self.bfs(source, sink); {
     // Reset iteration pointers for dead-end pruning
-    for i = 0; i < self.n; i = i + 1 {
+    for i in 0..<self.n {
       self.iter[i] = 0
     } where {
       invariant: i >= 0 && i <= self.n,
@@ -226,7 +226,7 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
   visited[source] = true
   for head = 0; head < queue.length(); {
     let u = queue[head]
-    for i = 0; i < self.adj[u].length(); i = i + 1 {
+    for i in 0..<self.adj[u].length() {
       let e = self.adj[u][i]
       if !visited[e.to] && e.capacity > e.flow {
         visited[e.to] = true
@@ -248,9 +248,9 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
 
   // Collect cut edges: from visited to non-visited with original capacity
   let cut : Array[(Int, Int, Int64)] = []
-  for u = 0; u < self.n; u = u + 1 {
+  for u in 0..<self.n {
     if visited[u] {
-      for i = 0; i < self.adj[u].length(); i = i + 1 {
+      for i in 0..<self.adj[u].length() {
         let e = self.adj[u][i]
         if !visited[e.to] && e.capacity > 0L {
           cut.push((u, e.to, e.capacity))

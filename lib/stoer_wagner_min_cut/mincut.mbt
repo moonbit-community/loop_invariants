@@ -90,7 +90,7 @@ pub fn stoer_wagner_min_cut(
   // Using matrix for O(1) edge weight lookup
   // Parallel edges are summed
   let adj : Array[Array[Int64]] = Array::makei(n, _ => Array::make(n, 0L))
-  for i = 0; i < edges.length(); i = i + 1 {
+  for i in 0..<edges.length() {
     let (u, v, w) = edges[i]
     guard u >= 0 && u < n && v >= 0 && v < n && u != v else { continue }
     adj[u][v] = adj[u][v] + w

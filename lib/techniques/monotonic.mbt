@@ -17,74 +17,19 @@ fn next_greater_element(arr : ArrayView[Int]) -> Array[Int] {
   guard n > 0 else { return [] }
   let result : Array[Int] = Array::make(n, -1)
   let stack : Array[Int] = [] // Indices of elements waiting for their NGE
-  for i = 0 {
-    if i >= n {
-      break result
-    } else {
-      // Pop elements smaller than current - current is their NGE
-      for pop_next = stack.length() > 0 &&
-            arr[stack[stack.length() - 1]] < arr[i]; pop_next; {
-        match stack.pop() {
-          Some(top) => result[top] = i
-          None => break
-        }
-        continue stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]
+  for i in 0..<n {
+    // Pop elements smaller than current - current is their NGE
+    for pop_next = stack.length() > 0 &&
+          arr[stack[stack.length() - 1]] < arr[i]; pop_next; {
+      match stack.pop() {
+        Some(top) => result[top] = i
+        None => break
       }
-      stack.push(i)
-      continue i + 1
+      continue stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT 1 (Bounds and progress):
-      #|i is the next index to process, and every index < i has either been
-      #|resolved (its next greater element found) or is waiting on the stack.
-      #|This ensures linear progress until i reaches n.
-      #|MAINTENANCE:
-      #|Processing arr[i] either resolves waiting indices or pushes i, then
-      #|advances to i+1, preserving the invariant.
-      #|TERMINATION:
-      #|At i = n, all indices are processed; unresolved ones have no NGE.
-    ),
-    invariant: i >= 0,
-    reasoning: (
-      #|INVARIANT 2 (Monotonic stack property):
-      #|The stack contains indices in increasing order, AND the values
-      #|at those indices are in DECREASING order (monotonic decreasing).
-      #|
-      #|Formally: For stack indices s[0] < s[1] < ... < s[k]:
-      #|  arr[s[0]] >= arr[s[1]] >= ... >= arr[s[k]]
-      #|
-      #|BASE: Empty stack trivially satisfies this.
-      #|
-      #|INDUCTIVE: When processing element arr[i]:
-      #|  - Pop all elements smaller than arr[i] (they found their NGE)
-      #|  - Push i onto stack
-      #|  - After pushing: arr[top_after_pop] >= arr[i] (or stack was empty)
-      #|  - So monotonic decreasing property is maintained. ✓
-      #|
-      #|WHY THIS WORKS:
-      #|An element stays on the stack while "waiting" for its NGE.
-      #|When we see a larger element, we "resolve" all smaller waiting elements.
-      #|
-      #|CORRECTNESS:
-      #|For any position j still on stack at time i:
-      #|  - All elements between j and i are smaller than arr[j]
-      #|    (otherwise j would have been popped earlier)
-      #|  - So the NGE for j, if it exists, must be at position >= i
-      #|
-      #|When arr[i] > arr[j], position i is indeed the first greater
-      #|element to the right of j. ✓
-      #|
-      #|TIME: O(n) - each element pushed and popped at most once.
-      #|SPACE: O(n) - stack can hold all elements in decreasing sequence.
-      #|MAINTENANCE:
-      #|Popping smaller elements and pushing i preserves the decreasing-value
-      #|order of the stack.
-      #|TERMINATION:
-      #|After the scan, stack elements correctly have no greater element to the right.
-    ),
+    stack.push(i)
   }
+  result
 }
 
 ///|
@@ -113,91 +58,28 @@ fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
   let result : Array[Int] = []
   // Deque stores indices; values at these indices are monotonic decreasing
   let deque : @deque.Deque[Int] = @deque.new()
-  for i = 0 {
-    if i >= n {
-      break result
-    } else {
-      // Remove elements outside current window from front
-      for pop_front = deque.front() is Some(front) && front <= i - k; pop_front; {
-        let _ = deque.pop_front()
-        continue deque.front() is Some(front) && front <= i - k
-      }
-
-      // Remove elements smaller than current from back (they can't be max)
-      for pop_back = deque.back() is Some(back) && arr[back] < arr[i]; pop_back; {
-        let _ = deque.pop_back()
-        continue deque.back() is Some(back) && arr[back] < arr[i]
-      }
-
-      // Add current element
-      deque.push_back(i)
-
-      // Once we have a full window, record the maximum
-      if i >= k - 1 && deque.front() is Some(front) {
-        result.push(arr[front])
-      }
-      continue i + 1
+  for i in 0..<n {
+    // Remove elements outside current window from front
+    for pop_front = deque.front() is Some(front) && front <= i - k; pop_front; {
+      let _ = deque.pop_front()
+      continue deque.front() is Some(front) && front <= i - k
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT 1 (Bounds and window position):
-      #|i is the current right edge of the sliding window. All deque indices
-      #|refer to positions < i, so each iteration advances the window by one.
-      #|MAINTENANCE:
-      #|After processing arr[i], increment i to move the window right.
-      #|TERMINATION:
-      #|At i = n, all windows have been processed.
-    ),
-    invariant: i >= 0,
-    reasoning: (
-      #|INVARIANT 2 (Deque properties):
-      #|At the start of iteration i (before processing arr[i]):
-      #|
-      #|1. WINDOW CONSTRAINT: All indices in deque are in [max(0, i-k+1), i)
-      #|   (within the current or upcoming window)
-      #|
-      #|2. MONOTONIC DECREASING: If deque = [d₀, d₁, ..., dₘ], then:
-      #|   arr[d₀] >= arr[d₁] >= ... >= arr[dₘ]
-      #|   AND d₀ < d₁ < ... < dₘ (indices are sorted)
-      #|
-      #|3. MAXIMUM AT FRONT: arr[d₀] is the maximum of arr[max(0,i-k+1)..i)
-      #|
-      #|PROOF OF INVARIANT MAINTENANCE:
-      #|
-      #|Step 1: Remove expired indices from front.
-      #|  Elements with index <= i-k are outside window [i-k+1, i].
-      #|  After removal, window constraint is satisfied. ✓
-      #|
-      #|Step 2: Remove smaller elements from back.
-      #|  If arr[back] < arr[i], then for any future window containing both:
-      #|    - arr[back] cannot be maximum (arr[i] is larger)
-      #|    - arr[i] will still be in window when arr[back] would be considered
-      #|  So arr[back] is useless; remove it.
-      #|  This maintains monotonic decreasing property. ✓
-      #|
-      #|Step 3: Push i.
-      #|  Since we removed all arr[back] < arr[i], adding i maintains monotonicity. ✓
-      #|
-      #|WHY FRONT IS MAXIMUM:
-      #|  - Front has the largest value (monotonic decreasing)
-      #|  - Front is in the current window (we removed expired elements)
-      #|  - Any element >= arr[front] would have caused front to be removed
-      #|  Therefore arr[front] = max of current window. ✓
-      #|
-      #|TIME: O(n) - each element pushed and popped at most once.
-      #|SPACE: O(k) - deque holds at most k elements.
-      #|
-      #|COMPARISON WITH NAIVE:
-      #|Naive: O(nk) - recompute max for each window
-      #|Monotonic deque: O(n) - amortized O(1) per element
-      #|MAINTENANCE:
-      #|Deque updates preserve window membership and decreasing values after
-      #|each push/pop.
-      #|TERMINATION:
-      #|At i = n, result contains maxima for all windows.
-    ),
+
+    // Remove elements smaller than current from back (they can't be max)
+    for pop_back = deque.back() is Some(back) && arr[back] < arr[i]; pop_back; {
+      let _ = deque.pop_back()
+      continue deque.back() is Some(back) && arr[back] < arr[i]
+    }
+
+    // Add current element
+    deque.push_back(i)
+
+    // Once we have a full window, record the maximum
+    if i >= k - 1 && deque.front() is Some(front) {
+      result.push(arr[front])
+    }
   }
+  result
 }
 
 ///|
@@ -225,39 +107,37 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
   let stack : Array[Int] = []
 
   // Process all bars, plus one "sentinel" bar of height 0
-  for i = 0, max_area = 0 {
-    if i > n {
-      break max_area
-    } else {
-      let curr_height = if i == n { 0 } else { heights[i] }
+  for i in 0..<=n; max_area = 0 {
+    let curr_height = if i == n { 0 } else { heights[i] }
 
-      // Pop bars taller than current - they can't extend further right
-      let max_area = for max_area = max_area; stack.length() > 0 &&
-                        heights[stack[stack.length() - 1]] > curr_height; {
-        match stack.pop() {
-          Some(h_idx) => {
-            let height = heights[h_idx]
+    // Pop bars taller than current - they can't extend further right
+    let max_area = for max_area = max_area; stack.length() > 0 &&
+                      heights[stack[stack.length() - 1]] > curr_height; {
+      match stack.pop() {
+        Some(h_idx) => {
+          let height = heights[h_idx]
 
-            // Width = distance from previous stack element to current position
-            let width = if stack.length() == 0 {
-              i
-            } else {
-              i - stack[stack.length() - 1] - 1
-            }
-            let area = height * width
-            let max_area = if area > max_area { area } else { max_area }
-            continue max_area
+          // Width = distance from previous stack element to current position
+          let width = if stack.length() == 0 {
+            i
+          } else {
+            i - stack[stack.length() - 1] - 1
           }
-          None => break max_area
+          let area = height * width
+          let max_area = if area > max_area { area } else { max_area }
+          continue max_area
         }
-      } nobreak {
-        max_area
+        None => break max_area
       }
-      stack.push(i)
-      continue i + 1, max_area
+    } nobreak {
+      max_area
     }
+    stack.push(i)
+    continue max_area
+  } nobreak {
+    max_area
   } where {
-    invariant: i >= 0 && i <= n + 1 && max_area >= 0,
+    invariant: max_area >= 0,
     reasoning: (
       #|INVARIANT 1 (Bounds and sentinel):
       #|i scans bars from left to right, and the extra step at i == n acts
@@ -446,7 +326,7 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
 
   // Compute left distances using monotonic stack
   let stack : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     for pop_next = stack.length() > 0 &&
           arr[stack[stack.length() - 1]] >= arr[i]; pop_next; {
       let _ = stack.pop()
@@ -458,19 +338,6 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
       i - stack[stack.length() - 1]
     }
     stack.push(i)
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (Previous smaller):
-      #|The stack stores indices with strictly increasing values, so the top
-      #|after popping is the nearest index to the left with value < arr[i].
-      #|For every processed position t < i, left[t] is already fixed.
-      #|MAINTENANCE:
-      #|Pop until the previous smaller element is on top, then set left[i]
-      #|and push i.
-      #|TERMINATION:
-      #|At i = n, all left distances are computed.
-    ),
   }
 
   // Compute right distances using monotonic stack (process right to left)
@@ -489,16 +356,14 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
   }
 
   // Sum contributions
-  for i = 0, total = 0 {
-    if i >= n {
-      break total
-    } else {
-      // Element arr[i] is minimum of left[i] * right[i] subarrays
-      let contribution = arr[i] * left[i] % modulus * right[i] % modulus
-      continue i + 1, (total + contribution) % modulus
-    }
+  for i in 0..<n; total = 0 {
+    // Element arr[i] is minimum of left[i] * right[i] subarrays
+    let contribution = arr[i] * left[i] % modulus * right[i] % modulus
+    continue (total + contribution) % modulus
+  } nobreak {
+    total
   } where {
-    invariant: i >= 0 && i <= n && total >= 0 && total < modulus,
+    invariant: total >= 0 && total < modulus,
     reasoning: (
       #|INVARIANT (Contribution counting):
       #|total = Σ(contribution of arr[0..i) as minimums)
@@ -556,55 +421,24 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
   guard n > 0 else { return [] }
   let spans : Array[Int] = Array::make(n, 0)
   let stack : Array[Int] = [] // Indices of "dominant" prices
-  for i = 0 {
-    if i >= n {
-      break spans
-    } else {
-      // Pop prices smaller than current
-      for pop_next = stack.length() > 0 &&
-            prices[stack[stack.length() - 1]] <= prices[i]; pop_next; {
-        let _ = stack.pop()
-        continue stack.length() > 0 &&
-          prices[stack[stack.length() - 1]] <= prices[i]
-      }
-
-      // Span extends back to previous larger price (or to start)
-      spans[i] = if stack.length() == 0 {
-        i + 1
-      } else {
-        i - stack[stack.length() - 1]
-      }
-      stack.push(i)
-      continue i + 1
+  for i in 0..<n {
+    // Pop prices smaller than current
+    for pop_next = stack.length() > 0 &&
+          prices[stack[stack.length() - 1]] <= prices[i]; pop_next; {
+      let _ = stack.pop()
+      continue stack.length() > 0 &&
+        prices[stack[stack.length() - 1]] <= prices[i]
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (Dominant prices):
-      #|Stack contains indices of "dominant" prices - those that haven't
-      #|been surpassed by any later price.
-      #|
-      #|Prices in stack are in strictly decreasing order.
-      #|
-      #|For computing span[i]:
-      #|  - Pop all prices <= prices[i] (they're now dominated by i)
-      #|  - If stack empty: no larger price exists to left, span = i + 1
-      #|  - Else: previous larger price at stack[top], span = i - stack[top]
-      #|
-      #|WHY STRICTLY DECREASING?
-      #|If prices[j] <= prices[k] for j < k, then j is dominated by k.
-      #|For any future day i, if prices[i] >= prices[k], then
-      #|prices[i] >= prices[j] too. So j is redundant.
-      #|
-      #|ONLINE ALGORITHM:
-      #|This can process one price at a time with O(1) amortized cost,
-      #|making it suitable for streaming scenarios.
-      #|MAINTENANCE:
-      #|Pop dominated prices, compute span for i, then push i.
-      #|TERMINATION:
-      #|At i = n, spans for all days are computed.
-    ),
+
+    // Span extends back to previous larger price (or to start)
+    spans[i] = if stack.length() == 0 {
+      i + 1
+    } else {
+      i - stack[stack.length() - 1]
+    }
+    stack.push(i)
   }
+  spans
 }
 
 ///|

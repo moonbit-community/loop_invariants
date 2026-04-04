@@ -71,28 +71,23 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
   self.on_stack[v] = true
   // Process all neighbors
   let neighbors = self.graph[v]
-  for i = 0 {
-    if i >= neighbors.length() {
-      break
-    } else {
-      let w = neighbors[i]
-      if self.disc[w] == -1 {
-        // Tree edge: w not yet visited
-        self.dfs(w)
-        // After returning, update low[v] with low[w]
-        if self.low[w] < self.low[v] {
-          self.low[v] = self.low[w]
-        }
-      } else if self.on_stack[w] {
-        // Back edge to vertex on stack
-        // Update low[v] with disc[w]
-        if self.disc[w] < self.low[v] {
-          self.low[v] = self.disc[w]
-        }
+  for i in 0..<neighbors.length() {
+    let w = neighbors[i]
+    if self.disc[w] == -1 {
+      // Tree edge: w not yet visited
+      self.dfs(w)
+      // After returning, update low[v] with low[w]
+      if self.low[w] < self.low[v] {
+        self.low[v] = self.low[w]
       }
-      // Cross edge to vertex not on stack: ignore (already in different SCC)
-      continue i + 1
+    } else if self.on_stack[w] {
+      // Back edge to vertex on stack
+      // Update low[v] with disc[w]
+      if self.disc[w] < self.low[v] {
+        self.low[v] = self.disc[w]
+      }
     }
+    // Cross edge to vertex not on stack: ignore (already in different SCC)
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
     reasoning: (
@@ -190,14 +185,9 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
 /// Find all SCCs in the graph.
 #warnings("+missing_invariant+missing_reasoning")
 fn TarjanSCC::find_sccs(self : TarjanSCC) -> Unit {
-  for v = 0 {
-    if v >= self.n {
-      break
-    } else {
-      if self.disc[v] == -1 {
-        self.dfs(v)
-      }
-      continue v + 1
+  for v in 0..<self.n {
+    if self.disc[v] == -1 {
+      self.dfs(v)
     }
   } where {
     invariant: v >= 0 && v <= self.n,
@@ -321,15 +311,10 @@ fn KosarajuSCC::new(graph : Array[Array[Int]]) -> KosarajuSCC {
 fn KosarajuSCC::dfs1(self : KosarajuSCC, v : Int) -> Unit {
   self.visited[v] = true
   let neighbors = self.graph[v]
-  for i = 0 {
-    if i >= neighbors.length() {
-      break
-    } else {
-      let w = neighbors[i]
-      if !self.visited[w] {
-        self.dfs1(w)
-      }
-      continue i + 1
+  for i in 0..<neighbors.length() {
+    let w = neighbors[i]
+    if !self.visited[w] {
+      self.dfs1(w)
     }
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
@@ -368,15 +353,10 @@ fn KosarajuSCC::dfs2(self : KosarajuSCC, v : Int, scc : Array[Int]) -> Unit {
   self.visited[v] = true
   scc.push(v)
   let neighbors = self.reversed[v]
-  for i = 0 {
-    if i >= neighbors.length() {
-      break
-    } else {
-      let w = neighbors[i]
-      if !self.visited[w] {
-        self.dfs2(w, scc)
-      }
-      continue i + 1
+  for i in 0..<neighbors.length() {
+    let w = neighbors[i]
+    if !self.visited[w] {
+      self.dfs2(w, scc)
     }
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
@@ -412,14 +392,9 @@ fn KosarajuSCC::dfs2(self : KosarajuSCC, v : Int, scc : Array[Int]) -> Unit {
 #warnings("+missing_invariant+missing_reasoning")
 fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
   // Pass 1: DFS to get finish order
-  for v = 0 {
-    if v >= self.n {
-      break
-    } else {
-      if !self.visited[v] {
-        self.dfs1(v)
-      }
-      continue v + 1
+  for v in 0..<self.n {
+    if !self.visited[v] {
+      self.dfs1(v)
     }
   } where {
     invariant: v >= 0 && v <= self.n,
@@ -436,13 +411,8 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
     ),
   }
   // Reset visited for pass 2
-  for v = 0 {
-    if v >= self.n {
-      break
-    } else {
-      self.visited[v] = false
-      continue v + 1
-    }
+  for v in 0..<self.n {
+    self.visited[v] = false
   } where {
     invariant: v >= 0 && v <= self.n,
     reasoning: (
@@ -563,39 +533,35 @@ fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
   self.low[v] = self.time
   self.time = self.time + 1
   let neighbors = self.graph[v]
-  for i = 0, children = 0 {
-    if i >= neighbors.length() {
-      break
-    } else {
-      let w = neighbors[i]
-      if self.disc[w] == -1 {
-        // Tree edge
-        let new_children = children + 1
-        self.parent[w] = v
-        self.dfs(w)
-        // Update low value
-        if self.low[w] < self.low[v] {
-          self.low[v] = self.low[w]
-        }
-        // Check articulation point condition
-        if self.parent[v] == -1 && new_children > 1 {
-          // Root with 2+ children
-          self.is_ap[v] = true
-        }
-        if self.parent[v] != -1 && self.low[w] >= self.disc[v] {
-          // Non-root with child that can't bypass v
-          self.is_ap[v] = true
-        }
-        continue i + 1, new_children
-      } else if w != self.parent[v] {
-        // Back edge (not to parent in undirected graph)
-        if self.disc[w] < self.low[v] {
-          self.low[v] = self.disc[w]
-        }
-        continue i + 1, children
-      } else {
-        continue i + 1, children
+  for i in 0..<neighbors.length(); children = 0 {
+    let w = neighbors[i]
+    if self.disc[w] == -1 {
+      // Tree edge
+      let new_children = children + 1
+      self.parent[w] = v
+      self.dfs(w)
+      // Update low value
+      if self.low[w] < self.low[v] {
+        self.low[v] = self.low[w]
       }
+      // Check articulation point condition
+      if self.parent[v] == -1 && new_children > 1 {
+        // Root with 2+ children
+        self.is_ap[v] = true
+      }
+      if self.parent[v] != -1 && self.low[w] >= self.disc[v] {
+        // Non-root with child that can't bypass v
+        self.is_ap[v] = true
+      }
+      continue new_children
+    } else if w != self.parent[v] {
+      // Back edge (not to parent in undirected graph)
+      if self.disc[w] < self.low[v] {
+        self.low[v] = self.disc[w]
+      }
+      continue children
+    } else {
+      continue children
     }
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
@@ -712,27 +678,22 @@ fn BridgeFinder::dfs(self : BridgeFinder, v : Int) -> Unit {
   self.low[v] = self.time
   self.time = self.time + 1
   let neighbors = self.graph[v]
-  for i = 0 {
-    if i >= neighbors.length() {
-      break
-    } else {
-      let w = neighbors[i]
-      if self.disc[w] == -1 {
-        self.parent[w] = v
-        self.dfs(w)
-        if self.low[w] < self.low[v] {
-          self.low[v] = self.low[w]
-        }
-        // Bridge condition: stricter than articulation point
-        if self.low[w] > self.disc[v] {
-          self.bridges.push((v, w))
-        }
-      } else if w != self.parent[v] {
-        if self.disc[w] < self.low[v] {
-          self.low[v] = self.disc[w]
-        }
+  for i in 0..<neighbors.length() {
+    let w = neighbors[i]
+    if self.disc[w] == -1 {
+      self.parent[w] = v
+      self.dfs(w)
+      if self.low[w] < self.low[v] {
+        self.low[v] = self.low[w]
       }
-      continue i + 1
+      // Bridge condition: stricter than articulation point
+      if self.low[w] > self.disc[v] {
+        self.bridges.push((v, w))
+      }
+    } else if w != self.parent[v] {
+      if self.disc[w] < self.low[v] {
+        self.low[v] = self.disc[w]
+      }
     }
   } where {
     invariant: i >= 0 && i <= neighbors.length(),
@@ -832,18 +793,16 @@ fn TopologicalSort::dfs(self : TopologicalSort, v : Int) -> Unit {
   }
   self.state[v] = 1 // Visiting
   let neighbors = self.graph[v]
-  for i = 0 {
-    if i >= neighbors.length() || self.has_cycle {
+  for i in 0..<neighbors.length() {
+    if self.has_cycle {
       break
-    } else {
-      let w = neighbors[i]
-      if self.state[w] == 1 {
-        // Back edge: cycle detected
-        self.has_cycle = true
-      } else if self.state[w] == 0 {
-        self.dfs(w)
-      }
-      continue i + 1
+    }
+    let w = neighbors[i]
+    if self.state[w] == 1 {
+      // Back edge: cycle detected
+      self.has_cycle = true
+    } else if self.state[w] == 0 {
+      self.dfs(w)
     }
   } where {
     invariant: i >= 0 && i <= neighbors.length(),

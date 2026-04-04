@@ -248,47 +248,17 @@ fn SuffixAutomaton::compute_counts(self : SuffixAutomaton) -> Unit {
   // Topological sort by length (counting sort)
   let max_len = self.states[self.last].len
   let cnt_by_len : Array[Int] = Array::make(max_len + 1, 0)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     cnt_by_len[self.states[i].len] = cnt_by_len[self.states[i].len] + 1
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (count lengths):
-      #|cnt_by_len holds counts for state lengths in [0, i).
-      #|MAINTENANCE:
-      #|Increment the bucket for state i's length.
-      #|TERMINATION:
-      #|At i = n, counts per length are complete.
-    ),
   }
-  for i = 1; i <= max_len; i = i + 1 {
+  for i in 1..<=max_len {
     cnt_by_len[i] = cnt_by_len[i] + cnt_by_len[i - 1]
-  } where {
-    invariant: i >= 1 && i <= max_len + 1,
-    reasoning: (
-      #|INVARIANT (prefix sums):
-      #|cnt_by_len[0..i) stores cumulative counts.
-      #|MAINTENANCE:
-      #|Accumulate cnt_by_len[i] with the previous prefix sum.
-      #|TERMINATION:
-      #|At i = max_len + 1, cnt_by_len holds cumulative counts for all lengths.
-    ),
   }
   let sorted : Array[Int] = Array::make(n, 0)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let len = self.states[i].len
     cnt_by_len[len] = cnt_by_len[len] - 1
     sorted[cnt_by_len[len]] = i
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (bucket sort):
-      #|States in [0, i) have been placed into sorted by nondecreasing length.
-      #|MAINTENANCE:
-      #|Place state i into its bucket position using cnt_by_len.
-      #|TERMINATION:
-      #|At i = n, all states are sorted by length.
-    ),
   }
 
   // Propagate counts (longest to shortest)
@@ -444,19 +414,9 @@ fn SuffixAutomaton::longest_common_substring(
     ""
   } else {
     let sb = StringBuilder::new()
-    for j = best_end - best_len; j < best_end; j = j + 1 {
+    for j in (best_end - best_len)..<best_end {
       let ch = other[j].to_int()
       sb.write_char(ch.unsafe_to_char())
-    } where {
-      invariant: j >= best_end - best_len && j <= best_end,
-      reasoning: (
-        #|INVARIANT (build substring):
-        #|sb contains other[best_end - best_len..j).
-        #|MAINTENANCE:
-        #|Append other[j] to extend the substring.
-        #|TERMINATION:
-        #|At j = best_end, sb holds the best substring.
-      ),
     }
     sb.to_string()
   }
@@ -672,7 +632,7 @@ fn SuffixAutomaton::all_substrings(self : SuffixAutomaton) -> Array[String] {
     result : Array[String],
   ) -> Unit {
     result.push(current.to_string())
-    for c = 0; c < alphabet_size; c = c + 1 {
+    for c in 0..<alphabet_size {
       let next = sam.states[state].trans[c]
       if next >= 0 {
         current.write_char(c.unsafe_to_char())
@@ -680,31 +640,11 @@ fn SuffixAutomaton::all_substrings(self : SuffixAutomaton) -> Array[String] {
         // Remove last character (backtrack)
         let s = current.to_string()
         current.reset()
-        for i = 0; i < s.length() - 1; i = i + 1 {
+        for i in 0..<(s.length() - 1) {
           let ch = s[i].to_int()
           current.write_char(ch.unsafe_to_char())
-        } where {
-          invariant: i >= 0 && i <= s.length() - 1,
-          reasoning: (
-            #|INVARIANT (rebuild prefix):
-            #|current contains the first i characters of s (excluding the last).
-            #|MAINTENANCE:
-            #|Append s[i] to rebuild the prefix.
-            #|TERMINATION:
-            #|At i = s.length() - 1, the prefix is fully rebuilt.
-          ),
         }
       }
-    } where {
-      invariant: c >= 0 && c <= alphabet_size,
-      reasoning: (
-        #|INVARIANT (DFS transitions):
-        #|All transitions for chars < c have been explored and backtracked.
-        #|MAINTENANCE:
-        #|Follow transition c, recurse, then backtrack.
-        #|TERMINATION:
-        #|At c = alphabet_size, all substrings from this state are generated.
-      ),
     }
   }
 

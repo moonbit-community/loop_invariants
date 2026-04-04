@@ -225,7 +225,7 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
         visited[u] = true
 
         // Relax all outgoing edges
-        for i = 0; i < graph.adj[u].length(); i = i + 1 {
+        for i in 0..<graph.adj[u].length() {
           let edge = graph.adj[u][i]
           let v = edge.to
           let new_dist = dist[u] + edge.weight
@@ -282,12 +282,12 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
     return dist
   }
   dist[src] = 0
-  for iter = 0; iter < n; iter = iter + 1 {
-    let u = for i = 0, u = -1, best = DIJK_INF_INT; i < n; {
+  for iter in 0..<n {
+    let u = for i in 0..<n; u = -1, best = DIJK_INF_INT {
       if !used[i] && dist[i] < best {
-        continue i + 1, i, dist[i]
+        continue i, dist[i]
       }
-      continue i + 1, u, best
+      continue u, best
     } nobreak {
       u
     } where {
@@ -306,7 +306,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
     }
     used[u] = true
     let neighbors = adj[u]
-    for j = 0; j < neighbors.length(); j = j + 1 {
+    for j in 0..<neighbors.length() {
       let (v, w) = neighbors[j]
       let cand = dist[u] + w
       if !used[v] && cand < dist[v] {
@@ -441,7 +441,7 @@ pub fn bidirectional_dijkstra(
               best_dist
             } else {
               // Relax edges
-              for i = 0; i < graph.adj[u].length(); i = i + 1 {
+              for i in 0..<graph.adj[u].length() {
                 let edge = graph.adj[u][i]
                 let v = edge.to
                 let new_dist = dist_forward[u] + edge.weight
@@ -496,7 +496,7 @@ pub fn bidirectional_dijkstra(
               best_dist
             } else {
               // Relax edges (using reverse graph)
-              for i = 0; i < reverse_graph.adj[u].length(); i = i + 1 {
+              for i in 0..<reverse_graph.adj[u].length() {
                 let edge = reverse_graph.adj[u][i]
                 let v = edge.to
                 let new_dist = dist_backward[u] + edge.weight

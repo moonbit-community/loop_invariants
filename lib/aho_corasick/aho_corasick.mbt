@@ -117,22 +117,12 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
   let queue : Array[Int] = []
 
   // Initialize: children of root have failure link to root
-  for c = 0; c < AC_ALPHABET; c = c + 1 {
+  for c in 0..<AC_ALPHABET {
     let child = self.states[0].children[c]
     if child >= 0 {
       self.states[child].failure = 0
       queue.push(child)
     }
-  } where {
-    invariant: 0 <= c && c < AC_ALPHABET,
-    reasoning: (
-      #|INVARIANT (root transitions):
-      #|All byte transitions for characters in [0, c) are processed.
-      #|MAINTENANCE:
-      #|If a child exists, set its failure to root and enqueue it.
-      #|TERMINATION:
-      #|At c = AC_ALPHABET, all root transitions are initialized.
-    ),
   }
 
   // BFS to compute failure links
@@ -142,7 +132,7 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
     match queue.get(front) {
       None => break ()
       Some(state) => {
-        for c = 0; c < AC_ALPHABET; c = c + 1 {
+        for c in 0..<AC_ALPHABET {
           let child = self.states[state].children[c]
           if child < 0 {
             continue
@@ -187,16 +177,6 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
           for pattern_idx in failure_output {
             self.states[child].output.push(pattern_idx)
           }
-        } where {
-          invariant: 0 <= c && c < AC_ALPHABET,
-          reasoning: (
-            #|INVARIANT (state transitions):
-            #|All byte transitions for characters in [0, c) are processed for state.
-            #|MAINTENANCE:
-            #|Process transition c and compute its failure link/output.
-            #|TERMINATION:
-            #|At c = AC_ALPHABET, all transitions from this state are handled.
-          ),
         }
         continue front + 1
       }

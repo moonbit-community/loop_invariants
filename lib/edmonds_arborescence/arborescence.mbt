@@ -194,12 +194,11 @@ pub fn min_arborescence(
       let final_parent = parent.copy()
 
       // Find which edge enters the cycle in contracted solution
-      let enter_edge = for i = 0; i < contracted_edges.length(); {
+      let enter_edge = for i in 0..<contracted_edges.length() {
         let e = contracted_edges[i]
         if e.to == 0 && sub_tree.parent[e.to] == e.from {
           break Some(e)
         }
-        continue i + 1
       } nobreak {
         None
       }

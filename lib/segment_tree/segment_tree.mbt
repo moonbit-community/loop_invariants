@@ -269,18 +269,8 @@ fn IterativeSegTree::new(arr : Array[Int64]) -> IterativeSegTree {
   let tree = Array::make(2 * n, 0L)
 
   // Copy leaves
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     tree[n + i] = arr[i]
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (leaf copy):
-      #|tree[n..n+i) mirrors arr[0..i).
-      #|MAINTENANCE:
-      #|Copy arr[i] into leaf position n + i.
-      #|TERMINATION:
-      #|At i = n, all leaves store the array values.
-    ),
   }
 
   // Build internal nodes from bottom up
@@ -444,18 +434,8 @@ test "segment tree boundary" {
 test "segment tree large" {
   let n = 100
   let arr : Array[Int64] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     arr.push(i.to_int64())
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (build test array):
-      #|arr has length i and contains values 0..i-1.
-      #|MAINTENANCE:
-      #|Push i to extend the sequence by one element.
-      #|TERMINATION:
-      #|At i = n, arr contains 0..n-1.
-    ),
   }
   let st = SegmentTree::new(arr)
   // Sum of 0..99 = 99*100/2 = 4950

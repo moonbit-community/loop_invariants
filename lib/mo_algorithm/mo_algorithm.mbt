@@ -73,9 +73,9 @@ fn isqrt(n : Int) -> Int {
 
 ///|
 fn max_element(arr : Array[Int]) -> Int {
-  let mx = for i = 0, mx = 0; i < arr.length(); {
+  let mx = for i in 0..<arr.length(); mx = 0 {
     let mx = if arr[i] > mx { arr[i] } else { mx }
-    continue i + 1, mx
+    continue mx
   } nobreak {
     mx
   } where {
@@ -139,7 +139,7 @@ fn MoDistinct::process_queries(
 
   // Create query objects with indices
   let mo_queries : Array[MoQuery] = []
-  for i = 0; i < q; i = i + 1 {
+  for i in 0..<q {
     let (l, r) = queries[i]
     mo_queries.push({ l, r, idx: i })
   } where {
@@ -168,7 +168,7 @@ fn MoDistinct::process_queries(
     }
   })
   let results = Array::make(q, 0)
-  for i = 0; i < q; i = i + 1 {
+  for i in 0..<q {
     let query = mo_queries[i]
 
     // Expand right
@@ -256,7 +256,7 @@ fn MoSum::process_queries(
     return []
   }
   let mo_queries : Array[MoQuery] = []
-  for i = 0; i < q; i = i + 1 {
+  for i in 0..<q {
     let (l, r) = queries[i]
     mo_queries.push({ l, r, idx: i })
   } where {
@@ -282,7 +282,7 @@ fn MoSum::process_queries(
     }
   })
   let results = Array::make(q, 0L)
-  for i = 0; i < q; i = i + 1 {
+  for i in 0..<q {
     let query = mo_queries[i]
     for expand_right = self.curr_r < query.r; expand_right; {
       self.curr_r = self.curr_r + 1

@@ -197,7 +197,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
     Some(pair) => pair
   }
   let heap = MinHeap::new()
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     if deg[v] == 1 {
       heap.push(v)
     }
@@ -214,7 +214,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   }
   let next_idx = Array::make(n, 0)
   let code : Array[Int] = []
-  for step = 0; step < n - 2; step = step + 1 {
+  for step in 0..<(n - 2) {
     let leaf = match heap.pop() {
       Some(v) => v
       None => return None
@@ -277,7 +277,7 @@ pub fn prufer_decode(code : ArrayView[Int]) -> Array[(Int, Int)]? {
     deg[v] = deg[v] + 1
   }
   let heap = MinHeap::new()
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     if deg[v] == 1 {
       heap.push(v)
     }

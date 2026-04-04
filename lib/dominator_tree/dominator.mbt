@@ -92,7 +92,7 @@ fn DominatorWork::compute_idom(self : DominatorWork, root_idx : Int) -> Unit {
 
   // Phase 2: Fix immediate dominators
   // Some idom values point to intermediate vertices; follow the chain
-  for i = 2; i <= n; i = i + 1 {
+  for i in 2..<=n {
     // If idom[i] was set to u (not sdom[i]), then idom[i] = idom[u]
     if self.idom[i] != self.sdom[i] {
       self.idom[i] = self.idom[self.idom[i]]
@@ -195,7 +195,7 @@ pub fn build_dominator_tree(
 
   // Step 5: Convert from DFS indices back to vertex IDs
   let idom_vertex = Array::make(n, -1)
-  for i = 1; i <= work.time.val; i = i + 1 {
+  for i in 1..<=work.time.val {
     let v = work.rev[i] // vertex ID for DFS index i
     let id = work.idom[i] // idom in DFS index
     idom_vertex[v] = work.rev[id] // convert back to vertex ID
@@ -215,7 +215,7 @@ pub fn build_dominator_tree(
 
   // Step 6: Build dominator tree structure
   let tree = build_adj_lists(n)
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     let p = idom_vertex[v]
     guard p >= 0 && v != root else { continue }
     tree[p].push(v) // Add edge idom[v] → v

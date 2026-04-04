@@ -149,7 +149,7 @@ pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
   // Find positions where Z[i] = m (full pattern match)
   // These positions correspond to text[i - m - 1]
   // INVARIANT: Valid matches are at positions > m (after pattern$)
-  for i = m + 1; i < z.length(); i = i + 1 {
+  for i in (m + 1)..<z.length() {
     if z[i] == m {
       result.push(i - m - 1) // Convert to text index
     }
@@ -212,7 +212,7 @@ fn all_borders(s : String) -> Array[Int] {
   let borders : Array[Int] = []
 
   // A border of length k exists if some position i has Z[i] = n - i = k
-  for i = 1; i < n; i = i + 1 {
+  for i in 1..<n {
     if z[i] + i == n {
       borders.push(z[i])
     }
@@ -246,7 +246,7 @@ fn string_period(s : String) -> Int {
   // Period p means n - p is a border length, or equivalently
   // there exists position p where Z[p] >= n - p
   // INVARIANT: Find smallest p where s[p..] matches prefix of length >= n-p
-  for p = 1; p < n; p = p + 1 {
+  for p in 1..<n {
     if z[p] >= n - p {
       return p
     }

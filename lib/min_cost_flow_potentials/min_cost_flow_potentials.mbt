@@ -154,20 +154,10 @@ fn MinCostFlowPotentials::dijkstra(
   sink : Int,
   potential : Array[Int64],
 ) -> Bool {
-  for i = 0; i < self.n; i = i + 1 {
+  for i in 0..<self.n {
     self.dist[i] = MCF_INF
     self.prev_v[i] = -1
     self.prev_e[i] = -1
-  } where {
-    invariant: i >= 0 && i <= self.n,
-    reasoning: (
-      #|INVARIANT (reset arrays):
-      #|dist/prev are reset for vertices in [0, i).
-      #|MAINTENANCE:
-      #|Clear state for vertex i.
-      #|TERMINATION:
-      #|At i = n, all vertices are reset for a fresh Dijkstra run.
-    ),
   }
   let heap = MinHeap::new()
   self.dist[source] = 0L
@@ -183,7 +173,7 @@ fn MinCostFlowPotentials::dijkstra(
         if u == sink {
           break ()
         }
-        for i = 0; i < self.adj[u].length(); i = i + 1 {
+        for i in 0..<self.adj[u].length() {
           let e = self.adj[u][i]
           if e.cap > e.flow {
             let reduced = e.cost + potential[u] - potential[e.to]
@@ -195,17 +185,6 @@ fn MinCostFlowPotentials::dijkstra(
               heap.push({ dist: nd, vertex: e.to })
             }
           }
-        } where {
-          invariant: i >= 0 && i <= self.adj[u].length(),
-          reasoning: (
-            #|INVARIANT (relax edges):
-            #|All edges adj[u][0..i) have been considered for relaxation.
-            #|MAINTENANCE:
-            #|Relax edge i if residual capacity exists and reduced cost improves
-            #|the tentative distance.
-            #|TERMINATION:
-            #|At i = deg(u), all outgoing residual edges are processed.
-          ),
         }
         continue heap.pop()
       }
@@ -241,21 +220,10 @@ pub fn MinCostFlowPotentials::compute_with_limit(
 
     // Shortest path cost in original weights (before updating potentials).
     let path_cost = self.dist[sink] + potential[sink] - potential[source]
-    for i = 0; i < self.n; i = i + 1 {
+    for i in 0..<self.n {
       if self.dist[i] < MCF_INF {
         potential[i] = potential[i] + self.dist[i]
       }
-    } where {
-      invariant: i >= 0 && i <= self.n,
-      reasoning: (
-        #|INVARIANT (potential update):
-        #|potentials for vertices in [0, i) have been updated with their
-        #|shortest reduced distances, preserving non-negative reduced costs.
-        #|MAINTENANCE:
-        #|Add dist[i] to potential[i] when reachable.
-        #|TERMINATION:
-        #|At i = n, all reachable vertices have updated potentials.
-      ),
     }
     let add_flow = for steps = 0, v = sink, add_flow = flow_limit - total_flow; v !=
                       source; {

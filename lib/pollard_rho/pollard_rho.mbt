@@ -155,7 +155,7 @@ fn pollard_rho(n : Int64) -> Int64 {
     return 2L
   }
   let constants : Array[Int64] = [1L, 3L, 5L, 7L, 11L, 13L, 17L]
-  for idx = 0; idx < constants.length(); idx = idx + 1 {
+  for idx in 0..<constants.length() {
     let c = constants[idx]
     let d = for x = 2L, y = 2L, d = 1L {
       if d != 1L {

@@ -29,7 +29,7 @@ fn knapsack_01(
 
   // dp[w] = max value achievable with capacity w using items considered so far
   let dp = Array::make(capacity + 1, 0)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let weight = weights[i]
     let value = values[i]
 
@@ -85,8 +85,8 @@ fn knapsack_unbounded(
   let dp = Array::make(capacity + 1, 0)
 
   // Process weights in forward direction (allows reusing items)
-  for w = 1; w <= capacity; w = w + 1 {
-    for i = 0; i < n; i = i + 1 {
+  for w in 1..<=capacity {
+    for i in 0..<n {
       if weights[i] <= w {
         let candidate = dp[w - weights[i]] + values[i]
         if candidate > dp[w] {
@@ -152,7 +152,7 @@ fn lis_binary_search(nums : ArrayView[Int]) -> Int {
 
   // tails[i] = smallest tail of all increasing subsequences of length i+1
   let tails : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let num = nums[i]
     // Binary search for the position to insert/replace
     let pos = lower_bound_lis(tails[:], num)
@@ -230,8 +230,8 @@ fn coin_change_min(coins : ArrayView[Int], amount : Int) -> Int {
   let inf = amount + 1 // Represents impossible
   let dp = Array::make(amount + 1, inf)
   dp[0] = 0
-  for a = 1; a <= amount; a = a + 1 {
-    for i = 0; i < coins.length(); i = i + 1 {
+  for a in 1..<=amount {
+    for i in 0..<coins.length() {
       let coin = coins[i]
       if coin <= a && dp[a - coin] < inf {
         let candidate = dp[a - coin] + 1
@@ -289,9 +289,9 @@ fn coin_change_ways(coins : ArrayView[Int], amount : Int) -> Int {
   dp[0] = 1 // One way to make 0: use no coins
 
   // Process coins first to avoid counting permutations as different
-  for i = 0; i < coins.length(); i = i + 1 {
+  for i in 0..<coins.length() {
     let coin = coins[i]
-    for a = coin; a <= amount; a = a + 1 {
+    for a in coin..<=amount {
       dp[a] = dp[a] + dp[a - coin]
     } where {
       invariant: a >= coin && a <= amount + 1,
@@ -348,8 +348,8 @@ fn longest_common_subsequence(s1 : String, s2 : String) -> Int {
   // Space optimization: only need two rows
   let prev = Array::make(n + 1, 0)
   let curr = Array::make(n + 1, 0)
-  for i = 1; i <= m; i = i + 1 {
-    for j = 1; j <= n; j = j + 1 {
+  for i in 1..<=m {
+    for j in 1..<=n {
       if chars1[i - 1] == chars2[j - 1] {
         curr[j] = prev[j - 1] + 1
       } else {
@@ -408,7 +408,7 @@ fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
   if n == 0 {
     return 0
   }
-  for i = 1, max_ending_here = nums[0], max_so_far = nums[0]; i < n; i = i + 1 {
+  for i in 1..<n; max_ending_here = nums[0], max_so_far = nums[0] {
     // Either start fresh at nums[i] or extend previous subarray
     let extend = max_ending_here + nums[i]
     let new_max_ending = if nums[i] > extend { nums[i] } else { extend }
@@ -417,7 +417,7 @@ fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
     } else {
       max_so_far
     }
-    continue i + 1, new_max_ending, new_max_so_far
+    continue new_max_ending, new_max_so_far
   } nobreak {
     max_so_far
   } where {
@@ -455,13 +455,12 @@ fn house_robber(nums : ArrayView[Int]) -> Int {
   if n == 1 {
     return nums[0]
   }
-  for i = 2, prev2 = nums[0], prev1 = (if nums[1] > nums[0] {
+  for i in 2..<n
+      prev2 = nums[0], prev1 = (if nums[1] > nums[0] {
           nums[1]
         } else {
           nums[0]
-        })
-      i < n
-      i = i + 1 {
+        }) {
     let rob_current = prev2 + nums[i]
     let skip_current = prev1
     let current = if rob_current > skip_current {
@@ -469,7 +468,7 @@ fn house_robber(nums : ArrayView[Int]) -> Int {
     } else {
       skip_current
     }
-    continue i + 1, prev1, current
+    continue prev1, current
   } nobreak {
     prev1
   } where {
@@ -511,8 +510,8 @@ fn unique_paths(m : Int, n : Int) -> Int {
 
   // Space optimization: only need one row
   let dp = Array::make(n, 1)
-  for i = 1; i < m; i = i + 1 {
-    for j = 1; j < n; j = j + 1 {
+  for i in 1..<m {
+    for j in 1..<n {
       dp[j] = dp[j] + dp[j - 1]
     } where {
       invariant: j >= 1 && j <= n,
@@ -572,9 +571,9 @@ fn min_path_sum(grid : Array[Array[Int]]) -> Int {
   }
 
   // Fill remaining rows
-  for i = 1; i < m; i = i + 1 {
+  for i in 1..<m {
     dp[0] = dp[0] + grid[i][0]
-    for j = 1; j < n; j = j + 1 {
+    for j in 1..<n {
       let from_above = dp[j]
       let from_left = dp[j - 1]
       dp[j] = grid[i][j] +
@@ -629,8 +628,8 @@ fn word_break(s : String, word_dict : Array[String]) -> Bool {
   }
   let dp = Array::make(n + 1, false)
   dp[0] = true // Empty string can be segmented
-  for i = 1; i <= n; i = i + 1 {
-    for w = 0; w < words.length(); w = w + 1 {
+  for i in 1..<=n {
+    for w in 0..<words.length() {
       let word = words[w]
       let word_len = word.length()
       if word_len <= i && dp[i - word_len] {
@@ -675,7 +674,7 @@ fn word_break(s : String, word_dict : Array[String]) -> Bool {
 ///|
 fn matches_word(chars : Array[Char], start : Int, word : Array[Char]) -> Bool {
   let word_len = word.length()
-  for i = 0; i < word_len; i = i + 1 {
+  for i in 0..<word_len {
     if chars[start + i] != word[i] {
       return false
     }
@@ -724,8 +723,8 @@ fn min_palindrome_cuts(s : String) -> Int {
   }
 
   // Fill palindrome table
-  for length = 2; length <= n; length = length + 1 {
-    for i = 0; i <= n - length; i = i + 1 {
+  for length in 2..<=n {
+    for i in 0..<=(n - length) {
       let j = i + length - 1
       if length == 2 {
         is_palindrome[i][j] = chars[i] == chars[j]
@@ -765,11 +764,11 @@ fn min_palindrome_cuts(s : String) -> Int {
   for i in 0..<=n {
     dp[i] = i - 1 // Maximum cuts = i - 1
   }
-  for i = 1; i <= n; i = i + 1 {
+  for i in 1..<=n {
     if is_palindrome[0][i - 1] {
       dp[i] = 0 // Entire prefix is palindrome
     } else {
-      for j = 1; j < i; j = j + 1 {
+      for j in 1..<i {
         if is_palindrome[j][i - 1] {
           let candidate = dp[j] + 1
           if candidate < dp[i] {
@@ -890,8 +889,8 @@ fn longest_palindromic_subsequence(s : String) -> Int {
   }
 
   // Fill for lengths 2 to n
-  for length = 2; length <= n; length = length + 1 {
-    for i = 0; i <= n - length; i = i + 1 {
+  for length in 2..<=n {
+    for i in 0..<=(n - length) {
       let j = i + length - 1
       if chars[i] == chars[j] {
         dp[i][j] = dp[i + 1][j - 1] + 2
@@ -958,13 +957,13 @@ fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
   }
 
   // Chain length from 2 to n
-  for len = 2; len <= n; len = len + 1 {
-    for i = 1; i <= n - len + 1; i = i + 1 {
+  for len in 2..<=n {
+    for i in 1..<=(n - len + 1) {
       let j = i + len - 1
       dp[i][j] = 2147483647 // INT_MAX
 
       // Try all split points
-      for k = i; k < j; k = k + 1 {
+      for k in i..<j {
         let cost = dp[i][k] +
           dp[k + 1][j] +
           dimensions[i - 1] * dimensions[k] * dimensions[j]

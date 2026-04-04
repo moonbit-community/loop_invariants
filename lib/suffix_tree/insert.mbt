@@ -230,7 +230,7 @@ pub fn SuffixTree::new(s : String) -> SuffixTree {
   let nodes : Array[Node] = [Node::new()]
 
   // Insert all suffixes
-  for start = 0; start < text.length(); start = start + 1 {
+  for start in 0..<text.length() {
     insert_suffix(nodes, text, start)
   } where {
     invariant: start >= 0 && start <= text.length(),

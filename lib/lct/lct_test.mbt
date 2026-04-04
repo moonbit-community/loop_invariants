@@ -158,7 +158,7 @@ test "lct stress test" {
   let lct = LinkCutTree::new(n)
 
   // Build a path: 0 <- 1 <- 2 <- ... <- 49
-  for i = 1; i < n; i = i + 1 {
+  for i in 1..<n {
     lct.link(i, i - 1)
   } where {
     invariant: i >= 1 && i <= n,
@@ -175,7 +175,7 @@ test "lct stress test" {
   }
 
   // All should have root 0
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     guard lct.find_root(i) == 0 else { fail("Wrong root") }
   } where {
     invariant: i >= 0 && i <= n,

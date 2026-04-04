@@ -61,7 +61,7 @@ priv struct UF {
 fn UF::new(n : Int) -> UF {
   let parent = Array::make(n, 0)
   let rank = Array::make(n, 0)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     parent[i] = i
   } where {
     invariant: i >= 0 && i <= n && parent.length() == n && rank.length() == n,
@@ -195,11 +195,11 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
   let (total_weight, edges_added) = for iter = 0, total_weight = 0L, edges_added = 0; iter <
                                        self.n; {
     // Find minimum edge to non-MST vertex
-    let (u, min_w) = for i = 0, u = -1, min_w = PRIM_INF; i < self.n; i = i + 1 {
+    let (u, min_w) = for i in 0..<self.n; u = -1, min_w = PRIM_INF {
       if !in_mst[i] && min_edge[i] < min_w {
-        continue i + 1, i, min_edge[i]
+        continue i, min_edge[i]
       }
-      continue i + 1, u, min_w
+      continue u, min_w
     } nobreak {
       (u, min_w)
     } where {

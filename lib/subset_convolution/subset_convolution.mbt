@@ -60,8 +60,8 @@ pub fn subset_convolution(
     fpc[k][s] = fpad[s]
     gpc[k][s] = gpad[s]
   }
-  for k = 0; k <= n; k = k + 1 {
-    for bit = 0; bit < n; bit = bit + 1 {
+  for k in 0..<=n {
+    for bit in 0..<n {
       let mask = 1 << bit
       for s in 0..<size {
         if (s & mask) != 0 {
@@ -93,8 +93,8 @@ pub fn subset_convolution(
     ),
   }
   let hpc = Array::makei(n + 1, _ => Array::make(size, 0L))
-  for k = 0; k <= n; k = k + 1 {
-    for i = 0; i <= k; i = i + 1 {
+  for k in 0..<=n {
+    for i in 0..<=k {
       for s in 0..<size {
         hpc[k][s] = hpc[k][s] + fpc[i][s] * gpc[k - i][s]
       }
@@ -120,8 +120,8 @@ pub fn subset_convolution(
       #|At k = n+1, all popcount layers are computed.
     ),
   }
-  for k = 0; k <= n; k = k + 1 {
-    for bit = 0; bit < n; bit = bit + 1 {
+  for k in 0..<=n {
+    for bit in 0..<n {
       let mask = 1 << bit
       for s in 0..<size {
         if (s & mask) != 0 {

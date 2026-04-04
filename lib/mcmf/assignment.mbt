@@ -58,78 +58,20 @@ pub fn solve_assignment(cost : Array[Array[Int64]]) -> Int64 {
   let sink = 2 * n + 1
 
   // Source to workers (capacity 1, cost 0)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     mcmf.add_edge(source, i + 1, 1L, 0L)
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (source to workers):
-      #|  Workers [0..i) have incoming edges from source.
-      #|
-      #|EDGE MEANING:
-      #|  Each worker can be assigned to at most 1 task.
-      #|  Cost 0 because assignment cost is on worker-task edges.
-      #|
-      #|MAINTENANCE:
-      #|  Add edge for worker i.
-      #|
-      #|TERMINATION:
-      #|  At i = n, all workers connected to source.
-    ),
   }
 
   // Workers to tasks (capacity 1, cost = cost[worker][task])
-  for i = 0; i < n; i = i + 1 {
-    for j = 0; j < cost[i].length(); j = j + 1 {
+  for i in 0..<n {
+    for j in 0..<cost[i].length() {
       mcmf.add_edge(i + 1, n + 1 + j, 1L, cost[i][j])
-    } where {
-      invariant: j >= 0 && j <= cost[i].length(),
-      reasoning: (
-        #|INVARIANT (worker to tasks):
-        #|  For worker i, edges to tasks [0..j) have been added.
-        #|
-        #|EDGE MEANING:
-        #|  Worker i can be assigned to task j with cost[i][j].
-        #|
-        #|MAINTENANCE:
-        #|  Add edge from worker i to task j.
-        #|
-        #|TERMINATION:
-        #|  At j = n, worker i can reach all tasks.
-      ),
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (all worker-task edges):
-      #|  Workers [0..i) have edges to all tasks.
-      #|
-      #|MAINTENANCE:
-      #|  Add all edges for worker i.
-      #|
-      #|TERMINATION:
-      #|  At i = n, complete bipartite worker-task graph.
-    ),
   }
 
   // Tasks to sink (capacity 1, cost 0)
-  for j = 0; j < n; j = j + 1 {
+  for j in 0..<n {
     mcmf.add_edge(n + 1 + j, sink, 1L, 0L)
-  } where {
-    invariant: j >= 0 && j <= n,
-    reasoning: (
-      #|INVARIANT (tasks to sink):
-      #|  Tasks [0..j) have edges to sink.
-      #|
-      #|EDGE MEANING:
-      #|  Each task can be assigned to at most 1 worker.
-      #|
-      #|MAINTENANCE:
-      #|  Add edge for task j.
-      #|
-      #|TERMINATION:
-      #|  At j = n, all tasks connected to sink.
-    ),
   }
 
   // Compute min-cost max-flow

@@ -30,8 +30,8 @@ fn build_suffix_array_simple(s : String) -> Array[Int] {
 
   // Sort using bubble sort with suffix comparison
   // (In production, use radix sort for O(n log n))
-  for i = 0; i < n; i = i + 1 {
-    for j = i + 1; j < n; j = j + 1 {
+  for i in 0..<n {
+    for j in (i + 1)..<n {
       if compare_suffixes(chars, sa[i], sa[j]) > 0 {
         let temp = sa[i]
         sa[i] = sa[j]
@@ -49,7 +49,7 @@ fn build_suffix_array_simple(s : String) -> Array[Int] {
       ),
     }
   } where {
-    invariant: i >= 0 && i <= n,
+    invariant: i >= 0 && i < n,
     reasoning: (
       #|INVARIANT (selection outer loop):
       #|sa[0..i) contains the i smallest suffixes in sorted order.
@@ -66,7 +66,8 @@ fn build_suffix_array_simple(s : String) -> Array[Int] {
 ///|
 fn compare_suffixes(chars : Array[Char], i : Int, j : Int) -> Int {
   let n = chars.length()
-  for k = 0; i + k < n && j + k < n; k = k + 1 {
+  let len = if n - i < n - j { n - i } else { n - j }
+  for k in 0..<len {
     if chars[i + k] < chars[j + k] {
       return -1
     }
@@ -386,7 +387,8 @@ fn search_upper_bound(
 fn compare_with_pattern(s : Array[Char], start : Int, p : Array[Char]) -> Int {
   let n = s.length()
   let m = p.length()
-  for i = 0; i < m && start + i < n; i = i + 1 {
+  let len = if m < n - start { m } else { n - start }
+  for i in 0..<len {
     if s[start + i] < p[i] {
       return -1
     }
@@ -503,7 +505,7 @@ fn count_substrings_by_char(s : String) -> Array[Int] {
 
   // Count for each character (assuming lowercase a-z)
   let count = Array::make(26, 0)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let c = chars[i].to_int() - 'a'.to_int()
     if c >= 0 && c < 26 {
       // Suffix at position i contributes (n - i) substrings
@@ -550,7 +552,7 @@ fn burrows_wheeler_transform(s : String) -> String {
   }
   let sa = build_suffix_array_simple(s)
   let bwt : Array[Char] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     // Character before the suffix (with wraparound)
     let idx = (sa[i] - 1 + n) % n
     bwt.push(chars[idx])
@@ -600,7 +602,7 @@ fn smallest_rotation(s : String) -> String {
   let sa = build_suffix_array_simple(doubled_str)
 
   // Find smallest suffix that starts in first half
-  for i = 0; i < 2 * n; i = i + 1 {
+  for i in 0..<(2 * n) {
     if sa[i] < n {
       // This is the smallest rotation starting point
       let result = Array::makei(n, j => chars[(sa[i] + j) % n])
