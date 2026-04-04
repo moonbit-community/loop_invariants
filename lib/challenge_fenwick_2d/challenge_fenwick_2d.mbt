@@ -26,9 +26,10 @@ pub fn Fenwick2D::new(rows : Int, cols : Int) -> Fenwick2D {
 pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
   let x = r + 1
   let y = c + 1
-  for i = x; i <= self.rows; i = i + lowbit(i) {
-    for j = y; j <= self.cols; j = j + lowbit(j) {
+  for i = x; i <= self.rows; {
+    for j = y; j <= self.cols; {
       self.tree[i][j] = self.tree[i][j] + delta
+      continue j + lowbit(j)
     } where {
       invariant: j > 0 && j <= self.cols + 1,
       reasoning: (
@@ -40,6 +41,7 @@ pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
         #|j eventually exceeds cols, finishing column updates for this row.
       ),
     }
+    continue i + lowbit(i)
   } where {
     invariant: i > 0 && i <= self.rows + 1,
     reasoning: (
