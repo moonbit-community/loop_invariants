@@ -11,10 +11,10 @@ fn build_prefix_sum_fixed(
 } {
   let n = arr.length()
   let prefix = FixedArray::make(n + 1, 0)
-  for i = 0, sum = 0; i < n; {
+  for i in 0..<n; sum = 0 {
     let next = sum + arr[i]
     prefix[i + 1] = next
-    continue i + 1, next
+    continue next
   } nobreak {
     prefix
   } where {
