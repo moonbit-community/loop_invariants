@@ -249,15 +249,28 @@ test "lcp array" {
 }
 
 ///|
-/// Count Distinct Substrings using Suffix Array
+/// Count the number of distinct (non-empty) substrings of `s`.
 ///
-/// MATHEMATICAL FOUNDATION:
-/// Total substrings = n*(n+1)/2
-/// Duplicate substrings = sum of LCP values
-/// Distinct = Total - Duplicates
+/// Uses the suffix array and LCP array with the formula:
+/// ```
+/// distinct = n*(n+1)/2 - sum(lcp)
+/// ```
+/// Each suffix `sa[i]` of length `n - sa[i]` contributes exactly
+/// `(n - sa[i]) - lcp[i]` new distinct substrings that were not already
+/// introduced by the lexicographically preceding suffix.
 ///
-/// INVARIANT: Each suffix contributes (n - sa[i]) substrings,
-/// but lcp[i] of them are duplicates from the previous suffix.
+/// # Example
+/// ```
+/// // "ab": substrings "a", "b", "ab"  -> 3
+/// // "aa": substrings "a", "aa"       -> 2
+/// // "abc": 6 distinct substrings
+/// ```
+///
+/// # Parameters
+/// - `s` — the string to analyse
+///
+/// # Returns
+/// The count of distinct non-empty substrings as an `Int`.
 fn count_distinct_substrings(s : String) -> Int {
   let n = s.to_array().length()
   if n == 0 {
@@ -301,10 +314,26 @@ test "count distinct substrings" {
 }
 
 ///|
-/// Longest Repeated Substring using LCP
+/// Find the longest substring of `s` that appears at least twice.
 ///
-/// INSIGHT: The longest repeated substring is the maximum value in the LCP array.
-/// It appears as a prefix of two adjacent suffixes in sorted order.
+/// The longest repeated substring corresponds to the maximum value in the
+/// LCP array.  When `lcp[i] = k`, the first `k` characters of suffixes
+/// `sa[i-1]` and `sa[i]` are identical, so `k` characters starting at
+/// `sa[i]` appear at two different positions in `s`.
+///
+/// # Example
+/// ```
+/// // longest_repeated_substring("banana") == "ana"
+/// // longest_repeated_substring("abcd")   == ""   (no repetition)
+/// // longest_repeated_substring("aaa")    == "aa"
+/// ```
+///
+/// # Parameters
+/// - `s` — the string to search
+///
+/// # Returns
+/// The longest repeated substring, or `""` if no character appears more
+/// than once.
 fn longest_repeated_substring(s : String) -> String {
   let chars = s.to_array()
   let n = chars.length()
@@ -354,11 +383,28 @@ test "longest repeated substring" {
 }
 
 ///|
-/// Pattern Search using Suffix Array (Binary Search)
+/// Find all starting positions where `pattern` occurs in `s` using binary
+/// search on the suffix array.
 ///
-/// MATHEMATICAL FOUNDATION:
-/// Since suffixes are sorted, we can binary search for patterns.
-/// Find the range [lo, hi) where all suffixes start with the pattern.
+/// Because the suffix array stores suffixes in sorted order, all suffixes
+/// that start with `pattern` form a contiguous range `[lo, hi)`.  Two binary
+/// searches locate this range in **O(m log n)** time (after O(n² log n)
+/// preprocessing).
+///
+/// # Parameters
+/// - `s`       — the text to search in
+/// - `pattern` — the pattern to search for
+///
+/// # Returns
+/// An `Array[Int]` of all (unsorted) starting positions in `s` where
+/// `pattern` occurs.  Returns an empty array if `pattern` is empty, longer
+/// than `s`, or not found.
+///
+/// # Example
+/// ```
+/// // search_pattern("banana", "ana") -> [1, 3]  (two occurrences)
+/// // search_pattern("banana", "ban") -> [0]
+/// ```
 fn search_pattern(s : String, pattern : String) -> Array[Int] {
   let s_chars = s.to_array()
   let p_chars = pattern.to_array()
@@ -379,6 +425,12 @@ fn search_pattern(s : String, pattern : String) -> Array[Int] {
 }
 
 ///|
+/// Binary-search the suffix array `sa` for the first index whose suffix
+/// is greater than or equal to the pattern `p`.
+///
+/// This is the standard lower-bound binary search adapted for suffix
+/// comparisons.  The loop invariant is: all indices `< lo` are strictly
+/// less than `p`; all indices `>= hi` are greater than or equal to `p`.
 fn search_lower_bound(
   s : Array[Char],
   sa : ArrayView[Int],
@@ -408,6 +460,12 @@ fn search_lower_bound(
 }
 
 ///|
+/// Binary-search the suffix array `sa` for the first index whose suffix
+/// is strictly greater than the pattern `p`.
+///
+/// This is the upper-bound binary search; together with `search_lower_bound`
+/// it identifies the half-open range `[lo, hi)` of all suffixes that have
+/// `p` as a prefix.
 fn search_upper_bound(
   s : Array[Char],
   sa : ArrayView[Int],
@@ -437,6 +495,13 @@ fn search_upper_bound(
 }
 
 ///|
+/// Compare the suffix of `s` starting at `start` with pattern `p`.
+///
+/// Returns a negative integer if the suffix is lexicographically less than
+/// `p`, zero if `p` is a prefix of the suffix (or they are equal), and a
+/// positive integer if the suffix is greater than `p`.
+///
+/// A suffix shorter than `p` is treated as less than `p`.
 fn compare_with_pattern(s : Array[Char], start : Int, p : Array[Char]) -> Int {
   let n = s.length()
   let m = p.length()
@@ -480,10 +545,28 @@ test "pattern search" {
 }
 
 ///|
-/// Longest Common Substring of Two Strings
+/// Find the longest substring common to both `s1` and `s2` using a suffix
+/// array on the concatenation `s1 + '$' + s2`.
 ///
-/// INSIGHT: Concatenate strings with a separator, build suffix array,
-/// then find max LCP between suffixes from different strings.
+/// The separator `'$'` (ASCII 36, less than any lowercase letter) ensures
+/// that no suffix crosses from `s1` into `s2`.  After building the suffix
+/// array and LCP array for the combined string, the longest common substring
+/// is the maximum LCP value between adjacent suffixes that originate from
+/// **different** input strings.
+///
+/// # Parameters
+/// - `s1` — first string
+/// - `s2` — second string
+///
+/// # Returns
+/// The longest common substring (as a `String`), or `""` if the strings
+/// share no common character.
+///
+/// # Example
+/// ```
+/// // longest_common_substring_sa("abcdef", "zbcdf") == "bcd"
+/// // longest_common_substring_sa("abc",    "xyz")   == ""
+/// ```
 fn longest_common_substring_sa(s1 : String, s2 : String) -> String {
   let c1 = s1.to_array()
   let c2 = s2.to_array()
