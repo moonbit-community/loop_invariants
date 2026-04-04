@@ -1037,8 +1037,25 @@ fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
 }
 
 ///|
-/// Split interval at position pos, ensuring pos is start of some interval
-/// Returns index of interval starting at pos
+/// Ensures that `pos` is the left endpoint of some interval in the list.
+///
+/// If `pos` falls inside an existing interval [l, r] (with l < pos), that
+/// interval is split into [l, pos-1] and [pos, r], both inheriting the same
+/// value. If `pos` is already the left endpoint of an interval, or if `pos`
+/// is out of range, the list is left unchanged.
+///
+/// This is a prerequisite for assign and range_add: splitting at both l and
+/// r+1 guarantees that the range [l, r] is exactly covered by a contiguous
+/// slice of the intervals array, simplifying removal and insertion.
+///
+/// Parameters:
+/// - `pos`: the position that must become the start of an interval.
+///
+/// Returns: the index in self.intervals of the interval now starting at `pos`,
+///          or self.intervals.length() if `pos` is beyond the last interval.
+///
+/// Time complexity: O(log k + k) in the worst case (binary search + insertion
+///                 into the middle of the array). O(log k) when no split occurs.
 fn IntervalTree::split_at(self : IntervalTree, pos : Int) -> Int {
   if pos < 0 {
     return 0
@@ -1062,7 +1079,25 @@ fn IntervalTree::split_at(self : IntervalTree, pos : Int) -> Int {
 }
 
 ///|
-/// Assign value v to range [l, r]
+/// Sets every element in the closed range [l, r] to the value `v`.
+///
+/// All intervals that overlap [l, r] are removed and replaced by a single
+/// interval {l, r, v}. This is the operation that keeps the interval list
+/// short: repeated assigns collapse many small intervals into one.
+///
+/// The implementation first splits at r+1 (so the split is done before the
+/// left split to avoid index invalidation), then splits at l, then removes
+/// all intervals from left_idx to right_idx inclusive and inserts one new
+/// interval.
+///
+/// Parameters:
+/// - `l`: inclusive left bound (0-indexed).
+/// - `r`: inclusive right bound (0-indexed).
+/// - `v`: the value to assign to every position in [l, r].
+///
+/// Time complexity: O(k) where k is the number of intervals removed.
+///                 Amortised O(1) because each assign merges intervals that
+///                 were previously created.
 fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit {
   if l > r || self.intervals.length() == 0 {
     return
@@ -1104,7 +1139,22 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
 }
 
 ///|
-/// Query sum in range [l, r]
+/// Returns the sum of all elements in the closed range [l, r].
+///
+/// Iterates over all intervals, skipping those that do not overlap [l, r], and
+/// accumulates the contribution of each overlapping interval. The contribution
+/// of interval [il, ir] clipped to [l, r] is:
+///   (min(ir, r) - max(il, l) + 1) * interval.v
+///
+/// Returns 0 for an empty range or empty tree.
+///
+/// Parameters:
+/// - `l`: inclusive left bound (0-indexed).
+/// - `r`: inclusive right bound (0-indexed).
+///
+/// Returns: sum of arr[l..r].
+///
+/// Time complexity: O(k) where k is the number of live intervals.
 fn IntervalTree::query_sum(self : IntervalTree, l : Int, r : Int) -> Int {
   if l > r || self.intervals.length() == 0 {
     return 0
@@ -1137,7 +1187,20 @@ fn IntervalTree::query_sum(self : IntervalTree, l : Int, r : Int) -> Int {
 }
 
 ///|
-/// Add val to all elements in range [l, r]
+/// Adds `val` to every element in the closed range [l, r].
+///
+/// Splits the interval list at l and r+1 to align boundaries, then adds
+/// `val` to the stored value of every interval that falls inside [l, r].
+/// This does not merge adjacent intervals that become equal after the add,
+/// so repeated range_adds can increase the interval count over time; use
+/// assign to collapse intervals back.
+///
+/// Parameters:
+/// - `l`:   inclusive left bound (0-indexed).
+/// - `r`:   inclusive right bound (0-indexed).
+/// - `val`: integer to add (may be negative).
+///
+/// Time complexity: O(k + log k) where k is the number of intervals in [l, r].
 fn IntervalTree::range_add(
   self : IntervalTree,
   l : Int,
@@ -1168,6 +1231,18 @@ fn IntervalTree::range_add(
 }
 
 ///|
+/// Returns the current value at position `pos`.
+///
+/// Uses binary search over the interval list to find the interval containing
+/// `pos` and returns its stored value. Returns None if `pos` is out of range
+/// or the tree is empty.
+///
+/// Parameters:
+/// - `pos`: 0-indexed position to read.
+///
+/// Returns: Some(value) if `pos` is within [0, n-1], or None otherwise.
+///
+/// Time complexity: O(log k) where k is the current number of intervals.
 fn IntervalTree::get(self : IntervalTree, pos : Int) -> Int? {
   match self.find_interval(pos) {
     Some(idx) => Some(self.intervals[idx].v)
