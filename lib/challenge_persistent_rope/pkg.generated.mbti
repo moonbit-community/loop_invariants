@@ -21,8 +21,7 @@ pub enum Rope {
   Empty
   Leaf(value~ : String)
   Node(len~ : Int, left~ : Rope, right~ : Rope)
-}
-pub impl Show for Rope
+} derive(Show)
 
 // Type aliases
 

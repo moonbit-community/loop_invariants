@@ -51,17 +51,16 @@
 ///   - Total flow equals sum of all augmenting path flows
 /// ```
 pub fn Dinic::max_flow(self : Dinic, source : Int, sink : Int) -> Int64 {
-  let mut flow = 0L
-
   // Main loop: BFS phases
-  while self.bfs(source, sink) {
+  for flow = 0L; self.bfs(source, sink); {
     // Reset edge pointers for this phase
     self.iter.fill(0)
 
     // Find blocking flow using repeated DFS
-    for f = self.dfs(source, sink, DINIC_INF); f > 0L; {
-      flow = flow + f
-      continue self.dfs(source, sink, DINIC_INF)
+    let flow = for f = self.dfs(source, sink, DINIC_INF), flow = flow; f > 0L; {
+      continue self.dfs(source, sink, DINIC_INF), flow + f
+    } nobreak {
+      flow
     } where {
       invariant: flow >= 0L,
       reasoning: (
@@ -77,8 +76,10 @@ pub fn Dinic::max_flow(self : Dinic, source : Int, sink : Int) -> Int64 {
         #|  DFS returns 0 when no augmenting path exists.
       ),
     }
+    continue flow
+  } nobreak {
+    flow
   }
-  flow
 }
 
 ///|
@@ -123,8 +124,7 @@ pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
   let result : Array[Int] = []
   let queue : Array[Int] = [source]
   visited[source] = true
-  let mut front = 0
-  while queue.get(front) is Some(u) {
+  for front = 0; queue.get(front) is Some(u); {
     result.push(u)
     for e in self.adj[u] {
       if e.cap > e.flow && !visited[e.to] {
@@ -132,7 +132,7 @@ pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
         queue.push(e.to)
       }
     }
-    front = front + 1
+    continue front + 1
   }
   result
 }

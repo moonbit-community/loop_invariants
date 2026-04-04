@@ -44,17 +44,16 @@ fn TopoSorter::add_edge(self : TopoSorter, u : Int, v : Int) -> Unit {
 ///|
 fn TopoSorter::dfs(self : TopoSorter, u : Int) -> Bool {
   self.state[u] = 1
-  let mut ok = true
-  for v in self.adj[u] {
-    if ok {
-      if self.state[v] == 0 {
-        if !self.dfs(v) {
-          ok = false
-        }
-      } else if self.state[v] == 1 {
-        ok = false
+  let ok = for v in self.adj[u] {
+    if self.state[v] == 0 {
+      if !self.dfs(v) {
+        break false
       }
+    } else if self.state[v] == 1 {
+      break false
     }
+  } nobreak {
+    true
   }
   if !ok {
     return false
@@ -66,24 +65,24 @@ fn TopoSorter::dfs(self : TopoSorter, u : Int) -> Bool {
 
 ///|
 fn TopoSorter::sort(self : TopoSorter) -> Array[Int]? {
-  let mut ok = true
-  for v = 0; v < self.n; v = v + 1 {
+  let ok = for v in 0..<self.n {
     if self.state[v] == 0 {
       if !self.dfs(v) {
-        ok = false
-        break
+        break false
       }
     }
+  } nobreak {
+    true
   } where {
     invariant: v >= 0 && v <= self.n,
     reasoning: (
       #|INVARIANT (full coverage):
-      #|Vertices in [0..v) are either processed (state=2) or a cycle has been
-      #|detected and ok is false.
+      #|Vertices in [0..v) have already been processed successfully.
       #|MAINTENANCE:
-      #|If v is unvisited, run DFS; otherwise skip it. A detected cycle flips ok.
+      #|If v is unvisited, run DFS; otherwise skip it. A detected cycle exits
+      #|the loop immediately with false.
       #|TERMINATION:
-      #|At v = n, all vertices are processed or ok=false indicates a cycle.
+      #|At v = n, all vertices are processed.
     ),
   }
   if !ok {

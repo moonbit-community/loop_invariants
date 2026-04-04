@@ -28,15 +28,12 @@ pub fn max_overlap(intervals : ArrayView[(Int, Int)]) -> Int {
       a.delta - b.delta
     }
   })
-  let mut cur = 0
-  let mut best = 0
-  for ev in events {
-    cur = cur + ev.delta
-    if cur > best {
-      best = cur
-    }
+  for ev in events; cur = 0, best = 0 {
+    let new_cur = cur + ev.delta
+    continue new_cur, if new_cur > best { new_cur } else { best }
+  } nobreak {
+    best
   }
-  best
 }
 
 ///|

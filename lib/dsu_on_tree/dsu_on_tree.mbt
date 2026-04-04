@@ -35,19 +35,22 @@ fn dfs_sizes(
   parent[u] = p
   tin[u] = timer
   euler[timer] = u
-  let mut t = timer + 1
   size[u] = 1
-  let mut best_size = 0
-  for v in adj[u] {
+  let (t, _) = for v in adj[u]; t = timer + 1, best_size = 0 {
     if v == p {
       continue
     }
-    t = dfs_sizes(adj, v, u, parent, size, heavy, tin, tout, euler, t)
+    let t = dfs_sizes(adj, v, u, parent, size, heavy, tin, tout, euler, t)
     size[u] = size[u] + size[v]
-    if size[v] > best_size {
-      best_size = size[v]
+    let best_size = if size[v] > best_size {
       heavy[u] = v
+      size[v]
+    } else {
+      best_size
     }
+    continue t, best_size
+  } nobreak {
+    (t, best_size)
   }
   tout[u] = t
   t
@@ -232,4 +235,18 @@ test "dsu on tree tie case" {
   let colors : Array[Int] = [5, 5, 7]
   let result = subtree_color_mode_sum(adj, colors)
   inspect(result, content="[5, 12, 7]")
+}
+
+///|
+test "dsu on tree keeps carried state when parent edge is skipped" {
+  let adj = make_adj(4)
+  adj[1].push(2)
+  adj[2].push(1)
+  adj[0].push(1)
+  adj[1].push(0)
+  adj[1].push(3)
+  adj[3].push(1)
+  let colors : Array[Int] = [1, 2, 2, 3]
+  let result = subtree_color_mode_sum(adj, colors)
+  inspect(result, content="[2, 2, 2, 3]")
 }

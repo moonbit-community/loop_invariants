@@ -23,26 +23,28 @@ pub fn RollbackDSU::new(n : Int) -> RollbackDSU {
 ///|
 /// Find the representative of x (no path compression).
 pub fn RollbackDSU::find(self : RollbackDSU, x : Int) -> Int {
-  let mut cur = x
-  while self.parent[cur] != cur {
-    cur = self.parent[cur]
+  for cur = x {
+    if self.parent[cur] == cur {
+      break cur
+    } else {
+      continue self.parent[cur]
+    }
   }
-  cur
 }
 
 ///|
 /// Union the sets of a and b; returns true if merged.
 pub fn RollbackDSU::union(self : RollbackDSU, a : Int, b : Int) -> Bool {
-  let mut ra = self.find(a)
-  let mut rb = self.find(b)
+  let ra0 = self.find(a)
+  let rb0 = self.find(b)
+  let (ra, rb) = if self.size[ra0] < self.size[rb0] {
+    (rb0, ra0)
+  } else {
+    (ra0, rb0)
+  }
   if ra == rb {
     self.history.push((-1, 0))
     return false
-  }
-  if self.size[ra] < self.size[rb] {
-    let tmp = ra
-    ra = rb
-    rb = tmp
   }
   self.history.push((rb, self.size[ra]))
   self.parent[rb] = ra
@@ -59,15 +61,20 @@ pub fn RollbackDSU::snapshot(self : RollbackDSU) -> Int {
 ///|
 /// Roll back all unions after the given snapshot.
 pub fn RollbackDSU::rollback(self : RollbackDSU, snap : Int) -> Unit {
-  while self.history.length() > snap {
-    match self.history.pop() {
-      Some((child, parent_size)) =>
-        if child >= 0 {
-          let root = self.parent[child]
-          self.size[root] = parent_size
-          self.parent[child] = child
-        }
-      None => ()
+  for rollback_next = self.history.length() > snap {
+    if !rollback_next {
+      break
+    } else {
+      match self.history.pop() {
+        Some((child, parent_size)) =>
+          if child >= 0 {
+            let root = self.parent[child]
+            self.size[root] = parent_size
+            self.parent[child] = child
+          }
+        None => ()
+      }
+      continue self.history.length() > snap
     }
   }
 }

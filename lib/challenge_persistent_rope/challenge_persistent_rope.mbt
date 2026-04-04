@@ -57,9 +57,9 @@ pub fn to_string(r : Rope) -> String {
 ///|
 /// Concatenate a list of ropes in order.
 pub fn concat_many(ropes : ArrayView[Rope]) -> Rope {
-  let mut acc = Empty
-  for r in ropes {
-    acc = concat(acc, r)
+  for r in ropes; acc = Empty {
+    continue concat(acc, r)
+  } nobreak {
+    acc
   }
-  acc
 }

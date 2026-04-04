@@ -28,12 +28,11 @@ pub fn tsp_min_cycle(dist : Array[Array[Int]], inf : Int) -> Int {
     }
   }
   let full = total - 1
-  let mut best = inf
-  for u in 0..<n {
+  let best = for u in 0..<n; best = inf {
     let cand = dp[full][u] + dist[u][0]
-    if cand < best {
-      best = cand
-    }
+    continue if cand < best { cand } else { best }
+  } nobreak {
+    best
   }
   if best >= inf {
     -1

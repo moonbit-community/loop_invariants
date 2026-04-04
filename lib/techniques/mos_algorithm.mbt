@@ -590,33 +590,40 @@ fn offline_lca_simple(
   let visited : Array[Bool] = Array::make(n, false)
   queue.push(root)
   visited[root] = true
-  let mut front = 0
-  while queue.get(front) is Some(node) {
-    for child in adj[node] {
-      if !visited[child] {
-        visited[child] = true
-        parent[child] = node
-        depth[child] = depth[node] + 1
-        queue.push(child)
+  for front = 0 {
+    match queue.get(front) {
+      Some(node) => {
+        for child in adj[node] {
+          if !visited[child] {
+            visited[child] = true
+            parent[child] = node
+            depth[child] = depth[node] + 1
+            queue.push(child)
+          }
+        }
+        continue front + 1
       }
+      None => break
     }
-    front = front + 1
   }
 
   // Answer queries
   for qi = 0; qi < q; qi = qi + 1 {
     let (u, v) = queries[qi]
-    let mut u_curr = u
-    let mut v_curr = v
-    while depth[u_curr] > depth[v_curr] {
-      u_curr = parent[u_curr]
+    let u_curr = for u_curr = u; depth[u_curr] > depth[v]; {
+      continue parent[u_curr]
+    } nobreak {
+      u_curr
     }
-    while depth[v_curr] > depth[u_curr] {
-      v_curr = parent[v_curr]
+    let v_curr = for v_curr = v; depth[v_curr] > depth[u_curr]; {
+      continue parent[v_curr]
+    } nobreak {
+      v_curr
     }
-    while u_curr != v_curr {
-      u_curr = parent[u_curr]
-      v_curr = parent[v_curr]
+    let u_curr = for u_curr = u_curr, v_curr = v_curr; u_curr != v_curr; {
+      continue parent[u_curr], parent[v_curr]
+    } nobreak {
+      u_curr
     }
     results[qi] = u_curr
   } where {
@@ -655,12 +662,18 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
   let stack : Array[(Int, Int)] = []
   let order : Array[Int] = []
   stack.push((root, -1))
-  while stack.pop() is Some((node, par)) {
-    parent[node] = par
-    order.push(node)
-    for child in adj[node] {
-      if child != par {
-        stack.push((child, node))
+  let _ = for popped = stack.pop() {
+    match popped {
+      None => break ()
+      Some((node, par)) => {
+        parent[node] = par
+        order.push(node)
+        for child in adj[node] {
+          if child != par {
+            stack.push((child, node))
+          }
+        }
+        continue stack.pop()
       }
     }
   }
@@ -676,16 +689,19 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
   let tree_size = subtree_size[root]
   for i = 0, centroid = root; i < n; {
     let node = order[i]
-    let mut is_centroid = true
-    for neighbor in adj[node] {
+    let is_centroid = for neighbor_i = 0; neighbor_i < adj[node].length(); {
+      let neighbor = adj[node][neighbor_i]
       let subtree = if neighbor == parent[node] {
         tree_size - subtree_size[node]
       } else {
         subtree_size[neighbor]
       }
       if subtree > tree_size / 2 {
-        is_centroid = false
+        break false
       }
+      continue neighbor_i + 1
+    } nobreak {
+      true
     }
     if is_centroid {
       continue n, node
@@ -732,20 +748,26 @@ fn build_euler_tour(adj : Array[Array[Int]], root : Int) -> EulerTour {
   let stack : Array[(Int, Int, Int)] = []
   stack.push((root, -1, 0))
   let time = Array::make(1, 0)
-  while stack.pop() is Some((node, par, state)) {
-    if state == 0 {
-      enter[node] = time[0]
-      tour.push(node)
-      time[0] = time[0] + 1
-      stack.push((node, par, 1))
-      for i in adj[node].length()>..0 {
-        let child = adj[node][i]
-        if child != par {
-          stack.push((child, node, 0))
+  let _ = for popped = stack.pop() {
+    match popped {
+      None => break ()
+      Some((node, par, state)) => {
+        if state == 0 {
+          enter[node] = time[0]
+          tour.push(node)
+          time[0] = time[0] + 1
+          stack.push((node, par, 1))
+          for i in adj[node].length()>..0 {
+            let child = adj[node][i]
+            if child != par {
+              stack.push((child, node, 0))
+            }
+          }
+        } else {
+          exit[node] = time[0]
         }
+        continue stack.pop()
       }
-    } else {
-      exit[node] = time[0]
     }
   }
   { enter, exit, tour }
@@ -781,17 +803,21 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
   queue.push(root)
   visited[root] = true
   up[root][0] = root
-  let mut front = 0
-  while queue.get(front) is Some(node) {
-    for child in adj[node] {
-      if !visited[child] {
-        visited[child] = true
-        depth[child] = depth[node] + 1
-        up[child][0] = node
-        queue.push(child)
+  for front = 0 {
+    match queue.get(front) {
+      Some(node) => {
+        for child in adj[node] {
+          if !visited[child] {
+            visited[child] = true
+            depth[child] = depth[node] + 1
+            up[child][0] = node
+            queue.push(child)
+          }
+        }
+        continue front + 1
       }
+      None => break
     }
-    front = front + 1
   }
   for k = 1; k < log_n; k = k + 1 {
     for v = 0; v < n; v = v + 1 {
@@ -830,18 +856,17 @@ fn BinaryLifting::lca_binary_lifting(
   u_in : Int,
   v_in : Int,
 ) -> Int {
-  let mut u = u_in
-  let mut v = v_in
-  if self.depth[u] < self.depth[v] {
-    let temp = u
-    u = v
-    v = temp
+  let (u, v) = if self.depth[u_in] < self.depth[v_in] {
+    (v_in, u_in)
+  } else {
+    (u_in, v_in)
   }
   let diff = self.depth[u] - self.depth[v]
-  for k = 0; k < self.log_n; k = k + 1 {
-    if ((diff >> k) & 1) == 1 {
-      u = self.up[u][k]
-    }
+  let u = for k = 0, u = u; k < self.log_n; {
+    let u = if ((diff >> k) & 1) == 1 { self.up[u][k] } else { u }
+    continue k + 1, u
+  } nobreak {
+    u
   } where {
     invariant: k >= 0 && k <= self.log_n,
     reasoning: (
@@ -856,11 +881,16 @@ fn BinaryLifting::lca_binary_lifting(
   if u == v {
     return u
   }
-  for k in self.log_n>..0 {
-    if self.up[u][k] != self.up[v][k] {
-      u = self.up[u][k]
-      v = self.up[v][k]
+  let u = for bit = self.log_n, u = u, v = v; bit > 0; {
+    let k = bit - 1
+    let (u, v) = if self.up[u][k] != self.up[v][k] {
+      (self.up[u][k], self.up[v][k])
+    } else {
+      (u, v)
     }
+    continue k, u, v
+  } nobreak {
+    u
   }
   self.up[u][0]
 }

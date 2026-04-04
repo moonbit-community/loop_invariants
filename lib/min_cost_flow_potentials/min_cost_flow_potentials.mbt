@@ -54,14 +54,13 @@ fn MinHeap::new() -> MinHeap {
 ///|
 fn MinHeap::push(self : MinHeap, entry : HeapEntry) -> Unit {
   self.data.push(entry)
-  let mut i = self.data.length() - 1
-  while i > 0 {
+  let _ = for i = self.data.length() - 1; i > 0; {
     let parent = (i - 1) / 2
     if self.data[i].dist < self.data[parent].dist {
       let temp = self.data[i]
       self.data[i] = self.data[parent]
       self.data[parent] = temp
-      i = parent
+      continue parent
     } else {
       break
     }
@@ -79,17 +78,20 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
   let _ = self.data.pop()
   if self.data.length() > 0 {
     self.data[0] = last
-    let mut i = 0
     let len = self.data.length()
-    for ;; {
+    let _ = for i = 0 {
       let left = 2 * i + 1
       let right = 2 * i + 2
-      let mut smallest = i
-      if left < len && self.data[left].dist < self.data[smallest].dist {
-        smallest = left
+      let smallest = if left < len && self.data[left].dist < self.data[i].dist {
+        left
+      } else {
+        i
       }
-      if right < len && self.data[right].dist < self.data[smallest].dist {
-        smallest = right
+      let smallest = if right < len &&
+        self.data[right].dist < self.data[smallest].dist {
+        right
+      } else {
+        smallest
       }
       if smallest == i {
         break
@@ -97,7 +99,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
       let temp = self.data[i]
       self.data[i] = self.data[smallest]
       self.data[smallest] = temp
-      i = smallest
+      continue smallest
     } where {
       invariant: i >= 0 && i < len,
       reasoning: (
@@ -170,37 +172,43 @@ fn MinCostFlowPotentials::dijkstra(
   let heap = MinHeap::new()
   self.dist[source] = 0L
   heap.push({ dist: 0L, vertex: source })
-  while heap.pop() is Some(entry) {
-    let u = entry.vertex
-    if entry.dist != self.dist[u] {
-      continue
-    }
-    if u == sink {
-      break
-    }
-    for i = 0; i < self.adj[u].length(); i = i + 1 {
-      let e = self.adj[u][i]
-      if e.cap > e.flow {
-        let reduced = e.cost + potential[u] - potential[e.to]
-        let nd = self.dist[u] + reduced
-        if nd < self.dist[e.to] {
-          self.dist[e.to] = nd
-          self.prev_v[e.to] = u
-          self.prev_e[e.to] = i
-          heap.push({ dist: nd, vertex: e.to })
+  let _ = for popped = heap.pop() {
+    match popped {
+      None => break ()
+      Some(entry) => {
+        let u = entry.vertex
+        if entry.dist != self.dist[u] {
+          continue heap.pop()
         }
+        if u == sink {
+          break ()
+        }
+        for i = 0; i < self.adj[u].length(); i = i + 1 {
+          let e = self.adj[u][i]
+          if e.cap > e.flow {
+            let reduced = e.cost + potential[u] - potential[e.to]
+            let nd = self.dist[u] + reduced
+            if nd < self.dist[e.to] {
+              self.dist[e.to] = nd
+              self.prev_v[e.to] = u
+              self.prev_e[e.to] = i
+              heap.push({ dist: nd, vertex: e.to })
+            }
+          }
+        } where {
+          invariant: i >= 0 && i <= self.adj[u].length(),
+          reasoning: (
+            #|INVARIANT (relax edges):
+            #|All edges adj[u][0..i) have been considered for relaxation.
+            #|MAINTENANCE:
+            #|Relax edge i if residual capacity exists and reduced cost improves
+            #|the tentative distance.
+            #|TERMINATION:
+            #|At i = deg(u), all outgoing residual edges are processed.
+          ),
+        }
+        continue heap.pop()
       }
-    } where {
-      invariant: i >= 0 && i <= self.adj[u].length(),
-      reasoning: (
-        #|INVARIANT (relax edges):
-        #|All edges adj[u][0..i) have been considered for relaxation.
-        #|MAINTENANCE:
-        #|Relax edge i if residual capacity exists and reduced cost improves
-        #|the tentative distance.
-        #|TERMINATION:
-        #|At i = deg(u), all outgoing residual edges are processed.
-      ),
     }
   }
   self.dist[sink] < MCF_INF
@@ -225,11 +233,10 @@ pub fn MinCostFlowPotentials::compute_with_limit(
   flow_limit : Int64,
 ) -> (Int64, Int64) {
   let potential = Array::make(self.n, 0L)
-  let mut total_flow = 0L
-  let mut total_cost = 0L
-  for iter = 0; total_flow < flow_limit; iter = iter + 1 {
+  let (total_flow, total_cost) = for iter = 0, total_flow = 0L, total_cost = 0L; total_flow <
+                                    flow_limit; {
     if !self.dijkstra(source, sink, potential) {
-      break
+      break (total_flow, total_cost)
     }
 
     // Shortest path cost in original weights (before updating potentials).
@@ -250,16 +257,15 @@ pub fn MinCostFlowPotentials::compute_with_limit(
         #|At i = n, all reachable vertices have updated potentials.
       ),
     }
-    let mut add_flow = flow_limit - total_flow
-    let mut v = sink
-    for steps = 0; v != source; steps = steps + 1 {
+    let add_flow = for steps = 0, v = sink, add_flow = flow_limit - total_flow; v !=
+                      source; {
       let u = self.prev_v[v]
       let idx = self.prev_e[v]
       let residual = self.adj[u][idx].cap - self.adj[u][idx].flow
-      if residual < add_flow {
-        add_flow = residual
-      }
-      v = u
+      let add_flow = if residual < add_flow { residual } else { add_flow }
+      continue steps + 1, u, add_flow
+    } nobreak {
+      add_flow
     } where {
       invariant: steps >= 0 && add_flow > 0L,
       reasoning: (
@@ -272,14 +278,13 @@ pub fn MinCostFlowPotentials::compute_with_limit(
         #|When v reaches source, add_flow is the bottleneck capacity.
       ),
     }
-    v = sink
-    for steps = 0; v != source; steps = steps + 1 {
+    let _ = for steps = 0, v = sink; v != source; {
       let u = self.prev_v[v]
       let idx = self.prev_e[v]
       self.adj[u][idx].flow = self.adj[u][idx].flow + add_flow
       let rev = self.adj[u][idx].rev
       self.adj[v][rev].flow = self.adj[v][rev].flow - add_flow
-      v = u
+      continue steps + 1, u
     } where {
       invariant: steps >= 0,
       reasoning: (
@@ -292,8 +297,9 @@ pub fn MinCostFlowPotentials::compute_with_limit(
         #|At v = source, the entire path is augmented.
       ),
     }
-    total_flow = total_flow + add_flow
-    total_cost = total_cost + add_flow * path_cost
+    continue iter + 1, total_flow + add_flow, total_cost + add_flow * path_cost
+  } nobreak {
+    (total_flow, total_cost)
   } where {
     invariant: iter >= 0 && total_flow >= 0L,
     reasoning: (

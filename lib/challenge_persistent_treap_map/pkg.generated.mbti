@@ -24,8 +24,7 @@ pub fn[K : Compare, V] split(TreapMap[K, V], K) -> (TreapMap[K, V], TreapMap[K, 
 pub enum TreapMap[K, V] {
   Empty
   Node(key~ : K, value~ : V, priority~ : Int, size~ : Int, left~ : TreapMap[K, V], right~ : TreapMap[K, V])
-}
-pub impl[K : Show, V : Show] Show for TreapMap[K, V]
+} derive(Show)
 
 // Type aliases
 

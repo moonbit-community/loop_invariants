@@ -1,0 +1,22 @@
+predicate in_bounds(arr : FixedArray[Int], i : Int) {
+  0 <= i && i < arr.length()
+}
+
+predicate prefix_prefix_ok(
+  arr : FixedArray[Int],
+  prefix : FixedArray[Int],
+  end_ : Int,
+  sum : Int
+) {
+  prefix.length() == arr.length() + 1 &&
+  0 <= end_ && end_ <= arr.length() &&
+  prefix[0] == 0 &&
+  prefix[end_] == sum &&
+  (∀ i : Int, ((0 <= i) && (i < end_)) → prefix[i + 1] == prefix[i] + arr[i])
+}
+
+predicate prefix_sum_ok(arr : FixedArray[Int], prefix : FixedArray[Int]) {
+  prefix.length() == arr.length() + 1 &&
+  prefix[0] == 0 &&
+  (∀ i : Int, in_bounds(arr, i) → prefix[i + 1] == prefix[i] + arr[i])
+}

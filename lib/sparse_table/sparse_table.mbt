@@ -144,14 +144,13 @@ fn SparseTableMax::query(self : SparseTableMax, l : Int, r : Int) -> Int64 {
 
 ///|
 fn gcd(a : Int64, b : Int64) -> Int64 {
-  let mut x = if a < 0L { -a } else { a }
-  let mut y = if b < 0L { -b } else { b }
-  while y != 0L {
-    let t = y
-    y = x % y
-    x = t
+  for x = (if a < 0L { -a } else { a }), y = (if b < 0L { -b } else { b }) {
+    if y != 0L {
+      continue y, x % y
+    } else {
+      break x
+    }
   }
-  x
 }
 
 ///|

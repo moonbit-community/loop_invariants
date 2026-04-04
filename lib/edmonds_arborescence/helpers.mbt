@@ -49,10 +49,11 @@ fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
     guard v != root && parent[v] != -1 else { continue }
 
     // Follow parent pointers, marking with v's ID
-    let mut cur = v
-    while cur != -1 && cur != root && seen[cur] == -1 {
+    let cur = for cur = v; cur != -1 && cur != root && seen[cur] == -1; {
       seen[cur] = v
-      cur = parent[cur]
+      continue parent[cur]
+    } nobreak {
+      cur
     }
 
     // Check if we found a cycle (revisited vertex marked with same ID)
@@ -61,10 +62,9 @@ fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
       let cycle : Array[Int] = []
       let start = cur
       cycle.push(start)
-      let mut x = parent[start]
-      while x != start {
+      for x = parent[start]; x != start; {
         cycle.push(x)
-        x = parent[x]
+        continue parent[x]
       }
       return cycle
     }
@@ -103,8 +103,7 @@ fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
   let seen = Array::make(n, false)
   let stack : Array[Int] = [root]
   seen[root] = true
-  let mut idx = 0
-  while idx < stack.length() {
+  for idx = 0; idx < stack.length(); {
     let u = stack[idx]
     for v in adj[u] {
       if !seen[v] {
@@ -112,7 +111,7 @@ fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
         stack.push(v)
       }
     }
-    idx = idx + 1
+    continue idx + 1
   }
   seen
 }

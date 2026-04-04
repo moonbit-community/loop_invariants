@@ -76,12 +76,10 @@ pub fn dial_shortest_paths(graph : Graph, source : Int) -> Array[Int] {
   dist[source] = 0
   buckets[0].push(source)
   for d in 0..<(max_dist + 1) {
-    let mut idx = 0
-    while idx < buckets[d].length() {
+    let _ = for idx = 0; idx < buckets[d].length(); {
       let u = buckets[d][idx]
-      idx = idx + 1
       if dist[u] != d {
-        continue
+        continue idx + 1
       }
       for e in graph.adj[u] {
         let nd = d + e.weight
@@ -90,6 +88,7 @@ pub fn dial_shortest_paths(graph : Graph, source : Int) -> Array[Int] {
           buckets[nd].push(e.to)
         }
       }
+      continue idx + 1
     }
   }
   dist

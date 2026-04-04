@@ -67,17 +67,23 @@ pub fn zero_one_bfs(graph : Graph, source : Int) -> Array[Int] {
   dist[source] = 0
   let deque : @deque.Deque[Int] = @deque.Deque::new()
   deque.push_front(source)
-  while deque.pop_front() is Some(u) {
-    let du = dist[u]
-    for e in graph.adj[u] {
-      let nd = du + e.weight
-      if nd < dist[e.to] {
-        dist[e.to] = nd
-        if e.weight == 0 {
-          deque.push_front(e.to)
-        } else {
-          deque.push_back(e.to)
+  let _ = for popped = deque.pop_front() {
+    match popped {
+      None => break ()
+      Some(u) => {
+        let du = dist[u]
+        for e in graph.adj[u] {
+          let nd = du + e.weight
+          if nd < dist[e.to] {
+            dist[e.to] = nd
+            if e.weight == 0 {
+              deque.push_front(e.to)
+            } else {
+              deque.push_back(e.to)
+            }
+          }
         }
+        continue deque.pop_front()
       }
     }
   }

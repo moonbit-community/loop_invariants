@@ -163,7 +163,7 @@ current state = init
 current length = 0
 
 for each char c in T:
-  while no transition and state != init:
+  repeat until transition exists or state == init:
     state = link[state]
     current length = len[state]
   if transition exists:

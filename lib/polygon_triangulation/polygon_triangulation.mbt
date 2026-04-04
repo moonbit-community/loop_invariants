@@ -45,11 +45,11 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
     return None
   }
   let dp : Array[Array[Int64]] = Array::makei(n, _ => Array::make(n, 0L))
-  for len = 2; len < n; len = len + 1 {
-    for i = 0; i + len < n; i = i + 1 {
+  for len in 2..<n {
+    for i in 0..<(n - len) {
       let j = i + len
       dp[i][j] = INF64
-      for k = i + 1; k < j; k = k + 1 {
+      for k in (i + 1)..<j {
         let cost = dp[i][k] + dp[k][j] + triangle_cost(points, i, k, j)
         if cost < dp[i][j] {
           dp[i][j] = cost

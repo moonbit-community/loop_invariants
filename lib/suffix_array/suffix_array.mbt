@@ -98,18 +98,18 @@ pub fn SuffixArray::new(text : String) -> SuffixArray {
   // Build LCP array using Kasai's algorithm
   let lcp = Array::make(n, 0)
   for i = 0, h = 0; i < n; {
-    let mut curr_h = h
+    let curr_h = h
     if rank_norm[i] > 0 {
       let j = sa[rank_norm[i] - 1]
-      while i + curr_h < n &&
-            j + curr_h < n &&
-            text[i + curr_h] == text[j + curr_h] {
-        curr_h = curr_h + 1
+      let curr_h = for curr_h = curr_h; i + curr_h < n &&
+                      j + curr_h < n &&
+                      text[i + curr_h] == text[j + curr_h]; {
+        continue curr_h + 1
+      } nobreak {
+        curr_h
       }
       lcp[rank_norm[i]] = curr_h
-      if curr_h > 0 {
-        curr_h = curr_h - 1
-      }
+      continue i + 1, if curr_h > 0 { curr_h - 1 } else { curr_h }
     }
     continue i + 1, curr_h
   } where {
@@ -148,22 +148,20 @@ pub fn lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
   }
   let lcp = Array::make(n, 0)
   for i = 0, h = 0; i < n; {
-    let mut curr_h = h
+    let curr_h = h
     if rank[i] == 0 {
-      if curr_h > 0 {
-        curr_h = curr_h - 1
-      }
-      continue i + 1, curr_h
+      continue i + 1, if curr_h > 0 { curr_h - 1 } else { curr_h }
     }
     let j = sa[rank[i] - 1]
-    while i + curr_h < n && j + curr_h < n && s[i + curr_h] == s[j + curr_h] {
-      curr_h = curr_h + 1
+    let curr_h = for curr_h = curr_h; i + curr_h < n &&
+                    j + curr_h < n &&
+                    s[i + curr_h] == s[j + curr_h]; {
+      continue curr_h + 1
+    } nobreak {
+      curr_h
     }
     lcp[rank[i]] = curr_h
-    if curr_h > 0 {
-      curr_h = curr_h - 1
-    }
-    continue i + 1, curr_h
+    continue i + 1, if curr_h > 0 { curr_h - 1 } else { curr_h }
   } where {
     invariant: i >= 0 && i <= n && h >= 0,
     reasoning: (
@@ -189,33 +187,33 @@ pub fn SuffixArray::search(self : SuffixArray, pattern : String) -> (Int, Int)? 
   }
 
   // Binary search for lower bound
-  let mut lo = 0
-  let mut hi = n
-  while lo < hi {
+  let first = for lo = 0, hi = n; lo < hi; {
     let mid = (lo + hi) / 2
     let suffix_start = self.sa[mid]
     if compare_suffix(self.text, suffix_start, pattern) < 0 {
-      lo = mid + 1
+      continue mid + 1, hi
     } else {
-      hi = mid
+      continue lo, mid
     }
+  } nobreak {
+    lo
   }
-  let first = lo
 
   // Binary search for upper bound
-  hi = n
-  while lo < hi {
+  let after_last = for lo = first, hi = n; lo < hi; {
     let mid = (lo + hi) / 2
     let suffix_start = self.sa[mid]
     if starts_with(self.text, suffix_start, pattern) {
-      lo = mid + 1
+      continue mid + 1, hi
     } else if compare_suffix(self.text, suffix_start, pattern) < 0 {
-      lo = mid + 1
+      continue mid + 1, hi
     } else {
-      hi = mid
+      continue lo, mid
     }
+  } nobreak {
+    lo
   }
-  let last = lo - 1
+  let last = after_last - 1
   if first <= last && starts_with(self.text, self.sa[first], pattern) {
     Some((first, last))
   } else {
@@ -292,13 +290,13 @@ pub fn SuffixArray::longest_repeated_substring(self : SuffixArray) -> String {
     return ""
   }
   // Find max LCP and its index.
-  let mut max_idx = 0
-  let mut max_lcp = 0
-  for i in 1..<n {
+  let (max_idx, max_lcp) = for i in 1..<n; max_idx = 0, max_lcp = 0 {
     if self.lcp[i] > max_lcp {
-      max_lcp = self.lcp[i]
-      max_idx = i
+      continue i, self.lcp[i]
     }
+    continue max_idx, max_lcp
+  } nobreak {
+    (max_idx, max_lcp)
   }
   if max_lcp == 0 {
     return ""

@@ -182,12 +182,10 @@ pub fn[T : Compare] contains(t : Tree[T], key : T) -> Bool {
 /// Build a 2-3 tree by inserting elements in order.
 pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Tree[T] {
   let n = arr.length()
-  for i = 0, tree = Empty {
-    if i >= n {
-      break tree
-    } else {
-      continue i + 1, insert(tree, arr[i])
-    }
+  for i in 0..<n; tree = Empty {
+    continue insert(tree, arr[i])
+  } nobreak {
+    tree
   } where {
     invariant: i >= 0 && i <= n,
     invariant: size(tree) == i,

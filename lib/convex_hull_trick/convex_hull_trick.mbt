@@ -48,11 +48,12 @@ pub fn ConvexHullTrick::add_line(
   b : Int64,
 ) -> Unit {
   let line = { m, b }
-  while self.lines.length() - self.head >= 2 {
+  for prune_next = self.lines.length() - self.head >= 2; prune_next; {
     let l1 = self.lines[self.lines.length() - 2]
     let l2 = self.lines[self.lines.length() - 1]
     if is_bad(l1, l2, line) {
       let _ = self.lines.pop()
+      continue self.lines.length() - self.head >= 2
     } else {
       break
     }
@@ -63,11 +64,12 @@ pub fn ConvexHullTrick::add_line(
 ///|
 /// Query maximum at x. x must be non-decreasing across calls.
 pub fn ConvexHullTrick::query(self : ConvexHullTrick, x : Int64) -> Int64 {
-  while self.lines.length() - self.head >= 2 {
+  for advance_next = self.lines.length() - self.head >= 2; advance_next; {
     let l1 = self.lines[self.head]
     let l2 = self.lines[self.head + 1]
     if l2.value(x) >= l1.value(x) {
       self.head = self.head + 1
+      continue self.lines.length() - self.head >= 2
     } else {
       break
     }

@@ -22,11 +22,13 @@ fn next_greater_element(arr : ArrayView[Int]) -> Array[Int] {
       break result
     } else {
       // Pop elements smaller than current - current is their NGE
-      while stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i] {
+      for pop_next = stack.length() > 0 &&
+            arr[stack[stack.length() - 1]] < arr[i]; pop_next; {
         match stack.pop() {
           Some(top) => result[top] = i
           None => break
         }
+        continue stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]
       }
       stack.push(i)
       continue i + 1
@@ -116,21 +118,15 @@ fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
       break result
     } else {
       // Remove elements outside current window from front
-      while deque.front() is Some(front) {
-        if front <= i - k {
-          let _ = deque.pop_front()
-        } else {
-          break
-        }
+      for pop_front = deque.front() is Some(front) && front <= i - k; pop_front; {
+        let _ = deque.pop_front()
+        continue deque.front() is Some(front) && front <= i - k
       }
 
       // Remove elements smaller than current from back (they can't be max)
-      while deque.back() is Some(back) {
-        if arr[back] < arr[i] {
-          let _ = deque.pop_back()
-        } else {
-          break
-        }
+      for pop_back = deque.back() is Some(back) && arr[back] < arr[i]; pop_back; {
+        let _ = deque.pop_back()
+        continue deque.back() is Some(back) && arr[back] < arr[i]
       }
 
       // Add current element
@@ -227,18 +223,17 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
 
   // Stack stores indices of bars in increasing height order
   let stack : Array[Int] = []
-  let mut max_area = 0
 
   // Process all bars, plus one "sentinel" bar of height 0
-  for i = 0 {
+  for i = 0, max_area = 0 {
     if i > n {
       break max_area
     } else {
       let curr_height = if i == n { 0 } else { heights[i] }
 
       // Pop bars taller than current - they can't extend further right
-      while stack.length() > 0 &&
-            heights[stack[stack.length() - 1]] > curr_height {
+      let max_area = for max_area = max_area; stack.length() > 0 &&
+                        heights[stack[stack.length() - 1]] > curr_height; {
         match stack.pop() {
           Some(h_idx) => {
             let height = heights[h_idx]
@@ -250,15 +245,16 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
               i - stack[stack.length() - 1] - 1
             }
             let area = height * width
-            if area > max_area {
-              max_area = area
-            }
+            let max_area = if area > max_area { area } else { max_area }
+            continue max_area
           }
-          None => break
+          None => break max_area
         }
+      } nobreak {
+        max_area
       }
       stack.push(i)
-      continue i + 1
+      continue i + 1, max_area
     }
   } where {
     invariant: i >= 0 && i <= n + 1 && max_area >= 0,
@@ -451,8 +447,10 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
   // Compute left distances using monotonic stack
   let stack : Array[Int] = []
   for i = 0; i < n; i = i + 1 {
-    while stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i] {
+    for pop_next = stack.length() > 0 &&
+          arr[stack[stack.length() - 1]] >= arr[i]; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i]
     }
     left[i] = if stack.length() == 0 {
       i + 1
@@ -478,8 +476,9 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
   // Compute right distances using monotonic stack (process right to left)
   stack.clear()
   for i in n>..0 {
-    while stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i] {
+    for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]
     }
     right[i] = if stack.length() == 0 {
       n - i
@@ -562,8 +561,11 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
       break spans
     } else {
       // Pop prices smaller than current
-      while stack.length() > 0 && prices[stack[stack.length() - 1]] <= prices[i] {
+      for pop_next = stack.length() > 0 &&
+            prices[stack[stack.length() - 1]] <= prices[i]; pop_next; {
         let _ = stack.pop()
+        continue stack.length() > 0 &&
+          prices[stack[stack.length() - 1]] <= prices[i]
       }
 
       // Span extends back to previous larger price (or to start)

@@ -22,8 +22,7 @@ pub fn[T] size(Heap[T]) -> Int
 pub enum Heap[T] {
   Empty
   Node(value~ : T, rank~ : Int, left~ : Heap[T], right~ : Heap[T])
-}
-pub impl[T : Show] Show for Heap[T]
+} derive(Show)
 
 // Type aliases
 

@@ -123,13 +123,11 @@ pub fn[T] to_array(t : Treap[T]) -> Array[T] {
 ///|
 /// Build a treap by appending elements in order.
 pub fn[T : Hash] from_array(arr : ArrayView[T]) -> Treap[T] {
-  let mut tree = Empty
-  let mut idx = 0
-  for value in arr {
-    tree = insert_at(tree, idx, value)
-    idx = idx + 1
+  for value in arr; tree = Empty, idx = 0 {
+    continue insert_at(tree, idx, value), idx + 1
+  } nobreak {
+    tree
   }
-  tree
 }
 
 ///|

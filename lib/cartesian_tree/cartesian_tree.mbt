@@ -152,7 +152,7 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   let depth = Array::make(n, 0)
   let queue : Array[Int] = [root]
   depth[root] = 0
-  for head = 0; head < queue.length(); head = head + 1 {
+  for head = 0; head < queue.length(); {
     let v = queue[head]
     if nodes[v].left != -1 {
       let left = nodes[v].left
@@ -164,6 +164,7 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
       depth[right] = depth[v] + 1
       queue.push(right)
     }
+    continue head + 1
   } where {
     invariant: head >= 0 && head <= queue.length(),
     reasoning: (
@@ -433,10 +434,11 @@ fn nearest_smaller_left(arr : Array[Int64]) -> Array[Int] {
   let stack : Array[Int] = []
   for i in 0..<n {
     // Pop elements >= arr[i]
-    while stack.length() > 0 {
+    for pop_next = stack.length() > 0; pop_next; {
       let top = stack[stack.length() - 1]
       if arr[top] >= arr[i] {
         let _ = stack.pop()
+        continue stack.length() > 0
       } else {
         break
       }
@@ -458,10 +460,11 @@ fn nearest_smaller_right(arr : Array[Int64]) -> Array[Int] {
   // Process from right to left
   let stack : Array[Int] = []
   for i in n>..0 {
-    while stack.length() > 0 {
+    for pop_next = stack.length() > 0; pop_next; {
       let top = stack[stack.length() - 1]
       if arr[top] >= arr[i] {
         let _ = stack.pop()
+        continue stack.length() > 0
       } else {
         break
       }
@@ -486,15 +489,14 @@ fn largest_rectangle_histogram(heights : Array[Int64]) -> Int64 {
   let right = nearest_smaller_right(heights)
 
   // For each position, width extends from left+1 to right-1
-  let mut max_area = 0L
-  for i in 0..<n {
+  let max_area = for i in 0..<n; max_area = 0L {
     let l = if left[i] == -1 { 0 } else { left[i] + 1 }
     let r = if right[i] == -1 { n - 1 } else { right[i] - 1 }
     let width = (r - l + 1).to_int64()
     let area = heights[i] * width
-    if area > max_area {
-      max_area = area
-    }
+    continue if area > max_area { area } else { max_area }
+  } nobreak {
+    max_area
   }
   max_area
 }
@@ -518,9 +520,10 @@ fn CartesianTree::tree_number(self : CartesianTree) -> Int64 {
   encode_tree(self.nodes, self.root, bits)
 
   // Convert to number
-  let mut result = 0L
-  for i in 0..<bits.length() {
-    result = result * 2L + bits[i].to_int64()
+  let result = for i in 0..<bits.length(); result = 0L {
+    continue result * 2L + bits[i].to_int64()
+  } nobreak {
+    result
   }
   result
 }

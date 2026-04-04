@@ -132,11 +132,13 @@ pub fn min_arborescence(
 
   // Case A: No cycle - selected edges form valid arborescence
   if cycle.length() == 0 {
-    let mut total = 0L
-    for v in 0..<n {
+    let total = for v = 0, total = 0L; v < n; {
       if v != root {
-        total = total + in_cost[v]
+        continue v + 1, total + in_cost[v]
       }
+      continue v + 1, total
+    } nobreak {
+      total
     }
     return Some({ cost: total, parent })
   }
@@ -150,19 +152,19 @@ pub fn min_arborescence(
   for v in cycle {
     cycle_id[v] = 0
   }
-  let mut new_index = 1
   let comp = Array::make(n, -1)
-  for v in 0..<n {
+  let new_n = for v = 0, new_index = 1; v < n; {
     if cycle_id[v] == 0 {
       comp[v] = 0
-    } else {
-      comp[v] = new_index
-      new_index = new_index + 1
+      continue v + 1, new_index
     }
+    comp[v] = new_index
+    continue v + 1, new_index + 1
+  } nobreak {
+    new_index
   }
 
   // Step 4: Build contracted graph
-  let new_n = new_index
   let contracted_edges : Array[Edge] = []
   for e in edge_list {
     let a = comp[e.from]
@@ -192,12 +194,14 @@ pub fn min_arborescence(
       let final_parent = parent.copy()
 
       // Find which edge enters the cycle in contracted solution
-      let mut enter_edge : Edge? = None
-      for e in contracted_edges {
+      let enter_edge = for i = 0; i < contracted_edges.length(); {
+        let e = contracted_edges[i]
         if e.to == 0 && sub_tree.parent[e.to] == e.from {
-          enter_edge = Some(e)
-          break
+          break Some(e)
         }
+        continue i + 1
+      } nobreak {
+        None
       }
       match enter_edge {
         None => {

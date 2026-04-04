@@ -62,11 +62,10 @@ fn mod_pow(base : Int64, exp : Int64, m : Int64) -> Int64 {
 ///|
 /// Compute bit reversal of index
 fn bit_reverse(x : Int, bits : Int) -> Int {
-  let mut result = 0
-  let mut v = x
-  for i = 0; i < bits; i = i + 1 {
-    result = (result << 1) | (v & 1)
-    v = v >> 1
+  for i = 0, result = 0, v = x; i < bits; {
+    continue i + 1, (result << 1) | (v & 1), v >> 1
+  } nobreak {
+    result
   } where {
     invariant: i >= 0 && i <= bits,
     reasoning: (
@@ -78,7 +77,6 @@ fn bit_reverse(x : Int, bits : Int) -> Int {
       #|At i = bits, result is the full bit-reversal of x.
     ),
   }
-  result
 }
 
 ///|
@@ -149,14 +147,13 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
     let w_base = if inverse { self.root_inv } else { self.root }
     let w = mod_pow(w_base, (n / len).to_int64(), self.mod_val)
     for i = 0; i < n; i = i + len {
-      let mut wn = 1L
-      for j = 0; j < len / 2; j = j + 1 {
+      let _ = for j = 0, wn = 1L; j < len / 2; {
         let u = a[i + j]
         let v = a[i + j + len / 2] * wn % self.mod_val
         a[i + j] = (u + v) % self.mod_val
         a[i + j + len / 2] = ((u - v) % self.mod_val + self.mod_val) %
           self.mod_val
-        wn = wn * w % self.mod_val
+        continue j + 1, wn * w % self.mod_val
       } where {
         invariant: j >= 0 && j <= len / 2,
         reasoning: (

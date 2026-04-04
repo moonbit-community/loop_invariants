@@ -28,16 +28,21 @@ pub fn dag_shortest_paths(
     }
   }
   let order : Array[Int] = []
-  for head = 0; head < queue.length(); head = head + 1 {
-    let u = queue[head]
-    order.push(u)
-    let neighbors = adj[u]
-    for edge in neighbors {
-      let (v, _w) = edge
-      indeg[v] = indeg[v] - 1
-      if indeg[v] == 0 {
-        queue.push(v)
+  for head = 0 {
+    if head >= queue.length() {
+      break
+    } else {
+      let u = queue[head]
+      order.push(u)
+      let neighbors = adj[u]
+      for edge in neighbors {
+        let (v, _w) = edge
+        indeg[v] = indeg[v] - 1
+        if indeg[v] == 0 {
+          queue.push(v)
+        }
       }
+      continue head + 1
     }
   } where {
     invariant: head >= 0 && head <= queue.length(),

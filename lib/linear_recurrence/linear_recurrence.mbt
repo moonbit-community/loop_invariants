@@ -12,11 +12,12 @@
 
 ///|
 fn mod_norm(x : Int64, m : Int64) -> Int64 {
-  let mut v = x % m
+  let v = x % m
   if v < 0L {
-    v = v + m
+    v + m
+  } else {
+    v
   }
-  v
 }
 
 ///|
@@ -31,15 +32,11 @@ fn mod_mul(a : Int64, b : Int64, m : Int64) -> Int64 {
 
 ///|
 fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
-  let mut result = 1L % m
-  let mut b = mod_norm(base, m)
-  let mut e = exp
-  for ; e > 0L; {
-    if (e & 1L) == 1L {
-      result = mod_mul(result, b, m)
-    }
-    b = mod_mul(b, b, m)
-    e = e / 2L
+  for e = exp, result = 1L % m, b = mod_norm(base, m); e > 0L; {
+    let new_result = if (e & 1L) == 1L { mod_mul(result, b, m) } else { result }
+    continue e / 2L, new_result, mod_mul(b, b, m)
+  } nobreak {
+    result
   } where {
     invariant: e >= 0L,
     reasoning: (
@@ -50,7 +47,6 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
       #|When e reaches 0, result is base^exp mod m.
     ),
   }
-  result
 }
 
 ///|
@@ -104,17 +100,19 @@ pub fn linear_recurrence_nth(
   if k == 1 {
     return mod_mul(initial[0], pow_mod(coeffs[0], n, m), m)
   }
-  let mut res = Array::make(k, 0L)
-  res[0] = 1L
-  let mut base = Array::make(k, 0L)
-  base[1] = 1L
-  let mut e = n
-  for ; e > 0L; {
-    if (e & 1L) == 1L {
-      res = combine(res, base, coeffs, m)
+  let init_res = Array::make(k, 0L)
+  init_res[0] = 1L
+  let init_base = Array::make(k, 0L)
+  init_base[1] = 1L
+  let (res, _) = for e = n, res = init_res, base = init_base; e > 0L; {
+    let new_res = if (e & 1L) == 1L {
+      combine(res, base, coeffs, m)
+    } else {
+      res
     }
-    base = combine(base, base, coeffs, m)
-    e = e / 2L
+    continue e / 2L, new_res, combine(base, base, coeffs, m)
+  } nobreak {
+    (res, base)
   } where {
     invariant: e >= 0L,
     reasoning: (
@@ -125,9 +123,10 @@ pub fn linear_recurrence_nth(
       #|When e = 0, res encodes x^n modulo the recurrence.
     ),
   }
-  let mut ans = 0L
-  for i in 0..<k {
-    ans = mod_add(ans, mod_mul(res[i], initial[i], m), m)
+  let ans = for i in 0..<k; ans = 0L {
+    continue mod_add(ans, mod_mul(res[i], initial[i], m), m)
+  } nobreak {
+    ans
   }
   ans
 }

@@ -4,47 +4,73 @@
 // ============================================================================
 
 ///|
-/// Check if weights can be shipped within days using the given capacity.
-pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
-  if days <= 0 {
-    return false
-  }
-  for i = 0, used = 1, load = 0 {
-    if i >= weights.length() {
-      break used <= days
-    } else if weights[i] > capacity {
-      break false
-    } else if load + weights[i] > capacity {
-      continue i + 1, used + 1, weights[i]
+fn days_needed_fixed(
+  weights : FixedArray[Int],
+  capacity : Int,
+) -> Int where {
+  proof_require: capacity_admissible(weights, capacity),
+  proof_ensure: result => days_needed_ok(weights, capacity, result),
+} {
+  for i in 0..<weights.length(); used = 1, load = 0 {
+    let w = weights[i]
+    if load + w > capacity {
+      continue used + 1, w
     } else {
-      continue i + 1, used, load + weights[i]
+      continue used, load + w
     }
+  } nobreak {
+    used
   } where {
-    invariant: i >= 0 && i <= weights.length(),
-    invariant: used >= 1 && load >= 0 && load <= capacity,
+    proof_invariant: 0 <= i,
+    proof_invariant: i <= weights.length(),
+    proof_invariant: 1 <= used,
+    proof_invariant: used <= i + 1,
+    proof_invariant: 0 <= load,
+    proof_invariant: load <= capacity,
     reasoning: (
-      #|INVARIANT (Shipping state):
-      #|The first i items are assigned to 'used' days, and load is the total
-      #|weight loaded on the current day (never exceeding capacity).
-      #|MAINTENANCE:
-      #|If the next item fits, add it to load; otherwise, start a new day
-      #|with that item as the first load.
-      #|TERMINATION:
-      #|At i = weights.length(), we succeeded iff used <= days.
+      #|This helper proves the boundedness properties of the greedy day scan.
+      #|
+      #|`used` is the number of days opened so far, and `load` is the current
+      #|day load. Under the admissibility precondition, every processed item
+      #|fits in the capacity on its own, so opening a new day still preserves
+      #|`load <= capacity`.
+      #|
+      #|Each processed item contributes to at most one new day, which yields the
+      #|simple but useful bound `used <= i + 1`.
     ),
   }
 }
 
 ///|
+/// Check if weights can be shipped within days using the given capacity.
+pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
+  if days <= 0 {
+    return false
+  }
+  if capacity < 0 {
+    return false
+  }
+  let fixed = FixedArray::make(weights.length(), 0)
+  for i, w in weights {
+    if w < 0 {
+      return false
+    }
+    if w > capacity {
+      return false
+    }
+    fixed[i] = w
+  }
+  days_needed_fixed(fixed, capacity) <= days
+}
+
+///|
 /// Minimum capacity to ship all weights within the given days.
 pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
-  let mut lo = 0
-  let mut hi = 0
-  for w in weights {
-    if w > lo {
-      lo = w
-    }
-    hi = hi + w
+  let (lo, hi) = for w in weights; lo = 0, hi = 0 {
+    let new_lo = if w > lo { w } else { lo }
+    continue new_lo, hi + w
+  } nobreak {
+    (lo, hi)
   }
   for low = lo, high = hi {
     if low >= high {
@@ -58,7 +84,7 @@ pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
       }
     }
   } where {
-    invariant: lo <= low && low <= high && high <= hi,
+    proof_invariant: lo <= low && low <= high && high <= hi,
     reasoning: (
       #|INVARIANT (Binary search bounds):
       #|The feasible capacity lies in [low, high].

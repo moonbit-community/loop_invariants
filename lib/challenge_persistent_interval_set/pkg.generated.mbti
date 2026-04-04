@@ -16,8 +16,7 @@ pub fn to_array(Tree) -> Array[(Int, Int)]
 pub enum Tree {
   Empty
   Node(start~ : Int, end~ : Int, left~ : Tree, right~ : Tree)
-}
-pub impl Show for Tree
+} derive(Show)
 
 // Type aliases
 

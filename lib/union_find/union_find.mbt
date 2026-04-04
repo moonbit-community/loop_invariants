@@ -65,17 +65,23 @@ pub fn UnionFind::find(self : UnionFind, x : Int) -> Int {
 
   // Find root with path compression
   // We first find the root, then make all nodes point to it
-  let mut root = x
-  while self.parent[root] != root {
-    root = self.parent[root]
+  let root = for root = x {
+    if self.parent[root] != root {
+      continue self.parent[root]
+    } else {
+      break root
+    }
   }
 
   // Path compression: make all nodes on path point to root
-  let mut curr = x
-  while curr != root {
-    let next = self.parent[curr]
-    self.parent[curr] = root
-    curr = next
+  let _ = for curr = x {
+    if curr != root {
+      let next = self.parent[curr]
+      self.parent[curr] = root
+      continue next
+    } else {
+      break ()
+    }
   }
   root
 }

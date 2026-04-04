@@ -75,12 +75,16 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
     let _ = for i = 0 {
       let left = 2 * i + 1
       let right = 2 * i + 2
-      let mut smallest = i
-      if left < len && self.data[left].dist < self.data[smallest].dist {
-        smallest = left
+      let smallest = if left < len && self.data[left].dist < self.data[i].dist {
+        left
+      } else {
+        i
       }
-      if right < len && self.data[right].dist < self.data[smallest].dist {
-        smallest = right
+      let smallest = if right < len &&
+        self.data[right].dist < self.data[smallest].dist {
+        right
+      } else {
+        smallest
       }
       if smallest == i {
         break ()

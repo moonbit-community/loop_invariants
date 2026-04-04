@@ -43,14 +43,13 @@ fn MinHeap::new() -> MinHeap {
 ///|
 fn MinHeap::push(self : MinHeap, entry : HeapEntry) -> Unit {
   self.data.push(entry)
-  let mut i = self.data.length() - 1
-  while i > 0 {
+  for i = self.data.length() - 1; i > 0; {
     let parent = (i - 1) / 2
     if self.data[i].dist < self.data[parent].dist {
       let tmp = self.data[i]
       self.data[i] = self.data[parent]
       self.data[parent] = tmp
-      i = parent
+      continue parent
     } else {
       break
     }
@@ -68,17 +67,20 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
   let _ = self.data.pop()
   if self.data.length() > 0 {
     self.data[0] = last
-    let mut i = 0
     let len = self.data.length()
-    for ;; {
+    for i = 0; i < len; {
       let left = 2 * i + 1
       let right = 2 * i + 2
-      let mut smallest = i
-      if left < len && self.data[left].dist < self.data[smallest].dist {
-        smallest = left
+      let smallest = if left < len && self.data[left].dist < self.data[i].dist {
+        left
+      } else {
+        i
       }
-      if right < len && self.data[right].dist < self.data[smallest].dist {
-        smallest = right
+      let smallest = if right < len &&
+        self.data[right].dist < self.data[smallest].dist {
+        right
+      } else {
+        smallest
       }
       if smallest == i {
         break
@@ -86,7 +88,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
       let tmp = self.data[i]
       self.data[i] = self.data[smallest]
       self.data[smallest] = tmp
-      i = smallest
+      continue smallest
     } where {
       invariant: i >= 0 && i < len,
       reasoning: (
@@ -120,33 +122,39 @@ fn dijkstra_original(
   dist[source] = 0L
   let heap = MinHeap::new()
   heap.push({ dist: 0L, vertex: source })
-  while heap.pop() is Some(entry) {
-    let u = entry.vertex
-    if entry.dist != dist[u] {
-      continue
-    }
-    if u == sink {
-      break
-    }
-    for i = 0; i < adj[u].length(); i = i + 1 {
-      let edge_id = adj[u][i]
-      let v = to[edge_id]
-      let nd = dist[u] + weight[edge_id]
-      if nd < dist[v] {
-        dist[v] = nd
-        prev_edge[v] = edge_id
-        heap.push({ dist: nd, vertex: v })
+  let _ = for popped = heap.pop() {
+    match popped {
+      None => break ()
+      Some(entry) => {
+        let u = entry.vertex
+        if entry.dist != dist[u] {
+          continue heap.pop()
+        }
+        if u == sink {
+          break ()
+        }
+        for i = 0; i < adj[u].length(); i = i + 1 {
+          let edge_id = adj[u][i]
+          let v = to[edge_id]
+          let nd = dist[u] + weight[edge_id]
+          if nd < dist[v] {
+            dist[v] = nd
+            prev_edge[v] = edge_id
+            heap.push({ dist: nd, vertex: v })
+          }
+        } where {
+          invariant: i >= 0 && i <= adj[u].length(),
+          reasoning: (
+            #|INVARIANT (relax edges):
+            #|Edges adj[u][0..i) have been considered for relaxation.
+            #|MAINTENANCE:
+            #|Relax edge i if it improves the shortest known distance.
+            #|TERMINATION:
+            #|At i = deg(u), all outgoing edges are processed.
+          ),
+        }
+        continue heap.pop()
       }
-    } where {
-      invariant: i >= 0 && i <= adj[u].length(),
-      reasoning: (
-        #|INVARIANT (relax edges):
-        #|Edges adj[u][0..i) have been considered for relaxation.
-        #|MAINTENANCE:
-        #|Relax edge i if it improves the shortest known distance.
-        #|TERMINATION:
-        #|At i = deg(u), all outgoing edges are processed.
-      ),
     }
   }
   if dist[sink] >= SD_INF {
@@ -177,33 +185,39 @@ fn dijkstra_modified(
   dist[source] = 0L
   let heap = MinHeap::new()
   heap.push({ dist: 0L, vertex: source })
-  while heap.pop() is Some(entry) {
-    let u = entry.vertex
-    if entry.dist != dist[u] {
-      continue
-    }
-    if u == sink {
-      break
-    }
-    for i = 0; i < adj[u].length(); i = i + 1 {
-      let e = adj[u][i]
-      let nd = dist[u] + e.weight
-      if nd < dist[e.to] {
-        dist[e.to] = nd
-        prev_v[e.to] = u
-        prev_e[e.to] = i
-        heap.push({ dist: nd, vertex: e.to })
+  let _ = for popped = heap.pop() {
+    match popped {
+      None => break ()
+      Some(entry) => {
+        let u = entry.vertex
+        if entry.dist != dist[u] {
+          continue heap.pop()
+        }
+        if u == sink {
+          break ()
+        }
+        for i = 0; i < adj[u].length(); i = i + 1 {
+          let e = adj[u][i]
+          let nd = dist[u] + e.weight
+          if nd < dist[e.to] {
+            dist[e.to] = nd
+            prev_v[e.to] = u
+            prev_e[e.to] = i
+            heap.push({ dist: nd, vertex: e.to })
+          }
+        } where {
+          invariant: i >= 0 && i <= adj[u].length(),
+          reasoning: (
+            #|INVARIANT (relax modified edges):
+            #|Edges adj[u][0..i) have been relaxed under reduced weights.
+            #|MAINTENANCE:
+            #|Relax edge i if it improves the tentative distance.
+            #|TERMINATION:
+            #|At i = deg(u), all modified edges are processed.
+          ),
+        }
+        continue heap.pop()
       }
-    } where {
-      invariant: i >= 0 && i <= adj[u].length(),
-      reasoning: (
-        #|INVARIANT (relax modified edges):
-        #|Edges adj[u][0..i) have been relaxed under reduced weights.
-        #|MAINTENANCE:
-        #|Relax edge i if it improves the tentative distance.
-        #|TERMINATION:
-        #|At i = deg(u), all modified edges are processed.
-      ),
     }
   }
   if dist[sink] >= SD_INF {
@@ -245,12 +259,11 @@ fn extract_path(
   sink : Int,
 ) -> Array[Int]? {
   let path : Array[Int] = []
-  let mut cur = source
-  for steps = 0; cur != sink; steps = steps + 1 {
+  for steps = 0, cur = source; cur != sink; {
     path.push(cur)
     let next = adj[cur].pop()
     guard next is Some(v) else { return None }
-    cur = v
+    continue steps + 1, v
   } where {
     invariant: steps >= 0 && path.length() == steps,
     reasoning: (
@@ -319,14 +332,13 @@ pub fn suurballe_disjoint_paths(
     Some(result) => result
   }
   let path_edges : Array[Int] = []
-  let mut v = sink
-  for steps = 0; v != source; steps = steps + 1 {
+  for steps = 0, v = sink; v != source; {
     let e = prev_edge[v]
     if e < 0 {
       return None
     }
     path_edges.push(e)
-    v = from[e]
+    continue steps + 1, from[e]
   } where {
     invariant: steps >= 0 && path_edges.length() == steps,
     reasoning: (
@@ -397,8 +409,7 @@ pub fn suurballe_disjoint_paths(
     Some(result) => result
   }
   let path2 : Array[(Int, Edge2)] = []
-  v = sink
-  for steps = 0; v != source; steps = steps + 1 {
+  for steps = 0, v = sink; v != source; {
     let u = prev_v[v]
     let idx = prev_e[v]
     if u < 0 || idx < 0 {
@@ -406,7 +417,7 @@ pub fn suurballe_disjoint_paths(
     }
     let e = adj2[u][idx]
     path2.push((u, e))
-    v = u
+    continue steps + 1, u
   } where {
     invariant: steps >= 0 && path2.length() == steps,
     reasoning: (

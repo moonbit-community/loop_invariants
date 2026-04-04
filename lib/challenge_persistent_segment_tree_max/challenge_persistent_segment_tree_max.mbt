@@ -105,12 +105,12 @@ pub fn apply_updates(
   n : Int,
   updates : ArrayView[(Int, Int)],
 ) -> Node {
-  let mut tree = root
-  for update in updates {
+  for update in updates; tree = root {
     let (idx, value) = update
-    tree = set_value(tree, 0, n, idx, value)
+    continue set_value(tree, 0, n, idx, value)
+  } nobreak {
+    tree
   }
-  tree
 }
 
 ///|

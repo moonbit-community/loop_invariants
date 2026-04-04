@@ -32,12 +32,22 @@ pub fn tsp_min_cycle(dist : Array[Array[Int]]) -> Int {
     }
   }
   let full = total - 1
-  let mut best = INF
-  for u in 1..<n {
+  for u in 1..<n; best = INF {
     let cand = dp[full][u] + dist[u][0]
-    if cand < best {
-      best = cand
-    }
+    continue if cand < best { cand } else { best }
+  } nobreak {
+    best
   }
-  best
+}
+
+///|
+test "tsp_min_cycle" {
+  let dist = [
+    [0, 10, 15, 20],
+    [10, 0, 35, 25],
+    [15, 35, 0, 30],
+    [20, 25, 30, 0],
+  ]
+  assert_eq(tsp_min_cycle(dist), 80)
+  assert_eq(tsp_min_cycle([[0]]), 0)
 }

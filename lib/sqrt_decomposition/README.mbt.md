@@ -54,17 +54,17 @@ range_sum(l, r):
   sum = 0
 
   // left partial
-  while l <= r and l % block_size != 0:
+  repeat until l > r or l % block_size == 0:
     sum += arr[l]
     l++
 
   // full blocks
-  while l + block_size - 1 <= r:
+  repeat until l + block_size - 1 > r:
     sum += block_sum[l / block_size]
     l += block_size
 
   // right partial
-  while l <= r:
+  repeat until l > r:
     sum += arr[l]
     l++
 

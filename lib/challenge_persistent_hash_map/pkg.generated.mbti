@@ -15,14 +15,12 @@ pub fn[K, V] size(HashMap[K, V]) -> Int
 // Errors
 
 // Types and methods
-type Bucket[K, V]
-pub impl[K : Show, V : Show] Show for Bucket[K, V]
+type Bucket[K, V] derive(Show)
 
 pub struct HashMap[K, V] {
   buckets : Array[Bucket[K, V]]
   size : Int
-}
-pub impl[K : Show, V : Show] Show for HashMap[K, V]
+} derive(Show)
 
 // Type aliases
 

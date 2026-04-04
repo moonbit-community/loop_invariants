@@ -16,33 +16,25 @@ pub fn floor_sum(n : Int64, m : Int64, a : Int64, b : Int64) -> Int64 {
   if n <= 0L || m <= 0L {
     return 0L
   }
-  let mut n0 = n
-  let mut m0 = m
-  let mut a0 = a
-  let mut b0 = b
-  let mut ans = 0L
-  for ;; {
-    if a0 >= m0 {
+  for n0 = n, m0 = m, a0 = a, b0 = b, ans = 0L {
+    let (a1, ans1) = if a0 >= m0 {
       let q = a0 / m0
-      ans = ans + (n0 - 1L) * n0 / 2L * q
-      a0 = a0 % m0
+      (a0 % m0, ans + (n0 - 1L) * n0 / 2L * q)
+    } else {
+      (a0, ans)
     }
-    if b0 >= m0 {
+    let (b1, ans2) = if b0 >= m0 {
       let q = b0 / m0
-      ans = ans + n0 * q
-      b0 = b0 % m0
+      (b0 % m0, ans1 + n0 * q)
+    } else {
+      (b0, ans1)
     }
-    let y_max = a0 * n0 + b0
+    let y_max = a1 * n0 + b1
     if y_max < m0 {
-      break
+      break ans2
+    } else {
+      continue y_max / m0, a1, m0, y_max % m0, ans2
     }
-    let new_n = y_max / m0
-    let new_b = y_max % m0
-    let new_m = a0
-    a0 = m0
-    m0 = new_m
-    n0 = new_n
-    b0 = new_b
   } where {
     invariant: n0 >= 0L && m0 > 0L && a0 >= 0L && b0 >= 0L,
     reasoning: (
@@ -54,5 +46,10 @@ pub fn floor_sum(n : Int64, m : Int64, a : Int64, b : Int64) -> Int64 {
       #|When y_max < m0, all remaining terms are < 1 and the loop ends.
     ),
   }
-  ans
+}
+
+///|
+test "floor_sum" {
+  assert_eq(floor_sum(4L, 10L, 6L, 3L), 3L)
+  assert_eq(floor_sum(6L, 7L, 4L, 2L), 8L)
 }

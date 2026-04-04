@@ -10,15 +10,13 @@ pub fn min_arborescence(Int, ArrayView[Edge], Int) -> Arborescence?
 pub(all) struct Arborescence {
   cost : Int64
   parent : Array[Int]
-}
-pub impl Show for Arborescence
+} derive(Show)
 
 pub(all) struct Edge {
   from : Int
   to : Int
   weight : Int64
-}
-pub impl Show for Edge
+} derive(Show)
 
 // Type aliases
 

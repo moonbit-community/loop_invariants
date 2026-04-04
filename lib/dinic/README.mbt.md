@@ -157,13 +157,13 @@ test "dinic no path" {
 def dinic(graph, s, t):
     max_flow = 0
 
-    while True:
+    loop:
         # Build level graph using BFS
         level = [-1] * n
         level[s] = 0
         queue = [s]
 
-        while queue:
+        repeat until queue is empty:
             u = queue.pop(0)
             for v in neighbors(u):
                 if capacity[u][v] > 0 and level[v] < 0:
@@ -174,7 +174,7 @@ def dinic(graph, s, t):
             break  # No path to sink
 
         # Find blocking flow using DFS
-        while True:
+        loop:
             flow = dfs(s, t, infinity, level)
             if flow == 0:
                 break

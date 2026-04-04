@@ -193,8 +193,8 @@ pub fn build(n : Int, edges : ArrayView[(Int, Int, Int64)]) -> Graph { ... }
 - Change: Use `loop` with an explicit `front` state and `match` on `queue.get`.
 - Result: Keeps the queue scan functional and matches the preferred loop style.
 - Example:
-// Before
-let mut front = 0
+// Before (mutable cursor style)
+front := 0
 while queue.get(front) is Some(u) {
   process(u)
   front = front + 1
@@ -218,9 +218,9 @@ let _ = loop 0 {
 - Change: Use a `loop` with a `(u, v, count)` state to perform chain jumps.
 - Result: Same logic, fewer mutations, consistent with functional loop style.
 - Example:
-// Before
-let mut a = u
-let mut b = v
+// Before (mutable cursor style)
+a := u
+b := v
 while head[a] != head[b] {
   if depth[head[a]] < depth[head[b]] { b = parent[head[b]] }
   else { a = parent[head[a]] }

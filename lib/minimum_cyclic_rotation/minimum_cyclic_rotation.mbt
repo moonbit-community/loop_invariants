@@ -27,31 +27,24 @@ pub fn min_cyclic_rotation_index(s : String) -> Int {
     return 0
   }
   let doubled = s + s
-  let mut i = 0
-  let mut j = 1
-  let mut k = 0
-  for ;; {
+  let (i, j) = for i = 0, j = 1, k = 0 {
     if i >= n || j >= n || k >= n {
-      break
-    }
-    let a = doubled[i + k]
-    let b = doubled[j + k]
-    if a == b {
-      k = k + 1
-      continue
-    }
-    if a > b {
-      i = i + k + 1
-      if i <= j {
-        i = j + 1
-      }
+      break (i, j)
     } else {
-      j = j + k + 1
-      if j <= i {
-        j = i + 1
+      let a = doubled[i + k]
+      let b = doubled[j + k]
+      if a == b {
+        continue i, j, k + 1
+      } else if a > b {
+        let next_i = i + k + 1
+        let next_i = if next_i <= j { j + 1 } else { next_i }
+        continue next_i, j, 0
+      } else {
+        let next_j = j + k + 1
+        let next_j = if next_j <= i { i + 1 } else { next_j }
+        continue i, next_j, 0
       }
     }
-    k = 0
   } where {
     invariant: i >= 0 && j >= 0 && k >= 0 && i <= n && j <= n,
     reasoning: (

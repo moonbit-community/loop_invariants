@@ -64,13 +64,13 @@ fn highest_bit(x : Int) -> Int {
   if x <= 0 {
     return 0
   }
-  let mut result = 0
-  let mut val = x
-  while val > 1 {
-    result = result + 1
-    val = val / 2
+  for val = x, result = 0 {
+    if val > 1 {
+      continue val / 2, result + 1
+    } else {
+      break result
+    }
   }
-  result
 }
 
 ///|
@@ -87,7 +87,7 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
 
   // Build each level
   // INVARIANT: At level k, blocks have size 2^(k+1) and mids are at positions 2^k - 1 within each block
-  for k = 0; k < log_n; k = k + 1 {
+  for k in 0..<log_n {
     let row = Array::make(n, 0L)
     let block_size = 2 << k // 2^(k+1)
     let half = 1 << k // 2^k
@@ -115,7 +115,7 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
           n - 1
         }
         row[mid + 1] = arr[mid + 1]
-        for i = mid + 2; i <= right_end; i = i + 1 {
+        for i in (mid + 2)..<=right_end {
           row[i] = row[i - 1] + arr[i]
         } where {
           invariant: i >= mid + 2 && i <= right_end + 1,
@@ -202,7 +202,7 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
   }
   let log_n = highest_bit(n - 1) + 1
   let table : Array[Array[Int64]] = []
-  for k = 0; k < log_n; k = k + 1 {
+  for k in 0..<log_n {
     let row = Array::make(n, 0L)
     let block_size = 2 << k
     let half = 1 << k
@@ -225,7 +225,7 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
           n - 1
         }
         row[mid + 1] = arr[mid + 1]
-        for i = mid + 2; i <= right_end; i = i + 1 {
+        for i in (mid + 2)..<=right_end {
           row[i] = row[i - 1] ^ arr[i]
         } where {
           invariant: i >= mid + 2 && i <= right_end + 1,
@@ -310,7 +310,7 @@ fn DisjointSparseProd::new(
   }
   let log_n = highest_bit(n - 1) + 1
   let table : Array[Array[Int64]] = []
-  for k = 0; k < log_n; k = k + 1 {
+  for k in 0..<log_n {
     let row = Array::make(n, 1L)
     let block_size = 2 << k
     let half = 1 << k
@@ -333,7 +333,7 @@ fn DisjointSparseProd::new(
           n - 1
         }
         row[mid + 1] = arr[mid + 1] % modulo
-        for i = mid + 2; i <= right_end; i = i + 1 {
+        for i in (mid + 2)..<=right_end {
           row[i] = row[i - 1] * arr[i] % modulo
         } where {
           invariant: i >= mid + 2 && i <= right_end + 1,

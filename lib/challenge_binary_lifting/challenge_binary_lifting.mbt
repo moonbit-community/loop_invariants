@@ -16,7 +16,7 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
       continue k + 1, pow << 1
     }
   } where {
-    invariant: k >= 1 && pow >= 1,
+    proof_invariant: k >= 1 && pow >= 1,
     reasoning: (
       #|INVARIANT (Log growth):
       #|pow = 2^(k-1) and grows until it covers n.
@@ -45,20 +45,20 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
 /// Lift node v by dist steps using the lifting table.
 pub fn lift(up : Array[Array[Int]], v : Int, dist : Int) -> Int {
   let levels = up.length()
-  for k = 0, cur = v, d = dist {
-    if k >= levels {
-      break cur
-    } else if (d & 1) == 1 {
+  for k in 0..<levels; cur = v, d = dist {
+    if (d & 1) == 1 {
       if cur < 0 {
         break -1
       } else {
-        continue k + 1, up[k][cur], d >> 1
+        continue up[k][cur], d >> 1
       }
     } else {
-      continue k + 1, cur, d >> 1
+      continue cur, d >> 1
     }
+  } nobreak {
+    cur
   } where {
-    invariant: k >= 0 && k <= levels,
+    proof_invariant: k >= 0 && k <= levels,
     reasoning: (
       #|INVARIANT (Bit lifting):
       #|cur equals the ancestor of v after applying the first k bits of dist.

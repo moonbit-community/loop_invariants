@@ -20,13 +20,18 @@ fn bfs(adj : Array[Array[Int]], start : Int) -> (Int, Array[Int]) {
   let queue : Array[Int] = []
   dist[start] = 0
   queue.push(start)
-  for head = 0; head < queue.length(); head = head + 1 {
-    let u = queue[head]
-    for v in adj[u] {
-      if dist[v] == -1 {
-        dist[v] = dist[u] + 1
-        queue.push(v)
+  for head = 0 {
+    if head >= queue.length() {
+      break
+    } else {
+      let u = queue[head]
+      for v in adj[u] {
+        if dist[v] == -1 {
+          dist[v] = dist[u] + 1
+          queue.push(v)
+        }
       }
+      continue head + 1
     }
   } where {
     invariant: head >= 0 && head <= queue.length(),
@@ -40,13 +45,16 @@ fn bfs(adj : Array[Array[Int]], start : Int) -> (Int, Array[Int]) {
       #|At head = queue.length(), all reachable nodes are processed.
     ),
   }
-  let mut best_node = start
-  let mut best_dist = dist[start]
-  for i in 0..<n {
+  let (best_node, _) = for
+    i in 0..<n
+    best_node = start, best_dist = dist[start] {
     if dist[i] > best_dist {
-      best_dist = dist[i]
-      best_node = i
+      continue i, dist[i]
+    } else {
+      continue best_node, best_dist
     }
+  } nobreak {
+    (best_node, best_dist)
   }
   (best_node, dist)
 }

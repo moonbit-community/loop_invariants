@@ -2,7 +2,7 @@
 
 An **AVL tree** is a balanced binary search tree that keeps heights within 1.
 This implementation is **persistent**, so every insertion returns a new version
-while old versions remain valid and reusable.
+and old versions remain valid and reusable.
 
 This package provides:
 

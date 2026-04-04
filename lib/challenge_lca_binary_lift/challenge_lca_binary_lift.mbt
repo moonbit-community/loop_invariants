@@ -54,14 +54,19 @@ pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
   queue.push(root)
   up[0][root] = -1
   depth[root] = 0
-  for head = 0; head < queue.length(); head = head + 1 {
-    let u = queue[head]
-    for v in adj[u] {
-      if v != up[0][u] {
-        up[0][v] = u
-        depth[v] = depth[u] + 1
-        queue.push(v)
+  for head = 0 {
+    if head >= queue.length() {
+      break
+    } else {
+      let u = queue[head]
+      for v in adj[u] {
+        if v != up[0][u] {
+          up[0][v] = u
+          depth[v] = depth[u] + 1
+          queue.push(v)
+        }
       }
+      continue head + 1
     }
   } where {
     invariant: head >= 0 && head <= queue.length(),
@@ -88,29 +93,30 @@ pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
 /// Return the lowest common ancestor of u and v.
 pub fn lca(tree : Lca, u : Int, v : Int) -> Int {
   let log = tree.up.length()
-  let mut a = u
-  let mut b = v
-  if tree.depth[a] < tree.depth[b] {
-    let tmp = a
-    a = b
-    b = tmp
-  }
-  let diff = tree.depth[a] - tree.depth[b]
-  for k in 0..<log {
+  let (a0, b0) = if tree.depth[u] < tree.depth[v] { (v, u) } else { (u, v) }
+  let diff = tree.depth[a0] - tree.depth[b0]
+  let lifted_a = for k in 0..<log; a = a0 {
     if ((diff >> k) & 1) == 1 {
-      a = tree.up[k][a]
+      continue tree.up[k][a]
+    } else {
+      continue a
     }
+  } nobreak {
+    a
   }
-  if a == b {
-    return a
+  if lifted_a == b0 {
+    return lifted_a
   }
-  for k in log>..0 {
+  let (a1, _) = for k in log>..0; a = lifted_a, b = b0 {
     let upa = tree.up[k][a]
     let upb = tree.up[k][b]
     if upa != upb {
-      a = upa
-      b = upb
+      continue upa, upb
+    } else {
+      continue a, b
     }
+  } nobreak {
+    (a, b)
   }
-  tree.up[0][a]
+  tree.up[0][a1]
 }

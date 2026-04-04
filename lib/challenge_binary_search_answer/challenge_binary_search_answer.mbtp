@@ -1,0 +1,12 @@
+predicate in_bounds(weights : FixedArray[Int], i : Int) {
+  0 <= i && i < weights.length()
+}
+
+predicate capacity_admissible(weights : FixedArray[Int], capacity : Int) {
+  0 <= capacity &&
+  (∀ i : Int, in_bounds(weights, i) → 0 <= weights[i] && weights[i] <= capacity)
+}
+
+predicate days_needed_ok(weights : FixedArray[Int], capacity : Int, result : Int) {
+  1 <= result && result <= weights.length() + 1 && 0 <= capacity
+}

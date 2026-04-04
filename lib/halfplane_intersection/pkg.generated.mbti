@@ -10,15 +10,13 @@ pub fn halfplane_intersection(Array[HalfPlane]) -> Array[Point]?
 pub(all) struct HalfPlane {
   p : Point
   v : Point
-}
+} derive(Show)
 pub fn HalfPlane::from_points(Point, Point) -> Self
-pub impl Show for HalfPlane
 
 pub(all) struct Point {
   x : Double
   y : Double
-}
-pub impl Show for Point
+} derive(Show)
 
 // Type aliases
 

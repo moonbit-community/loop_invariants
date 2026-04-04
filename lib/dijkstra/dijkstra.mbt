@@ -57,14 +57,13 @@ fn MinHeap::new() -> MinHeap {
 fn MinHeap::push(self : MinHeap, entry : HeapEntry) -> Unit {
   self.data.push(entry)
   // Bubble up
-  let mut i = self.data.length() - 1
-  while i > 0 {
+  for i = self.data.length() - 1; i > 0; {
     let parent = (i - 1) / 2
     if self.data[i].dist < self.data[parent].dist {
       let temp = self.data[i]
       self.data[i] = self.data[parent]
       self.data[parent] = temp
-      i = parent
+      continue parent
     } else {
       break
     }
@@ -83,17 +82,20 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
   if self.data.length() > 0 {
     self.data[0] = last
     // Bubble down
-    let mut i = 0
     let len = self.data.length()
-    for ;; {
+    for i = 0; i < len; {
       let left = 2 * i + 1
       let right = 2 * i + 2
-      let mut smallest = i
-      if left < len && self.data[left].dist < self.data[smallest].dist {
-        smallest = left
+      let smallest = if left < len && self.data[left].dist < self.data[i].dist {
+        left
+      } else {
+        i
       }
-      if right < len && self.data[right].dist < self.data[smallest].dist {
-        smallest = right
+      let smallest = if right < len &&
+        self.data[right].dist < self.data[smallest].dist {
+        right
+      } else {
+        smallest
       }
       if smallest == i {
         break
@@ -101,7 +103,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
       let temp = self.data[i]
       self.data[i] = self.data[smallest]
       self.data[smallest] = temp
-      i = smallest
+      continue smallest
     } where {
       invariant: i >= 0 && i < len,
       reasoning: (
@@ -281,13 +283,13 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
   }
   dist[src] = 0
   for iter = 0; iter < n; iter = iter + 1 {
-    let mut u = -1
-    let mut best = DIJK_INF_INT
-    for i = 0; i < n; i = i + 1 {
+    let u = for i = 0, u = -1, best = DIJK_INF_INT; i < n; {
       if !used[i] && dist[i] < best {
-        u = i
-        best = dist[i]
+        continue i + 1, i, dist[i]
       }
+      continue i + 1, u, best
+    } nobreak {
+      u
     } where {
       invariant: i >= 0 && i <= n,
       reasoning: (
@@ -350,10 +352,9 @@ pub fn reconstruct_path(result : DijkstraResult, target : Int) -> Array[Int] {
   }
 
   // Build path from target to source
-  let mut current = target
-  while current != -1 {
+  for current = target; current != -1; {
     path.push(current)
-    current = result.parent[current]
+    continue result.parent[current]
   }
 
   // Reverse to get source to target
@@ -408,20 +409,15 @@ pub fn bidirectional_dijkstra(
   let pq_backward = MinHeap::new()
   pq_forward.push({ dist: 0L, vertex: source })
   pq_backward.push({ dist: 0L, vertex: target })
-  let mut best_dist = INF
 
   // INVARIANT: best_dist is the shortest known path through a vertex
   // visited by both searches
-  for ;; {
+  let best_dist = for best_dist = INF; !pq_forward.is_empty() ||
+                     !pq_backward.is_empty(); {
     // Alternate between forward and backward search
     let forward_done = pq_forward.is_empty()
     let backward_done = pq_backward.is_empty()
-    if forward_done && backward_done {
-      break
-    }
-
-    // Forward step
-    if !forward_done {
+    let best_dist = if !forward_done {
       match pq_forward.pop() {
         Some(entry) => {
           let u = entry.vertex
@@ -429,16 +425,20 @@ pub fn bidirectional_dijkstra(
             visited_forward[u] = true
 
             // Check if we met backward search
-            if visited_backward[u] {
+            let best_dist = if visited_backward[u] {
               let candidate = dist_forward[u] + dist_backward[u]
               if candidate < best_dist {
-                best_dist = candidate
+                candidate
+              } else {
+                best_dist
               }
+            } else {
+              best_dist
             }
 
             // Early termination
             if dist_forward[u] >= best_dist {
-              // Skip
+              best_dist
             } else {
               // Relax edges
               for i = 0; i < graph.adj[u].length(); i = i + 1 {
@@ -461,15 +461,18 @@ pub fn bidirectional_dijkstra(
                   #|At i = deg(u), forward relaxations from u are complete.
                 ),
               }
+              best_dist
             }
+          } else {
+            best_dist
           }
         }
-        None => ()
+        None => best_dist
       }
+    } else {
+      best_dist
     }
-
-    // Backward step
-    if !backward_done {
+    let best_dist = if !backward_done {
       match pq_backward.pop() {
         Some(entry) => {
           let u = entry.vertex
@@ -477,16 +480,20 @@ pub fn bidirectional_dijkstra(
             visited_backward[u] = true
 
             // Check if we met forward search
-            if visited_forward[u] {
+            let best_dist = if visited_forward[u] {
               let candidate = dist_forward[u] + dist_backward[u]
               if candidate < best_dist {
-                best_dist = candidate
+                candidate
+              } else {
+                best_dist
               }
+            } else {
+              best_dist
             }
 
             // Early termination
             if dist_backward[u] >= best_dist {
-              // Skip
+              best_dist
             } else {
               // Relax edges (using reverse graph)
               for i = 0; i < reverse_graph.adj[u].length(); i = i + 1 {
@@ -509,12 +516,20 @@ pub fn bidirectional_dijkstra(
                   #|At i = deg(u), backward relaxations from u are complete.
                 ),
               }
+              best_dist
             }
+          } else {
+            best_dist
           }
         }
-        None => ()
+        None => best_dist
       }
+    } else {
+      best_dist
     }
+    continue best_dist
+  } nobreak {
+    best_dist
   } where {
     invariant: best_dist >= 0L,
     reasoning: (

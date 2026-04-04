@@ -24,8 +24,7 @@ pub fn[T] to_array(Stack[T]) -> Array[T]
 pub enum Stack[T] {
   Nil
   Cons(head~ : T, tail~ : Stack[T])
-}
-pub impl[T : Show] Show for Stack[T]
+} derive(Show)
 
 // Type aliases
 

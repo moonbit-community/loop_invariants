@@ -24,11 +24,10 @@ fn build_lca(
   root : Int,
 ) -> (Array[Array[Int]], Array[Int], Array[Int], Array[Int]) {
   let n = adj.length()
-  let mut log = 1
-  let mut pow = 1
-  for ; pow < n; {
-    pow = pow * 2
-    log = log + 1
+  let (log, _pow) = for log = 1, pow = 1; pow < n; {
+    continue log + 1, pow * 2
+  } nobreak {
+    (log, pow)
   } where {
     invariant: pow >= 1 && log >= 1 && pow == 1 << (log - 1),
     reasoning: (
@@ -56,12 +55,14 @@ fn build_lca(
     up[0][u] = if p == NO_PARENT { u } else { p }
     depth[u] = if p == NO_PARENT { 0 } else { depth[p] + 1 }
     tin[u] = timer
-    let mut t = timer + 1
-    for v in adj[u] {
+    let t = for v in adj[u]; t = timer + 1 {
       if v == p {
-        continue
+        continue t
+      } else {
+        continue dfs(adj, up, depth, tin, tout, v, u, t)
       }
-      t = dfs(adj, up, depth, tin, tout, v, u, t)
+    } nobreak {
+      t
     }
     tout[u] = t
     t
@@ -80,30 +81,29 @@ fn build_lca(
 ///|
 fn lca(up : Array[Array[Int]], depth : Array[Int], a0 : Int, b0 : Int) -> Int {
   let log = up.length()
-  let mut a = a0
-  let mut b = b0
-  if depth[a] < depth[b] {
-    let tmp = a
-    a = b
-    b = tmp
-  }
+  let (a, b) = if depth[a0] < depth[b0] { (b0, a0) } else { (a0, b0) }
   let target_depth = depth[b]
-  let mut diff = depth[a] - target_depth
-  for k in log>..0 {
+  let (a, _diff) = for k in log>..0; a = a, diff = depth[a] - target_depth {
     let step = 1 << k
     if diff >= step {
-      a = up[k][a]
-      diff = diff - step
+      continue up[k][a], diff - step
+    } else {
+      continue a, diff
     }
+  } nobreak {
+    (a, diff)
   }
   if a == b {
     return a
   }
-  for k in log>..0 {
+  let (a, _) = for k in log>..0; a = a, b = b {
     if up[k][a] != up[k][b] {
-      a = up[k][a]
-      b = up[k][b]
+      continue up[k][a], up[k][b]
+    } else {
+      continue a, b
     }
+  } nobreak {
+    (a, b)
   }
   up[0][a]
 }

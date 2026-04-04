@@ -3,27 +3,34 @@
 // ============================================================================
 
 ///|
-fn lower_bound(arr : ArrayView[Int], target : Int) -> Int {
-  for lo = 0, hi = arr.length() {
-    if lo >= hi {
-      break lo
+fn lower_bound_fixed(
+  arr : FixedArray[Int],
+  target : Int,
+) -> Int where {
+  proof_require: sorted(arr),
+  proof_ensure: result => lower_bound_ok(arr, target, result),
+} {
+  for lo = 0, hi = arr.length(); lo < hi; {
+    let mid = lo + (hi - lo) / 2
+    if arr[mid] < target {
+      continue mid + 1, hi
     } else {
-      let mid = lo + (hi - lo) / 2
-      if arr[mid] < target {
-        continue mid + 1, hi
-      } else {
-        continue lo, mid
-      }
+      continue lo, mid
     }
+  } nobreak {
+    lo
   } where {
-    invariant: lo >= 0 && lo <= hi && hi <= arr.length(),
+    proof_invariant: 0 <= lo,
+    proof_invariant: lo <= hi,
+    proof_invariant: hi <= arr.length(),
+    proof_invariant: all_less_before(arr, target, lo),
+    proof_invariant: all_geq_from(arr, target, hi),
     reasoning: (
-      #|INVARIANT (Lower bound):
-      #|All indices < lo are < target, all indices >= hi are >= target.
-      #|MAINTENANCE:
-      #|Shrink [lo, hi) based on mid comparison.
-      #|TERMINATION:
-      #|At lo = hi, lo is the first index with arr[lo] >= target.
+      #|This is the package's proof-carrying lower-bound kernel.
+      #|Every index before `lo` is already known to be `< target`, and every
+      #|index from `hi` onward is already known to be `>= target`.
+      #|Sortedness lets the midpoint comparison extend one of those proven
+      #|regions while shrinking the search window.
     ),
   }
 }
@@ -43,9 +50,13 @@ pub fn coordinate_compress(values : ArrayView[Int]) -> (Array[Int], Array[Int]) 
       unique.push(val)
     }
   }
+  let unique_fixed = FixedArray::make(unique.length(), 0)
+  for i, val in unique {
+    unique_fixed[i] = val
+  }
   let compressed : Array[Int] = Array::make(n, 0)
   for i, val in values {
-    compressed[i] = lower_bound(unique[:], val)
+    compressed[i] = lower_bound_fixed(unique_fixed, val)
   }
   (compressed, unique)
 }

@@ -85,7 +85,7 @@ hierholzer(graph, start):
   path = []
   stack = [start]
 
-  while stack is not empty:
+  repeat until stack is empty:
     v = stack.top()
 
     if v has unused edges:

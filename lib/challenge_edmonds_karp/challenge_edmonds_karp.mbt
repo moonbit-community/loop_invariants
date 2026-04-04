@@ -53,13 +53,13 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
   if s < 0 || s >= n || t < 0 || t >= n {
     return 0
   }
-  let mut edge_count = 0
-  for neighbors in g.adj {
-    edge_count = edge_count + neighbors.length()
+  let edge_count = for neighbors in g.adj; edge_count = 0 {
+    continue edge_count + neighbors.length()
+  } nobreak {
+    edge_count
   }
   let limit = n * edge_count + 1
-  let mut flow = 0
-  for iter = 0; iter < limit; iter = iter + 1 {
+  for iter = 0, flow = 0; iter < limit; {
     let parent : Array[(Int, Int)] = Array::make(n, (-1, -1))
     let queue : Array[Int] = []
     queue.push(s)
@@ -96,7 +96,7 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
       ),
     }
     if parent[t].0 == -1 {
-      break
+      break flow
     }
     let aug = for cur = t, best = INF {
       if cur == s {
@@ -140,7 +140,9 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
         #|When cur reaches s, the augmentation is complete.
       ),
     }
-    flow = flow + aug
+    continue iter + 1, flow + aug
+  } nobreak {
+    flow
   } where {
     invariant: iter >= 0 && iter <= limit,
     invariant: flow >= 0,
@@ -153,5 +155,4 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
       #|When no path remains (or after the Edmonds-Karp bound), flow is final.
     ),
   }
-  flow
 }

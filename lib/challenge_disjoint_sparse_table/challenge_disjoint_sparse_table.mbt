@@ -50,34 +50,39 @@ pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable 
   for i, val in arr {
     table[0][i] = val
   }
-  for k = 1; k < levels; k = k + 1 {
+  for k in 1..<levels {
     let span = 1 << (k + 1)
     let half = span >> 1
-    for block = 0; block < n; block = block + span {
-      let mid = min(block + half, n)
-      let end = min(block + span, n)
-      if mid > block {
-        table[k][mid - 1] = arr[mid - 1]
-        let left_start = mid - 1
-        for i in left_start>..block {
-          table[k][i] = min(arr[i], table[k][i + 1])
+    for block = 0 {
+      if block >= n {
+        break
+      } else {
+        let mid = min(block + half, n)
+        let end = min(block + span, n)
+        if mid > block {
+          table[k][mid - 1] = arr[mid - 1]
+          let left_start = mid - 1
+          for i in left_start>..block {
+            table[k][i] = min(arr[i], table[k][i + 1])
+          }
         }
-      }
-      if mid < end {
-        table[k][mid] = arr[mid]
-        for i = mid + 1; i < end; i = i + 1 {
-          table[k][i] = min(table[k][i - 1], arr[i])
-        } where {
-          invariant: i >= mid + 1 && i <= end,
-          reasoning: (
-            #|INVARIANT (right prefix):
-            #|table[k][mid..i) stores minima for ranges [mid, t].
-            #|MAINTENANCE:
-            #|Set table[k][i] as min(table[k][i-1], arr[i]).
-            #|TERMINATION:
-            #|At i = end, the right half is complete.
-          ),
+        if mid < end {
+          table[k][mid] = arr[mid]
+          for i in (mid + 1)..<end {
+            table[k][i] = min(table[k][i - 1], arr[i])
+          } where {
+            invariant: i >= mid + 1 && i <= end,
+            reasoning: (
+              #|INVARIANT (right prefix):
+              #|table[k][mid..i) stores minima for ranges [mid, t].
+              #|MAINTENANCE:
+              #|Set table[k][i] as min(table[k][i-1], arr[i]).
+              #|TERMINATION:
+              #|At i = end, the right half is complete.
+            ),
+          }
         }
+        continue block + span
       }
     } where {
       invariant: block >= 0 && block <= n,

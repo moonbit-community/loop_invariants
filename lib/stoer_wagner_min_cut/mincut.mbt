@@ -119,32 +119,33 @@ pub fn stoer_wagner_min_cut(
 
   // members[v] = original vertices represented by supernode v
   let members : Array[Array[Int]] = Array::makei(n, i => [i])
-  let mut alive_count = n
-  let mut best_weight = INF64
-  let mut best_cut : Array[Int] = []
+  let empty_cut : Array[Int] = []
 
   // Step 2: Run n-1 phases of contraction
-  for phase = 0; phase < n - 1; phase = phase + 1 {
-    guard alive_count > 1 else { break }
+  let (_, best_weight, best_cut) = for phase = 0, alive_count = n, best_weight = INF64, best_cut = empty_cut; phase <
+                                      n - 1; {
+    if alive_count <= 1 {
+      break (alive_count, best_weight, best_cut)
+    }
 
     // Maximum Adjacency Search for this phase
     let added = Array::make(n, false) // Vertices added to set A
     let w = Array::make(n, 0L) // w[v] = weight from v to set A
-    let mut prev = -1 // Previous vertex (will become s)
-    for iter = 0; iter < alive_count; iter = iter + 1 {
+    let (alive_count, phase_weight, phase_cut) = for iter = 0, prev = -1
+                                                     iter < alive_count
+                                                     iter = iter + 1 {
       // Select vertex with maximum connection to A
       let sel = select_max_vertex(alive, added, w)
-      guard sel >= 0 else { break }
+      if sel < 0 {
+        break (alive_count, INF64, empty_cut)
+      }
       added[sel] = true
 
       // Last iteration: sel is t, prev is s
       if iter == alive_count - 1 {
         // Phase cut: {sel} vs everyone else
         let cut_weight = w[sel]
-        if cut_weight < best_weight {
-          best_weight = cut_weight
-          best_cut = members[sel]
-        }
+        let phase_cut = members[sel]
 
         // Contract sel into prev (if prev exists)
         if prev >= 0 {
@@ -160,8 +161,7 @@ pub fn stoer_wagner_min_cut(
 
         // Remove sel from consideration
         alive[sel] = false
-        alive_count = alive_count - 1
-        break
+        break (alive_count - 1, cut_weight, phase_cut)
       }
 
       // Not last iteration: update w[] for remaining vertices
@@ -170,7 +170,9 @@ pub fn stoer_wagner_min_cut(
           w[v] = w[v] + adj[sel][v]
         }
       }
-      prev = sel
+      continue iter + 1, sel
+    } nobreak {
+      (alive_count, INF64, empty_cut)
     } where {
       invariant: iter >= 0 && iter <= alive_count,
       reasoning: (
@@ -198,6 +200,14 @@ pub fn stoer_wagner_min_cut(
         #|  At iter = alive_count - 1, we have s = prev, t = sel.
       ),
     }
+    let (best_weight, best_cut) = if phase_weight < best_weight {
+      (phase_weight, phase_cut)
+    } else {
+      (best_weight, best_cut)
+    }
+    continue phase + 1, alive_count, best_weight, best_cut
+  } nobreak {
+    (alive_count, best_weight, best_cut)
   } where {
     invariant: phase >= 0 && phase <= n - 1 && alive_count >= 1,
     reasoning: (

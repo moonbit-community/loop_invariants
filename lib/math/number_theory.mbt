@@ -71,7 +71,7 @@ fn is_strong_probable_prime(n : Int64, a : Int64) -> Bool {
   }
 
   // Compute a^d mod n
-  let mut x = mod_exp(a, d, n)
+  let x = mod_exp(a, d, n)
 
   // If a^d ≡ 1 (mod n) or a^d ≡ -1 (mod n), n passes this test
   if x == 1L || x == n - 1L {
@@ -79,18 +79,18 @@ fn is_strong_probable_prime(n : Int64, a : Int64) -> Bool {
   }
 
   // Square up to r-1 times, looking for -1
-  for i = 0L {
+  for i = 0L, x = x {
     if i >= r - 1L {
       break false
     } else {
-      x = x * x % n
-      if x == n - 1L {
+      let next_x = x * x % n
+      if next_x == n - 1L {
         break true
-      } else if x == 1L {
+      } else if next_x == 1L {
         // Found a non-trivial square root of 1 → composite
         break false
       } else {
-        continue i + 1L
+        continue i + 1L, next_x
       }
     }
   } where {

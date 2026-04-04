@@ -78,20 +78,17 @@ Minimized when B = √n.
 ```mbt nocheck
 ///|
 fn range_sum(l : Int, r : Int) -> Int {
-  let mut sum = 0
-  while l <= r && l % block_size != 0 {
-    sum += arr[l]
-    l += 1
+  for l = l, sum = 0 {
+    if l > r {
+      break sum
+    } else if l % block_size != 0 {
+      continue l + 1, sum + arr[l]
+    } else if l + block_size - 1 <= r {
+      continue l + block_size, sum + block_sum[l / block_size]
+    } else {
+      continue l + 1, sum + arr[l]
+    }
   }
-  while l + block_size - 1 <= r {
-    sum += block_sum[l / block_size]
-    l += block_size
-  }
-  while l <= r {
-    sum += arr[l]
-    l += 1
-  }
-  sum
 }
 ```
 

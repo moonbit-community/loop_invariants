@@ -107,11 +107,10 @@ fn insert_line_max(
   let new_at_mid = new_line.eval(mid)
 
   // Winner dominates at midpoint, loser might dominate elsewhere
-  let mut winner = node.line
-  let mut loser = new_line
-  if new_at_mid > curr_at_mid {
-    winner = new_line
-    loser = node.line
+  let (winner, loser) = if new_at_mid > curr_at_mid {
+    (new_line, node.line)
+  } else {
+    (node.line, new_line)
   }
   tree.nodes[node_idx].line = winner
 

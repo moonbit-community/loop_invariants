@@ -42,7 +42,7 @@ the minimum.
 ```mbt nocheck
 lo = 0
 hi = n - 1
-while hi - lo > 3:
+repeat until hi - lo <= 3:
   m1 = lo + (hi - lo) / 3
   m2 = hi - (hi - lo) / 3
   if arr[m1] <= arr[m2]:

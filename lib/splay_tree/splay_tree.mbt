@@ -149,7 +149,7 @@ fn[T] SplayTree::splay(self : SplayTree[T], x : Int) -> Unit {
   if x < 0 {
     return
   }
-  while self.nodes[x].parent >= 0 {
+  for keep_splaying = self.nodes[x].parent >= 0; keep_splaying; {
     let p = self.nodes[x].parent
     let g = self.nodes[p].parent
     if g < 0 {
@@ -176,6 +176,7 @@ fn[T] SplayTree::splay(self : SplayTree[T], x : Int) -> Unit {
       self.rotate_right(x)
       self.rotate_left(x)
     }
+    continue self.nodes[x].parent >= 0
   }
   self.root = x
 }
@@ -187,16 +188,16 @@ fn[T : Compare] SplayTree::insert(self : SplayTree[T], key : T) -> Unit {
     self.root = self.alloc_node(key)
     return
   }
-  let mut cur = self.root
-  let mut parent = -1
-  while cur >= 0 {
-    parent = cur
+  let parent = for cur = self.root, parent = -1; cur >= 0; {
     self.nodes[cur].size = self.nodes[cur].size + 1
+    let parent = cur
     if key < self.nodes[cur].key {
-      cur = self.nodes[cur].left
+      continue self.nodes[cur].left, parent
     } else {
-      cur = self.nodes[cur].right
+      continue self.nodes[cur].right, parent
     }
+  } nobreak {
+    parent
   }
   let new_node = self.alloc_node(key)
   self.nodes[new_node].parent = parent
@@ -211,18 +212,18 @@ fn[T : Compare] SplayTree::insert(self : SplayTree[T], key : T) -> Unit {
 ///|
 /// Find node with given key (returns -1 if not found)
 fn[T : Compare] SplayTree::find_node(self : SplayTree[T], key : T) -> Int {
-  let mut cur = self.root
-  while cur >= 0 {
+  for cur = self.root; cur >= 0; {
     if key == self.nodes[cur].key {
       self.splay(cur)
-      return cur
+      break cur
     } else if key < self.nodes[cur].key {
-      cur = self.nodes[cur].left
+      continue self.nodes[cur].left
     } else {
-      cur = self.nodes[cur].right
+      continue self.nodes[cur].right
     }
+  } nobreak {
+    -1
   }
-  -1
 }
 
 ///|
@@ -237,11 +238,11 @@ fn[T] SplayTree::find_min(self : SplayTree[T], x : Int) -> Int {
   if x < 0 {
     return -1
   }
-  let mut cur = x
-  while self.nodes[cur].left >= 0 {
-    cur = self.nodes[cur].left
+  for cur = x; self.nodes[cur].left >= 0; {
+    continue self.nodes[cur].left
+  } nobreak {
+    cur
   }
-  cur
 }
 
 ///|
@@ -250,11 +251,11 @@ fn[T] SplayTree::find_max(self : SplayTree[T], x : Int) -> Int {
   if x < 0 {
     return -1
   }
-  let mut cur = x
-  while self.nodes[cur].right >= 0 {
-    cur = self.nodes[cur].right
+  for cur = x; self.nodes[cur].right >= 0; {
+    continue self.nodes[cur].right
+  } nobreak {
+    cur
   }
-  cur
 }
 
 ///|
@@ -303,9 +304,7 @@ fn[T] SplayTree::kth_element(self : SplayTree[T], k : Int) -> T? {
   if self.root < 0 || k <= 0 {
     return None
   }
-  let mut cur = self.root
-  let mut remaining = k
-  while cur >= 0 {
+  for cur = self.root, remaining = k; cur >= 0; {
     let left_size = if self.nodes[cur].left >= 0 {
       self.nodes[self.nodes[cur].left].size
     } else {
@@ -313,15 +312,15 @@ fn[T] SplayTree::kth_element(self : SplayTree[T], k : Int) -> T? {
     }
     if remaining == left_size + 1 {
       self.splay(cur)
-      return Some(self.nodes[cur].key)
+      break Some(self.nodes[cur].key)
     } else if remaining <= left_size {
-      cur = self.nodes[cur].left
+      continue self.nodes[cur].left, remaining
     } else {
-      remaining = remaining - left_size - 1
-      cur = self.nodes[cur].right
+      continue self.nodes[cur].right, remaining - left_size - 1
     }
+  } nobreak {
+    None
   }
-  None
 }
 
 ///|
@@ -330,22 +329,20 @@ fn[T : Compare] SplayTree::count_less(self : SplayTree[T], key : T) -> Int {
   if self.root < 0 {
     return 0
   }
-  let mut cur = self.root
-  let mut count = 0
-  while cur >= 0 {
+  for cur = self.root, count = 0; cur >= 0; {
     let left_size = if self.nodes[cur].left >= 0 {
       self.nodes[self.nodes[cur].left].size
     } else {
       0
     }
     if key <= self.nodes[cur].key {
-      cur = self.nodes[cur].left
+      continue self.nodes[cur].left, count
     } else {
-      count = count + left_size + 1
-      cur = self.nodes[cur].right
+      continue self.nodes[cur].right, count + left_size + 1
     }
+  } nobreak {
+    count
   }
-  count
 }
 
 ///|

@@ -88,26 +88,23 @@ fn FlowNetwork::edmonds_karp(
   source : Int,
   sink : Int,
 ) -> Int {
-  let mut max_flow = 0
-  for ;; {
+  for max_flow = 0 {
     let (has_path, parent) = self.bfs_find_path(source, sink)
     if !has_path {
       break max_flow
     }
     // Find minimum residual capacity along path
-    let mut path_flow = 2147483647
-    for v = sink; v != source; {
+    let path_flow = for v = sink, path_flow = 2147483647; v != source; {
       match parent[v] {
-        None => break
+        None => break path_flow
         Some((u, edge_idx)) => {
           let residual = self.adj[u][edge_idx].capacity -
             self.adj[u][edge_idx].flow
-          if residual < path_flow {
-            path_flow = residual
-          }
-          continue u
+          continue u, if residual < path_flow { residual } else { path_flow }
         }
       }
+    } nobreak {
+      path_flow
     } where {
       invariant: v >= 0 && v < self.n,
       reasoning: (
@@ -149,7 +146,7 @@ fn FlowNetwork::edmonds_karp(
         #|When v == source, the entire augmenting path has been updated.
       ),
     }
-    max_flow = max_flow + path_flow
+    continue max_flow + path_flow
   } where {
     invariant: max_flow >= 0,
     reasoning: (
@@ -294,29 +291,31 @@ fn DinicNetwork::dinic_max_flow(
   source : Int,
   sink : Int,
 ) -> Int {
-  let mut max_flow = 0
-  for ;; {
+  for max_flow = 0 {
     if !self.bfs_dinic(source, sink) {
       break max_flow
     }
     for i in 0..<self.n {
       self.iter[i] = 0
     }
-    for pushed = self.dfs_dinic(source, sink, 2147483647); pushed > 0; {
-      max_flow = max_flow + pushed
-      continue self.dfs_dinic(source, sink, 2147483647)
+    let phase_flow = for pushed = self.dfs_dinic(source, sink, 2147483647), phase_flow = 0; pushed >
+                        0; {
+      continue self.dfs_dinic(source, sink, 2147483647), phase_flow + pushed
+    } nobreak {
+      phase_flow
     } where {
       invariant: pushed >= 0,
       reasoning: (
         #|INVARIANT (Blocking flow augmentation):
         #|Each successful dfs_dinic call augments along the current level
-        #|graph, so max_flow accumulates the flow sent in this phase.
+        #|graph, so phase_flow accumulates the flow sent in this phase.
         #|MAINTENANCE:
-        #|Adding pushed preserves flow feasibility and increases max_flow.
+        #|Adding pushed preserves flow feasibility and increases phase_flow.
         #|TERMINATION:
         #|When pushed == 0, the current level graph is blocked.
       ),
     }
+    continue max_flow + phase_flow
   } where {
     invariant: max_flow >= 0,
     reasoning: (
@@ -434,28 +433,24 @@ fn MCMFNetwork::min_cost_max_flow(
   source : Int,
   sink : Int,
 ) -> (Int, Int) {
-  let mut max_flow = 0
-  let mut min_cost = 0
   let dist : Array[Int] = Array::make(self.n, 0)
   let parent : Array[(Int, Int)?] = Array::make(self.n, None)
-  for ;; {
+  for max_flow = 0, min_cost = 0 {
     if !self.spfa_mcmf(source, sink, dist, parent) {
       break (max_flow, min_cost)
     }
     // Find minimum residual capacity
-    let mut path_flow = 2147483647
-    for v = sink; v != source; {
+    let path_flow = for v = sink, path_flow = 2147483647; v != source; {
       match parent[v] {
-        None => break
+        None => break path_flow
         Some((u, edge_idx)) => {
           let residual = self.adj[u][edge_idx].capacity -
             self.adj[u][edge_idx].flow
-          if residual < path_flow {
-            path_flow = residual
-          }
-          continue u
+          continue u, if residual < path_flow { residual } else { path_flow }
         }
       }
+    } nobreak {
+      path_flow
     } where {
       invariant: v >= 0 && v < self.n,
       reasoning: (
@@ -477,24 +472,22 @@ fn MCMFNetwork::min_cost_max_flow(
           self.adj[u][edge_idx].flow = self.adj[u][edge_idx].flow + path_flow
           let rev_idx = self.adj[u][edge_idx].rev_idx
           self.adj[v][rev_idx].flow = self.adj[v][rev_idx].flow - path_flow
-          min_cost = min_cost + path_flow * self.adj[u][edge_idx].cost
           continue u
         }
       }
     } where {
       invariant: v >= 0 && v < self.n,
       reasoning: (
-        #|INVARIANT (Costed augmentation):
+        #|INVARIANT (Augmentation):
         #|For the processed suffix of the path, flow has been augmented by
-        #|path_flow and min_cost accounts for the added cost on those edges.
+        #|path_flow while preserving residual consistency.
         #|MAINTENANCE:
-        #|Updating one edge and its reverse preserves feasibility while
-        #|accumulating cost = path_flow * edge.cost.
+        #|Updating one edge and its reverse preserves feasibility.
         #|TERMINATION:
         #|When v == source, the entire augmenting path is updated.
       ),
     }
-    max_flow = max_flow + path_flow
+    continue max_flow + path_flow, min_cost + path_flow * dist[sink]
   } where {
     invariant: max_flow >= 0,
     reasoning: (
@@ -573,21 +566,14 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
   let way : Array[Int] = Array::make(m + 1, 0)
   for i = 1; i <= n; i = i + 1 {
     p[0] = i
-    let mut j0 = 0
     let minv : Array[Int] = Array::make(m + 1, inf)
     let used : Array[Bool] = Array::make(m + 1, false)
 
     // Find augmenting path
-    let mut done = false
-    for ;; {
-      if done {
-        break
-      }
+    let j0 = for j0 = 0 {
       used[j0] = true
       let i0 = p[j0]
-      let mut delta = inf
-      let mut j1 = 0
-      for j = 1; j <= m; j = j + 1 {
+      let (delta, j1) = for j = 1, delta = inf, j1 = 0; j <= m; j = j + 1 {
         if !used[j] {
           let cur = cost[i0 - 1][j - 1] - u[i0] - v[j]
           if cur < minv[j] {
@@ -595,10 +581,12 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
             way[j] = j0
           }
           if minv[j] < delta {
-            delta = minv[j]
-            j1 = j
+            continue j + 1, minv[j], j
           }
         }
+        continue j + 1, delta, j1
+      } nobreak {
+        (delta, j1)
       } where {
         invariant: j >= 1 && j <= m + 1,
         reasoning: (
@@ -640,8 +628,11 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
           #|After the update, at least one new column has zero reduced cost.
         ),
       }
-      j0 = j1
-      done = p[j0] == 0
+      if p[j1] == 0 {
+        break j1
+      } else {
+        continue j1
+      }
     } where {
       invariant: j0 >= 0 && j0 <= m,
       reasoning: (
@@ -695,11 +686,13 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
   }
 
   // Compute total cost
-  let mut total_cost = 0
-  for j = 1; j <= m; j = j + 1 {
+  let total_cost = for j = 1, total_cost = 0; j <= m; j = j + 1 {
     if p[j] > 0 && p[j] <= n {
-      total_cost = total_cost + cost[p[j] - 1][j - 1]
+      continue j + 1, total_cost + cost[p[j] - 1][j - 1]
     }
+    continue j + 1, total_cost
+  } nobreak {
+    total_cost
   } where {
     invariant: j >= 1 && j <= m + 1,
     reasoning: (

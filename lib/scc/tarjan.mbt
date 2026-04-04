@@ -254,17 +254,18 @@ fn tarjan_dfs(
   if disc[v] == low[v] {
     let scc_id = scc_count.val
     scc_count.val = scc_count.val + 1
-    let mut size = 0
+    let size = for size = 0 {
 
-    // Pop all vertices until v (inclusive) → they form the SCC
-    for ;; {
+      // Pop all vertices until v (inclusive) → they form the SCC
       let u = stack[stack.length() - 1]
       let _ = stack.pop()
       on_stack[u] = false
       component[u] = scc_id
-      size = size + 1
+      let size = size + 1
       if u == v {
-        break
+        break size
+      } else {
+        continue size
       }
     } where {
       invariant: stack.length() >= 0 && size >= 0,

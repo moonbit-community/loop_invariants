@@ -103,11 +103,11 @@ pub fn[T : Compare] delete_min(h : Heap[T]) -> Heap[T]? {
 ///|
 /// Build a heap by inserting elements in sequence.
 pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Heap[T] {
-  let mut heap = Empty
-  for value in arr {
-    heap = insert(heap, value)
+  for value in arr; heap = Empty {
+    continue insert(heap, value)
+  } nobreak {
+    heap
   }
-  heap
 }
 
 ///|

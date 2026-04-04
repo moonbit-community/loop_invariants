@@ -226,15 +226,18 @@ fn kruskal(n : Int, edges : Array[Edge]) -> (Array[Edge], Int) {
   edges.sort_by((a, b) => a.w - b.w)
   let uf = UF::new(n)
   let mst : Array[Edge] = []
-  let mut total = 0
-  for e in edges {
+  let total = for e in edges; total = 0 {
     if uf.union(e.u, e.v) {
       mst.push(e)
-      total = total + e.w
+      let next_total = total + e.w
       if mst.length() == n - 1 {
-        break
+        break next_total
       }
+      continue next_total
     }
+    continue total
+  } nobreak {
+    total
   }
   (mst, total)
 }
@@ -248,18 +251,18 @@ fn prim(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
   let in_tree = Array::make(n, false)
   let pq = MinHeap::new() // (weight, vertex)
   pq.push((0, 0))
-  let mut total = 0
-
-  for _ in 0..<n {
+  let total = for _ in 0..<n; total = 0 {
     let (w, v) = pq.pop_min()
-    if in_tree[v] { continue }
+    if in_tree[v] { continue total }
     in_tree[v] = true
-    total = total + w
     for (to, w2) in adj[v] {
       if !(in_tree[to]) {
         pq.push((w2, to))
       }
     }
+    continue total + w
+  } nobreak {
+    total
   }
   total
 }

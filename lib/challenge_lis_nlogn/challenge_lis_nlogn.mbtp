@@ -1,0 +1,33 @@
+predicate in_bounds(arr : FixedArray[Int], i : Int) {
+  0 <= i && i < arr.length()
+}
+
+predicate in_prefix(arr : FixedArray[Int], len : Int, i : Int) {
+  0 <= i && i < len && i < arr.length()
+}
+
+predicate sorted_prefix(arr : FixedArray[Int], len : Int) {
+  0 <= len && len <= arr.length() &&
+  (∀ i : Int, ∀ j : Int,
+    ((in_prefix(arr, len, i)) && (in_prefix(arr, len, j)) && (i <= j)) →
+      arr[i] <= arr[j])
+}
+
+predicate all_less_before_prefix(arr : FixedArray[Int], target : Int, idx : Int) {
+  ∀ i : Int, ((0 <= i) && (i < idx)) → arr[i] < target
+}
+
+predicate all_geq_from_prefix(arr : FixedArray[Int], target : Int, idx : Int, len : Int) {
+  ∀ i : Int, ((idx <= i) && (i < len)) → target <= arr[i]
+}
+
+predicate lower_bound_prefix_ok(
+  arr : FixedArray[Int],
+  len : Int,
+  target : Int,
+  result : Int
+) {
+  (0 <= result) && (result <= len) &&
+  (all_less_before_prefix(arr, target, result)) &&
+  (all_geq_from_prefix(arr, target, result, len))
+}

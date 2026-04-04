@@ -20,11 +20,9 @@ pub fn[T] size(MinQueue[T]) -> Int
 pub struct MinQueue[T] {
   front : MinStack[T]
   back : MinStack[T]
-}
-pub impl[T : Show] Show for MinQueue[T]
+} derive(Show)
 
-type MinStack[T]
-pub impl[T : Show] Show for MinStack[T]
+type MinStack[T] derive(Show)
 
 // Type aliases
 

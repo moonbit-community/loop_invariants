@@ -15,14 +15,12 @@ pub fn[T] to_array(PArray[T]) -> Array[T]
 // Errors
 
 // Types and methods
-type Node[T]
-pub impl[T : Show] Show for Node[T]
+type Node[T] derive(Show)
 
 pub struct PArray[T] {
   root : Node[T]
   n : Int
-}
-pub impl[T : Show] Show for PArray[T]
+} derive(Show)
 
 // Type aliases
 

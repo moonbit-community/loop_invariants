@@ -38,22 +38,32 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
   }
   let result : Array[Int64] = []
   let dq : @deque.Deque[Int] = @deque.new()
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     // Remove elements outside window
-    while dq.front() is Some(front) {
-      if front <= i - k {
-        let _ = dq.pop_front()
-      } else {
-        break
+    let _ = for front = dq.front() {
+      match front {
+        None => break ()
+        Some(front) =>
+          if front <= i - k {
+            let _ = dq.pop_front()
+            continue dq.front()
+          } else {
+            break ()
+          }
       }
     }
 
     // Remove smaller elements from back
-    while dq.back() is Some(back) {
-      if arr[back] <= arr[i] {
-        let _ = dq.pop_back()
-      } else {
-        break
+    let _ = for back = dq.back() {
+      match back {
+        None => break ()
+        Some(back) =>
+          if arr[back] <= arr[i] {
+            let _ = dq.pop_back()
+            continue dq.back()
+          } else {
+            break ()
+          }
       }
     }
 
@@ -130,19 +140,29 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
   }
   let result : Array[Int64] = []
   let dq : @deque.Deque[Int] = @deque.new()
-  for i = 0; i < n; i = i + 1 {
-    while dq.front() is Some(front) {
-      if front <= i - k {
-        let _ = dq.pop_front()
-      } else {
-        break
+  for i in 0..<n {
+    let _ = for front = dq.front() {
+      match front {
+        None => break ()
+        Some(front) =>
+          if front <= i - k {
+            let _ = dq.pop_front()
+            continue dq.front()
+          } else {
+            break ()
+          }
       }
     }
-    while dq.back() is Some(back) {
-      if arr[back] >= arr[i] {
-        let _ = dq.pop_back()
-      } else {
-        break
+    let _ = for back = dq.back() {
+      match back {
+        None => break ()
+        Some(back) =>
+          if arr[back] >= arr[i] {
+            let _ = dq.pop_back()
+            continue dq.back()
+          } else {
+            break ()
+          }
       }
     }
     dq.push_back(i)
@@ -244,23 +264,26 @@ fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
   if n == 0 {
     return 0
   }
-  let mut left = 0
-  let mut sum = 0L
-  let mut max_len = 0
-  for right = 0; right < n; right = right + 1 {
-    sum = sum + arr[right]
-
-    // Shrink window until sum <= target
-    while sum > target && left <= right {
-      sum = sum - arr[left]
-      left = left + 1
+  for right = 0, left = 0, sum = 0L, max_len = 0; right < n; {
+    let (left, sum) = for left = left, sum = sum + arr[right]; sum > target &&
+                         left <= right; {
+      continue left + 1, sum - arr[left]
+    } nobreak {
+      (left, sum)
     }
-    if sum <= target {
+    let new_max_len = if sum <= target {
       let len = right - left + 1
       if len > max_len {
-        max_len = len
+        len
+      } else {
+        max_len
       }
+    } else {
+      max_len
     }
+    continue right + 1, left, sum, new_max_len
+  } nobreak {
+    max_len
   } where {
     invariant: right >= 0 && right <= n && left >= 0 && left <= right + 1,
     reasoning: (
@@ -287,7 +310,6 @@ fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
       #|After right = n, every window end was considered, so max_len is optimal.
     ),
   }
-  max_len
 }
 
 ///|
@@ -297,21 +319,19 @@ fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int {
   if n == 0 {
     return 0
   }
-  let mut left = 0
-  let mut sum = 0L
-  let mut min_len = n + 1 // Impossible value
-  for right = 0; right < n; right = right + 1 {
-    sum = sum + arr[right]
-
-    // Shrink window while sum >= target
-    while sum >= target && left <= right {
+  let min_len = for right = 0, left = 0, sum = 0L, min_len = n + 1; right < n; {
+    let (left, sum, min_len) = for left = left, sum = sum + arr[right], min_len = min_len; sum >=
+                                  target &&
+                                  left <= right; {
       let len = right - left + 1
-      if len < min_len {
-        min_len = len
-      }
-      sum = sum - arr[left]
-      left = left + 1
+      let min_len = if len < min_len { len } else { min_len }
+      continue left + 1, sum - arr[left], min_len
+    } nobreak {
+      (left, sum, min_len)
     }
+    continue right + 1, left, sum, min_len
+  } nobreak {
+    min_len
   } where {
     invariant: right >= 0 && right <= n && left >= 0 && left <= right + 1,
     reasoning: (
@@ -409,6 +429,7 @@ test "longest subarray" {
   inspect(longest_subarray_with_sum_le(arr, 6L), content="3") // [1,2,3]
   inspect(longest_subarray_with_sum_le(arr, 15L), content="5") // entire array
   inspect(longest_subarray_with_sum_le(arr, 0L), content="0") // none
+  inspect(longest_subarray_with_sum_le(arr, -1L), content="0") // shrink past right
 }
 
 ///|
@@ -416,4 +437,5 @@ test "min subarray sum ge" {
   let arr : Array[Int64] = [2L, 3L, 1L, 2L, 4L, 3L]
   inspect(min_subarray_with_sum_ge(arr, 7L), content="2") // [4,3]
   inspect(min_subarray_with_sum_ge(arr, 100L), content="0") // impossible
+  inspect(min_subarray_with_sum_ge(arr, 0L), content="1") // any single element
 }

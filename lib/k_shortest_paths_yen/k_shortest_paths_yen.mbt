@@ -67,13 +67,13 @@ fn path_in_list(paths : Array[KPath], nodes : Array[Int]) -> Bool {
 
 ///|
 fn min_cost_index(paths : Array[KPath]) -> Int {
-  let mut idx = -1
-  let mut best = INF64
-  for i in 0..<paths.length() {
+  let (idx, _) = for i in 0..<paths.length(); idx = -1, best = INF64 {
     if paths[i].cost < best {
-      best = paths[i].cost
-      idx = i
+      continue i, paths[i].cost
     }
+    continue idx, best
+  } nobreak {
+    (idx, best)
   }
   idx
 }
@@ -116,12 +116,14 @@ fn min_edge_weight(
   if u < 0 || u >= adj.length() {
     return None
   }
-  let mut best = INF64
-  for edge in adj[u] {
+  let best = for edge in adj[u]; best = INF64 {
     let (to, w) = edge
     if to == v && w < best {
-      best = w
+      continue w
     }
+    continue best
+  } nobreak {
+    best
   }
   if best == INF64 {
     None
@@ -135,17 +137,17 @@ fn path_cost(adj : Array[Array[(Int, Int64)]], nodes : Array[Int]) -> Int64? {
   if nodes.length() <= 1 {
     return Some(0L)
   }
-  let mut total = 0L
   let last = nodes.length() - 1
-  for i in 0..<last {
+  for i in 0..<last; total = 0L {
     let u = nodes[i]
     let v = nodes[i + 1]
     match min_edge_weight(adj, u, v) {
-      None => return None
-      Some(w) => total = total + w
+      None => break None
+      Some(w) => continue total + w
     }
+  } nobreak {
+    Some(total)
   }
-  Some(total)
 }
 
 ///|
@@ -314,4 +316,11 @@ test "yen no path" {
   let edges : Array[(Int, Int, Int64)] = []
   let paths = yen_k_shortest_paths(3, edges[:], 0, 2, 2)
   inspect(paths.length(), content="0")
+}
+
+///|
+test "yen path cost uses lightest parallel edge" {
+  let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L), (0, 1, 2L), (1, 2, 1L)]
+  let adj = build_adj(3, edges[:]).unwrap()
+  inspect(path_cost(adj, [0, 1, 2]).unwrap(), content="3")
 }

@@ -123,21 +123,21 @@ fn build_lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
   let rank = Array::make(n, 0)
   sa.eachi((i, pos) => rank[pos] = i)
   let lcp = Array::make(n, 0)
-  let mut k = 0
 
   // Process suffixes in text order (not sorted order)
-  for i = 0; i < n; i = i + 1 {
+  let _ = for i = 0, k = 0; i < n; i = i + 1 {
     if rank[i] == 0 {
-      k = 0
-      continue i + 1
+      continue i + 1, 0
     }
 
     // Previous suffix in sorted order
     let j = sa[rank[i] - 1]
 
     // Extend LCP from previous value
-    for ; i + k < n && j + k < n && chars[i + k] == chars[j + k]; {
-      k = k + 1
+    let k = for k = k; i + k < n && j + k < n && chars[i + k] == chars[j + k]; {
+      continue k + 1
+    } nobreak {
+      k
     } where {
       invariant: k >= 0,
       reasoning: (
@@ -152,9 +152,7 @@ fn build_lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
     lcp[rank[i]] = k
 
     // Key insight: next suffix can have LCP at most k-1 less
-    if k > 0 {
-      k = k - 1
-    }
+    continue i + 1, if k > 0 { k - 1 } else { k }
   } where {
     invariant: i >= 0 && i <= n && k >= 0,
     reasoning: (

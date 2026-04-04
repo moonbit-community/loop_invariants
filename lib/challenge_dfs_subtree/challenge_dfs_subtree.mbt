@@ -14,14 +14,19 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
   let stack : Array[Int] = []
   parent[root] = root
   stack.push(root)
-  for idx = 0; idx < stack.length(); idx = idx + 1 {
-    let u = stack[idx]
-    order.push(u)
-    for v in adj[u] {
-      if v != parent[u] && parent[v] == -1 {
-        parent[v] = u
-        stack.push(v)
+  for idx = 0 {
+    if idx >= stack.length() {
+      break
+    } else {
+      let u = stack[idx]
+      order.push(u)
+      for v in adj[u] {
+        if v != parent[u] && parent[v] == -1 {
+          parent[v] = u
+          stack.push(v)
+        }
       }
+      continue idx + 1
     }
   } where {
     invariant: idx >= 0 && idx <= stack.length(),

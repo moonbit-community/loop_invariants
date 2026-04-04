@@ -146,13 +146,15 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
 
   // Second DFS: find SCCs in reverse finish order
   let comp = Array::make(num_nodes, -1)
-  let mut num_scc = 0
-  for i in num_nodes>..0 {
+  let _ = for i in num_nodes>..0; num_scc = 0 {
     let node = order[i]
     if comp[node] < 0 {
       dfs2(self.radj, comp, num_scc, node)
-      num_scc = num_scc + 1
+      continue num_scc + 1
     }
+    continue num_scc
+  } nobreak {
+    num_scc
   }
 
   // Check satisfiability: x and ¬x must be in different SCCs

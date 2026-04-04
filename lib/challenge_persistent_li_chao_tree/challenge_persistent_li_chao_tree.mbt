@@ -101,11 +101,11 @@ pub fn query(node : Node, x : Int, l : Int, r : Int) -> Int {
 ///|
 /// Build a Li Chao tree by inserting lines in order.
 pub fn from_array(lines : ArrayView[Line], l : Int, r : Int) -> Node {
-  let mut tree = Empty
-  for line in lines {
-    tree = insert(tree, line, l, r)
+  for line in lines; tree = Empty {
+    continue insert(tree, line, l, r)
+  } nobreak {
+    tree
   }
-  tree
 }
 
 ///|

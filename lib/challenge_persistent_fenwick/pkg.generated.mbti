@@ -18,11 +18,9 @@ pub fn range_sum(Fenwick, Int, Int) -> Int
 pub struct Fenwick {
   root : Node
   n : Int
-}
-pub impl Show for Fenwick
+} derive(Show)
 
-type Node
-pub impl Show for Node
+type Node derive(Show)
 
 // Type aliases
 

@@ -23,8 +23,7 @@ pub(all) struct DijkstraResult {
 pub(all) struct Edge {
   to : Int
   weight : Int64
-}
-pub impl Show for Edge
+} derive(Show)
 
 pub(all) struct Graph {
   n : Int

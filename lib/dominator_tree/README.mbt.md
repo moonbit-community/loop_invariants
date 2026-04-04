@@ -269,7 +269,7 @@ Computation (after dominator tree):
   For each node v:
     For each CFG successor w of v:
       runner = v
-      while runner != idom[w]:
+      repeat until runner == idom[w]:
         DF[runner].add(w)
         runner = idom[runner]
 

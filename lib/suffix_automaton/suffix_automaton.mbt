@@ -74,12 +74,13 @@ pub fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
   self.size = self.size + 1
   self.states[cur].len = self.states[self.last].len + 1
   self.states[cur].first_pos = self.states[cur].len - 1
-  let mut p = self.last
 
   // Follow suffix links and add transitions
-  while p >= 0 && self.states[p].next[c] < 0 {
+  let p = for p = self.last; p >= 0 && self.states[p].next[c] < 0; {
     self.states[p].next[c] = cur
-    p = self.states[p].link
+    continue self.states[p].link
+  } nobreak {
+    p
   }
   if p < 0 {
     // No existing transition for c
@@ -99,9 +100,11 @@ pub fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
       self.states[q].next[:].blit_to(self.states[clone].next)
 
       // Redirect transitions from p and its ancestors to clone
-      while p >= 0 && self.states[p].next[c] == q {
+      let _ = for p = p; p >= 0 && self.states[p].next[c] == q; {
         self.states[p].next[c] = clone
-        p = self.states[p].link
+        continue self.states[p].link
+      } nobreak {
+        ()
       }
       self.states[q].link = clone
       self.states[cur].link = clone
@@ -124,8 +127,7 @@ pub fn SuffixAutomaton::build(self : SuffixAutomaton, s : String) -> Unit {
 ///|
 /// Check if substring exists
 pub fn SuffixAutomaton::contains(self : SuffixAutomaton, s : String) -> Bool {
-  let mut state = 0
-  for i in 0..<s.length() {
+  let _ = for i = 0, state = 0; i < s.length(); {
     let c = s[i].to_int() - 97
     if c < 0 || c >= SAM_ALPHABET {
       return false
@@ -134,7 +136,9 @@ pub fn SuffixAutomaton::contains(self : SuffixAutomaton, s : String) -> Bool {
     if next < 0 {
       return false
     }
-    state = next
+    continue i + 1, next
+  } nobreak {
+    ()
   }
   true
 }
@@ -144,13 +148,13 @@ pub fn SuffixAutomaton::contains(self : SuffixAutomaton, s : String) -> Bool {
 pub fn SuffixAutomaton::count_distinct_substrings(
   self : SuffixAutomaton,
 ) -> Int64 {
-  let mut count = 0L
-  for i in 1..<self.size {
+  for i = 1, count = 0L; i < self.size; {
     let link = self.states[i].link
     let link_len = if link >= 0 { self.states[link].len } else { 0 }
-    count = count + (self.states[i].len - link_len).to_int64()
+    continue i + 1, count + (self.states[i].len - link_len).to_int64()
+  } nobreak {
+    count
   }
-  count
 }
 
 ///|
@@ -165,32 +169,29 @@ pub fn longest_common_substring(s1 : String, s2 : String) -> Int {
   sam.build(s1)
 
   // Traverse s2 through SAM
-  let mut state = 0
-  let mut len = 0
-  let mut max_len = 0
-  for i = 0; i < s2.length(); i = i + 1 {
+  for i = 0, state = 0, len = 0, max_len = 0; i < s2.length(); {
     let c = s2[i].to_int() - 97
     if c < 0 || c >= SAM_ALPHABET {
-      state = 0
-      len = 0
-      continue i + 1
+      continue i + 1, 0, 0, max_len
     }
 
     // Follow suffix links until we can extend
-    while state > 0 && sam.states[state].next[c] < 0 {
-      state = sam.states[state].link
-      len = sam.states[state].len
+    let (state2, len2) = for state = state, len = len; state > 0 &&
+                            sam.states[state].next[c] < 0; {
+      let next_state = sam.states[state].link
+      continue next_state, sam.states[next_state].len
+    } nobreak {
+      (state, len)
     }
-    if sam.states[state].next[c] >= 0 {
-      state = sam.states[state].next[c]
-      len = len + 1
+    let (state3, len3) = if sam.states[state2].next[c] >= 0 {
+      (sam.states[state2].next[c], len2 + 1)
     } else {
-      state = 0
-      len = 0
+      (0, 0)
     }
-    if len > max_len {
-      max_len = len
-    }
+    let max_len = if len3 > max_len { len3 } else { max_len }
+    continue i + 1, state3, len3, max_len
+  } nobreak {
+    max_len
   } where {
     invariant: i >= 0 && i <= s2.length() && state >= 0 && state < sam.size,
     reasoning: (
@@ -205,7 +206,6 @@ pub fn longest_common_substring(s1 : String, s2 : String) -> Int {
       #|At i == s2.length(), max_len is the LCS length.
     ),
   }
-  max_len
 }
 
 ///|
@@ -221,8 +221,7 @@ pub fn SuffixAutomaton::count_occurrences(
   pattern : String,
 ) -> Int {
   // First, find the state for pattern
-  let mut state = 0
-  for i in 0..<pattern.length() {
+  let state = for i = 0, state = 0; i < pattern.length(); {
     let c = pattern[i].to_int() - 97
     if c < 0 || c >= SAM_ALPHABET {
       return 0
@@ -231,7 +230,9 @@ pub fn SuffixAutomaton::count_occurrences(
     if next < 0 {
       return 0
     }
-    state = next
+    continue i + 1, next
+  } nobreak {
+    state
   }
 
   // Count using topological sort on suffix link tree
@@ -257,10 +258,11 @@ pub fn SuffixAutomaton::count_occurrences(
   }
 
   // Mark terminal states (states on path from initial to last)
-  let mut p = self.size - 1
-  while p > 0 {
+  let _ = for p = self.size - 1; p > 0; {
     cnt[p] = 1
-    p = self.states[p].link
+    continue self.states[p].link
+  } nobreak {
+    ()
   }
 
   // Propagate counts through suffix links

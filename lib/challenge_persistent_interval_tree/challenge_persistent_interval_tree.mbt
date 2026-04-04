@@ -93,12 +93,12 @@ pub fn find_overlap(t : Tree, qs : Int, qe : Int) -> (Int, Int)? {
 ///|
 /// Build an interval tree by inserting intervals in order.
 pub fn from_array(arr : ArrayView[(Int, Int)]) -> Tree {
-  let mut tree = Empty
-  for interval in arr {
+  for interval in arr; tree = Empty {
     let (s, e) = interval
-    tree = insert(tree, s, e)
+    continue insert(tree, s, e)
+  } nobreak {
+    tree
   }
-  tree
 }
 
 ///|

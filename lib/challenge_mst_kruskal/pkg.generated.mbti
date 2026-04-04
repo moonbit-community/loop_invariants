@@ -7,8 +7,7 @@ pub fn mst_weight(Int, ArrayView[(Int, Int, Int)]) -> Int?
 // Errors
 
 // Types and methods
-type DSU
-pub impl Show for DSU
+type DSU derive(Show)
 
 // Type aliases
 

@@ -422,8 +422,8 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
   guard m > 0 && n > 0 else { return m + n }
 
   // Only need two rows: previous and current
-  let mut prev : Array[Int] = Array::make(n + 1, 0)
-  let mut curr : Array[Int] = Array::make(n + 1, 0)
+  let prev : Array[Int] = Array::make(n + 1, 0)
+  let curr : Array[Int] = Array::make(n + 1, 0)
 
   // Initialize first row: edit distance from empty string to s2[0..j)
   for j = 0; j <= n; j = j + 1 {
@@ -441,7 +441,7 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
       #|At j = n + 1, the entire base row is initialized.
     ),
   }
-  for i = 1 {
+  for i = 1, prev = prev, curr = curr {
     if i > m {
       break prev[n]
     } else {
@@ -482,10 +482,7 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
       }
 
       // Swap rows
-      let tmp = prev
-      prev = curr
-      curr = tmp
-      continue i + 1
+      continue i + 1, curr, prev
     }
   } where {
     invariant: i >= 1 && i <= m + 1,
@@ -609,10 +606,11 @@ fn point_cmp(p1 : Point, p2 : Point) -> Int {
 fn sort_points(points : Array[Point]) -> Unit {
   for i in 1..<points.length() {
     let key = points[i]
-    let mut j = i - 1
-    while j >= 0 && point_cmp(points[j], key) > 0 {
+    let j = for j = i - 1; j >= 0 && point_cmp(points[j], key) > 0; {
       points[j + 1] = points[j]
-      j = j - 1
+      continue j - 1
+    } nobreak {
+      j
     }
     points[j + 1] = key
   }
@@ -635,14 +633,21 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
       break
     } else {
       // Remove points that make clockwise turn
-      while hull.length() >= 2 &&
+      for pop_next = hull.length() >= 2 &&
             cross_product(
               hull[hull.length() - 2],
               hull[hull.length() - 1],
               points[i],
             ) <=
-            0 {
+            0; pop_next; {
         let _ = hull.pop()
+        continue hull.length() >= 2 &&
+          cross_product(
+            hull[hull.length() - 2],
+            hull[hull.length() - 1],
+            points[i],
+          ) <=
+          0
       }
       hull.push(points[i])
       continue i + 1
@@ -705,14 +710,21 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
     if i < 0 {
       break
     } else {
-      while hull.length() > lower_size &&
+      for pop_next = hull.length() > lower_size &&
             cross_product(
               hull[hull.length() - 2],
               hull[hull.length() - 1],
               points[i],
             ) <=
-            0 {
+            0; pop_next; {
         let _ = hull.pop()
+        continue hull.length() > lower_size &&
+          cross_product(
+            hull[hull.length() - 2],
+            hull[hull.length() - 1],
+            points[i],
+          ) <=
+          0
       }
       hull.push(points[i])
       continue i - 1

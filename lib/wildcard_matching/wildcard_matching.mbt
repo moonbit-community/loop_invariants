@@ -20,7 +20,7 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
   dp[0] = true
 
   // Initialize dp for empty text and pattern prefix of '*'.
-  for j = 1; j <= m; j = j + 1 {
+  for j in 1..<=m {
     if pattern[j - 1] == '*' {
       dp[j] = dp[j - 1]
     } else {
@@ -37,10 +37,10 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
       #|At j = m, dp encodes matches for empty text.
     ),
   }
-  for i = 1; i <= n; i = i + 1 {
-    let mut prev = dp[0]
+  for i in 1..<=n {
+    let old_dp0 = dp[0]
     dp[0] = false
-    for j = 1; j <= m; j = j + 1 {
+    let _ = for j = 1, prev = old_dp0; j <= m; {
       let tmp = dp[j]
       let p = pattern[j - 1]
       if p == '*' {
@@ -50,7 +50,9 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
       } else {
         dp[j] = false
       }
-      prev = tmp
+      continue j + 1, tmp
+    } nobreak {
+      prev
     } where {
       invariant: j >= 1 && j <= m + 1,
       reasoning: (

@@ -1,0 +1,22 @@
+predicate in_bounds(arr : FixedArray[Int], i : Int) {
+  0 <= i && i < arr.length()
+}
+
+predicate sorted(arr : FixedArray[Int]) {
+  ∀ i : Int, ∀ j : Int,
+    ((in_bounds(arr, i)) && (in_bounds(arr, j)) && (i <= j)) →
+      arr[i] <= arr[j]
+}
+
+predicate all_less_before(arr : FixedArray[Int], target : Int, idx : Int) {
+  ∀ i : Int, ((0 <= i) && (i < idx)) → arr[i] < target
+}
+
+predicate all_geq_from(arr : FixedArray[Int], target : Int, idx : Int) {
+  ∀ i : Int, ((idx <= i) && (i < arr.length())) → target <= arr[i]
+}
+
+predicate lower_bound_ok(arr : FixedArray[Int], target : Int, result : Int) {
+  (0 <= result) && (result <= arr.length()) &&
+  (all_less_before(arr, target, result)) && (all_geq_from(arr, target, result))
+}

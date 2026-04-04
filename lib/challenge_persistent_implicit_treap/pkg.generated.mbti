@@ -24,8 +24,7 @@ pub fn[T] to_array(Treap[T]) -> Array[T]
 pub enum Treap[T] {
   Empty
   Node(value~ : T, priority~ : Int, size~ : Int, left~ : Treap[T], right~ : Treap[T])
-}
-pub impl[T : Show] Show for Treap[T]
+} derive(Show)
 
 // Type aliases
 

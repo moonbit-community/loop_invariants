@@ -10,8 +10,7 @@ pub fn stoer_wagner_min_cut(Int, ArrayView[(Int, Int, Int64)]) -> MinCutResult?
 pub(all) struct MinCutResult {
   weight : Int64
   cut : Array[Int]
-}
-pub impl Show for MinCutResult
+} derive(Show)
 
 // Type aliases
 

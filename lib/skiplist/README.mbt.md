@@ -45,7 +45,7 @@ Each node gets a random height by flipping a coin:
 
 ```
 level = 1
-while coin_flip() == heads:
+repeat until coin_flip() != heads:
   level = level + 1
 ```
 

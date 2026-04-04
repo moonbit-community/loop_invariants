@@ -2,7 +2,7 @@
 
 A **Fenwick tree** (Binary Indexed Tree) supports fast prefix sums with point
 updates. This version is **persistent**, so every update returns a new tree
-while older versions remain valid.
+and older versions remain valid.
 
 This package provides:
 
@@ -26,7 +26,7 @@ lowbit(i) = i & -i
 Update (add delta at index `i`):
 
 ```
-while i <= n:
+repeat until i > n:
   bit[i] += delta
   i += lowbit(i)
 ```
@@ -35,7 +35,7 @@ Prefix sum (sum of 1..i):
 
 ```
 res = 0
-while i > 0:
+repeat until i == 0:
   res += bit[i]
   i -= lowbit(i)
 ```

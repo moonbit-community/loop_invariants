@@ -169,7 +169,7 @@ When querying a path:
 ## LCA via HLD
 
 ```
-while head[u] != head[v]:
+repeat until head[u] == head[v]:
   if depth[head[u]] < depth[head[v]]: v = parent[head[v]]
   else: u = parent[head[u]]
 return (deeper of u,v)
@@ -204,17 +204,20 @@ for u in 0..<n {
 }
 
 // Path query u-v
-let mut ans = 0
-let mut a = u
-let mut b = v
-while hld.get_chain_head(a) != hld.get_chain_head(b) {
-  if depth[head[a]] < depth[head[b]] { swap(a, b) }
-  let head = hld.get_chain_head(a)
-  ans += segtree.query(pos[head]..pos[a])
-  a = parent[head]
+let ans = loop (u, v, 0) {
+  (a, b, ans) => {
+    let head_a = hld.get_chain_head(a)
+    let head_b = hld.get_chain_head(b)
+    if head_a == head_b {
+      break ans + segtree.query(min(pos[a], pos[b])..max(pos[a], pos[b]))
+    }
+    if depth[head_a] < depth[head_b] {
+      continue (a, parent[head_b], ans + segtree.query(pos[head_b]..pos[b]))
+    } else {
+      continue (parent[head_a], b, ans + segtree.query(pos[head_a]..pos[a]))
+    }
+  }
 }
-// Final segment in same chain
-ans += segtree.query(min(pos[a],pos[b])..max(pos[a],pos[b]))
 ```
 
 ### Micro example with explicit ranges

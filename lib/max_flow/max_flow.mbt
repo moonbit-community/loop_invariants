@@ -109,7 +109,6 @@ fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
   }
   self.level[source] = 0
   let queue : Array[Int] = [source]
-  let mut head = 0
 
   // INVARIANT: head >= 0 && head <= queue.length()
   // I: level[source]=0, queue=[source]. M: BFS explores vertices level by level.
@@ -117,9 +116,8 @@ fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
   // with residual capacity. This constructs the level graph where only edges to
   // next level are used. T: When queue exhausted, level[v] = shortest path
   // distance from source, or -1 if unreachable.
-  while head < queue.length() {
+  for head = 0; head < queue.length(); {
     let u = queue[head]
-    head = head + 1
     for i = 0; i < self.adj[u].length(); i = i + 1 {
       let e = self.adj[u][i]
       if self.level[e.to] < 0 && e.capacity > e.flow {
@@ -137,6 +135,7 @@ fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
         #|At i = deg(u), all outgoing edges are processed.
       ),
     }
+    continue head + 1
   }
   self.level[sink] >= 0
 }
@@ -147,7 +146,7 @@ fn MaxFlow::dfs(self : MaxFlow, u : Int, sink : Int, pushed : Int64) -> Int64 {
   if u == sink {
     return pushed
   }
-  while self.iter[u] < self.adj[u].length() {
+  for next_edge = self.iter[u] < self.adj[u].length(); next_edge; {
     let idx = self.iter[u]
     let e = self.adj[u][idx]
     if self.level[u] + 1 == self.level[e.to] && e.capacity > e.flow {
@@ -161,6 +160,7 @@ fn MaxFlow::dfs(self : MaxFlow, u : Int, sink : Int, pushed : Int64) -> Int64 {
       }
     }
     self.iter[u] = self.iter[u] + 1
+    continue self.iter[u] < self.adj[u].length()
   }
   0L
 }
@@ -171,8 +171,6 @@ const FLOW_INF : Int64 = 9223372036854775807L
 ///|
 /// Compute maximum flow from source to sink
 fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
-  let mut flow = 0L
-
   // INVARIANT: flow >= 0
   // I: flow=0, no flow pushed. M: Each iteration builds level graph via BFS.
   // If sink unreachable, we're done (max-flow min-cut theorem). Otherwise, find
@@ -180,7 +178,7 @@ fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
   // Blocking flow saturates at least one edge on every s-t path in level graph.
   // After each phase, shortest path length increases by at least 1.
   // T: After at most n phases, sink becomes unreachable and flow equals maximum.
-  while self.bfs(source, sink) {
+  for flow = 0L; self.bfs(source, sink); {
     // Reset iteration pointers for dead-end pruning
     for i = 0; i < self.n; i = i + 1 {
       self.iter[i] = 0
@@ -197,12 +195,11 @@ fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
     }
 
     // Find blocking flow
-    for ;; {
-      let pushed = self.dfs(source, sink, FLOW_INF)
-      if pushed == 0L {
-        break
-      }
-      flow = flow + pushed
+    let flow = for pushed = self.dfs(source, sink, FLOW_INF), flow = flow; pushed >
+                  0L; {
+      continue self.dfs(source, sink, FLOW_INF), flow + pushed
+    } nobreak {
+      flow
     } where {
       invariant: flow >= 0L,
       reasoning: (
@@ -214,8 +211,10 @@ fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
         #|When pushed == 0, a blocking flow is reached.
       ),
     }
+    continue flow
+  } nobreak {
+    flow
   }
-  flow
 }
 
 ///|
@@ -225,10 +224,8 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
   let visited = Array::make(self.n, false)
   let queue : Array[Int] = [source]
   visited[source] = true
-  let mut head = 0
-  while head < queue.length() {
+  for head = 0; head < queue.length(); {
     let u = queue[head]
-    head = head + 1
     for i = 0; i < self.adj[u].length(); i = i + 1 {
       let e = self.adj[u][i]
       if !visited[e.to] && e.capacity > e.flow {
@@ -246,6 +243,7 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
         #|At i = deg(u), all outgoing edges are processed.
       ),
     }
+    continue head + 1
   }
 
   // Collect cut edges: from visited to non-visited with original capacity
@@ -390,10 +388,11 @@ test "max flow min cut" {
   inspect(flow, content="4")
   let cut = mf.min_cut(0)
   // Cut should have total capacity = max flow
-  let mut cut_capacity = 0L
-  for i = 0; i < cut.length(); i = i + 1 {
+  let cut_capacity = for i = 0, cut_capacity = 0L; i < cut.length(); {
     let (_, _, cap) = cut[i]
-    cut_capacity = cut_capacity + cap
+    continue i + 1, cut_capacity + cap
+  } nobreak {
+    cut_capacity
   } where {
     invariant: i >= 0 && i <= cut.length(),
     reasoning: (

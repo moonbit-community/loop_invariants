@@ -64,22 +64,20 @@ fn isqrt(n : Int) -> Int {
   if n <= 0 {
     return 0
   }
-  let mut x = n
-  let mut y = (x + 1) / 2
-  while y < x {
-    x = y
-    y = (x + n / x) / 2
+  for x = n, y = (n + 1) / 2; y < x; {
+    continue y, (y + n / y) / 2
+  } nobreak {
+    x
   }
-  x
 }
 
 ///|
 fn max_element(arr : Array[Int]) -> Int {
-  let mut mx = 0
-  for i = 0; i < arr.length(); i = i + 1 {
-    if arr[i] > mx {
-      mx = arr[i]
-    }
+  let mx = for i = 0, mx = 0; i < arr.length(); {
+    let mx = if arr[i] > mx { arr[i] } else { mx }
+    continue i + 1, mx
+  } nobreak {
+    mx
   } where {
     invariant: i >= 0 && i <= arr.length(),
     reasoning: (
@@ -174,27 +172,31 @@ fn MoDistinct::process_queries(
     let query = mo_queries[i]
 
     // Expand right
-    while self.curr_r < query.r {
+    for expand_right = self.curr_r < query.r; expand_right; {
       self.curr_r = self.curr_r + 1
       self.add(self.curr_r)
+      continue self.curr_r < query.r
     }
 
     // Shrink right
-    while self.curr_r > query.r {
+    for shrink_right = self.curr_r > query.r; shrink_right; {
       self.remove(self.curr_r)
       self.curr_r = self.curr_r - 1
+      continue self.curr_r > query.r
     }
 
     // Expand left
-    while self.curr_l > query.l {
+    for expand_left = self.curr_l > query.l; expand_left; {
       self.curr_l = self.curr_l - 1
       self.add(self.curr_l)
+      continue self.curr_l > query.l
     }
 
     // Shrink left
-    while self.curr_l < query.l {
+    for shrink_left = self.curr_l < query.l; shrink_left; {
       self.remove(self.curr_l)
       self.curr_l = self.curr_l + 1
+      continue self.curr_l < query.l
     }
     results[query.idx] = self.distinct
   } where {
@@ -282,21 +284,25 @@ fn MoSum::process_queries(
   let results = Array::make(q, 0L)
   for i = 0; i < q; i = i + 1 {
     let query = mo_queries[i]
-    while self.curr_r < query.r {
+    for expand_right = self.curr_r < query.r; expand_right; {
       self.curr_r = self.curr_r + 1
       self.add(self.curr_r)
+      continue self.curr_r < query.r
     }
-    while self.curr_r > query.r {
+    for shrink_right = self.curr_r > query.r; shrink_right; {
       self.remove(self.curr_r)
       self.curr_r = self.curr_r - 1
+      continue self.curr_r > query.r
     }
-    while self.curr_l > query.l {
+    for expand_left = self.curr_l > query.l; expand_left; {
       self.curr_l = self.curr_l - 1
       self.add(self.curr_l)
+      continue self.curr_l > query.l
     }
-    while self.curr_l < query.l {
+    for shrink_left = self.curr_l < query.l; shrink_left; {
       self.remove(self.curr_l)
       self.curr_l = self.curr_l + 1
+      continue self.curr_l < query.l
     }
     results[query.idx] = self.sum
   } where {

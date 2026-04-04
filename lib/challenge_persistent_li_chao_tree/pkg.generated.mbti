@@ -18,14 +18,12 @@ pub fn size(Node) -> Int
 pub(all) struct Line {
   m : Int
   b : Int
-}
-pub impl Show for Line
+} derive(Show)
 
 pub enum Node {
   Empty
   Node(line~ : Line, left~ : Node, right~ : Node)
-}
-pub impl Show for Node
+} derive(Show)
 
 // Type aliases
 

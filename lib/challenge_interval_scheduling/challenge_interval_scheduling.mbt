@@ -16,15 +16,15 @@ fn max_non_overlapping(intervals : Array[Interval]) -> Int {
     return 0
   }
   intervals.sort_by_key(it => it.end)
-  let mut count = 0
-  let mut last_end = -1_000_000_000
-  for it in intervals {
+  for it in intervals; count = 0, last_end = -1_000_000_000 {
     if it.start >= last_end {
-      count = count + 1
-      last_end = it.end
+      continue count + 1, it.end
+    } else {
+      continue count, last_end
     }
+  } nobreak {
+    count
   }
-  count
 }
 
 ///|

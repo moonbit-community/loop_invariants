@@ -32,23 +32,20 @@ pub fn mst_weight(adj : Array[Array[(Int, Int)]]) -> Int? {
   let in_mst = Array::make(n, false)
   let min_edge = Array::make(n, INF)
   min_edge[0] = 0
-  let mut total = 0
-  let mut added = 0
-  for _ in 0..<n {
-    let mut v = -1
-    let mut best = INF
-    for i in 0..<n {
+  let (total, added) = for _ in 0..<n; total = 0, added = 0 {
+    let (v, best) = for i in 0..<n; v = -1, best = INF {
       if !in_mst[i] && min_edge[i] < best {
-        v = i
-        best = min_edge[i]
+        continue i, min_edge[i]
+      } else {
+        continue v, best
       }
+    } nobreak {
+      (v, best)
     }
     if v < 0 || best == INF {
-      break
+      break (total, added)
     }
     in_mst[v] = true
-    total = total + best
-    added = added + 1
     let neighbors = adj[v]
     for edge in neighbors {
       let (to, w) = edge
@@ -56,6 +53,9 @@ pub fn mst_weight(adj : Array[Array[(Int, Int)]]) -> Int? {
         min_edge[to] = w
       }
     }
+    continue total + best, added + 1
+  } nobreak {
+    (total, added)
   }
   if added == n {
     Some(total)

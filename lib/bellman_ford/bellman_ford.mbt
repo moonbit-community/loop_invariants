@@ -70,14 +70,17 @@ pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
 
   // Relax all edges V-1 times
   for _ in 0..<(self.n - 1) {
-    let mut any_relaxed = false
-    for edge in self.edges {
+    let any_relaxed = for edge in self.edges; any_relaxed = false {
       let (u, v, w) = edge
       if self.dist[u] < BF_INF && self.dist[u] + w < self.dist[v] {
         self.dist[v] = self.dist[u] + w
         self.parent[v] = u
-        any_relaxed = true
+        continue true
+      } else {
+        continue any_relaxed
       }
+    } nobreak {
+      any_relaxed
     }
     // Early termination if no relaxation happened
     if !any_relaxed {
@@ -210,25 +213,29 @@ fn SPFA::compute(self : SPFA, source : Int) -> Array[Int64]? {
   let queue : Array[Int] = [source]
   self.in_queue[source] = true
   self.count[source] = 1
-  let mut front = 0
-  while queue.get(front) is Some(u) {
-    self.in_queue[u] = false
-    for edge in self.adj[u] {
-      let (v, w) = edge
-      if self.dist[u] + w < self.dist[v] {
-        self.dist[v] = self.dist[u] + w
-        if !self.in_queue[v] {
-          queue.push(v)
-          self.in_queue[v] = true
-          self.count[v] = self.count[v] + 1
-          // If vertex entered queue more than n times, negative cycle exists
-          if self.count[v] >= self.n {
-            return None
+  let _ = for front = 0 {
+    match queue.get(front) {
+      None => break ()
+      Some(u) => {
+        self.in_queue[u] = false
+        for edge in self.adj[u] {
+          let (v, w) = edge
+          if self.dist[u] + w < self.dist[v] {
+            self.dist[v] = self.dist[u] + w
+            if !self.in_queue[v] {
+              queue.push(v)
+              self.in_queue[v] = true
+              self.count[v] = self.count[v] + 1
+              // If vertex entered queue more than n times, negative cycle exists
+              if self.count[v] >= self.n {
+                return None
+              }
+            }
           }
         }
+        continue front + 1
       }
     }
-    front = front + 1
   }
   Some(self.dist)
 }

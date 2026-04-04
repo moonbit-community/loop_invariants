@@ -24,13 +24,15 @@ fn bellman_ford_with_neg_cycle(
 
   // Relax all edges n-1 times
   for i = 0; i < n - 1; i = i + 1 {
-    let mut changed = false
-    for edge in edges {
+    let changed = for edge in edges; changed = false {
       let (u, v, w) = edge
       if dist[u] != inf && dist[u] + w < dist[v] {
         dist[v] = dist[u] + w
-        changed = true
+        continue true
       }
+      continue changed
+    } nobreak {
+      changed
     }
     // Early termination if no changes
     if !changed {
@@ -59,13 +61,13 @@ fn bellman_ford_with_neg_cycle(
   }
 
   // Check for negative cycles - one more iteration
-  let mut has_negative_cycle = false
-  for edge in edges {
+  let has_negative_cycle = for edge in edges {
     let (u, v, w) = edge
     if dist[u] != inf && dist[u] + w < dist[v] {
-      has_negative_cycle = true
-      break
+      break true
     }
+  } nobreak {
+    false
   }
   (dist, has_negative_cycle)
 }
@@ -417,13 +419,15 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
 
   // Second pass: count SCCs
   let visited2 = Array::make(n, false)
-  let mut scc_count = 0
-  for i in n>..0 {
+  let scc_count = for i in n>..0; scc_count = 0 {
     let v = order[i]
     if !visited2[v] {
       dfs_mark(rev_adj, visited2, v)
-      scc_count = scc_count + 1
+      continue scc_count + 1
     }
+    continue scc_count
+  } nobreak {
+    scc_count
   }
   scc_count
 }
@@ -476,16 +480,15 @@ fn prim_mst(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
   let in_mst = Array::make(n, false)
   let key = Array::make(n, inf) // Minimum edge weight to connect to MST
   key[0] = 0
-  let mut total_weight = 0
-  for count = 0; count < n; count = count + 1 {
+  let total_weight = for count = 0, total_weight = 0; count < n; {
     // Find minimum key vertex not in MST
-    let mut min_key = inf
-    let mut u = -1
-    for v = 0; v < n; v = v + 1 {
+    let (u, _) = for v in 0..<n; u = -1, min_key = inf {
       if !in_mst[v] && key[v] < min_key {
-        min_key = key[v]
-        u = v
+        continue v, key[v]
       }
+      continue u, min_key
+    } nobreak {
+      (u, min_key)
     } where {
       invariant: v >= 0 && v <= n,
       reasoning: (
@@ -501,10 +504,10 @@ fn prim_mst(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
       ),
     }
     if u == -1 {
-      break // Disconnected graph
+      break total_weight // Disconnected graph
     }
     in_mst[u] = true
-    total_weight = total_weight + key[u]
+    let total_weight = total_weight + key[u]
 
     // Update keys of adjacent vertices
     for edge in adj[u] {
@@ -513,6 +516,9 @@ fn prim_mst(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
         key[v] = weight
       }
     }
+    continue count + 1, total_weight
+  } nobreak {
+    total_weight
   } where {
     invariant: count >= 0 && count <= n,
     reasoning: (
@@ -601,9 +607,9 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
   // Union-Find
   let parent = Array::makei(n, i => i)
   let rank = Array::make(n, 0)
-  let mut total_weight = 0
-  let mut edges_added = 0
-  for i = 0; i < sorted_edges.length() && edges_added < n - 1; {
+  let total_weight = for i = 0, total_weight = 0, edges_added = 0; i <
+                        sorted_edges.length() &&
+                        edges_added < n - 1; {
     let (u, v, w) = sorted_edges[i]
     let root_u = find_root(parent, u)
     let root_v = find_root(parent, v)
@@ -617,11 +623,9 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
         parent[root_v] = root_u
         rank[root_u] = rank[root_u] + 1
       }
-      total_weight = total_weight + w
-      edges_added = edges_added + 1
-      continue i + 1
+      continue i + 1, total_weight + w, edges_added + 1
     } else {
-      continue i + 1
+      continue i + 1, total_weight, edges_added
     }
   } nobreak {
     total_weight
@@ -643,6 +647,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
       #|The loop ends when edges_added == n - 1 or all edges are considered.
     ),
   }
+  total_weight
 }
 
 ///|

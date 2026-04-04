@@ -68,11 +68,11 @@ test "scc condensation graph" {
   // Should have edge from {0,1,2}'s SCC to {3}'s SCC
   let scc_012 = result.component[0]
   let scc_3 = result.component[3]
-  let mut has_edge = false
-  for i in 0..<result.scc_adj[scc_012].length() {
-    if result.scc_adj[scc_012][i] == scc_3 {
-      has_edge = true
-    }
+  let has_edge = for i in 0..<result.scc_adj[scc_012].length(); has_edge = false {
+    let has_edge = has_edge || result.scc_adj[scc_012][i] == scc_3
+    continue has_edge
+  } nobreak {
+    has_edge
   }
   inspect(has_edge, content="true")
 }
@@ -145,9 +145,10 @@ test "two sat unsatisfiable" {
 test "scc sizes" {
   let adj : Array[Array[Int]] = [[1], [2], [0, 3], []]
   let result = find_sccs(4, adj)
-  let mut total = 0
-  for i = 0; i < result.scc_sizes.length(); i = i + 1 {
-    total = total + result.scc_sizes[i]
+  let total = for i = 0, total = 0; i < result.scc_sizes.length(); {
+    continue i + 1, total + result.scc_sizes[i]
+  } nobreak {
+    total
   } where {
     invariant: i >= 0 && i <= result.scc_sizes.length(),
     reasoning: (

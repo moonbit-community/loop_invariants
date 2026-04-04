@@ -136,15 +136,17 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // =========================================================================
   let component = Array::make(n, -1)
   let scc_sizes : Array[Int] = []
-  let mut scc_count = 0
-  for i in n>..0 {
+  let scc_count = for i in n>..0; scc_count = 0 {
     let v = order[i]
     if component[v] == -1 {
       let size : Counter = { val: 0 }
       dfs_assign(v, radj, component, scc_count, size)
       scc_sizes.push(size.val)
-      scc_count = scc_count + 1
+      continue scc_count + 1
     }
+    continue scc_count
+  } nobreak {
+    scc_count
   }
 
   // =========================================================================

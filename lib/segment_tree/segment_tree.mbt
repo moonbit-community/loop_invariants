@@ -301,13 +301,14 @@ fn IterativeSegTree::update(
   }
 
   // Update leaf
-  let mut idx = i + self.n
+  let idx = i + self.n
   self.tree[idx] = val
 
   // Propagate up to root
-  while idx > 1 {
-    idx = idx / 2
-    self.tree[idx] = self.tree[2 * idx] + self.tree[2 * idx + 1]
+  let _ = for idx = idx; idx > 1; {
+    let parent = idx / 2
+    self.tree[parent] = self.tree[2 * parent] + self.tree[2 * parent + 1]
+    continue parent
   }
 }
 
@@ -411,6 +412,16 @@ test "iterative segment tree update" {
   let st = IterativeSegTree::new(arr)
   st.update(2, 10L)
   inspect(st.query(0, 4), content="22")
+}
+
+///|
+test "iterative segment tree update power of two" {
+  let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
+  let st = IterativeSegTree::new(arr)
+  st.update(3, 100L)
+  inspect(st.query(0, 7), content="132")
+  inspect(st.query(0, 3), content="106")
+  inspect(st.query(4, 7), content="26")
 }
 
 ///|

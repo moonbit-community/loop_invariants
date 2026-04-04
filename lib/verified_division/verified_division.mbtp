@@ -1,0 +1,12 @@
+predicate valid_division_args(n : Int, d : Int) {
+  (n >= 0) && (d > 0)
+}
+
+predicate div_ok(n : Int, d : Int, q : Int) {
+  (q >= 0) && (q * d <= n) && (n < (q + 1) * d)
+}
+
+predicate mod_ok(n : Int, d : Int, r : Int) {
+  (0 <= r) && (r < d) &&
+  (∃ q : Int, div_ok(n, d, q) && n == q * d + r)
+}

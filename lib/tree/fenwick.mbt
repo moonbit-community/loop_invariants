@@ -267,9 +267,12 @@ fn FenwickTree::find_kth(self : FenwickTree, k : Int) -> Int {
     return 0
   }
   // Find the highest power of 2 <= n
-  let mut max_bit = 1
-  while max_bit * 2 <= self.n {
-    max_bit = max_bit * 2
+  let max_bit = for max_bit = 1 {
+    if max_bit * 2 <= self.n {
+      continue max_bit * 2
+    } else {
+      break max_bit
+    }
   }
   for pos = 0, remaining = k, bit = max_bit {
     if bit == 0 {

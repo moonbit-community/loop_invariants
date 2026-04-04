@@ -36,16 +36,18 @@ fn MinHeap::new() -> MinHeap {
 ///|
 fn MinHeap::push(self : MinHeap, x : Int) -> Unit {
   self.data.push(x)
-  let mut i = self.data.length() - 1
-  while i > 0 {
+  let _ = for i = self.data.length() - 1 {
+    if i <= 0 {
+      break ()
+    }
     let p = (i - 1) / 2
     if self.data[i] < self.data[p] {
       let tmp = self.data[i]
       self.data[i] = self.data[p]
       self.data[p] = tmp
-      i = p
+      continue p
     } else {
-      break
+      break ()
     }
   }
 }
@@ -63,25 +65,27 @@ fn MinHeap::pop(self : MinHeap) -> Int? {
   }
   if self.data.length() > 0 {
     self.data[0] = last
-    let mut i = 0
     let len = self.data.length()
-    for ;; {
+    let _ = for i = 0 {
       let left = 2 * i + 1
       let right = 2 * i + 2
-      let mut smallest = i
-      if left < len && self.data[left] < self.data[smallest] {
-        smallest = left
+      let smallest = if left < len && self.data[left] < self.data[i] {
+        left
+      } else {
+        i
       }
-      if right < len && self.data[right] < self.data[smallest] {
-        smallest = right
+      let smallest = if right < len && self.data[right] < self.data[smallest] {
+        right
+      } else {
+        smallest
       }
       if smallest == i {
-        break
+        break ()
       }
       let tmp = self.data[i]
       self.data[i] = self.data[smallest]
       self.data[smallest] = tmp
-      i = smallest
+      continue smallest
     } where {
       invariant: i >= 0 && i < len,
       reasoning: (
@@ -215,9 +219,12 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
       Some(v) => v
       None => return None
     }
-    let mut idx = next_idx[leaf]
-    while idx < adj[leaf].length() && deg[adj[leaf][idx]] == 0 {
-      idx = idx + 1
+    let idx = for idx = next_idx[leaf] {
+      if idx < adj[leaf].length() && deg[adj[leaf][idx]] == 0 {
+        continue idx + 1
+      } else {
+        break idx
+      }
     }
     if idx >= adj[leaf].length() {
       return None

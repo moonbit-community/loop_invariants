@@ -74,22 +74,24 @@ fn Trie::new() -> Trie {
 /// INVARIANT: After traversing k characters, current node represents prefix[0..k).
 /// REASONING: Each character extends the path by one node; at end we mark is_end.
 fn Trie::insert(self : Trie, word : String) -> Unit {
-  let mut current = self.root
-  current.prefix_count = current.prefix_count + 1
-  for i = 0; i < word.length(); i = i + 1 {
+  self.root.prefix_count = self.root.prefix_count + 1
+  let current = for i = 0, current = self.root; i < word.length(); {
     let c = word[i].to_int() - 'a'.to_int()
     if c < 0 || c >= 26 {
-      continue i + 1 // Skip non-lowercase characters
+      continue i + 1, current // Skip non-lowercase characters
     }
-    match current.children[c] {
+    let next = match current.children[c] {
       None => {
         let new_node = TrieNode::new()
         current.children[c] = Some(new_node)
-        current = new_node
+        new_node
       }
-      Some(child) => current = child
+      Some(child) => child
     }
-    current.prefix_count = current.prefix_count + 1
+    next.prefix_count = next.prefix_count + 1
+    continue i + 1, next
+  } nobreak {
+    current
   } where {
     invariant: i >= 0 && i <= word.length(),
     reasoning: (
@@ -149,16 +151,17 @@ fn Trie::count_word(self : Trie, word : String) -> Int {
 ///|
 /// Find node for given string (helper function)
 fn Trie::find_node(self : Trie, s : String) -> TrieNode? {
-  let mut current = self.root
-  for i = 0; i < s.length(); i = i + 1 {
+  for i = 0, current = self.root; i < s.length(); {
     let c = s[i].to_int() - 'a'.to_int()
     if c < 0 || c >= 26 {
-      continue i + 1
+      continue i + 1, current
     }
     match current.children[c] {
-      None => return None
-      Some(child) => current = child
+      None => break None
+      Some(child) => continue i + 1, child
     }
+  } nobreak {
+    Some(current)
   } where {
     invariant: i >= 0 && i <= s.length(),
     reasoning: (
@@ -171,7 +174,6 @@ fn Trie::find_node(self : Trie, s : String) -> TrieNode? {
       #|If the loop completes, current is the node for the full string s.
     ),
   }
-  Some(current)
 }
 
 ///|
@@ -181,20 +183,21 @@ fn Trie::delete(self : Trie, word : String) -> Bool {
   if !self.search(word) {
     return false
   }
-  let mut current = self.root
-  current.prefix_count = current.prefix_count - 1
-  for i = 0; i < word.length(); i = i + 1 {
+  self.root.prefix_count = self.root.prefix_count - 1
+  let current = for i = 0, current = self.root; i < word.length(); {
     let c = word[i].to_int() - 'a'.to_int()
     if c < 0 || c >= 26 {
-      continue i + 1
+      continue i + 1, current
     }
     match current.children[c] {
-      None => return false
+      None => break None
       Some(child) => {
-        current = child
-        current.prefix_count = current.prefix_count - 1
+        child.prefix_count = child.prefix_count - 1
+        continue i + 1, child
       }
     }
+  } nobreak {
+    Some(current)
   } where {
     invariant: i >= 0 && i <= word.length(),
     reasoning: (
@@ -209,11 +212,16 @@ fn Trie::delete(self : Trie, word : String) -> Bool {
       #|clear is_end if needed. Counts remain consistent.
     ),
   }
-  current.count = current.count - 1
-  if current.count == 0 {
-    current.is_end = false
+  match current {
+    None => false
+    Some(current) => {
+      current.count = current.count - 1
+      if current.count == 0 {
+        current.is_end = false
+      }
+      true
+    }
   }
-  true
 }
 
 ///|
@@ -232,9 +240,10 @@ fn collect_words(
   result : Array[String],
 ) -> Unit {
   if node.is_end {
-    let mut s = ""
-    for i = 0; i < current.length(); i = i + 1 {
-      s = s + current[i].to_string()
+    let s = for i = 0, s = ""; i < current.length(); {
+      continue i + 1, s + current[i].to_string()
+    } nobreak {
+      s
     } where {
       invariant: i >= 0 && i <= current.length(),
       reasoning: (
@@ -325,22 +334,18 @@ fn Trie::autocomplete(self : Trie, prefix : String) -> Array[String] {
 ///|
 /// Find longest prefix of word that exists in trie
 fn Trie::longest_prefix(self : Trie, word : String) -> String {
-  let mut current = self.root
-  let mut last_end = 0
-  for i = 0; i < word.length(); i = i + 1 {
+  let last_end = for i = 0, current = self.root, last_end = 0; i < word.length(); {
     let c = word[i].to_int() - 'a'.to_int()
     if c < 0 || c >= 26 {
-      break
+      break last_end
     }
     match current.children[c] {
-      None => break
-      Some(child) => {
-        current = child
-        if current.is_end {
-          last_end = i + 1
-        }
-      }
+      None => break last_end
+      Some(child) =>
+        continue i + 1, child, if child.is_end { i + 1 } else { last_end }
     }
+  } nobreak {
+    last_end
   } where {
     invariant: i >= 0 && i <= word.length(),
     reasoning: (
@@ -655,6 +660,28 @@ test "trie autocomplete" {
   trie.insert("cat")
   let results = trie.autocomplete("car")
   inspect(results.length(), content="3") // car, card, care
+}
+
+///|
+test "trie autocomplete contents and skipped characters" {
+  let trie = Trie::new()
+  trie.insert("car")
+  trie.insert("card")
+  trie.insert("care")
+  trie.insert("care")
+  trie.insert("a-b")
+  trie.insert("app")
+  trie.insert("apple")
+  let results = trie.autocomplete("car")
+  inspect(results.length(), content="4")
+  inspect(results[0], content="car")
+  inspect(results[1], content="card")
+  inspect(results[2], content="care")
+  inspect(results[3], content="care")
+  inspect(trie.search("ab"), content="true")
+  inspect(trie.delete("a-b"), content="true")
+  inspect(trie.search("ab"), content="false")
+  inspect(trie.longest_prefix("app!zz"), content="app")
 }
 
 ///|

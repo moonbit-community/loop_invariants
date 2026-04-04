@@ -94,7 +94,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
     // - left_elems ++ right_elems contains all processed elements
     // - elements in left_elems have value < mid
     // - elements in right_elems have value >= mid
-    for i = 0; i < elements.length(); i = i + 1 {
+    for i in 0..<elements.length() {
       let v = elements[i]
       if v < mid {
         bits.push(false)

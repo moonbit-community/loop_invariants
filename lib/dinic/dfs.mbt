@@ -65,7 +65,7 @@ pub fn Dinic::dfs(self : Dinic, u : Int, sink : Int, pushed : Int64) -> Int64 {
   }
 
   // Try edges starting from iter[u]
-  while self.iter[u] < self.adj[u].length() {
+  for next_edge = self.iter[u] < self.adj[u].length(); next_edge; {
     let i = self.iter[u]
     let e = self.adj[u][i]
 
@@ -92,6 +92,7 @@ pub fn Dinic::dfs(self : Dinic, u : Int, sink : Int, pushed : Int64) -> Int64 {
 
     // This edge didn't work, try next one
     self.iter[u] = self.iter[u] + 1
+    continue self.iter[u] < self.adj[u].length()
   }
 
   // No augmenting path found from u
