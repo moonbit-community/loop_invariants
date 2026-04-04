@@ -744,8 +744,39 @@ test "lcs_length" {
 // ============================================================================
 
 ///|
-/// Booth's algorithm: find starting index of lexicographically smallest rotation.
-/// For string s of length n, there are n rotations. We find the smallest one.
+/// Find the starting index of the lexicographically smallest rotation of `s`
+/// using Booth's algorithm.
+///
+/// A *rotation* by `k` of a string `s` of length `n` is `s[k..n] + s[0..k]`.
+/// There are `n` distinct rotations (some may be equal).  This function
+/// returns the index `k` such that the rotation starting at `k` is
+/// lexicographically smallest, running in **O(n)** time.
+///
+/// The algorithm maintains a current best candidate `k` and scans the doubled
+/// string `s + s` (via modular indexing) left-to-right.  A KMP-style failure
+/// function is used to skip impossible candidates without re-examining
+/// characters, giving amortised O(n) total work.
+///
+/// # Parameters
+/// - `s` — the character slice to rotate (length `n`)
+///
+/// # Returns
+/// The 0-based index `k` in `s` such that `s[k:] + s[:k]` is the
+/// lexicographically smallest rotation.  Returns `0` for an empty slice.
+///
+/// # Examples
+/// ```
+/// // "bca" rotations: "bca", "cab", "abc"  -> smallest "abc" starts at 2
+/// // booth_smallest_rotation(['b','c','a']) == 2
+///
+/// // already the smallest
+/// // booth_smallest_rotation(['a','b','c']) == 0
+/// ```
+///
+/// # Applications
+/// - Canonical form for cyclic strings (DNA, cryptography)
+/// - Equality testing under rotation
+/// - Preprocessing for the Burrows-Wheeler Transform
 #warnings("+missing_invariant+missing_reasoning")
 fn booth_smallest_rotation(s : ArrayView[Char]) -> Int {
   let n = s.length()
