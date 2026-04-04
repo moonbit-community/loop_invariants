@@ -101,11 +101,12 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
   // Each consecutive triple makes a right turn (or is collinear)
   for i in 0..<n {
     // While last two points and sorted[i] don't make a right turn, remove last
-    while hull.length() >= 2 {
+    for pop_next = hull.length() >= 2; pop_next; {
       let top = hull[hull.length() - 1]
       let second = hull[hull.length() - 2]
       if cross(second, top, sorted[i]) <= 0L {
         let _ = hull.pop()
+        continue hull.length() >= 2
       } else {
         break
       }
@@ -118,11 +119,12 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
   // INVARIANT: hull[lower_len:] contains upper hull in right-to-left order
   let start_exclusive = n - 1
   for i in start_exclusive>..0 {
-    while hull.length() > lower_len {
+    for pop_next = hull.length() > lower_len; pop_next; {
       let top = hull[hull.length() - 1]
       let second = hull[hull.length() - 2]
       if cross(second, top, sorted[i]) <= 0L {
         let _ = hull.pop()
+        continue hull.length() > lower_len
       } else {
         break
       }
@@ -208,11 +210,12 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
   // INVARIANT: hull forms a convex polygon with counterclockwise orientation
   for point in rest {
     // Remove points that would make a right turn
-    while hull.length() >= 2 {
+    for pop_next = hull.length() >= 2; pop_next; {
       let top = hull[hull.length() - 1]
       let second = hull[hull.length() - 2]
       if cross(second, top, point) <= 0L {
         let _ = hull.pop()
+        continue hull.length() >= 2
       } else {
         break
       }

@@ -633,14 +633,21 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
       break
     } else {
       // Remove points that make clockwise turn
-      while hull.length() >= 2 &&
+      for pop_next = hull.length() >= 2 &&
             cross_product(
               hull[hull.length() - 2],
               hull[hull.length() - 1],
               points[i],
             ) <=
-            0 {
+            0; pop_next; {
         let _ = hull.pop()
+        continue hull.length() >= 2 &&
+          cross_product(
+            hull[hull.length() - 2],
+            hull[hull.length() - 1],
+            points[i],
+          ) <=
+          0
       }
       hull.push(points[i])
       continue i + 1
@@ -703,14 +710,21 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
     if i < 0 {
       break
     } else {
-      while hull.length() > lower_size &&
+      for pop_next = hull.length() > lower_size &&
             cross_product(
               hull[hull.length() - 2],
               hull[hull.length() - 1],
               points[i],
             ) <=
-            0 {
+            0; pop_next; {
         let _ = hull.pop()
+        continue hull.length() > lower_size &&
+          cross_product(
+            hull[hull.length() - 2],
+            hull[hull.length() - 1],
+            points[i],
+          ) <=
+          0
       }
       hull.push(points[i])
       continue i - 1
