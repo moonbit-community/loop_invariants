@@ -10,14 +10,37 @@
 /// O(n) or O(log n) solutions to many string problems.
 
 ///|
-/// Suffix Array Construction (Simple O(n² log n) version)
+/// Build the suffix array of `s` using a simple selection-sort approach.
 ///
-/// MATHEMATICAL FOUNDATION:
-/// suffix_array[i] = starting index of the i-th smallest suffix
-/// For string "banana":
-///   Suffixes: banana, anana, nana, ana, na, a
-///   Sorted:   a, ana, anana, banana, na, nana
-///   SA:       [5, 3, 1, 0, 4, 2]
+/// The **suffix array** `sa` of a string of length `n` is a permutation of
+/// `[0, n)` such that `sa[i]` is the starting index of the i-th smallest
+/// suffix in lexicographic order.
+///
+/// This implementation uses an O(n² log n) selection sort for clarity.
+/// Production code should use a radix-sort-based O(n log n) or O(n)
+/// construction.
+///
+/// # Mathematical foundation
+/// ```
+/// s = "banana"   (n = 6)
+///
+/// Suffix index | Suffix   | Rank
+///      5       | "a"      |  0
+///      3       | "ana"    |  1
+///      1       | "anana"  |  2
+///      0       | "banana" |  3
+///      4       | "na"     |  4
+///      2       | "nana"   |  5
+///
+/// sa = [5, 3, 1, 0, 4, 2]
+/// ```
+///
+/// # Parameters
+/// - `s` — the string whose suffix array is requested
+///
+/// # Returns
+/// An `Array[Int]` of length `s.length()` containing the sorted suffix
+/// starting indices.  Returns an empty array for the empty string.
 fn build_suffix_array_simple(s : String) -> Array[Int] {
   let chars = s.to_array()
   let n = chars.length()
@@ -64,6 +87,18 @@ fn build_suffix_array_simple(s : String) -> Array[Int] {
 }
 
 ///|
+/// Compare two suffixes of `chars` starting at indices `i` and `j`
+/// lexicographically.
+///
+/// Returns a negative integer if suffix `i` is less than suffix `j`,
+/// zero if they are equal, and a positive integer if suffix `i` is greater.
+/// The shorter suffix is considered smaller when it is a proper prefix of
+/// the longer one.
+///
+/// # Parameters
+/// - `chars` — the character array holding both suffixes
+/// - `i`     — starting index of the first suffix
+/// - `j`     — starting index of the second suffix
 fn compare_suffixes(chars : Array[Char], i : Int, j : Int) -> Int {
   let n = chars.length()
   let len = if n - i < n - j { n - i } else { n - j }
@@ -102,17 +137,35 @@ test "suffix array simple" {
 }
 
 ///|
-/// LCP Array Construction (Kasai's Algorithm)
+/// Build the LCP (Longest Common Prefix) array for string `s` given its
+/// suffix array `sa`, using Kasai's O(n) algorithm.
 ///
-/// MATHEMATICAL FOUNDATION:
-/// lcp[i] = length of longest common prefix between suffix_array[i] and suffix_array[i-1]
+/// `lcp[i]` is the length of the longest common prefix between the suffixes
+/// at sorted positions `i` and `i-1` (i.e. `sa[i]` and `sa[i-1]`).
+/// `lcp[0] = 0` by convention (no predecessor).
 ///
-/// KEY INSIGHT (Kasai's observation):
-/// If lcp[rank[i]] = k, then lcp[rank[i+1]] >= k - 1
-/// This allows O(n) construction by processing suffixes in text order.
+/// **Kasai's key observation:** if the suffix starting at position `i` has
+/// LCP `k` with its predecessor in the sorted order, then the suffix starting
+/// at position `i+1` has LCP at least `k-1`.  Processing suffixes in text
+/// order (not sorted order) and carrying this lower bound forward yields a
+/// total of at most `2n` character comparisons.
 ///
-/// INVARIANT: When processing suffix starting at i, we already know
-/// lcp for suffix at i-1, giving us a lower bound.
+/// # Example
+/// ```
+/// s  = "banana"
+/// sa = [5, 3, 1, 0, 4, 2]
+///
+/// Sorted suffixes: "a" | "ana" | "anana" | "banana" | "na" | "nana"
+/// lcp             =  0 |   1   |    3    |     0    |   0  |   2
+/// ```
+///
+/// # Parameters
+/// - `s`  — the original string
+/// - `sa` — its suffix array (from `build_suffix_array_simple`)
+///
+/// # Returns
+/// An `Array[Int]` of length `s.length()` containing the LCP values.
+/// Returns an empty array for the empty string.
 fn build_lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
   let chars = s.to_array()
   let n = chars.length()

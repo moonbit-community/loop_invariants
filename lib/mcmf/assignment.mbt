@@ -22,7 +22,7 @@
 //   Min cost = optimal assignment cost
 // ```
 //
-// VISUAL:
+// VISUAL (2x2 example):
 // ```
 //           cost[0][0]
 //   Worker 0 ---------> Task 0
@@ -33,18 +33,37 @@
 //           cost[1][1]
 // ```
 //
-// TIME COMPLEXITY: O(n³) using MCMF
-// (Hungarian algorithm is O(n³) with better constants)
+// TIME COMPLEXITY: O(n^3) using MCMF
+// (Hungarian algorithm achieves the same bound with better constants)
 
 ///|
-/// Solve assignment problem: n workers, n tasks, cost matrix.
+/// Solve the minimum-cost perfect assignment problem for an n-by-n cost matrix.
 ///
-/// PARAMETERS:
-///   cost[i][j] = cost of assigning worker i to task j
+/// Given `n` workers and `n` jobs, each worker must be assigned to exactly one
+/// job and each job must be covered by exactly one worker. The cost of assigning
+/// worker `i` to job `j` is `cost[i][j]`. The function returns the minimum
+/// total cost over all perfect assignments.
 ///
-/// RETURNS: Minimum total cost for perfect assignment
+/// The problem is modelled as a min-cost max-flow network:
+/// - Vertex 0 is the source.
+/// - Vertices `1..n` represent workers.
+/// - Vertices `n+1..2n` represent jobs.
+/// - Vertex `2n+1` is the sink.
+/// - Source -> worker edges have capacity 1 and cost 0.
+/// - Worker `i` -> job `j` edges have capacity 1 and cost `cost[i][j]`.
+/// - Job -> sink edges have capacity 1 and cost 0.
 ///
-/// PRECONDITION: cost is n×n square matrix
+/// A max flow of `n` through this network corresponds to a perfect matching;
+/// MCMF minimises the total edge cost, which equals the assignment cost.
+///
+/// Parameters:
+/// - `cost` - square matrix of size n x n where `cost[i][j]` is the cost of
+///            assigning worker `i` to job `j`; all values may be any `Int64`
+///
+/// Returns the minimum total assignment cost.
+///
+/// Precondition: `cost` must be a square matrix (n rows, each with n columns).
+/// An empty matrix returns 0.
 pub fn solve_assignment(cost : Array[Array[Int64]]) -> Int64 {
   let n = cost.length()
   if n == 0 {

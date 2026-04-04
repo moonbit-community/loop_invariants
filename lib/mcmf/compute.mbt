@@ -10,8 +10,8 @@
 //   total_cost = 0
 //
 //   While SPFA finds path from source to sink:
-//     1. Find minimum residual capacity along path
-//     2. Augment flow along path by this amount
+//     1. Find minimum residual capacity along path (bottleneck)
+//     2. Augment flow along path by bottleneck amount
 //     3. Update total_flow and total_cost
 //
 //   Return (total_flow, total_cost)
@@ -21,25 +21,42 @@
 // ```
 //   Given path source -> v1 -> v2 -> ... -> sink:
 //
-//   1. Find bottleneck: min residual capacity on path
+//   1. Find bottleneck: min(cap - flow) over all edges on path
 //   2. For each edge (u, v) on path:
 //      - Forward edge: flow += bottleneck
-//      - Reverse edge: flow -= bottleneck
+//      - Reverse edge: flow -= bottleneck  (increases its residual)
 //   3. Cost increase = bottleneck * dist[sink]
-//      (dist[sink] = total cost to push 1 unit to sink)
+//      (dist[sink] = total cost to push 1 unit to sink via this path)
 // ```
 //
 // CORRECTNESS:
 // ```
 //   By always augmenting along minimum cost path:
-//   - Each unit of flow uses cheapest available route
-//   - Total cost is minimum for achieved flow value
+//   - Each unit of flow uses cheapest available route at that moment
+//   - The residual graph allows cancellation via negative cost back-edges
+//   - Combined, this gives minimum cost for every intermediate flow value
 // ```
 
 ///|
-/// Compute min-cost max-flow from source to sink.
+/// Compute the minimum-cost maximum flow from `source` to `sink`.
 ///
-/// RETURNS: (max_flow, min_cost)
+/// The algorithm iterates until no augmenting path exists in the residual
+/// graph:
+/// 1. Call `spfa(source, sink)` to find the cheapest residual path.
+/// 2. Determine the bottleneck (minimum residual capacity on the path).
+/// 3. Push `bottleneck` units along the path, updating forward and reverse
+///    edge flows.
+/// 4. Accumulate `bottleneck * dist[sink]` into the running cost.
+///
+/// Parameters:
+/// - `source` - index of the source vertex
+/// - `sink`   - index of the sink vertex
+///
+/// Returns `(max_flow, min_cost)` where:
+/// - `max_flow` is the total flow pushed from `source` to `sink`
+/// - `min_cost` is the minimum total cost of that flow
+///
+/// Note: all flow is pushed; use `compute_with_limit` to cap the flow.
 pub fn MinCostMaxFlow::compute(
   self : MinCostMaxFlow,
   source : Int,
@@ -83,13 +100,27 @@ pub fn MinCostMaxFlow::compute(
 }
 
 ///|
-/// Compute min-cost max-flow with a flow limit.
+/// Compute min-cost flow from `source` to `sink`, stopping once `max_flow_limit`
+/// units have been sent or no more augmenting paths exist.
 ///
-/// Stops when either:
-///   - Total flow reaches max_flow_limit, OR
-///   - No more augmenting paths exist
+/// This is useful when the caller only needs a specific amount of flow (for
+/// example, exactly `k` workers assigned in an assignment problem) rather than
+/// the full maximum flow.
 ///
-/// RETURNS: (achieved_flow, total_cost)
+/// The algorithm is identical to `compute` except that:
+/// - The initial bottleneck for each path is clamped to
+///   `min(residual_capacity, remaining_limit)` so the total never exceeds
+///   `max_flow_limit`.
+/// - The loop exits early once `total_flow >= max_flow_limit`.
+///
+/// Parameters:
+/// - `source`          - index of the source vertex
+/// - `sink`            - index of the sink vertex
+/// - `max_flow_limit`  - maximum total flow to send; must be >= 0
+///
+/// Returns `(achieved_flow, total_cost)` where:
+/// - `achieved_flow <= max_flow_limit`
+/// - `total_cost`    is the minimum cost for `achieved_flow` units
 pub fn MinCostMaxFlow::compute_with_limit(
   self : MinCostMaxFlow,
   source : Int,
