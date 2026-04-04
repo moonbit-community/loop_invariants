@@ -18,14 +18,14 @@
 //
 // ALGORITHM:
 // ```
-//   1. Initialize dist[source] = 0, all others = infinity
+//   1. Initialize dist[source] = 0, all others = MCMF_INF
 //   2. Maintain queue of vertices to process
-//   3. For each vertex u in queue:
-//      - For each edge (u, v) with residual capacity:
+//   3. For each vertex u dequeued:
+//      - For each edge (u, v) with residual capacity > 0:
 //        - If dist[u] + cost(u,v) < dist[v]:
 //          - Update dist[v]
-//          - Record path (prev_v[v] = u, prev_e[v] = edge_index)
-//          - Add v to queue if not already there
+//          - Record path: prev_v[v] = u, prev_e[v] = edge_index
+//          - Enqueue v if not already present
 //   4. Continue until queue is empty
 // ```
 //
@@ -37,12 +37,28 @@
 // ```
 
 ///|
-/// SPFA to find minimum cost path from source to sink.
+/// Find the minimum-cost path from `source` to `sink` in the current residual
+/// graph using SPFA (Shortest Path Faster Algorithm).
 ///
-/// RETURNS: true if sink is reachable from source in residual graph
+/// SPFA is a queue-based relaxation algorithm that handles negative edge
+/// weights, which appear on backward (residual) edges in the MCMF graph.
+/// It is equivalent to Bellman-Ford but skips re-processing vertices whose
+/// distance has not changed, giving much better average-case performance.
 ///
-/// SIDE EFFECTS:
-///   Updates dist[], prev_v[], prev_e[] for path reconstruction
+/// After this function returns `true`, the arrays `dist`, `prev_v`, and
+/// `prev_e` record the cheapest path tree rooted at `source`:
+/// - `dist[v]`   - minimum cost to reach vertex `v` from `source`
+/// - `prev_v[v]` - the vertex before `v` on the cheapest path
+/// - `prev_e[v]` - the index in `adj[prev_v[v]]` of the edge entering `v`
+///
+/// Parameters:
+/// - `source` - starting vertex for the shortest-path search
+/// - `sink`   - target vertex; reachability is the return value
+///
+/// Returns `true` if `sink` is reachable from `source` through edges that
+/// have positive residual capacity; `false` otherwise.
+///
+/// Side effects: resets and updates `dist`, `prev_v`, `prev_e`, `in_queue`.
 pub fn MinCostMaxFlow::spfa(
   self : MinCostMaxFlow,
   source : Int,
