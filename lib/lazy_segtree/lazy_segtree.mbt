@@ -366,6 +366,8 @@ priv struct LazySegTreeSetSum {
 }
 
 ///|
+/// Build a `LazySegTreeSetSum` from `arr`.  All `has_pending` slots start as
+/// `false` (no pending assignments).
 fn LazySegTreeSetSum::new(arr : Array[Int64]) -> LazySegTreeSetSum {
   let n = arr.length()
   if n == 0 {
@@ -379,6 +381,7 @@ fn LazySegTreeSetSum::new(arr : Array[Int64]) -> LazySegTreeSetSum {
 }
 
 ///|
+/// Bottom-up build helper for `LazySegTreeSetSum`.
 fn build_set(
   arr : Array[Int64],
   tree : Array[Int64],
@@ -397,6 +400,11 @@ fn build_set(
 }
 
 ///|
+/// Push-down for the assignment variant.  When `has_pending[node]` is true,
+/// both children receive the same assignment value: their `tree` values are
+/// overwritten with `pending[node] * child_size`, their `pending` slots are set
+/// to `pending[node]`, and their `has_pending` flags are set to `true`.
+/// After the push, `has_pending[node]` is cleared to `false`.
 fn push_down_set(
   tree : Array[Int64],
   pending : Array[Int64],

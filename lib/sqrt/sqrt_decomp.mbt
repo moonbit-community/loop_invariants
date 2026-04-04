@@ -292,7 +292,36 @@ fn SqrtSum::length(self : SqrtSum) -> Int {
 // ============================================================================
 
 ///|
-/// Sqrt decomposition for range minimum queries with lazy range updates
+/// Sqrt decomposition structure for range minimum queries with lazy range add.
+///
+/// Each block stores the minimum of its raw element values. A `pending` array
+/// holds a per-block additive offset that has not yet been flushed to the
+/// elements; the effective value at index i is arr[i] + pending[i/block_size].
+///
+/// This lazy approach allows range add to skip O(1) for full blocks while only
+/// paying O(block_size) = O(sqrt(n)) for the two partial boundary blocks.
+///
+/// Layout (n = 9, block_size = 3):
+/// ```
+/// arr:       [5  2  8  |  1  9  3  |  7  4  6]
+/// blocks:    [   2        1            4   ]
+/// pending:   [   0        0            0   ]
+/// ```
+///
+/// After range_add(3, 5, 10):
+/// ```
+/// arr:       [5  2  8  |  1  9  3  |  7  4  6]   (unchanged)
+/// blocks:    [   2        1            4   ]       (raw min unchanged)
+/// pending:   [   0        10           0   ]
+/// effective: [5  2  8  | 11 19 13  |  7  4  6]
+/// ```
+///
+/// Time complexity:
+/// - Build:       O(n)
+/// - Query:       O(sqrt(n))
+/// - range_add:   O(sqrt(n))
+///
+/// Space: O(n)
 priv struct SqrtMin {
   arr : Array[Int] // Original array
   blocks : Array[Int] // Block minimums
