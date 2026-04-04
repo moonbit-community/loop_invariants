@@ -7,7 +7,7 @@
 pub enum MinStack[T] {
   Nil
   Cons(value~ : T, min~ : T, tail~ : MinStack[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Create an empty min-stack.

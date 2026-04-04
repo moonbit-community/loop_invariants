@@ -7,13 +7,13 @@
 enum MinStack[T] {
   Nil
   Cons(value~ : T, min~ : T, tail~ : MinStack[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct MinQueue[T] {
   front : MinStack[T]
   back : MinStack[T]
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Create an empty min-queue.

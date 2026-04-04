@@ -8,7 +8,7 @@ pub enum Rope {
   Empty
   Leaf(value~ : String)
   Node(len~ : Int, left~ : Rope, right~ : Rope)
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Create an empty rope.

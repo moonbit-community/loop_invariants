@@ -17,7 +17,7 @@ pub fn count_nonneg(
     proof_invariant: i <= xs.length(),
     proof_invariant: 0 <= count,
     proof_invariant: count <= i,
-    reasoning: (
+    proof_reasoning: (
       #| This loop is a direct proof of the accumulator bounds:
       #| `count` is always nonnegative and never exceeds the number of
       #| processed elements `i`.

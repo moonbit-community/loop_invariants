@@ -124,7 +124,7 @@ pub fn LinkCutTree::new(n : Int) -> LinkCutTree {
     nodes.push(LCTNode::new(0))
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (init nodes):
       #|  nodes[0..i) are initialized as isolated tree roots.
       #|

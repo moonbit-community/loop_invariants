@@ -58,7 +58,7 @@ fn manacher(s : String) -> ManacherResult {
     t[2 * i + 1] = s[i]
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (transform):
       #|t is filled with separators, and positions 2*j+1 for j in [0, i)
       #|contain s[j]. Even positions remain separators.
@@ -91,7 +91,7 @@ fn manacher(s : String) -> ManacherResult {
     continue i + 1, c, r
   } where {
     proof_invariant: i >= 0 && i <= t_len && c >= 0 && r >= 0 && r <= t_len,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Manacher scan):
       #|For all centers < i, p is the correct palindrome radius, and (c, r)
       #|marks the rightmost palindrome boundary seen so far.
@@ -136,7 +136,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
       }
     } where {
       proof_invariant: t >= k && t <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (odd expand):
         #|t is the current odd radius such that s[i-t..i+t] is a palindrome.
         #|MAINTENANCE:
@@ -151,7 +151,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
     continue i + 1, l, r
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (odd scan):
       #|Odd radii d1[0..i) are finalized.
       #|MAINTENANCE:
@@ -160,7 +160,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
       #|At i = n, all odd centers are processed.
     ),
     proof_invariant: r >= -1 && r < n && l >= 0 && l <= i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (odd window bounds):
       #|[l, r] is the rightmost odd palindrome window; r may be -1 if empty.
       #|MAINTENANCE:
@@ -169,7 +169,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
       #|Bounds ensure mirror indices stay valid when i <= r.
     ),
     proof_invariant: r < 0 || l <= r,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (odd window order):
       #|When the window is non-empty, its left boundary does not exceed r.
       #|MAINTENANCE:
@@ -189,7 +189,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
       }
     } where {
       proof_invariant: t >= k && t <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (even expand):
         #|t is the current even radius such that s[i-t..i+t-1] is a palindrome.
         #|MAINTENANCE:
@@ -204,7 +204,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
     continue i + 1, l, r
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (even scan):
       #|Even radii d2[0..i) are finalized.
       #|MAINTENANCE:
@@ -213,7 +213,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
       #|At i = n, all even centers are processed.
     ),
     proof_invariant: r >= -1 && r < n && l >= 0 && l <= i + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (even window bounds):
       #|[l, r] is the rightmost even palindrome window; r may be -1 if empty.
       #|MAINTENANCE:
@@ -222,7 +222,7 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
       #|Bounds keep the mirror index valid when i <= r.
     ),
     proof_invariant: r < 0 || l <= r + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (even window order):
       #|When the window is non-empty, its left boundary is at most r + 1.
       #|MAINTENANCE:
@@ -251,7 +251,7 @@ fn ManacherResult::longest_palindrome(self : ManacherResult) -> String {
     best
   } where {
     proof_invariant: i >= 0 && i <= self.radii.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (max radius):
       #|best is (center, length) of the longest palindrome in radii[0..i).
       #|MAINTENANCE:
@@ -332,7 +332,7 @@ fn ManacherResult::get_all_palindromes(
     }
   } where {
     proof_invariant: i >= 0 && i <= self.radii.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (collect spans):
       #|result contains maximal palindrome spans for centers in [0, i).
       #|MAINTENANCE:
@@ -365,7 +365,7 @@ pub fn longest_palindrome_len(s : String) -> Int {
     best
   } where {
     proof_invariant: i >= 0 && i <= d1.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (max palindrome length):
       #|best is the maximum palindrome length in [0..i).
       #|MAINTENANCE:

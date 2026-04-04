@@ -7,7 +7,7 @@
 pub enum Aa[T] {
   Empty
   Node(key~ : T, level~ : Int, left~ : Aa[T], right~ : Aa[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] level(t : Aa[T]) -> Int {
@@ -153,7 +153,7 @@ pub fn[T : Compare] contains(t : Aa[T], key : T) -> Bool {
   } where {
     proof_invariant: aa_valid(cur, lo, hi),
     proof_invariant: within_bounds(key, lo, hi),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (AA tree search):
       #|cur is a valid AA subtree within bounds (lo, hi) and key respects bounds.
       #|MAINTENANCE:
@@ -185,7 +185,7 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Aa[T] {
     proof_invariant: i >= 0 && i <= n,
     proof_invariant: size(tree) == i,
     proof_invariant: aa_valid(tree, None, None),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (AA tree build):
       #|tree contains the first i elements and maintains AA invariants.
       #|MAINTENANCE:

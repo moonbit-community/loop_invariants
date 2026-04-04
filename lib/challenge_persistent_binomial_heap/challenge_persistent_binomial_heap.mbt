@@ -8,12 +8,12 @@ struct Tree[T] {
   value : T
   rank : Int
   children : Array[Tree[T]]
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct Heap[T] {
   trees : Array[Tree[T]?]
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] tree_rank(t : Tree[T]) -> Int {
@@ -90,7 +90,7 @@ fn[T : Compare] merge_heaps(a : Heap[T], b : Heap[T]) -> Heap[T] {
     proof_invariant: i >= 0 && i <= len,
     proof_invariant: valid_prefix(out, i),
     proof_invariant: carry is None || (carry is Some(t) && tree_rank(t) == i),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Binomial carry):
       #|out[0..i) holds finalized ranks, and carry (if any) has rank i.
       #|MAINTENANCE:

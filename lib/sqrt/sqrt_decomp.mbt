@@ -45,7 +45,7 @@ fn isqrt_ceil(n : Int) -> Int {
     continue next
   } where {
     proof_invariant: x > 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Newton convergence):
       #|x remains positive and is an upper bound on sqrt(n). The update
       #|next = (x + n/x)/2 satisfies next <= x when x^2 >= n, so the sequence
@@ -115,7 +115,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
       sum
     } where {
       proof_invariant: i >= l && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (single block scan):
         #|sum equals the sum of arr[l..i) within the block.
         #|MAINTENANCE:
@@ -135,7 +135,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
     sum
   } where {
     proof_invariant: i >= l && i <= left_block_end + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Left partial):
       #|sum is the sum of arr[l..i) within the left boundary block. This
       #|handles the partial block exactly so no element is missed or double
@@ -155,7 +155,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
     sum
   } where {
     proof_invariant: b >= left_block + 1 && b <= right_block,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (middle blocks):
       #|sum equals the total of full blocks in [left_block+1, b).
       #|MAINTENANCE:
@@ -173,7 +173,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
     sum
   } where {
     proof_invariant: i >= right_block_start && i <= r + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Right partial):
       #|sum equals the sum of arr[right_block_start..i) for the right boundary
       #|block, completing the final partial segment of the query.
@@ -289,7 +289,7 @@ fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int) -> Unit {
     m
   } where {
     proof_invariant: i >= start && i <= end,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (recompute min):
       #|m is the minimum of self.arr[start..i).
       #|MAINTENANCE:
@@ -324,7 +324,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
       m
     } where {
       proof_invariant: i >= l && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Single block scan):
         #|m is the minimum of values in arr[l..i), with the block's pending
         #|lazy add applied. This yields the exact minimum for the query range.
@@ -350,7 +350,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     m
   } where {
     proof_invariant: i >= l && i <= left_block_end + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Left boundary min):
       #|m tracks the minimum over arr[l..i) within the left partial block,
       #|including the block's pending add.
@@ -375,7 +375,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     m
   } where {
     proof_invariant: b >= left_block + 1 && b <= right_block,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Middle blocks min):
       #|m is the minimum across all complete blocks processed so far, each
       #|using blocks[b] plus its pending lazy value.
@@ -400,7 +400,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     m
   } where {
     proof_invariant: i >= right_block_start && i <= r + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Right boundary min):
       #|m is the minimum over arr[right_block_start..i) with the pending add
       #|applied, completing the boundary scan.
@@ -529,7 +529,7 @@ fn MoSolver::solve_distinct(
     m
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (max scan):
       #|m is the maximum of self.arr[0..i).
       #|MAINTENANCE:
@@ -613,7 +613,7 @@ fn MoSolver::solve_distinct(
     continue i + 1, distinct, cur_l, cur_r
   } where {
     proof_invariant: cur_l >= 0 && cur_l <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Left pointer bounds):
       #|cur_l stays within [0, n] as we move it toward each query's left bound.
       #|MAINTENANCE:
@@ -622,7 +622,7 @@ fn MoSolver::solve_distinct(
       #|At loop end, cur_l matches the current query's left bound.
     ),
     proof_invariant: cur_r >= -1 && cur_r < n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Right pointer bounds):
       #|cur_r stays within [-1, n-1], with -1 representing the empty range.
       #|MAINTENANCE:
@@ -631,7 +631,7 @@ fn MoSolver::solve_distinct(
       #|At loop end, cur_r matches the current query's right bound.
     ),
     proof_invariant: distinct >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Distinct count):
       #|distinct equals the number of values with count[v] > 0 in the current
       #|window. Every increment/decrement updates count and distinct in sync,
@@ -691,7 +691,7 @@ fn IntervalTree::new(arr : Array[Int]) -> IntervalTree {
     continue i + 1, start
   } where {
     proof_invariant: i >= 1 && i <= arr.length() + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Run compression):
       #|i scans one past the array end as a sentinel. When the value changes
       #|or we hit the sentinel, we close the run [start, i-1] as one interval.
@@ -702,7 +702,7 @@ fn IntervalTree::new(arr : Array[Int]) -> IntervalTree {
       #|At i = arr.length() + 1, all runs are emitted.
     ),
     proof_invariant: start >= 0 && start <= i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Run start):
       #|start is the first index of the current equal-value run, so
       #|arr[start..i) all share the same value.
@@ -734,7 +734,7 @@ fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
     None
   } where {
     proof_invariant: lo >= 0 && hi >= -1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Binary search window):
       #|Intervals containing pos, if any, must lie in index range [lo, hi].
       #|When hi < lo, the range is empty and no interval contains pos.
@@ -745,7 +745,7 @@ fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
       #|When lo > hi, no interval contains pos.
     ),
     proof_invariant: hi < self.intervals.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Index bounds):
       #|hi remains within valid indices or becomes -1 when the search window
       #|is empty, so array accesses stay safe.
@@ -802,7 +802,7 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
     i - 1
   } where {
     proof_invariant: i >= left_idx && i <= self.intervals.length() + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Right boundary scan):
       #|i advances while interval starts are <= r, so i-1 is the last interval
       #|that intersects [l, r]. This identifies the range to replace.
@@ -817,7 +817,7 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
     // and replace with single interval [l, r] with value v
     // Using multiple removes (simple but O(n) per remove)
     let num_to_remove = right_idx - left_idx + 1
-    for j in 0..<num_to_remove {
+    for _ in 0..<num_to_remove {
       let _ = self.intervals.remove(left_idx)
     }
     self.intervals.insert(left_idx, { l, r, v })
@@ -844,7 +844,7 @@ fn IntervalTree::query_sum(self : IntervalTree, l : Int, r : Int) -> Int {
     s
   } where {
     proof_invariant: i >= 0 && i <= self.intervals.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Sum accumulation):
       #|s equals the total contribution of all processed intervals that
       #|overlap [l, r]. Non-overlapping intervals contribute 0.
@@ -876,7 +876,7 @@ fn IntervalTree::range_add(
     self.intervals[i].v = self.intervals[i].v + val
   } where {
     proof_invariant: i >= left_idx && i <= self.intervals.length() + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Range add):
       #|All intervals in [left_idx, i) intersect [l, r] and have been incremented
       #|by val. The split ensures interval boundaries align with l and r.

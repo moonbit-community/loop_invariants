@@ -7,14 +7,14 @@
 enum Node {
   Empty
   Node(count~ : Int, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct OrderStat {
   root : Node
   lo : Int
   hi : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn count(node : Node) -> Int {

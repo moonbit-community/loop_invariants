@@ -45,7 +45,7 @@ pub fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
     }
   } where {
     proof_invariant: node >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|FIND ROOT INVARIANT:
       #|
       #|  node is on the path from v toward the tree root.

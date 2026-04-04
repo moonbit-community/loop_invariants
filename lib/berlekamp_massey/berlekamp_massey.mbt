@@ -49,7 +49,7 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
     result
   } where {
     proof_invariant: e >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (binary exponentiation):
       #|result * (b^e) equals base^exp modulo m. Each iteration consumes the
       #|lowest bit of e, updating result when the bit is 1 and squaring b.

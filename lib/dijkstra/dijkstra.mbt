@@ -106,7 +106,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
       continue smallest
     } where {
       proof_invariant: i >= 0 && i < len,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (heapify down):
         #|All indices outside the path from the root to i satisfy the heap
         #|property; i is the current candidate position for the swapped element.
@@ -134,7 +134,7 @@ fn MinHeap::is_empty(self : MinHeap) -> Bool {
 pub(all) struct Edge {
   to : Int
   weight : Int64
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Graph as adjacency list
@@ -236,7 +236,7 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
           }
         } where {
           proof_invariant: i >= 0 && i <= graph.adj[u].length(),
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (relax edges):
             #|dist[u] is finalized (u has the smallest tentative distance among
             #|unvisited vertices), so any improvement to neighbors must go through u.
@@ -254,7 +254,7 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
     proof_invariant: dist.length() == n &&
     parent.length() == n &&
     visited.length() == n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Dijkstra):
       #|All visited vertices have their final shortest distances from source.
       #|For any unvisited vertex v, dist[v] is the shortest path length that
@@ -292,7 +292,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
       u
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (min scan):
         #|best is the smallest dist among unvisited nodes in [0..i).
         #|MAINTENANCE:
@@ -314,7 +314,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
       }
     } where {
       proof_invariant: j >= 0 && j <= neighbors.length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (relaxation scan):
         #|All edges neighbors[0..j) have been relaxed from u.
         #|MAINTENANCE:
@@ -326,7 +326,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
   } where {
     proof_invariant: iter >= 0 && iter <= n,
     proof_invariant: dist.length() == n && used.length() == n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (dense Dijkstra frontier):
       #|All used nodes have final shortest distances from src.
       #|For unused nodes, dist is the shortest path using only used nodes
@@ -451,7 +451,7 @@ pub fn bidirectional_dijkstra(
                 }
               } where {
                 proof_invariant: i >= 0 && i <= graph.adj[u].length(),
-                reasoning: (
+                proof_reasoning: (
                   #|INVARIANT (forward relax):
                   #|All outgoing edges in adj[u][0..i) have been relaxed for
                   #|the forward search.
@@ -506,7 +506,7 @@ pub fn bidirectional_dijkstra(
                 }
               } where {
                 proof_invariant: i >= 0 && i <= reverse_graph.adj[u].length(),
-                reasoning: (
+                proof_reasoning: (
                   #|INVARIANT (backward relax):
                   #|All outgoing edges in reverse_graph.adj[u][0..i) have been
                   #|relaxed for the backward search.
@@ -532,7 +532,7 @@ pub fn bidirectional_dijkstra(
     best_dist
   } where {
     proof_invariant: best_dist >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (bidirectional search):
       #|best_dist is the shortest path length found so far from any meeting node.
       #|MAINTENANCE:

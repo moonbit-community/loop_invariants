@@ -21,7 +21,7 @@ pub fn div_nonneg(
     proof_invariant: 0 <= r,
     proof_invariant: n == q * d + r,
     proof_yield: res => div_ok(n, d, res),
-    reasoning: (
+    proof_reasoning: (
       #| This loop mirrors repeated subtraction exactly: `q` counts how many
       #| full copies of `d` have been removed from `n`, while `r` is the
       #| remaining amount.

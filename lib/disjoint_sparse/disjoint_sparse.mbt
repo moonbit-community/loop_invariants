@@ -119,7 +119,7 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
           row[i] = row[i - 1] + arr[i]
         } where {
           proof_invariant: i >= mid + 2 && i <= right_end + 1,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (sum prefix):
             #|row[mid+1..i-1] stores sums arr[mid+1..j] for j in [mid+1..i-1].
             #|MAINTENANCE:
@@ -131,7 +131,7 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
       }
     } where {
       proof_invariant: block_start >= 0 && block_start <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (sum blocks):
         #|Blocks in [0..block_start) already have correct suffix/prefix sums.
         #|MAINTENANCE:
@@ -143,7 +143,7 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
     table.push(row)
   } where {
     proof_invariant: k >= 0 && k <= log_n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (sum levels):
       #|Levels [0..k) are built with block size 2^(lvl+1) for level lvl.
       #|MAINTENANCE:
@@ -229,7 +229,7 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
           row[i] = row[i - 1] ^ arr[i]
         } where {
           proof_invariant: i >= mid + 2 && i <= right_end + 1,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (xor prefix):
             #|row[mid+1..i-1] stores XORs arr[mid+1..j] for j in [mid+1..i-1].
             #|MAINTENANCE:
@@ -241,7 +241,7 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
       }
     } where {
       proof_invariant: block_start >= 0 && block_start <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (xor blocks):
         #|Blocks in [0..block_start) already have correct suffix/prefix XORs.
         #|MAINTENANCE:
@@ -253,7 +253,7 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
     table.push(row)
   } where {
     proof_invariant: k >= 0 && k <= log_n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (xor levels):
       #|Levels [0..k) are built with block size 2^(lvl+1) for level lvl.
       #|MAINTENANCE:
@@ -337,7 +337,7 @@ fn DisjointSparseProd::new(
           row[i] = row[i - 1] * arr[i] % modulo
         } where {
           proof_invariant: i >= mid + 2 && i <= right_end + 1,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (prod prefix):
             #|row[mid+1..i-1] stores products arr[mid+1..j] mod modulo.
             #|MAINTENANCE:
@@ -349,7 +349,7 @@ fn DisjointSparseProd::new(
       }
     } where {
       proof_invariant: block_start >= 0 && block_start <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (prod blocks):
         #|Blocks in [0..block_start) already have correct suffix/prefix products.
         #|MAINTENANCE:
@@ -361,7 +361,7 @@ fn DisjointSparseProd::new(
     table.push(row)
   } where {
     proof_invariant: k >= 0 && k <= log_n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (prod levels):
       #|Levels [0..k) are built with block size 2^(lvl+1) for level lvl.
       #|MAINTENANCE:

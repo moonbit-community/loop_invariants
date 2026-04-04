@@ -88,7 +88,7 @@ pub fn compute_z(s : String) -> Array[Int] {
     }
   } where {
     proof_invariant: 1 <= i && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (scan position):
       #|i is the next position whose Z value is not finalized; all indices < i
       #|have their Z-values computed.
@@ -98,7 +98,7 @@ pub fn compute_z(s : String) -> Array[Int] {
       #|At i = n, the entire Z-array is computed.
     ),
     proof_invariant: 0 <= l && l <= r + 1 && r < n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Z-box bounds):
       #|[l, r] stays within [0..n-1]; when r < l the Z-box is empty, otherwise
       #|s[l..r] matches s[0..r-l].
@@ -108,7 +108,7 @@ pub fn compute_z(s : String) -> Array[Int] {
       #|Bounds guarantee all accesses stay inside the string.
     ),
     proof_invariant: l <= i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Z-box start):
       #|The Z-box start l never moves to the right of the current index i.
       #|MAINTENANCE:
@@ -155,7 +155,7 @@ pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= m + 1 && i <= z.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (pattern scan):
       #|Indices in [m+1..i) correspond to text positions already checked, and
       #|result stores all matches found so far.
@@ -218,7 +218,7 @@ fn all_borders(s : String) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= 1 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (border enumeration):
       #|Positions in [1..i) are scanned; borders contains all border lengths found.
       #|MAINTENANCE:
@@ -252,7 +252,7 @@ fn string_period(s : String) -> Int {
     }
   } where {
     proof_invariant: p >= 1 && p <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (period scan):
       #|All p' < p have been checked and do not satisfy the period condition.
       #|MAINTENANCE:

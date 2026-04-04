@@ -39,7 +39,7 @@ fn build_suffix_array_simple(s : String) -> Array[Int] {
       }
     } where {
       proof_invariant: j >= i + 1 && j <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (selection):
         #|sa[i] is the smallest suffix among indices in [i..j).
         #|MAINTENANCE:
@@ -50,7 +50,7 @@ fn build_suffix_array_simple(s : String) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= 0 && i < n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (selection outer loop):
       #|sa[0..i) contains the i smallest suffixes in sorted order.
       #|MAINTENANCE:
@@ -79,7 +79,7 @@ fn compare_suffixes(chars : Array[Char], i : Int, j : Int) -> Int {
     n - i - (n - j)
   } where {
     proof_invariant: k >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (suffix compare):
       #|All positions up to offset k match between suffixes i and j.
       #|MAINTENANCE:
@@ -141,7 +141,7 @@ fn build_lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
       k
     } where {
       proof_invariant: k >= 0,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (LCP extend):
         #|Characters match for the current prefix length k.
         #|MAINTENANCE:
@@ -156,7 +156,7 @@ fn build_lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
     continue i + 1, if k > 0 { k - 1 } else { k }
   } where {
     proof_invariant: i >= 0 && i <= n && k >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT (Kasai's Algorithm):
       #|  - lcp[rank[0..i)] has been computed
       #|  - k is a lower bound for the next LCP computation
@@ -222,7 +222,7 @@ fn count_distinct_substrings(s : String) -> Int {
     total
   } where {
     proof_invariant: i >= 0 && i <= n && total >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: total = count of distinct substrings from suffixes 0..i
       #|
       #|Suffix sa[i] has length (n - sa[i]), contributing that many substrings.
@@ -279,7 +279,7 @@ fn longest_repeated_substring(s : String) -> String {
     }
   } where {
     proof_invariant: i >= 1 && i <= n && max_lcp >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: max_lcp = maximum LCP value in lcp[1..i)
       #|
       #|The longest repeated substring appears as a common prefix
@@ -343,7 +343,7 @@ fn search_lower_bound(
     lo
   } where {
     proof_invariant: lo >= 0 && hi >= 0 && lo <= hi + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (lower bound):
       #|All indices < lo are < pattern; all indices >= hi are >= pattern.
       #|MAINTENANCE:
@@ -372,7 +372,7 @@ fn search_upper_bound(
     lo
   } where {
     proof_invariant: lo >= 0 && hi >= 0 && lo <= hi + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (upper bound):
       #|All indices < lo are <= pattern; all indices >= hi are > pattern.
       #|MAINTENANCE:
@@ -405,7 +405,7 @@ fn compare_with_pattern(s : Array[Char], start : Int, p : Array[Char]) -> Int {
     }
   } where {
     proof_invariant: i >= 0 && i <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (pattern compare):
       #|Characters up to offset i match between suffix and pattern.
       #|MAINTENANCE:
@@ -471,7 +471,7 @@ fn longest_common_substring_sa(s1 : String, s2 : String) -> String {
     }
   } where {
     proof_invariant: i >= 1 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: max_lcp = longest common substring found so far
       #|
       #|By concatenating s1 + '$' + s2 and building SA/LCP:
@@ -513,7 +513,7 @@ fn count_substrings_by_char(s : String) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: count[c] = total substrings starting with character c
       #|                          from positions [0, i)
       #|
@@ -558,7 +558,7 @@ fn burrows_wheeler_transform(s : String) -> String {
     bwt.push(chars[idx])
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: bwt[0..i) contains BWT of first i suffixes
       #|
       #|BWT[i] is the character preceding suffix sa[i] in the original string.
@@ -612,7 +612,7 @@ fn smallest_rotation(s : String) -> String {
     s // Should not reach here
   } where {
     proof_invariant: i >= 0 && i <= 2 * n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: No suffix with index < n found in sa[0..i)
       #|
       #|By doubling the string, each rotation appears as a suffix.

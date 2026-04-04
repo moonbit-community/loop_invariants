@@ -65,7 +65,7 @@ fn DominatorWork::dfs(self : DominatorWork, u : Int) -> Unit {
     // These are handled later via predecessor lists
   } where {
     proof_invariant: i >= 0 && i <= self.adj[u].length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (neighbor exploration):
       #|  adj[u][0..i) have been processed.
       #|  Unvisited neighbors have been recursively explored.

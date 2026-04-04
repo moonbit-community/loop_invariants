@@ -22,7 +22,7 @@ fn mod_exp(base : Int64, exp : Int64, m : Int64) -> Int64 {
     }
   } where {
     proof_invariant: e >= 0L && acc >= 0L && acc < m && b >= 0L && b < m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Binary exponentiation):
       #|acc * b^e ≡ base^exp (mod m) at every step.
       #|
@@ -58,7 +58,7 @@ fn is_strong_probable_prime(n : Int64, a : Int64) -> Bool {
     }
   } where {
     proof_invariant: d >= 1L && r >= 0L && d * (1L << r.to_int()) == n - 1L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Factorization): d × 2^r = n-1 is maintained.
       #|
       #|Base: d = n-1, r = 0 → (n-1) × 2^0 = n-1. ✓
@@ -95,7 +95,7 @@ fn is_strong_probable_prime(n : Int64, a : Int64) -> Bool {
     }
   } where {
     proof_invariant: i >= 0L && i <= r,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Squaring sequence): After i iterations,
       #|x = a^(d × 2^(i+1)) mod n.
       #|
@@ -158,7 +158,7 @@ fn is_prime_32(n : Int) -> Bool {
     }
   } where {
     proof_invariant: i >= 0 && i <= witnesses.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Witness scan):
       #|After processing witnesses[0..i), n has passed all tested bases so far.
       #|If any base fails the strong probable prime test, n is composite.
@@ -205,7 +205,7 @@ fn extended_gcd_64(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
     }
   } where {
     proof_invariant: a * x0 + b * y0 == r0,
-    reasoning: (
+    proof_reasoning: (
       #|BÉZOUT INVARIANT: a·x0 + b·y0 = r0 and a·x1 + b·y1 = r1.
       #|
       #|This is the key to constructing the Bézout coefficients.
@@ -217,7 +217,7 @@ fn extended_gcd_64(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
       #|When r1 = 0, r0 is gcd(a,b) with coefficients x0,y0.
     ),
     proof_invariant: a * x1 + b * y1 == r1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Second remainder):
       #|r1 always equals a*x1 + b*y1. The Euclidean update
       #|  (r0, r1) <- (r1, r0 - q*r1)
@@ -273,7 +273,7 @@ fn chinese_remainder(congruences : ArrayView[(Int64, Int64)]) -> (Int64, Int64) 
     }
   } where {
     proof_invariant: i >= 1 && i <= congruences.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Bounds and progress):
       #|i is the next congruence to merge. Each iteration combines exactly
       #|one new pair into the accumulator, so we eventually process all
@@ -285,7 +285,7 @@ fn chinese_remainder(congruences : ArrayView[(Int64, Int64)]) -> (Int64, Int64) 
       #|At i = congruences.length(), all pairs are merged.
     ),
     proof_invariant: acc_m >= 1L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (CRT accumulator):
       #|acc_a is the unique solution modulo acc_m to the first i congruences.
       #|
@@ -364,7 +364,7 @@ fn binary_gcd(a : Int, b : Int) -> Int {
     }
   } where {
     proof_invariant: k >= 0 && (a | b) == x * (1 << k),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Power of 2 extraction):
       #|We count the common trailing zeros in a|b.
       #|k = min(v2(a), v2(b)) where v2 is the 2-adic valuation.
@@ -389,7 +389,7 @@ fn binary_gcd(a : Int, b : Int) -> Int {
   } where {
     proof_invariant: x >= 1 &&
     gcd_spec(x, b / (1 << shift)) == gcd_spec(a, b) / (1 << shift),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Odd part of a):
       #|We repeatedly strip factors of 2 from a until it becomes odd.
       #|Because all common powers of 2 were already removed into shift,
@@ -413,7 +413,7 @@ fn binary_gcd(a : Int, b : Int) -> Int {
       }
     } where {
       proof_invariant: x >= 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Odd part of v):
         #|Because u is odd, gcd(u, v) is unchanged by removing powers of 2
         #|from v. The loop returns the odd part of v, allowing the main
@@ -434,7 +434,7 @@ fn binary_gcd(a : Int, b : Int) -> Int {
     }
   } where {
     proof_invariant: u >= 1 && u % 2 == 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Odd GCD preservation):
       #|gcd(u, v) = gcd(original a, original b) / 2^shift
       #|
@@ -559,7 +559,7 @@ fn ilog2(n : Int) -> Int {
     log >= 0 &&
     n >= x * (1 << log) &&
     n < (x + 1) * (1 << log),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Logarithm bounds):
       #|x × 2^log ≤ n < (x+1) × 2^log
       #|
@@ -660,7 +660,7 @@ fn is_perfect_power(n : Int) -> Bool {
     }
   } where {
     proof_invariant: b >= 2 && b <= max_exp + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Exhaustive exponent search):
       #|We try each possible exponent from 2 up to floor(log2(n)).
       #|
@@ -698,7 +698,7 @@ fn nth_root(n : Int, b : Int) -> Int {
     }
   } where {
     proof_invariant: lo >= 1 && hi <= n && lo <= hi + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Root bracket):
       #|lo is always a candidate with lo^b <= n, and hi is always a candidate
       #|with hi^b >= n. The update keeps the true floor root inside [lo, hi].
@@ -730,7 +730,7 @@ fn int_pow_checked(a : Int, b : Int, max_val : Int) -> Int {
     }
   } where {
     proof_invariant: exp >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Exponentiation by squaring):
       #|At each step, acc * base^exp equals a^b, unless overflow is detected.
       #|When a multiplication would exceed max_val, we clamp to max_val+1
@@ -757,7 +757,7 @@ fn int_pow(a : Int, b : Int) -> Int {
     }
   } where {
     proof_invariant: exp >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Exponentiation by squaring):
       #|acc * base^exp == a^b. When exp is even, we square base and halve exp;
       #|when exp is odd, we multiply acc by base and decrement exp.

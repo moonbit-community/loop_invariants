@@ -71,7 +71,7 @@ pub fn subset_convolution(
       }
     } where {
       proof_invariant: bit >= 0 && bit <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (zeta per k):
         #|After each bit, subset sums for fpc[k]/gpc[k] are correct for the
         #|processed bits.
@@ -83,7 +83,7 @@ pub fn subset_convolution(
     }
   } where {
     proof_invariant: k >= 0 && k <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (zeta over k):
       #|Zeta transforms are complete for all popcounts < k.
       #|MAINTENANCE:
@@ -100,7 +100,7 @@ pub fn subset_convolution(
       }
     } where {
       proof_invariant: i >= 0 && i <= k + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (popcount convolution):
         #|hpc[k] accumulates contributions for i in [0, current).
         #|MAINTENANCE:
@@ -111,7 +111,7 @@ pub fn subset_convolution(
     }
   } where {
     proof_invariant: k >= 0 && k <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (compute hpc):
       #|hpc layers for popcounts < k are fully computed.
       #|MAINTENANCE:
@@ -130,7 +130,7 @@ pub fn subset_convolution(
       }
     } where {
       proof_invariant: bit >= 0 && bit <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (inverse zeta per k):
         #|After each bit, hpc[k] is inverted for the processed bits.
         #|MAINTENANCE:
@@ -141,7 +141,7 @@ pub fn subset_convolution(
     }
   } where {
     proof_invariant: k >= 0 && k <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (inverse zeta over k):
       #|Inverse transforms are complete for all popcounts < k.
       #|MAINTENANCE:

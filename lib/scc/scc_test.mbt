@@ -151,7 +151,7 @@ test "scc sizes" {
     total
   } where {
     proof_invariant: i >= 0 && i <= result.scc_sizes.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (sum sizes):
       #|  total = sum of scc_sizes[0..i)
       #|

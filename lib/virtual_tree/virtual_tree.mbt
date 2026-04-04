@@ -30,7 +30,7 @@ fn build_lca(
     (log, pow)
   } where {
     proof_invariant: pow >= 1 && log >= 1 && pow == 1 << (log - 1),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (log growth):
       #|pow tracks 2^(log-1). Each iteration doubles pow and increments log,
       #|so pow remains the smallest power of two >= 2^(log-1).
@@ -155,7 +155,7 @@ pub fn build_virtual_tree(
       vt_adj[child].push(parent)
     } where {
       proof_invariant: stack.length() >= 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (virtual stack):
         #|stack forms a root-to-leaf path in the virtual tree, ordered by depth.
         #|While the second-to-top node is deeper than l, the top edge is final
@@ -181,7 +181,7 @@ pub fn build_virtual_tree(
     vt_adj[child].push(parent)
   } where {
     proof_invariant: stack.length() >= 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (final chain):
       #|stack represents a single remaining path in the virtual tree whose
       #|edges are not yet emitted. Each iteration adds one edge and shortens

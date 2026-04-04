@@ -37,7 +37,7 @@ pub fn floor_sum(n : Int64, m : Int64, a : Int64, b : Int64) -> Int64 {
     }
   } where {
     proof_invariant: n0 >= 0L && m0 > 0L && a0 >= 0L && b0 >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Euclidean reduction):
       #|The current (n0, m0, a0, b0) represent the same floor sum after
       #|extracting full multiples of m0 from a0 and b0. The swap step applies

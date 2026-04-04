@@ -30,7 +30,7 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
     }
   } where {
     proof_invariant: idx >= 0 && idx <= stack.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (DFS discovery):
       #|All nodes in stack[0..idx) have been expanded, and order records them.
       #|MAINTENANCE:

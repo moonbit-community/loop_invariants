@@ -14,13 +14,13 @@ pub enum Tree[T] {
     middle~ : Tree[T],
     right~ : Tree[T]
   )
-} derive(Show)
+} derive(Debug)
 
 ///|
 enum InsertResult[T] {
   Done(tree~ : Tree[T])
   Split(key~ : T, left~ : Tree[T], right~ : Tree[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Return the number of keys in the tree.
@@ -167,7 +167,7 @@ pub fn[T : Compare] contains(t : Tree[T], key : T) -> Bool {
   } where {
     proof_invariant: tree_valid(cur, lo, hi),
     proof_invariant: within_bounds(key, lo, hi),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (2-3 search bounds):
       #|cur is a valid subtree constrained by (lo, hi); key respects bounds.
       #|MAINTENANCE:
@@ -190,7 +190,7 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Tree[T] {
     proof_invariant: i >= 0 && i <= n,
     proof_invariant: size(tree) == i,
     proof_invariant: tree_valid(tree, None, None),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (2-3 build):
       #|tree contains the first i keys and preserves 2-3 ordering.
       #|MAINTENANCE:

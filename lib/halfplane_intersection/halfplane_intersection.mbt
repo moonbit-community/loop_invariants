@@ -18,13 +18,13 @@ const EPS : Double = 1.0e-12
 pub(all) struct Point {
   x : Double
   y : Double
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub(all) struct HalfPlane {
   p : Point
   v : Point // Direction vector; feasible region is left of v
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn abs(x : Double) -> Double {
@@ -152,7 +152,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
       break
     } where {
       proof_invariant: head >= 0 && head <= deque.length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (pop back):
         #|The deque stores half-planes whose intersection is non-empty. If the
         #|last intersection point violates the new line, we discard the back
@@ -175,7 +175,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
       head
     } where {
       proof_invariant: head >= 0 && head <= deque.length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (pop front):
         #|If the front intersection point violates the new line, the front line
         #|cannot be part of the final intersection and is removed.
@@ -204,7 +204,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
     break
   } where {
     proof_invariant: head >= 0 && head <= deque.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (final back trim):
       #|The deque represents a feasible intersection except possibly at the back.
       #|MAINTENANCE:
@@ -225,7 +225,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
     head
   } where {
     proof_invariant: head >= 0 && head <= deque.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (final front trim):
       #|The deque represents a feasible intersection except possibly at the front.
       #|MAINTENANCE:

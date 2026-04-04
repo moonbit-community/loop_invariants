@@ -35,7 +35,7 @@ fn bfs(adj : Array[Array[Int]], start : Int) -> (Int, Array[Int]) {
     }
   } where {
     proof_invariant: head >= 0 && head <= queue.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (BFS queue):
       #|All nodes in queue[0..head) have finalized distances. The queue holds
       #|the frontier of discovered nodes.

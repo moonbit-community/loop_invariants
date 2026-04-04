@@ -90,7 +90,7 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
     // Cross edge to vertex not on stack: ignore (already in different SCC)
   } where {
     proof_invariant: i >= 0 && i <= neighbors.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Neighbors processed):
       #|After processing neighbors[0..i), low[v] equals the minimum of:
       #|  - disc[v] (v itself),
@@ -111,7 +111,7 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
       #|so low[v] is finalized for v.
     ),
     proof_invariant: self.on_stack[v],
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Stack membership):
       #|v is pushed before exploring its neighbors and stays on the stack
       #|until we finish scanning all outgoing edges. This ensures any back
@@ -124,7 +124,7 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
       #|root check decides whether to pop an SCC.
     ),
     proof_invariant: self.low[v] <= self.disc[v],
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 3 (Low-link monotonicity):
       #|low[v] starts at disc[v] and only decreases via min updates when we
       #|see earlier discovery times. This guarantees low[v] always reflects
@@ -157,7 +157,7 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
       proof_invariant: scc.all(x => !self.on_stack[x]),
       proof_invariant: scc.all(x => self.disc[x] >= self.disc[v]),
       proof_invariant: self.stack.length() + scc.length() <= self.n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (SCC pop):
         #|The stack stores the current DFS path; the SCC rooted at v is a
         #|contiguous suffix of this stack. Each iteration pops one vertex from
@@ -191,7 +191,7 @@ fn TarjanSCC::find_sccs(self : TarjanSCC) -> Unit {
     }
   } where {
     proof_invariant: v >= 0 && v <= self.n,
-    reasoning: (
+    proof_reasoning: (
       #|MAIN LOOP INVARIANT:
       #|After processing vertices [0, v), every vertex with index < v has
       #|disc != -1, and every SCC reachable from those start points has been
@@ -318,7 +318,7 @@ fn KosarajuSCC::dfs1(self : KosarajuSCC, v : Int) -> Unit {
     }
   } where {
     proof_invariant: i >= 0 && i <= neighbors.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Neighbor processing):
       #|After processing neighbors[0..i), every vertex reachable from v via
       #|those neighbors is marked visited, and its subtree has been fully
@@ -332,7 +332,7 @@ fn KosarajuSCC::dfs1(self : KosarajuSCC, v : Int) -> Unit {
       #|At i == neighbors.length(), all descendants of v are finished.
     ),
     proof_invariant: self.visited[v],
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Visited):
       #|v remains marked visited for the entire call, preventing re-entry
       #|from other branches and ensuring finish_order receives v exactly once.
@@ -360,7 +360,7 @@ fn KosarajuSCC::dfs2(self : KosarajuSCC, v : Int, scc : Array[Int]) -> Unit {
     }
   } where {
     proof_invariant: i >= 0 && i <= neighbors.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Neighbor processing):
       #|After processing neighbors[0..i), all vertices reachable from v via
       #|those reversed edges are visited and added to scc.
@@ -374,7 +374,7 @@ fn KosarajuSCC::dfs2(self : KosarajuSCC, v : Int, scc : Array[Int]) -> Unit {
       #|At i == neighbors.length(), the SCC rooted at v is fully collected.
     ),
     proof_invariant: self.visited[v],
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Visited):
       #|v remains marked visited while dfs2 expands the SCC, so each vertex
       #|is added to exactly one SCC and cannot be revisited in this pass.
@@ -398,7 +398,7 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
     }
   } where {
     proof_invariant: v >= 0 && v <= self.n,
-    reasoning: (
+    proof_reasoning: (
       #|PASS 1 INVARIANT:
       #|After processing vertices [0, v), all vertices reachable from those
       #|start points are visited, and their finishing times have been appended
@@ -415,7 +415,7 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
     self.visited[v] = false
   } where {
     proof_invariant: v >= 0 && v <= self.n,
-    reasoning: (
+    proof_reasoning: (
       #|RESET INVARIANT:
       #|After processing vertices [0, v), visited[0..v) = false, preparing
       #|a clean slate for the second pass.
@@ -440,7 +440,7 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
     }
   } where {
     proof_invariant: i >= -1 && i < self.finish_order.length(),
-    reasoning: (
+    proof_reasoning: (
       #|SECOND PASS INVARIANT:
       #|Processing in reverse finish order ensures we start from "sink" SCCs.
       #|
@@ -460,7 +460,7 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
       #|have been assigned to SCCs.
     ),
     proof_invariant: self.sccs.length() <= self.n,
-    reasoning: (
+    proof_reasoning: (
       #|PROGRESS:
       #|After each iteration, every vertex whose finish-order index is greater
       #|than i has been assigned to exactly one SCC. The remaining vertices
@@ -565,7 +565,7 @@ fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
     }
   } where {
     proof_invariant: i >= 0 && i <= neighbors.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Processed neighbors):
       #|After processing neighbors[0..i), children equals the number of DFS
       #|tree children of v among those neighbors.
@@ -586,7 +586,7 @@ fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
       #|At i == neighbors.length(), low[v] and children are final for v.
     ),
     proof_invariant: self.low[v] <= self.disc[v],
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Low-link monotonicity):
       #|low[v] starts at disc[v] and only decreases as we discover back edges
       #|or child subtrees with earlier discovery times. This maintains the
@@ -697,7 +697,7 @@ fn BridgeFinder::dfs(self : BridgeFinder, v : Int) -> Unit {
     }
   } where {
     proof_invariant: i >= 0 && i <= neighbors.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Processed neighbors):
       #|After processing neighbors[0..i), low[v] is the minimum of:
       #|  - disc[v],
@@ -717,7 +717,7 @@ fn BridgeFinder::dfs(self : BridgeFinder, v : Int) -> Unit {
       #|incident to v have been identified.
     ),
     proof_invariant: self.low[v] <= self.disc[v],
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Low-link monotonicity):
       #|low[v] begins at disc[v] and only decreases when a back edge or child
       #|subtree reaches an earlier ancestor. This is exactly what the bridge
@@ -806,7 +806,7 @@ fn TopologicalSort::dfs(self : TopologicalSort, v : Int) -> Unit {
     }
   } where {
     proof_invariant: i >= 0 && i <= neighbors.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Neighbor processing):
       #|After processing neighbors[0..i), any reachable neighbor subtree has
       #|either been fully visited (state 2) or we have detected a cycle.
@@ -825,7 +825,7 @@ fn TopologicalSort::dfs(self : TopologicalSort, v : Int) -> Unit {
       #|neighbors have been handled or the search short-circuits.
     ),
     proof_invariant: self.state[v] == 1 || self.has_cycle,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (DFS stack):
       #|v stays in the visiting state while its neighbors are explored, which
       #|lets us detect a back edge to any node on the current DFS path. If a

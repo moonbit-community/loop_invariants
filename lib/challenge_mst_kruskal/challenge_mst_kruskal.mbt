@@ -6,7 +6,7 @@
 struct DSU {
   parent : Array[Int]
   size : Array[Int]
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn dsu_make(n : Int) -> DSU {
@@ -26,7 +26,7 @@ fn dsu_find(dsu : DSU, x : Int) -> Int {
     }
   } where {
     proof_invariant: cur >= 0 && cur < dsu.parent.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (DSU root walk):
       #|cur stays on the parent chain of x.
       #|MAINTENANCE:

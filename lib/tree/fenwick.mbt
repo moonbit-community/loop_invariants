@@ -69,7 +69,7 @@ fn FenwickTree::update(self : FenwickTree, i : Int, delta : Int) -> Unit {
     }
   } where {
     proof_invariant: idx >= i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT: idx traverses through all positions whose ranges include i.
       #|
       #|PROOF OF RANGE COVERAGE:
@@ -114,7 +114,7 @@ fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int {
     }
   } where {
     proof_invariant: idx >= 0 && idx <= i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT: sum = arr[idx+1] + arr[idx+2] + ... + arr[i]
       #|          (sum of elements from idx+1 to i)
       #|
@@ -190,7 +190,7 @@ fn FenwickTree::from_array(arr : ArrayView[Int]) -> FenwickTree {
     }
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Copy step):
       #|After processing indices [0..i), tree[t+1] = arr[t] for all t < i.
       #|This prepares the base values so that the propagation pass can
@@ -214,7 +214,7 @@ fn FenwickTree::from_array(arr : ArrayView[Int]) -> FenwickTree {
     }
   } where {
     proof_invariant: i >= 1 && i <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT: After processing index i, tree[j] for j ≤ i contains
       #|the correct partial sum for its range (considering only indices ≤ i).
       #|
@@ -292,7 +292,7 @@ fn FenwickTree::find_kth(self : FenwickTree, k : Int) -> Int {
     }
   } where {
     proof_invariant: bit >= 0 && pos >= 0 && pos <= self.n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Binary lifting):
       #|pos is the largest index such that prefix_sum(pos) < k, and
       #|remaining = k - prefix_sum(pos).
@@ -391,7 +391,7 @@ fn FenwickTree2D::update(
         }
       } where {
         proof_invariant: y >= j,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Column traversal):
           #|y walks the Fenwick ancestors of column j: j, j+lowbit(j), ...
           #|Each visited y corresponds to a column interval that contains j,
@@ -406,7 +406,7 @@ fn FenwickTree2D::update(
     }
   } where {
     proof_invariant: x >= i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT: We update all cells (x, y) whose 2D ranges include (i, j).
       #|
       #|The 2D Fenwick tree has the property that tree[x][y] stores:
@@ -441,7 +441,7 @@ fn FenwickTree2D::prefix_sum(self : FenwickTree2D, i : Int, j : Int) -> Int {
         }
       } where {
         proof_invariant: y >= 0,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Column sum):
           #|acc accumulates the 1D Fenwick prefix sum for column y at fixed x,
           #|so after the loop, inner_sum equals sum of row-ancestor ranges
@@ -456,7 +456,7 @@ fn FenwickTree2D::prefix_sum(self : FenwickTree2D, i : Int, j : Int) -> Int {
     }
   } where {
     proof_invariant: x >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT: sum accumulates the 2D prefix sum for rectangle (1,1) to (i,j).
       #|
       #|The 2D query is the sum of independent 1D queries:
@@ -706,7 +706,7 @@ fn count_inversions(arr : ArrayView[Int], max_val : Int) -> Int {
     }
   } where {
     proof_invariant: i >= -1 && i < n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT: After processing index i:
       #|  - tree[v] = frequency of value v in arr[i+1..n-1]
       #|  - count = number of inversions involving indices > i

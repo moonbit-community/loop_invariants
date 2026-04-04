@@ -7,13 +7,13 @@
 enum ChildList[T] {
   Nil
   Cons(head~ : Heap[T], tail~ : ChildList[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub enum Heap[T] {
   Empty
   Node(value~ : T, children~ : ChildList[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] heap_size(h : Heap[T]) -> Int {

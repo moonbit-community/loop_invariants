@@ -88,7 +88,7 @@ fn matrix_pow_2x2(
     }
   } where {
     proof_invariant: power >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: M^original_p ≡ result · matrix^power (mod modulo)
       #|
       #|This is the standard binary exponentiation invariant applied to matrices.
@@ -212,7 +212,7 @@ fn matrix_mult_3x3(
             }
           } where {
             proof_invariant: k >= 0 && k <= 3,
-            reasoning: (
+            proof_reasoning: (
               #|INVARIANT (Dot product):
               #|acc = Σ_{t < k} a[i,t] * b[t,j] (mod modulo).
               #|After k reaches 3, acc is the full inner product for cell (i,j).
@@ -227,7 +227,7 @@ fn matrix_mult_3x3(
         }
       } where {
         proof_invariant: j >= 0 && j <= 3,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Row fill):
           #|After processing columns [0..j), result[i,*] is correct for those
           #|columns. Each column j computes the dot product of row i and
@@ -242,7 +242,7 @@ fn matrix_mult_3x3(
     }
   } where {
     proof_invariant: i >= 0 && i <= 3,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Matrix fill):
       #|After processing rows [0..i), all entries in those rows are computed.
       #|This is the standard triple-loop matrix multiplication.
@@ -271,7 +271,7 @@ fn matrix_pow_3x3(m : Array[Int64], p : Int64, modulo : Int64) -> Array[Int64] {
     }
   } where {
     proof_invariant: power >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT: M^original_p ≡ result · matrix^power (mod modulo).
       #|
       #|This is the same binary exponentiation invariant as the 2x2 case.
@@ -369,7 +369,7 @@ fn count_paths(
               }
             } where {
               proof_invariant: kk >= 0 && kk <= n,
-              reasoning: (
+              proof_reasoning: (
                 #|INVARIANT (Dot product):
                 #|acc = Σ_{t < kk} a[i,t] * b[t,j] (mod modulo).
                 #|After kk reaches n, acc is the full inner product for (i,j).
@@ -384,7 +384,7 @@ fn count_paths(
           }
         } where {
           proof_invariant: j >= 0 && j <= n,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (Row fill):
             #|After processing columns [0..j), result[i,*] is correct for those
             #|columns. Each column j computes a full dot product.
@@ -398,7 +398,7 @@ fn count_paths(
       }
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Matrix fill):
         #|After processing rows [0..i), every entry result[r,c] for r < i
         #|matches the matrix product of a and b. The inner loops compute each
@@ -422,7 +422,7 @@ fn count_paths(
     }
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Identity build):
       #|After processing rows [0..i), identity has 1s on the diagonal entries
       #|(t,t) for t < i and 0s elsewhere.
@@ -445,7 +445,7 @@ fn count_paths(
     }
   } where {
     proof_invariant: power >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT: A^original_k = result · matrix^power.
       #|
       #|By the path-counting theorem, A^t[i,j] equals the number of paths
@@ -537,7 +537,7 @@ fn matrix_chain_order(dims : ArrayView[Int]) -> Int {
             }
           } where {
             proof_invariant: k >= i && k <= j,
-            reasoning: (
+            proof_reasoning: (
               #|INVARIANT: After iteration k, m[i,j] contains the minimum cost among
               #|all parenthesizations that split at position i, i+1, ..., k.
               #|
@@ -556,7 +556,7 @@ fn matrix_chain_order(dims : ArrayView[Int]) -> Int {
         }
       } where {
         proof_invariant: i >= 0 && i <= n,
-        reasoning: (
+        proof_reasoning: (
           #|Processing all chains of length len starting at position i.
           #|By the time we process m[i,j], all subproblems m[i,k] and m[k+1,j]
           #|for k in [i,j) have already been computed (shorter chains).
@@ -571,7 +571,7 @@ fn matrix_chain_order(dims : ArrayView[Int]) -> Int {
     }
   } where {
     proof_invariant: len >= 2 && len <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|OUTER LOOP INVARIANT:
       #|After processing chain length len, all m[i,j] where j-i+1 < len are optimal.
       #|
@@ -724,7 +724,7 @@ fn fibonacci_fast_doubling(n : Int64, modulo : Int64) -> (Int64, Int64) {
     }
   } where {
     proof_invariant: bit >= -1 && bit <= 63,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT: (f_k, f_k1) = (F(k), F(k+1)) where k is the number formed
       #|by the bits of n from position 63 down to bit+1.
       #|

@@ -44,7 +44,7 @@ const INF64 : Int64 = 4611686018427387903L
 pub(all) struct MinCutResult {
   weight : Int64
   cut : Array[Int]
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Select the vertex with maximum w[] value among alive, non-added vertices.

@@ -7,7 +7,7 @@
 pub enum Node {
   Leaf(max~ : Int, tag~ : Int)
   Branch(max~ : Int, tag~ : Int, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn node_max(node : Node) -> Int {

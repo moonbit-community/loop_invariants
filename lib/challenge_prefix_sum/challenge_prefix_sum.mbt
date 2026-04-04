@@ -21,7 +21,7 @@ fn build_prefix_sum_fixed(
     proof_invariant: 0 <= i,
     proof_invariant: i <= n,
     proof_invariant: prefix_prefix_ok(arr, prefix, i, sum),
-    reasoning: (
+    proof_reasoning: (
       #|This is the proof-carrying prefix-sum kernel.
       #|
       #|`sum` is the running prefix total for the first `i` elements, and

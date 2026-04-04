@@ -199,7 +199,7 @@ fn[T] SplayTree::splay(self : SplayTree[T], x : Int) -> Unit {
     }
   } where {
     proof_invariant: x >= 0 && x < self.nodes.length(),
-    reasoning: (
+    proof_reasoning: (
       #|SPLAY INVARIANT:
       #|
       #|1. Each iteration moves x closer to root:
@@ -252,7 +252,7 @@ fn[T : Compare] SplayTree::search(self : SplayTree[T], key : T) -> Bool {
     }
   } where {
     proof_invariant: node >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|SEARCH INVARIANT:
       #|
       #|1. If key exists, it must be in subtree rooted at node
@@ -283,7 +283,7 @@ fn[T] SplayTree::find_min(self : SplayTree[T], x : Int) -> Int {
     }
   } where {
     proof_invariant: node >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|FIND MIN INVARIANT:
       #|node remains on the left spine toward the minimum.
       #|MAINTENANCE:
@@ -308,7 +308,7 @@ fn[T] SplayTree::find_max(self : SplayTree[T], x : Int) -> Int {
     }
   } where {
     proof_invariant: node >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|FIND MAX INVARIANT:
       #|node remains on the right spine toward the maximum.
       #|MAINTENANCE:
@@ -351,7 +351,7 @@ fn[T : Compare] SplayTree::insert(self : SplayTree[T], key : T) -> Bool {
     }
   } where {
     proof_invariant: node >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INSERT SEARCH INVARIANT:
       #|
       #|Find the node that will become parent of new node.
@@ -512,7 +512,7 @@ fn[T] SplayTree::kth_element(self : SplayTree[T], k : Int) -> T? {
     }
   } where {
     proof_invariant: node >= 0 && remaining > 0,
-    reasoning: (
+    proof_reasoning: (
       #|KTH ELEMENT INVARIANT:
       #|
       #|1. remaining = rank of target within current subtree
@@ -561,7 +561,7 @@ fn[T : Compare] SplayTree::count_less(self : SplayTree[T], key : T) -> Int {
     }
   } where {
     proof_invariant: node >= 0 && count >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|COUNT LESS INVARIANT:
       #|
       #|1. count = number of elements less than key in already-visited parts

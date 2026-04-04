@@ -64,4 +64,4 @@ pub(all) struct SCCResult {
   component : Array[Int]
   scc_sizes : Array[Int]
   scc_adj : Array[Array[Int]]
-} derive(Show)
+} derive(Debug)

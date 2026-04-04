@@ -7,13 +7,13 @@
 enum Stack[T] {
   Nil
   Cons(head~ : T, tail~ : Stack[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct Queue[T] {
   front : Stack[T]
   back : Stack[T]
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Create an empty persistent queue.

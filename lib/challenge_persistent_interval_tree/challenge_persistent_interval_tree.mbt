@@ -7,7 +7,7 @@
 pub enum Tree {
   Empty
   Node(start~ : Int, end~ : Int, max_end~ : Int, left~ : Tree, right~ : Tree)
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn max2(a : Int, b : Int) -> Int {

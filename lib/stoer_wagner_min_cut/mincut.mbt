@@ -97,7 +97,7 @@ pub fn stoer_wagner_min_cut(
     adj[v][u] = adj[v][u] + w
   } where {
     proof_invariant: i >= 0 && i <= edges.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (adjacency matrix):
       #|  For edges[0..i), their weights are accumulated in adj[][].
       #|  adj[u][v] = adj[v][u] = sum of weights for edges between u and v.
@@ -175,7 +175,7 @@ pub fn stoer_wagner_min_cut(
       (alive_count, INF64, empty_cut)
     } where {
       proof_invariant: iter >= 0 && iter <= alive_count,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (maximum adjacency search):
         #|  Let A = {v : added[v] = true}.
         #|  |A| = iter at the start of each iteration.
@@ -210,7 +210,7 @@ pub fn stoer_wagner_min_cut(
     (alive_count, best_weight, best_cut)
   } where {
     proof_invariant: phase >= 0 && phase <= n - 1 && alive_count >= 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (contraction phases):
       #|  After phase k, exactly k+1 original vertices have been contracted.
       #|  alive_count = n - (k+1) = remaining supernodes.

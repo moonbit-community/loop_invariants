@@ -111,7 +111,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
       )
     } where {
       proof_invariant: bits.length() == i,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (partition):
         #|After processing i elements, bits and rank have length i+1, and
         #|left_elems/right_elems contain exactly the partition of elements[0..i).
@@ -197,7 +197,7 @@ fn WaveletTree::count(self : WaveletTree, l : Int, r : Int, v : Int) -> Int {
     }
   } where {
     proof_invariant: node_idx >= 0 && node_idx < self.nodes.length() && left <= right,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (count path):
       #|[left, right) is the subrange in the current node that corresponds to
       #|the original query range, and v lies within the node's value interval.
@@ -269,7 +269,7 @@ fn WaveletTree::count_less(
     }
   } where {
     proof_invariant: node_idx >= 0 && left <= right && count >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (count_less path):
       #|count equals the number of elements proven < v in the processed path,
       #|and [left, right) is the corresponding range in the current node.
@@ -339,7 +339,7 @@ fn WaveletTree::quantile(self : WaveletTree, l : Int, r : Int, k : Int) -> Int? 
     left < right &&
     remaining_k > 0 &&
     remaining_k <= right - left,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (quantile path):
       #|remaining_k is the rank of the desired element within [left, right),
       #|and the answer lies within the current node's value range.
@@ -396,7 +396,7 @@ fn WaveletTree::select(
     }
   } where {
     proof_invariant: lo >= l && hi <= r && lo <= hi,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (kth search):
       #|If the k-th occurrence exists, its position lies within [lo, hi].
       #|MAINTENANCE:
@@ -437,7 +437,7 @@ fn WaveletTree::access(self : WaveletTree, i : Int) -> Int? {
     }
   } where {
     proof_invariant: node_idx >= 0 && pos >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (access path):
       #|pos is the position of the queried element within the current node's
       #|bitvector, corresponding to the original index i.

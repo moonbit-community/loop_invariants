@@ -71,7 +71,7 @@ pub fn Hungarian::max_matching(self : Hungarian) -> Int {
     matching
   } where {
     proof_invariant: u >= 0 && u <= self.graph.n_left,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Kuhn augmentation):
       #|matching counts the number of successful augmentations for processed
       #|left vertices in [0, u).

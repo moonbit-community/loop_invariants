@@ -22,7 +22,7 @@ pub fn upper_bound(
     proof_invariant: hi <= xs.length(),
     proof_invariant: all_leq_before(xs, key, lo),
     proof_invariant: all_gt_from(xs, key, hi),
-    reasoning: (
+    proof_reasoning: (
       #| `lo` is always a safe lower boundary: everything before it has already
       #| been proved `<= key`.
       #|

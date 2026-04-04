@@ -34,7 +34,7 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
     result
   } where {
     proof_invariant: e >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (binary exponentiation):
       #|result * (b^e) equals base^exp modulo m. Each iteration processes
       #|one bit of e and preserves the invariant.
@@ -94,7 +94,7 @@ pub fn nck_mod_prime_lucas(n : Int64, k : Int64, p : Int64) -> Int64 {
     result
   } where {
     proof_invariant: kk >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Lucas digits):
       #|result equals the product of C(n_i, k_i) over processed base-p digits.
       #|Each iteration consumes one digit of n and k.

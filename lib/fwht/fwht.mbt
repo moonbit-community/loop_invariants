@@ -31,7 +31,7 @@ pub fn fwht_xor(values : ArrayView[Int64], inverse : Bool) -> Array[Int64] {
       }
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (butterfly block):
         #|All blocks in [0, i) of size 2*len have been transformed.
         #|MAINTENANCE:
@@ -42,7 +42,7 @@ pub fn fwht_xor(values : ArrayView[Int64], inverse : Bool) -> Array[Int64] {
     }
   } where {
     proof_invariant: len >= 1 && len <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (stage size):
       #|After each stage, the transform is correct for sub-blocks of size 2*len.
       #|MAINTENANCE:
@@ -75,7 +75,7 @@ pub fn xor_convolution(
     n
   } where {
     proof_invariant: n > 0 && n <= 2 * target,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (pad size):
       #|n is the smallest power of two >= target after doublings.
       #|MAINTENANCE:

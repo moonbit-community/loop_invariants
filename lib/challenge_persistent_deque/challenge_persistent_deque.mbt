@@ -7,13 +7,13 @@
 enum Stack[T] {
   Nil
   Cons(head~ : T, tail~ : Stack[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct Deque[T] {
   front : Stack[T]
   back : Stack[T]
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] size_stack(s : Stack[T]) -> Int {

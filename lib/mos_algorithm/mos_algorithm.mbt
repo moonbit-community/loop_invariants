@@ -76,7 +76,7 @@ fn isqrt(n : Int) -> Int {
     result - 1
   } where {
     proof_invariant: result >= 1 && (result - 1) * (result - 1) <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (isqrt loop):
       #|result - 1 is a candidate with (result - 1)^2 <= n.
       #|MAINTENANCE:
@@ -209,7 +209,7 @@ fn MoDistinct::answer_queries(
     }
   } where {
     proof_invariant: i >= 0 && i <= q,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Progress):
       #|i counts how many queries have been processed and stored in answers.
       #|MAINTENANCE:
@@ -222,7 +222,7 @@ fn MoDistinct::answer_queries(
     cur_r >= -1 &&
     cur_r < self.n &&
     cur_l <= cur_r + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Range validity):
       #|cur_l/cur_r describe a valid inclusive range or the empty range.
       #|MAINTENANCE:
@@ -232,7 +232,7 @@ fn MoDistinct::answer_queries(
     ),
     proof_invariant: distinct >= 0 &&
     distinct <= (if cur_r >= cur_l { cur_r - cur_l + 1 } else { 0 }),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 3 (State correctness):
       #|freq[v] equals the count of value v in arr[cur_l..cur_r].
       #|distinct equals the number of values with freq[v] > 0.
@@ -354,7 +354,7 @@ fn MoSum::answer_queries(
     }
   } where {
     proof_invariant: i >= 0 && i <= q,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Progress):
       #|i queries have been answered and stored.
       #|MAINTENANCE:
@@ -367,7 +367,7 @@ fn MoSum::answer_queries(
     cur_r >= -1 &&
     cur_r < self.n &&
     cur_l <= cur_r + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Range validity):
       #|cur_l/cur_r describe a valid inclusive range or the empty range.
       #|MAINTENANCE:
@@ -380,7 +380,7 @@ fn MoSum::answer_queries(
     } else {
       true
     },
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 3 (State correctness):
       #|current_sum equals sum(arr[cur_l..cur_r]) for the current range.
       #|In the empty-range state (cur_r < cur_l), the sum is zero.
@@ -502,7 +502,7 @@ fn MoRangeCount::answer_queries(
         count
       } where {
         proof_invariant: v >= lo && v <= hi && v < 100001,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (range count):
           #|count equals sum(freq[lo..v)) for the current range.
           #|MAINTENANCE:
@@ -516,7 +516,7 @@ fn MoRangeCount::answer_queries(
     }
   } where {
     proof_invariant: i >= 0 && i <= q,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Progress):
       #|i queries have been answered and stored.
       #|MAINTENANCE:
@@ -529,7 +529,7 @@ fn MoRangeCount::answer_queries(
     cur_r >= -1 &&
     cur_r < self.n &&
     cur_l <= cur_r + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Range validity):
       #|cur_l/cur_r describe a valid inclusive range or the empty range.
       #|MAINTENANCE:
@@ -538,7 +538,7 @@ fn MoRangeCount::answer_queries(
       #|After adjustments, the range matches the current query.
     ),
     proof_invariant: freq.length() == 100001,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 3 (State correctness):
       #|freq[v] counts occurrences of v in arr[cur_l..cur_r].
       #|
@@ -624,7 +624,7 @@ fn MoMode::answer_queries(
       }
     } where {
       proof_invariant: i >= cur_l && i <= cur_r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT 1 (Scan bounds):
         #|i walks the current range [cur_l, cur_r].
         #|MAINTENANCE:
@@ -633,7 +633,7 @@ fn MoMode::answer_queries(
         #|At i = cur_r + 1, the entire range is scanned.
       ),
       proof_invariant: max_f >= 0,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT 2 (Best-so-far):
         #|max_f/m track the value with highest freq seen in arr[cur_l..i).
         #|Ties are broken by choosing the smallest value.
@@ -694,7 +694,7 @@ fn MoMode::answer_queries(
     }
   } where {
     proof_invariant: i >= 0 && i <= q,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Progress):
       #|i queries have been answered and stored.
       #|MAINTENANCE:
@@ -707,7 +707,7 @@ fn MoMode::answer_queries(
     cur_r >= -1 &&
     cur_r < self.n &&
     cur_l <= cur_r + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Range validity):
       #|cur_l/cur_r describe a valid inclusive range or the empty range.
       #|MAINTENANCE:
@@ -716,7 +716,7 @@ fn MoMode::answer_queries(
       #|After adjustments, the range matches the current query.
     ),
     proof_invariant: freq.length() == 100001,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 3 (State correctness):
       #|freq[v] counts occurrences in arr[cur_l..cur_r].
       #|

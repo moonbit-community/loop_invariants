@@ -114,7 +114,7 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
       last_popped
     } where {
       proof_invariant: last_popped >= -1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (pop larger values):
         #|last_popped is the most recently popped node with larger value.
         #|MAINTENANCE:
@@ -167,7 +167,7 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
     continue head + 1
   } where {
     proof_invariant: head >= 0 && head <= queue.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (BFS):
       #|queue[0..head) is processed with depths assigned; queue[head..] is discovered.
       #|MAINTENANCE:
@@ -217,7 +217,7 @@ fn highest_bit(x : Int) -> Int {
     result
   } where {
     proof_invariant: val > 0 && result >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (highest_bit):
       #|val == floor(x / 2^result) and val > 0 while looping.
       #|MAINTENANCE:
@@ -250,7 +250,7 @@ fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
     u
   } where {
     proof_invariant: k >= 0 && k <= self.log_n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (lift depth):
       #|u has been lifted by the sum of 2^bit for all processed bits in diff.
       #|MAINTENANCE:
@@ -276,7 +276,7 @@ fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
     (u, v)
   } where {
     proof_invariant: k >= -1 && k < self.log_n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (lift together):
       #|u and v remain at the same depth, and the LCA is above both.
       #|MAINTENANCE:

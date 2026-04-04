@@ -91,7 +91,7 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
       continue k + 1, pi + 1
     } where {
       proof_invariant: k >= edge.start && k <= edge.end && pi >= i && pi <= p.length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (edge label matching):
         #|  self.text[edge.start..k) == p[i..pi)
         #|
@@ -106,7 +106,7 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
     node < self.nodes.length() &&
     i >= 0 &&
     i <= p.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (tree walk progress):
       #|  p[0..i) has been matched along the path from root to node.
       #|  We are at a valid node in the tree.
@@ -200,7 +200,7 @@ pub fn SuffixTree::count_occurrences(
       continue k + 1, pi + 1
     } where {
       proof_invariant: k >= edge.start && k <= edge.end && pi >= i && pi <= p.length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (edge label matching):
         #|  self.text[edge.start..k) == p[i..pi)
         #|
@@ -215,7 +215,7 @@ pub fn SuffixTree::count_occurrences(
     node < self.nodes.length() &&
     i >= 0 &&
     i <= p.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (tree walk progress):
       #|  p[0..i) has been matched along the path from root to node.
       #|  We are at a valid node in the tree.

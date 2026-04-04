@@ -7,13 +7,13 @@
 enum Node {
   Leaf(count~ : Int)
   Branch(count~ : Int, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct Bitset {
   root : Node
   n : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn node_count(node : Node) -> Int {

@@ -7,13 +7,13 @@
 pub(all) struct Line {
   m : Int
   b : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub enum Node {
   Empty
   Node(line~ : Line, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn eval(line : Line, x : Int) -> Int {

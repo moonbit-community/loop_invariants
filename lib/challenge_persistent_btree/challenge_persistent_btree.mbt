@@ -7,19 +7,19 @@
 struct BNode[T] {
   keys : Array[T]
   children : Array[BNode[T]]
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub enum Tree[T] {
   Empty
   Node(node~ : BNode[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 enum InsertResult[T] {
   Done(node~ : BNode[T])
   Split(key~ : T, left~ : BNode[T], right~ : BNode[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] is_leaf(node : BNode[T]) -> Bool {
@@ -99,7 +99,7 @@ fn[T : Compare] find_pos(keys : Array[T], key : T) -> (Int, Bool) {
     }
   } where {
     proof_invariant: i >= 0 && i <= keys.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Find position):
       #|keys[0..i) are strictly less than key.
       #|MAINTENANCE:

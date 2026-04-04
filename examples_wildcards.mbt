@@ -68,7 +68,7 @@ fn is_balanced_parens_star(chars : ArrayView[Char]) -> Bool {
     }
   } where {
     proof_invariant: 0 <= i && i <= chars.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (progress):
       #|i is the length of the processed prefix, within [0..chars.length()].
       #|MAINTENANCE:
@@ -77,7 +77,7 @@ fn is_balanced_parens_star(chars : ArrayView[Char]) -> Bool {
       #|At i = chars.length(), all characters are processed.
     ),
     proof_invariant: high == range_prefix(chars, i).1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (max balance):
       #|high equals the maximum possible balance after i characters.
       #|MAINTENANCE:
@@ -86,7 +86,7 @@ fn is_balanced_parens_star(chars : ArrayView[Char]) -> Bool {
       #|At the end, high bounds the maximum feasible balance.
     ),
     proof_invariant: low == clamp_nonneg(range_prefix(chars, i).0),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (min balance):
       #|low equals the minimum feasible balance after i characters, clamped at 0.
       #|MAINTENANCE:
@@ -95,7 +95,7 @@ fn is_balanced_parens_star(chars : ArrayView[Char]) -> Bool {
       #|At the end, low bounds the minimum feasible balance.
     ),
     proof_invariant: low <= high,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (interval):
       #|Possible balances form a contiguous interval [low, high].
       #|MAINTENANCE:

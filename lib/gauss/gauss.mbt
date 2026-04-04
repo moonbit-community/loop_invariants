@@ -97,7 +97,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
       (best_row, best_val)
     } where {
       proof_invariant: i >= row + 1 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Pivot scan range):
         #|Rows [row+1..i) have been inspected for the current column.
         #|The loop only considers candidates below the active pivot row,
@@ -108,7 +108,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
         #|At i == n, all remaining rows have been considered for the pivot.
       ),
       proof_invariant: best_row >= row && best_row < n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Best row validity):
         #|best_row stays within [row, i), so it always names a row already
         #|examined for this pivot choice.
@@ -118,7 +118,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
         #|At loop end, best_row is a valid pivot candidate row.
       ),
       proof_invariant: best_val == abs(aug[best_row][col]),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Best value):
         #|best_val is the maximum absolute entry seen so far in column col
         #|among rows [row..i). This implements partial pivoting for stability.
@@ -147,7 +147,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
       aug[row][j] = aug[row][j] / pivot
     } where {
       proof_invariant: j >= col && j <= m + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Row normalization):
         #|After processing columns [col..j), aug[row][t] has been divided by
         #|pivot for every t in that range. When the loop ends, the pivot entry
@@ -158,7 +158,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
         #|At j == m + 1, the entire row is normalized.
       ),
       proof_invariant: abs(pivot) >= GAUSS_EPS,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Non-zero pivot):
         #|We only normalize when the chosen pivot is safely away from zero,
         #|so dividing preserves numerical stability and avoids blow-ups.
@@ -177,7 +177,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
           aug[i][j] = aug[i][j] - factor * aug[row][j]
         } where {
           proof_invariant: j >= col && j <= m + 1,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (Row elimination):
             #|After processing columns [col..j), row i has been updated by
             #|subtracting factor * pivot_row, so all entries in that range
@@ -191,7 +191,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
       }
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Column elimination):
         #|After processing rows [0..i), every row other than the pivot row
         #|has column col reduced to 0 (within epsilon). This produces the
@@ -202,7 +202,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
         #|At i == n, all rows are cleared in column col except the pivot row.
       ),
       proof_invariant: abs(aug[row][col] - 1.0) < GAUSS_EPS,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Pivot stability):
         #|The pivot entry remains 1 because we never modify the pivot row
         #|during elimination of other rows.
@@ -217,7 +217,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
     rank
   } where {
     proof_invariant: 0 <= row && row <= n && 0 <= col && col <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Forward elimination progress):
       #|row counts completed pivot rows, and col is the current column under
       #|consideration. All rows above row are already in reduced row-echelon
@@ -228,7 +228,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
       #|At col == m or row == n, forward elimination is complete.
     ),
     proof_invariant: rank == row,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Rank tracking):
       #|Every time we accept a pivot we increment row and rank together.
       #|Therefore rank equals the number of independent pivot rows built so far.
@@ -249,7 +249,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
     true
   } where {
     proof_invariant: i >= rank && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Consistency check):
       #|Rows i >= rank have all-zero coefficients on the left side. If any
       #|such row has a non-zero right-hand side, the system is inconsistent
@@ -277,7 +277,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
         }
       } where {
         proof_invariant: j >= 0 && j <= m,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Pivot column scan):
           #|After scanning columns [0..j), no pivot (value near 1) has been
           #|found yet. When we find it, the corresponding variable is fixed
@@ -290,7 +290,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
       }
     } where {
       proof_invariant: i >= 0 && i <= rank && i <= m,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Solution extraction):
         #|Each pivot row determines one basic variable. By scanning only the
         #|first rank rows, we assign values to all pivot variables while leaving
@@ -360,7 +360,7 @@ fn gauss_mod(
       -1
     } where {
       proof_invariant: i >= row && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (pivot search):
         #|Rows in [row..i) have been checked for a non-zero pivot in column col.
         #|MAINTENANCE:
@@ -386,7 +386,7 @@ fn gauss_mod(
       aug[row][j] = aug[row][j] * inv % p
     } where {
       proof_invariant: j >= col && j <= m + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (normalize pivot row):
         #|Entries aug[row][col..j) are scaled so aug[row][col] = 1 in GF(p).
         #|MAINTENANCE:
@@ -404,7 +404,7 @@ fn gauss_mod(
           aug[i][j] = ((aug[i][j] - factor * aug[row][j]) % p + p) % p
         } where {
           proof_invariant: j >= col && j <= m + 1,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (row elimination):
             #|Entries aug[i][col..j) are updated to eliminate column col.
             #|MAINTENANCE:
@@ -416,7 +416,7 @@ fn gauss_mod(
       }
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (column elimination):
         #|Rows in [0..i) have column col eliminated (except pivot row).
         #|MAINTENANCE:
@@ -425,7 +425,7 @@ fn gauss_mod(
         #|At i = n, column col is eliminated in all non-pivot rows.
       ),
       proof_invariant: aug[row][col] == 1L,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (pivot stays 1):
         #|The pivot entry aug[row][col] remains 1 throughout elimination.
         #|MAINTENANCE:
@@ -439,7 +439,7 @@ fn gauss_mod(
     row
   } where {
     proof_invariant: 0 <= row && row <= n && 0 <= col && col <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (forward elimination):
       #|row is the number of pivots found; col is the current column being processed.
       #|MAINTENANCE:
@@ -456,7 +456,7 @@ fn gauss_mod(
     }
   } where {
     proof_invariant: i >= row && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (consistency check):
       #|All checked rows in [row..i) have zero RHS for a zero coefficient row.
       #|MAINTENANCE:
@@ -479,7 +479,7 @@ fn gauss_mod(
       }
     } where {
       proof_invariant: j >= 0 && j <= m,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (pivot scan):
         #|Columns in [0..j) have been checked for the pivot in row i.
         #|MAINTENANCE:
@@ -490,7 +490,7 @@ fn gauss_mod(
     }
   } where {
     proof_invariant: i >= 0 && i <= row && i <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (solution extraction):
       #|Each processed pivot row contributes one variable value to solution.
       #|MAINTENANCE:
@@ -530,7 +530,7 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
       -1
     } where {
       proof_invariant: i >= row && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (pivot search xor):
         #|Rows in [row..i) have been checked for a 1 in column col.
         #|MAINTENANCE:
@@ -557,7 +557,7 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
           aug[i][j] = aug[i][j] ^ aug[row][j]
         } where {
           proof_invariant: j >= col && j <= m + 1,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (xor elimination):
             #|Entries aug[i][col..j) are updated by XOR with pivot row.
             #|MAINTENANCE:
@@ -569,7 +569,7 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
       }
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (column elimination xor):
         #|Rows in [0..i) have column col eliminated (except the pivot row).
         #|MAINTENANCE:
@@ -578,7 +578,7 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
         #|At i = n, the pivot column is cleared in all other rows.
       ),
       proof_invariant: aug[row][col] == 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (pivot stays 1 xor):
         #|The pivot entry aug[row][col] remains 1 in GF(2).
         #|MAINTENANCE:
@@ -592,7 +592,7 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
     row
   } where {
     proof_invariant: 0 <= row && row <= n && 0 <= col && col <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (forward elimination xor):
       #|row counts pivots found; col is the current column being processed.
       #|MAINTENANCE:
@@ -609,7 +609,7 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
     }
   } where {
     proof_invariant: i >= row && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (consistency check xor):
       #|Checked rows in [row..i) have zero RHS for a zero coefficient row.
       #|MAINTENANCE:
@@ -632,7 +632,7 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
       }
     } where {
       proof_invariant: j >= 0 && j <= m,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (pivot scan xor):
         #|Columns in [0..j) have been checked for the pivot in row i.
         #|MAINTENANCE:
@@ -643,7 +643,7 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
     }
   } where {
     proof_invariant: i >= 0 && i <= row && i <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (solution extraction xor):
       #|Each processed pivot row yields a variable assignment.
       #|MAINTENANCE:

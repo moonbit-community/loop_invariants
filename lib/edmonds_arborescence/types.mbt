@@ -31,7 +31,7 @@ pub(all) struct Edge {
   from : Int
   to : Int
   weight : Int64
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Result of minimum arborescence computation.
@@ -64,4 +64,4 @@ pub(all) struct Edge {
 pub(all) struct Arborescence {
   cost : Int64
   parent : Array[Int]
-} derive(Show)
+} derive(Debug)

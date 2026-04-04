@@ -21,7 +21,7 @@ fn highest_bit(x : Int) -> Int {
     }
   } where {
     proof_invariant: v >= 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (highest bit):
       #|v equals x >> k, so k is the number of shifts performed so far.
       #|MAINTENANCE:
@@ -72,7 +72,7 @@ pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable 
             table[k][i] = min(table[k][i - 1], arr[i])
           } where {
             proof_invariant: i >= mid + 1 && i <= end,
-            reasoning: (
+            proof_reasoning: (
               #|INVARIANT (right prefix):
               #|table[k][mid..i) stores minima for ranges [mid, t].
               #|MAINTENANCE:
@@ -86,7 +86,7 @@ pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable 
       }
     } where {
       proof_invariant: block >= 0 && block <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (block build):
         #|All blocks before block have their disjoint minima populated for
         #|level k. Each block covers span = 2^(k+1) elements.
@@ -98,7 +98,7 @@ pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable 
     }
   } where {
     proof_invariant: k >= 1 && k <= levels,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (levels):
       #|Levels [0..k) have disjoint prefix minima precomputed.
       #|MAINTENANCE:

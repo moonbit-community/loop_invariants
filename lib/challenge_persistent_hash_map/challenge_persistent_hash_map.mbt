@@ -7,13 +7,13 @@
 enum Bucket[K, V] {
   Nil
   Cons(key~ : K, value~ : V, tail~ : Bucket[K, V])
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct HashMap[K, V] {
   buckets : Array[Bucket[K, V]]
   size : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 

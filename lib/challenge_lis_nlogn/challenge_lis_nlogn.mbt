@@ -27,7 +27,7 @@ fn lower_bound_prefix(
     proof_invariant: hi <= len,
     proof_invariant: all_less_before_prefix(arr, target, lo),
     proof_invariant: all_geq_from_prefix(arr, target, hi, len),
-    reasoning: (
+    proof_reasoning: (
       #|This is the proof-carrying lower-bound kernel for the active prefix
       #|`arr[0 .. len)`.
       #|
