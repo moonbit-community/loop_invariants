@@ -172,27 +172,31 @@ fn MoDistinct::process_queries(
     let query = mo_queries[i]
 
     // Expand right
-    while self.curr_r < query.r {
+    for expand_right = self.curr_r < query.r; expand_right; {
       self.curr_r = self.curr_r + 1
       self.add(self.curr_r)
+      continue self.curr_r < query.r
     }
 
     // Shrink right
-    while self.curr_r > query.r {
+    for shrink_right = self.curr_r > query.r; shrink_right; {
       self.remove(self.curr_r)
       self.curr_r = self.curr_r - 1
+      continue self.curr_r > query.r
     }
 
     // Expand left
-    while self.curr_l > query.l {
+    for expand_left = self.curr_l > query.l; expand_left; {
       self.curr_l = self.curr_l - 1
       self.add(self.curr_l)
+      continue self.curr_l > query.l
     }
 
     // Shrink left
-    while self.curr_l < query.l {
+    for shrink_left = self.curr_l < query.l; shrink_left; {
       self.remove(self.curr_l)
       self.curr_l = self.curr_l + 1
+      continue self.curr_l < query.l
     }
     results[query.idx] = self.distinct
   } where {
@@ -280,21 +284,25 @@ fn MoSum::process_queries(
   let results = Array::make(q, 0L)
   for i = 0; i < q; i = i + 1 {
     let query = mo_queries[i]
-    while self.curr_r < query.r {
+    for expand_right = self.curr_r < query.r; expand_right; {
       self.curr_r = self.curr_r + 1
       self.add(self.curr_r)
+      continue self.curr_r < query.r
     }
-    while self.curr_r > query.r {
+    for shrink_right = self.curr_r > query.r; shrink_right; {
       self.remove(self.curr_r)
       self.curr_r = self.curr_r - 1
+      continue self.curr_r > query.r
     }
-    while self.curr_l > query.l {
+    for expand_left = self.curr_l > query.l; expand_left; {
       self.curr_l = self.curr_l - 1
       self.add(self.curr_l)
+      continue self.curr_l > query.l
     }
-    while self.curr_l < query.l {
+    for shrink_left = self.curr_l < query.l; shrink_left; {
       self.remove(self.curr_l)
       self.curr_l = self.curr_l + 1
+      continue self.curr_l < query.l
     }
     results[query.idx] = self.sum
   } where {
