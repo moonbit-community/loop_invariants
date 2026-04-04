@@ -27,17 +27,22 @@ pub fn shortest_path_grid(
   queue.push((sx, sy))
   let dx : Array[Int] = [1, -1, 0, 0]
   let dy : Array[Int] = [0, 0, 1, -1]
-  for head = 0; head < queue.length(); head = head + 1 {
-    let (x, y) = queue[head]
-    for d in 0..<4 {
-      let nx = x + dx[d]
-      let ny = y + dy[d]
-      if nx >= 0 && nx < n && ny >= 0 && ny < m {
-        if grid[nx][ny] == 0 && dist[nx][ny] == -1 {
-          dist[nx][ny] = dist[x][y] + 1
-          queue.push((nx, ny))
+  for head = 0 {
+    if head >= queue.length() {
+      break
+    } else {
+      let (x, y) = queue[head]
+      for d in 0..<4 {
+        let nx = x + dx[d]
+        let ny = y + dy[d]
+        if nx >= 0 && nx < n && ny >= 0 && ny < m {
+          if grid[nx][ny] == 0 && dist[nx][ny] == -1 {
+            dist[nx][ny] = dist[x][y] + 1
+            queue.push((nx, ny))
+          }
         }
       }
+      continue head + 1
     }
   } where {
     invariant: head >= 0 && head <= queue.length(),
