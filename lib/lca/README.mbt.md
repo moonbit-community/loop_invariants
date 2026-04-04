@@ -1,79 +1,68 @@
 # Lowest Common Ancestor (LCA) with Binary Lifting
 
-## What LCA Answers
+## Overview
 
-The **Lowest Common Ancestor** of two nodes `u` and `v` is the deepest node
-that is an ancestor of both. It is the core primitive behind distance queries,
-subtree checks, and many tree path algorithms.
+The **Lowest Common Ancestor** of two nodes `u` and `v` in a rooted tree is the deepest
+node that is an ancestor of both. It is the core primitive behind:
 
-This package uses **binary lifting**:
+- Distance queries between nodes
+- Subtree containment checks
+- Tree path aggregation problems
+
+This package uses **binary lifting** for efficient preprocessing and queries:
 
 - **Preprocess**: O(n log n)
 - **Query**: O(log n)
 - **Space**: O(n log n)
 
-## Visual Intuition
+## Tree Diagram and LCA Examples
 
 ```
-Tree:
-          0
+Tree rooted at 0:
+
+          0           depth 0
         / | \
-       1  2  3
+       1  2  3        depth 1
       / \
-     4   5
+     4   5            depth 2
 
-LCA(4, 5) = 1
-LCA(4, 2) = 0
-LCA(4, 3) = 0
-LCA(1, 5) = 1
+LCA(4, 5) = 1   (both are children of 1)
+LCA(4, 2) = 0   (paths to root diverge at 0)
+LCA(4, 3) = 0   (paths to root diverge at 0)
+LCA(1, 5) = 1   (1 is already an ancestor of 5)
 ```
 
-The LCA is the last shared node on the two root‑to‑node paths.
-
-## Binary Lifting in One Picture
-
-For each node, precompute ancestors at powers of two:
+The LCA is the last shared node on the two root-to-node paths:
 
 ```
-up[v][0] = parent
-up[v][1] = 2^1 ancestor
-up[v][2] = 2^2 ancestor
-...
+path(root -> 4) = [0, 1, 4]
+path(root -> 2) = [0, 2]
+                        ^
+                   last shared = 0    =>  LCA(4, 2) = 0
+
+path(root -> 4) = [0, 1, 4]
+path(root -> 5) = [0, 1, 5]
+                        ^
+                   last shared = 1    =>  LCA(4, 5) = 1
 ```
 
-Any jump by `k` levels is done by decomposing `k` into bits.
+## Binary Lifting Table
 
-Example: jump 13 = 8 + 4 + 1
-
-```
-13 = (1101)_2
-jump 2^3 -> jump 2^2 -> jump 2^0
-```
-
-## Step‑By‑Step Query
-
-### 1) Equalize Depths
-
-Bring the deeper node up to the same depth.
-
-Example: `LCA(5, 2)`
+For each node `v` and each power `k`, precompute:
 
 ```
-Depth[5] = 3, Depth[2] = 1
-Diff = 2 (binary 10)
-
-Lift node 5 by 2:
-  jump 2^1 -> 5 -> 1
-Now both at depth 1: nodes 1 and 2
+up[v][k] = 2^k-th ancestor of v  (or -1 if it doesn't exist)
 ```
 
-### 2) Jump Together
+The recurrence is:
 
-From the highest power down, if `up[u][k] != up[v][k]`, jump both up.
+```
+up[v][0] = parent(v)
+up[v][k] = up[ up[v][k-1] ][k-1]
+           ^-- 2^k ancestor = 2^(k-1) ancestor of the 2^(k-1) ancestor
+```
 
-After this, the parent of either node is the LCA.
-
-## Example Table
+### Example Table
 
 Tree:
 
@@ -87,24 +76,81 @@ Tree:
 5
 ```
 
-Depth and ancestor table:
+Depths and ancestor table (log_n = 3 for n = 6):
 
 ```
-node:   0  1  2  3  4  5
-up[][0]: -1 0  0  1  1  3
-up[][1]: -1 -1 -1 0  0  1
-up[][2]: -1 -1 -1 -1 -1 0
+node  | depth | up[][0]  | up[][1]  | up[][2]
+      |       | (parent) | (2^1=2nd)| (2^2=4th)
+------+-------+----------+----------+----------
+  0   |   0   |   -1     |   -1     |   -1
+  1   |   1   |    0     |   -1     |   -1
+  2   |   1   |    0     |   -1     |   -1
+  3   |   2   |    1     |    0     |   -1
+  4   |   2   |    1     |    0     |   -1
+  5   |   3   |    3     |    1     |    0
 ```
 
-Now `LCA(5,4)`:
+Any ancestor reachable in `k` steps is found by decomposing `k` into bits.
+For example, to jump 5 = (101)_2 levels: jump 2^2, then jump 2^0.
+
+## Step-by-Step LCA Query: LCA(5, 4)
+
+### Step 1: Equalize Depths
+
+Find which node is deeper and bring it up to the same depth:
 
 ```
-Depths: 5=3, 4=2 => lift 5 by 1 -> 3
-Now nodes 3 and 4
-Check from high k:
-  k=1: up[3][1]=0, up[4][1]=0 (equal)
-  k=0: up[3][0]=1, up[4][0]=1 (equal)
-Result = up[3][0] = 1
+depth[5] = 3,  depth[4] = 2
+diff = 3 - 2 = 1 = (001)_2
+
+Lift node 5 by 2^0 = 1:
+  up[5][0] = 3
+
+After lifting:   curr_u = 3,  curr_v = 4
+Both at depth 2.
+```
+
+### Step 2: Check if Equal
+
+```
+curr_u = 3,  curr_v = 4  =>  not equal, continue.
+```
+
+### Step 3: Jump Together from Highest Bit
+
+Scan k from log_n-1 down to 0. Jump both nodes when their 2^k ancestors differ:
+
+```
+k=2: up[3][2] = -1,  up[4][2] = -1   (equal -> no jump)
+k=1: up[3][1] =  0,  up[4][1] =  0   (equal -> no jump)
+k=0: up[3][0] =  1,  up[4][0] =  1   (equal -> no jump)
+```
+
+No jumps were made, so curr_u = 3, curr_v = 4 remain.
+
+### Step 4: Return Parent
+
+```
+LCA(5, 4) = up[curr_u][0] = up[3][0] = 1
+```
+
+### Another Example: LCA(5, 2)
+
+```
+depth[5] = 3,  depth[2] = 1
+diff = 2 = (010)_2
+
+Lift node 5 by 2^1 = 2:
+  up[5][1] = 1
+
+After lifting:   curr_u = 1,  curr_v = 2
+Both at depth 1. Not equal, continue.
+
+k=2: up[1][2] = -1,  up[2][2] = -1   (equal -> no jump)
+k=1: up[1][1] = -1,  up[2][1] = -1   (equal -> no jump)
+k=0: up[1][0] =  0,  up[2][0] =  0   (equal -> no jump)
+
+LCA(5, 2) = up[curr_u][0] = up[1][0] = 0
 ```
 
 ## Common Operations Using LCA
@@ -118,16 +164,22 @@ dist(u, v) = depth[u] + depth[v] - 2 * depth[LCA(u, v)]
 ### Ancestor Check
 
 ```
-Is u ancestor of v?  LCA(u, v) == u
+Is u ancestor of v?   LCA(u, v) == u
 ```
 
-### k‑th Ancestor
+### k-th Ancestor
 
-Decompose `k` into powers of two and jump using `up[v][bit]`.
+Decompose `k` into powers of two and jump using `up[v][bit]`:
+
+```
+k = 5 = (101)_2
+  jump 2^2:  v -> up[v][2]
+  jump 2^0:  v -> up[v][0]
+```
 
 ### Path Queries
 
-Split by LCA and combine:
+Split the path at the LCA and combine results:
 
 ```
 query(u, v) = combine(query(u, lca), query(lca, v))
@@ -139,7 +191,7 @@ Store `dist_to_root[v]` during DFS:
 
 ```
 dist(u, v) = dist_to_root[u] + dist_to_root[v]
-          - 2 * dist_to_root[LCA(u, v)]
+           - 2 * dist_to_root[LCA(u, v)]
 ```
 
 ## Example Usage
@@ -174,19 +226,19 @@ test "lca distance via depths" {
 
 ## Complexity
 
-| Operation | Time | Space |
-|----------|------|-------|
-| Build | O(n log n) | O(n log n) |
-| LCA query | O(log n) | O(1) extra |
-| Distance query | O(log n) | O(1) extra |
-| k‑th ancestor | O(log n) | O(1) extra |
+| Operation      | Time       | Space          |
+|----------------|------------|----------------|
+| Build          | O(n log n) | O(n log n)     |
+| LCA query      | O(log n)   | O(1) extra     |
+| Distance query | O(log n)   | O(1) extra     |
+| k-th ancestor  | O(log n)   | O(1) extra     |
 
 ## Binary Lifting vs Other Methods
 
-| Method | Preprocess | Query | Notes |
-|--------|------------|-------|------|
-| Binary Lifting | O(n log n) | O(log n) | simple, fast |
-| Euler Tour + RMQ | O(n) | O(1) | more complex |
-| HLD | O(n) | O(log n) | if you already need HLD |
+| Method             | Preprocess | Query    | Notes                     |
+|--------------------|------------|----------|---------------------------|
+| Binary Lifting     | O(n log n) | O(log n) | simple, fast              |
+| Euler Tour + RMQ   | O(n)       | O(1)     | more complex              |
+| HLD                | O(n)       | O(log n) | if you already need HLD   |
 
 Binary lifting is usually the best balance of simplicity and speed.

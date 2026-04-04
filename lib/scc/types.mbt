@@ -25,39 +25,45 @@
 //   - Social network analysis
 
 ///|
-/// Mutable counter for timestamps and SCC IDs.
+/// Mutable integer counter used as a shared, incrementable value passed
+/// by reference across recursive DFS calls.
+///
+/// Used for the discovery-time timer in Tarjan's algorithm and for
+/// counting how many SCCs have been identified so far.
 priv struct Counter {
   mut val : Int
 }
 
 ///|
-/// Result of SCC computation.
+/// Result returned by both `find_sccs` and `find_sccs_kosaraju`.
 ///
-/// FIELDS:
-///   - num_sccs: total number of SCCs found
-///   - component: component[v] = SCC index of vertex v (0 to num_sccs-1)
-///   - scc_sizes: scc_sizes[i] = number of vertices in SCC i
-///   - scc_adj: condensation graph (DAG of SCCs)
+/// All four fields are consistent with each other: they describe the same
+/// SCC decomposition of the input graph.
 ///
-/// SCC NUMBERING:
+/// Fields:
+/// - `num_sccs`  : total number of strongly connected components.
+/// - `component` : `component[v]` is the SCC index (0 to `num_sccs - 1`)
+///                 of vertex `v`. Vertices in the same SCC share an index.
+/// - `scc_sizes` : `scc_sizes[i]` is the number of vertices in SCC `i`.
+///                 The sizes sum to `n` (total vertex count).
+/// - `scc_adj`   : condensation DAG adjacency list. `scc_adj[i]` contains
+///                 the indices of SCCs that SCC `i` has a directed edge into.
+///                 Self-loops and duplicate edges are excluded.
+///
+/// SCC numbering (Tarjan):
 /// ```
-///   Tarjan's algorithm numbers SCCs in reverse topological order
-///   (sink SCCs get lower numbers).
-///
-///   Kosaraju's algorithm also produces a valid numbering where
-///   if there's an edge from SCC i to SCC j, then i > j in Tarjan's
-///   numbering (or the reverse in some implementations).
+///   SCCs are numbered in the order they are completed during DFS.
+///   Sink SCCs (no outgoing SCC edges) receive lower indices.
+///   Source SCCs receive higher indices.
+///   This matches reverse topological order on the condensation DAG.
 /// ```
 ///
-/// CONDENSATION GRAPH:
+/// Example for graph `0->1->2->0, 2->3`:
 /// ```
-///   scc_adj[i] contains all SCCs j such that there exists an edge
-///   from some vertex in SCC i to some vertex in SCC j.
-///
-///   Example:
-///     Original: 0→1→2→0, 2→3
-///     SCCs: {0,1,2}=SCC0, {3}=SCC1
-///     Condensation: SCC0 → SCC1
+///   num_sccs  = 2
+///   component = [1, 1, 1, 0]   // vertices 0,1,2 in SCC 1; vertex 3 in SCC 0
+///   scc_sizes = [1, 3]          // SCC 0 has 1 vertex; SCC 1 has 3 vertices
+///   scc_adj   = [[], [0]]       // SCC 1 -> SCC 0; SCC 0 has no outgoing edges
 /// ```
 pub(all) struct SCCResult {
   num_sccs : Int

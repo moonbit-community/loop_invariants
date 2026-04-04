@@ -35,7 +35,14 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-/// Union-Find (Disjoint Set Union) data structure
+/// Union-Find (Disjoint Set Union) data structure with path compression and
+/// union by rank.
+///
+/// Each element is identified by an integer index in `[0, n)`. Internally the
+/// structure stores a `parent` array and a `rank` array.  When `parent[x] == x`
+/// the element `x` is a root (representative) of its set.
+///
+/// Space complexity: O(n).
 pub struct UnionFind {
   parent : Array[Int]
   rank : Array[Int]
@@ -43,8 +50,16 @@ pub struct UnionFind {
 }
 
 ///|
-/// Create a new Union-Find structure with n elements (0 to n-1)
-/// Initially, each element is in its own set
+/// Create a new Union-Find structure with `n` elements (indices `0` to `n-1`).
+///
+/// Initially every element is its own root, so there are `n` singleton sets.
+///
+/// Parameters:
+/// - `n`: number of elements; must be non-negative.
+///
+/// Returns a new `UnionFind` value ready for use.
+///
+/// Time complexity: O(n).
 pub fn UnionFind::new(n : Int) -> UnionFind {
   // Each element is its own parent (self-loop = root)
   let parent = Array::makei(n, i => i)
@@ -53,11 +68,22 @@ pub fn UnionFind::new(n : Int) -> UnionFind {
 }
 
 ///|
-/// Find the root (representative) of element x's set
-/// Uses path compression for efficiency
+/// Find the representative (root) of the set that contains element `x`.
 ///
-/// INVARIANT: Following parent pointers leads to root
-/// PATH COMPRESSION: Makes all nodes on path point directly to root
+/// Applies **full path compression**: after the call every node on the path
+/// from `x` to the root has its `parent` updated to point directly to the
+/// root, flattening the tree for future queries.
+///
+/// Parameters:
+/// - `x`: the element whose representative is requested; must be in `[0, n)`.
+///
+/// Returns the root element of `x`'s set, or `-1` if `x` is out of bounds.
+///
+/// Time complexity: O(α(n)) amortized, where α is the inverse Ackermann
+/// function (effectively constant for all practical inputs).
+///
+/// INVARIANT: Following parent pointers leads to root.
+/// PATH COMPRESSION: Makes all nodes on path point directly to root.
 pub fn UnionFind::find(self : UnionFind, x : Int) -> Int {
   if x < 0 || x >= self.parent.length() {
     return -1
@@ -87,11 +113,23 @@ pub fn UnionFind::find(self : UnionFind, x : Int) -> Int {
 }
 
 ///|
-/// Union the sets containing x and y
-/// Uses union by rank for efficiency
-/// Returns true if sets were different (union performed)
+/// Merge the sets that contain elements `x` and `y`.
 ///
-/// INVARIANT: Smaller rank tree goes under larger rank tree
+/// Uses **union by rank**: the root with the lower rank is attached under the
+/// root with the higher rank, keeping trees shallow.  When both roots have the
+/// same rank the rank of the chosen root is incremented by one.
+///
+/// Parameters:
+/// - `x`: an element in the first set; must be in `[0, n)`.
+/// - `y`: an element in the second set; must be in `[0, n)`.
+///
+/// Returns `true` when `x` and `y` were in different sets and a merge was
+/// performed; `false` when they were already in the same set or when either
+/// index is out of bounds.
+///
+/// Time complexity: O(α(n)) amortized.
+///
+/// INVARIANT: Smaller rank tree goes under larger rank tree.
 pub fn UnionFind::union(self : UnionFind, x : Int, y : Int) -> Bool {
   let root_x = self.find(x)
   let root_y = self.find(y)
@@ -117,7 +155,16 @@ pub fn UnionFind::union(self : UnionFind, x : Int, y : Int) -> Bool {
 }
 
 ///|
-/// Check if x and y are in the same set
+/// Test whether elements `x` and `y` belong to the same set.
+///
+/// Parameters:
+/// - `x`: an element index in `[0, n)`.
+/// - `y`: an element index in `[0, n)`.
+///
+/// Returns `true` if `x` and `y` share the same representative, `false`
+/// otherwise (including when either index is out of bounds).
+///
+/// Time complexity: O(α(n)) amortized.
 pub fn UnionFind::connected(self : UnionFind, x : Int, y : Int) -> Bool {
   let root_x = self.find(x)
   let root_y = self.find(y)
@@ -125,13 +172,30 @@ pub fn UnionFind::connected(self : UnionFind, x : Int, y : Int) -> Bool {
 }
 
 ///|
-/// Get the number of disjoint sets
+/// Return the current number of disjoint sets.
+///
+/// Starts at `n` (one set per element) and decreases by one each time
+/// `union` successfully merges two distinct sets.
+///
+/// Returns the count of disjoint sets remaining.
+///
+/// Time complexity: O(1).
 pub fn UnionFind::count_sets(self : UnionFind) -> Int {
   self.num_sets
 }
 
 ///|
-/// Get the size of the set containing x
+/// Return the number of elements in the set that contains element `x`.
+///
+/// Parameters:
+/// - `x`: an element index in `[0, n)`.
+///
+/// Returns the size of `x`'s set, or `0` if `x` is out of bounds.
+///
+/// Note: this operation scans all `n` elements once and calls `find` on each,
+/// so it is more expensive than the other operations.
+///
+/// Time complexity: O(n · α(n)).
 pub fn UnionFind::set_size(self : UnionFind, x : Int) -> Int {
   let root = self.find(x)
   if root < 0 {
@@ -151,8 +215,16 @@ pub fn UnionFind::set_size(self : UnionFind, x : Int) -> Int {
 // ============================================================================
 
 ///|
-/// Weighted Union-Find where each element has a weight relative to its parent
-/// Useful for problems like "A is X units heavier than B"
+/// Weighted Union-Find where each element has a weight relative to its parent.
+///
+/// Useful for problems where elements carry a numeric relationship to each
+/// other, for example "A is X units heavier than B".  The weight stored at
+/// each node is the signed distance from that node to its parent; path
+/// compression accumulates these distances so that after `find_with_weight`
+/// the stored weight is the total distance to the root.
+///
+/// This type is private; use `WeightedUnionFind::new`, `union_with_weight`,
+/// and `diff` to interact with it.
 priv struct WeightedUnionFind {
   parent : Array[Int]
   rank : Array[Int]
@@ -160,6 +232,15 @@ priv struct WeightedUnionFind {
 }
 
 ///|
+/// Create a new `WeightedUnionFind` with `n` elements (indices `0` to `n-1`).
+///
+/// Parameters:
+/// - `n`: number of elements; must be non-negative.
+///
+/// Returns a new structure in which every element is its own root with weight
+/// `0`.
+///
+/// Time complexity: O(n).
 fn WeightedUnionFind::new(n : Int) -> WeightedUnionFind {
   let parent = Array::makei(n, i => i)
   let rank = Array::make(n, 0)
@@ -168,8 +249,21 @@ fn WeightedUnionFind::new(n : Int) -> WeightedUnionFind {
 }
 
 ///|
-/// Find root and return (root, weight_to_root)
-/// weight_to_root = total weight from x to root
+/// Find the root of element `x` and compute its total weight relative to that
+/// root.
+///
+/// Performs path compression: after the call `parent[x]` points directly to
+/// the root and `weight[x]` holds the accumulated distance from `x` to the
+/// root.
+///
+/// Parameters:
+/// - `x`: an element index in `[0, n)`.
+///
+/// Returns a pair `(root, weight_to_root)` where `root` is the representative
+/// of `x`'s set and `weight_to_root` is the total signed weight from `x` to
+/// `root`.  Returns `(-1, 0)` if `x` is out of bounds.
+///
+/// Time complexity: O(α(n)) amortized.
 fn WeightedUnionFind::find_with_weight(
   self : WeightedUnionFind,
   x : Int,
@@ -192,7 +286,20 @@ fn WeightedUnionFind::find_with_weight(
 }
 
 ///|
-/// Get difference: weight(x) - weight(y) if in same set, None otherwise
+/// Compute the signed weight difference `weight(x) - weight(y)` when `x` and
+/// `y` are in the same set.
+///
+/// The difference is well-defined because all weights are stored relative to
+/// the common root; the root cancels out in the subtraction.
+///
+/// Parameters:
+/// - `x`: an element index in `[0, n)`.
+/// - `y`: an element index in `[0, n)`.
+///
+/// Returns `Some(weight(x) - weight(y))` if both elements are in the same set,
+/// or `None` if they are in different sets or either index is out of bounds.
+///
+/// Time complexity: O(α(n)) amortized.
 fn WeightedUnionFind::diff(
   self : WeightedUnionFind,
   x : Int,
@@ -207,8 +314,25 @@ fn WeightedUnionFind::diff(
 }
 
 ///|
-/// Union with constraint: weight(x) - weight(y) = w
-/// Returns true if union performed or constraint consistent
+/// Merge the sets of `x` and `y` subject to the constraint
+/// `weight(x) - weight(y) = w`.
+///
+/// If `x` and `y` are already in the same set the constraint is checked for
+/// consistency with existing weights: the function returns `true` only when
+/// the stored difference already equals `w`.
+///
+/// Uses union by rank to keep trees balanced.
+///
+/// Parameters:
+/// - `x`: an element index in `[0, n)`.
+/// - `y`: an element index in `[0, n)`.
+/// - `w`: the required value of `weight(x) - weight(y)`.
+///
+/// Returns `true` when the union was performed or when `x` and `y` were
+/// already in the same set with a consistent constraint; `false` when the
+/// constraint is inconsistent or either index is out of bounds.
+///
+/// Time complexity: O(α(n)) amortized.
 fn WeightedUnionFind::union_with_weight(
   self : WeightedUnionFind,
   x : Int,

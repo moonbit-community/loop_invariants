@@ -44,14 +44,114 @@ Bellman-Ford uses this fact:
 This is the key invariant: **after k rounds, `dist[v]` is the shortest distance
 using at most k edges**.
 
+## ASCII art: relaxation rounds on a 4-vertex graph
+
+Consider this directed graph with a negative edge:
+
+```
+    (4)         (-2)
+0 -------> 1 -------> 2
+|                     |
++-----(5)-----------> |        dist[2] via 0->1->2 = 4 + (-2) = 2
+                      |
+                      v (3)
+                      3
+```
+
+Edges: `0->1 (+4)`, `0->2 (+5)`, `1->2 (-2)`, `2->3 (+3)`
+
+**Initialization** (all distances start at infinity except source):
+
+```
+  vertex:   0      1      2      3
+  dist:     0     INF    INF    INF
+```
+
+**Round 1** (relax all edges once):
+
+```
+  relax 0->1 (+4):  dist[1] = 0+4  = 4
+  relax 0->2 (+5):  dist[2] = 0+5  = 5
+  relax 1->2 (-2):  dist[2] = 4-2  = 2   <-- improvement!
+  relax 2->3 (+3):  dist[3] = 2+3  = 5
+
+  vertex:   0      1      2      3
+  dist:     0      4      2      5
+```
+
+**Round 2** (no edge can improve any distance):
+
+```
+  relax 0->1 (+4):  4 >= 4, no change
+  relax 0->2 (+5):  5 >= 2, no change
+  relax 1->2 (-2):  2 >= 2, no change
+  relax 2->3 (+3):  5 >= 5, no change
+
+  vertex:   0      1      2      3
+  dist:     0      4      2      5      (converged)
+```
+
+The algorithm terminates early because round 2 produced no relaxations. Final
+shortest paths: `0` (cost 0), `0->1` (cost 4), `0->1->2` (cost 2),
+`0->1->2->3` (cost 5).
+
+## Step-by-step convergence over V-1 rounds
+
+For a graph with V vertices, the algorithm needs at most V-1 rounds to
+propagate information along the longest possible simple path (one that visits
+every vertex exactly once, using V-1 edges).
+
+```
+  Round k:  dist[v] holds the shortest path to v using AT MOST k edges
+  ---------------------------------------------------------------
+  k=0:      dist[src]=0, dist[others]=INF   (0 edges used)
+  k=1:      all 1-hop shortest paths are correct
+  k=2:      all 2-hop shortest paths are correct
+  ...
+  k=V-1:    all shortest paths are correct  (final answer)
+```
+
+If a V-th relaxation round still improves some distance, then the "path" would
+need V or more edges, which means it must revisit a vertex -- forming a cycle.
+If that cycle reduces the total cost, it is a **negative cycle**.
+
 ## Detecting negative cycles
 
 After `V - 1` rounds, all simple shortest paths are finalized. If **any** edge
 can still relax, then some path can be improved indefinitely, which means a
 negative cycle is reachable from the source.
 
-The implementation in this package runs one extra pass to set
-`has_negative_cycle`.
+The implementation runs one extra pass to set `has_negative_cycle`.
+
+### Visualization of negative cycle detection
+
+Consider the cycle `1 -> 2 -> 1` with edge weights `-2` and `-2`:
+
+```
+    (+1)      (-2)
+0 -------> 1 <------> 2
+           |    (-2)
+           +----------^
+```
+
+Edges: `0->1 (+1)`, `1->2 (-2)`, `2->1 (-2)`
+
+```
+  After round 1:
+    dist[0]=0, dist[1]=1, dist[2]=-1
+
+  After round 2 (= V-1 = 2 rounds for 3 vertices):
+    relax 2->1 (-2): dist[1] = -1 + (-2) = -3  <-- still improving!
+    dist[0]=0, dist[1]=-3, dist[2]=-5
+
+  Extra detection round:
+    relax 1->2 (-2): dist[2] = -3 + (-2) = -5  <-- can relax again!
+    => negative cycle detected
+```
+
+The cycle weight is `(-2) + (-2) = -4`. Traversing it repeatedly drives
+distances toward negative infinity, so no finite shortest path exists for
+vertices reachable via this cycle.
 
 ## Examples
 

@@ -7,50 +7,42 @@
 //
 // KEY INSIGHT:
 //   Every substring of text is a prefix of some suffix.
-//   Walking down from root, matching query characters, finds the substring.
-//   The subtree below represents all suffixes containing that substring.
+//   Walking from the root, matching query characters, locates the substring.
+//   The subtree below the matching position represents all suffixes that
+//   contain the pattern, so its leaf count equals the occurrence count.
 //
-// TIME: O(m) where m = pattern length (independent of text length!)
+// TIME: O(m) where m = pattern length (independent of text length).
 
 ///|
-/// Check whether a pattern occurs as a substring in the indexed text.
+/// Check whether `pattern` occurs as a substring in the indexed text.
 ///
-/// ALGORITHM:
-/// ```
-///   Walk down from root, matching pattern characters against edge labels.
+/// The search walks from the root, matching pattern characters against edge
+/// labels one by one. Three outcomes are possible at each step:
 ///
-///   At each node:
-///     1. Find edge starting with pattern[i]
-///     2. If no edge: pattern not found, return false
-///     3. Match pattern against edge label
-///     4. If pattern exhausted: found! return true
-///     5. If edge exhausted: move to child, continue
-///     6. If mismatch mid-edge: not found, return false
-/// ```
+/// - No edge starts with the current pattern character: pattern not found,
+///   return `false`.
+/// - The pattern is exhausted before or at an edge boundary: pattern found,
+///   return `true`. (A match ending mid-edge is still a valid substring.)
+/// - The edge label is exhausted before the pattern: descend to the child node
+///   and continue matching.
+/// - A character mismatch occurs mid-edge: pattern not found, return `false`.
 ///
-/// WHY THIS WORKS:
-///   - If pattern exists in text, it's a prefix of some suffix
-///   - That suffix has a root-to-leaf path in the tree
-///   - We can match the pattern along that path
-///   - Partial matches (ending mid-edge) are still valid substrings
+/// Parameters:
+/// - `self`    - The suffix tree to query.
+/// - `pattern` - The substring to search for.
 ///
-/// PARAMETERS:
-///   - self: The suffix tree
-///   - pattern: The substring to search for
+/// Returns `true` if `pattern` appears at least once in the indexed text,
+/// `false` otherwise. An empty pattern always returns `true`.
 ///
-/// RETURNS:
-///   true if pattern occurs in text, false otherwise
+/// Time: O(m)  Space: O(m) for the pattern character array.
 ///
-/// TIME: O(m) where m = pattern.length()
-/// SPACE: O(m) for pattern array conversion
-///
-/// EXAMPLE:
+/// Example:
 /// ```mbt check
 /// test {
 ///   let tree = @suffix_tree.SuffixTree::new("banana")
-///   assert_true(tree.contains("ana")) // true - occurs at positions 1 and 3
-///   assert_true(tree.contains("ban")) // true - prefix of text
-///   assert_false(tree.contains("xyz")) // false - not in text
+///   assert_true(tree.contains("ana")) // occurs at positions 1 and 3
+///   assert_true(tree.contains("ban")) // prefix of text
+///   assert_false(tree.contains("xyz")) // not in text
 /// }
 /// ```
 pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
@@ -123,44 +115,37 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
 }
 
 ///|
-/// Count the number of occurrences of a pattern in the indexed text.
+/// Count the number of (possibly overlapping) occurrences of `pattern` in the
+/// indexed text.
 ///
-/// ALGORITHM:
+/// The algorithm first walks down the tree matching `pattern`, exactly as in
+/// `contains`. If the pattern is found, the `leaf_count` of the node (or edge
+/// child) where the match ends is returned. Each leaf under that node
+/// represents one suffix that begins with `pattern`, so the leaf count equals
+/// the number of times the pattern occurs.
+///
+/// Example for `"banana"`:
 /// ```
-///   1. Walk down tree matching pattern (same as contains)
-///   2. If pattern found, return leaf_count of the subtree
-///   3. leaf_count = number of suffixes passing through = occurrences
-/// ```
+/// count_occurrences("ana") = 2
+///   leaf 1: suffix "anana$" — "ana" appears at its start (text position 1)
+///   leaf 2: suffix "ana$"   — "ana" is the full suffix   (text position 3)
 ///
-/// KEY INSIGHT:
-///   Each leaf represents a unique suffix. If we reach a subtree after
-///   matching pattern P, every leaf below represents a suffix starting
-///   with P. The number of leaves = number of occurrences.
+/// count_occurrences("na") = 2
+///   leaf 1: suffix "nana$"  — "na" at its start (text position 2)
+///   leaf 2: suffix "na$"    — "na" is the full suffix (text position 4)
 ///
-/// EXAMPLE for "banana":
-/// ```
-///   count_occurrences("ana") = 2
-///     - "anana$" suffix contains "ana" at start
-///     - "ana$" suffix is "ana"
-///     Both are leaves under the "ana" subtree
-///
-///   count_occurrences("na") = 2
-///     - "nana$" contains "na" at start
-///     - "na$" is "na"
-///
-///   count_occurrences("ban") = 1
-///     - Only "banana$" contains "ban"
+/// count_occurrences("ban") = 1
+///   Only suffix "banana$" contains "ban".
 /// ```
 ///
-/// PARAMETERS:
-///   - self: The suffix tree
-///   - pattern: The substring to count
+/// Parameters:
+/// - `self`    - The suffix tree to query.
+/// - `pattern` - The substring whose occurrences are to be counted.
 ///
-/// RETURNS:
-///   Number of (possibly overlapping) occurrences of pattern in text.
-///   Empty pattern returns 0 by convention.
+/// Returns the number of times `pattern` appears in the text. Returns 0 for
+/// an empty pattern (by convention) and 0 when the pattern is not found.
 ///
-/// TIME: O(m) where m = pattern.length()
+/// Time: O(m)  Space: O(m) for the pattern character array.
 pub fn SuffixTree::count_occurrences(
   self : SuffixTree,
   pattern : String,

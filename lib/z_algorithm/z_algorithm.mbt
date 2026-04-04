@@ -38,8 +38,26 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-/// Compute Z-array for string s
-/// Returns array where z[i] = length of longest prefix match starting at i
+/// Computes the Z-array for a string.
+///
+/// `Z[i]` is the length of the longest substring starting at index `i` that
+/// matches a prefix of `s`. By convention `Z[0]` equals `n`, the full string
+/// length.
+///
+/// The algorithm maintains a **Z-box** `[l, r]` — the rightmost window where
+/// `s[l..r]` matches `s[0..r-l]`. When index `i` falls inside the box, the
+/// previously computed value `Z[i-l]` is reused to avoid redundant character
+/// comparisons. The right boundary `r` only moves forward, so the total work
+/// is linear.
+///
+/// Parameters:
+/// - `s`: the input string.
+///
+/// Returns an `Array[Int]` of length `n` where entry `i` holds `Z[i]`.
+/// Returns an empty array when `s` is empty.
+///
+/// Time complexity: O(n), where n = s.length().
+/// Space complexity: O(n).
 pub fn compute_z(s : String) -> Array[Int] {
   let n = s.length()
   if n == 0 {
@@ -121,14 +139,37 @@ pub fn compute_z(s : String) -> Array[Int] {
 }
 
 ///|
-/// Compute the Z-array for s (alias of compute_z).
+/// Computes the Z-array for a string (alias of `compute_z`).
+///
+/// Parameters:
+/// - `s`: the input string.
+///
+/// Returns an `Array[Int]` of length `n` where entry `i` holds `Z[i]`.
+///
+/// Time complexity: O(n), where n = s.length().
 pub fn z_function(s : String) -> Array[Int] {
   compute_z(s)
 }
 
 ///|
-/// Find all occurrences of pattern in text using Z-algorithm
-/// Returns array of starting indices where pattern occurs
+/// Finds all (possibly overlapping) occurrences of `pattern` in `text` using
+/// the Z-algorithm.
+///
+/// Constructs the concatenated string `pattern + "$" + text`, computes its
+/// Z-array, and collects every index `i` (with `i > pattern.length()`) where
+/// `Z[i] == pattern.length()`. The `"$"` separator prevents a Z-value from
+/// spanning the pattern/text boundary.
+///
+/// Parameters:
+/// - `text`: the string to search in.
+/// - `pattern`: the string to search for.
+///
+/// Returns an `Array[Int]` of zero-based starting positions in `text` where
+/// `pattern` occurs, in ascending order. Returns an empty array when `pattern`
+/// is empty or longer than `text`.
+///
+/// Time complexity: O(n + m), where n = text.length() and m = pattern.length().
+/// Space complexity: O(n + m).
 pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
   let result : Array[Int] = []
   let m = pattern.length()
@@ -169,20 +210,48 @@ pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
 }
 
 ///|
-/// Find all occurrences of pattern in text (alias of find_pattern).
+/// Finds all occurrences of `pattern` in `text` (alias of `find_pattern`).
+///
+/// Parameters:
+/// - `text`: the string to search in.
+/// - `pattern`: the string to search for.
+///
+/// Returns an `Array[Int]` of zero-based starting positions in `text` where
+/// `pattern` occurs, in ascending order.
+///
+/// Time complexity: O(n + m), where n = text.length() and m = pattern.length().
 pub fn z_search(text : String, pattern : String) -> Array[Int] {
   find_pattern(text, pattern)
 }
 
 ///|
-/// Count occurrences of pattern in text
+/// Counts all (possibly overlapping) occurrences of `pattern` in `text`.
+///
+/// Parameters:
+/// - `text`: the string to search in.
+/// - `pattern`: the string to count.
+///
+/// Returns the number of positions in `text` where `pattern` starts.
+/// Returns 0 when `pattern` is empty or longer than `text`.
+///
+/// Time complexity: O(n + m), where n = text.length() and m = pattern.length().
 pub fn count_pattern(text : String, pattern : String) -> Int {
   find_pattern(text, pattern).length()
 }
 
 ///|
-/// Find longest prefix that is also a suffix (excluding trivial cases)
-/// Uses Z-array property: if Z[i] = n - i, then s[i..n-1] = s[0..n-i-1]
+/// Finds the length of the longest proper prefix of `s` that is also a suffix.
+///
+/// A position `i` satisfies this when `Z[i] + i == n`, meaning the suffix
+/// starting at `i` matches the prefix of the same length exactly. The trivial
+/// case (the whole string) is excluded.
+///
+/// Parameters:
+/// - `s`: the input string.
+///
+/// Returns the length of the longest proper border, or 0 if none exists.
+///
+/// Time complexity: O(n), where n = s.length().
 fn longest_prefix_suffix(s : String) -> Int {
   let n = s.length()
   if n <= 1 {
@@ -202,7 +271,19 @@ fn longest_prefix_suffix(s : String) -> Int {
 }
 
 ///|
-/// Find all border lengths (prefix-suffix matches)
+/// Returns the lengths of all borders of `s`, sorted in ascending order.
+///
+/// A **border** of `s` is a non-empty proper prefix that is also a suffix.
+/// Equivalently, a border of length `k` exists when some index `i` satisfies
+/// `Z[i] + i == n` (with `Z[i] == k`).
+///
+/// Parameters:
+/// - `s`: the input string.
+///
+/// Returns an `Array[Int]` of border lengths in ascending order.
+/// Returns an empty array when `s` is empty or has no borders.
+///
+/// Time complexity: O(n log n) due to sorting; the Z-array pass is O(n).
 fn all_borders(s : String) -> Array[Int] {
   let n = s.length()
   if n == 0 {
@@ -234,8 +315,19 @@ fn all_borders(s : String) -> Array[Int] {
 }
 
 ///|
-/// Find the period of a string (length of smallest repeating unit)
-/// A string with period p satisfies s[i] = s[i mod p] for all i
+/// Returns the period of `s`: the length of the smallest repeating unit.
+///
+/// A string has period `p` when `s[i] == s[i mod p]` for every valid `i`.
+/// Equivalently, `p` is the smallest positive integer such that `Z[p] >= n - p`
+/// (the suffix at `p` covers the rest of the string when tiled from the start).
+/// If no such `p < n` exists, the period is `n` (the string does not repeat).
+///
+/// Parameters:
+/// - `s`: the input string.
+///
+/// Returns an `Int` in the range `[1, n]`.  Returns 0 for an empty string.
+///
+/// Time complexity: O(n), where n = s.length().
 fn string_period(s : String) -> Int {
   let n = s.length()
   if n == 0 {
@@ -265,7 +357,19 @@ fn string_period(s : String) -> Int {
 }
 
 ///|
-/// Check if string is a repetition of a smaller pattern
+/// Reports whether `s` is formed by repeating a strictly shorter unit an
+/// integer number of times.
+///
+/// Uses `string_period` to find the minimal period `p`, then checks that
+/// `p < n` and `n` is divisible by `p`.
+///
+/// Parameters:
+/// - `s`: the input string.
+///
+/// Returns `true` if `s` is a non-trivial repetition (e.g. `"abab"`, `"aaaa"`),
+/// `false` otherwise. Strings of length 0 or 1 always return `false`.
+///
+/// Time complexity: O(n), where n = s.length().
 fn is_repetition(s : String) -> Bool {
   let n = s.length()
   if n <= 1 {

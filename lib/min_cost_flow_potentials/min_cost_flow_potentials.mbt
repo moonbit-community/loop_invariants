@@ -11,23 +11,72 @@
 // SPACE COMPLEXITY: O(V + E)
 
 ///|
+/// Sentinel value used as infinity for distances and flow limits.
+/// Chosen as `Int64::max_value / 2` to prevent overflow when adding two
+/// distances together.
 const MCF_INF : Int64 = 4611686018427387903L
 
 ///|
+/// A single directed edge in the flow network, stored in an adjacency list.
+///
+/// Both the forward edge and its corresponding reverse (residual) edge are
+/// represented as `Edge` values. The reverse edge is found via
+/// `adj[to][rev]`.
+///
+/// The usable residual capacity of this edge is `cap - flow`.  For a reverse
+/// edge that was added automatically by `add_edge`, `cap` starts at `0` and
+/// `flow` starts at `0`; flow is decreased (made negative) as the forward
+/// edge is augmented, so `cap - flow` correctly reflects the cancellation
+/// capacity.
 pub struct Edge {
+  /// Destination vertex index.
   to : Int
+  /// Maximum capacity of this edge.
   cap : Int64
+  /// Cost per unit of flow on this edge.  Reverse edges carry `-cost`.
   cost : Int64
+  /// Current flow sent along this edge.  Residual capacity = `cap - flow`.
   mut flow : Int64
+  /// Index of the reverse edge in `adj[to]`.
   rev : Int
 }
 
 ///|
+/// Min-cost max-flow solver using successive shortest paths with Johnson's
+/// potential technique.
+///
+/// **Usage pattern**
+///
+/// ```
+/// let mcf = MinCostFlowPotentials::new(n)   // n vertices, 0-indexed
+/// mcf.add_edge(u, v, cap, cost)             // add directed edges
+/// let (flow, cost) = mcf.compute(src, sink) // solve
+/// ```
+///
+/// **Algorithm overview**
+///
+/// Each iteration runs Dijkstra on *reduced costs* (original cost reweighted
+/// by Johnson potentials) to find the cheapest augmenting path in the residual
+/// graph.  After augmenting, potentials are updated so that all residual edges
+/// continue to have non-negative reduced cost, keeping future Dijkstra runs
+/// correct.
+///
+/// **Requirement**: all original edge costs must be non-negative.  If your
+/// graph contains negative-cost edges, initialise potentials with a
+/// Bellman-Ford pass first or use the SPFA-based `mcmf` package.
 pub struct MinCostFlowPotentials {
+  /// Number of vertices in the graph.
   n : Int
+  /// Adjacency list.  `adj[u]` holds all edges (including reverse edges)
+  /// that originate at vertex `u`.
   adj : Array[Array[Edge]]
+  /// Shortest-path distances in reduced-cost space, reused each Dijkstra call.
   dist : Array[Int64]
+  /// `prev_v[v]` is the predecessor vertex of `v` on the shortest path found
+  /// by the most recent Dijkstra call.
   prev_v : Array[Int]
+  /// `prev_e[v]` is the index into `adj[prev_v[v]]` of the edge leading to
+  /// `v` on the shortest path found by the most recent Dijkstra call.
   prev_e : Array[Int]
 }
 
@@ -120,7 +169,13 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 // ============================================================================
 
 ///|
-/// Create a min-cost flow network with n vertices.
+/// Create a min-cost flow network with `n` vertices numbered `0..n-1`.
+///
+/// All internal arrays are pre-allocated to size `n`.  Edges are added
+/// separately with `add_edge`.
+///
+/// Parameters:
+/// - `n`: number of vertices (must be >= 1).
 pub fn MinCostFlowPotentials::new(n : Int) -> MinCostFlowPotentials {
   let adj : Array[Array[Edge]] = Array::makei(n, _ => [])
   {
@@ -133,7 +188,18 @@ pub fn MinCostFlowPotentials::new(n : Int) -> MinCostFlowPotentials {
 }
 
 ///|
-/// Add directed edge u -> v with capacity and cost.
+/// Add a directed edge `u -> v` with the given capacity and cost per unit of
+/// flow.
+///
+/// A reverse (residual) edge `v -> u` with capacity `0` and cost `-cost` is
+/// automatically added so the algorithm can cancel flow later.
+///
+/// Parameters:
+/// - `u`: source vertex of the edge (0-indexed).
+/// - `v`: destination vertex of the edge (0-indexed).
+/// - `cap`: maximum flow that can pass through this edge.
+/// - `cost`: cost per unit of flow; must be non-negative for the Dijkstra
+///   variant to be correct without a Bellman-Ford initialisation step.
 pub fn MinCostFlowPotentials::add_edge(
   self : MinCostFlowPotentials,
   u : Int,
@@ -194,7 +260,17 @@ fn MinCostFlowPotentials::dijkstra(
 }
 
 ///|
-/// Compute min-cost max-flow from source to sink.
+/// Compute the minimum-cost maximum flow from `source` to `sink`.
+///
+/// Equivalent to `compute_with_limit(source, sink, Int64::max_value / 2)`.
+///
+/// Returns a tuple `(flow, cost)` where:
+/// - `flow` is the total units of flow delivered from `source` to `sink`.
+/// - `cost` is the minimum total cost of that flow.
+///
+/// Parameters:
+/// - `source`: index of the source vertex.
+/// - `sink`: index of the sink vertex.
 pub fn MinCostFlowPotentials::compute(
   self : MinCostFlowPotentials,
   source : Int,
@@ -204,7 +280,28 @@ pub fn MinCostFlowPotentials::compute(
 }
 
 ///|
-/// Compute min-cost flow with a flow limit.
+/// Compute the minimum-cost flow from `source` to `sink`, sending at most
+/// `flow_limit` units in total.
+///
+/// The algorithm runs successive shortest-path iterations.  Each iteration:
+/// 1. Runs Dijkstra on reduced costs (edge costs reweighted by Johnson
+///    potentials) to find the cheapest augmenting path.
+/// 2. Augments flow along that path by the bottleneck residual capacity,
+///    capped at the remaining flow budget.
+/// 3. Updates potentials so that all residual edges keep non-negative
+///    reduced cost for the next iteration.
+///
+/// The loop terminates when either `flow_limit` is reached or no augmenting
+/// path exists in the residual graph.
+///
+/// Returns a tuple `(flow, cost)` where:
+/// - `flow` is the total units of flow delivered (at most `flow_limit`).
+/// - `cost` is the minimum total cost of that flow.
+///
+/// Parameters:
+/// - `source`: index of the source vertex.
+/// - `sink`: index of the sink vertex.
+/// - `flow_limit`: upper bound on the total flow to send.
 pub fn MinCostFlowPotentials::compute_with_limit(
   self : MinCostFlowPotentials,
   source : Int,

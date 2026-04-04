@@ -33,77 +33,160 @@ Union-Find answers these in nearly constant time.
 
 ## 2) The data structure (forest of trees)
 
-Each set is stored as a tree.  
+Each set is stored as a tree.
 The root represents the set ID.
 
-Initial state (each node is its own root):
+Initial state — 5 elements, each its own root (`parent[i] = i`, `rank[i] = 0`):
 
 ```
-0   1   2   3   4
-|   |   |   |   |
-0   1   2   3   4
-```
+index:   0   1   2   3   4
+parent:  0   1   2   3   4
+rank:    0   0   0   0   0
 
-`parent[i] = i` means "i is a root".
-
----
-
-## 3) Union: merge two sets
-
-Suppose we union(0, 1) and union(2, 3):
-
-```
-Before:             After:
-0   1   2   3       0       2
-|   |   |   |       |       |
-0   1   2   3       1       3
-```
-
-Now union(0, 2):
-
-```
-   0             0
-   |             |
-   1             1
-
-   2       ->    2
-   |             |
-   3             3
-
-After union:
-     0
-   /   \
-  1     2
-         \
-          3
+ [0] [1] [2] [3] [4]   <- each node is its own root
 ```
 
 ---
 
-## 4) Path compression (why find is fast)
+## 3) Union by rank — step by step
 
-Every `find(x)` shortens the path to the root:
+Union by rank keeps trees shallow by always attaching the tree with the
+**lower rank** under the tree with the **higher rank**.  The rank is an upper
+bound on tree height and is incremented only when two roots of equal rank are
+merged.
+
+### Step 1: union(0, 1) — both have rank 0 (equal), so rank of chosen root grows
 
 ```
-Before find(3):        After find(3):
-0                       0
-|                     / | \
-1                    1  2  3
-|
-2
-|
-3
+Before:           After:
+[0]  [1]          [0]      <- root_0 chosen, rank[0] becomes 1
+                   |
+                  [1]
+
+parent: [0,1,...] -> [0,0,...]
+rank:   [0,0,...] -> [1,0,...]
 ```
 
-After compression, future finds are almost instant.
+### Step 2: union(2, 3) — both have rank 0 (equal), rank of chosen root grows
+
+```
+Before:           After:
+[2]  [3]          [2]      <- root_2 chosen, rank[2] becomes 1
+                   |
+                  [3]
+
+parent: [...,2,3,...] -> [...,2,2,...]
+rank:   [...,0,0,...] -> [...,1,0,...]
+```
+
+### Step 3: union(4, 5) — same pattern
+
+```
+Before:           After:
+[4]  [5]          [4]      <- root_4 chosen, rank[4] becomes 1
+                   |
+                  [5]
+```
+
+### Step 4: union(0, 2) — rank[0]=1 equals rank[2]=1, so rank of chosen root grows
+
+```
+Before:           After:
+  [0]    [2]            [0]          <- rank[0] becomes 2
+   |      |            /   \
+  [1]    [3]         [1]   [2]
+                            |
+                           [3]
+
+parent[2] = 0
+rank[0]   = 2
+```
+
+### Step 5: union(0, 4) — rank[0]=2 > rank[4]=1, so [4] goes under [0]
+
+```
+Before:               After:
+     [0]                     [0]
+    /   \                  / | \
+  [1]   [2]             [1] [4] [2]
+          |                  |    |
+         [3]                [5]  [3]
+
+parent[4] = 0     (rank stays unchanged; rank[0] is already higher)
+rank: no change
+```
+
+The tree stays shallow because the smaller (lower-rank) tree is always
+attached beneath the larger one.
 
 ---
 
-## 5) Union by rank (or size)
+## 4) Path compression — step by step
 
-When merging two trees, attach the **smaller** one under the larger one.
+Every `find(x)` call shortens the path to the root.  After the call, every
+node that was on the path points **directly** to the root.  Future finds on
+any of those nodes cost O(1).
 
-This keeps trees shallow and speeds up future queries.
+### Before find(4) — a deep chain
+
+Suppose after a sequence of unions we have built this chain:
+
+```
+ [0]              root
+  |
+ [1]
+  |
+ [2]
+  |
+ [3]
+  |
+ [4]              <- we call find(4)
+```
+
+### Pass 1: walk up to discover the root
+
+```
+find(4) -> follow parent chain: 4 -> 3 -> 2 -> 1 -> 0
+root = 0
+```
+
+### Pass 2: compress — redirect every node on the path to the root
+
+```
+parent[4] = 0
+parent[3] = 0
+parent[2] = 0
+parent[1] = 0    (was already 0; no change)
+```
+
+### After find(4) — flat tree
+
+```
+      [0]           root
+   / | | \
+ [1][2][3][4]       all children point directly to root
+```
+
+Any future call to `find(1)`, `find(2)`, `find(3)`, or `find(4)` now takes
+exactly **one** step.
+
+---
+
+## 5) Combined effect: amortized near-constant time
+
+Alone, each optimisation already improves performance significantly.
+Together they achieve the theoretical optimum:
+
+```
+Operation      Single call (worst)   Amortized per call
+-----------    -------------------   ------------------
+find           O(log n)              O(alpha(n))
+union          O(log n)              O(alpha(n))
+connected      O(log n)              O(alpha(n))
+```
+
+`alpha(n)` is the inverse Ackermann function.  For every practical input size
+(including the number of atoms in the observable universe), `alpha(n) <= 4`.
 
 ---
 
@@ -192,12 +275,14 @@ Union-Find makes step 2 extremely fast.
 
 ```
 Operation      Cost (amortized)
-find           O(α(n))
-union          O(α(n))
-connected      O(α(n))
+find           O(alpha(n))
+union          O(alpha(n))
+connected      O(alpha(n))
+count_sets     O(1)
+set_size       O(n * alpha(n))
 ```
 
-`α(n)` is the inverse Ackermann function (so small it is < 5 for any real input).
+`alpha(n)` is the inverse Ackermann function (so small it is < 5 for any real input).
 
 ---
 

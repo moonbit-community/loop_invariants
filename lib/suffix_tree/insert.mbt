@@ -5,29 +5,32 @@
 // This file contains the core suffix insertion logic. The algorithm inserts
 // one suffix at a time by walking down from the root, matching characters
 // along edge labels, and either:
-//   1. Creating a new leaf edge when no matching edge exists
-//   2. Splitting an existing edge when a mismatch occurs mid-edge
-//   3. Continuing to the next node when the edge is fully matched
+//   1. Creating a new leaf edge when no matching edge exists.
+//   2. Splitting an existing edge when a mismatch occurs mid-edge.
+//   3. Continuing to the next node when the edge is fully matched.
 //
-// TIME COMPLEXITY: O(n) per suffix, O(n^2) total for all suffixes
-// SPACE COMPLEXITY: O(n^2) nodes in worst case
+// TIME COMPLEXITY: O(n) per suffix, O(n^2) total for all suffixes.
+// SPACE COMPLEXITY: O(n^2) nodes in the worst case (many repeated characters).
 
 ///|
-/// Find the index of the edge starting with character `ch` from a given node.
+/// Find the index of the outgoing edge from `node_idx` whose label starts with
+/// character `ch`.
 ///
-/// ALGORITHM:
-///   Linear scan through outgoing edges, comparing first character.
+/// The search is a linear scan because no two edges from the same node share
+/// the same first character (a required suffix-tree invariant). For typical
+/// alphabets the average number of edges per node is small, so in practice
+/// this is fast.
 ///
-/// PARAMETERS:
-///   - nodes: The node array of the suffix tree
-///   - text: The character array of the original text
-///   - node_idx: Index of the node to search from
-///   - ch: The character to match
+/// Parameters:
+/// - `nodes`    - The flat node array of the suffix tree.
+/// - `text`     - The character array of the indexed text.
+/// - `node_idx` - Index of the node whose outgoing edges are searched.
+/// - `ch`       - The first character of the desired edge label.
 ///
-/// RETURNS:
-///   - Some(index) of matching edge in nodes[node_idx].edges, or None if not found
+/// Returns `Some(i)` where `i` is the position of the matching edge inside
+/// `nodes[node_idx].edges`, or `None` if no such edge exists.
 ///
-/// TIME: O(alphabet_size) worst case, typically O(1) for small alphabets
+/// Time: O(|alphabet|) worst case, O(1) on average for small alphabets.
 fn find_edge(
   nodes : Array[Node],
   text : Array[Char],
@@ -39,45 +42,46 @@ fn find_edge(
 }
 
 ///|
-/// Insert a single suffix into the suffix tree.
+/// Insert a single suffix `text[start..n)` into the suffix tree.
 ///
-/// ALGORITHM OVERVIEW:
-/// ```
-/// Starting from root, for suffix text[start..n):
-///   1. Find edge matching text[pos] (current position in suffix)
-///   2. If no edge found: create new leaf edge, done
-///   3. Match suffix against edge label character by character
-///   4. If edge fully matched: move to child node, continue from step 1
-///   5. If mismatch mid-edge: split edge, create leaf, done
-/// ```
+/// The algorithm walks from the root, consuming the suffix character by
+/// character along edge labels. Three cases arise during the walk:
 ///
-/// EDGE SPLITTING (the tricky part):
-/// ```
-/// Before split at position k:
+/// Case A — no matching edge:
+///   A new leaf edge spanning `text[pos..n)` is added directly to the current
+///   node. The suffix is now fully represented.
 ///
-///   current ──[start..end)──► child
-///                  ↑
-///            mismatch at k
+/// Case B — edge fully matched:
+///   All characters of the current edge label matched. Descend to the child
+///   node and continue matching the remaining suffix.
+///
+/// Case C — mismatch mid-edge:
+///   The suffix and the edge label diverge at position `k` inside the edge.
+///   The edge is split by inserting a new internal (split) node:
+///
+/// ```
+/// Before split at offset k inside [edge.start, edge.end):
+///
+///   current ──[edge.start .. edge.end)──► child
+///                        ↑ mismatch here (offset k)
 ///
 /// After split:
 ///
-///   current ──[start..k)──► split ──[k..end)──► child (original subtree)
-///                              │
-///                              └──[j..n)───► leaf (new suffix)
+///   current ──[edge.start .. k)──► split ──[k .. edge.end)──► child
+///                                      │
+///                                      └──[j .. n)──────────► leaf
 /// ```
 ///
-/// WHY THIS WORKS:
-///   - The split node represents the longest common prefix
-///   - Original subtree preserved under split node
-///   - New suffix branches off at the point of divergence
-///   - Tree remains a valid suffix tree after each insertion
+/// The split node holds the longest common prefix; the original subtree and
+/// the new leaf branch off below it.
 ///
-/// PARAMETERS:
-///   - nodes: Mutable node array (will be extended)
-///   - text: Character array of the text
-///   - start: Starting position of the suffix to insert
+/// Parameters:
+/// - `nodes` - Mutable node array (new nodes are appended during splits).
+/// - `text`  - Character array of the full text (including sentinel).
+/// - `start` - Starting index of the suffix to insert.
 ///
-/// INVARIANT: After insertion, text[start..n) is represented by a root-to-leaf path
+/// Post-condition: `text[start..n)` is represented by a unique root-to-leaf
+/// path in the tree.
 fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
   let n = text.length()
 
@@ -163,25 +167,24 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
 }
 
 ///|
-/// Compute leaf counts for all nodes via post-order DFS.
+/// Compute leaf counts for all nodes via a post-order depth-first traversal.
 ///
-/// ALGORITHM:
-///   For each node, leaf_count = sum of children's leaf_counts.
-///   Leaf nodes (no edges) have leaf_count = 1.
+/// After this call, `node.leaf_count` equals the number of leaf descendants of
+/// that node, which is the number of suffixes that pass through it. Because
+/// each leaf corresponds to exactly one suffix, this count also equals the
+/// number of occurrences of the path-label (the string spelled out from the
+/// root to that node) in the text.
 ///
-/// PURPOSE:
-///   After this, node.leaf_count equals the number of distinct suffixes
-///   passing through that node, which equals the number of occurrences
-///   of the substring represented by the path from root to that node.
+/// Base case: a leaf node (no outgoing edges) has `leaf_count = 1`.
+/// Recursive case: `leaf_count = sum of children's leaf_counts`.
 ///
-/// PARAMETERS:
-///   - nodes: The node array (leaf_count fields will be modified)
-///   - node_idx: Index of node to process
+/// Parameters:
+/// - `nodes`    - The node array whose `leaf_count` fields will be updated.
+/// - `node_idx` - Index of the subtree root to process.
 ///
-/// RETURNS:
-///   The leaf count of the subtree rooted at node_idx
+/// Returns the leaf count of the subtree rooted at `node_idx`.
 ///
-/// TIME: O(n) - visits each node exactly once
+/// Time: O(n) — each node is visited exactly once.
 fn compute_leaf_counts(nodes : Array[Node], node_idx : Int) -> Int {
   // Base case: leaf node
   if nodes[node_idx].edges.length() == 0 {
@@ -198,32 +201,34 @@ fn compute_leaf_counts(nodes : Array[Node], node_idx : Int) -> Int {
 }
 
 ///|
-/// Build a suffix tree from a string using naive O(n^2) construction.
+/// Build a suffix tree for string `s` using naive O(n²) construction.
 ///
-/// ALGORITHM:
-///   1. Append sentinel to ensure all suffixes end at leaves
-///   2. Insert each suffix text[i..n) for i = 0, 1, ..., n-1
-///   3. Compute leaf counts for occurrence queries
+/// Construction steps:
+/// 1. Append `SENTINEL` (`\0`) to `s` so that every suffix ends at a leaf and
+///    no suffix is a prefix of another.
+/// 2. Insert each suffix `text[i..n)` for `i = 0, 1, …, n-1` using
+///    `insert_suffix`, which handles edge splitting as needed.
+/// 3. Run `compute_leaf_counts` so that every node's `leaf_count` is ready for
+///    `count_occurrences` queries.
 ///
-/// EXAMPLE for "banana":
+/// Example insertion order for `"banana"`:
 /// ```
-///   Insert "banana$"  -> creates path for full string
-///   Insert "anana$"   -> shares "ana" prefix, splits
-///   Insert "nana$"    -> creates new branch from root
-///   Insert "ana$"     -> shares with "anana$"
-///   Insert "na$"      -> shares with "nana$"
-///   Insert "a$"       -> shares prefix
-///   Insert "$"        -> single edge from root
+/// Insert "banana$"  -> path for the full string from root
+/// Insert "anana$"   -> shares no prefix with existing paths, new branch
+/// Insert "nana$"    -> new branch from root
+/// Insert "ana$"     -> shares "ana" with "anana$", triggers a split
+/// Insert "na$"      -> shares "na" with "nana$", triggers a split
+/// Insert "a$"       -> shares "a", triggers a split
+/// Insert "$"        -> single sentinel edge from root
 /// ```
 ///
-/// PARAMETERS:
-///   - s: The input string
+/// Parameters:
+/// - `s` - The input string to index.
 ///
-/// RETURNS:
-///   A suffix tree supporting O(m) substring queries
+/// Returns a `SuffixTree` supporting O(m) `contains` and `count_occurrences`
+/// queries on the original text.
 ///
-/// TIME: O(n^2) construction
-/// SPACE: O(n^2) nodes and edges
+/// Time: O(n²)  Space: O(n²)
 pub fn SuffixTree::new(s : String) -> SuffixTree {
   let text = s.to_array()
   text.push(SENTINEL)

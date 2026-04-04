@@ -36,13 +36,26 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
+/// Internal result produced by the core Manacher scan.
+///
+/// `radii[i]` is the palindrome radius at position `i` in the transformed
+/// string (original with `#` sentinels interleaved).  `original` is the
+/// input string kept for index conversion and substring extraction.
 priv struct ManacherResult {
   radii : Array[Int] // Palindrome radii in transformed string
   original : String
 }
 
 ///|
-/// Compute palindrome radii using Manacher's algorithm
+/// Run Manacher's algorithm on `s` and return the radius array together with
+/// the original string.
+///
+/// The string is first transformed by inserting `#` sentinels so that every
+/// palindrome has odd length and a unique center.  The radius array `P` is
+/// then filled left to right, reusing previously computed values via the
+/// mirror property to keep the total work linear.
+///
+/// Time: O(n).  Space: O(n).
 fn manacher(s : String) -> ManacherResult {
   let n = s.length()
   if n == 0 {
@@ -108,6 +121,7 @@ fn manacher(s : String) -> ManacherResult {
 }
 
 ///|
+/// Return the smaller of two integers.
 fn min(a : Int, b : Int) -> Int {
   if a < b {
     a
@@ -117,9 +131,28 @@ fn min(a : Int, b : Int) -> Int {
 }
 
 ///|
-/// Compute odd/even palindrome radii for each center in the original string.
-/// d1[i] = radius of odd palindrome centered at i (length = 2*d1[i] - 1)
-/// d2[i] = radius of even palindrome centered between i-1 and i (length = 2*d2[i])
+/// Compute the odd and even palindrome radii for every center in `s`.
+///
+/// Returns a pair `(d1, d2)` of arrays with the same length as `s`:
+///
+/// - `d1[i]` is the radius of the longest **odd-length** palindrome centered
+///   at index `i`.  The palindrome covers `s[i - d1[i] + 1 .. i + d1[i]]`
+///   and has length `2 * d1[i] - 1`.  A single character has `d1[i] = 1`.
+///
+/// - `d2[i]` is the radius of the longest **even-length** palindrome whose
+///   center gap falls between `s[i-1]` and `s[i]`.  The palindrome covers
+///   `s[i - d2[i] .. i + d2[i]]` and has length `2 * d2[i]`.  A value of
+///   zero means no even palindrome is centered there.
+///
+/// Both arrays are filled in O(n) time using the same rightmost-boundary
+/// reuse trick as the full Manacher scan.
+///
+/// Example:
+/// ```
+/// let (d1, d2) = manacher_radii("abba")
+/// // d1 = [1, 1, 1, 1]  -- every char is a trivial odd palindrome
+/// // d2 = [0, 0, 2, 0]  -- "bb" and "abba" are centered between index 1 and 2
+/// ```
 pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
   let n = s.length()
   if n == 0 {
@@ -235,7 +268,12 @@ pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
 }
 
 ///|
-/// Get the longest palindromic substring
+/// Return the longest palindromic substring encoded in `self`.
+///
+/// Scans the radius array for the maximum value, converts the
+/// `(center, radius)` pair back to original-string indices, and returns the
+/// corresponding slice.  When multiple centers share the maximum radius, the
+/// leftmost one is returned.  Returns `""` for an empty input.
 fn ManacherResult::longest_palindrome(self : ManacherResult) -> String {
   if self.radii.length() == 0 {
     return ""
@@ -270,9 +308,18 @@ fn ManacherResult::longest_palindrome(self : ManacherResult) -> String {
 }
 
 ///|
-/// Get length of longest palindrome centered at position i in original string
-/// For odd-length palindromes, i is the center character
-/// For even-length palindromes, i is between the two center characters
+/// Return the radius of the palindrome at a specific center in the original
+/// string.
+///
+/// When `odd` is `true`, `i` is the index of the center character of an
+/// odd-length palindrome; the returned value is `P[2*i+1]` in the
+/// transformed string.
+///
+/// When `odd` is `false`, `i` marks the position just right of the gap
+/// between the two center characters of an even-length palindrome; the
+/// returned value is `P[2*i]`.
+///
+/// Returns 0 if `i` is out of range.
 fn ManacherResult::palindrome_length_at(
   self : ManacherResult,
   i : Int,
@@ -292,7 +339,12 @@ fn ManacherResult::palindrome_length_at(
 }
 
 ///|
-/// Check if substring [l, r) is a palindrome
+/// Return `true` if the half-open interval `[l, r)` of the original string
+/// is a palindrome.
+///
+/// Uses the precomputed radius array: the center of `[l, r)` in the
+/// transformed string is `l + r`, and the palindrome covers the interval when
+/// `P[l+r] >= r - l`.  Returns `false` for invalid or empty intervals.
 fn ManacherResult::is_palindrome(
   self : ManacherResult,
   l : Int,
@@ -310,7 +362,12 @@ fn ManacherResult::is_palindrome(
 }
 
 ///|
-/// Count all palindromic substrings
+/// Count all distinct palindromic substrings (by position, not by value).
+///
+/// Each transformed-string center with radius `r` contributes `(r + 1) / 2`
+/// palindromes to the original string: one for each odd or even length from
+/// the minimal palindrome up to the full radius.  The sum over all centers
+/// gives the total count in O(n).
 fn ManacherResult::count_palindromes(self : ManacherResult) -> Int {
   // Each center contributes (radius + 1) / 2 palindromes
   // For separator positions (even i), these are even-length palindromes
@@ -319,7 +376,15 @@ fn ManacherResult::count_palindromes(self : ManacherResult) -> Int {
 }
 
 ///|
-/// Get all maximal palindromes (not contained in larger palindrome at same center)
+/// Collect the maximal palindrome span for every center that has a positive
+/// radius.
+///
+/// Returns an array of `(start, end)` pairs in half-open notation `[start,
+/// end)` in the original string, one entry per transformed-string center with
+/// `P[i] > 0`.  The pairs are in order of increasing center index.
+///
+/// Note: this does not enumerate every palindromic substring; it returns only
+/// the longest palindrome for each center.
 fn ManacherResult::get_all_palindromes(
   self : ManacherResult,
 ) -> Array[(Int, Int)] {
@@ -345,13 +410,36 @@ fn ManacherResult::get_all_palindromes(
 }
 
 ///|
-/// Return the longest palindromic substring in s.
+/// Return the longest palindromic substring of `s`.
+///
+/// Runs the Manacher scan in O(n) and extracts the substring corresponding to
+/// the maximum radius.  When multiple centers tie for the longest palindrome,
+/// the leftmost one is returned.  Returns `""` for an empty string.
+///
+/// Example:
+/// ```
+/// longest_palindrome("cbbd")    // "bb"
+/// longest_palindrome("racecar") // "racecar"
+/// longest_palindrome("abcdef")  // any single character, e.g. "a"
+/// ```
 pub fn longest_palindrome(s : String) -> String {
   manacher(s).longest_palindrome()
 }
 
 ///|
-/// Return the length of the longest palindromic substring in s.
+/// Return the length of the longest palindromic substring of `s`.
+///
+/// Uses `manacher_radii` to compute odd and even radii, then iterates over
+/// every center in O(n) to find the maximum.  Returns 1 for a non-empty
+/// string with no palindrome longer than a single character, and 0 for the
+/// empty string.
+///
+/// Example:
+/// ```
+/// longest_palindrome_len("abacaba") // 7
+/// longest_palindrome_len("cbbd")    // 2
+/// longest_palindrome_len("abcdef")  // 1
+/// ```
 pub fn longest_palindrome_len(s : String) -> Int {
   let (d1, d2) = manacher_radii(s)
   // Find max length by comparing odd and even palindromes at each center
@@ -377,7 +465,17 @@ pub fn longest_palindrome_len(s : String) -> Int {
 }
 
 ///|
-/// Count all palindromic substrings in s.
+/// Count all palindromic substrings of `s` (by position, not by value).
+///
+/// Two occurrences of the same palindrome at different positions are counted
+/// separately.  The result is computed in O(n) via the Manacher radius array.
+///
+/// Example:
+/// ```
+/// count_palindromes("aaa")  // 6  ("a"x3, "aa"x2, "aaa"x1)
+/// count_palindromes("aaaa") // 10
+/// count_palindromes("abcd") // 4  (only single characters)
+/// ```
 pub fn count_palindromes(s : String) -> Int {
   manacher(s).count_palindromes()
 }

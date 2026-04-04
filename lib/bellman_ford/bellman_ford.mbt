@@ -22,12 +22,25 @@
 // SPACE COMPLEXITY: O(V)
 
 ///|
+/// Sentinel distance value used internally to represent "infinity" (unreachable).
+/// Chosen so that `BF_INF + BF_INF` does not overflow Int64.
 const BF_INF : Int64 = 4611686018427387903L // Large value but allows addition without overflow
 
 ///|
+/// Sentinel distance value for the Int-based convenience wrapper.
 const BF_INF_INT : Int = 0x3fffffff
 
 ///|
+/// A Bellman-Ford solver for single-source shortest paths on a directed
+/// weighted graph with vertices labelled `0..n-1`.
+///
+/// Fields:
+/// - `n`: number of vertices
+/// - `edges`: list of directed edges `(from, to, weight)`
+/// - `dist`: shortest-distance array, populated by `compute`
+/// - `parent`: predecessor array for path reconstruction, populated by `compute`
+/// - `has_negative_cycle`: set to `true` by `compute` when a negative cycle
+///   reachable from the source is found
 pub struct BellmanFord {
   n : Int
   edges : Array[(Int, Int, Int64)] // (from, to, weight)
@@ -37,7 +50,16 @@ pub struct BellmanFord {
 }
 
 ///|
-/// Create a Bellman-Ford solver for a graph with vertices 0..n-1.
+/// Create a new Bellman-Ford solver for a graph with `n` vertices labelled
+/// `0..n-1`.
+///
+/// Parameters:
+/// - `n`: total number of vertices in the graph (must be >= 1)
+///
+/// Returns a fresh `BellmanFord` with no edges. Use `add_edge` to populate
+/// the graph, then call `compute` to run the algorithm.
+///
+/// Time complexity: O(n).
 pub fn BellmanFord::new(n : Int) -> BellmanFord {
   {
     n,
@@ -49,7 +71,17 @@ pub fn BellmanFord::new(n : Int) -> BellmanFord {
 }
 
 ///|
-/// Add a directed edge (from -> to) with an Int64 weight.
+/// Add a directed edge `from -> to` with the given `weight` to the graph.
+///
+/// Parameters:
+/// - `from`: source vertex index (`0 <= from < n`)
+/// - `to`: destination vertex index (`0 <= to < n`)
+/// - `weight`: edge weight; may be negative
+///
+/// Edges are stored in insertion order and processed in that order during
+/// relaxation. Self-loops and parallel edges are accepted.
+///
+/// Time complexity: O(1) amortised.
 pub fn BellmanFord::add_edge(
   self : BellmanFord,
   from : Int,
@@ -60,8 +92,29 @@ pub fn BellmanFord::add_edge(
 }
 
 ///|
-/// Run Bellman-Ford from a source vertex and compute shortest paths.
-/// The returned value includes distances, parents, and negative-cycle flag.
+/// Run the Bellman-Ford algorithm from `source` and return an updated
+/// `BellmanFord` value whose `dist`, `parent`, and `has_negative_cycle`
+/// fields reflect the result.
+///
+/// The algorithm performs up to `n - 1` relaxation rounds over all edges.
+/// An early-exit optimisation stops as soon as a full round produces no
+/// improvement, which is safe because distances are already final at that
+/// point.
+///
+/// After `n - 1` rounds (or early exit), one additional round is performed
+/// to check for negative cycles: if any edge can still be relaxed, a
+/// negative cycle reachable from `source` exists and `has_negative_cycle`
+/// is set to `true`.
+///
+/// Parameters:
+/// - `source`: index of the source vertex (`0 <= source < n`)
+///
+/// Returns the same solver struct with updated `dist`, `parent`, and
+/// `has_negative_cycle` fields. Unreachable vertices retain the internal
+/// infinity sentinel; use `get_distance` to obtain an `Option` value.
+///
+/// Time complexity: O(V * E) in the worst case, O(E) with early exit.
+/// Space complexity: O(V).
 pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
   // Initialize distances
   self.dist.fill(BF_INF)
@@ -103,7 +156,29 @@ pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
 }
 
 ///|
-/// Convenience wrapper that returns Int distances and negative-cycle flag.
+/// Convenience wrapper around `BellmanFord` that accepts `Int` edge weights
+/// and returns `Int` distances alongside a negative-cycle flag.
+///
+/// This function constructs a fresh solver, adds all provided edges, runs
+/// `compute`, and converts the Int64 internal distances back to `Int`.
+/// Unreachable vertices are represented by the sentinel `0x3fffffff` in the
+/// returned array.
+///
+/// Parameters:
+/// - `n`: number of vertices (vertices are labelled `0..n-1`)
+/// - `edges`: slice of `(from, to, weight)` triples; weights may be negative
+/// - `src`: source vertex index
+///
+/// Returns a tuple `(dist, has_negative_cycle)` where:
+/// - `dist` is an array of length `n` with the shortest distance from `src`
+///   to each vertex (or `0x3fffffff` if unreachable)
+/// - `has_negative_cycle` is `true` if a negative cycle reachable from `src`
+///   was detected
+///
+/// If `n <= 0` an empty array is returned. If `src` is out of range, all
+/// distances are left at the infinity sentinel.
+///
+/// Time complexity: O(V * E). Space complexity: O(V + E).
 pub fn bellman_ford(
   n : Int,
   edges : ArrayView[(Int, Int, Int)],
@@ -131,7 +206,16 @@ pub fn bellman_ford(
 }
 
 ///|
-/// Return the shortest distance to v, or None if unreachable/out of range.
+/// Return the shortest distance from the last source used in `compute` to
+/// vertex `v`, or `None` if `v` is unreachable, out of range, or `compute`
+/// has not been called yet.
+///
+/// Parameters:
+/// - `v`: target vertex index
+///
+/// Returns `Some(distance)` as an `Int64`, or `None`.
+///
+/// Time complexity: O(1).
 pub fn BellmanFord::get_distance(self : BellmanFord, v : Int) -> Int64? {
   if v < 0 || v >= self.n || self.dist[v] == BF_INF {
     None
@@ -141,13 +225,40 @@ pub fn BellmanFord::get_distance(self : BellmanFord, v : Int) -> Int64? {
 }
 
 ///|
-/// True if a negative cycle is reachable after running compute.
+/// Return `true` if `compute` detected a negative cycle reachable from the
+/// source, `false` otherwise.
+///
+/// A negative cycle is a directed cycle whose edge weights sum to a negative
+/// value. When one exists, shortest paths to vertices that can reach the
+/// cycle are undefined (they would decrease without bound).
+///
+/// This field is meaningful only after `compute` has been called; it is
+/// `false` in a freshly constructed `BellmanFord`.
+///
+/// Time complexity: O(1).
 pub fn BellmanFord::has_negative_cycle(self : BellmanFord) -> Bool {
   self.has_negative_cycle
 }
 
 ///|
-/// Reconstruct path from source to target, or None if unreachable.
+/// Reconstruct the shortest path from the last source used in `compute` to
+/// `target`, or return `None` if `target` is unreachable or out of range.
+///
+/// The path is built by following `parent` pointers from `target` back to
+/// the source, then reversing the result.
+///
+/// Parameters:
+/// - `target`: destination vertex index
+///
+/// Returns `Some(path)` where `path` is an array of vertex indices starting
+/// at the source and ending at `target`, or `None` if no path exists.
+///
+/// Note: if `has_negative_cycle` is `true`, `get_path` may still return a
+/// path; however, that path is not guaranteed to be a true shortest path
+/// because the distances are not meaningful in the presence of a negative
+/// cycle.
+///
+/// Time complexity: O(V) for path reconstruction.
 pub fn BellmanFord::get_path(self : BellmanFord, target : Int) -> Array[Int]? {
   if target < 0 || target >= self.n || self.dist[target] == BF_INF {
     return None

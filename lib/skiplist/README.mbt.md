@@ -1,233 +1,282 @@
 # Skip List (Probabilistic Ordered Structure)
 
-This package documents skip lists, a probabilistic alternative to balanced
+This package implements a skip list: a probabilistic alternative to balanced
 trees. Skip lists give expected O(log n) search, insert, and delete with
-simple pointer updates.
+simple pointer updates and no rotations.
 
 ---
 
 ## 1. Big idea (beginner friendly)
 
-A skip list is multiple sorted linked lists stacked in levels.
-
-Higher levels "skip" many nodes, like express lanes:
+A skip list is multiple sorted linked lists stacked on top of each other.
+Higher levels act as "express lanes" that skip over many elements:
 
 ```
-Level 2: 1 ------------> 5 ------------> 9
-Level 1: 1 ----> 3 ----> 5 ----> 7 ----> 9
-Level 0: 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
+Level 2: HEAD ─────────────────> 5 ─────────────────> 9 ──> NIL
+Level 1: HEAD ──────> 3 ────────> 5 ────────> 7 ────────> 9 ──> NIL
+Level 0: HEAD -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 ──> NIL
 ```
 
-Searching goes right on the current level, and drops down when you would
-overshoot.
+Each node at level i also exists on all levels below i.  The header
+sentinel exists at every level and is treated as negative infinity.
+
+Searching moves right on the current level while the next key is smaller
+than the target, then drops down one level when it would overshoot.
 
 ---
 
 ## 2. Visual search path
 
-Search for key 6:
+Search for key 6 in the structure above:
 
 ```
-Level 2: 1 -> 5 (next is 9 > 6) drop down
-           |
-Level 1:   5 -> 7 (7 > 6) drop down
-           |
-Level 0:   5 -> 6 (found)
+Level 2: HEAD ─────────────────> 5   (next is 9 > 6, drop down)
+                                  |
+Level 1:                          5 ────────> 7   (7 > 6, drop down)
+                                  |
+Level 0:                          5 -> 6   (found!)
 ```
 
-You only touch a few nodes per level instead of scanning the whole list.
+The search touches only a handful of nodes rather than scanning the whole
+list.  Expected nodes visited = O(log n).
 
 ---
 
-## 3. How heights are chosen (random levels)
+## 3. Structure of a single node
 
-Each node gets a random height by flipping a coin:
-
-```
-level = 1
-repeat until coin_flip() != heads:
-  level = level + 1
-```
-
-With probability p = 1/2:
+Each node stores an array of forward pointers, one per level it occupies:
 
 ```
-P(level >= k) = (1/2)^(k-1)
+     key=5, value=50
+     forward:
+       [0] -> node(6)
+       [1] -> node(7)
+       [2] -> node(9)
 ```
 
-So most nodes are height 1, fewer are height 2, and so on. This "pyramid"
-shape is why searching is fast on average.
-
-Example heights for values 1..9 (one possible outcome):
+The header sentinel has forward pointers at every level up to max_level
+and its key is treated as negative infinity:
 
 ```
-value : 1 2 3 4 5 6 7 8 9
-height: 1 1 2 1 3 1 2 1 1
+     HEAD (sentinel, key = -inf)
+     forward:
+       [0] -> node(1)   -- level 0: all elements
+       [1] -> node(3)   -- level 1: promoted elements
+       [2] -> node(5)   -- level 2: highly promoted elements
+       ...
 ```
 
 ---
 
-## 4. Anatomy of a node
+## 4. How heights are chosen (random level assignment)
 
-Each node stores an array of forward pointers, one per level:
-
-```
-Node(value=5, next=[L0 -> 6, L1 -> 7, L2 -> 9])
-```
-
-There is a HEAD sentinel with the maximum level, so search can always start
-from the top:
+When a new node is inserted its height is chosen by repeatedly flipping a
+biased coin until the coin shows "tails":
 
 ```
-HEAD (level = max_level)
+level = 0
+while random() % 4 == 0 and level < max_level - 1:
+    level = level + 1
 ```
 
-Some implementations also keep a TAIL sentinel to simplify edge cases.
+With promotion probability p = 1/4:
+
+```
+P(level >= 0) = 1          (every node is at level 0)
+P(level >= 1) = 1/4
+P(level >= 2) = 1/16
+P(level >= k) = (1/4)^k
+```
+
+This gives a geometric distribution.  Most nodes are short towers; a few
+are tall.  The expected number of forward pointers per node is 4/3.
 
 ---
 
-## 5. Insert walkthrough (with update array)
+## 5. Step-by-step insertion example
 
-Insert 4 into:
-
-```
-Level 2: HEAD ----> 5 ----> 9
-Level 1: HEAD -> 3 -> 5 -> 7 -> 9
-Level 0: HEAD -> 1 -> 2 -> 3 -> 5 -> 6 -> 7 -> 8 -> 9
-```
-
-Step 1: search and record the last node before the insertion point
-at each level. This is usually called the update array.
+Insert key 4 (value 40) into this skip list:
 
 ```
-Level 2: stop at HEAD (next 5 > 4)  -> update[2] = HEAD
-Level 1: move to 3 (next 5 > 4)     -> update[1] = 3
-Level 0: stop at 3 (next 5 > 4)     -> update[0] = 3
+Before:
+Level 2: HEAD ──────────────────────> 5 ──────> 9 ──> NIL
+Level 1: HEAD ──────────> 3 ─────────> 5 ──> 7 ──> 9 ──> NIL
+Level 0: HEAD -> 1 -> 2 -> 3 ─────────> 5 -> 6 -> 7 -> 8 -> 9 ──> NIL
 ```
 
-Step 2: flip coins, suppose the new node has height 2 (levels 0 and 1).
-
-Step 3: rewire pointers on those levels:
+Step 1 — walk and fill the update array (predecessor at each level):
 
 ```
-Level 2: HEAD ----> 5 ----> 9
-Level 1: HEAD -> 3 -> 4 -> 5 -> 7 -> 9
-Level 0: HEAD -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9
+Level 2: HEAD (next=5 > 4)   -> update[2] = HEAD
+Level 1:    3 (next=5 > 4)   -> update[1] = node(3)
+Level 0:    3 (next=5 > 4)   -> update[0] = node(3)
 ```
 
-Only a few pointers change, no rotations are needed.
+Step 2 — assign a random level.  Suppose the coin gives level=1 (height 2).
+
+Step 3 — splice the new node at levels 0 and 1:
+
+```
+new_node(4).forward[0] = update[0].forward[0]   -- was node(5)
+update[0].forward[0]   = new_node(4)
+
+new_node(4).forward[1] = update[1].forward[1]   -- was node(5)
+update[1].forward[1]   = new_node(4)
+```
+
+Result:
+
+```
+After:
+Level 2: HEAD ──────────────────────> 5 ──────> 9 ──> NIL
+Level 1: HEAD ──────────> 3 ──> 4 ──> 5 ──> 7 ──> 9 ──> NIL
+Level 0: HEAD -> 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7 -> 8 -> 9 ──> NIL
+```
+
+Only two forward pointers changed; no rotations or rebalancing.
 
 ---
 
 ## 6. Delete walkthrough
 
-Delete key 7 from the structure:
+Delete key 7:
 
-1. Search and build the update array (same as insert).
-2. If the next node at level 0 is 7, remove it.
-3. At every level where 7 appears, bypass it.
+```
+Step 1: fill update array exactly as in insert.
+Step 2: verify forward[0] of the predecessor is indeed node(7).
+Step 3: for each level i where update[i].forward[i] == node(7):
+            update[i].forward[i] = node(7).forward[i]
+```
 
-Diagram (remove 7):
+Before and after at the affected levels:
 
 ```
 Before:
-Level 1: ... -> 5 -> 7 -> 9
-Level 0: ... -> 6 -> 7 -> 8 -> 9
+  Level 1: ... -> 5 -> 7 -> 9 -> NIL
+  Level 0: ... -> 6 -> 7 -> 8 -> 9 -> NIL
 
 After:
-Level 1: ... -> 5 ------> 9
-Level 0: ... -> 6 -> 8 -> 9
+  Level 1: ... -> 5 ────────> 9 -> NIL
+  Level 0: ... -> 6 -> 8 -> 9 -> NIL
 ```
 
----
-
-## 7. Range query (simple and fast)
-
-To list all keys in [L, R]:
-
-1. Search for the first node >= L (O(log n) expected).
-2. Walk forward on level 0 until you pass R.
-
-This is why skip lists are popular for ordered maps and sorted sets.
+If the top level becomes empty the current level counter is decremented.
 
 ---
 
-## 8. Why the expected cost is O(log n)
+## 7. Range query
 
-Two facts when p = 1/2:
+To collect all entries with keys in [L, R]:
 
-- Expected number of nodes per level halves each level.
-- Expected height of the tallest tower is O(log n).
+1. Search for the predecessor of L in O(log n) expected time.
+2. Walk forward at level 0, collecting nodes while key <= R.
 
-So a search touches a few nodes per level, across O(log n) levels.
+Level 0 is the base list and contains every element in sorted order, so a
+forward scan from the first node >= L is all that is needed.
 
-Memory is also reasonable: expected pointers per node is 1 / (1 - p) = 2.
+```
+range_query(5, 13) on keys [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]:
+
+  Search lands just before key 6.
+  Walk: 6, 8, 10, 12 (14 > 13, stop)
+  Result: [(6, 60), (8, 80), (10, 100), (12, 120)]
+```
+
+Total cost: O(log n + k) where k is the number of results.
+
+---
+
+## 8. Why expected cost is O(log n)
+
+With p = 1/4:
+
+- Level i contains approximately n / 4^i nodes on average.
+- The expected height of the tallest tower is O(log_4 n).
+- Search visits at most a constant expected number of nodes per level
+  (because at each level the run of "right" steps is geometrically bounded).
+
+Memory cost: 1 + 1/4 + 1/16 + ... = 4/3 forward pointers per node on
+average, so total space is O(n).
 
 ---
 
 ## 9. Skip list vs balanced tree
 
 ```
-Skip list:
-  - Simple code
-  - Randomized expected O(log n)
-  - Worst case O(n) (rare)
-
-Balanced tree:
-  - More complex code
-  - Guaranteed O(log n)
+                  Skip list          Balanced BST (e.g. AVL / red-black)
+Search           O(log n) expected   O(log n) worst case
+Insert           O(log n) expected   O(log n) worst case
+Delete           O(log n) expected   O(log n) worst case
+Worst case       O(n) (very rare)    O(log n)
+Implementation   Simple              Moderately complex (rotations/recoloring)
+Concurrency      Lock-free friendly  Hard to make lock-free
+Range scan       Natural (level 0)   Needs in-order traversal
 ```
 
-Use a skip list when simplicity and concurrency matter more than strict
-worst-case guarantees.
+Use a skip list when simplicity and concurrent access matter more than
+strict worst-case guarantees.
 
 ---
 
-## 10. Example usage (conceptual)
+## 10. This implementation
 
-This package is tutorial-only; it does not export a concrete API.
+The package provides two internal data structures:
+
+- `SkipList[K, V]` — a standard ordered map with unique keys.
+- `MultiSkipList[K, V]` — allows duplicate keys; each key maps to an array
+  of values.
+
+Both use `max_level = 16` and promotion probability 1/4.
 
 ```mbt nocheck
 ///|
-let sl = SkipList::new()
+let sl : SkipList[Int, String] = SkipList::new()
 
-sl.insert(3)
-sl.insert(1)
-sl.insert(4)
-sl.insert(1) // duplicates may be allowed depending on the design
-sl.insert(5)
+sl.insert(3, "three")
+sl.insert(1, "one")
+sl.insert(4, "four")
+sl.insert(1, "one-again") // duplicate: update is silently skipped in this impl
+sl.insert(5, "five")
 
-sl.contains(3) // true
-sl.contains(2) // false
+sl.search(3)  // Some("three")
+sl.search(2)  // None
 
-sl.delete(4)
+sl.delete(4)  // true
+
+sl.min()   // Some((1, "one"))
+sl.max()   // Some((5, "five"))
+
+sl.ceil(2)   // Some((3, "three"))
+sl.floor(2)  // Some((1, "one"))
+
+sl.range_query(1, 4)  // [(1, "one"), (3, "three")]
 ```
 
 ---
 
 ## 11. Common applications
 
-1. Ordered sets and maps
-2. Concurrent data structures (skip lists are easier to make lock-free)
-3. Databases and in-memory indexes (Redis uses skip lists for sorted sets)
-4. Range queries (scan at level 0 after O(log n) search)
+1. Ordered sets and maps (this package).
+2. Concurrent data structures — skip lists are easier to make lock-free
+   than rotation-based trees.
+3. Databases and in-memory indexes — Redis uses a skip list for sorted sets.
+4. Range queries — O(log n) entry point, then a fast sequential scan.
 
 ---
 
-## 12. Beginner checklist
+## 12. Key invariants maintained at all times
 
-1. Always start searching from the highest level.
-2. Move right while next key < target, then drop down.
-3. Keep a HEAD sentinel with max level.
-4. Update arrays (or predecessor lists) make insert/delete easy.
-5. Random heights keep the structure balanced in expectation.
+1. Every node at level i also appears on all levels 0..i-1.
+2. Each level is a sorted singly-linked list of forward pointers.
+3. The header sentinel is present at every level and acts as -infinity.
+4. `self.level` always equals the index of the highest non-empty level.
 
 ---
 
 ## 13. Summary
 
-Skip lists are a clean, probabilistic alternative to balanced trees:
+Skip lists are a clean probabilistic alternative to balanced trees:
 
-- simple pointer updates,
+- simple pointer updates (no rotations),
 - expected O(log n) operations,
 - great for ordered or concurrent data.

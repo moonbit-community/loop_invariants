@@ -8,7 +8,7 @@ This package provides:
 
 ```
 @z_algorithm.compute_z(s)
-@z_algorithm.z_function(s)       // alias
+@z_algorithm.z_function(s)          // alias
 @z_algorithm.find_pattern(text, pattern)
 @z_algorithm.z_search(text, pattern) // alias
 @z_algorithm.count_pattern(text, pattern)
@@ -20,58 +20,129 @@ This package provides:
 
 For a string `s`, `Z[i]` = length of the longest prefix match starting at `i`.
 
-Example:
+By convention `Z[0] = n` (the full string length).
+
+**Example: `s = "aabcaab"`**
 
 ```
-s = "aabcaab"
-index: 0 1 2 3 4 5 6
-char:  a a b c a a b
+index:  0   1   2   3   4   5   6
+char:   a   a   b   c   a   a   b
+        |   |               |
+        +---+               +-- Z[5]=1 ("a" matches prefix "a")
+        |
+        Z[0]=7  (whole string, by convention)
+
+Z[1]=1  s[1..1] = "a"   == s[0..0] = "a"      match length 1
+Z[2]=0  s[2..2] = "b"  !=  s[0..0] = "a"      no match
+Z[3]=0  s[3..3] = "c"  !=  s[0..0] = "a"      no match
+Z[4]=3  s[4..6] = "aab" == s[0..2] = "aab"    match length 3
+Z[5]=1  s[5..5] = "a"   == s[0..0] = "a"      match length 1
+Z[6]=0  s[6..6] = "b"  !=  s[0..0] = "a"      no match
 
 Z = [7, 1, 0, 0, 3, 1, 0]
 ```
 
-Why?
+---
 
-- `Z[1] = 1` because `"abcaab"` matches prefix `"a"` for 1 char.
-- `Z[4] = 3` because `"aab"` matches prefix `"aab"`.
+## 2) The Z-box idea (the trick that makes it O(n))
 
-By convention, `Z[0] = n` (full string length).
+A naive implementation recomputes every Z-value from scratch.  The Z-algorithm
+avoids this by maintaining a **Z-box**: the rightmost matching window `[l, r]`
+found so far, where `s[l..r]` matches the prefix `s[0..r-l]`.
+
+**Z-box visualization for `s = "aabcaab"` after processing `i=4`:**
+
+```
+index:  0   1   2   3   4   5   6
+char:   a   a   b   c   a   a   b
+                        [---l   r---]
+                         Z-box = [4, 6]
+                         s[4..6] == s[0..2] == "aab"
+```
+
+When we later process index `i=5` (which is inside the Z-box):
+
+```
+        0   1   2   3   4   5   6
+        a   a   b   c   a   a   b
+        ^   ^               ^
+prefix: |   |               |
+        0   k=1             i=5
+
+        k = i - l = 5 - 4 = 1
+        Z[k] = Z[1] = 1
+        remaining in box = r - i + 1 = 6 - 5 + 1 = 2
+
+        Z[k]=1 < remaining=2  -->  Z[5] = Z[1] = 1  (no extra comparison needed)
+```
+
+When we process `i=6` (also inside the box):
+
+```
+        k = i - l = 6 - 4 = 2
+        Z[k] = Z[2] = 0
+        Z[k]=0 < remaining=1  -->  Z[6] = 0  (reused directly)
+```
+
+**The key saving**: positions already matched inside the Z-box are never
+re-examined.  The right boundary `r` only ever moves forward, so across the
+entire string, at most `n` comparisons are made in total.
+
+**When does the Z-box expand?** Only in two cases:
+
+```
+Case 1: i > r  (i is outside the Z-box)
+        -- expand naively from i, update Z-box to [i, i+match-1]
+
+Case 2: i <= r AND Z[k] >= r-i+1  (match would reach or exceed the Z-box edge)
+        -- start comparing from r+1, extend Z-box right edge
+```
+
+In case 2a (`Z[k] < r-i+1`) the match stays strictly inside the box and we
+copy `Z[i] = Z[k]` for free.
 
 ---
 
-## 2) The Z-box idea (the trick)
-
-We keep a window `[l, r]` where `s[l..r]` matches the prefix `s[0..r-l]`.
+## 3) Step-by-step walkthrough for `s = "aabcaab"`
 
 ```
-s = a a b c a a b
-          [-----]   (when i = 4, l = 4, r = 6)
-```
+Initial state: l=0, r=0 (Z-box is empty, r < l conceptually)
 
-If `i` is inside the box, we can reuse information:
+i=1  outside box
+     compare s[0] vs s[1]: 'a'=='a' -> match
+     compare s[1] vs s[2]: 'a'!='b' -> stop
+     Z[1]=1, update box: l=1, r=1
 
-```
-k = i - l
-Z[i] is at least min(Z[k], r - i + 1)
-```
+     s:  a  a  b  c  a  a  b
+            [l=r=1]
 
-Only when we hit the boundary do we expand further.
+i=2  outside box (i=2 > r=1)
+     compare s[0] vs s[2]: 'a'!='b' -> stop
+     Z[2]=0, box unchanged: l=1, r=1
 
----
+i=3  outside box (i=3 > r=1)
+     compare s[0] vs s[3]: 'a'!='c' -> stop
+     Z[3]=0, box unchanged
 
-## 3) Walkthrough example
+i=4  outside box (i=4 > r=1)
+     compare s[0] vs s[4]: 'a'=='a' -> match
+     compare s[1] vs s[5]: 'a'=='a' -> match
+     compare s[2] vs s[6]: 'b'=='b' -> match
+     compare s[3] vs s[7]: out of bounds -> stop
+     Z[4]=3, update box: l=4, r=6
 
-```
-s = "aabcaab"
+     s:  a  a  b  c  a  a  b
+                     [l=4  r=6]
 
-i=1 (outside box): match "a" -> Z[1]=1, box=[1,1]
-i=2 (outside): Z[2]=0
-i=3 (outside): Z[3]=0
-i=4 (outside): match "aab" -> Z[4]=3, box=[4,6]
-i=5 (inside):  k=1, Z[1]=1, r-i+1=2 -> Z[5]=1
-i=6 (inside):  k=2, Z[2]=0 -> Z[6]=0
+i=5  INSIDE box (i=5 <= r=6)
+     k = 5-4 = 1,  Z[k]=Z[1]=1,  remaining=6-5+1=2
+     Z[1]=1 < 2  -->  Z[5]=1  (copied, no comparisons)
 
-Result: [7,1,0,0,3,1,0]
+i=6  INSIDE box (i=6 <= r=6)
+     k = 6-4 = 2,  Z[k]=Z[2]=0,  remaining=6-6+1=1
+     Z[2]=0 < 1  -->  Z[6]=0  (copied, no comparisons)
+
+Result: Z = [7, 1, 0, 0, 3, 1, 0]
 ```
 
 ---
@@ -85,20 +156,34 @@ S = P + "$" + T
 ```
 
 Compute Z on `S`.  
-Any position `i` with `Z[i] == |P|` is a match.
+Any position `i > |P|` with `Z[i] == |P|` is a match in `T` at index `i - |P| - 1`.
 
-Example:
+**Example: find `"ab"` in `"ababab"`**
 
 ```
-P = "ab"
+P = "ab"   (length 2)
 T = "ababab"
 S = "ab$ababab"
+     01234567 8
 
-Z = [9,0,0,2,0,2,0,2,0]
-          ^   ^   ^
-Matches at indices 3,5,7 in S
-=> positions 0,2,4 in T
+Z-array of S:
+  index:  0  1  2  3  4  5  6  7  8
+  char:   a  b  $  a  b  a  b  a  b
+  Z:      9  0  0  2  0  2  0  2  0
+                   ^     ^     ^
+                 Z[3]=2  Z[5]=2  Z[7]=2
+                 all equal |P|=2
+
+Text positions: i - |P| - 1
+  i=3:  3 - 2 - 1 = 0
+  i=5:  5 - 2 - 1 = 2
+  i=7:  7 - 2 - 1 = 4
+
+Matches at positions 0, 2, 4 in T.
 ```
+
+The `"$"` separator ensures no Z-value in the text portion accidentally spans
+across the boundary into the pattern.
 
 ---
 
@@ -136,20 +221,31 @@ test "count pattern" {
 
 ## 6) Why it is O(n)
 
-The right boundary `r` only moves forward.
-Each time we expand, `r` increases. It can only increase `n` times.
+The right boundary `r` starts at 0 and only ever moves **right**.  
+Every character comparison either:
 
-So the total work across all expansions is **O(n)**.
+- advances `r` by 1, or
+- is avoided by reusing a cached `Z[k]` value.
+
+Since `r` can increase at most `n` times, the total number of character
+comparisons across all iterations is **O(n)**.  Building the concatenated
+string for pattern matching is O(|P| + |T|), so the full search is also O(n).
+
+```
+r: 0 --> ... --> n-1      (monotonically non-decreasing)
+      each step = one comparison  =>  O(n) total
+```
 
 ---
 
 ## 7) Common applications
 
 ```
-Pattern matching (find all occurrences)
-String borders (prefix = suffix)
-String period detection
+Pattern matching         -- find all occurrences of P in T
+String borders           -- prefix that is also a suffix
+String period detection  -- smallest repeating unit
 Counting repeated prefixes
+Palindrome detection (combined with reverse)
 ```
 
 ---
@@ -159,16 +255,18 @@ Counting repeated prefixes
 Both do pattern matching in O(n).
 
 ```
-Z: compares prefixes
-KMP: uses failure links
+Z-algorithm:  maintains a "Z-box" window; reuses prefix comparisons
+KMP:          maintains a failure/next array; reuses suffix-prefix links
 ```
 
-Z is often simpler to implement.
+Z is often simpler to implement and reason about; KMP avoids building a
+concatenated string.
 
 ---
 
 ## 9) Common pitfalls
 
-- Forgetting that `Z[0] = n`.
-- Off-by-one in [l, r] vs [l, r) range.
-- Not using a separator between pattern and text.
+- Forgetting that `Z[0] = n` (full string, by convention).
+- Off-by-one when converting a Z-array index back to a text index: `i - m - 1`.
+- Not using a separator between pattern and text (risk of false matches spanning the boundary).
+- Using an empty string as the pattern — handled gracefully by returning no matches.

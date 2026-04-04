@@ -2,44 +2,51 @@
 // DINIC'S ALGORITHM - BFS for Level Graph
 // ============================================================================
 //
-// BFS builds the level graph by computing distances from source.
-// Only edges with residual capacity are considered.
+// BFS builds the level graph by computing shortest distances from the source
+// in the residual graph.  Only edges with positive residual capacity are used.
 //
 // LEVEL GRAPH PROPERTIES:
 // ```
 //   1. level[source] = 0
 //   2. level[v] = shortest distance from source in residual graph
-//   3. level[v] = -1 if v is unreachable
+//   3. level[v] = -1 if v is unreachable from source
 //
-//   The level graph contains only edges (u, v) where:
-//   - There is residual capacity (cap > flow)
-//   - level[v] = level[u] + 1 (going to higher level)
+//   The level graph retains only edges (u, v) satisfying:
+//     - residual capacity > 0  (cap > flow)
+//     - level[v] == level[u] + 1  (strictly advancing)
 // ```
 //
-// WHY LEVEL GRAPH:
+// WHY THE LEVEL GRAPH MATTERS:
 // ```
-//   By restricting DFS to level graph edges:
-//   - Every path found is a shortest path
-//   - We can find blocking flow efficiently
-//   - Distance to sink increases after each phase
-//
-//   This guarantees O(V) phases, each taking O(VE) time.
+//   By restricting DFS to level-graph edges:
+//   - Every augmenting path found is a shortest path.
+//   - Blocking flows can be found in O(VE) per phase.
+//   - After each blocking flow the distance to the sink strictly increases,
+//     guaranteeing at most O(V) BFS phases in total.
 // ```
 
 ///|
-/// BFS to build level graph.
+/// Run BFS from `source` to assign BFS levels to every reachable vertex.
 ///
-/// ALGORITHM:
+/// Builds the level graph implicitly: after this call, `self.level[v]`
+/// holds the shortest-path distance from `source` to `v` in the current
+/// residual graph, or `-1` if `v` is not reachable.
+///
+/// The DFS (`dfs`) then only follows edges where
+/// `level[e.to] == level[u] + 1` and `e.cap > e.flow`.
+///
+/// Algorithm:
 /// ```
-///   1. Reset all levels to -1
-///   2. Set level[source] = 0, enqueue source
-///   3. For each vertex u in queue:
-///      - For each edge (u, v) with residual capacity:
-///        - If level[v] = -1: set level[v] = level[u] + 1, enqueue v
-///   4. Return whether sink is reachable
+///   1. Set all levels to -1.
+///   2. Set level[source] = 0 and enqueue source.
+///   3. For each vertex u dequeued:
+///        For each edge (u, v) with residual capacity > 0:
+///          If level[v] == -1: set level[v] = level[u] + 1, enqueue v.
+///   4. Return true iff level[sink] >= 0.
 /// ```
 ///
-/// RETURNS: true if sink is reachable from source in residual graph
+/// Returns `true` if `sink` is reachable from `source` in the residual graph,
+/// meaning another blocking-flow phase is possible.
 pub fn Dinic::bfs(self : Dinic, source : Int, sink : Int) -> Bool {
   // Reset levels
   self.level.fill(-1)

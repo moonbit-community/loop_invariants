@@ -1,96 +1,197 @@
-# Suffix Tree (Beginner‑Friendly)
+# Suffix Tree (Beginner-Friendly)
 
 A suffix tree is a **compressed trie of all suffixes** of a string.
-Once built, it can answer substring queries in **O(m)** time.
+Once built, it can answer substring queries in **O(m)** time, where m is the
+length of the query pattern.
 
-This package builds the tree in **O(n²)** (naive insertion), which is easier
-to understand and great for education.
+This package builds the tree in **O(n²)** using naive one-by-one suffix
+insertion, which keeps the algorithm easy to follow and verify.
 
 ---
 
 ## 1. What is a suffix tree?
 
-Take all suffixes of a string and insert them into a trie, then compress edges.
+Take every suffix of a string, insert them all into a trie, then compress each
+unbranched chain of nodes into a single edge. The edge label is a substring of
+the original text stored as a `(start, end)` index pair — no character copying
+needed.
 
-Example string: `"banana"`
-
-Suffixes:
+Suffixes of `"banana"`:
 
 ```
-banana
-anana
-nana
-ana
-na
-a
+index  suffix
+  0    banana
+  1    anana
+  2    nana
+  3    ana
+  4    na
+  5    a
 ```
 
-A suffix tree stores these efficiently so any substring is just a path.
+Each of these becomes a root-to-leaf path in the tree.
 
 ---
 
-## 2. Why append a sentinel?
+## 2. Why append a sentinel character?
 
-The implementation appends a sentinel (`\0`) to ensure:
-
-- every suffix ends at a **leaf**,
-- no suffix is a prefix of another.
-
-Example `"aa"`:
+Without a sentinel some suffix can be a prefix of another (e.g. `"a"` is a
+prefix of `"ana"`). That would allow a suffix to end in the middle of an edge,
+making leaf counts ambiguous. Appending `\0` (NUL, the `SENTINEL` constant)
+guarantees every suffix ends at a **leaf**.
 
 ```
-Suffixes without sentinel: "aa", "a"
-Suffixes with sentinel:    "aa\0", "a\0", "\0"
+Without sentinel:  "aa"   -> suffixes "aa",  "a"   (one is a prefix of the other)
+With sentinel:     "aa\0" -> suffixes "aa\0","a\0","\0"  (all end uniquely)
 ```
-
-Now each suffix ends cleanly at a leaf.
 
 ---
 
-## 3. Visual structure (compressed edges)
+## 3. Full ASCII tree for `"banana$"` (where `$` stands for `\0`)
 
-Text: `"banana\0"`
+```
+                       root
+                      / | \ \
+                     /  |  \ \
+              "a"  /   |   \ \ "banana$"
+                  /  "na"   \
+                 v    |    "n"
+               [A]    |      \
+              /   \   |      [N]
+           "na"  "$"  |       \
+           /       \  |      "ana$"
+          v         v |          \
+        [AA]      [AB]|           v
+        /   \         |          [NA] (leaf)
+     "na$"  "$"       |
+      /       \       v
+     v         v    [NR]
+   (leaf)   (leaf)  /   \
+                  "na$" "$"
+                  /       \
+                 v         v
+              (leaf)    (leaf)
+```
 
-Simplified tree:
+Cleaner flat view (edges shown as quoted substrings):
 
 ```
 root
- ├── "a" ── "na" ── "na\0"
- │          └── "\0"
- ├── "banana\0"
- └── "na" ── "na\0"
-            └── "\0"
+ ├── "a"          -> node A
+ │    ├── "na"    -> node AA
+ │    │    ├── "na$"  -> leaf  (suffix "anana$")
+ │    │    └── "$"    -> leaf  (suffix "ana$")
+ │    └── "$"         -> leaf  (suffix "a$")
+ ├── "banana$"        -> leaf  (suffix "banana$")
+ ├── "na"         -> node N
+ │    ├── "na$"   -> leaf  (suffix "nana$")
+ │    └── "$"     -> leaf  (suffix "na$")
+ └── "$"              -> leaf  (suffix "$")
 ```
 
-Edges are **substrings**, not single characters.
+Key observations:
+
+- Every **leaf** is one suffix.
+- Every **internal node** is where two or more suffixes share a common prefix.
+- Each edge is a **substring** (`text[start..end)`), not a single character.
+- The root has one outgoing edge per distinct first character in the suffix set.
 
 ---
 
-## 4. Substring search idea
+## 4. How edge labels compress paths
 
-To check if pattern `P` is a substring:
+An uncompressed trie for `"banana$"` would have one edge per character and many
+internal nodes with only one child. Compression merges every chain of single-
+child nodes into a single edge:
 
-1. Start at root.
-2. Follow edges matching `P`.
-3. If you consume all of `P`, it exists.
+```
+Uncompressed (trie):           Compressed (suffix tree):
 
-Time: **O(m)**, where m = length of P.
+root                           root
+ └─ 'b'                         └── "banana$"  (leaf)
+     └─ 'a'
+         └─ 'n'
+             └─ 'a'
+                 └─ 'n'
+                     └─ 'a'
+                         └─ '$'  (leaf)
+```
+
+For the shared `"ana"` prefix the compression is:
+
+```
+Uncompressed:                  Compressed:
+
+root                           root
+ └─ 'a'                         └── "a" -> node A
+     └─ 'n'                              ├── "na" -> node AA
+         └─ 'a'                          │         ├── "na$" -> leaf
+             ├─ 'n' ...                  │         └── "$"   -> leaf
+             └─ '$' (leaf)               └── "$"   -> leaf
+```
+
+Storing edges as `(start, end)` indices means adding a new edge costs O(1) in
+both time and space regardless of how long the label is.
 
 ---
 
-## 5. Counting occurrences
+## 5. How pattern search walks the tree
 
-If we find the node representing `P`, then:
+To check whether `"ana"` is in `"banana"`:
 
 ```
-occurrences = number of leaves under that node
+Pattern: a n a
+         ^ ^ ^
+         i=0 i=1 i=2
+
+Step 1: at root, look for edge starting with 'a'.
+        Found: edge "a" -> node A.
+        Match 'a' against edge label. Edge exhausted after 1 char.
+        Advance to node A (i=1).
+
+Step 2: at node A, look for edge starting with 'n'.
+        Found: edge "na" -> node AA.
+        Match 'n','a' against edge label "na".
+        After matching 'n' (i=2) and 'a' (i=3), pattern is exhausted.
+        Pattern found!
+
+        root --"a"--> [A] --"na"--> [AA]
+                                     ^
+                               pattern ends here (mid-edge is fine)
 ```
 
-Each leaf corresponds to one suffix that contains `P`.
+To count occurrences, once the search lands on a node (or mid-edge child), read
+`leaf_count`:
+
+```
+node AA has leaf_count = 2
+  (leaves: "anana$" and "ana$" both contain "ana")
+```
 
 ---
 
-## 6. Example usage (public API)
+## 6. Edge splitting during construction
+
+When inserting suffix `"ana$"` into a tree that already has the path for
+`"anana$"`, the algorithm detects a mismatch mid-edge and splits:
+
+```
+Before:  [A] --"nana$"--> leaf
+
+Insert "na$" branching off at 'n':
+  text chars: n a n a $
+              match      mismatch at second 'n' vs end-of-pattern
+
+After:   [A] --"na"--> [AA] --"na$"--> leaf (original)
+                          \
+                           "--"$"--> leaf (new suffix "ana$")
+```
+
+The split node `[AA]` preserves the original subtree while branching for the
+new suffix. This is the only structural change needed during insertion.
+
+---
+
+## 7. Example usage (public API)
 
 ```mbt check
 ///|
@@ -112,47 +213,60 @@ test "suffix tree count" {
 
 ---
 
-## 7. Small walkthrough
-
-Text: `"banana"`, query `"ana"`.
+## 8. Step-by-step walkthrough: `"banana"`, query `"ana"`
 
 ```
-root -> "a" -> "na"
-pattern consumed ✓
+Tree path for "ana":
+  root -> (edge "a") -> [A] -> (edge "na") -> [AA]
 
-Leaves under this node = 2
-Occurrences at positions 1 and 3.
+Pattern consumed: "a" on first edge, "na" on second edge. Done.
+
+leaf_count of [AA] = 2
+  leaf 1: suffix "anana$" (starts at index 1, contains "ana" at position 0)
+  leaf 2: suffix "ana$"   (starts at index 3, contains "ana" at position 0)
+
+Result: 2 occurrences at text positions 1 and 3.
 ```
 
 ---
 
-## 8. Complexity
+## 9. Complexity
 
 ```
-Build (this impl): O(n²)
-Query:             O(m)
-Count occurrences: O(m + k)
+Build (this implementation):  O(n^2) time,  O(n^2) space
+contains(pattern):            O(m)   time,  O(m)   space (for pattern array)
+count_occurrences(pattern):   O(m)   time,  O(m)   space
+
+n = text length
+m = pattern length
 ```
 
-Where k is number of matches (leaf count).
+For large texts (n > 10^5) consider Ukkonen's O(n) algorithm. This
+implementation is ideal for educational use and moderate-sized inputs.
 
 ---
 
-## 9. When to use suffix trees
+## 10. When to use suffix trees
 
 Good for:
 
-- many substring queries on the same text,
-- educational understanding of suffix structures.
+- many different substring queries on the same text,
+- counting overlapping occurrences,
+- understanding compressed-trie / suffix-structure concepts.
 
-Not ideal for huge texts (use Ukkonen’s O(n) algorithm).
+Not ideal for:
+
+- one-off substring search (use `String::contains` instead),
+- very large texts where O(n) construction time matters (use Ukkonen or suffix arrays).
 
 ---
 
-## 10. Summary
+## 11. Summary
 
-Suffix trees are powerful:
+A suffix tree stores all suffixes of a text compactly by sharing common
+prefixes and compressing unbranched chains into single labelled edges. After
+O(n²) construction:
 
-- store all suffixes compactly,
-- answer substring queries in linear time,
-- support fast occurrence counting.
+- `contains(P)` answers in O(|P|) by walking edges,
+- `count_occurrences(P)` also answers in O(|P|) by reading a precomputed leaf
+  count at the node where the pattern ends.

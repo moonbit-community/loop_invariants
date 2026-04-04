@@ -2,31 +2,36 @@
 // SUFFIX TREE - Type Definitions
 // ============================================================================
 //
-// Core data structures for the suffix tree. The tree is stored as an array of
-// nodes, where each node has outgoing edges. Edges store substring labels as
-// (start, end) index pairs into the original text, enabling O(1) edge creation
-// without copying characters.
+// Core data structures for the suffix tree. The tree is stored as a flat array
+// of nodes, where each node holds outgoing edges. Edges carry substring labels
+// as (start, end) index pairs into the original text, enabling O(1) edge
+// creation without copying characters.
 //
 // MEMORY LAYOUT:
-//   - Node 0 is always the root
-//   - Leaf nodes have no outgoing edges
-//   - Each suffix ends at a unique leaf (guaranteed by sentinel)
+//   - Node 0 is always the root.
+//   - Leaf nodes have no outgoing edges.
+//   - Each suffix ends at a unique leaf (guaranteed by the sentinel character).
 
 ///|
-/// Sentinel character appended to ensure no suffix is prefix of another.
-/// Using NUL character which won't appear in normal text.
+/// Sentinel character appended to the input string during construction.
+///
+/// Using the NUL character ensures no suffix is a prefix of another, so every
+/// suffix ends at a leaf and leaf counts are unambiguous. The sentinel will
+/// never appear in ordinary text.
 pub const SENTINEL : Char = '\u0000'
 
 ///|
-/// An edge in the suffix tree, representing a substring of the original text.
+/// A single directed edge in the suffix tree, labelled by a substring of the
+/// original text.
 ///
-/// FIELDS:
-///   - start: Starting index in text (inclusive)
-///   - end: Ending index in text (exclusive)
-///   - child: Index of the child node this edge leads to
+/// The label is stored implicitly as the half-open index range `[start, end)`
+/// into the text array. This reduces per-edge storage from O(label_length) to
+/// O(1) regardless of how long the substring is.
 ///
-/// The edge label is text[start..end), stored implicitly to save memory.
-/// For a text of length n, this reduces edge storage from O(n) to O(1).
+/// Fields:
+/// - `start` - Inclusive start index of the edge label in `text`.
+/// - `end`   - Exclusive end index of the edge label in `text`.
+/// - `child` - Index of the child `Node` that this edge leads to.
 pub(all) struct Edge {
   start : Int
   end : Int
@@ -36,37 +41,53 @@ pub(all) struct Edge {
 ///|
 /// A node in the suffix tree.
 ///
-/// FIELDS:
-///   - edges: Outgoing edges, each labeled with a substring
-///   - leaf_count: Number of leaves in this subtree (for occurrence counting)
+/// Each node stores its outgoing edges and a precomputed leaf count used to
+/// answer occurrence queries in O(1) after construction.
 ///
-/// INVARIANTS:
-///   - All edges from a node start with distinct characters
-///   - leaf_count is valid only after compute_leaf_counts() is called
-///   - Leaf nodes (edges.length() == 0) have leaf_count == 1
+/// Fields:
+/// - `edges`      - Outgoing edges, each labelled with a distinct first character.
+/// - `leaf_count` - Number of leaves in this subtree. Valid only after
+///                  `compute_leaf_counts` has been called. For a leaf node
+///                  (no outgoing edges) this value is 1; for an internal node
+///                  it equals the number of suffixes passing through it, which
+///                  is the number of times the path label from the root to this
+///                  node occurs as a substring of the text.
+///
+/// Invariants:
+/// - No two edges from the same node share the same first character.
+/// - `leaf_count` equals the number of leaf descendants once construction is
+///   complete.
 pub(all) struct Node {
   edges : Array[Edge]
   mut leaf_count : Int
 }
 
 ///|
-/// The suffix tree data structure.
+/// The suffix tree data structure built over a single text string.
 ///
-/// FIELDS:
-///   - text: Original string as char array, with SENTINEL appended
-///   - nodes: All nodes stored in a flat array (node 0 = root)
+/// After construction every suffix of the original string corresponds to a
+/// unique root-to-leaf path, and every root-to-leaf path spells a suffix.
+/// Any substring of the text is a prefix of at least one suffix, so substring
+/// queries reduce to a single downward walk from the root.
 ///
-/// PROPERTIES:
-///   - Every suffix of the original string corresponds to a root-to-leaf path
-///   - Every root-to-leaf path spells out a suffix
-///   - Substring queries run in O(m) where m = query length
+/// Fields:
+/// - `text`  - The original string as a character array with `SENTINEL` appended.
+/// - `nodes` - All nodes stored in a flat array; node 0 is always the root.
+///
+/// Properties:
+/// - Build time: O(n²) using naive one-suffix-at-a-time insertion.
+/// - `contains` query: O(m) where m is the pattern length.
+/// - `count_occurrences` query: O(m).
 pub struct SuffixTree {
   text : Array[Char]
   nodes : Array[Node]
 }
 
 ///|
-/// Create an empty node with no edges.
+/// Create a new, empty node with no outgoing edges and a leaf count of zero.
+///
+/// Used internally during tree construction whenever a new node (either a
+/// split node or a new leaf) must be allocated.
 pub fn Node::new() -> Node {
   { edges: [], leaf_count: 0 }
 }

@@ -37,21 +37,37 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-/// 2D Point with integer coordinates
+/// A 2D point with 64-bit integer coordinates.
+///
+/// Using `Int64` avoids overflow in cross-product computations for coordinate
+/// values up to about 3 billion. All convex-hull functions in this package
+/// accept and return `Array[Point]`.
+///
+/// Example:
+/// ```
+/// let p : Point = { x: 3L, y: 4L }
+/// ```
 pub(all) struct Point {
   x : Int64
   y : Int64
 } derive(Debug, Eq)
 
 ///|
-/// Cross product of vectors OA and OB
-/// Positive = counterclockwise, Zero = collinear, Negative = clockwise
+/// Compute the 2D cross product of vectors OA and OB.
+///
+/// Returns a positive value when the turn O -> A -> B is counterclockwise
+/// (left turn), zero when the three points are collinear, and a negative value
+/// when the turn is clockwise (right turn).
+///
+/// Formula: `(A.x - O.x) * (B.y - O.y) - (A.y - O.y) * (B.x - O.x)`
 fn cross(o : Point, a : Point, b : Point) -> Int64 {
   (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
 }
 
 ///|
-/// Compare points for sorting: by x first, then by y
+/// Lexicographic comparator for `Point`: sorts by x first, then by y.
+///
+/// Returns -1, 0, or 1 in the style expected by `Array::sort_by`.
 fn point_compare(a : Point, b : Point) -> Int {
   if a.x != b.x {
     if a.x < b.x {
@@ -75,16 +91,22 @@ fn point_compare(a : Point, b : Point) -> Int {
 // ============================================================================
 
 ///|
-/// Compute convex hull using Monotone Chain algorithm
-/// Returns points in counterclockwise order starting from leftmost point
+/// Compute the convex hull using Andrew's monotone chain algorithm.
 ///
-/// ALGORITHM:
-/// 1. Sort points lexicographically (by x, then y)
-/// 2. Build lower hull: process points left-to-right
-/// 3. Build upper hull: process points right-to-left
-/// 4. Concatenate (removing duplicate endpoints)
+/// Returns the hull vertices in counterclockwise order, starting from the
+/// lexicographically smallest point (bottom-left). The last point is NOT
+/// repeated; the closing edge is implicit from last back to first.
 ///
-/// INVARIANT: At each step, hull[] forms a convex chain with right turns only
+/// Time: O(n log n). Space: O(n).
+///
+/// Steps:
+/// 1. Sort points lexicographically (by x, then by y for ties).
+/// 2. Build the lower hull left-to-right, discarding any non-right-turn.
+/// 3. Build the upper hull right-to-left with the same rule.
+/// 4. Concatenate, dropping the shared endpoints.
+///
+/// Invariant maintained during both passes: every consecutive triple in the
+/// growing chain makes a strict right turn, guaranteeing convexity.
 pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
   let n = points.length()
   if n <= 2 {
@@ -138,7 +160,22 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
 }
 
 ///|
-/// Compute convex hull using the monotone chain algorithm (ArrayView wrapper).
+/// Compute the convex hull from an `ArrayView[Point]`.
+///
+/// This is a convenience wrapper around `convex_hull_monotone` that accepts a
+/// slice of an array without requiring an explicit copy at the call site. The
+/// returned array follows the same counterclockwise ordering.
+///
+/// Example:
+/// ```
+/// let pts : Array[@convex_hull.Point] = [
+///   { x: 0L, y: 0L }, { x: 4L, y: 0L },
+///   { x: 4L, y: 4L }, { x: 0L, y: 4L },
+///   { x: 2L, y: 2L },
+/// ]
+/// let hull = @convex_hull.convex_hull(pts[:])
+/// // hull.length() == 4
+/// ```
 pub fn convex_hull(points : ArrayView[Point]) -> Array[Point] {
   convex_hull_monotone(points.to_array())
 }
@@ -148,13 +185,22 @@ pub fn convex_hull(points : ArrayView[Point]) -> Array[Point] {
 // ============================================================================
 
 ///|
-/// Compute convex hull using Graham Scan algorithm
-/// Returns points in counterclockwise order
+/// Compute the convex hull using the Graham scan algorithm.
 ///
-/// ALGORITHM:
-/// 1. Find the bottom-most point (pivot)
-/// 2. Sort other points by polar angle with pivot
-/// 3. Process points, maintaining convex hull invariant
+/// Returns hull vertices in counterclockwise order, starting from the
+/// bottom-most (then leftmost) point.
+///
+/// Time: O(n log n). Space: O(n).
+///
+/// Steps:
+/// 1. Pick the pivot: the point with the lowest y-coordinate (leftmost on tie).
+/// 2. Sort the remaining points by polar angle relative to the pivot;
+///    for collinear points, place the farthest one first.
+/// 3. Maintain a stack of hull candidates: pop the top whenever adding the next
+///    point would create a clockwise (or collinear) turn.
+///
+/// Invariant: the stack always contains a strictly convex chain in
+/// counterclockwise order around the pivot.
 pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
   let n = points.length()
   if n <= 2 {
@@ -230,18 +276,24 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
 // ============================================================================
 
 ///|
-/// Compute convex hull using Jarvis March (Gift Wrapping) algorithm
-/// Returns points in counterclockwise order
+/// Compute the convex hull using the Jarvis march (gift-wrapping) algorithm.
 ///
-/// TIME: O(nh) where h is the number of hull points
-/// Best when h is small (output-sensitive)
+/// Returns hull vertices in counterclockwise order, starting from the
+/// leftmost (then bottom-most) point.
 ///
-/// ALGORITHM:
-/// 1. Start from the leftmost point
-/// 2. Find the point that makes the smallest counterclockwise angle
-/// 3. Repeat until we return to the start
+/// Time: O(n * h), where h is the number of hull vertices. This is
+/// output-sensitive: when h is small (e.g. h = O(log n)) it can be faster
+/// than the O(n log n) sorting-based algorithms. In the worst case (all points
+/// on the hull) it degrades to O(n^2).
 ///
-/// INVARIANT: At each iteration, current point is on the hull
+/// Steps:
+/// 1. Start from the leftmost point (guaranteed to be on the hull).
+/// 2. At each step, scan all remaining points and select the one that is most
+///    counterclockwise relative to the current point.
+/// 3. Stop when the selection returns to the starting point.
+///
+/// Invariant: every point in `hull` so far is a true hull vertex visited in
+/// counterclockwise order; the current point is always a valid hull vertex.
 pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
   let n = points.length()
   if n <= 2 {
@@ -321,8 +373,18 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
 // ============================================================================
 
 ///|
-/// Calculate the area of a polygon (can be used on convex hull)
-/// Returns twice the area (to avoid floating point)
+/// Compute twice the signed area of a polygon using the shoelace formula.
+///
+/// Returns a non-negative `Int64` equal to `2 * area`. Returning twice the
+/// area keeps the result as an exact integer (no floating-point rounding) for
+/// integer-coordinate polygons.
+///
+/// The input array is treated as an ordered list of vertices (the closing edge
+/// from the last vertex back to the first is implicit). Works for any simple
+/// polygon; typically applied to the output of one of the hull functions.
+///
+/// Example: a unit square with vertices `(0,0), (1,0), (1,1), (0,1)` has area
+/// 1, so this function returns 2.
 pub fn polygon_area_2x(hull : Array[Point]) -> Int64 {
   let n = hull.length()
   if n < 3 {
@@ -342,8 +404,20 @@ pub fn polygon_area_2x(hull : Array[Point]) -> Int64 {
 }
 
 ///|
-/// Check if a point is inside or on the convex hull
-/// Returns: 1 = inside, 0 = on boundary, -1 = outside
+/// Test whether a point lies inside, on the boundary of, or outside a convex
+/// polygon.
+///
+/// The `hull` array must list the polygon's vertices in counterclockwise order
+/// (as produced by the hull functions in this package).
+///
+/// Return values:
+/// - `1`  -- the point is strictly inside the polygon.
+/// - `0`  -- the point is on an edge or at a vertex.
+/// - `-1` -- the point is strictly outside the polygon.
+///
+/// The algorithm checks the sign of the cross product for every directed edge.
+/// A point outside will produce a negative cross product for at least one edge.
+/// Time: O(n).
 pub fn point_in_hull(hull : Array[Point], p : Point) -> Int {
   let n = hull.length()
   if n < 3 {
@@ -383,9 +457,19 @@ pub fn point_in_hull(hull : Array[Point], p : Point) -> Int {
 }
 
 ///|
-/// Find the diameter of a convex hull (farthest pair of points)
-/// Uses rotating calipers - O(n)
-/// Returns twice the squared distance
+/// Find the squared diameter of a convex polygon (the farthest pair of vertices).
+///
+/// Uses the rotating calipers technique, which runs in O(n) time given a convex
+/// polygon already in counterclockwise order. The result is the maximum squared
+/// Euclidean distance over all pairs of hull vertices.
+///
+/// Returning the squared distance avoids floating-point arithmetic and is exact
+/// for integer coordinates.
+///
+/// For a square with side length `s`, the diameter is the diagonal, so this
+/// function returns `2 * s^2`. For a segment of length `d`, it returns `d^2`.
+///
+/// Time: O(n). Requires the hull to be convex and in counterclockwise order.
 pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
   let n = hull.length()
   if n < 2 {
