@@ -65,13 +65,12 @@ fn TopoSorter::dfs(self : TopoSorter, u : Int) -> Bool {
 
 ///|
 fn TopoSorter::sort(self : TopoSorter) -> Array[Int]? {
-  let ok = for v = 0; v < self.n; v = v + 1 {
+  let ok = for v in 0..<self.n {
     if self.state[v] == 0 {
       if !self.dfs(v) {
         break false
       }
     }
-    continue v + 1
   } nobreak {
     true
   } where {
