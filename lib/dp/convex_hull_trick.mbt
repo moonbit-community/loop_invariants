@@ -45,12 +45,13 @@ fn ConvexHullTrick::add_line(
   b : Int64,
 ) -> Unit {
   // Remove lines that are no longer useful
-  while self.lines.length() >= 2 {
+  for prune_next = self.lines.length() >= 2; prune_next; {
     let n = self.lines.length()
     let a = self.lines[n - 2]
     let b_line = self.lines[n - 1]
     if is_bad(a, b_line, (m, b)) {
       let _ = self.lines.pop()
+      continue self.lines.length() >= 2
     } else {
       break
     }
@@ -139,7 +140,7 @@ fn MonotonicCHT::add_line_mono(
   m : Int64,
   b : Int64,
 ) -> Unit {
-  while self.lines.length() >= 2 {
+  for prune_next = self.lines.length() >= 2; prune_next; {
     let n = self.lines.length()
     let a = self.lines[n - 2]
     let b_line = self.lines[n - 1]
@@ -149,6 +150,7 @@ fn MonotonicCHT::add_line_mono(
       if self.ptr[0] >= self.lines.length() && self.ptr[0] > 0 {
         self.ptr[0] = self.ptr[0] - 1
       }
+      continue self.lines.length() >= 2
     } else {
       break
     }
@@ -165,10 +167,11 @@ fn MonotonicCHT::query_mono_inc(self : MonotonicCHT, x : Int64) -> Int64 {
   }
 
   // Advance pointer while next line is better
-  while self.ptr[0] + 1 < self.lines.length() {
+  for advance_next = self.ptr[0] + 1 < self.lines.length(); advance_next; {
     if eval_line(self.lines[self.ptr[0]], x) >
       eval_line(self.lines[self.ptr[0] + 1], x) {
       self.ptr[0] = self.ptr[0] + 1
+      continue self.ptr[0] + 1 < self.lines.length()
     } else {
       break
     }
@@ -505,7 +508,7 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
   deque.push(0)
   for i = 1; i < n; i = i + 1 {
     // Remove elements outside window
-    while deque.length() > 0 && deque[0] < i - k {
+    for pop_front = deque.length() > 0 && deque[0] < i - k; pop_front; {
       // Remove front
       for j = 0; j < deque.length() - 1; j = j + 1 {
         deque[j] = deque[j + 1]
@@ -521,14 +524,16 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
         ),
       }
       let _ = deque.pop()
+      continue deque.length() > 0 && deque[0] < i - k
     }
 
     // dp[i] = dp[front] + arr[i]
     dp[i] = if deque.length() > 0 { dp[deque[0]] + arr[i] } else { arr[i] }
 
     // Maintain monotonicity: remove worse candidates from back
-    while deque.length() > 0 && dp[deque[deque.length() - 1]] >= dp[i] {
+    for pop_back = deque.length() > 0 && dp[deque[deque.length() - 1]] >= dp[i]; pop_back; {
       let _ = deque.pop()
+      continue deque.length() > 0 && dp[deque[deque.length() - 1]] >= dp[i]
     }
     deque.push(i)
   } where {
