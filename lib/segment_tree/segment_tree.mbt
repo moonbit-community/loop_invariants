@@ -34,14 +34,41 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-/// Segment Tree for range sum queries
+/// A segment tree supporting O(log n) range sum queries and O(log n) point
+/// updates over an array of `Int64` values.
+///
+/// The tree is stored in a flat array of size `4 * n` using the standard
+/// 1-indexed heap layout: node `k` has left child `2*k` and right child
+/// `2*k+1`.  Each node holds the sum of its associated subrange.
+///
+/// # Fields
+///
+/// - `n`    : number of elements in the original array.
+/// - `tree` : internal flat array; `tree[1]` is the root (sum of all elements).
+///
+/// # Invariants
+///
+/// 1. For every internal node `k` covering range `[s, e]`:
+///    `tree[k] == tree[2*k] + tree[2*k+1]`
+/// 2. For every leaf node `k` covering index `i`:
+///    `tree[k] == arr[i]` (after any updates)
 pub struct SegmentTree {
   n : Int
   tree : Array[Int64]
 }
 
 ///|
-/// Build segment tree from array
+/// Construct a `SegmentTree` from the given array in O(n) time.
+///
+/// - Returns an empty tree when `arr` is empty.
+/// - The tree allocates `4 * arr.length()` internal nodes.
+///
+/// # Example
+///
+/// ```
+/// let st = SegmentTree::new([1L, 2L, 3L, 4L, 5L])
+/// // st.query(0, 4) == 15L
+/// ```
 pub fn SegmentTree::new(arr : Array[Int64]) -> SegmentTree {
   let n = arr.length()
   if n == 0 {
@@ -53,6 +80,10 @@ pub fn SegmentTree::new(arr : Array[Int64]) -> SegmentTree {
 }
 
 ///|
+/// Recursively fill `tree` for the subrange `[start, end]` rooted at `node`.
+///
+/// Leaves copy the corresponding array element; internal nodes store the sum
+/// of their two children's values.
 fn build_tree(
   arr : Array[Int64],
   tree : Array[Int64],
@@ -71,7 +102,20 @@ fn build_tree(
 }
 
 ///|
-/// Update element at index i to value val
+/// Set the element at 0-indexed position `i` to `val` in O(log n) time.
+///
+/// The update descends to the leaf for `i`, sets it to `val`, then
+/// recomputes the sum at every ancestor on the path back to the root.
+///
+/// Out-of-bounds indices (`i < 0` or `i >= n`) are silently ignored.
+///
+/// # Example
+///
+/// ```
+/// let st = SegmentTree::new([1L, 2L, 3L])
+/// st.update(1, 10L)
+/// // st.query(0, 2) == 14L
+/// ```
 pub fn SegmentTree::update(self : SegmentTree, i : Int, val : Int64) -> Unit {
   if i < 0 || i >= self.n {
     return
@@ -80,6 +124,8 @@ pub fn SegmentTree::update(self : SegmentTree, i : Int, val : Int64) -> Unit {
 }
 
 ///|
+/// Recursively descend to leaf `i` inside `[start, end]`, set its value,
+/// and propagate the updated sum upward to `node`.
 fn update_helper(
   tree : Array[Int64],
   node : Int,
@@ -102,7 +148,21 @@ fn update_helper(
 }
 
 ///|
-/// Query sum of range [l, r]
+/// Return the sum of elements in the closed range `[l, r]` in O(log n) time.
+///
+/// The query recurses down the tree, accumulating sums from nodes whose
+/// range is completely inside `[l, r]`, and skipping nodes whose range is
+/// completely outside.
+///
+/// Returns `0` for any invalid range: `l < 0`, `r >= n`, or `l > r`.
+///
+/// # Example
+///
+/// ```
+/// let st = SegmentTree::new([1L, 2L, 3L, 4L, 5L])
+/// // st.query(1, 3) == 9L   (2 + 3 + 4)
+/// // st.query(0, 4) == 15L
+/// ```
 pub fn SegmentTree::query(self : SegmentTree, l : Int, r : Int) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return 0L
@@ -111,6 +171,13 @@ pub fn SegmentTree::query(self : SegmentTree, l : Int, r : Int) -> Int64 {
 }
 
 ///|
+/// Recursively compute the range sum for `[l, r]` intersected with
+/// the node's range `[start, end]`.
+///
+/// Three cases:
+/// - No overlap   (`r < start` or `end < l`): return 0.
+/// - Full overlap (`l <= start` and `end <= r`): return `tree[node]`.
+/// - Partial overlap: recurse into both children and add their results.
 fn query_helper(
   tree : Array[Int64],
   node : Int,
@@ -132,6 +199,7 @@ fn query_helper(
 }
 
 ///|
+/// Return the number of elements in the tree (length of the original array).
 fn SegmentTree::length(self : SegmentTree) -> Int {
   self.n
 }
@@ -141,15 +209,27 @@ fn SegmentTree::length(self : SegmentTree) -> Int {
 // ============================================================================
 
 ///|
+/// A segment tree that answers range-minimum queries (RMQ) and supports
+/// point updates.  This type is private; it exists to verify the min-query
+/// logic and is used only in tests.
+///
+/// Each node stores the minimum of its subrange.  `ST_INF` acts as the
+/// identity element for the min operation.
 priv struct SegmentTreeMin {
   n : Int
   tree : Array[Int64]
 }
 
 ///|
+/// Sentinel infinity value used as the identity element for the min
+/// operation: `min(x, ST_INF) == x` for all finite `x`.
 const ST_INF : Int64 = 9223372036854775807L
 
 ///|
+/// Construct a `SegmentTreeMin` from `arr` in O(n) time.
+///
+/// Each internal node stores the minimum of its children; leaves store
+/// the corresponding array element.  Empty arrays produce an empty tree.
 fn SegmentTreeMin::new(arr : Array[Int64]) -> SegmentTreeMin {
   let n = arr.length()
   if n == 0 {
@@ -161,6 +241,8 @@ fn SegmentTreeMin::new(arr : Array[Int64]) -> SegmentTreeMin {
 }
 
 ///|
+/// Recursively fill `tree` with minimum values for the subrange `[start, end]`
+/// rooted at `node`.
 fn build_min_tree(
   arr : Array[Int64],
   tree : Array[Int64],
@@ -183,6 +265,8 @@ fn build_min_tree(
 }
 
 ///|
+/// Set element at 0-indexed position `i` to `val` and update all ancestor
+/// minimums.  Out-of-bounds indices are silently ignored.
 fn SegmentTreeMin::update(self : SegmentTreeMin, i : Int, val : Int64) -> Unit {
   if i < 0 || i >= self.n {
     return
@@ -191,6 +275,8 @@ fn SegmentTreeMin::update(self : SegmentTreeMin, i : Int, val : Int64) -> Unit {
 }
 
 ///|
+/// Recursively descend to leaf `i`, set its value to `val`, and propagate
+/// the updated minimum back to the root.
 fn update_min_helper(
   tree : Array[Int64],
   node : Int,
@@ -217,6 +303,9 @@ fn update_min_helper(
 }
 
 ///|
+/// Return the minimum element in the closed range `[l, r]`.
+///
+/// Returns `ST_INF` for invalid ranges (`l < 0`, `r >= n`, or `l > r`).
 fn SegmentTreeMin::query(self : SegmentTreeMin, l : Int, r : Int) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return ST_INF
@@ -225,6 +314,11 @@ fn SegmentTreeMin::query(self : SegmentTreeMin, l : Int, r : Int) -> Int64 {
 }
 
 ///|
+/// Recursively compute the range minimum for `[l, r]` intersected with
+/// `[start, end]`.
+///
+/// Returns `ST_INF` when there is no overlap (identity for min), and
+/// `tree[node]` when the node's range is fully contained in `[l, r]`.
 fn query_min_helper(
   tree : Array[Int64],
   node : Int,
@@ -254,13 +348,25 @@ fn query_min_helper(
 // ============================================================================
 
 ///|
-/// Iterative Segment Tree - uses only 2n space and is cache-friendly
+/// An iterative segment tree that uses only `2n` space and is more
+/// cache-friendly than the recursive variant.
+///
+/// Layout: leaves occupy indices `[n, 2n)` of a flat array; internal nodes
+/// occupy `[1, n)`.  The root is at index `1`.  Node `k` has left child
+/// `2*k` and right child `2*k+1`; the parent of node `k` is `k/2`.
+///
+/// This type is private and is used only in tests to cross-check
+/// `SegmentTree`.
 priv struct IterativeSegTree {
   n : Int
   tree : Array[Int64] // 0-indexed, leaves at indices [n, 2n)
 }
 
 ///|
+/// Construct an `IterativeSegTree` from `arr` in O(n) time.
+///
+/// Copies leaves into `tree[n..2n)`, then fills internal nodes bottom-up
+/// so that `tree[i] = tree[2i] + tree[2i+1]`.
 fn IterativeSegTree::new(arr : Array[Int64]) -> IterativeSegTree {
   let n = arr.length()
   if n == 0 {
@@ -281,6 +387,11 @@ fn IterativeSegTree::new(arr : Array[Int64]) -> IterativeSegTree {
 }
 
 ///|
+/// Set element at 0-indexed position `i` to `val` in O(log n) time.
+///
+/// Writes directly to the leaf at `tree[n + i]`, then walks up to the
+/// root recomputing `tree[parent] = tree[2*parent] + tree[2*parent+1]`
+/// at each step.  Out-of-bounds indices are silently ignored.
 fn IterativeSegTree::update(
   self : IterativeSegTree,
   i : Int,
@@ -303,6 +414,15 @@ fn IterativeSegTree::update(
 }
 
 ///|
+/// Return the sum of elements in the closed range `[l, r]` in O(log n) time.
+///
+/// Uses the standard iterative two-pointer technique: start with
+/// `left = n + l` and `right = n + r + 1` (exclusive upper bound).  At each
+/// level, if `left` is an odd index (right child), include `tree[left]` and
+/// advance `left`; if `right` is odd (right child), include `tree[right-1]`
+/// and retreat `right`.  Both pointers then move to their parents.
+///
+/// Returns `0` for invalid ranges (`l < 0`, `r >= n`, or `l > r`).
 fn IterativeSegTree::query(self : IterativeSegTree, l : Int, r : Int) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return 0L

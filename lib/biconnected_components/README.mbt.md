@@ -7,6 +7,8 @@ undirected graph. These concepts are about *robust connectivity*:
   removing any single vertex does **not** disconnect the subgraph.
 - An **articulation point** (cut vertex) is a vertex whose removal **does**
   disconnect the graph (increases the number of connected components).
+- A **bridge** is an edge whose removal disconnects the graph; equivalently, it
+  is a biconnected component containing exactly one edge.
 
 These are fundamental tools for network reliability, dependency analysis, and
 graph decomposition.
@@ -18,35 +20,249 @@ Given an undirected graph with vertices `0..n-1` and edges `(u, v)`, find:
 1. All biconnected components (each reported as a list of edges).
 2. All articulation points.
 
-## Key ideas (DFS + low-link)
+## Graph structure: block-cut tree intuition
 
-We run a DFS and assign each vertex a discovery time:
+Every undirected graph decomposes into biconnected components that meet at
+articulation points. This structure is called the **block-cut tree**:
 
-- `disc[u]`: when we first visit `u`
-- `low[u]`: the smallest discovery time reachable from `u`'s subtree using
-  at most one back edge
+```
+  Blocks (biconnected components) are the "islands of resilience".
+  Articulation points are the "bridges between islands".
+  Removing an articulation point splits the graph across multiple blocks.
+```
 
-### Why low-link matters
+### Visualisation: triangle with a tail
 
-For a tree edge `(u, v)` in the DFS tree:
+```
+  0 ---- 1 ---- 3
+   \    /
+    \  /
+     2
+```
 
-- If `low[v] >= disc[u]`, then `v`'s subtree cannot reach any ancestor of `u`.
-- That means removing `u` would disconnect `v`'s subtree.
-- So `u` is an articulation point (with a special root rule below).
+Block decomposition:
+
+```
+  Block B1 (triangle): vertices {0, 1, 2}, edges {(0,1), (1,2), (2,0)}
+  Block B2 (bridge):   vertices {1, 3},   edges {(1,3)}
+
+  Articulation point:  vertex 1  (shared by B1 and B2)
+```
+
+Mermaid diagram — biconnected components highlighted:
+
+```mermaid
+graph LR
+    subgraph B1["Block B1 (triangle)"]
+        style B1 fill:#d4edda,stroke:#28a745
+        0((0))
+        1((1))
+        2((2))
+        0 --- 1
+        1 --- 2
+        2 --- 0
+    end
+    subgraph B2["Block B2 (bridge)"]
+        style B2 fill:#cce5ff,stroke:#004085
+        3((3))
+    end
+    1((1)) --- 3
+```
+
+The shared vertex `1` is the articulation point. It belongs to both blocks but
+sits on the boundary.
+
+### Visualisation: two triangles sharing a vertex
+
+```
+    2
+   / \
+  0---1---3
+       \ /
+        4
+```
+
+Block decomposition:
+
+```
+  Block B1: vertices {0, 1, 2}, edges {(0,1), (1,2), (2,0)}
+  Block B2: vertices {1, 3, 4}, edges {(1,3), (3,4), (4,1)}
+
+  Articulation point: vertex 1
+```
+
+Mermaid diagram:
+
+```mermaid
+graph LR
+    subgraph B1["Block B1"]
+        style B1 fill:#d4edda,stroke:#28a745
+        v0((0))
+        v1a((1))
+        v2((2))
+        v0 --- v1a
+        v1a --- v2
+        v2 --- v0
+    end
+    subgraph B2["Block B2"]
+        style B2 fill:#cce5ff,stroke:#004085
+        v1b((1))
+        v3((3))
+        v4((4))
+        v1b --- v3
+        v3 --- v4
+        v4 --- v1b
+    end
+    v1a -. "articulation\npoint" .- v1b
+```
+
+### Visualisation: pure cycle (no articulation points)
+
+```
+  0 ---- 1
+  |      |
+  3 ---- 2
+```
+
+The whole cycle is a single biconnected component. Removing any one vertex
+leaves the remaining three vertices still connected.
+
+```mermaid
+graph LR
+    subgraph B1["Block B1 (entire cycle)"]
+        style B1 fill:#fff3cd,stroke:#856404
+        c0((0))
+        c1((1))
+        c2((2))
+        c3((3))
+        c0 --- c1
+        c1 --- c2
+        c2 --- c3
+        c3 --- c0
+    end
+```
+
+## Key ideas: DFS + low-link
+
+We run a single DFS and assign each vertex:
+
+- `disc[u]`: the timestamp when `u` is first visited (starts at 0, increments
+  by 1 with each new vertex)
+- `low[u]`: the minimum `disc` value reachable from `u`'s DFS subtree using
+  any number of tree edges plus **at most one back edge**
+
+`low[u]` is updated as:
+
+```
+low[u] = min(
+    disc[u],
+    min { disc[w] : (u, w) is a back edge },
+    min { low[v] : (u, v) is a tree edge }
+)
+```
+
+### Why low-link detects articulation points
+
+For a tree edge `(u, v)` where `u` is the DFS parent of `v`:
+
+- If `low[v] >= disc[u]`, then no vertex in `v`'s subtree has a back edge
+  that reaches above `u`.
+- Removing `u` would therefore disconnect `v`'s subtree from `u`'s ancestors.
+- So `u` is an articulation point (with a special root rule, see below).
+
+For the bridge case: `low[v] > disc[u]` (strict inequality) means the edge
+`(u, v)` itself is a bridge.
 
 ### Root rule
 
-The DFS root is an articulation point **only if it has 2 or more DFS children**.
+The DFS root is an articulation point **only if it has 2 or more DFS children**
+(because the root has no ancestor, so back edges from its subtrees cannot
+reconnect them through the root).
 
-### Extracting components
+## DFS stack-based algorithm: ASCII walkthrough
 
-We push each traversed edge onto a stack. When we see `low[v] >= disc[u]`,
-we pop edges until we pop `(u, v)`. Those popped edges form one biconnected
-component.
+The algorithm uses a stack of edges. When `low[v] >= disc[u]`, all edges pushed
+since `(u, v)` form a biconnected component.
+
+Consider the graph `0-1-2-0, 1-3` (triangle with a tail):
+
+```
+  Adjacency: 0:[1,2]  1:[0,2,3]  2:[1,0]  3:[1]
+
+  STEP 1 — visit 0 (root, p_edge=-1)
+  ┌────────────────────────────────────────────────┐
+  │  disc[0]=0  low[0]=0   stack=[]                │
+  └────────────────────────────────────────────────┘
+
+  STEP 2 — tree edge 0->1
+  ┌────────────────────────────────────────────────┐
+  │  Push (0,1)   stack=[(0,1)]                    │
+  │  Recurse into 1                                │
+  │    disc[1]=1  low[1]=1                         │
+  └────────────────────────────────────────────────┘
+
+  STEP 3 — tree edge 1->2
+  ┌────────────────────────────────────────────────┐
+  │  Push (1,2)   stack=[(0,1),(1,2)]              │
+  │  Recurse into 2                                │
+  │    disc[2]=2  low[2]=2                         │
+  └────────────────────────────────────────────────┘
+
+  STEP 4 — back edge 2->0  (disc[0]=0 < disc[2]=2)
+  ┌────────────────────────────────────────────────┐
+  │  Push (2,0)   stack=[(0,1),(1,2),(2,0)]        │
+  │  low[2] = min(low[2], disc[0]) = min(2,0) = 0  │
+  └────────────────────────────────────────────────┘
+
+  STEP 5 — return from 2 to 1
+  ┌────────────────────────────────────────────────┐
+  │  low[1] = min(low[1], low[2]) = min(1,0) = 0   │
+  │  low[2]=0 >= disc[1]=1?  NO -> no split yet    │
+  └────────────────────────────────────────────────┘
+
+  STEP 6 — tree edge 1->3
+  ┌────────────────────────────────────────────────┐
+  │  Push (1,3)   stack=[(0,1),(1,2),(2,0),(1,3)]  │
+  │  Recurse into 3                                │
+  │    disc[3]=3  low[3]=3                         │
+  └────────────────────────────────────────────────┘
+
+  STEP 7 — return from 3 to 1
+  ┌────────────────────────────────────────────────┐
+  │  low[1] = min(low[1], low[3]) = min(0,3) = 0   │
+  │  low[3]=3 >= disc[1]=1?  YES -> extract block  │
+  │  Pop until (1,3): pop (1,3)                    │
+  │  Component = {(1,3)}   (bridge!)               │
+  │  Mark 1 as articulation point (non-root check) │
+  │  stack=[(0,1),(1,2),(2,0)]                     │
+  └────────────────────────────────────────────────┘
+
+  STEP 8 — return from 1 to 0
+  ┌────────────────────────────────────────────────┐
+  │  low[0] = min(low[0], low[1]) = min(0,0) = 0   │
+  │  low[1]=0 >= disc[0]=0?  YES -> extract block  │
+  │  Pop until (0,1): pop (2,0),(1,2),(0,1)        │
+  │  Component = {(0,1),(1,2),(2,0)}   (triangle!) │
+  │  Root rule: 0 has 1 child -> NOT articulation  │
+  │  stack=[]                                      │
+  └────────────────────────────────────────────────┘
+
+  Final result:
+    components: [{(1,3)}, {(0,1),(1,2),(2,0)}]
+    articulation_points: [1]
+```
+
+### disc / low table after DFS
+
+```
+  vertex  disc  low   role
+    0      0     0    DFS root (one child -> not AP)
+    1      1     0    articulation point
+    2      2     0    normal
+    3      3     3    leaf (bridge endpoint)
+```
 
 ## What the function returns
-
-The function:
 
 ```
 @biconnected_components.biconnected_components(n, edges)
@@ -54,10 +270,11 @@ The function:
 
 returns a `BiconnectedResult` with:
 
-- `components : Array[Array[(Int, Int)]]` (each component is a list of edges)
-- `articulation_points : Array[Int]`
+- `components : Array[Array[(Int, Int)]]` — each component is a list of edges
+- `articulation_points : Array[Int]` — vertex IDs of articulation points
 
-Edges are given in DFS order; the component order is not guaranteed.
+Edges within each component appear in DFS-pop order. Component order is not
+guaranteed. Sort outputs when you need deterministic results.
 
 ## Examples
 
@@ -69,8 +286,8 @@ Edges are given in DFS order; the component order is not guaranteed.
   2
 ```
 
-Here, vertex `1` is an articulation point. The triangle `(0,1,2)` is one
-biconnected component, and the bridge `(1,3)` is another.
+Vertex `1` is an articulation point. The triangle `(0,1,2)` is one biconnected
+component, and the bridge `(1,3)` is another.
 
 ```mbt check
 ///|
@@ -165,6 +382,11 @@ test "disconnected graph" {
   endpoints of those edges.
 - Articulation points are defined by **vertex removal**, not edge removal.
 - Bridges are exactly the components of size 1 (a single edge).
+- A leaf vertex (degree 1) is never an articulation point.
+- An isolated vertex (degree 0) does not appear in any component.
+- Multi-edges are handled safely because the algorithm skips the parent edge by
+  ID, not by endpoint, so a true parallel edge will not be falsely treated as a
+  back edge.
 
 ## Complexity
 
@@ -178,3 +400,4 @@ Use biconnected components when you need:
 - Critical nodes in a network (single points of failure)
 - Robust subgraphs that survive one vertex removal
 - Decomposition for graph algorithms that require articulation handling
+- Block-cut tree construction for advanced graph problems

@@ -1,8 +1,10 @@
-# Aho–Corasick (Multi‑Pattern Search)
+# Aho-Corasick (Multi-Pattern Search)
 
 ## What It Is
 
-**Aho–Corasick** is a string‑matching algorithm that finds **all occurrences of many patterns** in a single pass through the text. It combines a **trie** (prefix tree) with **failure links** (like KMP) to avoid backtracking.
+**Aho-Corasick** is a string-matching algorithm that finds **all occurrences of
+many patterns** in a single pass through the text. It combines a **trie**
+(prefix tree) with **failure links** (like KMP) to avoid backtracking.
 
 ## The Problem
 
@@ -12,99 +14,211 @@ Example:
 
 - Patterns: `he`, `she`, `his`, `hers`
 - Text: `ushers`
-- Matches: `she`, `he`, `hers`
+- Matches: `she` at 1, `he` at 2, `hers` at 2
 
-Running KMP once per pattern is too slow. Aho–Corasick builds one automaton and scans the text once.
+Running KMP once per pattern costs O(n * k) total. Aho-Corasick builds one
+automaton and scans the text once in O(n + z).
 
-## Core Idea (In Plain Words)
+## Core Idea
 
 1. **Build a trie** of all patterns.
-2. Add **failure links** so that when a character doesn’t match, we jump to the longest suffix that could still match.
-3. **Scan the text once** using the trie + failure links.
-4. Every time we land on a state, output all patterns that end there.
+2. Add **failure links** so that on a mismatch we jump to the longest suffix
+   that is still a prefix of some pattern.
+3. **Scan the text once** following trie edges and failure links.
+4. Every time we land on a state, collect all patterns that end there.
 
-This turns many pattern searches into a **single automaton walk**.
+---
 
-## Example 1: Basic Walkthrough
+## Trie Structure for `["he", "she", "his", "hers"]`
 
-Patterns: `he`, `she`, `his`, `hers`
-Text: `ushers`
+Each node is labelled with the string it represents. Numbers in parentheses are
+state indices assigned during BFS insertion.
 
-Step by step:
+```mermaid
+graph TD
+    R["root (0)"]
+    H["h (1)"]
+    S["s (2)"]
+    HE["he (3)"]
+    HI["hi (4)"]
+    SH["sh (5)"]
+    HER["her (6)"]
+    HIS["his (7)"]
+    SHE["she (8)"]
+    HERS["hers (9)"]
 
-- `u`: no edge → stay at root
-- `s`: go to state `s`
-- `h`: go to state `sh`
-- `e`: go to state `she`
-  - output `she`
-  - failure link also outputs `he`
-- `r`: follow failure links as needed
-- `s`: match `hers`
+    R -- h --> H
+    R -- s --> S
+    H -- e --> HE
+    H -- i --> HI
+    S -- h --> SH
+    HE -- r --> HER
+    HI -- s --> HIS
+    SH -- e --> SHE
+    HER -- s --> HERS
 
-Matches found: `she`, `he`, `hers`.
-
-## Example 2: Overlapping Matches
-
-Patterns: `aba`
-Text: `ababa`
-
-Matches:
-
-- `aba` at index 0
-- `aba` at index 2 (overlapping)
-
-Aho–Corasick handles overlaps naturally because it never skips characters.
-
-## Example 3: Prefix Patterns
-
-Patterns: `a`, `ab`, `abc`
-Text: `abc`
-
-All three match at position 0. The output list at that state includes every prefix pattern.
-
-## Failure Links (Why They Matter)
-
-Suppose we matched `she` and the next character is `x`:
-
-```
-current state: "she"
-no edge for x → follow failure to "he"
-still no x → follow failure to "e" or root
+    style HE  fill:#d4edda,stroke:#28a745
+    style HIS fill:#d4edda,stroke:#28a745
+    style SHE fill:#d4edda,stroke:#28a745
+    style HERS fill:#d4edda,stroke:#28a745
 ```
 
-This is exactly like KMP, but for the whole trie.
+Green nodes are **accepting states** (a complete pattern ends there).
 
-## Step‑By‑Step Algorithm
+---
+
+## Failure Links
+
+A failure link at state `s` points to the state representing the longest
+**proper suffix** of `label(s)` that also exists in the trie.
+
+```
+State    Label    Failure link points to
+------   -----    ----------------------
+root     ""       (none)
+h        "h"      root
+s        "s"      root
+he       "he"     root          ("e" is not in trie alone)
+hi       "hi"     root
+sh       "sh"     h             ("h" is in the trie)
+her      "her"    root
+his      "his"    root
+she      "she"    he            ("he" is in the trie -- suffix of "she")
+hers     "hers"   root
+```
+
+The failure link `she -> he` is the key insight: after matching `she`, we
+already know the last two characters are `he`, so we can report `he` as well
+without re-reading those characters.
+
+---
+
+## Automaton State Transitions (Simplified for `"ushers"`)
+
+The flowchart below traces the automaton walk over the text `ushers`.
+Each box shows the current automaton state after consuming that character.
+
+```mermaid
+flowchart LR
+    A([start: root]) -->|u| B([root\nno edge for u])
+    B -->|s| C([state: s])
+    C -->|h| D([state: sh])
+    D -->|e| E([state: she\nOUTPUT: she, he])
+    E -->|r| F([state: her\nvia failure: he->her])
+    F -->|s| G([state: hers\nOUTPUT: hers])
+```
+
+Notes on the walk:
+- `u`: root has no edge for `u`, stay at root.
+- `s`: root has edge `s`, move to state `s`.
+- `h`: state `s` has edge `h`, move to state `sh`.
+- `e`: state `sh` has edge `e`, move to state `she`. Output: `she`. The failure
+  link of `she` points to `he`, which is also an accepting state, so we also
+  output `he`.
+- `r`: state `she` has no edge `r`. Follow failure link to `he`. State `he` has
+  edge `r`, move to state `her`.
+- `s`: state `her` has edge `s`, move to state `hers`. Output: `hers`.
+
+---
+
+## Step-by-Step Matching Walkthrough for `"ushers"`
+
+```
+Patterns: he, she, his, hers
+Text:     u  s  h  e  r  s
+Index:    0  1  2  3  4  5
+
+Step 0 | char='u' | state: root -> root   | no match
+       |          | root has no 'u' edge; remain at root
+
+Step 1 | char='s' | state: root -> s      | no match
+       |          | root has 's' edge -> state "s"
+
+Step 2 | char='h' | state: s -> sh        | no match
+       |          | state "s" has 'h' edge -> state "sh"
+
+Step 3 | char='e' | state: sh -> she      | OUTPUT: "she" at [1,4)
+       |          | state "sh" has 'e' edge -> state "she"
+       |          | "she" is accepting
+       |          | failure("she") = "he" which is also accepting
+       |          |   => OUTPUT: "he" at [2,4)
+
+Step 4 | char='r' | state: she -> her     | no match
+       |          | state "she" has no 'r' edge
+       |          | follow failure to "he"
+       |          | state "he" has 'r' edge -> state "her"
+
+Step 5 | char='s' | state: her -> hers    | OUTPUT: "hers" at [2,6)
+       |          | state "her" has 's' edge -> state "hers"
+       |          | "hers" is accepting
+
+Final matches (start, end, pattern):
+  (1, 4, "she")
+  (2, 4, "he")
+  (2, 6, "hers")
+```
+
+---
+
+## Step-by-Step Algorithm
 
 ### 1. Build the trie
-Each node is a prefix of some pattern.
+
+Insert each pattern character by character. Each node stores:
+- `children[0..255]`: next state for each byte value, or -1 if absent.
+- `output`: indices of all patterns whose full text ends at this node.
 
 ### 2. Build failure links (BFS)
-We process nodes level by level so every failure target is already built.
+
+Process nodes in breadth-first order (shallowest first). For a node reached by
+edge `c` from parent `p`:
+
+```
+1. Start at failure(p).
+2. Walk the failure chain until you find a node that has an edge for c.
+3. The failure link of the child is that edge's destination.
+4. If the failure state is accepting, merge its output into the child's output.
+```
+
+Because BFS guarantees all ancestors are processed first, every failure target
+is already complete.
 
 ### 3. Scan the text
-For each character:
 
-- Follow edges if possible
-- Otherwise follow failure links until an edge exists
-- Output all patterns ending at this state
+```
+state = root
+for each character c in text:
+    while state != root and state has no edge for c:
+        state = failure(state)
+    if state has edge for c:
+        state = state.children[c]
+    report all patterns in state.output
+```
+
+---
 
 ## Complexity
 
 Let:
 
-- `m` = total length of patterns
+- `m` = total length of all patterns
 - `n` = text length
 - `z` = number of matches
-- `σ` = alphabet size (256 bytes here)
+- `sigma` = alphabet size (256 bytes here)
 
-Then:
+| Phase  | Time           | Space          |
+|--------|----------------|----------------|
+| Build  | O(m * sigma)   | O(m * sigma)   |
+| Search | O(n + z)       | O(1) working   |
 
-- Build: **O(m × σ)**
-- Search: **O(n + z)**
-- Space: **O(m × σ)**
+The build is dominated by allocating 256-element child arrays per trie node.
+The search is O(n + z) because the failure chain traversal is amortised: each
+step along a failure link strictly reduces the current match depth, and that
+depth can increase by at most 1 per character.
 
-## Example Usage (from this package)
+---
+
+## Example Usage
 
 ```mbt check
 ///|
@@ -138,25 +252,58 @@ test "aho corasick prefix patterns" {
 }
 ```
 
+---
+
+## API
+
+```
+find_all_matches(patterns, text) -> Array[(start, end, pattern)]
+    Build the automaton from patterns and return every match in text.
+    end is exclusive (standard half-open interval).
+
+count_all_matches(patterns, text) -> Int
+    Build the automaton from patterns and count total matches.
+```
+
+---
+
 ## Common Applications
 
-- **Keyword filtering** (e.g., spam or profanity detection)
-- **DNA motif search** (many patterns in a long genome)
-- **Log scanning** (many error signatures)
-- **Search engines** (dictionary words over large texts)
+- **Keyword filtering** (spam or profanity detection)
+- **DNA motif search** (many probes over a long genome)
+- **Log scanning** (many error signatures scanned in one pass)
+- **Search engines** (dictionary lookup over large texts)
+
+---
 
 ## Pitfalls
 
-- If you use Unicode strings, be aware this implementation uses **byte values** (0–255). It works for ASCII and raw bytes. For full Unicode, you would need a different alphabet strategy.
+- This implementation indexes strings by **byte value** (0-255). It works
+  correctly for ASCII and raw byte data. For full Unicode, a different alphabet
+  strategy is needed.
 - Output lists may contain **multiple patterns** at one position.
-- Overlapping matches are expected and correct.
+- **Overlapping matches** are reported and correct by design.
+- The child arrays are 256 integers per node, so memory usage is
+  O(m * 256 * 4) bytes. For very large pattern sets consider a sparse
+  child representation.
+
+---
 
 ## When to Use It
 
-Use Aho–Corasick when:
+Use Aho-Corasick when:
 
-- You have many patterns
-- You need all matches
-- You want one pass over the text
+- You have many patterns (more than a handful).
+- You need all occurrences, including overlapping ones.
+- You want a single pass over the text.
 
-If you only have one pattern, KMP is simpler and usually faster to set up.
+If you only have one pattern, KMP is simpler and has lower constant factors.
+
+## Aho-Corasick vs Alternatives
+
+| Algorithm    | Preprocess   | Search    | Notes                           |
+|--------------|--------------|-----------|---------------------------------|
+| Naive multi  | O(1)         | O(n*k*m)  | k patterns, each naive          |
+| KMP (x k)    | O(sum m)     | O(n*k)    | one pass per pattern            |
+| Rabin-Karp   | O(sum m)     | O(n) avg  | hashing, false positives exist  |
+| **Aho-Corasick** | O(sum m) | O(n+z)    | optimal for many patterns       |

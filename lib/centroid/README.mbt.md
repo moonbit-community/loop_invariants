@@ -25,6 +25,87 @@ Facts:
 Because each subtree has size at most half, the centroid tree height is
 O(log n).
 
+## Mermaid diagram: original tree vs centroid tree
+
+The diagram below shows a 7-node binary tree on the left and its resulting
+centroid tree on the right. Node 0 is the centroid of the full tree. After
+removing 0, the two subtrees {1,3,4} and {2,5,6} are decomposed independently.
+Node 1 is the centroid of the left subtree; node 2 is the centroid of the
+right subtree.
+
+```mermaid
+flowchart LR
+  subgraph Original["Original tree"]
+    direction TB
+    A0((0))
+    A0 --- A1((1))
+    A0 --- A2((2))
+    A1 --- A3((3))
+    A1 --- A4((4))
+    A2 --- A5((5))
+    A2 --- A6((6))
+  end
+
+  subgraph Centroid["Centroid tree"]
+    direction TB
+    B0((0))
+    B0 --> B1((1))
+    B0 --> B2((2))
+    B1 --> B3((3))
+    B1 --> B4((4))
+    B2 --> B5((5))
+    B2 --> B6((6))
+  end
+
+  Original --"decompose"--> Centroid
+```
+
+For this balanced binary tree the centroid tree mirrors the original tree.
+For unbalanced trees the centroid tree is always shallower than the original.
+
+## ASCII art: step-by-step decomposition
+
+The example below uses a path of 7 nodes to show how the algorithm recurses.
+After finding each centroid the remaining connected components are shown.
+
+```
+Original path: 0 - 1 - 2 - 3 - 4 - 5 - 6
+
+Step 1 – whole tree (size 7, centroid = 3)
+  0 - 1 - 2 -[3]- 4 - 5 - 6
+                ^
+         centroid (depth 0)
+  Remove 3. Remaining components:
+    Left:  0 - 1 - 2      (size 3)
+    Right: 4 - 5 - 6      (size 3)
+
+Step 2a – left component (size 3, centroid = 1)
+  0 -[1]- 2
+       ^
+  centroid (depth 1, parent = 3)
+  Remove 1. Remaining components:
+    Left:  0               (size 1)
+    Right: 2               (size 1)
+
+Step 2b – right component (size 3, centroid = 5)
+  4 -[5]- 6
+       ^
+  centroid (depth 1, parent = 3)
+  Remove 5. Remaining components:
+    Left:  4               (size 1)
+    Right: 6               (size 1)
+
+Step 3 – singletons (each is its own centroid, depth 2)
+  [0]  [2]  [4]  [6]
+
+Resulting centroid tree (edges show centroid-parent relation):
+          3
+         / \
+        1   5
+       / \ / \
+      0  2 4  6
+```
+
 ## Why it helps
 
 A node has only O(log n) centroid ancestors. Many query problems can be solved

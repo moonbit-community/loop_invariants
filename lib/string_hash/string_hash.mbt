@@ -22,12 +22,35 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
+/// The polynomial base used in hash computations.
+///
+/// A value of 31 is chosen because it is larger than the 26-letter lowercase
+/// alphabet (preventing character collisions at single positions) and is a
+/// small prime, giving good hash distribution.
 const HASH_BASE : Int64 = 31L
 
 ///|
+/// The modulus that keeps hash values bounded to a 32-bit-safe range.
+///
+/// 10^9 + 7 is a well-known large prime. The probability that two distinct
+/// strings share the same hash under this modulus is approximately 1/(10^9 + 7)
+/// per comparison.
 const HASH_MOD : Int64 = 1000000007L
 
 ///|
+/// Precomputed prefix hash table for a single string.
+///
+/// After construction the table supports O(1) substring hash queries via
+/// the prefix-difference formula:
+///
+/// ```
+/// hash(s[l..r)) = (prefix[r] - prefix[l] * powers[r - l]) mod p
+/// ```
+///
+/// Fields:
+/// - `n`      : length of the original string.
+/// - `prefix` : `prefix[i]` is the hash of `s[0..i-1]` (sentinel `prefix[0] = 0`).
+/// - `powers` : `powers[i]` is `HASH_BASE^i mod HASH_MOD`.
 priv struct StringHash {
   prefix : Array[Int64]
   powers : Array[Int64]
@@ -35,6 +58,16 @@ priv struct StringHash {
 }
 
 ///|
+/// Build a `StringHash` table from string `s` in O(n) time.
+///
+/// Both `prefix` and `powers` arrays have length `n + 1` so that all
+/// substring queries `[l, r)` with `0 <= l <= r <= n` are in bounds.
+/// Character values are mapped as `'a' -> 1`, `'b' -> 2`, …, `'z' -> 26`.
+///
+/// Parameters:
+/// - `s` : the source string (lowercase ASCII assumed).
+///
+/// Returns a `StringHash` ready for O(1) hash queries.
 fn StringHash::new(s : String) -> StringHash {
   let n = s.length()
   let prefix = Array::make(n + 1, 0L)
@@ -48,7 +81,25 @@ fn StringHash::new(s : String) -> StringHash {
 }
 
 ///|
-/// Get hash of substring s[l..r) (0-indexed, exclusive end)
+/// Return the polynomial hash of the substring `s[l..r)` (0-indexed,
+/// exclusive end).
+///
+/// Uses the prefix-difference formula:
+///
+/// ```
+/// hash = (prefix[r] - prefix[l] * powers[r - l] + HASH_MOD) mod HASH_MOD
+/// ```
+///
+/// The `+ HASH_MOD` before the outer `mod` prevents negative values that
+/// would arise from the subtraction when `prefix[r] < prefix[l] * powers[len]`.
+///
+/// Parameters:
+/// - `l` : inclusive start index (0-based).
+/// - `r` : exclusive end index (0-based).
+///
+/// Returns the hash value, or `0` if the range is empty or out of bounds.
+///
+/// Time complexity: O(1).
 fn StringHash::get_hash(self : StringHash, l : Int, r : Int) -> Int64 {
   if l >= r || l < 0 || r > self.n {
     return 0L
@@ -59,7 +110,19 @@ fn StringHash::get_hash(self : StringHash, l : Int, r : Int) -> Int64 {
 }
 
 ///|
-/// Compare two substrings
+/// Return `true` when substrings `s[l1..r1)` and `s[l2..r2)` have equal
+/// polynomial hashes (and therefore are very likely equal strings).
+///
+/// Lengths are compared first; a length mismatch immediately returns `false`
+/// without touching the hash arrays.
+///
+/// Parameters:
+/// - `l1`, `r1` : exclusive range of the first substring.
+/// - `l2`, `r2` : exclusive range of the second substring.
+///
+/// Returns `true` if the hashes match, `false` otherwise.
+///
+/// Time complexity: O(1).
 fn StringHash::compare(
   self : StringHash,
   l1 : Int,
@@ -74,7 +137,9 @@ fn StringHash::compare(
 }
 
 ///|
-/// Get length of string
+/// Return the length of the string used to build this `StringHash`.
+///
+/// Time complexity: O(1).
 fn StringHash::length(self : StringHash) -> Int {
   self.n
 }
@@ -84,12 +149,32 @@ fn StringHash::length(self : StringHash) -> Int {
 // ============================================================================
 
 ///|
+/// Secondary polynomial base for the double-hashing scheme.
+///
+/// Chosen to differ from `HASH_BASE` (31) so that the two hash functions
+/// are independent, making simultaneous collisions extremely unlikely.
 const HASH_BASE2 : Int64 = 37L
 
 ///|
+/// Secondary modulus for the double-hashing scheme.
+///
+/// 10^9 + 9 is another large prime. Combined with `HASH_MOD`, the collision
+/// probability for a pair of distinct strings falls to approximately
+/// 1 / (HASH_MOD * HASH_MOD2) ~ 10^-18.
 const HASH_MOD2 : Int64 = 1000000009L
 
 ///|
+/// Precomputed pair of independent polynomial hash tables for a string.
+///
+/// Using two separate (base, modulus) pairs makes accidental hash collisions
+/// astronomically unlikely. The combined fingerprint of a substring is the
+/// pair `(hash1, hash2)` — two substrings are considered equal only when
+/// both components agree.
+///
+/// Fields:
+/// - `prefix1` / `powers1` : hash scheme (HASH_BASE = 31,  HASH_MOD = 10^9 + 7).
+/// - `prefix2` / `powers2` : hash scheme (HASH_BASE2 = 37, HASH_MOD2 = 10^9 + 9).
+/// - `n`                   : length of the original string.
 priv struct DoubleHash {
   prefix1 : Array[Int64]
   prefix2 : Array[Int64]
@@ -99,6 +184,16 @@ priv struct DoubleHash {
 }
 
 ///|
+/// Build a `DoubleHash` table from string `s` in O(n) time.
+///
+/// Both power tables and both prefix-hash arrays are populated in a single
+/// forward pass over `s`.  After construction, `get_hash` and `compare`
+/// both run in O(1).
+///
+/// Parameters:
+/// - `s` : the source string (lowercase ASCII assumed).
+///
+/// Returns a `DoubleHash` ready for O(1) paired hash queries.
 fn DoubleHash::new(s : String) -> DoubleHash {
   let n = s.length()
   let prefix1 = Array::make(n + 1, 0L)
@@ -116,7 +211,19 @@ fn DoubleHash::new(s : String) -> DoubleHash {
 }
 
 ///|
-/// Get double hash of substring s[l..r)
+/// Return the double hash `(hash1, hash2)` of substring `s[l..r)` (exclusive
+/// end), or `(0, 0)` if the range is empty or out of bounds.
+///
+/// Each component is computed with its own (base, modulus) pair using the
+/// same prefix-difference formula as `StringHash::get_hash`.
+///
+/// Parameters:
+/// - `l` : inclusive start index (0-based).
+/// - `r` : exclusive end index (0-based).
+///
+/// Returns a pair of hash values `(h1, h2)`.
+///
+/// Time complexity: O(1).
 fn DoubleHash::get_hash(self : DoubleHash, l : Int, r : Int) -> (Int64, Int64) {
   if l >= r || l < 0 || r > self.n {
     return (0L, 0L)
@@ -136,7 +243,19 @@ fn DoubleHash::get_hash(self : DoubleHash, l : Int, r : Int) -> (Int64, Int64) {
 }
 
 ///|
-/// Compare two substrings using double hash
+/// Return `true` when substrings `s[l1..r1)` and `s[l2..r2)` have equal
+/// double hashes.
+///
+/// Both hash components must agree; a length mismatch immediately returns
+/// `false`.  The probability of a false positive is approximately 10^-18.
+///
+/// Parameters:
+/// - `l1`, `r1` : exclusive range of the first substring.
+/// - `l2`, `r2` : exclusive range of the second substring.
+///
+/// Returns `true` if both hash pairs match, `false` otherwise.
+///
+/// Time complexity: O(1).
 fn DoubleHash::compare(
   self : DoubleHash,
   l1 : Int,
@@ -155,7 +274,21 @@ fn DoubleHash::compare(
 // ============================================================================
 
 ///|
-/// Find longest common prefix length between substrings starting at i and j
+/// Return the length of the longest common prefix of the suffixes starting
+/// at positions `i` and `j` in the string.
+///
+/// Performs a binary search over candidate prefix lengths, testing each
+/// candidate in O(1) with `get_hash`.  The overall time complexity is
+/// O(log n) where `n` is the string length.
+///
+/// Parameters:
+/// - `i` : start of the first suffix (0-based, must be in `[0, n)`).
+/// - `j` : start of the second suffix (0-based, must be in `[0, n)`).
+///
+/// Returns the length of the longest common prefix (0 if the first characters
+/// already differ).
+///
+/// Time complexity: O(log n).
 fn StringHash::lcp(self : StringHash, i : Int, j : Int) -> Int {
   let max_len = if self.n - i < self.n - j { self.n - i } else { self.n - j }
   for lo = 0, hi = max_len {
@@ -177,7 +310,32 @@ fn StringHash::lcp(self : StringHash, i : Int, j : Int) -> Int {
 // ============================================================================
 
 ///|
-/// Find all occurrences of pattern in text
+/// Find all start positions where `pattern` appears in `text`, using
+/// polynomial rolling hashes.
+///
+/// Builds prefix hash tables for both strings in O(n + m), then slides a
+/// window of length `m` across `text` and compares hashes in O(1) per
+/// position.  Overlapping occurrences are included.
+///
+/// Note: this implementation does not perform a secondary character-by-character
+/// verification step.  For correctness-critical use cases, verify each returned
+/// position manually or switch to double hashing.
+///
+/// Parameters:
+/// - `text`    : the string to search in.
+/// - `pattern` : the string to search for.
+///
+/// Returns a sorted array of 0-based start indices where `pattern` occurs.
+/// Returns an empty array when `pattern` is empty or longer than `text`.
+///
+/// Time complexity: O(n + m) expected.
+/// Space complexity: O(n + m) for the prefix hash tables.
+///
+/// Example:
+/// ```
+/// hash_pattern_match("abababab", "aba")
+/// // => [0, 2, 4]
+/// ```
 pub fn hash_pattern_match(text : String, pattern : String) -> Array[Int] {
   let result : Array[Int] = []
   let n = text.length()
@@ -198,7 +356,24 @@ pub fn hash_pattern_match(text : String, pattern : String) -> Array[Int] {
 }
 
 ///|
-/// Count distinct substrings of length k
+/// Return the number of distinct substrings of `s` with exactly `k`
+/// characters.
+///
+/// Collects the polynomial hash of every length-`k` substring into a map
+/// and returns the number of unique hash values.  Because a single hash
+/// modulus is used, identical hashes are treated as identical substrings;
+/// the result may be slightly lower than the true count in the (extremely
+/// rare) presence of hash collisions.
+///
+/// Parameters:
+/// - `s` : the source string.
+/// - `k` : the required substring length.
+///
+/// Returns the count of distinct length-`k` substrings, or `0` when
+/// `k <= 0` or `k > s.length()`.
+///
+/// Time complexity: O(n) expected (hash map insertion and lookup).
+/// Space complexity: O(n) for the hash map.
 fn count_distinct_substrings(s : String, k : Int) -> Int {
   let n = s.length()
   if k <= 0 || k > n {

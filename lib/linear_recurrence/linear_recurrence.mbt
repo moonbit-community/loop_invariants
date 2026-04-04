@@ -11,6 +11,10 @@
 // SPACE COMPLEXITY: O(k)
 
 ///|
+/// Normalize `x` into the range `[0, m)`.
+///
+/// Returns `x mod m` as a non-negative value, correcting for MoonBit's
+/// sign-preserving `%` operator on negative operands.
 fn mod_norm(x : Int64, m : Int64) -> Int64 {
   let v = x % m
   if v < 0L {
@@ -21,16 +25,29 @@ fn mod_norm(x : Int64, m : Int64) -> Int64 {
 }
 
 ///|
+/// Compute `(a + b) mod m`, with result in `[0, m)`.
 fn mod_add(a : Int64, b : Int64, m : Int64) -> Int64 {
   mod_norm(a + b, m)
 }
 
 ///|
+/// Compute `(a * b) mod m`.
+///
+/// Both operands are assumed to already be in `[0, m)` so the intermediate
+/// product fits within an `Int64` for typical competitive-programming moduli
+/// (m <= 10^9).
 fn mod_mul(a : Int64, b : Int64, m : Int64) -> Int64 {
   a * b % m
 }
 
 ///|
+/// Compute `base^exp mod m` using binary (fast) exponentiation.
+///
+/// Handles `m = 1` correctly (result is 0) and normalises negative bases.
+///
+/// Loop invariant: `result * (b^e) == base^exp (mod m)` at every iteration.
+/// Each step consumes one bit of `e`, updating `result` and squaring `b`.
+/// When `e` reaches 0, `result` equals `base^exp mod m`.
 fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
   for e = exp, result = 1L % m, b = mod_norm(base, m); e > 0L; {
     let new_result = if (e & 1L) == 1L { mod_mul(result, b, m) } else { result }
@@ -50,6 +67,23 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
 }
 
 ///|
+/// Multiply two degree-(k-1) coefficient vectors `a` and `b`, then reduce
+/// the degree-(2k-2) product modulo the characteristic polynomial of the
+/// recurrence.
+///
+/// The characteristic polynomial is:
+///
+/// ```
+/// P(x) = x^k - coeffs[0]*x^(k-1) - coeffs[1]*x^(k-2) - ... - coeffs[k-1]
+/// ```
+///
+/// Reduction uses the identity `x^k = coeffs[0]*x^(k-1) + ... + coeffs[k-1]`
+/// to fold high-degree terms back into degree 0..k-1.
+///
+/// The result has length `k` and represents the product polynomial mod `P(x)`
+/// over `Z/mZ`.
+///
+/// Time complexity: O(k^2).
 fn combine(
   a : Array[Int64],
   b : Array[Int64],
@@ -82,8 +116,45 @@ fn combine(
 }
 
 ///|
-/// Compute f(n) for the given recurrence and initial values.
-/// `coeffs.length()` must match the number of initial terms.
+/// Compute the n-th term of a linear recurrence modulo `m` using the
+/// Kitamasa method.
+///
+/// The recurrence of order `k` is defined by:
+///
+/// ```
+/// f(n) = coeffs[0]*f(n-1) + coeffs[1]*f(n-2) + ... + coeffs[k-1]*f(n-k)
+/// ```
+///
+/// with `initial[i] = f(i)` for `i` in `0..<k`.
+///
+/// Parameters:
+/// - `coeffs`  - recurrence coefficients `[c0, c1, ..., c_{k-1}]`, length k
+/// - `initial` - initial values `[f(0), f(1), ..., f(k-1)]`, length k
+/// - `n`       - the index to evaluate (0-based, non-negative)
+/// - `m`       - positive modulus; all arithmetic is performed mod m
+///
+/// Returns `f(n) mod m`.
+///
+/// Constraints:
+/// - `coeffs.length() == initial.length()` (both equal k)
+/// - `m > 0`
+/// - `n >= 0`
+///
+/// Time complexity: O(k^2 log n).
+/// Space complexity: O(k).
+///
+/// Special cases:
+/// - `k = 0`: returns 0.
+/// - `n < k`: returns `initial[n] mod m` directly.
+/// - `k = 1`: reduces to fast modular exponentiation in O(log n).
+///
+/// The algorithm represents `x^n mod P(x)` as a coefficient vector of
+/// length k, where `P(x)` is the characteristic polynomial of the recurrence.
+/// Binary exponentiation on these vectors drives the doubling:
+///
+/// Loop invariant: `res` encodes `x^(processed bits)` and `base` encodes
+/// `x^(current power)`, both reduced modulo `P(x)`. When `e` reaches 0,
+/// `res[i]` gives the coefficient of `f(i)` in the expansion of `f(n)`.
 pub fn linear_recurrence_nth(
   coeffs : ArrayView[Int64],
   initial : ArrayView[Int64],
