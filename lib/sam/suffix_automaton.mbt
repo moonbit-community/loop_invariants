@@ -492,7 +492,14 @@ fn SuffixAutomaton::longest_common_substring_length(
 }
 
 ///|
-/// Helper to find suffix match when direct extension fails
+/// Walk suffix links from `start_state` until an outgoing edge on character
+/// `c` is found, then return `(next_state, new_cur_len)`.
+///
+/// If the initial state is reached without finding an edge on `c`, returns
+/// `(0, 0)` meaning: reset to the initial state with match length 0.
+///
+/// This is the fallback helper used by LCS scanning when a direct extension
+/// fails.
 fn find_suffix_match(
   sam : SuffixAutomaton,
   start_state : Int,
@@ -521,7 +528,18 @@ fn find_suffix_match(
 }
 
 ///|
-/// Find the actual longest common substring
+/// Return the longest common substring shared between the original text and
+/// `other` as a `String`.
+///
+/// When multiple substrings of equal maximum length exist, the one ending
+/// earliest in `other` is returned.  If there is no common substring (or
+/// one of the strings is empty), returns the empty string `""`.
+///
+/// Internally performs the same scan as `longest_common_substring_length`
+/// while also tracking the end position in `other` to reconstruct the
+/// result.
+///
+/// Time: O(|text| + |other|).
 fn SuffixAutomaton::longest_common_substring(
   self : SuffixAutomaton,
   other : String,
@@ -576,7 +594,14 @@ fn SuffixAutomaton::longest_common_substring(
 // ============================================================================
 
 ///|
-/// Compute path counts for k-th substring query
+/// Pre-compute the number of distinct strings (paths) reachable from each
+/// state in the automaton DAG, for use by `kth_substring`.
+///
+/// `path_count[q]` equals 1 (for the empty path from `q` itself) plus the
+/// sum of `path_count[r]` for every state `r` reachable from `q` via a
+/// single transition.  This is computed with memoized DFS.
+///
+/// Time: O(n * alphabet_size) where n is the number of SAM states.
 fn SuffixAutomaton::compute_path_counts(self : SuffixAutomaton) -> Array[Int64] {
   let n = self.states.length()
   let memo : Array[Int64] = Array::make(n, -1L)
@@ -610,8 +635,17 @@ fn SuffixAutomaton::compute_path_counts(self : SuffixAutomaton) -> Array[Int64] 
 }
 
 ///|
-/// Helper: find next transition for k-th substring
-/// Returns (next_state, next_remaining, char_to_add) or None if done
+/// Select the next transition when navigating to the k-th substring.
+///
+/// Given the current `state`, `remaining` rank (already adjusted so that
+/// 1 means "take the state itself"), and the precomputed `path_cnt` array,
+/// iterates transitions in lexicographic order and returns
+/// `Some((next_state, adjusted_remaining, char))` for the first transition
+/// whose subtree contains the target rank, or `None` when no transition
+/// covers the remaining rank.
+///
+/// The caller must subtract 1 from `remaining` before passing it here to
+/// account for the empty path represented by the state itself.
 fn find_next_transition(
   sam : SuffixAutomaton,
   state : Int,
@@ -644,7 +678,20 @@ fn find_next_transition(
 }
 
 ///|
-/// Find k-th lexicographically smallest substring (1-indexed)
+/// Return the `k`-th lexicographically smallest substring (1-indexed),
+/// where substrings are ordered lexicographically and the empty string
+/// is considered the smallest (rank 1).
+///
+/// Returns `None` if `k <= 0` or `k` exceeds the total number of distinct
+/// substrings (including the empty string).
+///
+/// Algorithm:
+/// 1. Compute `path_count` for each state via `compute_path_counts`.
+/// 2. Navigate the automaton greedily: at each state, skip past transitions
+///    whose subtree is too small and descend into the first transition that
+///    contains the target rank.
+///
+/// Time: O(n * alphabet_size + |result|).
 fn SuffixAutomaton::kth_substring(self : SuffixAutomaton, k : Int64) -> String? {
   if k <= 0L {
     return None
@@ -771,7 +818,15 @@ test "suffix automaton stress" {
 // ============================================================================
 
 ///|
-/// Get all distinct substrings (for debugging/testing small strings)
+/// Collect all distinct substrings (including the empty string) into a
+/// sorted array.
+///
+/// This performs a depth-first traversal of the automaton DAG, collecting
+/// every string reachable from the initial state.  The result is sorted
+/// lexicographically.
+///
+/// Intended for debugging and testing on small strings only.
+/// For a string of length n this may return O(n^2) substrings.
 fn SuffixAutomaton::all_substrings(self : SuffixAutomaton) -> Array[String] {
   let result : Array[String] = []
   fn dfs(
