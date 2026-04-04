@@ -101,8 +101,8 @@ pub fn ImplicitTreap::get(self : ImplicitTreap, pos : Int) -> Int64? {
   } nobreak {
     None
   } where {
-    invariant: node >= 0 && node < self.nodes.length(),
-    invariant: target >= 0 && target < self.get_size(node),
+    proof_invariant: node >= 0 && node < self.nodes.length(),
+    proof_invariant: target >= 0 && target < self.get_size(node),
     reasoning: (
       #|SEARCH INVARIANT:
       #|  (node, target) describes the target position within the
@@ -143,7 +143,7 @@ pub fn ImplicitTreap::set(self : ImplicitTreap, pos : Int, val : Int64) -> Unit 
       continue self.nodes[node].right, target - left_size - 1
     }
   } where {
-    invariant: node == -1 || (node >= 0 && node < self.nodes.length()),
+    proof_invariant: node == -1 || (node >= 0 && node < self.nodes.length()),
     reasoning: (
       #|INVARIANT (implicit index walk):
       #|  target is the index within the subtree rooted at node.

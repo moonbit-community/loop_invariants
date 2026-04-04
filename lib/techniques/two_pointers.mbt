@@ -30,7 +30,7 @@ fn two_sum_two_pointer(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
   } nobreak {
     None
   } where {
-    invariant: left >= 0 && right < arr.length() && left <= right,
+    proof_invariant: left >= 0 && right < arr.length() && left <= right,
     reasoning: (
       #|LOOP INVARIANT: If solution (i, j) exists with i < j, then left <= i and j <= right
       #|
@@ -99,7 +99,7 @@ fn three_sum(arr : Array[Int], target : Int) -> Array[(Int, Int, Int)] {
         continue left, right - 1
       }
     } where {
-      invariant: left >= i + 1 && right < n && left <= right,
+      proof_invariant: left >= i + 1 && right < n && left <= right,
       reasoning: (
         #|INVARIANT (two-sum inner):
         #|Any pair summing to remaining must lie in [left, right].
@@ -125,7 +125,7 @@ fn skip_duplicates_forward(
   } nobreak {
     l
   } where {
-    invariant: l >= left + 1,
+    proof_invariant: l >= left + 1,
     reasoning: (
       #|INVARIANT (skip forward):
       #|All indices in (left, l) are equal to arr[left].
@@ -148,7 +148,7 @@ fn skip_duplicates_backward(
   } nobreak {
     r
   } where {
-    invariant: r <= right - 1,
+    proof_invariant: r <= right - 1,
     reasoning: (
       #|INVARIANT (skip backward):
       #|All indices in (r, right) are equal to arr[right].
@@ -195,7 +195,7 @@ fn max_water_container(heights : ArrayView[Int]) -> Int {
   } nobreak {
     max_area
   } where {
-    invariant: left >= 0 && right < heights.length() && max_area >= 0,
+    proof_invariant: left >= 0 && right < heights.length() && max_area >= 0,
     reasoning: (
       #|LOOP INVARIANT: max_area is the largest area found so far
       #|
@@ -258,7 +258,7 @@ fn trap_water_two_pointer(height : ArrayView[Int]) -> Int {
   } nobreak {
     water
   } where {
-    invariant: left >= 0 && right < n && water >= 0,
+    proof_invariant: left >= 0 && right < n && water >= 0,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - left_max = max(height[0..left])
@@ -311,7 +311,7 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
         break
       }
     } where {
-      invariant: deque.length() >= 0,
+      proof_invariant: deque.length() >= 0,
       reasoning: (
         #|INVARIANT (drop out-of-window):
         #|All indices in deque are within the current window after removals.
@@ -331,7 +331,7 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
         break
       }
     } where {
-      invariant: deque.length() >= 0,
+      proof_invariant: deque.length() >= 0,
       reasoning: (
         #|INVARIANT (monotone deque):
         #|Values at deque indices are in decreasing order.
@@ -435,7 +435,7 @@ fn min_window_substring(s : String, t : String) -> String {
       String::from_array(result)
     }
   } where {
-    invariant: left >= 0 && right >= 0 && formed >= 0,
+    proof_invariant: left >= 0 && right >= 0 && formed >= 0,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - window[c] = count of character c in s[left..right)
@@ -490,7 +490,7 @@ fn contract_window(
   } nobreak {
     (l, f, mlen, mleft)
   } where {
-    invariant: l >= left && f >= 0,
+    proof_invariant: l >= left && f >= 0,
     reasoning: (
       #|INVARIANT (contract window):
       #|Window [l..right] remains valid (f == required_count), and (mleft, mlen)
@@ -534,7 +534,7 @@ fn longest_unique_substring(s : String) -> Int {
   } nobreak {
     max_len
   } where {
-    invariant: start >= 0 && max_len >= 0,
+    proof_invariant: start >= 0 && max_len >= 0,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - s[start..i] contains no duplicate characters
@@ -590,7 +590,7 @@ fn subarray_sum_equals_k(nums : ArrayView[Int], k : Int) -> Int {
   } nobreak {
     result
   } where {
-    invariant: result >= 0,
+    proof_invariant: result >= 0,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - prefix = sum(nums[0..i])
@@ -656,7 +656,7 @@ fn character_replacement(s : String, k : Int) -> Int {
   } nobreak {
     max_len
   } where {
-    invariant: left >= 0 && right >= 0 && max_count >= 0,
+    proof_invariant: left >= 0 && right >= 0 && max_count >= 0,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - count[c] = occurrences of character c in s[left..right)
@@ -723,7 +723,7 @@ fn fruit_into_baskets(fruits : ArrayView[Int]) -> Int {
   } nobreak {
     max_len
   } where {
-    invariant: left >= 0 && right >= 0 && distinct >= 0 && distinct <= 2,
+    proof_invariant: left >= 0 && right >= 0 && distinct >= 0 && distinct <= 2,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - Window [left, right) contains at most 2 distinct fruit types
@@ -758,7 +758,7 @@ fn remove_duplicates(nums : Array[Int]) -> Int {
   } nobreak {
     write
   } where {
-    invariant: read >= 1 && write >= 1 && write <= read,
+    proof_invariant: read >= 1 && write >= 1 && write <= read,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - nums[0..write) contains unique elements in sorted order
@@ -801,7 +801,7 @@ fn move_zeroes(nums : Array[Int]) -> Unit {
       continue read + 1, write
     }
   } where {
-    invariant: read >= 0 && write >= 0 && write <= read,
+    proof_invariant: read >= 0 && write >= 0 && write <= read,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - nums[0..write) contains all non-zero elements from nums[0..read) in order
@@ -855,7 +855,7 @@ fn sort_colors(nums : Array[Int]) -> Unit {
       continue low, mid, high - 1
     }
   } where {
-    invariant: low >= 0 && mid >= 0 && high >= -1,
+    proof_invariant: low >= 0 && mid >= 0 && high >= -1,
     reasoning: (
       #|LOOP INVARIANT (Dutch National Flag):
       #|  - nums[0..low) contains only 0s
@@ -914,7 +914,7 @@ fn partition(arr : Array[Int], lo : Int, hi : Int) -> Int {
     arr[hi] = temp
     i
   } where {
-    invariant: i >= lo && j >= lo && i <= j,
+    proof_invariant: i >= lo && j >= lo && i <= j,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - arr[lo..i) < pivot

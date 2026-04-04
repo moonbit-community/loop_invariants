@@ -87,9 +87,9 @@ fn[T : Compare] merge_heaps(a : Heap[T], b : Heap[T]) -> Heap[T] {
   } nobreak {
     carry
   } where {
-    invariant: i >= 0 && i <= len,
-    invariant: valid_prefix(out, i),
-    invariant: carry is None || (carry is Some(t) && tree_rank(t) == i),
+    proof_invariant: i >= 0 && i <= len,
+    proof_invariant: valid_prefix(out, i),
+    proof_invariant: carry is None || (carry is Some(t) && tree_rank(t) == i),
     reasoning: (
       #|INVARIANT (Binomial carry):
       #|out[0..i) holds finalized ranks, and carry (if any) has rank i.

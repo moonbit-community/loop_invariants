@@ -27,7 +27,7 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
       dp[j] = false
     }
   } where {
-    invariant: j >= 1 && j <= m + 1,
+    proof_invariant: j >= 1 && j <= m + 1,
     reasoning: (
       #|INVARIANT (init dp):
       #|dp[j] is true iff pattern[0..j) consists only of '*' characters.
@@ -54,7 +54,7 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
     } nobreak {
       prev
     } where {
-      invariant: j >= 1 && j <= m + 1,
+      proof_invariant: j >= 1 && j <= m + 1,
       reasoning: (
         #|INVARIANT (row update):
         #|dp[0..j) reflects matches for text[0..i) and pattern[0..j).
@@ -66,7 +66,7 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
       ),
     }
   } where {
-    invariant: i >= 1 && i <= n + 1,
+    proof_invariant: i >= 1 && i <= n + 1,
     reasoning: (
       #|INVARIANT (outer DP):
       #|dp encodes matches for text[0..i) against all pattern prefixes.

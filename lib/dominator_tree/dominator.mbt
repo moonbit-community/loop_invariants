@@ -98,7 +98,7 @@ fn DominatorWork::compute_idom(self : DominatorWork, root_idx : Int) -> Unit {
       self.idom[i] = self.idom[self.idom[i]]
     }
   } where {
-    invariant: i >= 2 && i <= n + 1,
+    proof_invariant: i >= 2 && i <= n + 1,
     reasoning: (
       #|INVARIANT (idom fix):
       #|  For DFS indices in [2..i), idom[j] is the correct
@@ -200,7 +200,7 @@ pub fn build_dominator_tree(
     let id = work.idom[i] // idom in DFS index
     idom_vertex[v] = work.rev[id] // convert back to vertex ID
   } where {
-    invariant: i >= 1 && i <= work.time.val + 1,
+    proof_invariant: i >= 1 && i <= work.time.val + 1,
     reasoning: (
       #|INVARIANT (index conversion):
       #|  idom_vertex is filled for all vertices with DFS index < i.
@@ -220,7 +220,7 @@ pub fn build_dominator_tree(
     guard p >= 0 && v != root else { continue }
     tree[p].push(v) // Add edge idom[v] → v
   } where {
-    invariant: v >= 0 && v <= n,
+    proof_invariant: v >= 0 && v <= n,
     reasoning: (
       #|INVARIANT (tree build):
       #|  Dominator tree edges are added for vertices [0..v).
@@ -272,7 +272,7 @@ pub fn DominatorTree::dominates(self : DominatorTree, u : Int, v : Int) -> Bool 
     }
     continue p
   } where {
-    invariant: cur >= 0 && cur < self.idom.length(),
+    proof_invariant: cur >= 0 && cur < self.idom.length(),
     reasoning: (
       #|INVARIANT (dominator walk):
       #|cur is on the path from v toward the root in the dominator tree.

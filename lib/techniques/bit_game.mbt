@@ -19,7 +19,7 @@ fn count_set_bits(n : Int) -> Int {
   } nobreak {
     count
   } where {
-    invariant: num >= 0 && count >= 0,
+    proof_invariant: num >= 0 && count >= 0,
     reasoning: (
       #|LOOP INVARIANT: count = number of set bits cleared so far
       #|
@@ -73,7 +73,7 @@ fn single_number(nums : ArrayView[Int]) -> Int {
   } nobreak {
     result
   } where {
-    invariant: result >= 0 || result < 0,
+    proof_invariant: result >= 0 || result < 0,
     reasoning: (
       #|LOOP INVARIANT: result = XOR of nums[0..i)
       #|
@@ -106,7 +106,7 @@ fn missing_number(nums : ArrayView[Int]) -> Int {
   } nobreak {
     result
   } where {
-    invariant: result >= 0 || result < 0,
+    proof_invariant: result >= 0 || result < 0,
     reasoning: (
       #|LOOP INVARIANT: result = n ^ XOR of [0..i) ^ XOR of nums[0..i)
       #|
@@ -143,7 +143,7 @@ fn reverse_bits(n : Int) -> Int {
   } nobreak {
     result
   } where {
-    invariant: result >= 0,
+    proof_invariant: result >= 0,
     reasoning: (
       #|LOOP INVARIANT: result contains reversed bits of lowest i bits of original n
       #|
@@ -255,7 +255,7 @@ fn nim_xor(piles : ArrayView[Int]) -> Int {
   } nobreak {
     result
   } where {
-    invariant: result >= 0 || result < 0,
+    proof_invariant: result >= 0 || result < 0,
     reasoning: (
       #|LOOP INVARIANT: result = XOR of piles[0..i)
       #|
@@ -409,7 +409,7 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
     } nobreak {
       max_xor
     } where {
-      invariant: max_xor >= 0,
+      proof_invariant: max_xor >= 0,
       reasoning: (
         #|INVARIANT (max xor inner):
         #|max_xor is the maximum XOR among pairs (i, k) for k in [i+1, j).
@@ -423,7 +423,7 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
   } nobreak {
     max_xor
   } where {
-    invariant: max_xor >= 0,
+    proof_invariant: max_xor >= 0,
     reasoning: (
       #|INVARIANT (max xor outer):
       #|max_xor is the maximum XOR among all pairs with first index < i.
@@ -465,7 +465,7 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
     } nobreak {
       (temp, multiple)
     } where {
-      invariant: multiple >= 1 && temp >= dvs,
+      proof_invariant: multiple >= 1 && temp >= dvs,
       reasoning: (
         #|INVARIANT (doubling step):
         #|temp == dvs * multiple and temp <= dvd; multiple is a power of two.
@@ -483,7 +483,7 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
       quotient
     }
   } where {
-    invariant: dvd >= 0,
+    proof_invariant: dvd >= 0,
     reasoning: (
       #|INVARIANT (division):
       #|quotient * dvs + dvd equals the absolute original dividend.

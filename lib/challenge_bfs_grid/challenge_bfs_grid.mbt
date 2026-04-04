@@ -45,7 +45,7 @@ pub fn shortest_path_grid(
       continue head + 1
     }
   } where {
-    invariant: head >= 0 && head <= queue.length(),
+    proof_invariant: head >= 0 && head <= queue.length(),
     reasoning: (
       #|INVARIANT (BFS frontier):
       #|All positions with index < head have their shortest distance finalized.

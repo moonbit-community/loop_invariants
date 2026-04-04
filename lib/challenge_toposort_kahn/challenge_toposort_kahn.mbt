@@ -37,7 +37,7 @@ pub fn topo_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
       continue head + 1
     }
   } where {
-    invariant: head >= 0 && head <= queue.length(),
+    proof_invariant: head >= 0 && head <= queue.length(),
     reasoning: (
       #|INVARIANT (Kahn frontier):
       #|order is a valid topological prefix of processed nodes.

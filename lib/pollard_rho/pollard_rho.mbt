@@ -49,7 +49,7 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
       continue mul_mod(b, b, m), e / 2L, acc
     }
   } where {
-    invariant: e >= 0L && acc >= 0L && acc < m,
+    proof_invariant: e >= 0L && acc >= 0L && acc < m,
     reasoning: (
       #|INVARIANT (modular exponentiation):
       #|acc * b^e ≡ base^exp (mod m) is preserved at every step.
@@ -91,7 +91,7 @@ fn miller_test(n : Int64, a : Int64, d : Int64, s : Int) -> Bool {
       }
     }
   } where {
-    invariant: r >= 1 && r <= s,
+    proof_invariant: r >= 1 && r <= s,
     reasoning: (
       #|INVARIANT (Miller-Rabin squaring):
       #|x equals a^(d * 2^r) mod n after r squarings.
@@ -128,7 +128,7 @@ pub fn is_prime(n : Int64) -> Bool {
       continue d / 2L, s + 1
     }
   } where {
-    invariant: d >= 1L && s >= 0 && d * (1L << s) == n - 1L,
+    proof_invariant: d >= 1L && s >= 0 && d * (1L << s) == n - 1L,
     reasoning: (
       #|INVARIANT (factor n-1):
       #|d * 2^s = n-1 is preserved while d is even.
@@ -172,7 +172,7 @@ fn pollard_rho(n : Int64) -> Int64 {
       return d
     }
   } where {
-    invariant: idx >= 0 && idx <= constants.length(),
+    proof_invariant: idx >= 0 && idx <= constants.length(),
     reasoning: (
       #|INVARIANT (rho attempts):
       #|All constants in constants[0..idx) have been tried without success.

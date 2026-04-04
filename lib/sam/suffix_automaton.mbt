@@ -114,7 +114,7 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
           self.states[pp].trans[c] = clone
           continue self.states[pp].link
         } where {
-          invariant: pp >= -1 && pp < self.states.length(),
+          proof_invariant: pp >= -1 && pp < self.states.length(),
           reasoning: (
             #|INVARIANT (redirect chain):
             #|All processed states on the suffix-link chain have their c-edge
@@ -130,7 +130,7 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
       }
     }
   } where {
-    invariant: p >= -1,
+    proof_invariant: p >= -1,
     reasoning: (
       #|SUFFIX EXTENSION INVARIANT:
       #|
@@ -191,7 +191,7 @@ fn SuffixAutomaton::contains(self : SuffixAutomaton, pattern : String) -> Bool {
   } nobreak {
     true
   } where {
-    invariant: state >= 0 && state < self.states.length(),
+    proof_invariant: state >= 0 && state < self.states.length(),
     reasoning: (
       #|SUBSTRING CHECK INVARIANT:
       #|
@@ -218,7 +218,7 @@ fn SuffixAutomaton::count_distinct_substrings(self : SuffixAutomaton) -> Int {
   } nobreak {
     count
   } where {
-    invariant: i >= 0 && count >= 0,
+    proof_invariant: i >= 0 && count >= 0,
     reasoning: (
       #|DISTINCT COUNT INVARIANT:
       #|
@@ -288,7 +288,7 @@ fn SuffixAutomaton::count_occurrences(
   } nobreak {
     self.states[state].cnt
   } where {
-    invariant: state >= 0,
+    proof_invariant: state >= 0,
     reasoning: (
       #|OCCURRENCE COUNT INVARIANT:
       #|state represents the SAM state after reading pattern[0..i).
@@ -326,7 +326,7 @@ fn SuffixAutomaton::longest_common_substring_length(
   } nobreak {
     best_len
   } where {
-    invariant: state >= 0 && cur_len >= 0 && best_len >= 0,
+    proof_invariant: state >= 0 && cur_len >= 0 && best_len >= 0,
     reasoning: (
       #|LCS INVARIANT:
       #|
@@ -359,7 +359,7 @@ fn find_suffix_match(
   } nobreak {
     (0, 0)
   } where {
-    invariant: st >= -1,
+    proof_invariant: st >= -1,
     reasoning: (
       #|INVARIANT (suffix fallback):
       #|st is a valid suffix-link state or -1 sentinel.
@@ -396,7 +396,7 @@ fn SuffixAutomaton::longest_common_substring(
   } nobreak {
     (best_len, best_end)
   } where {
-    invariant: state >= 0 && cur_len >= 0 && i >= 0,
+    proof_invariant: state >= 0 && cur_len >= 0 && i >= 0,
     reasoning: (
       #|LCS STRING INVARIANT:
       #|
@@ -442,7 +442,7 @@ fn SuffixAutomaton::compute_path_counts(self : SuffixAutomaton) -> Array[Int64] 
     } nobreak {
       cnt
     } where {
-      invariant: c >= 0 && c <= alphabet_size,
+      proof_invariant: c >= 0 && c <= alphabet_size,
       reasoning: (
         #|INVARIANT (count paths):
         #|cnt accounts for paths through transitions in [0, c).
@@ -482,7 +482,7 @@ fn find_next_transition(
   } nobreak {
     None
   } where {
-    invariant: c >= 0 && c <= alphabet_size && rem >= 0L,
+    proof_invariant: c >= 0 && c <= alphabet_size && rem >= 0L,
     reasoning: (
       #|INVARIANT (select transition):
       #|rem is the rank among substrings starting from transitions in [0, c).
@@ -520,7 +520,7 @@ fn SuffixAutomaton::kth_substring(self : SuffixAutomaton, k : Int64) -> String? 
       None => break
     }
   } where {
-    invariant: state >= 0 && remaining >= 0L,
+    proof_invariant: state >= 0 && remaining >= 0L,
     reasoning: (
       #|INVARIANT (ranked substring):
       #|remaining is the rank among substrings from the current state.

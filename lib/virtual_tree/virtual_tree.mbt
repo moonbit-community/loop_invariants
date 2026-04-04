@@ -29,7 +29,7 @@ fn build_lca(
   } nobreak {
     (log, pow)
   } where {
-    invariant: pow >= 1 && log >= 1 && pow == 1 << (log - 1),
+    proof_invariant: pow >= 1 && log >= 1 && pow == 1 << (log - 1),
     reasoning: (
       #|INVARIANT (log growth):
       #|pow tracks 2^(log-1). Each iteration doubles pow and increments log,
@@ -154,7 +154,7 @@ pub fn build_virtual_tree(
       vt_adj[parent].push(child)
       vt_adj[child].push(parent)
     } where {
-      invariant: stack.length() >= 1,
+      proof_invariant: stack.length() >= 1,
       reasoning: (
         #|INVARIANT (virtual stack):
         #|stack forms a root-to-leaf path in the virtual tree, ordered by depth.
@@ -180,7 +180,7 @@ pub fn build_virtual_tree(
     vt_adj[parent].push(child)
     vt_adj[child].push(parent)
   } where {
-    invariant: stack.length() >= 1,
+    proof_invariant: stack.length() >= 1,
     reasoning: (
       #|INVARIANT (final chain):
       #|stack represents a single remaining path in the virtual tree whose

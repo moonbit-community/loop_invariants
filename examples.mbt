@@ -17,7 +17,7 @@ fn fib_loop(n : Int) -> Int {
       continue i + 1, b, a + b
     }
   } where {
-    invariant: i >= 0 && a == fib(i) && b == fib(i + 1),
+    proof_invariant: i >= 0 && a == fib(i) && b == fib(i + 1),
     reasoning: (
       #|This invariant directly states the equivalence: a = F(i) and b = F(i+1).
       #|
@@ -69,7 +69,7 @@ fn binary_search(arr : ArrayView[Int], target : Int) -> Int? {
       }
     }
   } where {
-    invariant: lo >= 0 && hi <= arr.length() && lo <= hi,
+    proof_invariant: lo >= 0 && hi <= arr.length() && lo <= hi,
     reasoning: (
       #|INVARIANT 1 (Bounds): [lo, hi) is always a valid subrange.
       #|
@@ -83,7 +83,7 @@ fn binary_search(arr : ArrayView[Int], target : Int) -> Int? {
       #|TERMINATION:
       #|When lo >= hi, the search interval is empty.
     ),
-    invariant: lo == 0 || arr[lo - 1] < target,
+    proof_invariant: lo == 0 || arr[lo - 1] < target,
     reasoning: (
       #|INVARIANT 2 (Left exclusion): Everything before lo is too small.
       #|
@@ -100,7 +100,7 @@ fn binary_search(arr : ArrayView[Int], target : Int) -> Int? {
       #|TERMINATION:
       #|At loop end, all indices before lo are excluded.
     ),
-    invariant: hi == arr.length() || arr[hi] > target,
+    proof_invariant: hi == arr.length() || arr[hi] > target,
     reasoning: (
       #|INVARIANT 3 (Right exclusion): Everything from hi onwards is too large.
       #|
@@ -117,7 +117,7 @@ fn binary_search(arr : ArrayView[Int], target : Int) -> Int? {
       #|TERMINATION:
       #|At loop end, all indices from hi onward are excluded.
     ),
-    invariant: hi - lo >= 0,
+    proof_invariant: hi - lo >= 0,
     reasoning: (
       #|INVARIANT 4 (Termination measure): hi - lo is non-negative and decreases.
       #|
@@ -174,7 +174,7 @@ fn gcd_loop(a : Int, b : Int) -> Int {
       continue y, x % y
     }
   } where {
-    invariant: x >= 0 && y >= 0 && gcd_rec(x, y) == gcd_rec(a, b),
+    proof_invariant: x >= 0 && y >= 0 && gcd_rec(x, y) == gcd_rec(a, b),
     reasoning: (
       #|The invariant states that gcd(x,y) = gcd(a,b) throughout.
       #|
@@ -229,7 +229,7 @@ fn pow_loop(base : Int, exp : Int) -> Int {
       continue b, e - 1, acc * b
     }
   } where {
-    invariant: e >= 0 && acc * pow_rec(b, e) == pow_rec(base, exp),
+    proof_invariant: e >= 0 && acc * pow_rec(b, e) == pow_rec(base, exp),
     reasoning: (
       #|The invariant: acc × b^e = base^exp (the final answer).
       #|
@@ -276,7 +276,7 @@ fn reverse_inplace(arr : Array[Int]) -> Unit {
       continue lo + 1, hi - 1
     }
   } where {
-    invariant: lo >= 0 && hi < arr.length() && lo + hi == arr.length() - 1,
+    proof_invariant: lo >= 0 && hi < arr.length() && lo + hi == arr.length() - 1,
     reasoning: (
       #|The invariant tracks the symmetry of swap positions.
       #|
@@ -335,7 +335,7 @@ fn isqrt(n : Int) -> Int {
       }
     }
   } where {
-    invariant: lo >= 0 && lo < hi && lo * lo <= n && (hi > n || hi * hi > n),
+    proof_invariant: lo >= 0 && lo < hi && lo * lo <= n && (hi > n || hi * hi > n),
     reasoning: (
       #|The invariant maintains: lo² ≤ n < hi² (answer is in [lo, hi)).
       #|
@@ -397,7 +397,7 @@ fn dutch_flag(arr : Array[Int], pivot : Int) -> Unit {
       continue lo, mid + 1, hi
     }
   } where {
-    invariant: 0 <= lo && lo <= mid && mid <= hi && hi <= arr.length(),
+    proof_invariant: 0 <= lo && lo <= mid && mid <= hi && hi <= arr.length(),
     reasoning: (
       #|INVARIANT 1 (Bounds): Pointers maintain proper ordering.
       #|
@@ -416,7 +416,7 @@ fn dutch_flag(arr : Array[Int], pivot : Int) -> Unit {
       #|TERMINATION:
       #|When mid >= hi, all elements are partitioned.
     ),
-    invariant: hi - mid >= 0,
+    proof_invariant: hi - mid >= 0,
     reasoning: (
       #|INVARIANT 2 (Termination + Partition Property):
       #|The unprocessed region is [mid, hi). Its size = hi - mid.
@@ -499,7 +499,7 @@ fn kadane(arr : ArrayView[Int]) -> Int {
       continue i + 1, new_max_here, new_max_far
     }
   } where {
-    invariant: i >= 1 && i <= arr.length(),
+    proof_invariant: i >= 1 && i <= arr.length(),
     reasoning: (
       #|INVARIANT 1 (Bounds): i stays in valid range.
       #|
@@ -510,7 +510,7 @@ fn kadane(arr : ArrayView[Int]) -> Int {
       #|TERMINATION:
       #|At i = len, the scan is complete.
     ),
-    invariant: max_ending_here >= arr[i - 1],
+    proof_invariant: max_ending_here >= arr[i - 1],
     reasoning: (
       #|INVARIANT 2 (Local optimum): max_ending_here is the maximum sum of
       #|any subarray ending exactly at index i-1.
@@ -532,7 +532,7 @@ fn kadane(arr : ArrayView[Int]) -> Int {
       #|TERMINATION:
       #|At i = len, max_ending_here is optimal for the last index.
     ),
-    invariant: max_so_far >= max_ending_here,
+    proof_invariant: max_so_far >= max_ending_here,
     reasoning: (
       #|INVARIANT 3 (Global optimum): max_so_far is the maximum sum of
       #|any subarray in arr[0..i).
@@ -609,7 +609,7 @@ fn two_sum_sorted(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
       }
     }
   } where {
-    invariant: 0 <= lo && lo <= hi && hi < arr.length(),
+    proof_invariant: 0 <= lo && lo <= hi && hi < arr.length(),
     reasoning: (
       #|INVARIANT 1 (Bounds): Pointers stay valid and don't cross.
       #|
@@ -622,7 +622,7 @@ fn two_sum_sorted(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
       #|TERMINATION:
       #|When lo >= hi, no pair remains to check.
     ),
-    invariant: lo == 0 || arr[lo - 1] + arr[hi] < target,
+    proof_invariant: lo == 0 || arr[lo - 1] + arr[hi] < target,
     reasoning: (
       #|INVARIANT 2 (Left elimination): For all j < lo, arr[j] + arr[hi] < target.
       #|
@@ -640,7 +640,7 @@ fn two_sum_sorted(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
       #|TERMINATION:
       #|At loop end, all pairs with left index < lo are excluded.
     ),
-    invariant: hi == arr.length() - 1 || arr[lo] + arr[hi + 1] > target,
+    proof_invariant: hi == arr.length() - 1 || arr[lo] + arr[hi + 1] > target,
     reasoning: (
       #|INVARIANT 3 (Right elimination): For all k > hi, arr[lo] + arr[k] > target.
       #|
@@ -703,7 +703,7 @@ fn merge(left : ArrayView[Int], right : ArrayView[Int]) -> Array[Int] {
       continue i, j + 1
     }
   } where {
-    invariant: i >= 0 && i <= left.length() && j >= 0 && j <= right.length(),
+    proof_invariant: i >= 0 && i <= left.length() && j >= 0 && j <= right.length(),
     reasoning: (
       #|INVARIANT 1 (Bounds): Indices stay within array bounds.
       #|
@@ -714,7 +714,7 @@ fn merge(left : ArrayView[Int], right : ArrayView[Int]) -> Array[Int] {
       #|TERMINATION:
       #|When i and j reach the ends, the merge is complete.
     ),
-    invariant: result.length() == i + j,
+    proof_invariant: result.length() == i + j,
     reasoning: (
       #|INVARIANT 2 (Progress): Output size equals consumed input.
       #|
@@ -759,7 +759,7 @@ fn extended_gcd(a : Int, b : Int) -> (Int, Int, Int) {
       continue r1, r0 - q * r1, x1, x0 - q * x1, y1, y0 - q * y1
     }
   } where {
-    invariant: a * x0 + b * y0 == r0,
+    proof_invariant: a * x0 + b * y0 == r0,
     reasoning: (
       #|INVARIANT 1 (Bézout for r0): a·x0 + b·y0 = r0
       #|
@@ -774,7 +774,7 @@ fn extended_gcd(a : Int, b : Int) -> (Int, Int, Int) {
       #|TERMINATION:
       #|When r1 = 0, r0 is gcd and x0,y0 are Bézout coefficients.
     ),
-    invariant: a * x1 + b * y1 == r1,
+    proof_invariant: a * x1 + b * y1 == r1,
     reasoning: (
       #|INVARIANT 2 (Bézout for r1): a·x1 + b·y1 = r1
       #|
@@ -795,7 +795,7 @@ fn extended_gcd(a : Int, b : Int) -> (Int, Int, Int) {
       #|TERMINATION:
       #|At r1 = 0, the identity holds trivially and r0 is gcd.
     ),
-    invariant: r1 >= 0,
+    proof_invariant: r1 >= 0,
     reasoning: (
       #|INVARIANT 3 (Non-negative remainder): r1 ≥ 0
       #|
@@ -846,7 +846,7 @@ fn majority_element(arr : ArrayView[Int]) -> Int? {
       continue i + 1, candidate, count - 1
     }
   } where {
-    invariant: i >= 1 && i <= arr.length() && count >= 0,
+    proof_invariant: i >= 1 && i <= arr.length() && count >= 0,
     reasoning: (
       #|INVARIANT 1 (Bounds):
       #|i counts processed elements, so 1 <= i <= arr.length().
@@ -856,7 +856,7 @@ fn majority_element(arr : ArrayView[Int]) -> Int? {
       #|TERMINATION:
       #|At i = arr.length(), candidate and count reflect the full scan.
     ),
-    invariant: count <= i,
+    proof_invariant: count <= i,
     reasoning: (
       #|INVARIANT 2 (Count bound): count never exceeds elements seen.
       #|
@@ -922,7 +922,7 @@ fn isqrt_newton(n : Int) -> Int {
       continue x_next
     }
   } where {
-    invariant: x >= 1 && x * x >= n,
+    proof_invariant: x >= 1 && x * x >= n,
     reasoning: (
       #|INVARIANT 1 (Upper bound): x is always ≥ √n (an overestimate).
       #|
@@ -940,7 +940,7 @@ fn isqrt_newton(n : Int) -> Int {
       #|TERMINATION:
       #|When x' >= x, the loop stops at the floor sqrt.
     ),
-    invariant: x <= n,
+    proof_invariant: x <= n,
     reasoning: (
       #|INVARIANT 2 (Reasonable bound): x ≤ n.
       #|
@@ -1005,7 +1005,7 @@ fn sieve(n : Int) -> Array[Int] {
       continue i + 1
     }
   } where {
-    invariant: i >= 2 && i * i <= n + 1,
+    proof_invariant: i >= 2 && i * i <= n + 1,
     reasoning: (
       #|INVARIANT 1 (Bounds): i stays in sieving range.
       #|
@@ -1016,7 +1016,7 @@ fn sieve(n : Int) -> Array[Int] {
       #|TERMINATION:
       #|When i * i > n, all composites have a smaller prime factor marked.
     ),
-    invariant: i >= 2,
+    proof_invariant: i >= 2,
     reasoning: (
       #|INVARIANT 2 (Sieve correctness): After processing i,
       #|for all j ∈ [2, i], is_prime[j] = true iff j is prime.
@@ -1074,7 +1074,7 @@ fn mod_pow(base : Int, exp : Int, m : Int) -> Int {
       continue b, e - 1, acc * b % m
     }
   } where {
-    invariant: e >= 0 && acc >= 0 && acc < m && b >= 0 && b < m,
+    proof_invariant: e >= 0 && acc >= 0 && acc < m && b >= 0 && b < m,
     reasoning: (
       #|INVARIANT 1 (Bounds): All values stay in valid range.
       #|
@@ -1089,7 +1089,7 @@ fn mod_pow(base : Int, exp : Int, m : Int) -> Int {
       #|TERMINATION:
       #|When e = 0, the loop stops with a valid result.
     ),
-    invariant: acc >= 0,
+    proof_invariant: acc >= 0,
     reasoning: (
       #|INVARIANT 2 (Correctness): acc · b^e ≡ base^exp (mod m)
       #|
@@ -1146,7 +1146,7 @@ fn popcount(n : Int) -> Int {
       continue x & (x - 1), count + 1
     }
   } where {
-    invariant: count >= 0 && x >= 0,
+    proof_invariant: count >= 0 && x >= 0,
     reasoning: (
       #|INVARIANT 1 (Non-negative): count and x stay non-negative.
       #|
@@ -1159,7 +1159,7 @@ fn popcount(n : Int) -> Int {
       #|TERMINATION:
       #|When x = 0, all bits have been counted.
     ),
-    invariant: count >= 0,
+    proof_invariant: count >= 0,
     reasoning: (
       #|INVARIANT 2 (Progress + Correctness):
       #|popcount(original n) = count + popcount(x) + sign_bit_contribution
@@ -1218,7 +1218,7 @@ fn next_permutation(arr : Array[Int]) -> Bool {
       continue i - 1
     }
   } where {
-    invariant: i >= -1 && i < arr.length() - 1,
+    proof_invariant: i >= -1 && i < arr.length() - 1,
     reasoning: (
       #|INVARIANT 1 (Bounds): i stays in valid search range.
       #|
@@ -1254,7 +1254,7 @@ fn next_permutation(arr : Array[Int]) -> Bool {
       continue j - 1
     }
   } where {
-    invariant: j > p,
+    proof_invariant: j > p,
     reasoning: (
       #|INVARIANT 3 (Search bounds): j stays above pivot.
       #|
@@ -1289,7 +1289,7 @@ fn reverse_range(arr : Array[Int], lo : Int, hi : Int) -> Unit {
       continue l + 1, h - 1
     }
   } where {
-    invariant: 0 <= lo && lo <= l && h <= hi && hi < arr.length(),
+    proof_invariant: 0 <= lo && lo <= l && h <= hi && hi < arr.length(),
     reasoning: (
       #|Bounds: l and h stay within the provided range.
       #|
@@ -1300,7 +1300,7 @@ fn reverse_range(arr : Array[Int], lo : Int, hi : Int) -> Unit {
       #|TERMINATION:
       #|When l >= h, the range is fully reversed.
     ),
-    invariant: l + h == lo + hi,
+    proof_invariant: l + h == lo + hi,
     reasoning: (
       #|Symmetry: the distance moved from both ends is the same.
       #|
@@ -1346,7 +1346,7 @@ fn lower_bound(arr : Array[Int], len : Int, target : Int) -> Int {
       }
     }
   } where {
-    invariant: 0 <= lo && lo <= hi && hi <= len,
+    proof_invariant: 0 <= lo && lo <= hi && hi <= len,
     reasoning: (
       #|Bounds: lo and hi always stay within [0, len].
       #|
@@ -1356,7 +1356,7 @@ fn lower_bound(arr : Array[Int], len : Int, target : Int) -> Int {
       #|TERMINATION:
       #|When lo >= hi, lo is the lower_bound.
     ),
-    invariant: lo == 0 || arr[lo - 1] < target,
+    proof_invariant: lo == 0 || arr[lo - 1] < target,
     reasoning: (
       #|Left exclusion: all indices < lo are strictly < target.
       #|
@@ -1366,7 +1366,7 @@ fn lower_bound(arr : Array[Int], len : Int, target : Int) -> Int {
       #|TERMINATION:
       #|At loop end, all indices before lo are excluded.
     ),
-    invariant: hi == len || arr[hi] >= target,
+    proof_invariant: hi == len || arr[hi] >= target,
     reasoning: (
       #|Right candidate: hi is the smallest index known to satisfy arr[hi] >= target,
       #|or hi = len if no such index has been found yet.
@@ -1398,7 +1398,7 @@ fn lis_length(arr : ArrayView[Int]) -> Int {
       }
     }
   } where {
-    invariant: i >= 0 && i <= arr.length() && len >= 0 && len <= i,
+    proof_invariant: i >= 0 && i <= arr.length() && len >= 0 && len <= i,
     reasoning: (
       #|INVARIANT 1 (Bounds):
       #|i is the number of processed elements; len is the current LIS length.
@@ -1408,7 +1408,7 @@ fn lis_length(arr : ArrayView[Int]) -> Int {
       #|TERMINATION:
       #|At i = arr.length(), len is the LIS length for the full array.
     ),
-    invariant: len >= 0,
+    proof_invariant: len >= 0,
     reasoning: (
       #|INVARIANT 2 (Tails array property):
       #|For all j ∈ [0, len): tails[j] is the smallest possible ending

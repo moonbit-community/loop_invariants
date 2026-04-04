@@ -78,7 +78,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       dfs_order(v, adj, visited, order)
     }
   } where {
-    invariant: v >= 0 && v <= n,
+    proof_invariant: v >= 0 && v <= n,
     reasoning: (
       #|INVARIANT (post-order construction):
       #|  Vertices [0..v) are processed. Every visited vertex appears
@@ -105,7 +105,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       let v = adj[u][j]
       radj[v].push(u) // Reverse: u→v becomes v→u
     } where {
-      invariant: j >= 0 && j <= adj[u].length(),
+      proof_invariant: j >= 0 && j <= adj[u].length(),
       reasoning: (
         #|INVARIANT (per-vertex transpose):
         #|  Edges adj[u][0..j) have been reversed into radj.
@@ -118,7 +118,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       ),
     }
   } where {
-    invariant: u >= 0 && u <= n,
+    proof_invariant: u >= 0 && u <= n,
     reasoning: (
       #|INVARIANT (full transpose):
       #|  All edges from vertices [0..u) are reversed in radj.
@@ -165,7 +165,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
         scc_adj[comp_u].push(comp_v)
       }
     } where {
-      invariant: j >= 0 && j <= adj[u].length(),
+      proof_invariant: j >= 0 && j <= adj[u].length(),
       reasoning: (
         #|INVARIANT (edge processing):
         #|  Edges adj[u][0..j) checked for SCC crossings.
@@ -178,7 +178,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       ),
     }
   } where {
-    invariant: u >= 0 && u <= n,
+    proof_invariant: u >= 0 && u <= n,
     reasoning: (
       #|INVARIANT (condensation):
       #|  All edges from vertices [0..u) reflected in scc_adj.
@@ -208,7 +208,7 @@ fn dfs_order(
       dfs_order(u, adj, visited, order)
     }
   } where {
-    invariant: i >= 0 && i <= adj[v].length(),
+    proof_invariant: i >= 0 && i <= adj[v].length(),
     reasoning: (
       #|INVARIANT (DFS traversal):
       #|  Neighbors adj[v][0..i) are processed.
@@ -243,7 +243,7 @@ fn dfs_assign(
       dfs_assign(u, radj, component, scc_id, size)
     }
   } where {
-    invariant: i >= 0 && i <= radj[v].length(),
+    proof_invariant: i >= 0 && i <= radj[v].length(),
     reasoning: (
       #|INVARIANT (SCC assignment):
       #|  Neighbors radj[v][0..i) in the same SCC are assigned.

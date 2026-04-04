@@ -55,7 +55,7 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
           dp[i][j] = cost
         }
       } where {
-        invariant: k >= i + 1 && k <= j,
+        proof_invariant: k >= i + 1 && k <= j,
         reasoning: (
           #|INVARIANT (split scan):
           #|dp[i][j] is the minimum cost among splits in [i+1..k). Each split
@@ -67,7 +67,7 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
         ),
       }
     } where {
-      invariant: i >= 0 && i + len <= n,
+      proof_invariant: i >= 0 && i + len <= n,
       reasoning: (
         #|INVARIANT (fixed length):
         #|For all indices i' in [0..i), dp[i'][i'+len] is finalized for the
@@ -79,7 +79,7 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
       ),
     }
   } where {
-    invariant: len >= 2 && len <= n,
+    proof_invariant: len >= 2 && len <= n,
     reasoning: (
       #|INVARIANT (length expansion):
       #|All dp intervals with length < len are already optimal. This ensures

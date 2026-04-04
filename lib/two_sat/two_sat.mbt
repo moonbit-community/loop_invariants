@@ -133,7 +133,7 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
       dfs1(self.adj, visited, order, i)
     }
   } where {
-    invariant: i >= 0 && i <= num_nodes,
+    proof_invariant: i >= 0 && i <= num_nodes,
     reasoning: (
       #|INVARIANT (finish order):
       #|All nodes in [0, i) have been visited and added to order by finish time.
@@ -169,7 +169,7 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
     // Higher SCC number = earlier in reverse topo order = should be true
     assignment[i] = comp[node_true] > comp[node_false]
   } where {
-    invariant: i >= 0 && i <= self.n,
+    proof_invariant: i >= 0 && i <= self.n,
     reasoning: (
       #|INVARIANT (assignment):
       #|All variables in [0, i) have been assigned consistently with SCC order.
@@ -233,7 +233,7 @@ fn TwoSat::verify(self : TwoSat, assignment : Array[Bool]) -> Bool {
       }
     }
   } where {
-    invariant: u >= 0 && u <= 2 * self.n,
+    proof_invariant: u >= 0 && u <= 2 * self.n,
     reasoning: (
       #|INVARIANT (verify all nodes):
       #|All implication nodes in [0..u) have been validated against assignment.

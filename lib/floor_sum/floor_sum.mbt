@@ -36,7 +36,7 @@ pub fn floor_sum(n : Int64, m : Int64, a : Int64, b : Int64) -> Int64 {
       continue y_max / m0, a1, m0, y_max % m0, ans2
     }
   } where {
-    invariant: n0 >= 0L && m0 > 0L && a0 >= 0L && b0 >= 0L,
+    proof_invariant: n0 >= 0L && m0 > 0L && a0 >= 0L && b0 >= 0L,
     reasoning: (
       #|INVARIANT (Euclidean reduction):
       #|The current (n0, m0, a0, b0) represent the same floor sum after

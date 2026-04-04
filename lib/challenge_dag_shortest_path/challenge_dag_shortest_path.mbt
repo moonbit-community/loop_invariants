@@ -45,7 +45,7 @@ pub fn dag_shortest_paths(
       continue head + 1
     }
   } where {
-    invariant: head >= 0 && head <= queue.length(),
+    proof_invariant: head >= 0 && head <= queue.length(),
     reasoning: (
       #|INVARIANT (Topo order):
       #|order is a valid topological prefix of processed nodes.

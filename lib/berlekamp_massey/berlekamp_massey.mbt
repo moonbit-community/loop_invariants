@@ -48,7 +48,7 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
   } nobreak {
     result
   } where {
-    invariant: e >= 0L,
+    proof_invariant: e >= 0L,
     reasoning: (
       #|INVARIANT (binary exponentiation):
       #|result * (b^e) equals base^exp modulo m. Each iteration consumes the

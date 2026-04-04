@@ -110,7 +110,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
         rank[rank.length() - 1] + (if bits[bits.length() - 1] { 1 } else { 0 }),
       )
     } where {
-      invariant: bits.length() == i,
+      proof_invariant: bits.length() == i,
       reasoning: (
         #|INVARIANT (partition):
         #|After processing i elements, bits and rank have length i+1, and
@@ -196,7 +196,7 @@ fn WaveletTree::count(self : WaveletTree, l : Int, r : Int, v : Int) -> Int {
       continue node.right, new_left, new_right
     }
   } where {
-    invariant: node_idx >= 0 && node_idx < self.nodes.length() && left <= right,
+    proof_invariant: node_idx >= 0 && node_idx < self.nodes.length() && left <= right,
     reasoning: (
       #|INVARIANT (count path):
       #|[left, right) is the subrange in the current node that corresponds to
@@ -268,7 +268,7 @@ fn WaveletTree::count_less(
       continue node.right, new_left, new_right, new_count
     }
   } where {
-    invariant: node_idx >= 0 && left <= right && count >= 0,
+    proof_invariant: node_idx >= 0 && left <= right && count >= 0,
     reasoning: (
       #|INVARIANT (count_less path):
       #|count equals the number of elements proven < v in the processed path,
@@ -335,7 +335,7 @@ fn WaveletTree::quantile(self : WaveletTree, l : Int, r : Int, k : Int) -> Int? 
       continue node.right, new_left, new_right, new_k
     }
   } where {
-    invariant: node_idx >= 0 &&
+    proof_invariant: node_idx >= 0 &&
     left < right &&
     remaining_k > 0 &&
     remaining_k <= right - left,
@@ -395,7 +395,7 @@ fn WaveletTree::select(
       None
     }
   } where {
-    invariant: lo >= l && hi <= r && lo <= hi,
+    proof_invariant: lo >= l && hi <= r && lo <= hi,
     reasoning: (
       #|INVARIANT (kth search):
       #|If the k-th occurrence exists, its position lies within [lo, hi].
@@ -436,7 +436,7 @@ fn WaveletTree::access(self : WaveletTree, i : Int) -> Int? {
       continue node.left, new_pos
     }
   } where {
-    invariant: node_idx >= 0 && pos >= 0,
+    proof_invariant: node_idx >= 0 && pos >= 0,
     reasoning: (
       #|INVARIANT (access path):
       #|pos is the position of the queried element within the current node's

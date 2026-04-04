@@ -67,7 +67,7 @@ test "invariant sum example" {
   } nobreak {
     sum
   } where {
-    invariant: 0 <= i && i <= n,
+    proof_invariant: 0 <= i && i <= n,
     reasoning: "sum equals the total of xs[0..i).",
   }
   inspect(total, content="10")
@@ -91,7 +91,7 @@ test "invariant max example" {
   } nobreak {
     best
   } where {
-    invariant: 0 <= i && i <= n,
+    proof_invariant: 0 <= i && i <= n,
     reasoning: "best is max of xs[0..i).",
   }
   inspect(best, content="7")

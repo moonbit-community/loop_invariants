@@ -137,7 +137,7 @@ fn dijkstra(
       }
     }
   } where {
-    invariant: dist.length() == n,
+    proof_invariant: dist.length() == n,
     reasoning: (
       #|INVARIANT (Dijkstra):
       #|For every node already finalized (popped with d == dist[u]), dist[u] is

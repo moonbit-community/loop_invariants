@@ -134,7 +134,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
       }
       continue k + 1, j + 1
     } where {
-      invariant: k >= edge.start && k <= edge.end && j >= pos && j <= n,
+      proof_invariant: k >= edge.start && k <= edge.end && j >= pos && j <= n,
       reasoning: (
         #|INVARIANT (edge label matching):
         #|  text[edge.start..k) == text[pos..j)
@@ -145,7 +145,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
       ),
     }
   } where {
-    invariant: pos >= start && pos <= n,
+    proof_invariant: pos >= start && pos <= n,
     reasoning: (
       #|INVARIANT (suffix progress):
       #|  text[start..pos) is represented by the path from root to current.
@@ -233,7 +233,7 @@ pub fn SuffixTree::new(s : String) -> SuffixTree {
   for start in 0..<text.length() {
     insert_suffix(nodes, text, start)
   } where {
-    invariant: start >= 0 && start <= text.length(),
+    proof_invariant: start >= 0 && start <= text.length(),
     reasoning: (
       #|INVARIANT (suffix coverage):
       #|  All suffixes text[i..n) for i in [0..start) have been inserted.

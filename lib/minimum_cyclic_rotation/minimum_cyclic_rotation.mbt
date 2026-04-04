@@ -46,7 +46,7 @@ pub fn min_cyclic_rotation_index(s : String) -> Int {
       }
     }
   } where {
-    invariant: i >= 0 && j >= 0 && k >= 0 && i <= n && j <= n,
+    proof_invariant: i >= 0 && j >= 0 && k >= 0 && i <= n && j <= n,
     reasoning: (
       #|INVARIANT (Booth scan):
       #|i and j are candidate rotation starts; all indices less than min(i, j)

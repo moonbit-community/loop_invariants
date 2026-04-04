@@ -106,7 +106,7 @@ fn FlowNetwork::edmonds_karp(
     } nobreak {
       path_flow
     } where {
-      invariant: v >= 0 && v < self.n,
+      proof_invariant: v >= 0 && v < self.n,
       reasoning: (
         #|INVARIANT (Bottleneck scan):
         #|Traversing the parent chain from sink toward source, path_flow equals
@@ -133,7 +133,7 @@ fn FlowNetwork::edmonds_karp(
         }
       }
     } where {
-      invariant: v >= 0 && v < self.n,
+      proof_invariant: v >= 0 && v < self.n,
       reasoning: (
         #|INVARIANT (Augmentation):
         #|For edges on the already processed suffix of the parent path, the
@@ -148,7 +148,7 @@ fn FlowNetwork::edmonds_karp(
     }
     continue max_flow + path_flow
   } where {
-    invariant: max_flow >= 0,
+    proof_invariant: max_flow >= 0,
     reasoning: (
       #|INVARIANT (Edmonds-Karp progress):
       #|max_flow equals the value of the current feasible flow, and each
@@ -269,8 +269,8 @@ fn DinicNetwork::dfs_dinic(
   } nobreak {
     0
   } where {
-    invariant: idx >= 0 && idx <= self.adj[u].length(),
-    invariant: self.iter[u] == idx,
+    proof_invariant: idx >= 0 && idx <= self.adj[u].length(),
+    proof_invariant: self.iter[u] == idx,
     reasoning: (
       #|INVARIANT (DFS edge scan):
       #|Edges adj[u][0..idx) have been fully explored for blocking flow, and
@@ -304,7 +304,7 @@ fn DinicNetwork::dinic_max_flow(
     } nobreak {
       phase_flow
     } where {
-      invariant: pushed >= 0,
+      proof_invariant: pushed >= 0,
       reasoning: (
         #|INVARIANT (Blocking flow augmentation):
         #|Each successful dfs_dinic call augments along the current level
@@ -317,7 +317,7 @@ fn DinicNetwork::dinic_max_flow(
     }
     continue max_flow + phase_flow
   } where {
-    invariant: max_flow >= 0,
+    proof_invariant: max_flow >= 0,
     reasoning: (
       #|INVARIANT (Dinic phases):
       #|Each iteration builds a level graph and sends a blocking flow, so
@@ -452,7 +452,7 @@ fn MCMFNetwork::min_cost_max_flow(
     } nobreak {
       path_flow
     } where {
-      invariant: v >= 0 && v < self.n,
+      proof_invariant: v >= 0 && v < self.n,
       reasoning: (
         #|INVARIANT (Bottleneck scan):
         #|path_flow is the minimum residual capacity over the scanned suffix
@@ -476,7 +476,7 @@ fn MCMFNetwork::min_cost_max_flow(
         }
       }
     } where {
-      invariant: v >= 0 && v < self.n,
+      proof_invariant: v >= 0 && v < self.n,
       reasoning: (
         #|INVARIANT (Augmentation):
         #|For the processed suffix of the path, flow has been augmented by
@@ -489,7 +489,7 @@ fn MCMFNetwork::min_cost_max_flow(
     }
     continue max_flow + path_flow, min_cost + path_flow * dist[sink]
   } where {
-    invariant: max_flow >= 0,
+    proof_invariant: max_flow >= 0,
     reasoning: (
       #|INVARIANT (MCMF progress):
       #|max_flow/min_cost describe a feasible flow and its total cost.
@@ -588,7 +588,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
       } nobreak {
         (delta, j1)
       } where {
-        invariant: j >= 1 && j <= m + 1,
+        proof_invariant: j >= 1 && j <= m + 1,
         reasoning: (
           #|INVARIANT (Reduced costs):
           #|For each un-used column k in [1..j), minv[k] stores the minimum
@@ -614,7 +614,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
           minv[j] = minv[j] - delta
         }
       } where {
-        invariant: j >= 0 && j <= m + 1,
+        proof_invariant: j >= 0 && j <= m + 1,
         reasoning: (
           #|INVARIANT (Feasible potentials):
           #|Updating u/v by delta preserves feasibility:
@@ -634,7 +634,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
         continue j1
       }
     } where {
-      invariant: j0 >= 0 && j0 <= m,
+      proof_invariant: j0 >= 0 && j0 <= m,
       reasoning: (
         #|INVARIANT (Alternating tree):
         #|used marks the columns currently in the alternating tree rooted at
@@ -655,7 +655,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
       p[j] = p[j1]
       continue j1
     } where {
-      invariant: j >= 0 && j <= m,
+      proof_invariant: j >= 0 && j <= m,
       reasoning: (
         #|INVARIANT (Augment path):
         #|Along the suffix from the current column j to 0, p has been updated
@@ -668,7 +668,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
       ),
     }
   } where {
-    invariant: i >= 1 && i <= n + 1,
+    proof_invariant: i >= 1 && i <= n + 1,
     reasoning: (
       #|HUNGARIAN ALGORITHM INVARIANT:
       #|After iteration i-1, p encodes a minimum-cost matching for rows
@@ -694,7 +694,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
   } nobreak {
     total_cost
   } where {
-    invariant: j >= 1 && j <= m + 1,
+    proof_invariant: j >= 1 && j <= m + 1,
     reasoning: (
       #|INVARIANT (cost sum):
       #|total_cost equals the sum of costs for assigned columns in [1..j).

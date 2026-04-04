@@ -83,7 +83,7 @@ fn add_point(bit : Fenwick, idx : Int, delta : Int) -> Fenwick {
       continue i + (i & -i), updated
     }
   } where {
-    invariant: i >= 1 && i <= bit.n,
+    proof_invariant: i >= 1 && i <= bit.n,
     reasoning: (
       #|INVARIANT (BIT add):
       #|tree reflects delta applied to all visited indices so far.
@@ -105,7 +105,7 @@ fn prefix_sum(bit : Fenwick, idx : Int) -> Int {
       continue i - (i & -i), acc + current
     }
   } where {
-    invariant: i >= 0 && i <= bit.n,
+    proof_invariant: i >= 0 && i <= bit.n,
     reasoning: (
       #|INVARIANT (BIT prefix):
       #|acc equals the sum of BIT nodes already traversed.

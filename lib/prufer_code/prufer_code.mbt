@@ -87,7 +87,7 @@ fn MinHeap::pop(self : MinHeap) -> Int? {
       self.data[smallest] = tmp
       continue smallest
     } where {
-      invariant: i >= 0 && i < len,
+      proof_invariant: i >= 0 && i < len,
       reasoning: (
         #|INVARIANT (heapify down):
         #|All nodes outside the path from root to i satisfy heap order.
@@ -160,7 +160,7 @@ fn build_tree(
       }
     }
   } where {
-    invariant: idx >= 0 && idx <= queue.length(),
+    proof_invariant: idx >= 0 && idx <= queue.length(),
     reasoning: (
       #|INVARIANT (BFS):
       #|Vertices in queue[0..idx) are processed; seen_nodes marks all reached
@@ -202,7 +202,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
       heap.push(v)
     }
   } where {
-    invariant: v >= 0 && v <= n,
+    proof_invariant: v >= 0 && v <= n,
     reasoning: (
       #|INVARIANT (leaf init):
       #|heap contains exactly the leaves among vertices in [0..v).
@@ -238,7 +238,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
       heap.push(v)
     }
   } where {
-    invariant: step >= 0 && step <= n - 2,
+    proof_invariant: step >= 0 && step <= n - 2,
     reasoning: (
       #|INVARIANT (encode steps):
       #|After step iterations, code has length step and exactly step leaves
@@ -248,7 +248,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
       #|TERMINATION:
       #|At step = n-2, the Prufer code is complete.
     ),
-    invariant: code.length() == step,
+    proof_invariant: code.length() == step,
     reasoning: (
       #|INVARIANT (code length):
       #|code length equals the number of processed leaves.
@@ -282,7 +282,7 @@ pub fn prufer_decode(code : ArrayView[Int]) -> Array[(Int, Int)]? {
       heap.push(v)
     }
   } where {
-    invariant: v >= 0 && v <= n,
+    proof_invariant: v >= 0 && v <= n,
     reasoning: (
       #|INVARIANT (leaf init):
       #|heap contains all current leaves among vertices in [0..v).

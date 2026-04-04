@@ -75,7 +75,7 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
         }
       }
     } where {
-      invariant: head >= 0 && head <= queue.length(),
+      proof_invariant: head >= 0 && head <= queue.length(),
       reasoning: (
         #|INVARIANT (BFS frontier):
         #|parent marks the BFS tree of reachable nodes from s.
@@ -97,7 +97,7 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
         continue pu, min2(best, e.cap)
       }
     } where {
-      invariant: best > 0 && best <= INF,
+      proof_invariant: best > 0 && best <= INF,
       reasoning: (
         #|INVARIANT (Bottleneck):
         #|best is the minimum residual capacity on the path from cur to t.
@@ -120,7 +120,7 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
         continue pu
       }
     } where {
-      invariant: cur >= 0 && cur < n,
+      proof_invariant: cur >= 0 && cur < n,
       reasoning: (
         #|INVARIANT (Augment path):
         #|All edges from cur to t have been updated with augment flow.
@@ -134,8 +134,8 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
   } nobreak {
     flow
   } where {
-    invariant: iter >= 0 && iter <= limit,
-    invariant: flow >= 0,
+    proof_invariant: iter >= 0 && iter <= limit,
+    proof_invariant: flow >= 0,
     reasoning: (
       #|INVARIANT (Flow augmentation):
       #|flow equals the total amount sent from s to t so far.

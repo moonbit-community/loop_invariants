@@ -44,7 +44,7 @@ fn isqrt_ceil(n : Int) -> Int {
     }
     continue next
   } where {
-    invariant: x > 0,
+    proof_invariant: x > 0,
     reasoning: (
       #|INVARIANT (Newton convergence):
       #|x remains positive and is an upper bound on sqrt(n). The update
@@ -114,7 +114,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
     } nobreak {
       sum
     } where {
-      invariant: i >= l && i <= r + 1,
+      proof_invariant: i >= l && i <= r + 1,
       reasoning: (
         #|INVARIANT (single block scan):
         #|sum equals the sum of arr[l..i) within the block.
@@ -134,7 +134,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
   } nobreak {
     sum
   } where {
-    invariant: i >= l && i <= left_block_end + 1,
+    proof_invariant: i >= l && i <= left_block_end + 1,
     reasoning: (
       #|INVARIANT (Left partial):
       #|sum is the sum of arr[l..i) within the left boundary block. This
@@ -154,7 +154,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
   } nobreak {
     sum
   } where {
-    invariant: b >= left_block + 1 && b <= right_block,
+    proof_invariant: b >= left_block + 1 && b <= right_block,
     reasoning: (
       #|INVARIANT (middle blocks):
       #|sum equals the total of full blocks in [left_block+1, b).
@@ -172,7 +172,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
   } nobreak {
     sum
   } where {
-    invariant: i >= right_block_start && i <= r + 1,
+    proof_invariant: i >= right_block_start && i <= r + 1,
     reasoning: (
       #|INVARIANT (Right partial):
       #|sum equals the sum of arr[right_block_start..i) for the right boundary
@@ -288,7 +288,7 @@ fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int) -> Unit {
   } nobreak {
     m
   } where {
-    invariant: i >= start && i <= end,
+    proof_invariant: i >= start && i <= end,
     reasoning: (
       #|INVARIANT (recompute min):
       #|m is the minimum of self.arr[start..i).
@@ -323,7 +323,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
     } nobreak {
       m
     } where {
-      invariant: i >= l && i <= r + 1,
+      proof_invariant: i >= l && i <= r + 1,
       reasoning: (
         #|INVARIANT (Single block scan):
         #|m is the minimum of values in arr[l..i), with the block's pending
@@ -349,7 +349,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
   } nobreak {
     m
   } where {
-    invariant: i >= l && i <= left_block_end + 1,
+    proof_invariant: i >= l && i <= left_block_end + 1,
     reasoning: (
       #|INVARIANT (Left boundary min):
       #|m tracks the minimum over arr[l..i) within the left partial block,
@@ -374,7 +374,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
   } nobreak {
     m
   } where {
-    invariant: b >= left_block + 1 && b <= right_block,
+    proof_invariant: b >= left_block + 1 && b <= right_block,
     reasoning: (
       #|INVARIANT (Middle blocks min):
       #|m is the minimum across all complete blocks processed so far, each
@@ -399,7 +399,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
   } nobreak {
     m
   } where {
-    invariant: i >= right_block_start && i <= r + 1,
+    proof_invariant: i >= right_block_start && i <= r + 1,
     reasoning: (
       #|INVARIANT (Right boundary min):
       #|m is the minimum over arr[right_block_start..i) with the pending add
@@ -528,7 +528,7 @@ fn MoSolver::solve_distinct(
   } nobreak {
     m
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT (max scan):
       #|m is the maximum of self.arr[0..i).
@@ -612,7 +612,7 @@ fn MoSolver::solve_distinct(
     results[query.idx] = distinct
     continue i + 1, distinct, cur_l, cur_r
   } where {
-    invariant: cur_l >= 0 && cur_l <= n,
+    proof_invariant: cur_l >= 0 && cur_l <= n,
     reasoning: (
       #|INVARIANT (Left pointer bounds):
       #|cur_l stays within [0, n] as we move it toward each query's left bound.
@@ -621,7 +621,7 @@ fn MoSolver::solve_distinct(
       #|TERMINATION:
       #|At loop end, cur_l matches the current query's left bound.
     ),
-    invariant: cur_r >= -1 && cur_r < n,
+    proof_invariant: cur_r >= -1 && cur_r < n,
     reasoning: (
       #|INVARIANT (Right pointer bounds):
       #|cur_r stays within [-1, n-1], with -1 representing the empty range.
@@ -630,7 +630,7 @@ fn MoSolver::solve_distinct(
       #|TERMINATION:
       #|At loop end, cur_r matches the current query's right bound.
     ),
-    invariant: distinct >= 0,
+    proof_invariant: distinct >= 0,
     reasoning: (
       #|INVARIANT (Distinct count):
       #|distinct equals the number of values with count[v] > 0 in the current
@@ -690,7 +690,7 @@ fn IntervalTree::new(arr : Array[Int]) -> IntervalTree {
     }
     continue i + 1, start
   } where {
-    invariant: i >= 1 && i <= arr.length() + 1,
+    proof_invariant: i >= 1 && i <= arr.length() + 1,
     reasoning: (
       #|INVARIANT (Run compression):
       #|i scans one past the array end as a sentinel. When the value changes
@@ -701,7 +701,7 @@ fn IntervalTree::new(arr : Array[Int]) -> IntervalTree {
       #|TERMINATION:
       #|At i = arr.length() + 1, all runs are emitted.
     ),
-    invariant: start >= 0 && start <= i,
+    proof_invariant: start >= 0 && start <= i,
     reasoning: (
       #|INVARIANT (Run start):
       #|start is the first index of the current equal-value run, so
@@ -733,7 +733,7 @@ fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
   } nobreak {
     None
   } where {
-    invariant: lo >= 0 && hi >= -1,
+    proof_invariant: lo >= 0 && hi >= -1,
     reasoning: (
       #|INVARIANT (Binary search window):
       #|Intervals containing pos, if any, must lie in index range [lo, hi].
@@ -744,7 +744,7 @@ fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
       #|TERMINATION:
       #|When lo > hi, no interval contains pos.
     ),
-    invariant: hi < self.intervals.length(),
+    proof_invariant: hi < self.intervals.length(),
     reasoning: (
       #|INVARIANT (Index bounds):
       #|hi remains within valid indices or becomes -1 when the search window
@@ -801,7 +801,7 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
   } nobreak {
     i - 1
   } where {
-    invariant: i >= left_idx && i <= self.intervals.length() + 1,
+    proof_invariant: i >= left_idx && i <= self.intervals.length() + 1,
     reasoning: (
       #|INVARIANT (Right boundary scan):
       #|i advances while interval starts are <= r, so i-1 is the last interval
@@ -843,7 +843,7 @@ fn IntervalTree::query_sum(self : IntervalTree, l : Int, r : Int) -> Int {
   } nobreak {
     s
   } where {
-    invariant: i >= 0 && i <= self.intervals.length(),
+    proof_invariant: i >= 0 && i <= self.intervals.length(),
     reasoning: (
       #|INVARIANT (Sum accumulation):
       #|s equals the total contribution of all processed intervals that
@@ -875,7 +875,7 @@ fn IntervalTree::range_add(
       i = i + 1 {
     self.intervals[i].v = self.intervals[i].v + val
   } where {
-    invariant: i >= left_idx && i <= self.intervals.length() + 1,
+    proof_invariant: i >= left_idx && i <= self.intervals.length() + 1,
     reasoning: (
       #|INVARIANT (Range add):
       #|All intervals in [left_idx, i) intersect [l, r] and have been incremented

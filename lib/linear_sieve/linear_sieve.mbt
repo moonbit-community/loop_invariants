@@ -56,7 +56,7 @@ pub fn LinearSieve::new(n : Int) -> LinearSieve {
         mu[ip] = -mu[i]
       }
     } where {
-      invariant: j >= 0 && j <= primes.length(),
+      proof_invariant: j >= 0 && j <= primes.length(),
       reasoning: (
         #|INVARIANT (linear sieve inner):
         #|primes[0..j) have been processed for i, and spf/phi/mu are set for
@@ -68,7 +68,7 @@ pub fn LinearSieve::new(n : Int) -> LinearSieve {
       ),
     }
   } where {
-    invariant: i >= 2 && i <= n + 1,
+    proof_invariant: i >= 2 && i <= n + 1,
     reasoning: (
       #|INVARIANT (linear sieve outer):
       #|For all integers < i, spf/phi/mu are fully computed and primes contains

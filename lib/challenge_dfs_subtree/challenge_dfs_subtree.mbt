@@ -29,7 +29,7 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
       continue idx + 1
     }
   } where {
-    invariant: idx >= 0 && idx <= stack.length(),
+    proof_invariant: idx >= 0 && idx <= stack.length(),
     reasoning: (
       #|INVARIANT (DFS discovery):
       #|All nodes in stack[0..idx) have been expanded, and order records them.

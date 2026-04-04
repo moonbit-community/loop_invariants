@@ -62,7 +62,7 @@ pub fn Dinic::max_flow(self : Dinic, source : Int, sink : Int) -> Int64 {
     } nobreak {
       flow
     } where {
-      invariant: flow >= 0L,
+      proof_invariant: flow >= 0L,
       reasoning: (
         #|INVARIANT (blocking flow accumulation):
         #|  flow = total flow pushed so far.

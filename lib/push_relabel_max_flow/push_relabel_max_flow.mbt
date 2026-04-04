@@ -162,7 +162,7 @@ fn PushRelabel::discharge(
       self.next_edge[u] = 0
     }
   } where {
-    invariant: steps >= 0 && self.excess[u] >= 0L,
+    proof_invariant: steps >= 0 && self.excess[u] >= 0L,
     reasoning: (
       #|INVARIANT (discharge scan):
       #|Edges with index < next_edge[u] are known to be non-admissible under
@@ -219,7 +219,7 @@ pub fn PushRelabel::max_flow(
       None => break
     }
   } where {
-    invariant: steps >= 0 && active.length() >= 0,
+    proof_invariant: steps >= 0 && active.length() >= 0,
     reasoning: (
       #|INVARIANT (active vertices):
       #|Every vertex in active has positive excess and is neither source nor

@@ -67,7 +67,7 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
         break j
       }
     } where {
-      invariant: j >= 0 && j < n,
+      proof_invariant: j >= 0 && j < n,
       reasoning: (
         #|INVARIANT (advance antipodal):
         #|j is a candidate antipodal vertex for edge (i, i+1). Each step moves j
@@ -90,7 +90,7 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
   } nobreak {
     (best_i, best_j, best)
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT (outer calipers):
       #|For all processed edges up to i, best stores the maximum distance found

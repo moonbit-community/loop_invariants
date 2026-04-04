@@ -48,7 +48,7 @@ fn floyd_cycle_detect(nodes : ArrayView[ListNode], head : Int) -> (Bool, Int) {
       continue next_slow, next_fast, false
     }
   } where {
-    invariant: slow >= 0 && slow < nodes.length(),
+    proof_invariant: slow >= 0 && slow < nodes.length(),
     reasoning: (
       #|INVARIANT 1 (Slow pointer validity): slow is always a valid index.
       #|
@@ -62,7 +62,7 @@ fn floyd_cycle_detect(nodes : ArrayView[ListNode], head : Int) -> (Bool, Int) {
       #|TERMINATION:
       #|The loop ends when fast reaches -1 (no cycle) or slow meets fast.
     ),
-    invariant: fast >= 0 && fast < nodes.length(),
+    proof_invariant: fast >= 0 && fast < nodes.length(),
     reasoning: (
       #|INVARIANT 2 (Fast pointer validity): fast is always a valid index.
       #|
@@ -73,7 +73,7 @@ fn floyd_cycle_detect(nodes : ArrayView[ListNode], head : Int) -> (Bool, Int) {
       #|TERMINATION:
       #|If fast cannot advance, we return None (no cycle).
     ),
-    invariant: slow >= 0,
+    proof_invariant: slow >= 0,
     reasoning: (
       #|INVARIANT 3 (Meeting theorem): If a cycle exists of length λ,
       #|and the tail before the cycle has length μ, then:
@@ -112,7 +112,7 @@ fn floyd_cycle_detect(nodes : ArrayView[ListNode], head : Int) -> (Bool, Int) {
       continue get_next(nodes, p1), get_next(nodes, p2)
     }
   } where {
-    invariant: p1 >= 0 && p2 >= 0,
+    proof_invariant: p1 >= 0 && p2 >= 0,
     reasoning: (
       #|INVARIANT 4 (Convergence to cycle start):
       #|
@@ -212,7 +212,7 @@ fn build_kmp_failure(pattern : ArrayView[Char]) -> Array[Int] {
       continue i + 1, 0
     }
   } where {
-    invariant: i >= 1 && i <= pattern.length(),
+    proof_invariant: i >= 1 && i <= pattern.length(),
     reasoning: (
       #|INVARIANT 1 (Bounds and progress):
       #|i is the next pattern index whose failure value is still unknown.
@@ -224,7 +224,7 @@ fn build_kmp_failure(pattern : ArrayView[Char]) -> Array[Int] {
       #|TERMINATION:
       #|At i = pattern.length(), all failure values are computed.
     ),
-    invariant: j >= 0 && j < i,
+    proof_invariant: j >= 0 && j < i,
     reasoning: (
       #|INVARIANT 2 (j bound): j is always less than i.
       #|
@@ -239,7 +239,7 @@ fn build_kmp_failure(pattern : ArrayView[Char]) -> Array[Int] {
       #|TERMINATION:
       #|At loop end, j remains a valid prefix length.
     ),
-    invariant: j >= 0,
+    proof_invariant: j >= 0,
     reasoning: (
       #|INVARIANT 3 (Failure function meaning):
       #|At the start of each iteration, pattern[0..j) == pattern[i-j..i).
@@ -304,7 +304,7 @@ fn kmp_search(text : ArrayView[Char], pattern : ArrayView[Char]) -> Int {
       continue i + 1, 0
     }
   } where {
-    invariant: i >= 0 && i <= text.length() && j >= 0 && j < pattern.length(),
+    proof_invariant: i >= 0 && i <= text.length() && j >= 0 && j < pattern.length(),
     reasoning: (
       #|INVARIANT 1 (Bounds and progress):
       #|i is the current text position, and j is the length of the matched
@@ -317,7 +317,7 @@ fn kmp_search(text : ArrayView[Char], pattern : ArrayView[Char]) -> Int {
       #|TERMINATION:
       #|The loop ends when i reaches text.length() or a full match is found.
     ),
-    invariant: j >= 0,
+    proof_invariant: j >= 0,
     reasoning: (
       #|INVARIANT 2 (Partial match): text[i-j..i) == pattern[0..j).
       #|
@@ -450,7 +450,7 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
   } nobreak {
     prev[n]
   } where {
-    invariant: prev.length() == n + 1 && curr.length() == n + 1,
+    proof_invariant: prev.length() == n + 1 && curr.length() == n + 1,
     reasoning: (
       #|INVARIANT 1 (Outer loop bounds):
       #|i tracks which prefix of s1 is being processed. After each iteration
@@ -461,7 +461,7 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
       #|TERMINATION:
       #|At i = m + 1, all rows are processed.
     ),
-    invariant: prev.length() > 0,
+    proof_invariant: prev.length() > 0,
     reasoning: (
       #|INVARIANT 2 (DP correctness): After processing row i,
       #|prev[j] = edit_dist(s1[0..i), s2[0..j)) for all j in [0, n].

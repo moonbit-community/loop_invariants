@@ -324,7 +324,7 @@ fn IterativeSegTree::query(self : IterativeSegTree, l : Int, r : Int) -> Int64 {
   } nobreak {
     sum
   } where {
-    invariant: left >= 0 && right >= 0 && left <= right,
+    proof_invariant: left >= 0 && right >= 0 && left <= right,
     reasoning: (
       #|INVARIANT (iterative segtree query):
       #|sum accumulates the range sum for nodes processed so far.

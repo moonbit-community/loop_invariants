@@ -102,7 +102,7 @@ fn[K, V] SkipList::random_level(self : SkipList[K, V]) -> Int {
   } nobreak {
     max_level - 1
   } where {
-    invariant: lvl >= 0 && lvl < max_level,
+    proof_invariant: lvl >= 0 && lvl < max_level,
     reasoning: (
       #|LEVEL GENERATION INVARIANT:
       #|
@@ -160,7 +160,7 @@ fn[K : Compare, V] SkipList::search(self : SkipList[K, V], key : K) -> V? {
       _ => None
     }
   } where {
-    invariant: current.key is None ||
+    proof_invariant: current.key is None ||
     (current.key is Some(current_key) && current_key < key),
     reasoning: (
       #|SEARCH INVARIANT: current is header or current.key < key
@@ -266,7 +266,7 @@ fn[K : Compare, V] SkipList::insert(
       }
     }
   } where {
-    invariant: lvl >= -1 && lvl <= self.level && update.length() == max_level,
+    proof_invariant: lvl >= -1 && lvl <= self.level && update.length() == max_level,
     reasoning: (
       #|INSERT INVARIANT: update[lvl] tracks the predecessor at each level
       #|
@@ -340,7 +340,7 @@ fn[K : Compare, V] SkipList::delete(self : SkipList[K, V], key : K) -> Bool {
         } nobreak {
           ()
         } where {
-          invariant: self.level >= 0,
+          proof_invariant: self.level >= 0,
           reasoning: (
             #|LEVEL REDUCTION INVARIANT:
             #|
@@ -363,7 +363,7 @@ fn[K : Compare, V] SkipList::delete(self : SkipList[K, V], key : K) -> Bool {
       _ => false // Key not found
     }
   } where {
-    invariant: lvl >= -1 && lvl <= self.level && update.length() == max_level,
+    proof_invariant: lvl >= -1 && lvl <= self.level && update.length() == max_level,
     reasoning: (
       #|DELETE INVARIANT: Same search invariant as insert
       #|
@@ -423,7 +423,7 @@ fn[K : Compare, V] SkipList::range_query(
         _ => break
       }
     } where {
-      invariant: result.length() <= self.size,
+      proof_invariant: result.length() <= self.size,
       reasoning: (
         #|RANGE COLLECTION INVARIANT:
         #|
@@ -444,7 +444,7 @@ fn[K : Compare, V] SkipList::range_query(
     }
     result
   } where {
-    invariant: lvl >= -1 && lvl <= self.level,
+    proof_invariant: lvl >= -1 && lvl <= self.level,
     reasoning: (
       #|RANGE SEARCH INVARIANT: Same as regular search
       #|
@@ -508,7 +508,7 @@ fn[K, V] SkipList::max(self : SkipList[K, V]) -> (K, V)? {
       }
     }
   } where {
-    invariant: lvl >= 0 || lvl == -1,
+    proof_invariant: lvl >= 0 || lvl == -1,
     reasoning: (
       #|MAX FINDING INVARIANT:
       #|
@@ -553,7 +553,7 @@ fn[K : Compare, V] SkipList::ceil(self : SkipList[K, V], key : K) -> (K, V)? {
       None => None
     }
   } where {
-    invariant: current.key is None ||
+    proof_invariant: current.key is None ||
     (current.key is Some(current_key) && current_key < key),
     reasoning: (
       #|CEIL INVARIANT: Find first node >= key
@@ -588,7 +588,7 @@ fn[K : Compare, V] SkipList::floor(self : SkipList[K, V], key : K) -> (K, V)? {
       }
     }
   } where {
-    invariant: current.key is None ||
+    proof_invariant: current.key is None ||
     (current.key is Some(current_key) && current_key <= key),
     reasoning: (
       #|FLOOR INVARIANT: Find last node <= key
@@ -627,7 +627,7 @@ fn[K : Compare, V] SkipList::count_less_than(
       _ => break count
     }
   } where {
-    invariant: count >= 0,
+    proof_invariant: count >= 0,
     reasoning: (
       #|COUNT INVARIANT: count accumulates nodes with key < given key
       #|
@@ -664,7 +664,7 @@ fn[K, V] SkipList::kth_element(self : SkipList[K, V], k : Int) -> (K, V)? {
       None => break None
     }
   } where {
-    invariant: i >= 0 && i <= k,
+    proof_invariant: i >= 0 && i <= k,
     reasoning: (
       #|KTH ELEMENT INVARIANT: i counts elements traversed
       #|
@@ -891,7 +891,7 @@ fn[K, V] MultiSkipList::random_level(self : MultiSkipList[K, V]) -> Int {
   } nobreak {
     max_level - 1
   } where {
-    invariant: lvl >= 0 && lvl < max_level,
+    proof_invariant: lvl >= 0 && lvl < max_level,
     reasoning: (
       #|INVARIANT (random level):
       #|lvl is the current candidate level in [0, max_level - 1].
@@ -951,7 +951,7 @@ fn[K : Compare, V] MultiSkipList::insert(
       }
     }
   } where {
-    invariant: lvl >= -1 && lvl <= self.level && update.length() == max_level,
+    proof_invariant: lvl >= -1 && lvl <= self.level && update.length() == max_level,
     reasoning: (
       #|MULTI-INSERT INVARIANT:
       #|
@@ -987,7 +987,7 @@ fn[K : Compare, V] MultiSkipList::search(
       _ => None
     }
   } where {
-    invariant: lvl >= -1,
+    proof_invariant: lvl >= -1,
     reasoning: (
       #|INVARIANT (search):
       #|At each level, current is the rightmost node with key < target reachable

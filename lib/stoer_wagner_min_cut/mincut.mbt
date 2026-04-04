@@ -96,7 +96,7 @@ pub fn stoer_wagner_min_cut(
     adj[u][v] = adj[u][v] + w
     adj[v][u] = adj[v][u] + w
   } where {
-    invariant: i >= 0 && i <= edges.length(),
+    proof_invariant: i >= 0 && i <= edges.length(),
     reasoning: (
       #|INVARIANT (adjacency matrix):
       #|  For edges[0..i), their weights are accumulated in adj[][].
@@ -174,7 +174,7 @@ pub fn stoer_wagner_min_cut(
     } nobreak {
       (alive_count, INF64, empty_cut)
     } where {
-      invariant: iter >= 0 && iter <= alive_count,
+      proof_invariant: iter >= 0 && iter <= alive_count,
       reasoning: (
         #|INVARIANT (maximum adjacency search):
         #|  Let A = {v : added[v] = true}.
@@ -209,7 +209,7 @@ pub fn stoer_wagner_min_cut(
   } nobreak {
     (alive_count, best_weight, best_cut)
   } where {
-    invariant: phase >= 0 && phase <= n - 1 && alive_count >= 1,
+    proof_invariant: phase >= 0 && phase <= n - 1 && alive_count >= 1,
     reasoning: (
       #|INVARIANT (contraction phases):
       #|  After phase k, exactly k+1 original vertices have been contracted.

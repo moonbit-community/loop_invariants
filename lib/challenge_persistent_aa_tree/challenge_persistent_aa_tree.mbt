@@ -151,8 +151,8 @@ pub fn[T : Compare] contains(t : Aa[T], key : T) -> Bool {
         }
     }
   } where {
-    invariant: aa_valid(cur, lo, hi),
-    invariant: within_bounds(key, lo, hi),
+    proof_invariant: aa_valid(cur, lo, hi),
+    proof_invariant: within_bounds(key, lo, hi),
     reasoning: (
       #|INVARIANT (AA tree search):
       #|cur is a valid AA subtree within bounds (lo, hi) and key respects bounds.
@@ -182,9 +182,9 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Aa[T] {
   } nobreak {
     tree
   } where {
-    invariant: i >= 0 && i <= n,
-    invariant: size(tree) == i,
-    invariant: aa_valid(tree, None, None),
+    proof_invariant: i >= 0 && i <= n,
+    proof_invariant: size(tree) == i,
+    proof_invariant: aa_valid(tree, None, None),
     reasoning: (
       #|INVARIANT (AA tree build):
       #|tree contains the first i elements and maintains AA invariants.

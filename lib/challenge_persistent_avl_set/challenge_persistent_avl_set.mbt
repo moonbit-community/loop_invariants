@@ -174,8 +174,8 @@ pub fn[T : Compare] contains(t : Avl[T], key : T) -> Bool {
         }
     }
   } where {
-    invariant: avl_valid(cur, lo, hi),
-    invariant: within_bounds(key, lo, hi),
+    proof_invariant: avl_valid(cur, lo, hi),
+    proof_invariant: within_bounds(key, lo, hi),
     reasoning: (
       #|INVARIANT (AVL search bounds):
       #|cur is a valid AVL subtree respecting (lo, hi), and key respects bounds.
@@ -205,9 +205,9 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Avl[T] {
   } nobreak {
     tree
   } where {
-    invariant: i >= 0 && i <= n,
-    invariant: size(tree) == i,
-    invariant: avl_valid(tree, None, None),
+    proof_invariant: i >= 0 && i <= n,
+    proof_invariant: size(tree) == i,
+    proof_invariant: avl_valid(tree, None, None),
     reasoning: (
       #|INVARIANT (AVL build):
       #|tree contains the first i elements and maintains AVL balance.
