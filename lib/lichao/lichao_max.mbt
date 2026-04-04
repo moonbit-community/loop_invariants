@@ -2,51 +2,78 @@
 // LI CHAO TREE - Maximum Queries
 // ============================================================================
 //
-// Li Chao Tree for answering "what is the maximum y value at x?"
-// given a set of lines y = mx + b.
+// This file implements LiChaoTree, which maintains a set of lines y = m*x + b
+// and answers "what is the maximum y at x?" queries in O(log C) time, where
+// C = hi - lo is the x-coordinate range.
 //
 // TIME COMPLEXITY:
 // ```
-//   Insert line: O(log N) where N = hi - lo (coordinate range)
-//   Query at x:  O(log N)
-//   Space:       O(L log N) where L = number of lines inserted
-//                (each line creates at most O(log N) nodes)
+//   Insert line : O(log C)   -- one path from root to leaf
+//   Query at x  : O(log C)   -- one path from root to leaf
+//   Space       : O(L log C) -- each of the L inserted lines creates at
+//                               most O(log C) new nodes (lazy allocation)
 // ```
 //
-// CORRECTNESS PROOF SKETCH:
+// CORRECTNESS ARGUMENT (sketch):
 // ```
-//   Claim: For any x in [lo, hi], query(x) returns max over all lines.
+//   Claim: query(x) returns the maximum over all inserted lines at x.
 //
-//   Proof:
-//   1. Consider the path from root to leaf containing x
-//   2. At each node, the dominant line was chosen to beat all other
-//      lines that were inserted to that node, at the midpoint
-//   3. The true maximum line for x either:
-//      - Is the dominant line at some node on the path, OR
-//      - Was pushed to a child that contains x
-//   4. By induction, we eventually find it along the path
+//   Proof by induction on tree height:
+//
+//   Base case (leaf node [lo, lo]):
+//     At most one line can be dominant (earlier losers were pushed away).
+//     The dominant is the best line at lo, so query is correct.
+//
+//   Inductive step (internal node covering [lo, hi]):
+//     Let L* be the line achieving the true maximum at x.
+//     Case 1: L* is the dominant at this node.
+//       query evaluates it and takes the max -> correct.
+//     Case 2: L* lost to some other line D at some ancestor node A.
+//       L* was pushed to the child of A containing x.
+//       By induction on that subtree, L* is found.
+//     Case 3: L* is dominant at some ancestor.
+//       query already evaluated it on the way down -> correct.
+//
+//   In all cases the maximum is found along the root-to-leaf path for x.
 // ```
 
 ///|
-/// Li Chao Tree for maximum queries.
+/// Li Chao Tree for maximum-value queries.
 ///
-/// STRUCTURE:
-/// ```
-///   nodes: Array of tree nodes (index 0 is root)
-///   lo:    Minimum x-coordinate in range
-///   hi:    Maximum x-coordinate in range
+/// Maintains a dynamic set of lines `y = m * x + b` and answers queries of
+/// the form "what is the maximum y at x = k?" in O(log C) time, where
+/// C = `hi - lo` is the x-coordinate range.
 ///
-///   The tree covers discrete x-values in [lo, hi].
-///   Each internal node covers [lo, mid] and [mid+1, hi].
+/// Usage pattern:
 /// ```
+/// let tree = LiChaoTree::new(lo, hi)
+/// tree.insert(slope, intercept)   // add a line y = slope * x + intercept
+/// let max_y = tree.query(x)       // maximum y over all inserted lines at x
+/// ```
+///
+/// Notes:
+/// - All coordinates (`lo`, `hi`, slope, intercept, query x) are `Int64`.
+/// - Querying an empty tree returns a large negative sentinel value.
+/// - The tree covers the closed integer interval `[lo, hi]`; querying
+///   outside this range gives undefined results.
 pub(all) struct LiChaoTree {
   nodes : Array[LCNode]
-  lo : Int64 // Coordinate range
-  hi : Int64
+  lo : Int64 // Minimum x-coordinate of the covered range
+  hi : Int64 // Maximum x-coordinate of the covered range
 }
 
 ///|
-/// Create a new Li Chao Tree for maximum queries over [lo, hi].
+/// Create a new `LiChaoTree` for maximum queries over the integer interval
+/// `[lo, hi]`.
+///
+/// A single root node (with the sentinel "no line") is allocated immediately.
+/// All other nodes are created lazily as lines are inserted.
+///
+/// Parameters:
+/// - `lo`: smallest x value that will ever be queried.
+/// - `hi`: largest x value that will ever be queried.
+///
+/// Panics (index out of bounds) if `lo > hi`.
 pub fn LiChaoTree::new(lo : Int64, hi : Int64) -> LiChaoTree {
   let nodes : Array[LCNode] = []
   // Create root node with undefined line
@@ -55,7 +82,11 @@ pub fn LiChaoTree::new(lo : Int64, hi : Int64) -> LiChaoTree {
 }
 
 ///|
-/// Create a new node and return its index.
+/// Allocate a fresh node initialised with the sentinel "no line" and return
+/// its index in `self.nodes`.
+///
+/// Called internally whenever a loser line needs to be pushed into a child
+/// that does not yet exist.
 fn LiChaoTree::new_node(self : LiChaoTree) -> Int {
   let idx = self.nodes.length()
   self.nodes.push({ line: undefined_line(), left: -1, right: -1 })
@@ -63,29 +94,41 @@ fn LiChaoTree::new_node(self : LiChaoTree) -> Int {
 }
 
 ///|
-/// Insert a line y = mx + b.
+/// Insert the line `y = m * x + b` into the tree.
 ///
-/// ALGORITHM:
+/// After this call, all future `query` calls will consider this line when
+/// computing the maximum.
+///
+/// Algorithm overview (see `insert_line_max` for the full recursive logic):
 /// ```
-///   Starting from root, at each node:
-///   1. Compare new line with current dominant at midpoint
-///   2. Winner becomes new dominant
-///   3. Loser recurses to child where it might win
+/// At each node covering [lo, hi] with mid = (lo + hi) / 2:
+///   1. Compare the new line against the node's dominant at mid.
+///   2. The better-at-mid line stays as the new dominant (winner).
+///   3. The worse-at-mid line (loser) is pushed to the child half where
+///      it could still beat the winner.
+///   4. Stop at a leaf or when no child is needed.
 /// ```
+///
+/// Time complexity: O(log(hi - lo)).
 pub fn LiChaoTree::insert(self : LiChaoTree, m : Int64, b : Int64) -> Unit {
   let line : Line = { m, b }
   insert_line_max(self, 0, self.lo, self.hi, line)
 }
 
 ///|
-/// Internal: Insert line into subtree.
+/// Recursive helper: insert `new_line` into the subtree rooted at `node_idx`,
+/// which covers the interval `[lo, hi]`.
 ///
-/// INVARIANT:
+/// Invariant maintained after every call:
 /// ```
-///   After insertion, for any x in [lo, hi], the maximum over all
-///   inserted lines is found by taking max of dominant lines on
-///   the path from root to leaf containing x.
+///   For any x in [lo, hi], the maximum over all lines ever inserted into
+///   this subtree equals the maximum of the dominant lines on the path from
+///   node_idx down to the leaf containing x.
 /// ```
+///
+/// The function runs in O(log(hi - lo)) time because the loser is pushed to
+/// at most one child (two linear functions cross at most once, so the loser
+/// can only beat the winner on one side of mid).
 fn insert_line_max(
   tree : LiChaoTree,
   node_idx : Int,
@@ -95,18 +138,20 @@ fn insert_line_max(
 ) -> Unit {
   let node = tree.nodes[node_idx]
 
-  // If node's line is undefined, just set it
+  // If the node's dominant is the sentinel, set it directly and return.
+  // No comparison needed: any real line beats the sentinel everywhere.
   if node.line.is_undefined() {
     tree.nodes[node_idx].line = new_line
     return
   }
   let mid = (lo + hi) / 2L
 
-  // Compare at midpoint to determine winner/loser
+  // Evaluate both lines at the midpoint to determine winner and loser.
   let curr_at_mid = node.line.eval(mid)
   let new_at_mid = new_line.eval(mid)
 
-  // Winner dominates at midpoint, loser might dominate elsewhere
+  // Winner: better (larger) value at mid -> becomes the new dominant.
+  // Loser:  worse at mid -> may still win somewhere in [lo, hi].
   let (winner, loser) = if new_at_mid > curr_at_mid {
     (new_line, node.line)
   } else {
@@ -114,30 +159,29 @@ fn insert_line_max(
   }
   tree.nodes[node_idx].line = winner
 
-  // Leaf node: nowhere to push loser
+  // Leaf node: the loser has nowhere to go.
   if lo == hi {
     return
   }
 
-  // Determine which side loser might win
+  // Decide which half the loser might win in.
+  //
+  // Key observation: two lines cross at most once.  The winner dominates at
+  // mid, so the loser can only beat the winner on one side of mid.  We find
+  // which side by checking the left endpoint (lo):
+  //
+  //   loser(lo) > winner(lo)  =>  loser wins on the LEFT  half [lo,   mid]
+  //   otherwise               =>  loser wins on the RIGHT half [mid+1, hi]
   let winner_at_lo = winner.eval(lo)
   let loser_at_lo = loser.eval(lo)
-
-  // INSIGHT:
-  // ```
-  //   If loser wins at lo (left endpoint):
-  //     loser might dominate in left half [lo, mid]
-  //   Else (loser wins at hi):
-  //     loser might dominate in right half [mid+1, hi]
-  // ```
   if loser_at_lo > winner_at_lo {
-    // Loser might win in left half
+    // Loser might win somewhere in [lo, mid]; recurse left.
     if tree.nodes[node_idx].left < 0 {
       tree.nodes[node_idx].left = tree.new_node()
     }
     insert_line_max(tree, tree.nodes[node_idx].left, lo, mid, loser)
   } else {
-    // Loser might win in right half
+    // Loser might win somewhere in [mid+1, hi]; recurse right.
     if tree.nodes[node_idx].right < 0 {
       tree.nodes[node_idx].right = tree.new_node()
     }
@@ -146,21 +190,27 @@ fn insert_line_max(
 }
 
 ///|
-/// Query maximum y-value at x.
+/// Return the maximum value of any inserted line at `x`.
 ///
-/// ALGORITHM:
-/// ```
-///   1. Start at root
-///   2. Evaluate dominant line at current node
-///   3. Recurse to child containing x
-///   4. Return max of all evaluations along path
-/// ```
+/// Walks the root-to-leaf path for `x`, evaluates the dominant line at each
+/// node, and returns the maximum of those evaluations.
+///
+/// If no lines have been inserted, returns a large negative sentinel value
+/// (just above `Int64::min_value`).
+///
+/// Time complexity: O(log(hi - lo)).
+///
+/// Precondition: `lo <= x <= hi` (the range used at construction).
 pub fn LiChaoTree::query(self : LiChaoTree, x : Int64) -> Int64 {
   query_max_impl(self, 0, self.lo, self.hi, x)
 }
 
 ///|
-/// Internal: Query maximum from subtree.
+/// Recursive helper: return the maximum dominant-line evaluation at `x`
+/// within the subtree rooted at `node_idx` covering `[lo, hi]`.
+///
+/// Returns the sentinel minimum (`-9223372036854775807`) when `node_idx < 0`
+/// (absent child), so that a missing child never contributes to the maximum.
 fn query_max_impl(
   tree : LiChaoTree,
   node_idx : Int,
@@ -169,7 +219,8 @@ fn query_max_impl(
   x : Int64,
 ) -> Int64 {
   if node_idx < 0 {
-    return -9223372036854775807L // Return minimum for undefined
+    // Absent child: contribute the smallest possible value so it never wins.
+    return -9223372036854775807L
   }
   let node = tree.nodes[node_idx]
   let curr_val = if node.line.is_undefined() {
@@ -178,13 +229,13 @@ fn query_max_impl(
     node.line.eval(x)
   }
 
-  // Leaf node: return current value
+  // Leaf node: no children to visit.
   if lo == hi {
     return curr_val
   }
   let mid = (lo + hi) / 2L
 
-  // Recurse to child containing x, take max
+  // Descend to the child whose interval contains x, then take the max.
   if x <= mid {
     let child_val = query_max_impl(tree, node.left, lo, mid, x)
     if child_val > curr_val {
@@ -203,7 +254,11 @@ fn query_max_impl(
 }
 
 ///|
-/// Get number of nodes in tree (for efficiency analysis).
+/// Return the total number of nodes currently allocated in the tree.
+///
+/// Useful for benchmarking and verifying the O(L log C) space bound: after
+/// inserting L lines over a range of size C the node count should be at most
+/// `1 + L * ceil(log2(C + 1))`.
 pub fn LiChaoTree::node_count(self : LiChaoTree) -> Int {
   self.nodes.length()
 }

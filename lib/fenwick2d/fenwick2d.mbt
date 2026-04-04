@@ -23,7 +23,17 @@
 // SPACE: O(n * m)
 
 ///|
-/// 2D Fenwick Tree for prefix sums
+/// A 2D Fenwick Tree (Binary Indexed Tree) for efficient point updates and
+/// rectangle prefix-sum queries on a grid of `Int64` values.
+///
+/// All public methods use **1-indexed** coordinates: valid row indices are
+/// `1..rows` and valid column indices are `1..cols`.
+///
+/// ## Invariant
+///
+/// `tree[i][j]` holds the sum of all `arr[x][y]` where
+/// `x` is in `(i - lowbit(i), i]` and `y` is in `(j - lowbit(j), j]`.
+/// Here `lowbit(k) = k & (-k)` isolates the lowest set bit of `k`.
 pub struct Fenwick2D {
   tree : Array[Array[Int64]]
   rows : Int
@@ -31,7 +41,16 @@ pub struct Fenwick2D {
 }
 
 ///|
-/// Create a 2D Fenwick tree for rows x cols grid (1-indexed operations).
+/// Create a new `Fenwick2D` for a grid with the given number of `rows` and
+/// `cols`. All cells are initialised to zero. Both dimensions must be
+/// positive; the internal storage is `(rows+1) x (cols+1)` to support
+/// 1-indexed access without an offset calculation at every call site.
+///
+/// ```moonbit
+/// let fw = Fenwick2D::new(4, 6)
+/// assert_eq!(fw.get_rows(), 4)
+/// assert_eq!(fw.get_cols(), 6)
+/// ```
 pub fn Fenwick2D::new(rows : Int, cols : Int) -> Fenwick2D {
   // Use 1-indexed arrays (index 0 unused)
   let tree : Array[Array[Int64]] = []
@@ -42,16 +61,33 @@ pub fn Fenwick2D::new(rows : Int, cols : Int) -> Fenwick2D {
 }
 
 ///|
-/// Get lowest set bit
+/// Return the value of the lowest set bit of `x` (i.e. `x & -x`).
+///
+/// This is the fundamental primitive of the Fenwick Tree: it determines how
+/// many elements a tree node is responsible for, and drives both the climb
+/// (update) and descent (query) traversals.
+///
+/// Examples: `lowbit(1)=1`, `lowbit(2)=2`, `lowbit(3)=1`, `lowbit(4)=4`,
+/// `lowbit(6)=2`, `lowbit(8)=8`.
 fn lowbit(x : Int) -> Int {
   x & -x
 }
 
 ///|
-/// Add delta to position (x, y) (1-indexed)
-/// REASONING: We update all positions that "cover" (x, y) in both dimensions.
-/// In row dimension: positions x, x + lowbit(x), x + lowbit(x + lowbit(x)), ...
-/// In col dimension: same pattern for y
+/// Add `delta` to cell `(x, y)` (1-indexed).
+///
+/// Propagates the change to every `tree[i][j]` whose sub-rectangle contains
+/// `(x, y)`. The row index `i` climbs via `i += lowbit(i)`, and for each
+/// such `i` the column index `j` climbs via `j += lowbit(j)`. At most
+/// `ceil(log2(rows)) x ceil(log2(cols))` cells are touched.
+///
+/// Coordinates outside `[1..rows] x [1..cols]` are silently ignored.
+///
+/// ```moonbit
+/// let fw = Fenwick2D::new(3, 3)
+/// fw.update(2, 2, 10L)
+/// assert_eq!(fw.get(2, 2), 10L)
+/// ```
 pub fn Fenwick2D::update(
   self : Fenwick2D,
   x : Int,
@@ -79,9 +115,22 @@ pub fn Fenwick2D::update(
 }
 
 ///|
-/// Query prefix sum: sum of [(1,1), (x,y)]
-/// REASONING: We collect contributions from all positions that
-/// contribute to the prefix sum in both dimensions.
+/// Return the prefix sum over all cells in `[1..x][1..y]` (1-indexed).
+///
+/// The row index `i` descends via `i -= lowbit(i)`, and for each `i` the
+/// column index `j` descends via `j -= lowbit(j)`. The collected sub-rectangles
+/// are disjoint and together tile `[1..x][1..y]` exactly.
+///
+/// - Returns `0` when `x <= 0` or `y <= 0`.
+/// - Values of `x > rows` or `y > cols` are clamped to the grid boundary.
+///
+/// ```moonbit
+/// let fw = Fenwick2D::new(3, 3)
+/// fw.update(1, 1, 3L)
+/// fw.update(2, 2, 7L)
+/// assert_eq!(fw.prefix_sum(2, 2), 10L)
+/// assert_eq!(fw.prefix_sum(0, 2), 0L)
+/// ```
 pub fn Fenwick2D::prefix_sum(self : Fenwick2D, x : Int, y : Int) -> Int64 {
   if x <= 0 || y <= 0 {
     return 0L

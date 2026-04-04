@@ -217,7 +217,11 @@ fn update_tree(
 }
 
 ///|
-/// Query sum in range [l, r] for a specific version
+/// Return the sum of `arr[l..r]` as it existed in `version`.
+///
+/// Traverses the tree starting from `roots[version]` in O(log n). The query
+/// range `[l, r]` is inclusive on both ends and is clamped to `[0, n-1]`.
+/// Returns 0 for empty, invalid, or out-of-bounds inputs.
 fn PersistentSegTree::query(
   self : PersistentSegTree,
   version : Int,
@@ -244,8 +248,16 @@ fn PersistentSegTree::query(
 }
 
 ///|
-/// Query sum in range [l, r] from subtree
-/// INVARIANT: result is sum of elements in intersection of [lo, hi] and [l, r]
+/// Recursive range-sum query helper.
+///
+/// `node_idx` is the root of a subtree covering `[lo, hi]`. Returns the sum
+/// of all elements in the intersection of `[lo, hi]` and the query range
+/// `[l, r]`.
+///
+/// Three cases:
+/// - No overlap (`l > hi || r < lo`): return 0.
+/// - Full containment (`l <= lo && hi <= r`): return the node's precomputed sum.
+/// - Partial overlap: recurse into both children and combine.
 fn query_tree(
   nodes : Array[PNode],
   node_idx : Int,
@@ -272,19 +284,28 @@ fn query_tree(
 }
 
 ///|
-/// Get number of versions
+/// Return the total number of versions currently stored.
+///
+/// Version 0 is the initial tree. After `q` calls to `update`, this returns
+/// `q + 1`. The valid version range is `[0, version_count() - 1]`.
 fn PersistentSegTree::version_count(self : PersistentSegTree) -> Int {
   self.roots.length()
 }
 
 ///|
-/// Get total number of nodes (space usage)
+/// Return the total number of nodes in the shared node pool.
+///
+/// Useful for verifying the O(n + q log n) space bound. After building from
+/// an array of size `n` and performing `q` updates, this value is at most
+/// `2n - 1 + q * (floor(log2 n) + 1)`.
 fn PersistentSegTree::node_count(self : PersistentSegTree) -> Int {
   self.nodes.length()
 }
 
 ///|
-/// Get value at single position in a version
+/// Return the value of `arr[pos]` as it existed in `version`.
+///
+/// Convenience wrapper around `query(version, pos, pos)`.
 fn PersistentSegTree::get(
   self : PersistentSegTree,
   version : Int,
@@ -294,7 +315,11 @@ fn PersistentSegTree::get(
 }
 
 ///|
-/// Add delta to position, creating new version
+/// Add `delta` to `arr[pos]` in `version`, creating and returning a new
+/// version.
+///
+/// Equivalent to `update(version, pos, get(version, pos) + delta)`. Useful
+/// when building prefix-frequency trees for k-th smallest queries.
 fn PersistentSegTree::add(
   self : PersistentSegTree,
   version : Int,

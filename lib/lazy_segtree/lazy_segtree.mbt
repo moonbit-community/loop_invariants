@@ -294,13 +294,27 @@ fn range_sum_helper(
 }
 
 ///|
-/// Point query
+/// Return the value of the single element at index `i`, or `None` if `i` is
+/// out of bounds.
+///
+/// Implemented as `range_sum(i, i)`.  All accumulated pending additions along
+/// the path from the root to the leaf are correctly applied before the value
+/// is returned.
+///
+/// - Time: O(log n)
 pub fn LazySegTreeSum::point_query(self : LazySegTreeSum, i : Int) -> Int64? {
   self.range_sum(i, i)
 }
 
 ///|
-/// Point update (set value)
+/// Set the element at index `i` to `val`.
+///
+/// Reads the current value via `point_query`, then applies
+/// `range_add(i, i, val - current)` so that all existing pending additions
+/// are accounted for before the difference is computed.
+///
+/// - Time: O(log n) (two tree traversals: one read, one write)
+/// - Out-of-bounds indices are silently ignored.
 pub fn LazySegTreeSum::point_set(
   self : LazySegTreeSum,
   i : Int,
@@ -317,7 +331,8 @@ pub fn LazySegTreeSum::point_set(
 }
 
 ///|
-/// Return number of elements tracked by the tree.
+/// Return the number of elements in the original array that was used to build
+/// this tree.  Valid index range for all operations is `[0, length() - 1]`.
 pub fn LazySegTreeSum::length(self : LazySegTreeSum) -> Int {
   self.n
 }
@@ -327,7 +342,22 @@ pub fn LazySegTreeSum::length(self : LazySegTreeSum) -> Int {
 // ============================================================================
 
 ///|
-/// Lazy Segment Tree with range assignment and sum queries
+/// A private lazy segment tree that supports range assignment and range sum
+/// queries.
+///
+/// Unlike `LazySegTreeSum` (range add), this variant uses an *assignment* lazy
+/// tag: setting `[l, r]` to a value `v` overwrites whatever was there before.
+/// Because assignment does not compose with itself (any subsequent assignment
+/// simply replaces the previous one), the push-down logic unconditionally
+/// overwrites the children's pending values.
+///
+/// ## Fields
+///
+/// - `tree` -- `tree[k]` is the sum of the range covered by node `k`.
+/// - `pending` -- `pending[k]` is the pending assignment value for node `k`'s
+///   range when `has_pending[k]` is `true`.
+/// - `has_pending` -- distinguishes "no pending assignment" from "assign 0".
+///   A fresh tree has all `has_pending` slots set to `false`.
 priv struct LazySegTreeSetSum {
   n : Int
   tree : Array[Int64]
