@@ -3,28 +3,22 @@
 // ============================================================================
 //
 // A 2D Fenwick Tree extends the 1D version to efficiently handle:
-// - Point updates: add value at position (x, y)
-// - Prefix queries: sum of rectangle [(0,0), (x,y)]
-// - Range queries: sum of rectangle [(x1,y1), (x2,y2)] using inclusion-exclusion
+// - Point updates:  add value at position (r, c)                O(log n * log m)
+// - Prefix queries: sum of rectangle [(1,1), (r,c)]             O(log n * log m)
+// - Range queries:  sum of rectangle [(r1,c1), (r2,c2)]         O(log n * log m)
 //
 // KEY INSIGHT: We apply the 1D Fenwick tree concept in both dimensions.
-// For each row position managed by 1D Fenwick logic, we have another
-// 1D Fenwick tree managing columns.
+// For each row position managed by the row lowbit chain, there is an
+// independent 1D Fenwick tree managing the column axis.
 //
 // STRUCTURE:
-// - tree[i][j] stores partial sum contribution for position (i,j)
-// - i manages row aggregation using lowbit(i) = i & (-i)
-// - j manages column aggregation using lowbit(j) = j & (-j)
+// - tree is (rows+1) x (cols+1); index 0 in each axis is unused.
+// - tree[i][j] stores a partial sum for the sub-rectangle:
+//     rows (i - lowbit(i), i]   x   cols (j - lowbit(j), j]
 //
-// INVARIANT (2D extension of 1D):
-// tree[i][j] = sum of arr[x][y] where:
-//   x in (i - lowbit(i), i]
-//   y in (j - lowbit(j), j]
-//
-// OPERATIONS:
-// - Point update: O(log n * log m)
-// - Prefix query: O(log n * log m)
-// - Range query: O(log n * log m) using 4 prefix queries
+// TRAVERSAL:
+// - Update  (r, c): climb   i += lowbit(i),  j += lowbit(j)  until out of bounds
+// - Query   (r, c): descend i -= lowbit(i),  j -= lowbit(j)  until i or j <= 0
 //
 // SPACE: O(n * m)
 

@@ -6,6 +6,13 @@
 // in linear time. It compares rotations starting at indices i and j, and skips
 // dominated candidates using the length of their common prefix k.
 //
+// CORE IDEA:
+// Work on the doubled string "s + s" so that rotation i corresponds to the
+// slice doubled[i .. i+n), avoiding modulo arithmetic inside the hot loop.
+// Two candidate starts i and j are compared character by character; when a
+// mismatch is found at offset k, all starts from the losing candidate up to
+// offset k are dominated in one jump, giving the O(n) bound.
+//
 // TIME COMPLEXITY: O(n)
 // SPACE COMPLEXITY: O(n)
 
@@ -20,7 +27,39 @@ fn slice_rotation(s : String, start : Int, len : Int) -> String {
 }
 
 ///|
-/// Return the starting index of the lexicographically smallest rotation.
+/// Return the starting index of the lexicographically smallest rotation of `s`.
+///
+/// Among all `n` rotations of `s`, this function identifies the one that comes
+/// first in dictionary order.  When two or more rotations are equal (possible
+/// only for strings with repeated structure such as `"abab"`), the smallest
+/// starting index is returned.
+///
+/// The search uses **Booth's algorithm**: it maintains two candidate rotation
+/// starts `i` and `j` together with a common-prefix length `k`, and eliminates
+/// losing candidates in bulk on each mismatch.  Because every index from `0` to
+/// `n-1` is eliminated at most once, the total number of character comparisons
+/// is O(n).
+///
+/// Parameters:
+/// - `s` - the input string (any length, including empty)
+///
+/// Returns the 0-based index into `s` at which the minimum rotation begins.
+/// Returns `0` for the empty string and for single-character strings.
+///
+/// Time complexity: O(n), where n = `s.length()`
+/// Space complexity: O(n) for the doubled string
+///
+/// Example:
+/// ```
+/// // "baca": rotations are "baca", "acab", "caba", "abac"
+/// //         minimum is "abac", which starts at index 3
+/// let idx = min_cyclic_rotation_index("baca")
+/// // idx == 3
+///
+/// // "abab": rotations "abab" (idx 0) and "abab" (idx 2) tie; smallest index wins
+/// let idx2 = min_cyclic_rotation_index("abab")
+/// // idx2 == 0
+/// ```
 pub fn min_cyclic_rotation_index(s : String) -> Int {
   let n = s.length()
   if n == 0 {
@@ -67,7 +106,35 @@ pub fn min_cyclic_rotation_index(s : String) -> Int {
 }
 
 ///|
-/// Return the lexicographically smallest rotation of the string.
+/// Return the lexicographically smallest rotation of `s`.
+///
+/// This is a convenience wrapper around `min_cyclic_rotation_index`: it finds
+/// the optimal starting index and then extracts the corresponding length-`n`
+/// slice from the doubled string `s + s`.
+///
+/// Parameters:
+/// - `s` - the input string (any length, including empty)
+///
+/// Returns the rotation of `s` that is smallest in lexicographic (dictionary)
+/// order.  Returns `""` for the empty string.
+///
+/// Time complexity: O(n), where n = `s.length()`
+/// Space complexity: O(n)
+///
+/// Example:
+/// ```
+/// // Rotations of "baca": "baca", "acab", "caba", "abac"
+/// let r = min_cyclic_rotation("baca")
+/// // r == "abac"
+///
+/// // Already the minimum rotation
+/// let r2 = min_cyclic_rotation("abac")
+/// // r2 == "abac"
+///
+/// // All characters equal: any rotation is the same
+/// let r3 = min_cyclic_rotation("aaaa")
+/// // r3 == "aaaa"
+/// ```
 pub fn min_cyclic_rotation(s : String) -> String {
   let n = s.length()
   if n == 0 {

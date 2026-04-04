@@ -3,24 +3,30 @@
 // ============================================================================
 //
 // Segment tree beats maintains, for each node covering interval [l, r):
-// - max: maximum value in the interval
-// - second_max: second largest value (< max), or -inf if all equal
-// - count_max: number of elements equal to max
-// - sum: sum of all values in the interval
 //
-// KEY INSIGHT:
-// For a range chmin update with value x, if x is strictly greater than
-// second_max, only the elements equal to max will change. We can update
-// the node without descending further, and the amortized complexity stays
-// logarithmic (the "beats" effect).
+//   max        = largest value in the interval
+//   second_max = second largest (strictly < max), or NEG_INF if all equal
+//   count_max  = number of elements that equal max
+//   sum        = sum of all values in the interval
 //
-// TIME COMPLEXITY:
-// - range_chmin: O(log n) amortized
-// - range_max/range_sum: O(log n)
+// KEY INSIGHT (the "beats" condition):
+//   For range_chmin(x) on a node, check against second_max:
 //
-// SPACE COMPLEXITY: O(n)
+//   Case A  x >= max          -> no-op, nothing changes
+//   Case B  second_max < x < max -> only max-elements are affected;
+//                                   update sum and max in O(1) without
+//                                   descending (this is the "tag")
+//   Case C  x <= second_max   -> must push tag and recurse into children
+//
+// COMPLEXITY:
+//   range_chmin : O(log^2 n) amortized
+//   range_max   : O(log n)
+//   range_sum   : O(log n)
+//   Space       : O(n)
 
 ///|
+/// Sentinel value used for `second_max` when no second-largest element exists
+/// (e.g. a leaf node or a segment where all elements are equal).
 const NEG_INF : Int64 = -9223372036854775807L
 
 ///|
@@ -32,7 +38,22 @@ fn max_i64(a : Int64, b : Int64) -> Int64 {
   }
 }
 
-///|
+/// A segment tree that supports range chmin updates together with range sum and
+/// range max queries, all in amortized O(log^2 n) time.
+///
+/// Each internal node stores four aggregates for its covered segment `[l, r)`:
+///
+/// - `max`        — largest element value
+/// - `second_max` — second largest value (strictly less than max), or `NEG_INF`
+///                  when all elements are equal or the segment is a single leaf
+/// - `count_max`  — number of elements whose value equals `max`
+/// - `sum`        — total sum of all elements
+///
+/// The tree is 1-indexed and backed by four flat arrays of size `4 * n`.
+/// Node `k` has left child `2k` and right child `2k + 1`.
+///
+/// All ranges passed to public methods use the **half-open** convention:
+/// `[l, r)` covers indices `l, l+1, ..., r-1`.
 pub struct SegmentTreeBeats {
   n : Int
   max : Array[Int64]
@@ -42,7 +63,14 @@ pub struct SegmentTreeBeats {
 }
 
 ///|
-/// Build a segment tree beats structure from an array of Int64 values.
+/// Build a `SegmentTreeBeats` from a slice of `Int64` values.
+///
+/// The resulting tree covers the half-open range `[0, values.length())`.
+/// Construction runs in O(n) time.
+///
+/// Parameters:
+/// - `values` — the initial array; may be empty, in which case all queries
+///              return identity values (0 for sum, `NEG_INF` for max).
 pub fn SegmentTreeBeats::new(values : ArrayView[Int64]) -> SegmentTreeBeats {
   let n = values.length()
   let size = if n == 0 { 0 } else { 4 * n }
@@ -80,7 +108,17 @@ fn SegmentTreeBeats::build(
 }
 
 ///|
-/// Recompute node information from its children.
+/// Recompute the four aggregates of `node` from its two children.
+///
+/// Must be called after any modification to a child node.  This is the
+/// bottom-up merge step:
+///
+/// - `sum`        = sum[left] + sum[right]
+/// - When one child's max dominates, inherit its `max` and `count_max`, and
+///   set `second_max` to the larger of the other child's max and the dominant
+///   child's own `second_max`.
+/// - When both children share the same max, add their `count_max` values and
+///   take the larger of their `second_max` values.
 fn SegmentTreeBeats::pull(self : SegmentTreeBeats, node : Int) -> Unit {
   let left = node * 2
   let right = left + 1
@@ -106,7 +144,20 @@ fn SegmentTreeBeats::pull(self : SegmentTreeBeats, node : Int) -> Unit {
 }
 
 ///|
-/// Apply chmin to a node assuming x > second_max and x < max.
+/// Apply a chmin tag to `node` under the Case-B precondition.
+///
+/// Precondition: `second_max[node] < x < max[node]`.
+///
+/// Because only the `count_max` elements currently equal to `max` will be
+/// lowered to `x`, the update is exact and O(1):
+///
+/// ```
+/// sum  -= count_max * (max - x)
+/// max   = x
+/// ```
+///
+/// `second_max` and `count_max` remain unchanged; a future `push` call will
+/// propagate this tag to the children when needed.
 fn SegmentTreeBeats::apply_chmin(
   self : SegmentTreeBeats,
   node : Int,
@@ -122,7 +173,18 @@ fn SegmentTreeBeats::apply_chmin(
 }
 
 ///|
-/// Push max constraints from parent to children.
+/// Propagate any pending chmin tag from `node` down to its two children.
+///
+/// The tag is stored implicitly as `max[node]`.  If a child's `max` exceeds
+/// the parent's `max`, the parent's constraint has not yet been applied to that
+/// child, so we call `apply_chmin` on it.
+///
+/// The precondition `max[node] > second_max[child]` is guaranteed by the tree
+/// invariant, so each `apply_chmin` call here is always a Case-B operation and
+/// runs in O(1).
+///
+/// Must be called before descending into children during an update or query
+/// that cannot be served from the current node alone.
 fn SegmentTreeBeats::push(self : SegmentTreeBeats, node : Int) -> Unit {
   let max_val = self.max[node]
   let left = node * 2
@@ -136,7 +198,19 @@ fn SegmentTreeBeats::push(self : SegmentTreeBeats, node : Int) -> Unit {
 }
 
 ///|
-/// Apply range chmin: for i in [l, r), a[i] = min(a[i], x).
+/// Clamp every element in `[l, r)` to at most `x`.
+///
+/// Formally, for each index `i` in `[l, r)`, sets `a[i] = min(a[i], x)`.
+/// Indices outside `[l, r)` are unaffected.
+///
+/// Parameters:
+/// - `l` — inclusive left endpoint (0-indexed)
+/// - `r` — exclusive right endpoint; the range is `[l, r)`
+/// - `x` — the upper cap to apply
+///
+/// If `l >= r` or the tree is empty the call is a no-op.
+///
+/// Complexity: amortized O(log^2 n).
 pub fn SegmentTreeBeats::range_chmin(
   self : SegmentTreeBeats,
   l : Int,
@@ -150,7 +224,14 @@ pub fn SegmentTreeBeats::range_chmin(
 }
 
 ///|
-/// Recursively apply chmin while maintaining max/second_max invariants.
+/// Recursive implementation of range chmin for the subtree rooted at `node`,
+/// which covers segment `[l, r)`, against the query range `[ql, qr)`.
+///
+/// Decision logic at each node:
+///
+/// - No overlap with `[ql, qr)`, or `x >= max[node]`  ->  return immediately (Case A).
+/// - Full overlap and `x > second_max[node]`           ->  apply tag in O(1) (Case B).
+/// - Otherwise                                          ->  push, recurse, pull (Case C).
 fn SegmentTreeBeats::chmin_impl(
   self : SegmentTreeBeats,
   node : Int,
@@ -175,7 +256,15 @@ fn SegmentTreeBeats::chmin_impl(
 }
 
 ///|
-/// Query maximum on [l, r).
+/// Return the maximum element value in `[l, r)`.
+///
+/// Parameters:
+/// - `l` — inclusive left endpoint (0-indexed)
+/// - `r` — exclusive right endpoint; the range is `[l, r)`
+///
+/// Returns `NEG_INF` when `l >= r` or the tree is empty.
+///
+/// Complexity: O(log n).
 pub fn SegmentTreeBeats::range_max(
   self : SegmentTreeBeats,
   l : Int,

@@ -8,8 +8,8 @@ cycles**.
 
 It combines:
 
-- **Bellman-Ford** (to remove negatives)
-- **Dijkstra** (to do fast shortest paths afterward)
+- **Bellman-Ford** (one run from a super-source to compute potentials)
+- **Dijkstra** (one run per vertex on the reweighted graph)
 
 If your graph is dense, Floyd-Warshall is usually simpler. If it is sparse and
 has negative edges, Johnson is the standard tool.
@@ -17,95 +17,178 @@ has negative edges, Johnson is the standard tool.
 ## Key Idea in One Sentence
 
 Reweight every edge so all weights become non-negative **without changing which
-paths are shortest**.
+paths are shortest**, then use the faster Dijkstra from every source.
+
+---
 
 ## The Potential Trick (Why Reweighting Works)
 
-Pick a potential value `h(v)` for every vertex and redefine edge weights:
+Assign a potential value `h(v)` to every vertex and redefine each edge weight:
 
 ```
 w'(u, v) = w(u, v) + h(u) - h(v)
 ```
 
-For a path `P = v0 -> v1 -> ... -> vk`:
+For any path `P = v0 -> v1 -> ... -> vk`, the reweighted path cost is:
 
 ```
 w'(P) = w(P) + h(v0) - h(vk)
 ```
 
-That last term is a constant shift for *all* paths between `v0` and `vk`. So the
-shortest path order does **not** change.
+The correction `h(v0) - h(vk)` is a **constant** for all paths from `v0` to
+`vk`; it does not depend on which intermediate vertices the path visits. So
+the shortest path order is **preserved**.
 
-### How We Pick h(v)
+### Telescoping cancellation visualized
+
+```
+Path P: v0 --> v1 --> v2 --> v3
+
+  edge v0->v1:  w01 + h(v0) - h(v1)
+  edge v1->v2:  w12 + h(v1) - h(v2)   <- h(v1) cancels with previous h(v1)
+  edge v2->v3:  w23 + h(v2) - h(v3)   <- h(v2) cancels with previous h(v2)
+               -------------------------
+  total:        w(P) + h(v0) - h(v3)
+
+All internal h terms cancel (telescoping sum).
+Only the endpoint potentials survive.
+```
+
+### How we pick h(v)
 
 Add a **super-source** `q` with 0-weight edges to every vertex and run
 Bellman-Ford from `q`:
 
 ```
-h(v) = dist(q, v)
+h(v) = shortest_distance(q, v)
 ```
 
-By the Bellman-Ford triangle inequality:
+By the Bellman-Ford triangle inequality satisfied at convergence:
 
 ```
 h(v) <= h(u) + w(u, v)
-=> w(u, v) + h(u) - h(v) >= 0
+=>  w(u, v) + h(u) - h(v) >= 0
 ```
 
-So all reweighted edges are non-negative and Dijkstra becomes valid.
+Every reweighted edge is guaranteed to be non-negative, so Dijkstra is valid
+on the reweighted graph.
 
-## Visual: Reweighting Example
+---
 
-Original graph (has a negative edge):
+## Mermaid: Original Graph with a Negative Edge
 
-```
-0 --1--> 1 --(-2)--> 3
-|        |
-4        5
-|        |
-V        V
-2 --1--> 3
-```
+The following graph has a negative edge `1 -> 2` that would break Dijkstra
+on the original weights.
 
-Add super-source `q`:
-
-```
-q --0--> 0
-q --0--> 1
-q --0--> 2
-q --0--> 3
+```mermaid
+graph LR
+    0((0)) -->|"+1"| 1((1))
+    0((0)) -->|"+4"| 2((2))
+    1((1)) -->|"-2"| 2((2))
+    2((2)) -->|"+2"| 3((3))
+    1((1)) -->|"+5"| 3((3))
 ```
 
-Bellman-Ford from `q` gives potentials (one valid set):
+---
+
+## Mermaid: Super-Source Added for Bellman-Ford
+
+Johnson adds a virtual super-source `q` (index `n`) with zero-weight edges to
+every existing vertex. Bellman-Ford is run once from `q`.
+
+```mermaid
+graph LR
+    q((q)) -->|"0"| 0((0))
+    q((q)) -->|"0"| 1((1))
+    q((q)) -->|"0"| 2((2))
+    q((q)) -->|"0"| 3((3))
+    0((0)) -->|"+1"| 1((1))
+    0((0)) -->|"+4"| 2((2))
+    1((1)) -->|"-2"| 2((2))
+    2((2)) -->|"+2"| 3((3))
+    1((1)) -->|"+5"| 3((3))
+```
+
+Bellman-Ford from `q` yields potentials (one valid assignment):
 
 ```
-h[0]=0, h[1]=0, h[2]=0, h[3]=-2
+h[0] = 0   h[1] = 0   h[2] = -2   h[3] = 0
 ```
 
-Reweight each edge:
+---
+
+## Mermaid: Reweighted Graph (All Non-Negative)
+
+After applying `w'(u,v) = w(u,v) + h[u] - h[v]`, every edge weight is >= 0.
+Dijkstra can now run correctly from any source.
+
+```mermaid
+graph LR
+    0((0)) -->|"1+0-0=1"| 1((1))
+    0((0)) -->|"4+0-(-2)=6"| 2((2))
+    1((1)) -->|"-2+0-(-2)=0"| 2((2))
+    2((2)) -->|"2+(-2)-0=0"| 3((3))
+    1((1)) -->|"5+0-0=5"| 3((3))
+```
+
+All reweighted edges are >= 0. Dijkstra is now valid from every source.
+
+---
+
+## Pipeline: Bellman-Ford then Dijkstra x V
 
 ```
-w'(0,1) = 1 + 0 - 0  = 1
-w'(0,2) = 4 + 0 - 0  = 4
-w'(1,3) = -2 + 0 - (-2) = 0
-w'(2,3) = 1 + 0 - (-2)  = 3
-w'(1,3) is now 0, all edges >= 0
+INPUT: n vertices, directed edges with (possibly negative) weights
+         |
+         v
++--------+---------+
+|  1. Add super-   |
+|  source q with   |
+|  0-weight edges  |
+|  to all vertices |
++--------+---------+
+         |
+         v
++--------+---------+
+|  2. Bellman-Ford |   one run, O(V*E)
+|  from q          |
+|  -> potentials   |
+|     h[0..n-1]    |
+|  If negative     |
+|  cycle: return   |
+|  None            |
++--------+---------+
+         |
+         v
++--------+---------+
+|  3. Reweight     |   O(E)
+|  each edge:      |
+|  w'(u,v) =       |
+|  w(u,v)+h[u]-h[v]|
+|  All >= 0 now    |
++--------+---------+
+         |
+         v
++--------+---------+
+|  4. Dijkstra     |   V runs, each O((E+V) log V)
+|  from every      |
+|  source s in     |
+|  reweighted graph|
++--------+---------+
+         |
+         v
++--------+---------+
+|  5. Recover      |   O(V^2)
+|  original dists: |
+|  dist[s][t] =    |
+|  d'[t]-h[s]+h[t] |
++--------+---------+
+         |
+         v
+OUTPUT: n x n distance matrix (None on negative cycle)
 ```
 
-Now Dijkstra can be run from every source.
-
-## Algorithm Outline
-
-```
-1) Add super-source q with 0-weight edges to all vertices
-2) Run Bellman-Ford from q
-   - If a negative cycle exists: return None
-3) Reweight each edge: w'(u,v) = w(u,v) + h[u] - h[v]
-4) For each source s:
-     run Dijkstra on the reweighted graph
-     recover original distances:
-       dist[s][t] = d'[t] - h[s] + h[t]
-```
+---
 
 ## Step-by-Step Worked Example
 
@@ -119,42 +202,70 @@ Graph:
 1 -> 3 (5)
 ```
 
-### 1) Bellman-Ford from q
+### Step 1: Bellman-Ford from super-source q
 
 ```
 q -> every vertex with weight 0
 
 h starts as [0, 0, 0, 0]
 After relaxations:
-  h = [0, 0, -2, 0]
+  relax 1->2 (-2):  h[2] = h[1] + (-2) = -2
+  all other h values stay 0
+
+h = [0, 0, -2, 0]
 ```
 
-### 2) Reweight edges
+### Step 2: Reweight edges
 
 ```
-0->1: 1 + 0 - 0   = 1
-0->2: 4 + 0 - (-2)= 6
-1->2: -2 + 0 - (-2)= 0
-2->3: 2 + (-2) - 0= 0
-1->3: 5 + 0 - 0   = 5
+0->1: 1  + 0    -  0   = 1
+0->2: 4  + 0    - (-2) = 6
+1->2: -2 + 0    - (-2) = 0
+2->3: 2  + (-2) -  0   = 0
+1->3: 5  + 0    -  0   = 5
 ```
 
-### 3) Dijkstra from 0
+### Step 3: Dijkstra from source 0
 
-Reweighted distances from 0:
+Reweighted graph has only non-negative edges.
 
 ```
+Initial:  dist' = [0, INF, INF, INF]
+
+Process 0 (dist'=0):
+  0->1 (w'=1):  dist'[1] = 1
+  0->2 (w'=6):  dist'[2] = 6
+
+Process 1 (dist'=1):
+  1->2 (w'=0):  dist'[2] = min(6, 1+0) = 1   <-- improved
+  1->3 (w'=5):  dist'[3] = 1+5 = 6
+
+Process 2 (dist'=1):
+  2->3 (w'=0):  dist'[3] = min(6, 1+0) = 1   <-- improved
+
+Process 3 (dist'=1):
+  (no outgoing edges)
+
 d' = [0, 1, 1, 1]
 ```
 
-Recover original distances:
+### Step 4: Recover original distances from source 0
 
 ```
-original dist[0][v] = d'[v] - h[0] + h[v]
-= [0, 1, -1, 1]
+dist[0][v] = d'[v] - h[0] + h[v]
+
+dist[0][0] = 0 - 0 + 0   = 0
+dist[0][1] = 1 - 0 + 0   = 1
+dist[0][2] = 1 - 0 + (-2) = -1
+dist[0][3] = 1 - 0 + 0   = 1
 ```
 
-This matches the true shortest paths in the original graph.
+Result row for source 0: `[0, 1, -1, 1]`
+
+The negative entry `dist[0][2] = -1` is the true shortest path cost
+`0 -> 1 -> 2` with weights `1 + (-2) = -1` in the original graph.
+
+---
 
 ## Example Usage
 
@@ -191,52 +302,60 @@ test "johnson negative cycle" {
 }
 ```
 
-## Diagram: How the Potential Cancels
-
-```
-Path P: v0 -> v1 -> v2 -> v3
-
-w'(P) = (w01 + h0 - h1)
-      + (w12 + h1 - h2)
-      + (w23 + h2 - h3)
-      = w(P) + h0 - h3
-
-All internal h terms cancel (telescoping).
-```
+---
 
 ## Common Pitfalls
 
-- **Negative cycles**: Johnson must return None if any exist.
-- **Overflow**: use Int64 and guard `dist + w` from overflow.
-- **Unreachable nodes**: keep INF to represent no path.
-- **Edge direction**: algorithm is for directed graphs. For undirected graphs,
-  add edges in both directions.
-- **Reweight recovery**: always use `d'[t] - h[s] + h[t]`.
+- **Negative cycles**: Johnson must return `None` if any are detected;
+  shortest paths are undefined in graphs with negative cycles.
+- **Overflow**: distances are stored as `Int64`; the code guards `dist + w`
+  against overflow when `dist` is already near the sentinel `INF64`.
+- **Unreachable nodes**: `INF64` (`4611686018427387903`) is kept in the output
+  matrix to represent "no path exists."
+- **Edge direction**: the algorithm is for directed graphs. For undirected
+  graphs, add edges in both directions.
+- **Distance recovery**: always apply `d'[t] - h[s] + h[t]`; omitting this
+  step yields reweighted distances, not original distances.
+
+---
 
 ## Complexity
 
 | Phase | Time | Notes |
-|------|------|-------|
-| Bellman-Ford | O(V·E) | One run from super-source |
-| Reweight edges | O(E) | Simple pass |
-| Dijkstra × V | O(V·(E + V log V)) | Binary heap |
-| Total | O(V·E·log V) | Best on sparse graphs |
+|-------|------|-------|
+| Add super-source + Bellman-Ford | O(V * E) | One run from virtual source |
+| Reweight all edges | O(E) | Single linear pass |
+| Dijkstra from each vertex | O(V * (E + V log V)) | Binary-heap Dijkstra |
+| Distance recovery | O(V^2) | One subtraction per entry |
+| **Total** | **O(V * E + V^2 log V)** | Optimal on sparse graphs |
+
+For sparse graphs (E = O(V)) the total is O(V^2 log V), beating
+Floyd-Warshall's O(V^3).
+
+---
 
 ## Johnson vs Floyd-Warshall
 
 | Aspect | Johnson | Floyd-Warshall |
 |--------|---------|----------------|
-| Time | O(V·E·log V) | O(V^3) |
+| Time | O(V*E + V^2 log V) | O(V^3) |
 | Space | O(V + E) + output | O(V^2) |
-| Negative edges | Yes | Yes |
-| Best for | Sparse | Dense |
+| Handles negative edges | Yes | Yes |
+| Best for | Sparse graphs | Dense graphs |
+| Implementation complexity | Higher | Lower |
+
+---
 
 ## Implementation Notes (This Package)
 
-- Uses Bellman-Ford from `@bellman_ford` to get potentials.
-- Uses a custom binary heap for Dijkstra.
-- Distances are stored in `Int64`, with `INF64` for unreachable nodes.
-- The API returns `None` when a negative cycle exists.
+- Uses `@bellman_ford.BellmanFord` to compute potentials from the super-source.
+- Uses a package-local binary min-heap (`MinHeap`) for Dijkstra; no external
+  heap dependency.
+- Distances are stored as `Int64`, with the sentinel `INF64 =
+  4611686018427387903` for unreachable nodes (chosen so that `INF64 + INF64`
+  does not overflow `Int64`).
+- The public API returns `None` when a negative cycle exists.
+- Out-of-range vertex indices in the edge list are silently ignored.
 
-If you need path reconstruction, store predecessor arrays inside Dijkstra and
-carry them through the recovery step.
+If you need path reconstruction, add a predecessor array inside `dijkstra` and
+carry it through the recovery step alongside the distance array.
