@@ -45,7 +45,7 @@ fn[T] valid_prefix(arr : Array[Tree[T]?], i : Int) -> Bool {
 fn[T : Compare] merge_heaps(a : Heap[T], b : Heap[T]) -> Heap[T] {
   let len = max2(a.trees.length(), b.trees.length()) + 1
   let out : Array[Tree[T]?] = Array::make(len, None)
-  let _ = for i = 0, carry = None; i < len; {
+  let _ = for i in 0..<len; carry = None {
     let t1 = if i < a.trees.length() { a.trees[i] } else { None }
     let t2 = if i < b.trees.length() { b.trees[i] } else { None }
     let count = (if t1 is Some(_) { 1 } else { 0 }) +
@@ -83,7 +83,7 @@ fn[T : Compare] merge_heaps(a : Heap[T], b : Heap[T]) -> Heap[T] {
         }
       }
     }
-    continue i + 1, new_carry
+    continue new_carry
   } nobreak {
     carry
   } where {
