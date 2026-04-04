@@ -53,7 +53,7 @@ fn DominatorWork::dfs(self : DominatorWork, u : Int) -> Unit {
   self.dsu[t] = t
 
   // Visit all neighbors
-  for i = 0; i < self.adj[u].length(); i = i + 1 {
+  for i in 0..<self.adj[u].length() {
     let v = self.adj[u][i]
     if self.arr[v] == 0 {
       // v is unvisited - recurse
