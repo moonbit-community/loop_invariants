@@ -21,47 +21,69 @@
 const INF64 : Int64 = 4611686018427387903L
 
 ///|
-/// Directed edge with weight.
+/// A directed edge in the input graph.
 ///
-/// FIELDS:
-///   - from: source vertex
-///   - to: destination vertex
-///   - weight: edge cost (can be negative in contracted graphs)
+/// Edges are the primitive input to `min_arborescence`. Multiple edges between
+/// the same pair of vertices are permitted; the algorithm retains all of them
+/// because contraction can change which one is cheapest.
+///
+/// The `weight` field may be negative after contraction (internal use only).
+/// For user-supplied graphs, non-negative weights are recommended.
+///
+/// Example:
+/// ```
+///   let e : Edge = { from: 0, to: 1, weight: 7L }
+///   // Represents the directed edge 0 →(7)→ 1
+/// ```
 pub(all) struct Edge {
+  /// Source vertex of the edge (0-indexed).
   from : Int
+  /// Destination vertex of the edge (0-indexed).
   to : Int
+  /// Cost of traversing this edge.
   weight : Int64
 } derive(Debug)
 
 ///|
-/// Result of minimum arborescence computation.
+/// The result of a minimum arborescence computation.
 ///
-/// FIELDS:
-///   - cost: total weight of the arborescence
-///   - parent: parent[v] = predecessor of v in the arborescence
-///             parent[root] = -1
-///             parent[v] = -1 for unreachable vertices
+/// An `Arborescence` encodes a directed spanning tree rooted at a fixed vertex.
+/// Every non-root vertex has exactly one incoming edge, and all vertices are
+/// reachable from the root by following edges forward.
 ///
-/// STRUCTURE:
+/// ## Fields
+///
+/// - `cost`   — Total weight of all chosen edges.
+/// - `parent` — `parent[v]` is the predecessor of `v` in the tree.
+///              `parent[root]` is always `-1`.
+///
+/// ## Recovering the edge list
+///
 /// ```
-///   The arborescence forms a tree rooted at the specified root.
-///   Following parent pointers from any vertex leads to root.
+///   for v in 0..<n {
+///     if v != root {
+///       // edge parent[v] → v is in the arborescence
+///     }
+///   }
+/// ```
 ///
-///   Example for vertices {0, 1, 2, 3} with root=0:
-///     parent = [-1, 0, 1, 1]
+/// ## Example
 ///
-///     Means: 0 is root
-///            1's parent is 0 (edge 0→1)
-///            2's parent is 1 (edge 1→2)
-///            3's parent is 1 (edge 1→3)
-///
-///         0
-///         │
-///         1
-///        / \
-///       2   3
+/// ```
+/// // vertices {0,1,2,3}, root = 0
+/// // parent = [-1, 0, 1, 1]
+/// //
+/// //     0
+/// //     |
+/// //     1
+/// //    / \
+/// //   2   3
+/// //
+/// // cost = w(0→1) + w(1→2) + w(1→3)
 /// ```
 pub(all) struct Arborescence {
+  /// Total weight of the chosen arborescence edges.
   cost : Int64
+  /// `parent[v]` = predecessor of `v`; `-1` for the root.
   parent : Array[Int]
 } derive(Debug)

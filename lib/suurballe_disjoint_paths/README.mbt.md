@@ -38,7 +38,7 @@ It is tempting to:
 
 That can fail even when two disjoint paths exist.
 
-Example:
+Example graph:
 
 ```
   s --1--> u --1--> v --1--> t
@@ -46,10 +46,28 @@ Example:
   u --2--> t
 ```
 
+```mermaid
+graph LR
+    s -->|1| u
+    u -->|1| v
+    v -->|1| t
+    s -->|2| v
+    u -->|2| t
+```
+
 The shortest path is `s -> u -> v -> t` with cost 3.
 If you delete its edges, there is no remaining path from `s` to `t`.
 
 But two edge-disjoint paths do exist:
+
+```mermaid
+graph LR
+    s -->|"P1: 1"| u
+    u -->|"P1: 2"| t
+    s -->|"P2: 2"| v
+    v -->|"P2: 1"| t
+```
+
 - `s -> u -> t` (cost 3)
 - `s -> v -> t` (cost 3)
 
@@ -67,6 +85,17 @@ So we need a smarter approach that can "swap" edges between the two paths.
 
 The reversal trick lets the second run "undo" parts of `P1` where a different
 split would create a better pair of disjoint paths.
+
+```mermaid
+flowchart TD
+    A[Run Dijkstra from source] --> B[Record shortest path P1 and distances dist]
+    B --> C["Reweight: w'(u,v) = w(u,v) + dist[u] - dist[v]"]
+    C --> D[Reverse edges of P1 in reweighted graph, cost = 0]
+    D --> E[Run Dijkstra again on modified graph to get P2]
+    E --> F[Combine P1 and P2 edge sets]
+    F --> G[Cancel edges that appear in both directions]
+    G --> H[Extract two edge-disjoint paths from combined graph]
+```
 
 ## The reweighting step (Johnson potentials)
 
@@ -107,6 +136,15 @@ Step 3: Reverse edges of `P1` in the reweighted graph:
   u --0--> t
 ```
 
+```mermaid
+graph LR
+    u -->|"reversed, 0"| s
+    v -->|"reversed, 0"| u
+    t -->|"reversed, 0"| v
+    s -->|"0"| v
+    u -->|"0"| t
+```
+
 Step 4: Second Dijkstra finds a path that may use reversed edges, for example:
 `P2 = s -> v -> u -> t` (note the reversed edge `v -> u`).
 
@@ -120,6 +158,14 @@ Cancel u->v with v->u.
 Remaining edges:
   s->u, u->t
   s->v, v->t
+```
+
+```mermaid
+graph LR
+    s -->|"path 1"| u
+    u -->|"path 1"| t
+    s -->|"path 2"| v
+    v -->|"path 2"| t
 ```
 
 So the final pair is:

@@ -1,8 +1,8 @@
 // ============================================================================
-// MATRIX EXPONENTIATION - O(n³ log k) Matrix Power
+// MATRIX EXPONENTIATION - O(k^3 log n) Matrix Power
 // ============================================================================
 //
-// Computes M^k in O(n³ log k) time using binary exponentiation.
+// Computes M^n in O(k^3 log n) time using binary exponentiation.
 // Essential for solving linear recurrences in O(log n) time.
 //
 // KEY INSIGHT: Any linear recurrence can be represented as matrix multiplication:
@@ -16,16 +16,26 @@
 // - Dynamic programming acceleration
 //
 // INVARIANTS (for binary exponentiation):
-// 1. result * base^exp = original M^k (throughout loop)
+// 1. result * base^exp = original M^n (throughout loop)
 // 2. exp halves each iteration
 // 3. When exp is odd, multiply result by current base
 //
-// TIME COMPLEXITY: O(n³ log k)
-// SPACE COMPLEXITY: O(n²)
+// TIME COMPLEXITY: O(k^3 log n)
+// SPACE COMPLEXITY: O(k^2)
 
+/// The modulus used for all modular matrix arithmetic.
+///
+/// Using 10^9 + 7 (a prime) prevents Int64 overflow during multiplication
+/// and keeps values in range for large exponents.
 ///|
 const MATRIX_MOD : Int64 = 1000000007L
 
+/// A dense k x k matrix of Int64 values, stored in row-major order.
+///
+/// All arithmetic operations either apply `MATRIX_MOD` (via `multiply`) or
+/// operate on exact integers (via `multiply_no_mod`).  Use the modular path
+/// whenever `n` is large; use the exact path only when you know intermediate
+/// values stay within Int64 bounds.
 ///|
 priv struct Matrix {
   data : Array[Array[Int64]]
@@ -33,12 +43,27 @@ priv struct Matrix {
   cols : Int
 }
 
+/// Creates a zero-filled `rows x cols` matrix.
 ///|
 fn Matrix::new(rows : Int, cols : Int) -> Matrix {
   let data = Array::makei(rows, _ => Array::make(cols, 0L))
   { data, rows, cols }
 }
 
+/// Returns the `n x n` identity matrix.
+///
+/// The identity matrix satisfies `I * A = A * I = A` for any compatible
+/// matrix `A`.  It is used to initialise `result` in `Matrix::power` so
+/// that the loop invariant `result * base^e = M^n` holds before the first
+/// iteration.
+///
+/// # Example
+///
+/// ```
+/// let i2 = Matrix::identity(2)
+/// // i2 = [ [1, 0],
+/// //         [0, 1] ]
+/// ```
 ///|
 fn Matrix::identity(n : Int) -> Matrix {
   let m = Matrix::new(n, n)
@@ -48,6 +73,18 @@ fn Matrix::identity(n : Int) -> Matrix {
   m
 }
 
+/// Constructs a matrix from a 2-D array literal.
+///
+/// Each inner array becomes one row.  An empty outer array produces a 0x0
+/// matrix.  Rows are copied so later mutations to `arr` do not affect the
+/// returned matrix.
+///
+/// # Example
+///
+/// ```
+/// let m = Matrix::from_array([[1L, 2L], [3L, 4L]])
+/// // m[0][0] = 1, m[0][1] = 2, m[1][0] = 3, m[1][1] = 4
+/// ```
 ///|
 fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
   let rows = arr.length()
@@ -59,18 +96,35 @@ fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
   { data, rows, cols }
 }
 
+/// Returns the element at row `i`, column `j`.
 ///|
 fn Matrix::get(self : Matrix, i : Int, j : Int) -> Int64 {
   self.data[i][j]
 }
 
+/// Sets the element at row `i`, column `j` to `v`.
 ///|
 fn Matrix::set(self : Matrix, i : Int, j : Int, v : Int64) -> Unit {
   self.data[i][j] = v
 }
 
+/// Multiplies two matrices with modular reduction.
+///
+/// Computes `self * other` where every intermediate accumulation is reduced
+/// modulo `MATRIX_MOD`.  Both matrices must be conformable (`self.cols ==
+/// other.rows`); the result has dimensions `self.rows x other.cols`.
+///
+/// Time: O(self.rows * self.cols * other.cols)
+///
+/// # Loop invariant
+///
+/// For each output cell `(i, j)` the inner accumulator `sum` satisfies:
+///
+///   `sum = (sum_{t < k} self[i,t] * other[t,j]) mod MATRIX_MOD`
+///
+/// When `k` reaches `self.cols`, `sum` is the complete dot product for
+/// that cell.
 ///|
-/// Matrix multiplication with modulo
 fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix::new(self.rows, other.cols)
   for i in 0..<self.rows {
@@ -98,8 +152,23 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
   result
 }
 
+/// Multiplies two matrices without modular reduction.
+///
+/// Computes `self * other` using exact integer arithmetic.  Use this only
+/// when you are certain that no intermediate or final value exceeds the
+/// Int64 range (approximately 9.2 * 10^18).  Suitable for small matrices
+/// with small values, such as verifying identity-matrix properties.
+///
+/// Time: O(self.rows * self.cols * other.cols)
+///
+/// # Loop invariant
+///
+/// For each output cell `(i, j)` the inner accumulator `sum` satisfies:
+///
+///   `sum = sum_{t < k} self[i,t] * other[t,j]`
+///
+/// When `k` reaches `self.cols`, `sum` is the complete exact dot product.
 ///|
-/// Matrix multiplication without modulo
 fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix::new(self.rows, other.cols)
   for i in 0..<self.rows {
@@ -125,8 +194,36 @@ fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
   result
 }
 
+/// Raises a square matrix to a non-negative integer power using binary
+/// exponentiation.
+///
+/// Returns `self^exp` computed in O(k^3 log exp) time, where `k` is the
+/// dimension of the matrix.  All multiplications use `Matrix::multiply`
+/// (modular arithmetic).
+///
+/// If `self` is not square, it is returned unchanged (cannot exponentiate
+/// a non-square matrix).  `self^0` returns the identity matrix of the
+/// same dimension.
+///
+/// # Loop invariant
+///
+/// At the start of every iteration:
+///
+///   `result * base^e = M^exp`
+///
+/// where `M` is the original matrix.  The invariant is established with
+/// `result = I` and `base = M` before the loop.  Each step either folds
+/// one factor of `base` into `result` (when `e` is odd), squares `base`,
+/// and halves `e`.  When `e` reaches 0, `result` equals `M^exp`.
+///
+/// # Example
+///
+/// ```
+/// let m = Matrix::from_array([[1L, 1L], [1L, 0L]])
+/// let m10 = m.power(10L)
+/// // m10.get(0, 1) == F(10) == 55
+/// ```
 ///|
-/// Matrix exponentiation using binary exponentiation
 fn Matrix::power(self : Matrix, exp : Int64) -> Matrix {
   if self.rows != self.cols {
     return self // Cannot exponentiate non-square matrix
@@ -154,8 +251,10 @@ fn Matrix::power(self : Matrix, exp : Int64) -> Matrix {
   }
 }
 
+/// Returns a deep copy of the matrix.
+///
+/// Mutations to the returned matrix do not affect the original.
 ///|
-/// Copy matrix
 fn Matrix::copy(self : Matrix) -> Matrix {
   let m = Matrix::new(self.rows, self.cols)
   for i in 0..<self.rows {
@@ -166,8 +265,9 @@ fn Matrix::copy(self : Matrix) -> Matrix {
   m
 }
 
+/// Returns `true` if `self` and `other` have the same dimensions and all
+/// corresponding elements are equal.
 ///|
-/// Check if matrices are equal
 fn Matrix::equals(self : Matrix, other : Matrix) -> Bool {
   if self.rows != other.rows || self.cols != other.cols {
     return false
@@ -186,8 +286,30 @@ fn Matrix::equals(self : Matrix, other : Matrix) -> Bool {
 // FIBONACCI using Matrix Exponentiation
 // ============================================================================
 
+/// Computes the nth Fibonacci number in O(log n) time using matrix
+/// exponentiation.
+///
+/// Uses the identity:
+///
+/// ```
+/// [ F(n+1)  F(n)   ]   [ 1  1 ]^n
+/// [ F(n)    F(n-1) ] = [ 1  0 ]
+/// ```
+///
+/// so `F(n)` is the (0,1) entry of the Fibonacci matrix raised to the nth
+/// power.  The result is returned modulo `MATRIX_MOD` (10^9 + 7) for large
+/// `n`.
+///
+/// Special cases: `fibonacci(0) = 0`, `fibonacci(1) = 1`.
+///
+/// # Example
+///
+/// ```
+/// fibonacci(10L) // 55
+/// fibonacci(20L) // 6765
+/// fibonacci(50L) // 586268941  (= F(50) mod 10^9+7)
+/// ```
 ///|
-/// Compute nth Fibonacci number in O(log n)
 fn fibonacci(n : Int64) -> Int64 {
   if n <= 0L {
     return 0L
@@ -206,9 +328,58 @@ fn fibonacci(n : Int64) -> Int64 {
 // LINEAR RECURRENCE
 // ============================================================================
 
+/// Solves a k-term linear recurrence in O(k^3 log n) time.
+///
+/// Given a recurrence of the form:
+///
+/// ```
+/// f(n) = c[0]*f(n-1) + c[1]*f(n-2) + ... + c[k-1]*f(n-k)
+/// ```
+///
+/// and initial values `f(0), f(1), ..., f(k-1)`, returns `f(n)` modulo
+/// `MATRIX_MOD`.
+///
+/// Internally builds the k x k companion (transition) matrix:
+///
+/// ```
+/// [ c[0]  c[1]  c[2]  ...  c[k-1] ]
+/// [  1     0     0    ...    0     ]
+/// [  0     1     0    ...    0     ]
+/// [  ...                          ]
+/// [  0     0     0    ...    0     ]
+/// ```
+///
+/// raises it to the power `n - k + 1`, then computes the dot product with
+/// the reversed initial vector.
+///
+/// # Parameters
+///
+/// - `coefficients` - recurrence coefficients `[c[0], c[1], ..., c[k-1]]`
+/// - `initial` - base values `[f(0), f(1), ..., f(k-1)]`
+/// - `n` - the index to evaluate
+///
+/// # Example
+///
+/// Fibonacci (`k = 2`, coefficients = `[1, 1]`, initial = `[0, 1]`):
+///
+/// ```
+/// solve_recurrence([1L, 1L], [0L, 1L], 10L) // 55
+/// ```
+///
+/// Tribonacci (`k = 3`, coefficients = `[1, 1, 1]`, initial = `[0, 0, 1]`):
+///
+/// ```
+/// solve_recurrence([1L, 1L, 1L], [0L, 0L, 1L], 6L) // 7
+/// ```
+///
+/// # Loop invariant
+///
+/// The final dot-product loop maintains:
+///
+///   `ans = sum_{t < j} result[0][t] * initial[k-1-t]  (mod MATRIX_MOD)`
+///
+/// When `j` reaches `k`, `ans` is the complete recurrence value `f(n)`.
 ///|
-/// Solve linear recurrence: f(n) = c[0]*f(n-1) + c[1]*f(n-2) + ... + c[k-1]*f(n-k)
-/// Given initial values f(0), f(1), ..., f(k-1)
 fn solve_recurrence(
   coefficients : Array[Int64],
   initial : Array[Int64],
@@ -258,8 +429,34 @@ fn solve_recurrence(
 // GRAPH PATH COUNTING
 // ============================================================================
 
+/// Counts the number of walks of exactly `k` steps between every pair of
+/// vertices in a directed graph.
+///
+/// If `adj` is the adjacency matrix of a graph with `v` vertices, then
+/// `(adj^k)[i][j]` equals the number of distinct walks of length `k` from
+/// vertex `i` to vertex `j`.  This follows from the definition of matrix
+/// multiplication applied inductively.
+///
+/// Returns the full `v x v` result matrix so callers can query any pair
+/// `(i, j)` using `Matrix::get`.
+///
+/// Time: O(v^3 log k)
+///
+/// # Parameters
+///
+/// - `adj_matrix` - square adjacency matrix where `adj[i][j] = 1` if edge
+///   `i -> j` exists (0 otherwise); arbitrary non-negative weights also work
+/// - `k` - walk length (number of steps)
+///
+/// # Example
+///
+/// ```
+/// // Cycle graph: 0 -> 1 -> 2 -> 0
+/// let adj = [[0L, 1L, 0L], [0L, 0L, 1L], [1L, 0L, 0L]]
+/// let paths3 = count_paths(adj, 3L)
+/// // paths3.get(0, 0) == 1  (exactly one 3-step walk from 0 back to 0)
+/// ```
 ///|
-/// Count paths of exactly k steps from u to v in graph
 fn count_paths(adj_matrix : Array[Array[Int64]], k : Int64) -> Matrix {
   let m = Matrix::from_array(adj_matrix)
   m.power(k)

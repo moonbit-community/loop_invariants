@@ -18,6 +18,7 @@ priv struct ConvexHullTrick {
 }
 
 ///|
+/// Create an empty `ConvexHullTrick` instance with no lines.
 fn ConvexHullTrick::new() -> ConvexHullTrick {
   { lines: [] }
 }
@@ -130,11 +131,21 @@ priv struct MonotonicCHT {
 }
 
 ///|
+/// Create an empty `MonotonicCHT` instance with no lines and a fresh pointer.
 fn MonotonicCHT::new() -> MonotonicCHT {
   { lines: [], ptr: [0] }
 }
 
 ///|
+/// Add a line `y = mx + b` to the monotonic CHT.
+///
+/// Lines must be added with non-increasing slope. Dominated lines are pruned
+/// from the back of the hull, and the current pointer is adjusted if the
+/// pruned line was pointed to.
+///
+/// Parameters:
+/// - `m` : Slope of the new line.
+/// - `b` : Intercept of the new line.
 fn MonotonicCHT::add_line_mono(
   self : MonotonicCHT,
   m : Int64,

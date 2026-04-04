@@ -22,7 +22,9 @@
 // TIME COMPLEXITY: O(n log n)
 // SPACE COMPLEXITY: O(n)
 
-///|
+///| Computes the square root of `x`, returning `0.0` for non-positive inputs.
+/// This wrapper avoids NaN from negative values produced by floating-point
+/// rounding.
 fn sqrt_f64(x : Double) -> Double {
   if x <= 0.0 {
     0.0
@@ -31,30 +33,37 @@ fn sqrt_f64(x : Double) -> Double {
   }
 }
 
-///|
+///| Internal representation of a 2D point that preserves the original array
+/// index so that the returned `(index1, index2)` pair refers back to the
+/// caller-supplied `Array[(Double, Double)]`.
 priv struct Point {
   x : Double
   y : Double
   idx : Int // Original index
 }
 
-///|
+///| Returns the Euclidean distance between two `Point` values.
 fn distance(p1 : Point, p2 : Point) -> Double {
   sqrt_f64(distance_sq(p1, p2))
 }
 
-///|
+///| Returns the squared Euclidean distance between two `Point` values.
+/// Used internally to avoid a `sqrt` call when only comparisons are needed.
 fn distance_sq(p1 : Point, p2 : Point) -> Double {
   let dx = p1.x - p2.x
   let dy = p1.y - p2.y
   dx * dx + dy * dy
 }
 
-///|
+///| Sentinel value used as the initial "infinity" distance when no valid pair
+/// has been found yet (e.g. fewer than 2 points in the input).
 const CP_INF : Double = 1.0e18
 
-///|
-/// Find closest pair using brute force (for small inputs)
+///| Finds the closest pair among a small slice of points by checking every
+/// pair in `O(n^2)`.  Used as the base case of the divide-and-conquer
+/// recursion when `n <= 3`.
+///
+/// Returns `(distance, original_index1, original_index2)`.
 fn brute_force_closest(points : ArrayView[Point]) -> (Double, Int, Int) {
   let n = points.length()
   for i in 0..<n; min_dist = CP_INF, p1 = -1, p2 = -1 {
@@ -76,8 +85,22 @@ fn brute_force_closest(points : ArrayView[Point]) -> (Double, Int, Int) {
   }
 }
 
-///|
-/// Merge step: check strip for closer pairs
+///| Merge step of the divide-and-conquer algorithm.
+///
+/// Searches the strip — the vertical band of width `2 * delta` centered on the
+/// dividing line — for a pair closer than `delta`.  The strip is first sorted
+/// by y-coordinate; then for each point `i`, only points `j > i` whose
+/// y-difference is less than `delta` are examined.  A packing argument
+/// guarantees that at most 6 such points need to be checked per `i`, so the
+/// total work is `O(n)` (excluding the sort, which is `O(n log n)` but called
+/// only once per recursion level).
+///
+/// Parameters:
+/// - `strip`  — points inside the `2 * delta`-wide band, sorted by y on return.
+/// - `delta`  — the current best distance from the recursive sub-problems.
+/// - `best_p1`, `best_p2` — original indices of the pair achieving `delta`.
+///
+/// Returns the updated `(distance, index1, index2)` triple.
 fn strip_closest(
   strip : Array[Point],
   delta : Double,
@@ -109,8 +132,18 @@ fn strip_closest(
   }
 }
 
-///|
-/// Recursive closest pair
+///| Core recursive routine of the divide-and-conquer closest-pair algorithm.
+///
+/// - `points_x` — the current sub-array of points sorted by x-coordinate
+///   (used for dividing into left/right halves).
+/// - `points_y` — all points in the current sub-problem sorted by y-coordinate
+///   (used for building the strip in `O(n)` without re-sorting).
+///
+/// The function splits `points_x` at the median, partitions `points_y` into
+/// left and right groups, recurses on both halves, then calls `strip_closest`
+/// to handle cross-boundary pairs.
+///
+/// Returns `(distance, original_index1, original_index2)`.
 fn closest_pair_rec(
   points_x : ArrayView[Point],
   points_y : Array[Point],

@@ -6,6 +6,25 @@
 ///
 /// Key Insight: Two pointers maintain a window [left, right) with specific properties.
 /// The invariant describes what property the current window satisfies.
+///
+/// ## Technique overview
+///
+/// Both-ends inward (sorted array):
+///
+/// ```
+/// [1, 2, 4, 7, 11, 15]
+///  L                R   sum too big  -> move R left
+///  L           R       sum too small -> move L right
+///     L        R       found!
+/// ```
+///
+/// Slow / fast (same direction):
+///
+/// ```
+/// [1, 1, 2, 2, 3]
+///  s               slow marks the end of the "clean" prefix
+///  f               fast scans ahead; slow advances only on new value
+/// ```
 
 ///|
 /// Two Sum (Sorted Array) - Classic Two Pointer
@@ -63,10 +82,13 @@ test "two sum sorted" {
 }
 
 ///|
-/// Three Sum - Find triplets summing to target
+/// Three Sum - Find all unique triplets in `arr` whose values sum to `target`.
 ///
-/// INSIGHT: Fix one element, then use two-sum on the rest.
-/// To avoid duplicates, skip repeated elements.
+/// The array is sorted first; the outer loop fixes one element and the inner
+/// two-pointer pass finds all pairs for the remaining sum.  Duplicate elements
+/// are skipped to avoid returning the same triplet more than once.
+///
+/// Time: O(n^2).  Space: O(n) for the sorted copy.
 fn three_sum(arr : Array[Int], target : Int) -> Array[(Int, Int, Int)] {
   let n = arr.length()
   let result : Array[(Int, Int, Int)] = []
@@ -115,6 +137,9 @@ fn three_sum(arr : Array[Int], target : Int) -> Array[(Int, Int, Int)] {
 }
 
 ///|
+/// Advance `left` past consecutive elements equal to `arr[left]`.
+/// Returns the first index in `(left, right)` whose value differs from
+/// `arr[left]`, or `right` if no such index exists.
 fn skip_duplicates_forward(
   arr : ArrayView[Int],
   left : Int,
@@ -138,6 +163,9 @@ fn skip_duplicates_forward(
 }
 
 ///|
+/// Move `right` backward past consecutive elements equal to `arr[right]`.
+/// Returns the last index in `(left, right)` whose value differs from
+/// `arr[right]`, or `left` if no such index exists.
 fn skip_duplicates_backward(
   arr : ArrayView[Int],
   left : Int,

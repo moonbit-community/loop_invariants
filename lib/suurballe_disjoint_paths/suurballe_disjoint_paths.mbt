@@ -17,6 +17,8 @@
 // TIME COMPLEXITY: O(E log V)
 // SPACE COMPLEXITY: O(V + E)
 
+/// Sentinel value representing an unreachable distance (effectively infinity).
+/// Chosen as `Int64::max_value / 2` to avoid overflow when adding edge weights.
 ///|
 const SD_INF : Int64 = 4611686018427387903L
 
@@ -24,22 +26,28 @@ const SD_INF : Int64 = 4611686018427387903L
 // MIN-HEAP FOR DIJKSTRA
 // ============================================================================
 
+/// A single entry in the priority queue used by Dijkstra's algorithm.
+/// Holds the tentative distance to a vertex so the heap can order by distance.
 ///|
 priv struct HeapEntry {
   dist : Int64
   vertex : Int
 }
 
+/// A binary min-heap over `HeapEntry` values, ordered by `dist`.
+/// Used as the priority queue in both Dijkstra passes.
 ///|
 priv struct MinHeap {
   data : Array[HeapEntry]
 }
 
+/// Creates a new, empty `MinHeap`.
 ///|
 fn MinHeap::new() -> MinHeap {
   { data: [] }
 }
 
+/// Inserts `entry` into the heap and restores the heap property by sifting up.
 ///|
 fn MinHeap::push(self : MinHeap, entry : HeapEntry) -> Unit {
   self.data.push(entry)
@@ -56,6 +64,9 @@ fn MinHeap::push(self : MinHeap, entry : HeapEntry) -> Unit {
   }
 }
 
+/// Removes and returns the entry with the smallest `dist`, or `None` when the
+/// heap is empty.  Restores the heap property by sifting the last element down
+/// from the root.
 ///|
 fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
   let n = self.data.length()
@@ -108,6 +119,22 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 // DIJKSTRA HELPERS
 // ============================================================================
 
+/// Runs Dijkstra on the original graph from `source` to `sink`.
+///
+/// Parameters:
+/// - `n`      : number of vertices (vertices are `0..n-1`).
+/// - `adj`    : adjacency list; `adj[u]` contains edge ids leaving `u`.
+/// - `to`     : `to[e]` is the head vertex of edge `e`.
+/// - `weight` : `weight[e]` is the non-negative weight of edge `e`.
+/// - `source` : start vertex.
+/// - `sink`   : target vertex.
+///
+/// Returns `Some((dist, prev_edge))` where:
+/// - `dist[v]` is the shortest distance from `source` to `v`.
+/// - `prev_edge[v]` is the id of the last edge on the shortest path to `v`,
+///   or `-1` if `v` was not reached.
+///
+/// Returns `None` when `sink` is unreachable from `source`.
 ///|
 fn dijkstra_original(
   n : Int,
@@ -164,6 +191,15 @@ fn dijkstra_original(
   }
 }
 
+/// An edge in the Suurballe-modified graph used for the second Dijkstra pass.
+///
+/// - `to`       : head vertex of this edge.
+/// - `weight`   : reduced weight (`w'`) after applying Johnson potentials; `0`
+///                for edges that were reversed from the first shortest path.
+/// - `orig_id`  : index of the corresponding edge in the original edge list.
+/// - `reversed` : `true` when this edge is a reversal of a first-path edge.
+///                Traversing a reversed edge during path reconstruction cancels
+///                the original directed edge in the combined graph.
 ///|
 priv struct Edge2 {
   to : Int
@@ -172,6 +208,24 @@ priv struct Edge2 {
   reversed : Bool
 }
 
+/// Runs Dijkstra on the Suurballe-modified graph for the second path.
+///
+/// The modified graph has:
+/// - Original edges reweighted by Johnson potentials (all non-negative).
+/// - First-path edges replaced by their zero-cost reversal (`Edge2.reversed`).
+///
+/// Parameters:
+/// - `n`      : number of vertices.
+/// - `adj`    : adjacency list of `Edge2` records in the modified graph.
+/// - `source` : start vertex.
+/// - `sink`   : target vertex.
+///
+/// Returns `Some((dist, prev_v, prev_e))` where:
+/// - `dist[v]`   is the reduced-cost shortest distance from `source` to `v`.
+/// - `prev_v[v]` is the predecessor vertex on the shortest path to `v`.
+/// - `prev_e[v]` is the index into `adj[prev_v[v]]` of the edge used.
+///
+/// Returns `None` when `sink` is unreachable.
 ///|
 fn dijkstra_modified(
   n : Int,
@@ -231,6 +285,11 @@ fn dijkstra_modified(
 // PATH EXTRACTION HELPERS
 // ============================================================================
 
+/// Removes the first occurrence of vertex `v` from `adj[u]`.
+///
+/// Returns `true` if the edge was found and removed, `false` otherwise.
+/// Used during edge cancellation to eliminate opposite-direction edges between
+/// the combined first and second paths.
 ///|
 fn remove_edge(adj : Array[Array[Int]], u : Int, v : Int) -> Bool {
   for i in 0..<adj[u].length() {
@@ -252,6 +311,15 @@ fn remove_edge(adj : Array[Array[Int]], u : Int, v : Int) -> Bool {
   false
 }
 
+/// Extracts one complete path from `source` to `sink` by consuming edges from
+/// `adj` (each outgoing edge list is treated as a stack).
+///
+/// The function mutates `adj`: each edge consumed by this call is permanently
+/// removed, so calling it a second time extracts a different (disjoint) path
+/// from the same combined graph.
+///
+/// Returns `Some(path)` where `path` is a vertex list starting at `source` and
+/// ending at `sink`, or `None` if no path can be completed.
 ///|
 fn extract_path(
   adj : Array[Array[Int]],
@@ -284,9 +352,28 @@ fn extract_path(
 // PUBLIC API
 // ============================================================================
 
+/// Computes two edge-disjoint shortest paths from `source` to `sink` in a
+/// directed graph with non-negative edge weights using Suurballe's algorithm.
+///
+/// Parameters:
+/// - `n`      : total number of vertices; vertices are labelled `0..n-1`.
+/// - `edges`  : slice of `(u, v, w)` triples, where `u` and `v` are vertex
+///              indices and `w >= 0` is the edge weight.
+/// - `source` : start vertex (`0 <= source < n`, `source != sink`).
+/// - `sink`   : target vertex (`0 <= sink < n`).
+///
+/// Returns `Some((path1, path2))` where each path is a vertex list
+/// `[source, ..., sink]` and the two paths share no directed edge.
+/// The combined weight of both paths is minimal over all edge-disjoint pairs.
+///
+/// Returns `None` when:
+/// - no pair of edge-disjoint paths exists between `source` and `sink`, or
+/// - any input constraint is violated: `n <= 0`, vertex indices out of range,
+///   negative edge weight, or `source == sink`.
+///
+/// Time complexity:  `O(E log V)`
+/// Space complexity: `O(V + E)`
 ///|
-/// Compute two edge-disjoint shortest paths from source to sink.
-/// Returns None when no pair of disjoint paths exists or input is invalid.
 pub fn suurballe_disjoint_paths(
   n : Int,
   edges : ArrayView[(Int, Int, Int64)],

@@ -24,8 +24,23 @@
 // SPACE COMPLEXITY: O(n) for stack
 
 ///|
-/// Find next greater element for each position
-/// Returns -1 if no greater element exists to the right
+/// Returns the index of the next strictly greater element for each position.
+///
+/// For each index `i`, `result[i]` is the smallest `j > i` such that
+/// `arr[j] > arr[i]`, or `-1` if no such `j` exists.
+///
+/// Uses a **decreasing** monotonic stack: indices are kept on the stack
+/// while their values decrease.  When a new value is larger than the top,
+/// the top's "next greater" is found and it is popped.
+///
+/// Time complexity: O(n).  Each element is pushed and popped at most once.
+///
+/// # Example
+///
+/// ```
+/// arr    = [4, 5, 2, 10, 8]
+/// result = [1, 3, 3, -1, -1]   // indices of the next greater element
+/// ```
 fn next_greater_element(arr : Array[Int64]) -> Array[Int] {
   let n = arr.length()
   let result = Array::make(n, -1)
@@ -57,7 +72,23 @@ fn next_greater_element(arr : Array[Int64]) -> Array[Int] {
 }
 
 ///|
-/// Find next smaller element for each position
+/// Returns the index of the next strictly smaller element for each position.
+///
+/// For each index `i`, `result[i]` is the smallest `j > i` such that
+/// `arr[j] < arr[i]`, or `-1` if no such `j` exists.
+///
+/// Uses an **increasing** monotonic stack: indices are kept on the stack
+/// while their values increase.  When a new value is smaller than the top,
+/// the top's "next smaller" is found and it is popped.
+///
+/// Time complexity: O(n).
+///
+/// # Example
+///
+/// ```
+/// arr    = [4, 5, 2, 10, 8]
+/// result = [2, 2, -1,  4, -1]  // indices of the next smaller element
+/// ```
 fn next_smaller_element(arr : Array[Int64]) -> Array[Int] {
   let n = arr.length()
   let result = Array::make(n, -1)

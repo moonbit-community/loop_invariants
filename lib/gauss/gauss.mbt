@@ -26,9 +26,20 @@
 // TIME COMPLEXITY: O(n³)
 // SPACE COMPLEXITY: O(n²)
 
+/// Tolerance used to decide whether a floating-point value is effectively zero.
+/// Pivots smaller than this threshold are treated as zero and the column is
+/// skipped; RHS entries in zero rows larger than this are treated as a
+/// contradiction (no solution).
 ///|
 const GAUSS_EPS : Double = 0.000000001
 
+/// The result of a Gaussian elimination call.
+///
+/// - `solution` holds one particular solution vector (free variables are 0).
+/// - `rank` is the number of independent pivot rows (matrix rank).
+/// - `has_solution` is false when the system is inconsistent (0 = c, c != 0).
+/// - `has_unique_solution` is true when `has_solution` is true and `rank`
+///   equals the number of unknowns (no free variables).
 ///|
 pub struct GaussResult {
   solution : Array[Double]
@@ -37,8 +48,19 @@ pub struct GaussResult {
   has_unique_solution : Bool
 }
 
+/// Solve the linear system Ax = b using Gauss-Jordan elimination with partial
+/// pivoting.
+///
+/// Parameters:
+/// - `a`: coefficient matrix, n rows of length m each.
+/// - `b`: right-hand side vector, length n.
+///
+/// Returns a `GaussResult` describing whether a solution exists, how many
+/// degrees of freedom it has, and one particular solution vector.
+///
+/// Dimension mismatches (b.length() != a.length(), or inconsistent row
+/// lengths inside a) immediately return `has_solution = false`.
 ///|
-/// Solve Ax = b using Gaussian elimination.
 pub fn gauss_solve(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let n = a.length()
   if b.length() != n {
@@ -63,8 +85,18 @@ pub fn gauss_solve(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   gauss_eliminate(a, b)
 }
 
+/// Core Gauss-Jordan elimination routine (package-private).
+///
+/// Builds the augmented matrix [A|b] and performs forward elimination with
+/// partial pivoting, producing reduced row echelon form (RREF). Inconsistency
+/// is detected by checking zero-coefficient rows for a non-zero RHS. The
+/// solution is then read directly from the augmented column.
+///
+/// Invariants maintained throughout:
+/// - rows [0..row) are in RREF for columns [0..col).
+/// - rank == row at all times during the outer loop.
+/// - every accepted pivot has absolute value >= GAUSS_EPS.
 ///|
-/// Solve system Ax = b using Gaussian elimination
 fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let n = a.length()
   if n == 0 {
@@ -314,8 +346,12 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
 // MODULAR GAUSSIAN ELIMINATION
 // ============================================================================
 
+/// Compute the modular multiplicative inverse of `a` modulo prime `m`.
+///
+/// Uses Fermat's little theorem: a^(m-2) mod m = a^(-1) mod m,
+/// which is valid when `m` is prime and gcd(a, m) = 1.
+/// Implemented as fast binary exponentiation in O(log m) multiplications.
 ///|
-/// Modular multiplicative inverse using Fermat's little theorem
 fn mod_inverse(a : Int64, m : Int64) -> Int64 {
   for result = 1L, base = a % m, exp = m - 2L; exp > 0L; {
     let next_result = if exp % 2L == 1L { result * base % m } else { result }

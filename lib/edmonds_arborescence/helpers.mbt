@@ -5,42 +5,40 @@
 // Utility functions for cycle detection, reachability, and cost computation.
 
 ///|
-/// Find a cycle in the parent graph, if one exists.
+/// Find one cycle in the parent graph, if any exists.
 ///
-/// ALGORITHM:
+/// After the greedy selection step, each non-root vertex `v` stores
+/// `parent[v]` — the source of the cheapest edge into `v`. Following these
+/// pointers may lead to a directed cycle that is entirely disconnected from the
+/// root, which is exactly what needs to be contracted.
+///
+/// ## Algorithm
+///
+/// For each starting vertex `v`, follow parent pointers and mark every visited
+/// vertex with `v`'s ID. As soon as we arrive at a vertex already marked with
+/// `v`'s ID we have found a cycle. We then walk around that cycle once more to
+/// collect its members.
+///
 /// ```
-///   For each vertex v:
-///     Follow parent pointers until:
-///       1. Reach root → no cycle through v
-///       2. Reach -1 → no cycle through v
-///       3. Reach a vertex seen in THIS traversal → found cycle!
-///
-///   The "seen in this traversal" check is key:
-///     - Mark vertices with the current v's ID
-///     - If we revisit a vertex marked with same ID → cycle
-/// ```
-///
-/// WHY THIS WORKS:
-/// ```
-///   When selecting minimum incoming edges, cycles can form.
-///   Example:
-///     Edges: 0→1 (cost 1), 1→2 (cost 1), 2→1 (cost 1)
-///     Root: 0
-///
-///     Min incoming for 1: could be 0→1 or 2→1
-///     Min incoming for 2: 1→2
-///
-///     If we pick 2→1, we get cycle: 1 → 2 → 1
+/// // Example parent array (root = 0):
+/// //   parent = [-1, 2, 1, 2]
+/// //
+/// // Starting from v = 1:
+/// //   visit 1  (mark 1 with id=1)
+/// //   visit 2  (mark 2 with id=1)
+/// //   arrive at 1  → seen[1] == 1  → cycle found: {1, 2}
 /// ```
 ///
-/// PARAMETERS:
-///   - n: number of vertices
-///   - root: the root vertex (cycles cannot include root)
-///   - parent: parent[v] = chosen predecessor of v
+/// ## Parameters
 ///
-/// RETURNS:
-///   Array of vertices forming the cycle, or empty if no cycle.
-///   The cycle is returned in traversal order.
+/// - `n`      — Number of vertices.
+/// - `root`   — Root vertex; cycles cannot include the root.
+/// - `parent` — `parent[v]` = chosen predecessor of `v` (-1 if none).
+///
+/// ## Returns
+///
+/// An `Array[Int]` containing the vertices of one cycle, in traversal order.
+/// Returns an empty array when no cycle exists.
 fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
   // seen[v] = ID of the vertex that started this traversal (-1 = unvisited)
   let seen = Array::make(n, -1)
@@ -73,25 +71,36 @@ fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
 }
 
 ///|
-/// Build reachability from root using BFS.
+/// Determine which vertices are reachable from `root` via a forward BFS.
 ///
-/// ALGORITHM:
+/// This is the first safety check in `min_arborescence`: if any vertex cannot
+/// be reached from the root, no arborescence exists and the algorithm returns
+/// `None` immediately.
+///
+/// ## Algorithm
+///
+/// Standard iterative BFS using an index into a growing `stack` array (avoiding
+/// explicit queue allocation):
+///
 /// ```
-///   Standard BFS from root:
-///     1. Start with root in queue, marked as seen
-///     2. For each vertex u in queue:
-///        - For each edge u→v:
-///          - If v not seen, mark and enqueue
-///     3. Return seen array
+/// // Adjacency-list BFS
+/// //   queue = [root]
+/// //   while queue not empty:
+/// //     u = dequeue
+/// //     for each edge u → v:
+/// //       if v not seen: mark and enqueue
 /// ```
 ///
-/// PARAMETERS:
-///   - n: number of vertices
-///   - edges: all directed edges
-///   - root: starting vertex
+/// ## Parameters
 ///
-/// RETURNS:
-///   Array[Bool] where result[v] = true iff v is reachable from root
+/// - `n`     — Number of vertices (vertices labeled 0 to n-1).
+/// - `edges` — All directed edges in the graph.
+/// - `root`  — The starting vertex for BFS.
+///
+/// ## Returns
+///
+/// `Array[Bool]` of length `n` where element `v` is `true` iff `v` is
+/// reachable from `root`.
 fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
   // Build adjacency list for forward edges
   let adj : Array[Array[Int]] = Array::makei(n, _ => [])
@@ -117,24 +126,28 @@ fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
 }
 
 ///|
-/// Compute total cost of cycle edges.
+/// Sum the minimum incoming edge cost for every vertex in `cycle`.
 ///
-/// PARAMETERS:
-///   - in_cost: minimum incoming edge cost for each vertex
-///   - cycle: vertices forming the cycle
+/// When the algorithm contracts a cycle `C`, all edges *inside* `C` (the
+/// cheapest incoming edge of each cycle member) are tentatively kept. One of
+/// those edges will later be replaced by the external edge that breaks into
+/// `C`. The cycle cost is added back to the contracted sub-problem's cost
+/// during expansion so that the final total reflects the true edge weights.
 ///
-/// RETURNS:
-///   Sum of in_cost[v] for all v in cycle.
+/// ## Formula
 ///
-/// WHY THIS MATTERS:
 /// ```
-///   When we contract a cycle, we're committing to using all
-///   the cycle's edges EXCEPT one (the one we replace with
-///   an external edge entering the cycle).
-///
-///   The cycle cost is added to the contracted solution's cost
-///   to get the true total cost.
+/// cycle_cost(in_cost, C) = sum of in_cost[v] for v in C
 /// ```
+///
+/// ## Parameters
+///
+/// - `in_cost` — `in_cost[v]` = weight of the cheapest edge entering `v`.
+/// - `cycle`   — Vertices that form the cycle.
+///
+/// ## Returns
+///
+/// The sum of `in_cost[v]` for all `v` in `cycle`.
 fn cycle_cost(in_cost : Array[Int64], cycle : Array[Int]) -> Int64 {
   cycle.fold(init=0L, (total, v) => total + in_cost[v])
 }

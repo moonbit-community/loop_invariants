@@ -17,10 +17,26 @@
 // SPACE COMPLEXITY: O(n + m)
 
 ///|
+/// Sentinel infinity value used as the initial minimum during path traversal.
+/// Equal to `Int64::max_value / 2` to avoid overflow when compared.
 const GH_INF : Int64 = 4611686018427387903L
 
 ///|
-/// Gomory-Hu tree representation.
+/// A Gomory-Hu tree for an undirected capacitated graph.
+///
+/// The tree has exactly `n` vertices and `n-1` edges.  For any two distinct
+/// vertices `u` and `v`, the minimum edge weight on the unique path between
+/// them in this tree equals the minimum s-t cut value in the original graph.
+///
+/// Fields:
+/// - `n`      : number of vertices in the original graph.
+/// - `parent` : `parent[i]` is the parent of vertex `i` in the rooted tree
+///              (vertex 0 is the root and has `parent[0] == -1`).
+/// - `value`  : `value[i]` is the weight of the tree edge connecting `i` to
+///              `parent[i]`, which equals the min-cut between `i` and
+///              `parent[i]` in the original graph.
+/// - `adj`    : adjacency list of the tree, stored as `(neighbour, weight)`
+///              pairs, used for BFS path queries.
 pub struct GomoryHuTree {
   n : Int
   parent : Array[Int]
@@ -30,6 +46,23 @@ pub struct GomoryHuTree {
 
 ///|
 /// Build a Gomory-Hu tree for an undirected capacitated graph.
+///
+/// Parameters:
+/// - `n`     : number of vertices (vertices are labeled `0..n-1`).
+/// - `edges` : undirected edges given as `(u, v, capacity)` triples.
+///             Parallel edges and loops are handled gracefully (loops and
+///             non-positive capacities are ignored; parallel edges accumulate).
+///
+/// Returns a `GomoryHuTree` whose `min_cut` method answers all-pairs minimum
+/// cut queries in O(n) time per query.
+///
+/// The algorithm runs exactly `n-1` max-flow computations (one per non-root
+/// vertex).  Each flow is computed on the full graph (not a contracted one),
+/// which simplifies the implementation at the cost of a small constant factor.
+///
+/// Time complexity : O(n * T_maxflow) where T_maxflow is the cost of a single
+///                   s-t max-flow on the input graph.
+/// Space complexity: O(n + m).
 pub fn gomory_hu_tree(
   n : Int,
   edges : ArrayView[(Int, Int, Int64)],
@@ -85,7 +118,19 @@ pub fn gomory_hu_tree(
 }
 
 ///|
-/// Query min-cut value between u and v by taking the minimum edge on the path.
+/// Query the minimum cut value between vertices `u` and `v`.
+///
+/// By the Gomory-Hu theorem, this equals the minimum edge weight on the unique
+/// path between `u` and `v` in the tree.  The method finds this path with a
+/// BFS from `u` to `v` over the tree adjacency list, then walks the path back
+/// while tracking the running minimum weight.
+///
+/// Special cases:
+/// - Returns `0` when `u == v`.
+/// - Returns `0` when `u` and `v` are in different connected components of the
+///   original graph (their tree subtrees are disconnected).
+///
+/// Time complexity: O(n).
 pub fn GomoryHuTree::min_cut(self : GomoryHuTree, u : Int, v : Int) -> Int64 {
   if u == v {
     return 0L

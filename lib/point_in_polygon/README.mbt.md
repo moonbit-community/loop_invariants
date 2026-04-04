@@ -4,7 +4,7 @@ This package provides a classic **point-in-polygon** test:
 
 - **Inside**
 - **Outside**
-- **Boundary** (exactly on an edge)
+- **Boundary** (exactly on an edge or vertex)
 
 It uses the **ray casting** method, which is simple, fast, and robust for
 simple polygons.
@@ -49,23 +49,61 @@ So: **odd crossings = inside**, **even crossings = outside**.
 
 ## 3. ASCII picture
 
+The diagrams below show a convex pentagon, a point inside, and a point outside.
+
 ```
-Polygon (a simple pentagon):
+                     Polygon (a simple pentagon)
+                            +-------+
+                           /         \
+                          /           \
+                         /             \
+                        /               \
+                       +                 +
+                        \               /
+                         +-----------+
 
-        /\
-       /  \
-      /    \
-     /      \
-    /        \
-   /__________\
+  Case 1 -- point P is inside:
 
-Point P inside:
+              ray hits 1 edge (odd = inside)
+                    |
+                    v
+     +---------+-------+
+    /    P(*)---+-------+----------->   1 crossing -> Inside
+   /           /       \
+  +           /         +
+   \         /         /
+    +-------+---------+
 
-    P ●──────────────►  (ray crosses boundary once) -> Inside
+  Case 2 -- point Q is outside (left of polygon):
 
-Point Q outside:
+     Q(*)------------------------->   0 crossings -> Outside
+            +-----------+
+           /             \
+          /               \
+         +                 +
+          \               /
+           +-------------+
 
-Q ●──────────────────►  (ray crosses 0 times) -> Outside
+  Case 3 -- point R is outside (right of polygon):
+
+            +-----------+
+           /             \
+          /               \
+         +                 +    R(*)------------------------->
+          \               /          0 crossings -> Outside
+           +-------------+
+```
+
+### Annotated square example
+
+```
+    y
+    4  E(0,4)------F(4,4)
+       |                |
+    2  |    P(2,2)------+---> ray hits EF once -> Inside
+       |                |
+    0  A(0,0)------B(4,0)
+       0    2    4           x
 ```
 
 ---
@@ -108,7 +146,43 @@ After all edges:
 
 ---
 
-## 6. Step-by-step walkthrough
+## 6. Decision flow (Mermaid diagram)
+
+```mermaid
+flowchart TD
+    Start([Start: point P, polygon with n vertices]) --> Check3{n < 3?}
+    Check3 -->|Yes| RetOut1([Return Outside])
+    Check3 -->|No| Loop["For each edge A -> B"]
+    Loop --> CollinearTest{"cross(A,B,P) == 0\nand P on segment AB?"}
+    CollinearTest -->|Yes| RetBound([Return Boundary])
+    CollinearTest -->|No| CrossTest{"Ray from P crosses\nedge A -> B?"}
+    CrossTest -->|Yes| Toggle["Toggle inside flag"]
+    CrossTest -->|No| NoToggle["Keep inside flag"]
+    Toggle --> MoreEdges{More edges?}
+    NoToggle --> MoreEdges
+    MoreEdges -->|Yes| Loop
+    MoreEdges -->|No| OddTest{"inside == true?"}
+    OddTest -->|Yes| RetIn([Return Inside])
+    OddTest -->|No| RetOut2([Return Outside])
+```
+
+---
+
+## 7. Ray-crossing rule detail (Mermaid diagram)
+
+```mermaid
+flowchart LR
+    A["Edge endpoints A, B"] --> SameSide{"A.y > P.y == B.y > P.y?"}
+    SameSide -->|"Yes (edge fully above or below ray)"| Skip["No crossing"]
+    SameSide -->|"No (edge straddles the ray)"| Compute["Compute intersection x\nusing cross product (exact integer arithmetic)"]
+    Compute --> Right{"Intersection x > P.x?"}
+    Right -->|Yes| Count["Count crossing\n(toggle inside)"]
+    Right -->|No| Skip2["No crossing\n(intersection is left of P)"]
+```
+
+---
+
+## 8. Step-by-step walkthrough
 
 Square:
 
@@ -130,7 +204,7 @@ Crossings = 1 -> Inside.
 
 ---
 
-## 7. Example usage (real API)
+## 9. Example usage (real API)
 
 ```mbt check
 ///|
@@ -158,17 +232,21 @@ test "point in polygon square" {
 
 ---
 
-## 8. Example: concave polygon
+## 10. Example: concave polygon
 
 Concave shapes are where ray casting really matters.
 
 Here is a concave "dent" polygon (note the inward point at (2,2)):
 
 ```
-E(0,4) ---- D(2,2) ---- C(4,4)
- |                          |
- |                          |
-A(0,0) ---- B(4,0) ---------+
+    y
+    4  E(0,4)----+----C(4,4)
+       |   \    / \      |
+       |    \  /   \     |
+    2  |   D(2,2)   \    |
+       |              \  |
+    0  A(0,0)---B(4,0)-+-+
+       0    1    2    3    4   x
 ```
 
 Vertices in order:
@@ -182,7 +260,7 @@ Points:
 ```
 P = (1,1)  -> Inside
 Q = (3,3)  -> Boundary (on the diagonal edge C-D)
-R = (3,4)  -> Outside (above the dent)
+R = (3,4)  -> Outside (above the dent, outside the polygon)
 ```
 
 ```mbt check
@@ -212,9 +290,18 @@ test "point in concave polygon" {
 
 ---
 
-## 9. Example: point on a vertex
+## 11. Example: point on a vertex
 
 Points exactly equal to a polygon vertex are on the boundary.
+
+```
+Triangle:          Ray from vertex (0,0):
+  (0,3)
+   /|              vertex (0,0) is collinear with
+  / |              both adjacent edges -> Boundary
+ /  |
+(0,0)---(4,0)
+```
 
 ```mbt check
 ///|
@@ -233,7 +320,7 @@ test "point on vertex" {
 
 ---
 
-## 10. Winding number vs ray casting
+## 12. Winding number vs ray casting
 
 Ray casting is simple and fast. Another option is the **winding number**:
 
@@ -242,12 +329,20 @@ winding number != 0 -> Inside
 winding number == 0 -> Outside
 ```
 
-Winding number handles self‑intersecting polygons more naturally, but is more
+```mermaid
+flowchart LR
+    Input[Query point P] --> RC["Ray Casting\n(this package)"]
+    Input --> WN["Winding Number"]
+    RC --> RC_R["Inside / Outside / Boundary\nWorks for simple polygons\nO(n), easy to implement"]
+    WN --> WN_R["Inside / Outside\nWorks for self-intersecting polygons\nO(n), more complex math"]
+```
+
+Winding number handles self-intersecting polygons more naturally, but is more
 math-heavy. This package uses ray casting (ideal for simple polygons).
 
 ---
 
-## 11. Complexity
+## 13. Complexity
 
 ```
 Time:  O(n)  (check each edge once)
@@ -256,10 +351,10 @@ Space: O(1)
 
 ---
 
-## 12. Common pitfalls (beginner checklist)
+## 14. Common pitfalls (beginner checklist)
 
 1. **Double-counting vertices**  
-   Use a half-open y‑interval to count a vertex only once.
+   Use a half-open y-interval to count a vertex only once.
 
 2. **Horizontal edges**  
    They do not affect crossings, but still must be tested for Boundary.
@@ -272,7 +367,24 @@ Space: O(1)
 
 ---
 
-## 13. Summary
+## 15. Summary
+
+```
+                   +------ simple polygon ------+
+                   |                            |
+    for each edge: |  collinear & on segment?   |
+                   |         yes -> Boundary    |
+                   |                            |
+                   |  ray crosses edge?         |
+                   |         yes -> toggle flag |
+                   |                            |
+                   +----------------------------+
+
+    after all edges:
+
+        flag == true  ->  Inside
+        flag == false ->  Outside
+```
 
 - Ray casting toggles inside/outside on each edge crossing.
 - Boundary checks come first.
