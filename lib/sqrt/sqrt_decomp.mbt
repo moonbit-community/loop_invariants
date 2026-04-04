@@ -887,7 +887,14 @@ fn MoSolver::solve_distinct(
 // number of assign operations, making queries O(√n) expected.
 
 ///|
-/// An interval [l, r] with value v
+/// A contiguous segment of the array where every element has the same value.
+///
+/// Fields:
+/// - `l`: inclusive left endpoint (0-indexed).
+/// - `r`: inclusive right endpoint (0-indexed). Mutable because assign can
+///        shorten an interval when it is split at a boundary.
+/// - `v`: the shared value of arr[l..r]. Mutable to support range_add and
+///        range assign.
 priv struct Interval {
   l : Int
   mut r : Int
@@ -895,12 +902,44 @@ priv struct Interval {
 }
 
 ///|
-/// Interval container for range assignment + range query problems
+/// Chtholly Tree (ODT - Old Driver Tree) for range assignment and range queries.
+///
+/// Stores the array as an ordered list of maximal equal-value intervals.
+/// Range assignment collapses many intervals into one, keeping the list short
+/// under workloads with frequent assigns. Range add and range sum iterate only
+/// over the intervals that overlap the query range.
+///
+/// Initial construction compresses consecutive equal elements in O(n). Under
+/// random or assign-heavy input the expected number of live intervals is
+/// small (O(n / number_of_assigns)).
+///
+/// All intervals are non-overlapping and together cover [0, n-1].
+///
+/// Time complexity per operation: O(k) where k is the number of intervals
+/// that overlap the operation range. O(1) amortised for assign-heavy input.
+///
+/// Space: O(k) where k is the current number of intervals.
 priv struct IntervalTree {
   intervals : Array[Interval]
 }
 
 ///|
+/// Builds an IntervalTree from an existing array.
+///
+/// Scans the array once and compresses consecutive equal-value runs into
+/// single Interval records. For example:
+///
+/// ```
+/// arr = [1, 1, 3, 3, 3, 7]
+/// =>  intervals = [{l=0, r=1, v=1}, {l=2, r=4, v=3}, {l=5, r=5, v=7}]
+/// ```
+///
+/// Parameters:
+/// - `arr`: the source array. All elements are treated as integer values.
+///
+/// Returns: a new IntervalTree covering [0, n-1].
+///
+/// Time complexity: O(n).
 fn IntervalTree::new(arr : Array[Int]) -> IntervalTree {
   let intervals : Array[Interval] = []
   if arr.length() == 0 {
@@ -945,7 +984,19 @@ fn IntervalTree::new(arr : Array[Int]) -> IntervalTree {
 }
 
 ///|
-/// Find interval containing position pos
+/// Searches for the interval that contains position `pos` using binary search.
+///
+/// Because all intervals are non-overlapping and sorted by their left endpoint,
+/// a binary search on the interval list locates the containing interval in
+/// O(log k) time where k is the current number of intervals.
+///
+/// Parameters:
+/// - `pos`: 0-indexed array position to look up.
+///
+/// Returns: Some(index into self.intervals) if an interval contains `pos`,
+///          or None if `pos` is out of range or the tree is empty.
+///
+/// Time complexity: O(log k) where k is the number of intervals.
 fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
   // Binary search for interval containing pos
   for lo = 0, hi = self.intervals.length() - 1; lo <= hi; {
