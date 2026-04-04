@@ -54,14 +54,19 @@ pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
   queue.push(root)
   up[0][root] = -1
   depth[root] = 0
-  for head = 0; head < queue.length(); head = head + 1 {
-    let u = queue[head]
-    for v in adj[u] {
-      if v != up[0][u] {
-        up[0][v] = u
-        depth[v] = depth[u] + 1
-        queue.push(v)
+  for head = 0 {
+    if head >= queue.length() {
+      break
+    } else {
+      let u = queue[head]
+      for v in adj[u] {
+        if v != up[0][u] {
+          up[0][v] = u
+          depth[v] = depth[u] + 1
+          queue.push(v)
+        }
       }
+      continue head + 1
     }
   } where {
     invariant: head >= 0 && head <= queue.length(),
