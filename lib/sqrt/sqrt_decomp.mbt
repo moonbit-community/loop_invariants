@@ -330,6 +330,17 @@ priv struct SqrtMin {
 }
 
 ///|
+/// Builds a SqrtMin from an existing array.
+///
+/// Copies the array, initialises all pending offsets to zero, and computes
+/// the block minimum for each block in a single O(n) pass.
+///
+/// Parameters:
+/// - `arr`: the source array of integers.
+///
+/// Returns: a new SqrtMin owning a copy of `arr`.
+///
+/// Time complexity: O(n).
 fn SqrtMin::build(arr : Array[Int]) -> SqrtMin {
   let n = arr.length()
   if n == 0 {
@@ -351,13 +362,34 @@ fn SqrtMin::build(arr : Array[Int]) -> SqrtMin {
 }
 
 ///|
-/// Get actual value at index i (applying lazy propagation)
+/// Returns the effective value at index `i`, including any unapplied lazy offset.
+///
+/// The stored array element may not reflect range-add operations applied to
+/// full blocks. This function adds the pending offset for i's block so the
+/// caller always receives the correct current value.
+///
+/// Parameters:
+/// - `i`: 0-indexed position to read.
+///
+/// Returns: arr[i] + pending[block of i].
+///
+/// Time complexity: O(1).
 fn SqrtMin::get_value(self : SqrtMin, i : Int) -> Int {
   self.arr[i] + self.pending[i / self.block_size]
 }
 
 ///|
-/// Push lazy updates to a block's elements and recompute minimum
+/// Flushes the pending lazy offset for `block_idx` into the raw element array.
+///
+/// After this call, pending[block_idx] is 0 and every arr[i] in the block
+/// reflects its true current value. This is required before making individual
+/// element changes inside a partial block so that the block minimum can be
+/// recomputed correctly from the updated raw values.
+///
+/// Parameters:
+/// - `block_idx`: index of the block to flush.
+///
+/// Time complexity: O(block_size) = O(sqrt(n)).
 fn SqrtMin::push_block(self : SqrtMin, block_idx : Int) -> Unit {
   if self.pending[block_idx] == 0 {
     return
