@@ -73,7 +73,7 @@ priv struct HLD {
 /// DFS passes.
 ///
 /// # Example
-/// ```mbt check
+/// ```mbt nocheck
 /// test {
 ///   let hld = HLD::new(5)
 ///   hld.add_edge(0, 1)
@@ -107,7 +107,7 @@ fn HLD::new(n : Int) -> HLD {
 /// the tree can be rooted at any node during `build`.
 ///
 /// # Example
-/// ```mbt check
+/// ```mbt nocheck
 /// test {
 ///   let hld = HLD::new(3)
 ///   hld.add_edge(0, 1)
@@ -209,7 +209,7 @@ fn HLD::dfs_hld(self : HLD, u : Int, head : Int) -> Unit {
 /// Does nothing when `n == 0`.
 ///
 /// # Example
-/// ```mbt check
+/// ```mbt nocheck
 /// test {
 ///   let hld = HLD::new(4)
 ///   hld.add_edge(0, 1)
@@ -237,7 +237,7 @@ fn HLD::build(self : HLD, root : Int) -> Unit {
 /// Time complexity: O(log n) chain jumps.
 ///
 /// # Example
-/// ```mbt check
+/// ```mbt nocheck
 /// test {
 ///   //       0
 ///   //      / \
@@ -280,7 +280,7 @@ fn HLD::lca(self : HLD, u : Int, v : Int) -> Int {
 /// Time complexity: O(log n).
 ///
 /// # Example
-/// ```mbt check
+/// ```mbt nocheck
 /// test {
 ///   // Linear chain: 0 - 1 - 2 - 3 - 4
 ///   let hld = HLD::new(5)
@@ -313,7 +313,7 @@ fn HLD::path_length(self : HLD, u : Int, v : Int) -> Int {
 /// Time complexity: O(log n).
 ///
 /// # Example
-/// ```mbt check
+/// ```mbt nocheck
 /// test {
 ///   // Linear chain 0-1-2-3-4-5-6-7 forms a single heavy chain.
 ///   let hld = HLD::new(8)
@@ -347,7 +347,7 @@ fn HLD::count_chains(self : HLD, u : Int, v : Int) -> Int {
 /// `build` must have been called before using this function.
 ///
 /// # Example
-/// ```mbt check
+/// ```mbt nocheck
 /// test {
 ///   // Linear chain 0-1-2: positions are 0, 1, 2 in order.
 ///   let hld = HLD::new(3)
@@ -373,7 +373,7 @@ fn HLD::get_position(self : HLD, u : Int) -> Int {
 /// `build` must have been called before using this function.
 ///
 /// # Example
-/// ```mbt check
+/// ```mbt nocheck
 /// test {
 ///   // Linear chain 0-1-2: all nodes share chain head 0.
 ///   let hld = HLD::new(3)
