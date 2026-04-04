@@ -38,6 +38,7 @@ fn max_i64(a : Int64, b : Int64) -> Int64 {
   }
 }
 
+///|
 /// A segment tree that supports range chmin updates together with range sum and
 /// range max queries, all in amortized O(log^2 n) time.
 ///
@@ -277,6 +278,8 @@ pub fn SegmentTreeBeats::range_max(
 }
 
 ///|
+/// Recursive implementation of range max query for the subtree rooted at
+/// `node` covering `[l, r)`, against query range `[ql, qr)`.
 fn SegmentTreeBeats::max_impl(
   self : SegmentTreeBeats,
   node : Int,
@@ -299,7 +302,15 @@ fn SegmentTreeBeats::max_impl(
 }
 
 ///|
-/// Query sum on [l, r).
+/// Return the sum of all elements in `[l, r)`.
+///
+/// Parameters:
+/// - `l` — inclusive left endpoint (0-indexed)
+/// - `r` — exclusive right endpoint; the range is `[l, r)`
+///
+/// Returns `0` when `l >= r` or the tree is empty.
+///
+/// Complexity: O(log n).
 pub fn SegmentTreeBeats::range_sum(
   self : SegmentTreeBeats,
   l : Int,
@@ -312,6 +323,8 @@ pub fn SegmentTreeBeats::range_sum(
 }
 
 ///|
+/// Recursive implementation of range sum query for the subtree rooted at
+/// `node` covering `[l, r)`, against query range `[ql, qr)`.
 fn SegmentTreeBeats::sum_impl(
   self : SegmentTreeBeats,
   node : Int,

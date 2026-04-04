@@ -137,7 +137,22 @@ fn SqrtSum::build(arr : Array[Int]) -> SqrtSum {
 }
 
 ///|
-/// Query sum in range [l, r]
+/// Returns the sum of elements in the closed range [l, r].
+///
+/// The range is decomposed into at most three parts:
+///   1. Left partial block  - elements from l to the end of its block.
+///   2. Complete middle blocks - block sums read in O(1) each.
+///   3. Right partial block - elements from the start of r's block to r.
+///
+/// If l > r or the indices are out of bounds the function returns 0.
+///
+/// Parameters:
+/// - `l`: inclusive left bound (0-indexed).
+/// - `r`: inclusive right bound (0-indexed).
+///
+/// Returns: the sum arr[l] + arr[l+1] + ... + arr[r], or 0 for invalid input.
+///
+/// Time complexity: O(sqrt(n)).
 /// REASONING: We decompose the range into:
 ///   1. Partial left block: elements from l to end of l's block
 ///   2. Complete middle blocks: full blocks between l and r's blocks
@@ -230,7 +245,17 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
 }
 
 ///|
-/// Point update: set arr[i] = val
+/// Sets the element at index `i` to `val` and updates the block sum.
+///
+/// The old value is replaced in the underlying array, and the difference is
+/// added to the corresponding block aggregate, keeping all invariants intact.
+/// Out-of-bounds indices are silently ignored.
+///
+/// Parameters:
+/// - `i`:   0-indexed position to update.
+/// - `val`: new value for arr[i].
+///
+/// Time complexity: O(1).
 fn SqrtSum::update(self : SqrtSum, i : Int, val : Int) -> Unit {
   if i < 0 || i >= self.arr.length() {
     return
@@ -242,11 +267,22 @@ fn SqrtSum::update(self : SqrtSum, i : Int, val : Int) -> Unit {
 }
 
 ///|
+/// Returns the current value of the element at index `i`.
+///
+/// Parameters:
+/// - `i`: 0-indexed position to read.
+///
+/// Returns: arr[i] after any previous updates.
+///
+/// Time complexity: O(1).
 fn SqrtSum::get(self : SqrtSum, i : Int) -> Int {
   self.arr[i]
 }
 
 ///|
+/// Returns the number of elements in the underlying array.
+///
+/// Time complexity: O(1).
 fn SqrtSum::length(self : SqrtSum) -> Int {
   self.arr.length()
 }

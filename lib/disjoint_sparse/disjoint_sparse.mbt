@@ -448,6 +448,10 @@ fn DisjointSparseProd::new(
 }
 
 ///|
+/// Return `Some((arr[l] * ... * arr[r]) mod modulo)` in O(1), or `None` if the
+/// range is invalid (see `DisjointSparseSum::query` for validity conditions).
+///
+/// When `l == r` the result is `arr[l] mod modulo`.
 fn DisjointSparseProd::query(
   self : DisjointSparseProd,
   l : Int,
@@ -464,6 +468,7 @@ fn DisjointSparseProd::query(
 }
 
 ///|
+/// Return the number of elements in the original array.
 fn DisjointSparseProd::length(self : DisjointSparseProd) -> Int {
   self.n
 }
