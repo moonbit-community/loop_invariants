@@ -632,9 +632,27 @@ test "longest common substring sa" {
 }
 
 ///|
-/// Number of Substrings Starting with Each Character
+/// Count the number of substrings of `s` that start with each lowercase
+/// letter (`'a'` to `'z'`).
 ///
-/// Using suffix array, we can answer this in O(n) preprocessing + O(1) query.
+/// For each position `i`, the suffix `s[i..]` of length `n - i` contributes
+/// exactly `n - i` substrings of length 1 through `n - i`, all starting with
+/// `s[i]`.  Accumulating this over all positions gives the result in O(n).
+///
+/// # Parameters
+/// - `s` — the string to analyse (only lowercase ASCII letters are counted)
+///
+/// # Returns
+/// An `Array[Int]` of length 26 where index `c` holds the total number of
+/// substrings starting with the character `'a' + c`.
+///
+/// # Example
+/// ```
+/// // s = "abc"
+/// // 'a': "a", "ab", "abc"  -> 3
+/// // 'b': "b", "bc"         -> 2
+/// // 'c': "c"               -> 1
+/// ```
 fn count_substrings_by_char(s : String) -> Array[Int] {
   let chars = s.to_array()
   let n = chars.length()
@@ -673,13 +691,33 @@ test "count substrings by char" {
 }
 
 ///|
-/// Burrows-Wheeler Transform (BWT)
+/// Compute the Burrows-Wheeler Transform (BWT) of `s`.
 ///
-/// MATHEMATICAL FOUNDATION:
-/// BWT is a reversible transformation that groups similar characters together.
-/// It's the last column of the sorted rotation matrix.
+/// The BWT is the **last column** of the matrix formed by all cyclic rotations
+/// of `s` sorted lexicographically.  It is a reversible transformation that
+/// groups similar preceding contexts together, making the output highly
+/// compressible (used in bzip2).
 ///
-/// For suffix array: BWT[i] = s[(sa[i] - 1 + n) % n]
+/// Using the suffix array, `BWT[i] = s[(sa[i] - 1 + n) % n]` — the character
+/// immediately before the suffix `sa[i]` in the circular string.
+///
+/// # Example
+/// ```
+/// // s = "banana"  (n=6)
+/// // SA = [5, 3, 1, 0, 4, 2]
+/// // Sorted rotations (last column):
+/// //   "abanan" -> 'n'
+/// //   "anaban" -> 'n'
+/// //   "ananba" -> 'b'
+/// //   "bnanaa" -> 'a'  (well-known result: BWT("banana") = "nnbaaa")
+/// // burrows_wheeler_transform("banana") == "nnbaaa"
+/// ```
+///
+/// # Parameters
+/// - `s` — the string to transform (treated as circular)
+///
+/// # Returns
+/// The BWT of `s` as a `String` of the same length.
 fn burrows_wheeler_transform(s : String) -> String {
   let chars = s.to_array()
   let n = chars.length()
@@ -720,9 +758,29 @@ test "burrows wheeler transform" {
 }
 
 ///|
-/// Lexicographically Smallest Rotation
+/// Return the lexicographically smallest rotation of `s`.
 ///
-/// Using suffix array on doubled string.
+/// By doubling the string (`s + s`), every rotation of length `n` appears as
+/// a contiguous substring.  Building the suffix array of the doubled string
+/// and selecting the first suffix that starts within the first half gives the
+/// smallest rotation.
+///
+/// Note: `booth_smallest_rotation` in `string_algorithms.mbt` solves the same
+/// problem in O(n) time; this function runs in O(n² log n) due to the simple
+/// suffix-array construction but demonstrates the suffix-array technique.
+///
+/// # Parameters
+/// - `s` — the string to rotate
+///
+/// # Returns
+/// The lexicographically smallest rotation of `s` as a `String`.
+/// Returns `""` for the empty string.
+///
+/// # Example
+/// ```
+/// // smallest_rotation("bca") == "abc"
+/// // smallest_rotation("abc") == "abc"
+/// ```
 fn smallest_rotation(s : String) -> String {
   let chars = s.to_array()
   let n = chars.length()
