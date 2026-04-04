@@ -60,7 +60,7 @@ fn FlowGraph::add_edge(
 
 ///|
 fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
-  for i = 0; i < self.n; i = i + 1 {
+  for i in 0..<self.n {
     self.level[i] = -1
   } where {
     invariant: i >= 0 && i <= self.n && self.level.length() == self.n,
@@ -77,7 +77,7 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
   let queue : Array[Int] = [source]
   for front = 0; front < queue.length(); {
     let u = queue[front]
-    for i = 0; i < self.adj[u].length(); i = i + 1 {
+    for i in 0..<self.adj[u].length() {
       let e = self.adj[u][i]
       if e.cap > e.flow && self.level[e.to] < 0 {
         self.level[e.to] = self.level[u] + 1
@@ -135,7 +135,7 @@ fn FlowGraph::dfs(
 ///|
 fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
   for flow = 0L; self.bfs(source, sink); {
-    for i = 0; i < self.n; i = i + 1 {
+    for i in 0..<self.n {
       self.iter[i] = 0
     } where {
       invariant: i >= 0 && i <= self.n && self.iter.length() == self.n,
@@ -181,7 +181,7 @@ fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] 
   for front = 0; front < queue.length(); {
     let u = queue[front]
     result.push(u)
-    for i = 0; i < self.adj[u].length(); i = i + 1 {
+    for i in 0..<self.adj[u].length() {
       let e = self.adj[u][i]
       if e.cap > e.flow && !visited[e.to] {
         visited[e.to] = true
@@ -224,7 +224,7 @@ pub fn min_cut_st(
     return None
   }
   let flow = FlowGraph::new(n)
-  for i = 0; i < edges.length(); i = i + 1 {
+  for i in 0..<edges.length() {
     let (u, v, cap) = edges[i]
     if u >= 0 && u < n && v >= 0 && v < n && u != v && cap > 0L {
       flow.add_edge(u, v, cap)
