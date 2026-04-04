@@ -410,7 +410,17 @@ fn SqrtMin::push_block(self : SqrtMin, block_idx : Int) -> Unit {
 }
 
 ///|
-/// Recompute minimum for a block after direct element modifications
+/// Recomputes the stored block minimum by scanning all raw elements in the block.
+///
+/// Must be called after any direct writes to arr[i] within a partial block,
+/// such as after a push_block followed by individual element updates. The
+/// pending offset for this block must already be 0 (i.e., push_block has been
+/// called) so that the raw values are authoritative.
+///
+/// Parameters:
+/// - `block_idx`: index of the block to recompute.
+///
+/// Time complexity: O(block_size) = O(sqrt(n)).
 fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int) -> Unit {
   let start = block_idx * self.block_size
   let end_val = (block_idx + 1) * self.block_size
@@ -442,7 +452,22 @@ fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int) -> Unit {
 }
 
 ///|
-/// Query minimum in range [l, r]
+/// Returns the minimum element value in the closed range [l, r].
+///
+/// For partial boundary blocks the pending offset is applied per-element.
+/// For complete middle blocks the stored block minimum plus the block's pending
+/// offset is used directly, avoiding a per-element scan.
+///
+/// If l > r or indices are out of bounds, returns Int.max_value (2147483647).
+///
+/// Parameters:
+/// - `l`: inclusive left bound (0-indexed).
+/// - `r`: inclusive right bound (0-indexed).
+///
+/// Returns: min(arr[l], arr[l+1], ..., arr[r]) with all pending offsets applied,
+///          or Int.max_value for invalid input.
+///
+/// Time complexity: O(sqrt(n)).
 fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
   if l > r || l < 0 || r >= self.arr.length() {
     return 2147483647
@@ -561,7 +586,23 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
 }
 
 ///|
-/// Range add: add val to all elements in [l, r]
+/// Adds `val` to every element in the closed range [l, r].
+///
+/// Full blocks entirely inside [l, r] are updated lazily: only pending[b]
+/// is incremented. The two boundary blocks (which may only be partially
+/// covered) are flushed first via push_block, updated element-by-element,
+/// then their block minimums are recomputed via recompute_block.
+///
+/// Out-of-bounds or empty ranges are silently ignored.
+///
+/// Parameters:
+/// - `l`:   inclusive left bound (0-indexed).
+/// - `r`:   inclusive right bound (0-indexed).
+/// - `val`: integer to add to each element in the range (may be negative).
+///
+/// Time complexity: O(sqrt(n)) - O(block_size) for boundary flush + O(n/B)
+///                 for the full-block lazy updates, total O(sqrt(n)).
+///
 /// REASONING: For partial blocks, we must push lazy and update individually.
 /// For complete blocks, we just add to their lazy tag.
 fn SqrtMin::range_add(self : SqrtMin, l : Int, r : Int, val : Int) -> Unit {

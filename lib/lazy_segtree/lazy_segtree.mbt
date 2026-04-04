@@ -613,6 +613,8 @@ priv struct LazySegTreeMin {
 const INT64_MAX : Int64 = 9223372036854775807L
 
 ///|
+/// Build a `LazySegTreeMin` from `arr`.  Each node is initialised to the
+/// minimum of its sub-range; all `pending` slots start at zero.
 fn LazySegTreeMin::new(arr : Array[Int64]) -> LazySegTreeMin {
   let n = arr.length()
   if n == 0 {
@@ -625,6 +627,8 @@ fn LazySegTreeMin::new(arr : Array[Int64]) -> LazySegTreeMin {
 }
 
 ///|
+/// Bottom-up build helper for `LazySegTreeMin`.  Internal nodes store the
+/// minimum of their two children.
 fn build_min(
   arr : Array[Int64],
   tree : Array[Int64],
@@ -647,6 +651,17 @@ fn build_min(
 }
 
 ///|
+/// Push-down for the min variant.  Because min shifts uniformly when a constant
+/// is added to all elements, the children's `tree` values are incremented by
+/// `pending[node]` without any multiplication by range size.
+///
+/// ```
+/// tree[2k]     += pending[k]
+/// tree[2k+1]   += pending[k]
+/// pending[2k]  += pending[k]
+/// pending[2k+1]+= pending[k]
+/// pending[k]    = 0
+/// ```
 fn push_down_min(
   tree : Array[Int64],
   pending : Array[Int64],
@@ -662,6 +677,13 @@ fn push_down_min(
 }
 
 ///|
+/// Add `val` to every element in the closed range `[l, r]`.
+///
+/// For the min variant, adding a constant to all elements in a range shifts the
+/// range minimum by the same constant, so `tree[k] += val` for fully-covered
+/// nodes and `pending[k] += val` records the deferred work for children.
+///
+/// - Time: O(log n)
 fn LazySegTreeMin::range_add(
   self : LazySegTreeMin,
   l : Int,
@@ -675,6 +697,7 @@ fn LazySegTreeMin::range_add(
 }
 
 ///|
+/// Recursive worker for `LazySegTreeMin::range_add`.
 fn range_add_min_helper(
   tree : Array[Int64],
   pending : Array[Int64],
@@ -705,6 +728,13 @@ fn range_add_min_helper(
 }
 
 ///|
+/// Return the minimum element in the closed range `[l, r]`, or `None` if the
+/// range is empty or out of bounds.
+///
+/// No-overlap nodes contribute `INT64_MAX` (the identity for `min`), so the
+/// accumulation `min(left, right)` is correct at every level.
+///
+/// - Time: O(log n)
 fn LazySegTreeMin::range_min(self : LazySegTreeMin, l : Int, r : Int) -> Int64? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None

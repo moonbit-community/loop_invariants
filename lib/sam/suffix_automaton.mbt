@@ -254,7 +254,24 @@ pub fn contains_substring(text : String, pattern : String) -> Bool {
 }
 
 ///|
-/// Count distinct substrings of text using a suffix automaton.
+/// Count the number of distinct non-empty substrings of `text`.
+///
+/// Builds a suffix automaton and sums, over every state `q`, the value
+/// `len[q] - len[link[q]]`.  Each state contributes exactly the count of
+/// new substrings it introduces that are not already represented by its
+/// suffix-link ancestor.
+///
+/// The empty substring is **not** included in the count.
+///
+/// Time: O(|text|).
+///
+/// # Example
+///
+/// ```moonbit
+/// // "abab" has 7 distinct non-empty substrings:
+/// // "a", "b", "ab", "ba", "aba", "bab", "abab"
+/// assert_eq!(@sam.distinct_substrings_count("abab"), 7)
+/// ```
 pub fn distinct_substrings_count(text : String) -> Int {
   SuffixAutomaton::build(text).count_distinct_substrings()
 }
@@ -264,8 +281,16 @@ pub fn distinct_substrings_count(text : String) -> Int {
 // ============================================================================
 
 ///|
-/// Check if a pattern is a substring of the original text
-/// Time: O(|pattern|)
+/// Test whether `pattern` is a substring of the text this automaton was
+/// built from.
+///
+/// Starting from the initial state, follows the transition for each
+/// character of `pattern`.  If any character has no outgoing edge the
+/// pattern is not a substring.
+///
+/// The empty pattern always returns `true`.
+///
+/// Time: O(|pattern|).
 fn SuffixAutomaton::contains(self : SuffixAutomaton, pattern : String) -> Bool {
   for state = 0, i = 0; i < pattern.length(); {
     let c = pattern[i].to_int()
@@ -295,8 +320,14 @@ fn SuffixAutomaton::contains(self : SuffixAutomaton, pattern : String) -> Bool {
 }
 
 ///|
-/// Count distinct substrings (excluding empty string)
-/// Time: O(n) after construction
+/// Count distinct non-empty substrings represented by this automaton.
+///
+/// For each state `q` the number of new substrings it introduces equals
+/// `len[q] - len[link[q]]` (the width of the length interval assigned to
+/// this equivalence class).  Summing over all states (the initial state
+/// contributes 0) gives the total.
+///
+/// Time: O(n) where n is the number of SAM states (at most 2|text| - 1).
 fn SuffixAutomaton::count_distinct_substrings(self : SuffixAutomaton) -> Int {
   for i = 0, count = 0; i < self.states.length(); {
     let state = self.states[i]
@@ -325,7 +356,19 @@ fn SuffixAutomaton::count_distinct_substrings(self : SuffixAutomaton) -> Int {
 // ============================================================================
 
 ///|
-/// Compute occurrence counts for all states
+/// Populate the `cnt` field of every state with the number of times its
+/// represented substrings appear in the original text.
+///
+/// Algorithm:
+/// 1. Topologically sort states by decreasing `len` using counting sort.
+/// 2. Propagate counts from longer states to shorter ones via suffix links:
+///    `cnt[link[q]] += cnt[q]`.
+///
+/// This must be called before `count_occurrences`.  Calling it more than
+/// once is safe (counts are accumulated idempotently because the initial
+/// `cnt` values reflect construction, not previous propagation).
+///
+/// Time: O(n + max_len) where max_len = length of the original text.
 fn SuffixAutomaton::compute_counts(self : SuffixAutomaton) -> Unit {
   let n = self.states.length()
   if n == 0 {
@@ -359,7 +402,17 @@ fn SuffixAutomaton::compute_counts(self : SuffixAutomaton) -> Unit {
 }
 
 ///|
-/// Count occurrences of a pattern
+/// Count how many times `pattern` appears in the original text.
+///
+/// `compute_counts` must have been called before this method; otherwise
+/// the returned value is unspecified.
+///
+/// Walks the automaton reading `pattern` character by character.  If any
+/// transition is missing the pattern does not appear and 0 is returned.
+/// Otherwise returns `cnt` of the final state, which equals the number of
+/// occurrences recorded during count propagation.
+///
+/// Time: O(|pattern|) after `compute_counts`.
 fn SuffixAutomaton::count_occurrences(
   self : SuffixAutomaton,
   pattern : String,
@@ -392,7 +445,16 @@ fn SuffixAutomaton::count_occurrences(
 // ============================================================================
 
 ///|
-/// Find longest common substring length between original and another string
+/// Return the length of the longest common substring shared between the
+/// original text (the one this SAM was built from) and `other`.
+///
+/// Algorithm: scan `other` left to right while maintaining the current SAM
+/// state and match length.  When a transition exists, extend the match.
+/// When it does not, fall back along suffix links (shortening the match)
+/// until a matching transition is found or the initial state is reached.
+/// Track the maximum match length seen.
+///
+/// Time: O(|text| + |other|).
 fn SuffixAutomaton::longest_common_substring_length(
   self : SuffixAutomaton,
   other : String,
