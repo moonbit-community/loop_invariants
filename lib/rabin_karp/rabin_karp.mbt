@@ -143,7 +143,7 @@ pub fn rabin_karp_multi(
     let base_pow = pow_mod(RK_BASE, len - 1, RK_MOD)
     for i = 0, text_hash = compute_hash(text, 0, len); i <= n - len; {
       // Check against all patterns of this length
-      for j = 0; j < pattern_list.length(); j = j + 1 {
+      for j in 0..<pattern_list.length() {
         let (pat_idx, pat_hash) = pattern_list[j]
         if text_hash == pat_hash {
           // Verify
