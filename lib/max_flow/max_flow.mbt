@@ -39,6 +39,19 @@
 // SPACE COMPLEXITY: O(V + E)
 
 ///|
+/// A single directed edge in the flow network.
+///
+/// Each logical edge `u -> v` is stored as a pair: one forward `Edge` in
+/// `adj[u]` and one reverse `Edge` in `adj[v]`.  The reverse edge starts with
+/// `capacity = 0` so that it acts purely as a "cancel" arc in the residual
+/// graph.
+///
+/// Fields:
+/// - `to`       -- destination vertex index
+/// - `capacity` -- maximum flow this edge can carry (immutable after creation)
+/// - `flow`     -- current flow on this edge (mutable, 0 <= flow <= capacity)
+/// - `rev_idx`  -- index of the paired reverse edge inside `adj[to]`, enabling
+///                 O(1) residual updates
 priv struct Edge {
   to : Int
   capacity : Int64
@@ -47,6 +60,20 @@ priv struct Edge {
 }
 
 ///|
+/// Flow network used by Dinic's algorithm.
+///
+/// Stores the adjacency lists for all vertices together with two auxiliary
+/// arrays that are reused across BFS/DFS phases:
+///
+/// - `adj`   -- adjacency list; `adj[u]` holds all edges leaving vertex `u`
+///              (both original forward edges and their reverse counterparts)
+/// - `level` -- BFS distance from the source; reset to -1 before each BFS
+/// - `iter`  -- current-arc pointer per vertex; used by DFS to skip edges
+///              that have already been found to lead nowhere (dead-end
+///              pruning), reducing the DFS work to O(VE) per phase
+///
+/// Create with `MaxFlow::new(n)` and populate with `add_edge` or
+/// `add_undirected_edge` before calling `max_flow`.
 priv struct MaxFlow {
   n : Int
   adj : Array[Array[Edge]]
@@ -55,13 +82,25 @@ priv struct MaxFlow {
 }
 
 ///|
+/// Create a new, empty flow network with `n` vertices (indexed 0..n-1).
+///
+/// All adjacency lists are initialised empty.  `level` and `iter` arrays are
+/// pre-allocated but their initial values are overwritten before each use.
 fn MaxFlow::new(n : Int) -> MaxFlow {
   let adj : Array[Array[Edge]] = Array::makei(n, _ => [])
   { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0) }
 }
 
 ///|
-/// Add edge from u to v with given capacity
+/// Add a directed edge `from -> to` with the given `capacity`.
+///
+/// Internally this also inserts a **reverse edge** `to -> from` with capacity
+/// 0.  The reverse edge is essential for the residual graph: pushing `d` units
+/// of flow on `from -> to` reduces its residual by `d` and increases the
+/// reverse residual by `d`, allowing the algorithm to "undo" flow decisions
+/// made in earlier phases.
+///
+/// Panics (index-out-of-bounds) if `from` or `to` is outside `[0, n)`.
 fn MaxFlow::add_edge(
   self : MaxFlow,
   from : Int,
@@ -78,7 +117,18 @@ fn MaxFlow::add_edge(
 }
 
 ///|
-/// Add undirected edge (two directed edges with same capacity)
+/// Add an **undirected** edge between `u` and `v` with capacity `capacity` in
+/// each direction.
+///
+/// Unlike `add_edge`, both halves of the edge are stored as forward edges with
+/// the specified capacity.  Each half still gets the other as its reverse for
+/// residual-graph updates, so flow pushed in one direction can be cancelled by
+/// flow in the other direction.
+///
+/// Use this when the underlying connection is symmetric (e.g., undirected
+/// graphs, two-way pipes).
+///
+/// Panics (index-out-of-bounds) if `u` or `v` is outside `[0, n)`.
 fn MaxFlow::add_undirected_edge(
   self : MaxFlow,
   u : Int,
@@ -92,7 +142,17 @@ fn MaxFlow::add_undirected_edge(
 }
 
 ///|
-/// BFS to build level graph
+/// Build the level graph by running BFS from `source` in the residual network.
+///
+/// Assigns `level[v]` = shortest-hop distance from `source` to `v` through
+/// edges with positive residual capacity.  Sets `level[v] = -1` for vertices
+/// that cannot be reached.
+///
+/// Returns `true` if `sink` is reachable (i.e., another Dinic phase is
+/// possible), `false` otherwise (algorithm should terminate).
+///
+/// This function is called once per Dinic phase and resets all level values
+/// before each run so stale data from the previous phase does not interfere.
 fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
   for i in 0..<self.n {
     self.level[i] = -1
@@ -141,7 +201,22 @@ fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
 }
 
 ///|
-/// DFS to find blocking flow
+/// Recursively find and push flow along a single augmenting path in the level
+/// graph (DFS phase of Dinic's algorithm).
+///
+/// Parameters:
+/// - `u`      -- current vertex
+/// - `sink`   -- destination vertex
+/// - `pushed` -- maximum flow budget available on the path so far (starts at
+///               `FLOW_INF` from the top-level caller)
+///
+/// Returns the amount of flow actually pushed (0 if no augmenting path was
+/// found from `u` to `sink`).
+///
+/// The current-arc optimisation (`iter[u]`) means that once an edge is found
+/// to lead nowhere (DFS returned 0), `iter[u]` is advanced past it and it will
+/// never be re-examined in this phase.  This keeps the total DFS work across
+/// all calls in a single phase to O(V * E).
 fn MaxFlow::dfs(self : MaxFlow, u : Int, sink : Int, pushed : Int64) -> Int64 {
   if u == sink {
     return pushed
@@ -166,10 +241,31 @@ fn MaxFlow::dfs(self : MaxFlow, u : Int, sink : Int, pushed : Int64) -> Int64 {
 }
 
 ///|
+/// Sentinel value used as the initial flow budget passed into `dfs`.
+///
+/// Equal to `Int64` maximum value (2^63 - 1).  Because every real edge
+/// capacity is finite and much smaller than this, the actual bottleneck on any
+/// path will always be the tightest edge, not this sentinel.
 const FLOW_INF : Int64 = 9223372036854775807L
 
 ///|
-/// Compute maximum flow from source to sink
+/// Compute the maximum flow from `source` to `sink` using Dinic's algorithm.
+///
+/// The algorithm alternates between two phases until `sink` becomes unreachable
+/// in the residual graph:
+///
+/// 1. **BFS phase** -- builds the level graph (`level[]` array).
+/// 2. **DFS phase** -- finds a blocking flow (saturates every shortest path),
+///    using the current-arc array (`iter[]`) to prune dead ends.
+///
+/// Returns the total flow value as `Int64`.
+///
+/// Complexity: O(V^2 * E) in general, O(E * sqrt(V)) for unit-capacity graphs
+/// (e.g., bipartite matching).
+///
+/// The flow values accumulated in the `Edge.flow` fields can be inspected
+/// after this call to determine the actual flow on each individual edge.
+/// Call `min_cut` afterwards to identify a minimum cut achieving this flow.
 fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
   // INVARIANT: flow >= 0
   // I: flow=0, no flow pushed. M: Each iteration builds level graph via BFS.
@@ -218,7 +314,21 @@ fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
 }
 
 ///|
-/// Get the minimum cut (edges from source side to sink side)
+/// Return the edges of a minimum s-t cut after `max_flow` has been called.
+///
+/// A minimum cut partitions the vertices into two sets:
+/// - `S` -- vertices reachable from `source` in the **residual** graph
+/// - `T` -- all other vertices (including the sink)
+///
+/// Every edge from `S` to `T` in the **original** graph (capacity > 0) is a
+/// cut edge; together their capacities sum to the maximum flow value
+/// (by the max-flow min-cut theorem).
+///
+/// Returns an array of `(u, v, capacity)` triples for each cut edge.
+///
+/// Note: this function must be called **after** `max_flow`; calling it on a
+/// fresh network (no flow computed) will return the trivial cut containing all
+/// edges out of `source`.
 fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
   // After max flow, do one more BFS to find reachable vertices
   let visited = Array::make(self.n, false)

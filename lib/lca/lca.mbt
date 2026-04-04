@@ -37,7 +37,18 @@
 // SPACE COMPLEXITY: O(n log n)
 
 ///|
-/// LCA data structure with binary lifting
+/// Lowest Common Ancestor structure using binary lifting.
+///
+/// Stores a rooted tree (root = 0) with precomputed ancestor tables so that
+/// LCA queries can be answered in O(log n) after O(n log n) preprocessing.
+///
+/// Fields:
+/// - `n`      : number of nodes in the tree
+/// - `log_n`  : height of the ancestor table, equal to ceil(log2(n)) + 1
+/// - `up`     : sparse ancestor table; `up[v][k]` is the 2^k-th ancestor of
+///              node `v`, or -1 when that ancestor does not exist
+/// - `depth`  : `depth[v]` is the distance (number of edges) from the root
+///              to node `v`
 pub struct LCA {
   n : Int
   log_n : Int
@@ -46,6 +57,10 @@ pub struct LCA {
 }
 
 ///|
+/// Compute the smallest integer k such that 2^k >= n.
+///
+/// Used to determine the height of the binary lifting table so that every
+/// ancestor reachable within the tree can be represented.
 fn compute_log(n : Int) -> Int {
   for val = 1, log = 0; val < n; {
     continue val * 2, log + 1
@@ -66,7 +81,20 @@ fn compute_log(n : Int) -> Int {
 }
 
 ///|
-/// Create LCA structure from edges (tree rooted at 0).
+/// Build an LCA structure for a tree with `n` nodes rooted at node 0.
+///
+/// `edges` is an unordered list of undirected edges `(u, v)`. The edges
+/// must form a valid tree (connected, acyclic). Edges referencing nodes
+/// outside `[0, n-1]` are silently ignored.
+///
+/// Time:  O(n log n)
+/// Space: O(n log n)
+///
+/// Example:
+/// ```
+/// let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3)]
+/// let lca = LCA::new(4, edges)
+/// ```
 pub fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
   if n == 0 {
     return { n: 0, log_n: 0, up: [], depth: [] }
@@ -131,6 +159,15 @@ pub fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
 }
 
 ///|
+/// Recursive DFS that initialises `depth` and the first row of the `up` table.
+///
+/// For each node `v` visited:
+/// - `depth[v]` is set to the distance from the root.
+/// - `up[v][0]` is set to `parent` (the immediate parent of `v`), or -1 for
+///   the root.
+///
+/// Marking nodes in `visited` ensures each node is processed exactly once even
+/// if the adjacency list contains back-edges.
 fn dfs_build(
   v : Int,
   parent : Int,
@@ -151,13 +188,29 @@ fn dfs_build(
 }
 
 ///|
-/// Find LCA of nodes u and v.
-/// TIME: O(log n)
+/// Return the Lowest Common Ancestor of nodes `u` and `v`.
 ///
-/// ALGORITHM:
-/// 1. Bring deeper node up to same level as shallower node
-/// 2. Binary search: jump both nodes while their ancestors differ
-/// 3. Return parent of final position (or position if already same)
+/// Returns -1 if either node is outside `[0, n-1]`.
+/// Returns `u` (or `v`) directly when one node is an ancestor of the other.
+///
+/// Time: O(log n)
+///
+/// Algorithm:
+/// 1. Bring the deeper node up to the same depth as the shallower node using
+///    binary lifting on the depth difference.
+/// 2. If the nodes are now equal, that node is the LCA.
+/// 3. Otherwise, scan bit positions from high to low: jump both nodes up by
+///    2^k whenever their 2^k-th ancestors differ. After this loop the LCA is
+///    the immediate parent of either node.
+///
+/// Example:
+/// ```
+/// // Tree: 0 - 1 - 2
+/// //            \- 3
+/// let lca = LCA::new(4, [(0, 1), (1, 2), (1, 3)])
+/// lca.query(2, 3) // returns 1
+/// lca.query(0, 2) // returns 0
+/// ```
 pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
   if u < 0 || u >= self.n || v < 0 || v >= self.n {
     return -1
@@ -217,7 +270,9 @@ pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
 }
 
 ///|
-/// Get depth of node
+/// Return the depth (distance from root) of node `v`.
+///
+/// Returns -1 if `v` is outside `[0, n-1]`.
 fn LCA::get_depth(self : LCA, v : Int) -> Int {
   if v < 0 || v >= self.n {
     return -1
@@ -226,7 +281,12 @@ fn LCA::get_depth(self : LCA, v : Int) -> Int {
 }
 
 ///|
-/// Get distance between two nodes
+/// Return the number of edges on the path between nodes `u` and `v`.
+///
+/// Uses the identity:
+///   `dist(u, v) = depth[u] + depth[v] - 2 * depth[LCA(u, v)]`
+///
+/// Returns -1 if either node is outside `[0, n-1]`.
 fn LCA::distance(self : LCA, u : Int, v : Int) -> Int {
   let lca = self.query(u, v)
   if lca == -1 {
@@ -236,7 +296,13 @@ fn LCA::distance(self : LCA, u : Int, v : Int) -> Int {
 }
 
 ///|
-/// Get k-th ancestor of node v
+/// Return the k-th ancestor of node `v` (0-th ancestor is `v` itself).
+///
+/// Uses binary lifting: decompose `k` into powers of two and compose the
+/// corresponding jumps from the `up` table.
+///
+/// Returns -1 if `v` is outside `[0, n-1]`, `k` is negative, or `v` has
+/// fewer than `k` ancestors (i.e., the root is reached before k jumps).
 fn LCA::kth_ancestor(self : LCA, v : Int, k : Int) -> Int {
   if v < 0 || v >= self.n || k < 0 {
     return -1
@@ -266,13 +332,20 @@ fn LCA::kth_ancestor(self : LCA, v : Int, k : Int) -> Int {
 }
 
 ///|
-/// Check if u is ancestor of v
+/// Return `true` if `u` is an ancestor of `v` (including `u == v`).
+///
+/// Equivalent to checking whether `LCA(u, v) == u`.
 fn LCA::is_ancestor(self : LCA, u : Int, v : Int) -> Bool {
   self.query(u, v) == u
 }
 
 ///|
-/// Get path from u to v
+/// Return the sequence of nodes on the unique path from `u` to `v`.
+///
+/// The path is returned as an array starting at `u`, passing through
+/// `LCA(u, v)`, and ending at `v`. The LCA node appears exactly once.
+///
+/// Returns an empty array if either node is outside `[0, n-1]`.
 fn LCA::get_path(self : LCA, u : Int, v : Int) -> Array[Int] {
   if u < 0 || u >= self.n || v < 0 || v >= self.n {
     return []
@@ -328,12 +401,23 @@ fn LCA::get_path(self : LCA, u : Int, v : Int) -> Array[Int] {
 // ============================================================================
 
 ///|
+/// LCA structure extended with weighted edges for path-distance queries.
+///
+/// Stores an unweighted `LCA` for ancestor lookups together with
+/// `dist_to_root[v]`, the sum of edge weights on the path from the root
+/// to each node `v`. Weighted distance queries then reduce to:
+///   `dist(u, v) = dist_to_root[u] + dist_to_root[v] - 2 * dist_to_root[LCA(u, v)]`
 priv struct WeightedLCA {
   lca : LCA
   dist_to_root : Array[Int64] // Distance from root to each node
 }
 
 ///|
+/// Build a `WeightedLCA` for a weighted tree with `n` nodes rooted at 0.
+///
+/// `edges` is a list of triples `(u, v, weight)`. Edges outside `[0, n-1]`
+/// are ignored. The topology is handed to `LCA::new`; a separate DFS
+/// accumulates weighted distances from the root.
 fn WeightedLCA::new(n : Int, edges : Array[(Int, Int, Int64)]) -> WeightedLCA {
   if n == 0 {
     return { lca: LCA::new(0, []), dist_to_root: [] }
@@ -361,6 +445,10 @@ fn WeightedLCA::new(n : Int, edges : Array[(Int, Int, Int64)]) -> WeightedLCA {
 }
 
 ///|
+/// Recursive DFS that computes `dist_to_root` for a weighted tree.
+///
+/// `d` carries the accumulated weight from the root to the current node `v`.
+/// Each unvisited neighbour is recursed into with its edge weight added.
 fn dfs_dist(
   v : Int,
   d : Int64,
@@ -379,7 +467,10 @@ fn dfs_dist(
 }
 
 ///|
-/// Query weighted distance between u and v
+/// Return the total edge-weight on the path between `u` and `v`.
+///
+/// Computes `dist_to_root[u] + dist_to_root[v] - 2 * dist_to_root[LCA(u, v)]`.
+/// Returns -1L if the underlying LCA query is invalid.
 fn WeightedLCA::query_dist(self : WeightedLCA, u : Int, v : Int) -> Int64 {
   let lca = self.lca.query(u, v)
   if lca == -1 {
@@ -389,6 +480,10 @@ fn WeightedLCA::query_dist(self : WeightedLCA, u : Int, v : Int) -> Int64 {
 }
 
 ///|
+/// Return the LCA of `u` and `v` using the underlying unweighted structure.
+///
+/// Delegates directly to `LCA::query`; the edge weights have no effect on
+/// which node is the LCA.
 fn WeightedLCA::query_lca(self : WeightedLCA, u : Int, v : Int) -> Int {
   self.lca.query(u, v)
 }

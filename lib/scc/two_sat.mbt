@@ -12,8 +12,8 @@
 //     (NOT b) => a
 //
 //   Build an "implication graph" with 2n vertices:
-//     - Vertices 0..n-1 represent x₀..xₙ₋₁
-//     - Vertices n..2n-1 represent NOT x₀..NOT xₙ₋₁
+//     - Vertices 0..n-1 represent x0..x(n-1)
+//     - Vertices n..2n-1 represent NOT x0..NOT x(n-1)
 //
 //   Add edges for each implication.
 // ```
@@ -21,60 +21,75 @@
 // SATISFIABILITY CHECK:
 // ```
 //   The formula is satisfiable iff for all i:
-//     xᵢ and NOT xᵢ are in different SCCs
+//     xi and NOT xi are in different SCCs
 //
-//   Why? If xᵢ and NOT xᵢ are in the same SCC, then:
-//     xᵢ => ... => NOT xᵢ => ... => xᵢ
+//   Why? If xi and NOT xi are in the same SCC, then:
+//     xi => ... => NOT xi => ... => xi
 //   This creates a contradiction.
 // ```
 //
 // FINDING ASSIGNMENT:
 // ```
 //   Use the SCC numbering (topological order):
-//     - If SCC(xᵢ) > SCC(NOT xᵢ): set xᵢ = true
-//     - If SCC(xᵢ) < SCC(NOT xᵢ): set xᵢ = false
+//     - If SCC(xi) > SCC(NOT xi): set xi = true
+//     - If SCC(xi) < SCC(NOT xi): set xi = false
 //
 //   Why this works:
-//     If xᵢ = true leads to contradiction, then there's a path
-//     xᵢ => ... => NOT xᵢ, meaning SCC(xᵢ) ≤ SCC(NOT xᵢ).
+//     If xi = true leads to contradiction, then there's a path
+//     xi => ... => NOT xi, meaning SCC(xi) <= SCC(NOT xi).
 //     By choosing the one with higher SCC number, we avoid the
 //     implication chain leading to contradiction.
 // ```
 //
 // EXAMPLE:
 // ```
-//   Formula: (x₀ OR x₁) AND (NOT x₀ OR x₁) AND (x₀ OR NOT x₁)
+//   Formula: (x0 OR x1) AND (NOT x0 OR x1) AND (x0 OR NOT x1)
 //
 //   Implications:
-//     NOT x₀ => x₁, NOT x₁ => x₀
-//     x₀ => x₁, NOT x₁ => NOT x₀
-//     NOT x₀ => NOT x₁, x₁ => x₀
+//     NOT x0 => x1, NOT x1 => x0
+//     x0 => x1, NOT x1 => NOT x0
+//     NOT x0 => NOT x1, x1 => x0
 //
 //   Implication graph has paths:
-//     NOT x₀ => x₁ => x₀ (so NOT x₀ => x₀, meaning x₀ must be true)
-//     NOT x₁ => NOT x₀ => NOT x₁ (cycle, same SCC)
-//     x₁ => x₀ => ... (eventually x₁)
+//     NOT x0 => x1 => x0 (so NOT x0 => x0, meaning x0 must be true)
+//     NOT x1 => NOT x0 => NOT x1 (cycle, same SCC)
+//     x1 => x0 => ... (eventually x1)
 //
-//   Result: x₀ = true, x₁ = true (or both false depending on SCC order)
+//   Result: x0 = true, x1 = true (or both false depending on SCC order)
 // ```
 
 ///|
-/// 2-SAT problem structure.
+/// A 2-SAT problem instance backed by an implication graph.
 ///
-/// VERTEX ENCODING:
-/// ```
-///   Variable xᵢ (positive):  vertex i
-///   Variable ¬xᵢ (negated):  vertex i + n
+/// Variables are indexed `0` to `n - 1`. Each variable `xᵢ` is represented
+/// by two vertices in the implication graph:
 ///
-///   n total variables, 2n total vertices in implication graph.
 /// ```
+///   vertex i       = positive literal  xᵢ
+///   vertex i + n   = negative literal  NOT xᵢ
+/// ```
+///
+/// Clauses are added via `add_clause`, which records the two corresponding
+/// implication edges. Call `solve` to obtain a satisfying assignment, or
+/// `None` if the formula is unsatisfiable.
+///
+/// Fields:
+/// - `n`   : number of boolean variables.
+/// - `adj` : implication graph adjacency list (length `2 * n`).
 pub(all) struct TwoSAT {
   n : Int
   adj : Array[Array[Int]]
 }
 
 ///|
-/// Create a new 2-SAT instance with n boolean variables.
+/// Create a new 2-SAT instance with `n` boolean variables.
+///
+/// Allocates an implication graph with `2 * n` vertices: vertices `0..n-1`
+/// represent the positive literals and vertices `n..2n-1` represent the
+/// negated literals.  No clauses are added yet.
+///
+/// Parameter:
+/// - `n` : number of boolean variables (must be >= 0).
 pub fn TwoSAT::new(n : Int) -> TwoSAT {
   // Use makei to create 2n adjacency lists (n vars + n negated vars)
   let adj : Array[Array[Int]] = Array::makei(2 * n, _ => [])
@@ -82,15 +97,17 @@ pub fn TwoSAT::new(n : Int) -> TwoSAT {
 }
 
 ///|
-/// Convert variable and sign to vertex index.
+/// Map a (variable, sign) pair to its vertex index in the implication graph.
 ///
-/// PARAMETERS:
-///   - n: number of variables
-///   - x: variable index (0 to n-1)
-///   - neg: true if negated
+/// Positive literals occupy vertices `0` to `n - 1`; negated literals occupy
+/// vertices `n` to `2n - 1`.
 ///
-/// RETURNS:
-///   Vertex index in implication graph
+/// Parameters:
+/// - `n`   : total number of variables (used as offset for negated literals).
+/// - `x`   : variable index (`0` to `n - 1`).
+/// - `neg` : `true` if this is the negated literal (`NOT xₓ`).
+///
+/// Returns the vertex index for use in the implication graph.
 fn var_to_vertex(n : Int, x : Int, neg : Bool) -> Int {
   if neg {
     x + n // Negated variables are in second half
@@ -100,23 +117,30 @@ fn var_to_vertex(n : Int, x : Int, neg : Bool) -> Int {
 }
 
 ///|
-/// Add clause (a OR b) to the 2-SAT formula.
+/// Add the clause `(literal_a OR literal_b)` to the 2-SAT formula.
 ///
-/// IMPLEMENTATION:
+/// The clause is encoded as two implication edges in the internal graph:
+///
 /// ```
-///   (a OR b) is equivalent to:
-///     (NOT a) => b   (if a is false, b must be true)
-///     (NOT b) => a   (if b is false, a must be true)
-///
-///   We add both implications as edges in the graph.
+///   (NOT a) => b      if a is false, b must be true
+///   (NOT b) => a      if b is false, a must be true
 /// ```
 ///
-/// PARAMETERS:
-///   - self: the 2-SAT instance
-///   - a: first variable index
-///   - neg_a: true if first literal is negated
-///   - b: second variable index
-///   - neg_b: true if second literal is negated
+/// A literal is specified by its variable index and a boolean sign:
+/// - `neg = false` means the positive literal `xᵢ`
+/// - `neg = true`  means the negated literal `NOT xᵢ`
+///
+/// Parameters:
+/// - `self`  : the 2-SAT instance to modify.
+/// - `a`     : index of the first variable (`0` to `n - 1`).
+/// - `neg_a` : `true` if the first literal is negated.
+/// - `b`     : index of the second variable (`0` to `n - 1`).
+/// - `neg_b` : `true` if the second literal is negated.
+///
+/// Example — add the clause `(x0 OR NOT x1)`:
+/// ```
+/// ts.add_clause(0, false, 1, true)
+/// ```
 pub fn TwoSAT::add_clause(
   self : TwoSAT,
   a : Int,
@@ -136,25 +160,39 @@ pub fn TwoSAT::add_clause(
 }
 
 ///|
-/// Solve the 2-SAT formula.
+/// Solve the 2-SAT formula and return a satisfying assignment, if one exists.
 ///
-/// ALGORITHM:
-/// ```
-///   1. Find SCCs of implication graph
-///   2. Check: for each i, xᵢ and ¬xᵢ must be in different SCCs
-///   3. Assign: xᵢ = true if SCC(xᵢ) > SCC(¬xᵢ)
-/// ```
+/// The algorithm:
+/// 1. Run Tarjan's SCC algorithm on the implication graph.
+/// 2. For each variable `xᵢ`, check that `xᵢ` and `NOT xᵢ` are in
+///    **different** SCCs. If they share an SCC the formula is unsatisfiable
+///    (they mutually imply each other, creating a contradiction).
+/// 3. Assign `xᵢ = true` if `SCC(xᵢ) > SCC(NOT xᵢ)` in Tarjan's numbering
+///    (higher index = earlier in topological order = the literal that is
+///    "forced" to be true by the implication structure).
 ///
-/// RETURNS:
-///   Some(assignment) if satisfiable, None otherwise.
-///   assignment[i] = value of variable i.
+/// Returns:
+/// - `Some(assignment)` where `assignment[i]` is the value of variable `i`,
+///   if the formula is satisfiable.
+/// - `None` if the formula is unsatisfiable (some variable and its negation
+///   are in the same SCC).
+///
+/// Example:
+/// ```
+/// let ts = TwoSAT::new(2)
+/// ts.add_clause(0, false, 1, false)  // x0 OR x1
+/// match ts.solve() {
+///   Some(vals) => println(vals[0])   // true or false
+///   None => println("unsat")
+/// }
+/// ```
 pub fn TwoSAT::solve(self : TwoSAT) -> Array[Bool]? {
   let result = find_sccs(2 * self.n, self.adj)
 
   // Check satisfiability
   for x in 0..<self.n {
     if result.component[x] == result.component[x + self.n] {
-      return None // x and NOT x in same SCC → contradiction
+      return None // x and NOT x in same SCC -> contradiction
     }
   }
 

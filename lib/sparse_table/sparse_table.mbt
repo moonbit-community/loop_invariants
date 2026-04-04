@@ -29,6 +29,17 @@
 // SPACE COMPLEXITY: O(n log n)
 
 ///|
+/// A sparse table for O(1) range minimum queries over a static array of Int64.
+///
+/// The table precomputes minimums over all power-of-2-length intervals during
+/// construction (O(n log n) time and space). After construction the array must
+/// not change; no updates are supported.
+///
+/// Fields:
+/// - `table`: 2-D array where `table[i][j]` holds the minimum of the subarray
+///   `[i, i + 2^j - 1]`.
+/// - `log_table`: precomputed floor-log2 values; `log_table[x] = floor(log2(x))`.
+/// - `n`: number of elements in the original array.
 pub struct SparseTableMin {
   table : Array[Array[Int64]]
   log_table : Array[Int]
@@ -36,7 +47,15 @@ pub struct SparseTableMin {
 }
 
 ///|
-/// Build a sparse table for range minimum queries.
+/// Build a sparse table over `arr` for range minimum queries.
+///
+/// Parameters:
+/// - `arr`: the static input array of `Int64` values.
+///
+/// Returns a `SparseTableMin` that can answer any range-minimum query in O(1).
+///
+/// Time complexity: O(n log n) where n = `arr.length()`.
+/// Space complexity: O(n log n).
 pub fn SparseTableMin::new(arr : Array[Int64]) -> SparseTableMin {
   let n = arr.length()
   if n == 0 {
@@ -68,7 +87,21 @@ pub fn SparseTableMin::new(arr : Array[Int64]) -> SparseTableMin {
 }
 
 ///|
-/// Query minimum in range [l, r] inclusive
+/// Return the minimum value in the inclusive range `[l, r]`.
+///
+/// The query is answered in O(1) by combining two precomputed intervals of
+/// length `2^k` (the largest power of two that fits in `r - l + 1`). Because
+/// `min` is idempotent, overlapping intervals produce the correct result.
+///
+/// Parameters:
+/// - `self`: the sparse table built by `SparseTableMin::new`.
+/// - `l`: left index of the query range (inclusive, 0-based).
+/// - `r`: right index of the query range (inclusive, 0-based).
+///
+/// Returns the minimum element in `arr[l..=r]`, or `Int64::max_value`
+/// (`9223372036854775807`) if the range is empty or out of bounds.
+///
+/// Time complexity: O(1).
 pub fn SparseTableMin::query(self : SparseTableMin, l : Int, r : Int) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return 9223372036854775807L // INT64_MAX
@@ -89,6 +122,16 @@ pub fn SparseTableMin::query(self : SparseTableMin, l : Int, r : Int) -> Int64 {
 // ============================================================================
 
 ///|
+/// A sparse table for O(1) range maximum queries over a static array of Int64.
+///
+/// Mirrors `SparseTableMin` but uses the `max` operator. The same idempotency
+/// property guarantees correctness when two intervals overlap during a query.
+///
+/// Fields:
+/// - `table`: 2-D array where `table[i][j]` holds the maximum of the subarray
+///   `[i, i + 2^j - 1]`.
+/// - `log_table`: precomputed floor-log2 values.
+/// - `n`: number of elements in the original array.
 priv struct SparseTableMax {
   table : Array[Array[Int64]]
   log_table : Array[Int]
@@ -96,6 +139,15 @@ priv struct SparseTableMax {
 }
 
 ///|
+/// Build a sparse table over `arr` for range maximum queries.
+///
+/// Parameters:
+/// - `arr`: the static input array of `Int64` values.
+///
+/// Returns a `SparseTableMax` that can answer any range-maximum query in O(1).
+///
+/// Time complexity: O(n log n) where n = `arr.length()`.
+/// Space complexity: O(n log n).
 fn SparseTableMax::new(arr : Array[Int64]) -> SparseTableMax {
   let n = arr.length()
   if n == 0 {
@@ -123,6 +175,17 @@ fn SparseTableMax::new(arr : Array[Int64]) -> SparseTableMax {
 }
 
 ///|
+/// Return the maximum value in the inclusive range `[l, r]`.
+///
+/// Parameters:
+/// - `self`: the sparse table built by `SparseTableMax::new`.
+/// - `l`: left index of the query range (inclusive, 0-based).
+/// - `r`: right index of the query range (inclusive, 0-based).
+///
+/// Returns the maximum element in `arr[l..=r]`, or `Int64::min_value`
+/// (`-9223372036854775808`) if the range is empty or out of bounds.
+///
+/// Time complexity: O(1).
 fn SparseTableMax::query(self : SparseTableMax, l : Int, r : Int) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return -9223372036854775808L // INT64_MIN
@@ -143,6 +206,16 @@ fn SparseTableMax::query(self : SparseTableMax, l : Int, r : Int) -> Int64 {
 // ============================================================================
 
 ///|
+/// Compute the greatest common divisor of two `Int64` values using the
+/// Euclidean algorithm.
+///
+/// Parameters:
+/// - `a`: first operand (sign is ignored; the result is always non-negative).
+/// - `b`: second operand.
+///
+/// Returns `gcd(|a|, |b|)`. Returns `0` when both inputs are `0`.
+///
+/// Time complexity: O(log(min(|a|, |b|))).
 fn gcd(a : Int64, b : Int64) -> Int64 {
   for x = (if a < 0L { -a } else { a }), y = (if b < 0L { -b } else { b }) {
     if y != 0L {
@@ -154,6 +227,16 @@ fn gcd(a : Int64, b : Int64) -> Int64 {
 }
 
 ///|
+/// A sparse table for O(1) range GCD queries over a static array of Int64.
+///
+/// GCD is idempotent (`gcd(x, x) = x`), so two overlapping intervals of the
+/// same length always yield the correct GCD for any sub-range.
+///
+/// Fields:
+/// - `table`: 2-D array where `table[i][j]` holds the GCD of the subarray
+///   `[i, i + 2^j - 1]`.
+/// - `log_table`: precomputed floor-log2 values.
+/// - `n`: number of elements in the original array.
 priv struct SparseTableGCD {
   table : Array[Array[Int64]]
   log_table : Array[Int]
@@ -161,6 +244,15 @@ priv struct SparseTableGCD {
 }
 
 ///|
+/// Build a sparse table over `arr` for range GCD queries.
+///
+/// Parameters:
+/// - `arr`: the static input array of `Int64` values.
+///
+/// Returns a `SparseTableGCD` that can answer any range-GCD query in O(1).
+///
+/// Time complexity: O(n log n) where n = `arr.length()`.
+/// Space complexity: O(n log n).
 fn SparseTableGCD::new(arr : Array[Int64]) -> SparseTableGCD {
   let n = arr.length()
   if n == 0 {
@@ -186,6 +278,17 @@ fn SparseTableGCD::new(arr : Array[Int64]) -> SparseTableGCD {
 }
 
 ///|
+/// Return the GCD of all elements in the inclusive range `[l, r]`.
+///
+/// Parameters:
+/// - `self`: the sparse table built by `SparseTableGCD::new`.
+/// - `l`: left index of the query range (inclusive, 0-based).
+/// - `r`: right index of the query range (inclusive, 0-based).
+///
+/// Returns `gcd(arr[l], arr[l+1], ..., arr[r])`, or `0` if the range is
+/// empty or out of bounds.
+///
+/// Time complexity: O(1).
 fn SparseTableGCD::query(self : SparseTableGCD, l : Int, r : Int) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return 0L

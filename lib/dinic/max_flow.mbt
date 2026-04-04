@@ -2,54 +2,60 @@
 // DINIC'S ALGORITHM - Max Flow and Min Cut
 // ============================================================================
 //
-// Main algorithm combining BFS and DFS to find maximum flow.
-// Also includes min cut computation.
+// Main algorithm combining BFS level-graph construction and DFS blocking-flow
+// search to find the maximum flow from a source to a sink.
 //
-// ALGORITHM:
+// ALGORITHM LOOP:
 // ```
-//   While BFS finds path from source to sink:
-//     Reset edge pointers
-//     While DFS finds augmenting path:
-//       Add path flow to total
-//   Return total flow
+//   While BFS finds a path from source to sink in the residual graph:
+//     Reset current-arc pointers (iter[]) for the new phase.
+//     Repeatedly call DFS until it returns 0 (level graph is blocked).
+//     Accumulate the flow from each DFS call.
+//   Return total accumulated flow.
 // ```
 //
 // CORRECTNESS:
 // ```
-//   1. Each BFS phase increases distance from source to sink
-//   2. At most V phases needed (distance can't exceed V)
-//   3. Each phase finds a blocking flow in O(VE) time
-//   4. Total: O(V²E)
+//   1. Each BFS phase strictly increases the shortest s-t distance.
+//   2. At most V-1 phases are needed (distance is bounded by V).
+//   3. Each phase finds a blocking flow in O(VE) time via DFS + current-arc.
+//   4. Total: O(V^2 * E).
 // ```
 //
 // MAX-FLOW MIN-CUT THEOREM:
 // ```
-//   The maximum flow equals the minimum cut capacity.
+//   The value of the maximum flow equals the capacity of the minimum cut.
 //
-//   After finding max flow:
-//   - Source side: vertices reachable from source in residual graph
-//   - Sink side: remaining vertices
-//   - Cut edges: edges from source side to sink side with full capacity
+//   After Dinic terminates:
+//   - Source side: vertices reachable from source in the residual graph.
+//   - Sink side: all remaining vertices.
+//   - Min-cut edges: edges from the source side to the sink side whose
+//     residual capacity is 0 (i.e., they are fully saturated).
 // ```
 
 ///|
-/// Compute maximum flow from source to sink.
+/// Compute the maximum flow from `source` to `sink` in `self`.
 ///
-/// ALGORITHM:
+/// Runs Dinic's algorithm: alternating BFS phases (level-graph construction)
+/// and DFS phases (blocking-flow search) until the sink is unreachable in
+/// the residual graph.
+///
+/// The flow values stored in `self.adj` are updated in place.
+/// Call `reset` before re-running on the same graph with a different
+/// source/sink pair.
+///
+/// Algorithm:
 /// ```
-///   1. BFS to build level graph
-///   2. Reset edge pointers for DFS
-///   3. Find blocking flow using repeated DFS
-///   4. Repeat until sink unreachable
+///   1. BFS to build level graph.
+///   2. Reset iter[] (current-arc pointers) for this phase.
+///   3. Loop: call dfs(source, sink, DINIC_INF) until it returns 0.
+///   4. Go to step 1.
+///   Return total flow when BFS can no longer reach the sink.
 /// ```
 ///
-/// INVARIANT:
-/// ```
-///   After each BFS phase:
-///   - Distance from source to sink strictly increases
-///   - All flow pushed respects capacity constraints
-///   - Total flow equals sum of all augmenting path flows
-/// ```
+/// Loop invariant: at the start of each outer iteration, `flow` equals
+/// the total flow pushed across all completed BFS phases, and every
+/// intermediate flow assignment respects capacity constraints.
 pub fn Dinic::max_flow(self : Dinic, source : Int, sink : Int) -> Int64 {
   // Main loop: BFS phases
   for flow = 0L; self.bfs(source, sink); {
@@ -83,7 +89,13 @@ pub fn Dinic::max_flow(self : Dinic, source : Int, sink : Int) -> Int64 {
 }
 
 ///|
-/// Get flow on edge from u to v (first matching edge if multiple).
+/// Return the flow currently assigned to the first edge from `u` to `v`.
+///
+/// If multiple parallel edges exist between `u` and `v`, only the flow on
+/// the first matching forward edge is returned.  Returns `0` if no edge
+/// from `u` to `v` exists.
+///
+/// Useful for inspecting individual edge flows after `max_flow` has run.
 pub fn Dinic::get_flow(self : Dinic, u : Int, v : Int) -> Int64 {
   for e in self.adj[u] {
     if e.to == v {
@@ -94,7 +106,13 @@ pub fn Dinic::get_flow(self : Dinic, u : Int, v : Int) -> Int64 {
 }
 
 ///|
-/// Reset all flows to 0 (for recomputing with different source/sink).
+/// Reset all edge flows to 0, allowing `max_flow` to be called again.
+///
+/// The graph topology (vertices and edges added via `add_edge`) is
+/// preserved; only the `flow` field of every edge is zeroed.
+///
+/// Use this when you want to recompute the maximum flow with a different
+/// source or sink without rebuilding the entire `Dinic` instance.
 pub fn Dinic::reset(self : Dinic) -> Unit {
   for u in 0..<self.n {
     for e in self.adj[u] {
@@ -104,20 +122,23 @@ pub fn Dinic::reset(self : Dinic) -> Unit {
 }
 
 ///|
-/// Find vertices on source side of minimum cut.
+/// Return the set of vertices on the **source side** of the minimum cut.
 ///
-/// ALGORITHM:
-/// ```
-///   After computing max flow, perform BFS from source
-///   using only edges with residual capacity.
-///   Reachable vertices are on source side of min cut.
-/// ```
+/// Must be called **after** `max_flow` has been computed on `self`.
+/// Performs a BFS from `source` in the residual graph (only edges with
+/// positive residual capacity `cap > flow` are traversed).
 ///
-/// MIN CUT PROPERTY:
+/// The returned array contains every vertex reachable from `source` in
+/// the residual graph, which forms the source side of a minimum cut whose
+/// capacity equals the maximum flow (Max-flow Min-cut theorem).
+///
+/// Min-cut edges are those that go from a vertex in the returned set to a
+/// vertex not in the set, and have zero residual capacity (fully saturated).
+///
+/// Algorithm:
 /// ```
-///   Edges from source side to sink side are saturated
-///   (cap == flow), so they have no residual capacity.
-///   Total capacity of these edges = max flow.
+///   BFS from source using only edges with cap > flow.
+///   Collect all visited vertices and return them.
 /// ```
 pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
   let visited = Array::make(self.n, false)
@@ -138,7 +159,24 @@ pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
 }
 
 ///|
-/// Convenience function: compute max flow from edge list.
+/// Convenience function: build a `Dinic` instance from an edge list and
+/// return the maximum flow from `source` to `sink`.
+///
+/// Parameters:
+/// - `n`      : total number of vertices (labelled `0` to `n-1`)
+/// - `edges`  : slice of `(from, to, capacity)` tuples
+/// - `source` : source vertex index
+/// - `sink`   : sink vertex index
+///
+/// This is equivalent to:
+/// ```
+///   let d = Dinic::new(n)
+///   for (u, v, cap) in edges { d.add_edge(u, v, cap) }
+///   d.max_flow(source, sink)
+/// ```
+///
+/// Use `Dinic::new` directly if you need access to per-edge flows,
+/// min-cut information, or the ability to `reset` and rerun.
 pub fn max_flow(
   n : Int,
   edges : ArrayView[(Int, Int, Int64)],

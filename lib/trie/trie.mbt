@@ -41,7 +41,14 @@
 // Optimizations: Array-based children, compressed trie
 
 ///|
-/// Trie node with children array for lowercase letters
+/// Internal node for the standard trie.
+///
+/// Each node represents a character position on some path from the root.
+/// Children are indexed by `(char - 'a')` for O(1) lookup. `is_end` is set
+/// whenever a complete word terminates at this node. `count` tracks how many
+/// times that exact word was inserted (to support duplicate counting and
+/// per-copy deletion). `prefix_count` counts how many inserted words pass
+/// through this node, enabling O(1) prefix-count queries after an O(m) walk.
 priv struct TrieNode {
   children : Array[TrieNode?]
   mut is_end : Bool
@@ -50,29 +57,44 @@ priv struct TrieNode {
 }
 
 ///|
-/// Create a new trie node
+/// Create a new trie node with empty children and zero counts.
 fn TrieNode::new() -> TrieNode {
   { children: Array::make(26, None), is_end: false, count: 0, prefix_count: 0 }
 }
 
 ///|
-/// Trie data structure for string storage
+/// Standard trie for lowercase ASCII strings (`a..z`).
+///
+/// The trie stores strings as paths in a tree: each edge corresponds to one
+/// character, and nodes on the same path share all characters up to that
+/// depth. Supported operations include exact search, prefix queries,
+/// autocomplete, duplicate-aware insertion and deletion, and longest-prefix
+/// lookup.
+///
+/// Only lowercase letters `a..z` are meaningful. All other characters are
+/// silently skipped during traversal, so "a-b" is treated the same as "ab".
 priv struct Trie {
   root : TrieNode
 }
 
 ///|
-/// Create a new empty Trie
+/// Create a new, empty trie.
 fn Trie::new() -> Trie {
   { root: TrieNode::new() }
 }
 
 ///|
-/// Insert a word into the trie
-/// TIME: O(m) where m = word length
+/// Insert `word` into the trie.
 ///
-/// INVARIANT: After traversing k characters, current node represents prefix[0..k).
-/// REASONING: Each character extends the path by one node; at end we mark is_end.
+/// Each lowercase character in `word` follows or creates one node. The
+/// terminal node receives `is_end = true` and has its `count` incremented.
+/// Every node along the path has its `prefix_count` incremented so that
+/// `count_prefix` can answer queries in O(prefix length) time.
+///
+/// Non-lowercase characters are skipped; they do not create nodes or consume
+/// path slots, but they are effectively removed from the key.
+///
+/// Time complexity: O(m) where m = `word.length()`.
 fn Trie::insert(self : Trie, word : String) -> Unit {
   self.root.prefix_count = self.root.prefix_count + 1
   let current = for i = 0, current = self.root; i < word.length(); {
@@ -111,11 +133,14 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
 }
 
 ///|
-/// Search for exact word in trie
-/// Returns true if word exists
-/// TIME: O(m)
+/// Return `true` if `word` was inserted into the trie and has not been fully
+/// deleted.
 ///
-/// INVARIANT: After traversing k characters, current node represents prefix[0..k).
+/// Walks the path for `word` and checks `is_end` on the terminal node.
+/// Returns `false` if any edge is missing or if the terminal node has
+/// `is_end = false`.
+///
+/// Time complexity: O(m) where m = `word.length()`.
 fn Trie::search(self : Trie, word : String) -> Bool {
   match self.find_node(word) {
     Some(node) => node.is_end
@@ -124,14 +149,25 @@ fn Trie::search(self : Trie, word : String) -> Bool {
 }
 
 ///|
-/// Check if any word starts with given prefix
-/// TIME: O(p) where p = prefix length
+/// Return `true` if at least one inserted word starts with `prefix`.
+///
+/// Walks the path for `prefix` and returns `true` if the node exists,
+/// regardless of whether `prefix` itself is a complete word. This is faster
+/// than `autocomplete` because no word collection is needed.
+///
+/// Time complexity: O(p) where p = `prefix.length()`.
 fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
   self.find_node(prefix) is Some(_)
 }
 
 ///|
-/// Count words with given prefix
+/// Return the total number of inserted words (counting duplicates) that begin
+/// with `prefix`.
+///
+/// Reads the `prefix_count` field on the node reached by walking `prefix`.
+/// Returns 0 if no such node exists.
+///
+/// Time complexity: O(p) where p = `prefix.length()`.
 fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
   match self.find_node(prefix) {
     Some(node) => node.prefix_count
@@ -140,7 +176,12 @@ fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
 }
 
 ///|
-/// Count exact occurrences of word
+/// Return the number of times `word` was inserted (counting duplicates).
+///
+/// Reads the `count` field on the terminal node. Returns 0 if the word is
+/// not present or if all copies have been deleted.
+///
+/// Time complexity: O(m) where m = `word.length()`.
 fn Trie::count_word(self : Trie, word : String) -> Int {
   match self.find_node(word) {
     Some(node) => node.count
@@ -149,7 +190,14 @@ fn Trie::count_word(self : Trie, word : String) -> Int {
 }
 
 ///|
-/// Find node for given string (helper function)
+/// Walk the trie along the path defined by `s` and return the terminal node,
+/// or `None` if any edge is missing.
+///
+/// Non-lowercase characters are skipped without advancing the node pointer,
+/// matching the skip behaviour of `insert`. This is the shared kernel used
+/// by `search`, `starts_with`, `count_prefix`, and `count_word`.
+///
+/// Time complexity: O(n) where n = `s.length()`.
 fn Trie::find_node(self : Trie, s : String) -> TrieNode? {
   for i = 0, current = self.root; i < s.length(); {
     let c = s[i].to_int() - 'a'.to_int()
@@ -177,8 +225,18 @@ fn Trie::find_node(self : Trie, s : String) -> TrieNode? {
 }
 
 ///|
-/// Delete a word from trie (decrement count)
-/// Returns true if word was found and deleted
+/// Remove one occurrence of `word` from the trie.
+///
+/// Decrements `prefix_count` along the path and `count` at the terminal node.
+/// When `count` reaches zero, `is_end` is cleared so the word is no longer
+/// found by `search`. The path nodes themselves are not removed; the trie
+/// does not currently compact empty branches.
+///
+/// Returns `true` if `word` was present and one copy was removed, or `false`
+/// if the word was not found (including the case where all copies were
+/// previously deleted).
+///
+/// Time complexity: O(m) where m = `word.length()`.
 fn Trie::delete(self : Trie, word : String) -> Bool {
   if !self.search(word) {
     return false
@@ -225,7 +283,12 @@ fn Trie::delete(self : Trie, word : String) -> Bool {
 }
 
 ///|
-/// Get all words in trie (for testing/debugging)
+/// Return every word currently stored in the trie, in lexicographic order.
+///
+/// Duplicates appear multiple times according to their `count`. This is a
+/// full traversal and is primarily intended for testing and debugging; its
+/// time complexity is proportional to the total number of characters across
+/// all stored words.
 fn Trie::all_words(self : Trie) -> Array[String] {
   let result : Array[String] = []
   let current_word : Array[Char] = []
@@ -234,6 +297,13 @@ fn Trie::all_words(self : Trie) -> Array[String] {
 }
 
 ///|
+/// Recursively collect all words rooted at `node` into `result`.
+///
+/// `current` is a mutable character buffer representing the path from the
+/// trie root to `node`. On entry `current` contains the prefix for this
+/// subtree; characters are pushed before each recursive call and popped
+/// afterwards to restore the buffer. Words that appear multiple times
+/// (tracked by `count`) are pushed into `result` once per occurrence.
 fn collect_words(
   node : TrieNode,
   current : Array[Char],
@@ -299,7 +369,15 @@ fn collect_words(
 }
 
 ///|
-/// Autocomplete: find all words with given prefix
+/// Return all words stored in the trie that begin with `prefix`, in
+/// lexicographic order.
+///
+/// Walks to the node for `prefix`, then collects every word in that subtree
+/// via `collect_words`. If no word starts with `prefix` an empty array is
+/// returned. Duplicate insertions produce duplicate entries in the output.
+///
+/// Time complexity: O(p + k) where p = `prefix.length()` and k = total
+/// characters across all matching words.
 fn Trie::autocomplete(self : Trie, prefix : String) -> Array[String] {
   let result : Array[String] = []
   match self.find_node(prefix) {
@@ -332,7 +410,18 @@ fn Trie::autocomplete(self : Trie, prefix : String) -> Array[String] {
 }
 
 ///|
-/// Find longest prefix of word that exists in trie
+/// Return the longest prefix of `word` that is itself a complete word in the
+/// trie.
+///
+/// Walks the trie character by character along the path for `word`, updating
+/// a high-water mark each time a node with `is_end = true` is reached. If
+/// no prefix (including the empty string) is a word, the empty string is
+/// returned.
+///
+/// Example: if the trie contains `"a"`, `"app"`, and `"apple"`, then
+/// `longest_prefix("application")` returns `"app"`.
+///
+/// Time complexity: O(m) where m = `word.length()`.
 fn Trie::longest_prefix(self : Trie, word : String) -> String {
   let last_end = for i = 0, current = self.root, last_end = 0; i < word.length(); {
     let c = word[i].to_int() - 'a'.to_int()
@@ -368,29 +457,63 @@ fn Trie::longest_prefix(self : Trie, word : String) -> String {
 // ============================================================================
 
 ///|
-/// Compressed Trie node - stores edge labels as strings
+/// Internal node for the compressed trie (radix tree).
+///
+/// Instead of one node per character, edges carry a multi-character `String`
+/// label. Each child slot is indexed by the first character of its label so
+/// that lookup remains O(1) per level. `is_end` marks whether the path from
+/// the root to this node spells a complete word.
+///
+/// When a new word shares only part of an existing edge label, that edge is
+/// split at the common prefix: a new internal node is created for the shared
+/// portion, and two children are added for the diverging suffixes.
 priv struct CompressedTrieNode {
   children : Array[(String, CompressedTrieNode)?]
   mut is_end : Bool
 }
 
 ///|
+/// Create a new compressed trie node with no children and `is_end = false`.
 fn CompressedTrieNode::new() -> CompressedTrieNode {
   { children: Array::make(26, None), is_end: false }
 }
 
 ///|
+/// Compressed trie (radix tree) for lowercase ASCII strings.
+///
+/// Compared to the standard `Trie`, this structure collapses unbranched
+/// chains of nodes into single edges with multi-character labels. This
+/// reduces both node count and memory usage when many stored words share long
+/// common prefixes. The trade-off is slightly more complex insert and search
+/// logic (edge splitting and label comparison).
+///
+/// Like `Trie`, only lowercase letters `a..z` are supported.
 priv struct CompressedTrie {
   root : CompressedTrieNode
 }
 
 ///|
+/// Create a new, empty compressed trie.
 fn CompressedTrie::new() -> CompressedTrie {
   { root: CompressedTrieNode::new() }
 }
 
 ///|
-/// Insert word into compressed trie
+/// Insert `word` into the compressed trie.
+///
+/// Finds the edge whose label shares the longest common prefix with `word`.
+/// Three cases arise:
+/// - No matching edge: create a new edge with `word` as its label.
+/// - Edge label equals a prefix of `word`: recurse into the child node with
+///   the remaining suffix of `word`.
+/// - Edge label and `word` diverge mid-label: split the edge at the common
+///   prefix, creating an internal node with two children for the diverging
+///   suffixes.
+///
+/// Only the first character of each word or suffix is used to index the
+/// children array; the full label is compared character by character.
+///
+/// Time complexity: O(m) where m = `word.length()`.
 fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
   if word.length() == 0 {
     self.root.is_end = true
@@ -455,6 +578,12 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
 }
 
 ///|
+/// Recursively insert `word` into the subtree rooted at `node`.
+///
+/// This is the recursive helper used by `CompressedTrie::insert` after the
+/// first character dispatch. It applies the same three-case logic (no edge,
+/// edge is a prefix of the remaining word, split needed) at each level of
+/// the tree.
 fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
   if word.length() == 0 {
     node.is_end = true
@@ -509,6 +638,13 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
 }
 
 ///|
+/// Return the length of the longest common prefix of strings `a` and `b`.
+///
+/// Compares characters pairwise from index 0 until a mismatch or the end of
+/// the shorter string. Returns 0 if the strings share no common prefix, and
+/// `min(a.length(), b.length())` if one is a prefix of the other.
+///
+/// Time complexity: O(min(|a|, |b|)).
 fn common_prefix_len(a : String, b : String) -> Int {
   let min_len = if a.length() < b.length() { a.length() } else { b.length() }
   for i in 0..<min_len {
@@ -531,7 +667,12 @@ fn common_prefix_len(a : String, b : String) -> Int {
 }
 
 ///|
-/// Search in compressed trie
+/// Return `true` if `word` was inserted into the compressed trie.
+///
+/// Dispatches on the first character of `word` to find the matching root
+/// edge, then delegates to `search_in_node` for label-by-label traversal.
+///
+/// Time complexity: O(m) where m = `word.length()`.
 fn CompressedTrie::search(self : CompressedTrie, word : String) -> Bool {
   if word.length() == 0 {
     return self.root.is_end
@@ -547,6 +688,15 @@ fn CompressedTrie::search(self : CompressedTrie, word : String) -> Bool {
 }
 
 ///|
+/// Recursively search for `word` starting at an edge with the given `label`
+/// leading to `node`.
+///
+/// First verifies that `word` starts with `label`. If `word` equals `label`,
+/// checks `node.is_end`. If `word` extends beyond `label`, dispatches on the
+/// next character to find the appropriate child edge and recurses.
+///
+/// Returns `false` immediately if `word` is shorter than `label` or if any
+/// character comparison fails.
 fn search_in_node(
   label : String,
   node : CompressedTrieNode,

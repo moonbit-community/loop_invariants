@@ -23,13 +23,37 @@
 // SPACE COMPLEXITY: O(1)
 
 ///|
+/// The base used for polynomial rolling hash computation.
+///
+/// Characters are mapped to values 1..26 (where `'a'` maps to 1) before
+/// being multiplied by powers of this base, so the base must be at least 27
+/// to avoid confusing distinct characters.  31 is the conventional choice for
+/// lowercase ASCII alphabets.
 const RK_BASE : Int64 = 31L
 
 ///|
+/// The prime modulus used to keep intermediate hash values within Int64 range.
+///
+/// All hash arithmetic is performed modulo this value.  1_000_000_007 is a
+/// standard Mersenne-like prime that makes collisions unlikely while fitting
+/// comfortably in a 64-bit integer.
 const RK_MOD : Int64 = 1000000007L
 
 ///|
-/// Compute hash of string
+/// Compute the polynomial rolling hash of `s[start..<start+len]`.
+///
+/// Each character `c` is mapped to `c.to_int() - 96` (so `'a'` -> 1,
+/// `'b'` -> 2, ...) before being accumulated into the hash with base
+/// `RK_BASE` and modulus `RK_MOD`.
+///
+/// Parameters:
+/// - `s`     - the source string
+/// - `start` - the index of the first character to include
+/// - `len`   - the number of characters to hash
+///
+/// Returns the hash value in the range `[0, RK_MOD)`.
+///
+/// Time complexity: O(len)
 fn compute_hash(s : String, start : Int, len : Int) -> Int64 {
   for offset in 0..<len; h = 0L {
     let c = s[start + offset].to_int() - 96 // 'a' = 97, so 'a' -> 1
@@ -40,7 +64,20 @@ fn compute_hash(s : String, start : Int, len : Int) -> Int64 {
 }
 
 ///|
-/// Compute base^exp mod m
+/// Compute `base^exp mod m` using fast binary exponentiation (square-and-multiply).
+///
+/// Used internally to precompute the leading-digit weight `RK_BASE^(m-1)`,
+/// which is needed when removing the leftmost character during a rolling
+/// hash update.
+///
+/// Parameters:
+/// - `base` - the base value
+/// - `exp`  - the non-negative exponent
+/// - `m`    - the modulus (must be positive)
+///
+/// Returns `base^exp mod m`.
+///
+/// Time complexity: O(log exp)
 fn pow_mod(base : Int64, exp : Int, m : Int64) -> Int64 {
   for result = 1L, b = base % m, e = exp; e > 0; {
     let next_result = if e % 2 == 1 { result * b % m } else { result }
@@ -51,7 +88,37 @@ fn pow_mod(base : Int64, exp : Int, m : Int64) -> Int64 {
 }
 
 ///|
-/// Find all occurrences of pattern in text using Rabin-Karp
+/// Find all (possibly overlapping) starting positions of `pattern` in `text`
+/// using the Rabin-Karp rolling hash algorithm.
+///
+/// The algorithm maintains a hash of the current length-`m` window in the
+/// text.  After each comparison, the hash is updated in O(1) by removing the
+/// contribution of the leftmost character and adding the next character:
+///
+/// ```
+/// new_hash = (old_hash - text[i] * base^(m-1)) * base + text[i+m]
+/// ```
+///
+/// When the window hash equals the pattern hash, the actual characters are
+/// compared to rule out spurious hits caused by hash collisions.
+///
+/// Parameters:
+/// - `text`    - the string to search in (length n)
+/// - `pattern` - the string to search for (length m)
+///
+/// Returns an `Array[Int]` of 0-based starting indices at which `pattern`
+/// begins in `text`.  Returns an empty array when `pattern` is empty or
+/// longer than `text`.
+///
+/// Time complexity: O(n + m) expected, O(nm) worst case (all hashes collide)
+/// Space complexity: O(1) working space, O(k) for the result (k = match count)
+///
+/// Example:
+/// ```
+/// // Overlapping occurrences are all reported
+/// let positions = rabin_karp_search("abababab", "aba")
+/// // positions == [0, 2, 4]
+/// ```
 pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
   let result : Array[Int] = []
   let n = text.length()
@@ -103,7 +170,28 @@ pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
 }
 
 ///|
-/// Count pattern occurrences
+/// Count the number of (possibly overlapping) occurrences of `pattern` in
+/// `text`.
+///
+/// This is a convenience wrapper around `rabin_karp_search` that discards
+/// the position list and returns only the count.
+///
+/// Parameters:
+/// - `text`    - the string to search in
+/// - `pattern` - the string to search for
+///
+/// Returns the total number of occurrences, including overlapping ones.
+/// Returns 0 when the pattern is empty or longer than the text.
+///
+/// Time complexity: O(n + m) expected
+/// Space complexity: O(k) for the intermediate match list (k = match count)
+///
+/// Example:
+/// ```
+/// // Three overlapping "aa" windows in "aaaa"
+/// let count = rabin_karp_count("aaaa", "aa")
+/// // count == 3
+/// ```
 pub fn rabin_karp_count(text : String, pattern : String) -> Int {
   rabin_karp_search(text, pattern).length()
 }
@@ -113,7 +201,40 @@ pub fn rabin_karp_count(text : String, pattern : String) -> Int {
 // ============================================================================
 
 ///|
-/// Search for multiple patterns simultaneously
+/// Search for multiple patterns simultaneously in `text` using Rabin-Karp.
+///
+/// Patterns are grouped by length so that each distinct length requires only
+/// a single rolling hash pass over the text.  At each window position, the
+/// window hash is compared against the hashes of every pattern of that length;
+/// actual character comparison is performed only on hash matches to eliminate
+/// false positives.
+///
+/// This approach is more practical than KMP or Aho-Corasick when:
+/// - the set of patterns is not known in advance, or
+/// - the patterns have many distinct lengths.
+///
+/// Parameters:
+/// - `text`     - the string to search in (length n)
+/// - `patterns` - the array of patterns to search for
+///
+/// Returns an `Array[(Int, Int)]` of `(pattern_index, position)` pairs, where
+/// `pattern_index` is the 0-based index of the matched pattern in `patterns`
+/// and `position` is the 0-based starting index in `text`.  Pairs are
+/// reported in the order they are discovered (by length group, then by
+/// position within each group).
+///
+/// Patterns that are empty or longer than `text` are silently skipped.
+///
+/// Time complexity: O(n * L + sum_m) expected, where L is the number of
+/// distinct pattern lengths and sum_m is the total length of all patterns
+/// Space complexity: O(P) for the hash table (P = number of patterns)
+///
+/// Example:
+/// ```
+/// let patterns = ["aba", "bab", "ab"]
+/// let hits = rabin_karp_multi("ababab", patterns)
+/// // hits == [(0, 0), (1, 1), (0, 2), (1, 3), (2, 0), (2, 2), (2, 4)]
+/// ```
 pub fn rabin_karp_multi(
   text : String,
   patterns : Array[String],
@@ -206,7 +327,20 @@ pub fn rabin_karp_multi(
 // ============================================================================
 
 ///|
-/// Precompute prefix hashes for O(1) substring hash queries
+/// Prefix hash table for O(1) substring hash queries on a fixed string.
+///
+/// `prefix_hash[i]` stores the hash of `s[0..<i]`, and `powers[i]` stores
+/// `RK_BASE^i mod RK_MOD`.  Together they allow the hash of any substring
+/// `s[l..<r]` to be computed in O(1) using the formula:
+///
+/// ```
+/// hash(s[l..r)) = prefix_hash[r] - prefix_hash[l] * RK_BASE^(r-l)
+/// ```
+///
+/// (with appropriate modular arithmetic to keep the result non-negative).
+///
+/// This structure is private; create one with `HashArray::new` and query it
+/// with `get_hash` or `compare`.
 priv struct HashArray {
   prefix_hash : Array[Int64]
   powers : Array[Int64]
@@ -214,6 +348,18 @@ priv struct HashArray {
 }
 
 ///|
+/// Build a `HashArray` from the string `s`.
+///
+/// Precomputes `prefix_hash` and `powers` arrays of length `n + 1` in O(n)
+/// time, after which any substring hash can be retrieved in O(1).
+///
+/// Parameters:
+/// - `s` - the string to preprocess
+///
+/// Returns a `HashArray` ready for `get_hash` and `compare` queries.
+///
+/// Time complexity: O(n)
+/// Space complexity: O(n)
 fn HashArray::new(s : String) -> HashArray {
   let n = s.length()
   let prefix_hash = Array::make(n + 1, 0L)
@@ -227,7 +373,22 @@ fn HashArray::new(s : String) -> HashArray {
 }
 
 ///|
-/// Get hash of substring s[l..r) in O(1)
+/// Return the hash of the substring `s[l..<r]` in O(1).
+///
+/// Uses the prefix hash formula:
+///
+/// ```
+/// hash(s[l..r)) = (prefix_hash[r] - prefix_hash[l] * powers[r-l]) mod RK_MOD
+/// ```
+///
+/// Returns `0L` for degenerate ranges (`l >= r`, `l < 0`, or `r > n`).
+///
+/// Parameters:
+/// - `self` - the precomputed `HashArray`
+/// - `l`    - start index (inclusive)
+/// - `r`    - end index (exclusive)
+///
+/// Time complexity: O(1)
 fn HashArray::get_hash(self : HashArray, l : Int, r : Int) -> Int64 {
   if l >= r || l < 0 || r > self.n {
     return 0L
@@ -241,7 +402,21 @@ fn HashArray::get_hash(self : HashArray, l : Int, r : Int) -> Int64 {
 }
 
 ///|
-/// Compare two substrings using hashes
+/// Return `true` when `s[l1..<r1]` and `s[l2..<r2]` have the same hash.
+///
+/// Both substrings must have the same length for the comparison to be
+/// meaningful; the function returns `false` immediately when the lengths
+/// differ.
+///
+/// Note: equal hashes imply equal substrings with high probability, but a
+/// full character comparison is needed for a guaranteed-correct result.
+///
+/// Parameters:
+/// - `self`     - the precomputed `HashArray`
+/// - `l1`, `r1` - range of the first substring  `[l1, r1)`
+/// - `l2`, `r2` - range of the second substring `[l2, r2)`
+///
+/// Time complexity: O(1)
 fn HashArray::compare(
   self : HashArray,
   l1 : Int,

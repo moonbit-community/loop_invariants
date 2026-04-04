@@ -28,6 +28,10 @@
 // SPACE COMPLEXITY: O(V + E)
 
 ///|
+/// An undirected weighted edge between two vertices.
+///
+/// Both `u` and `v` are 0-based vertex indices. `weight` is the cost
+/// assigned to this edge and may be any `Int64` value, including zero.
 priv struct Edge {
   u : Int
   v : Int
@@ -35,29 +39,59 @@ priv struct Edge {
 }
 
 ///|
+/// A weighted undirected graph used by Kruskal's algorithm.
+///
+/// `n` is the number of vertices (indexed `0..n-1`). Edges are stored in
+/// an unsorted flat array and sorted lazily when `kruskal` is called.
 priv struct MST {
   n : Int
   edges : Array[Edge]
 }
 
 ///|
+/// Create a new empty graph with `n` vertices and no edges.
+///
+/// # Parameters
+/// - `n`: Number of vertices. Vertices are labelled `0` to `n-1`.
+///
+/// # Example
+/// ```moonbit
+/// let g = MST::new(5)
+/// ```
 fn MST::new(n : Int) -> MST {
   { n, edges: [] }
 }
 
 ///|
+/// Add an undirected edge between vertices `u` and `v` with the given `weight`.
+///
+/// The edge is stored once and is treated as bidirectional by Kruskal's
+/// algorithm: it can connect component `u` to component `v` or vice versa.
+///
+/// # Parameters
+/// - `u`, `v`: Endpoint vertex indices (0-based).
+/// - `weight`: Edge cost (`Int64`).
 fn MST::add_edge(self : MST, u : Int, v : Int, weight : Int64) -> Unit {
   self.edges.push({ u, v, weight })
 }
 
 ///|
-/// Union-Find for cycle detection
+/// Union-Find (Disjoint Set Union) data structure for cycle detection.
+///
+/// Uses path compression in `find` and union by rank in `union` so that
+/// both operations run in nearly O(1) amortised time.
 priv struct UF {
   parent : Array[Int]
   rank : Array[Int]
 }
 
 ///|
+/// Create a new Union-Find structure with `n` singleton sets.
+///
+/// After construction, `find(i) == i` for every vertex `i`.
+///
+/// # Parameters
+/// - `n`: Number of elements (vertices). Each starts in its own set.
 fn UF::new(n : Int) -> UF {
   let parent = Array::make(n, 0)
   let rank = Array::make(n, 0)
@@ -78,6 +112,13 @@ fn UF::new(n : Int) -> UF {
 }
 
 ///|
+/// Return the representative (root) of the set containing `x`.
+///
+/// Applies **path compression**: after the call, `parent[x]` points
+/// directly to the root, flattening the tree for future queries.
+///
+/// # Parameters
+/// - `x`: A vertex index in `[0, n)`.
 fn UF::find(self : UF, x : Int) -> Int {
   if self.parent[x] != x {
     self.parent[x] = self.find(self.parent[x])
@@ -86,6 +127,17 @@ fn UF::find(self : UF, x : Int) -> Int {
 }
 
 ///|
+/// Merge the sets containing `x` and `y`.
+///
+/// Returns `true` if `x` and `y` were in different sets (the edge is
+/// safe to add to the MST), or `false` if they were already connected
+/// (adding the edge would create a cycle).
+///
+/// Uses **union by rank**: the root of the smaller-rank tree is attached
+/// to the root of the larger-rank tree to keep trees shallow.
+///
+/// # Parameters
+/// - `x`, `y`: Vertex indices whose sets are to be merged.
 fn UF::union(self : UF, x : Int, y : Int) -> Bool {
   let rx = self.find(x)
   let ry = self.find(y)
@@ -104,7 +156,25 @@ fn UF::union(self : UF, x : Int, y : Int) -> Bool {
 }
 
 ///|
-/// Kruskal's algorithm
+/// Run Kruskal's algorithm and return the MST edges together with the
+/// total weight.
+///
+/// The algorithm sorts all edges by weight and greedily adds each edge
+/// that would not create a cycle (detected via Union-Find). By the
+/// **cut property**, every chosen edge is safe: at the moment it is
+/// considered it is the lightest edge crossing some cut of the graph,
+/// so it must belong to some MST.
+///
+/// # Returns
+/// A tuple `(mst_edges, total_weight)` where `mst_edges` contains at
+/// most `n - 1` edges. If the graph is connected, exactly `n - 1` edges
+/// are returned and `total_weight` is the MST cost. If the graph is
+/// disconnected, fewer than `n - 1` edges are returned (a minimum
+/// spanning *forest*).
+///
+/// # Complexity
+/// - Time: O(E log E) for sorting, plus near-linear Union-Find operations.
+/// - Space: O(E) for the sorted edge copy plus O(V) for Union-Find.
 fn MST::kruskal(self : MST) -> (Array[Edge], Int64) {
   if self.n <= 1 {
     return ([], 0L)
@@ -136,7 +206,11 @@ fn MST::kruskal(self : MST) -> (Array[Edge], Int64) {
 }
 
 ///|
-/// Check if graph is connected
+/// Return `true` when a spanning tree exists, i.e. the graph is connected.
+///
+/// A graph on `n` vertices is connected if and only if Kruskal's algorithm
+/// finds exactly `n - 1` MST edges. A graph with a single vertex is
+/// trivially connected.
 fn MST::is_connected(self : MST) -> Bool {
   if self.n <= 1 {
     return true
@@ -146,7 +220,12 @@ fn MST::is_connected(self : MST) -> Bool {
 }
 
 ///|
-/// Get MST weight
+/// Return the total weight of a minimum spanning tree, or `None` if the
+/// graph is disconnected.
+///
+/// - Returns `Some(0)` for a graph with a single vertex.
+/// - Returns `Some(weight)` when all vertices can be spanned.
+/// - Returns `None` when the graph has isolated components.
 fn MST::get_mst_weight(self : MST) -> Int64? {
   if self.n <= 1 {
     return Some(0L)
@@ -164,27 +243,66 @@ fn MST::get_mst_weight(self : MST) -> Int64? {
 // ============================================================================
 
 ///|
+/// A weighted undirected graph stored as an adjacency list, used by
+/// Prim's O(V^2) algorithm.
+///
+/// `n` is the number of vertices. `adj[u]` holds a list of
+/// `(neighbor, weight)` pairs for every edge incident to vertex `u`.
 priv struct PrimMST {
   n : Int
   adj : Array[Array[(Int, Int64)]] // (neighbor, weight)
 }
 
 ///|
+/// Create a new empty adjacency-list graph with `n` vertices.
+///
+/// # Parameters
+/// - `n`: Number of vertices. Vertices are labelled `0` to `n-1`.
 fn PrimMST::new(n : Int) -> PrimMST {
   let adj : Array[Array[(Int, Int64)]] = Array::makei(n, _ => [])
   { n, adj }
 }
 
 ///|
+/// Add an undirected edge between vertices `u` and `v` with the given
+/// `weight`. Both endpoints' adjacency lists are updated.
+///
+/// # Parameters
+/// - `u`, `v`: Endpoint vertex indices (0-based).
+/// - `weight`: Edge cost (`Int64`).
 fn PrimMST::add_edge(self : PrimMST, u : Int, v : Int, weight : Int64) -> Unit {
   self.adj[u].push((v, weight))
   self.adj[v].push((u, weight))
 }
 
 ///|
+/// Sentinel value representing "no edge known yet" in Prim's algorithm.
+///
+/// Set to `Int64::max_value` (9 223 372 036 854 775 807) so that any real
+/// edge weight will compare as smaller.
 const PRIM_INF : Int64 = 9223372036854775807L
 
 ///|
+/// Run Prim's O(V^2) algorithm and return the total MST weight.
+///
+/// Starting from vertex 0, the algorithm repeatedly selects the cheapest
+/// edge that crosses the frontier between the current tree and the
+/// remaining vertices. By the **cut property**, each chosen edge is safe.
+///
+/// The inner scan over all vertices to find the minimum is O(V), giving
+/// an overall O(V^2) runtime. This is competitive with the heap-based
+/// O((V+E) log V) variant on dense graphs where E is close to V^2.
+///
+/// # Returns
+/// - `Some(total_weight)` when the graph is connected and a spanning
+///   tree covering all `n` vertices is found.
+/// - `None` when the graph is disconnected (fewer than `n - 1` edges
+///   were added before no reachable vertex remained).
+/// - `Some(0)` for a single-vertex graph.
+///
+/// # Complexity
+/// - Time: O(V^2). Suitable for dense graphs or when V is small.
+/// - Space: O(V) for the `in_mst` and `min_edge` arrays.
 fn PrimMST::compute(self : PrimMST) -> Int64? {
   if self.n <= 1 {
     return Some(0L)

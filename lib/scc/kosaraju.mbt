@@ -21,12 +21,12 @@
 //   Claim: In reverse post-order, vertices from source SCCs come first.
 //
 //   Proof sketch:
-//     - If SCC A can reach SCC B (A→B), then in post-order traversal,
+//     - If SCC A can reach SCC B (A->B), then in post-order traversal,
 //       all vertices of A finish AFTER all vertices of B.
 //     - So in reverse post-order, A comes before B.
 //     - Processing in this order on the transpose:
 //       * When we start from a vertex in A, we can't reach B
-//         (because edge was A→B, now B→A, and B is already done)
+//         (because edge was A->B, now B->A, and B is already done)
 //       * We only reach vertices in the same SCC
 // ```
 //
@@ -42,27 +42,38 @@
 // SPACE: O(V + E) for transpose
 
 ///|
-/// Find SCCs using Kosaraju's algorithm.
+/// Find all strongly connected components using Kosaraju's algorithm.
 ///
-/// ALGORITHM:
-/// ```
-///   PASS 1: Compute finish order
-///     Run DFS, append vertices to 'order' in post-order
+/// This is an alternative to `find_sccs` (Tarjan). Both return an equivalent
+/// `SCCResult`; the SCC indices may differ between the two implementations
+/// but the partitioning of vertices is the same.
 ///
-///   TRANSPOSE:
-///     Build reverse graph (all edges flipped)
+/// The algorithm has three phases:
 ///
-///   PASS 2: Assign SCCs
-///     Process vertices in reverse finish order
-///     Each DFS on transpose finds exactly one SCC
-/// ```
+/// **Phase 1 — post-order traversal.**
+/// Run DFS on the original graph and append each vertex to `order` after
+/// all its descendants have been visited (post-order / finish order).
 ///
-/// PARAMETERS:
-///   - n: number of vertices
-///   - adj: adjacency list
+/// **Phase 2 — transpose.**
+/// Build the reverse graph (`radj`) by flipping every edge `u -> v` into
+/// `v -> u`.
 ///
-/// RETURNS:
-///   SCCResult with same structure as Tarjan's
+/// **Phase 3 — SCC assignment.**
+/// Process vertices in reverse finish order. For each unassigned vertex,
+/// run DFS on the transpose graph. Because of the post-order property,
+/// such a DFS can only reach vertices in the same SCC, so each DFS tree
+/// in this phase identifies exactly one SCC.
+///
+/// After all SCCs are found, the condensation DAG is built the same way as
+/// in Tarjan's implementation.
+///
+/// Parameters:
+/// - `n`   : number of vertices (labelled `0` to `n - 1`).
+/// - `adj` : adjacency list where `adj[v]` lists the out-neighbours of `v`.
+///
+/// Returns an `SCCResult` with the same structure as `find_sccs`.
+///
+/// Time: `O(V + E)`. Space: `O(V + E)` (transpose graph uses extra space).
 pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   if n == 0 {
     return { num_sccs: 0, component: [], scc_sizes: [], scc_adj: [] }
@@ -85,7 +96,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       #|  in 'order' exactly once, after all its descendants.
       #|
       #|POST-ORDER PROPERTY:
-      #|  If u→w is an edge and both are in the same DFS tree,
+      #|  If u->w is an edge and both are in the same DFS tree,
       #|  then w appears before u in 'order'.
       #|
       #|MAINTENANCE:
@@ -103,7 +114,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   for u in 0..<n {
     for j in 0..<adj[u].length() {
       let v = adj[u][j]
-      radj[v].push(u) // Reverse: u→v becomes v→u
+      radj[v].push(u) // Reverse: u->v becomes v->u
     } where {
       proof_invariant: j >= 0 && j <= adj[u].length(),
       proof_reasoning: (
@@ -194,7 +205,20 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
 }
 
 ///|
-/// First DFS: Record vertices in post-order.
+/// DFS pass 1: visit all vertices reachable from `v` and append each one to
+/// `order` in post-order (after all its descendants).
+///
+/// The resulting `order` array has the property that if there is an edge
+/// `u -> w` and both vertices are in the same DFS tree, then `w` appears
+/// before `u` in `order`.  Processing vertices in the reverse of this order
+/// during pass 2 guarantees we visit source SCCs before sink SCCs on the
+/// transpose graph.
+///
+/// Parameters:
+/// - `v`       : current vertex being visited.
+/// - `adj`     : original adjacency list.
+/// - `visited` : boolean flags to skip already-visited vertices.
+/// - `order`   : accumulates vertices in post-order.
 fn dfs_order(
   v : Int,
   adj : Array[Array[Int]],
@@ -227,7 +251,20 @@ fn dfs_order(
 }
 
 ///|
-/// Second DFS: Assign all reachable vertices to current SCC.
+/// DFS pass 2: assign vertex `v` and all vertices reachable from it in the
+/// **transpose** graph to SCC `scc_id`.
+///
+/// Because pass 2 processes vertices in reverse finish order, any neighbour
+/// reachable in the transpose that belongs to a different SCC will already
+/// have been assigned (`component[u] != -1`) and will be skipped.  This
+/// guarantees that each call to `dfs_assign` labels exactly one SCC.
+///
+/// Parameters:
+/// - `v`         : current vertex being assigned.
+/// - `radj`      : transpose adjacency list (edges reversed).
+/// - `component` : SCC assignment array; `-1` means unassigned.
+/// - `scc_id`    : the SCC index to assign to `v` and its reachable set.
+/// - `size`      : mutable counter incremented for each assigned vertex.
 fn dfs_assign(
   v : Int,
   radj : Array[Array[Int]],

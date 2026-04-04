@@ -45,14 +45,34 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-/// Constants for hashing
+/// The base used in the polynomial hash formula.
+///
+/// Character values are treated as coefficients of a polynomial evaluated
+/// at `HASH_BASE`.  A value of 31 works well for lowercase ASCII strings
+/// because it is larger than the 26-letter alphabet and is a small prime.
 const HASH_BASE : Int64 = 31L
 
 ///|
+/// The modulus used to keep hash values bounded.
+///
+/// 10^9 + 7 is a well-known large prime.  Using a prime modulus makes
+/// collisions unlikely for random strings (probability ~1/MOD per pair).
 const HASH_MOD : Int64 = 1000000007L
 
 ///|
-/// Rolling Hash structure for a string
+/// Precomputed polynomial hash table for a single string.
+///
+/// After construction, any substring hash can be retrieved in O(1) using
+/// the prefix-hash subtraction formula:
+///
+/// ```
+/// hash(s[l..r]) = (prefix_hash[r+1] - prefix_hash[l] * base^(r-l+1)) mod p
+/// ```
+///
+/// Fields:
+/// - `n`           : length of the original string
+/// - `prefix_hash` : `prefix_hash[i]` = hash of `s[0..i-1]` (1-indexed end)
+/// - `pow_base`    : `pow_base[i]` = `HASH_BASE^i mod HASH_MOD`
 priv struct RollingHash {
   n : Int
   prefix_hash : Array[Int64] // prefix_hash[i] = hash of s[0..i-1]
@@ -60,6 +80,10 @@ priv struct RollingHash {
 }
 
 ///|
+/// Build a `RollingHash` from string `s` in O(n) time.
+///
+/// After this call, `prefix_hash` and `pow_base` are fully populated so
+/// that `get_hash` and `substrings_equal` work in O(1).
 fn RollingHash::new(s : String) -> RollingHash {
   let n = s.length()
 
@@ -105,8 +129,15 @@ fn RollingHash::new(s : String) -> RollingHash {
 }
 
 ///|
-/// Get hash of substring s[l..r] (inclusive, 0-indexed)
-/// REASONING: hash(s[l..r]) = prefix_hash[r+1] - prefix_hash[l] * base^(r-l+1)
+/// Return the polynomial hash of the substring `s[l..r]` (inclusive,
+/// 0-indexed), or `None` if the range is invalid.
+///
+/// Formula:
+/// ```
+/// hash = (prefix_hash[r+1] - prefix_hash[l] * base^(r-l+1)) mod p
+/// ```
+/// Adding `HASH_MOD` before the final `mod` avoids negative results from
+/// the subtraction.
 fn RollingHash::get_hash(self : RollingHash, l : Int, r : Int) -> Int64? {
   if l < 0 || r >= self.n || l > r {
     return None
@@ -122,7 +153,12 @@ fn RollingHash::get_hash(self : RollingHash, l : Int, r : Int) -> Int64? {
 }
 
 ///|
-/// Check if two substrings are equal using hash
+/// Return `true` when substrings `s[l1..r1]` and `s[l2..r2]` (inclusive)
+/// have the same polynomial hash.
+///
+/// Lengths are compared first; different-length substrings always return
+/// `false`.  Equal hashes are a strong (but not guaranteed) indicator of
+/// equal strings under a single modulus.
 fn RollingHash::substrings_equal(
   self : RollingHash,
   l1 : Int,
@@ -140,6 +176,7 @@ fn RollingHash::substrings_equal(
 }
 
 ///|
+/// Return the length of the string this `RollingHash` was built from.
 fn RollingHash::length(self : RollingHash) -> Int {
   self.n
 }
@@ -149,13 +186,31 @@ fn RollingHash::length(self : RollingHash) -> Int {
 // ============================================================================
 
 ///|
+/// Secondary base for the double-hashing scheme.
+///
+/// Chosen to be different from `HASH_BASE` (31) so that the two hash
+/// functions are independent.
 const HASH_BASE2 : Int64 = 37L
 
 ///|
+/// Secondary modulus for the double-hashing scheme.
+///
+/// 10^9 + 9 is another large prime.  With two independent hashes the
+/// collision probability drops to approximately 1/(MOD1 * MOD2).
 const HASH_MOD2 : Int64 = 1000000009L
 
 ///|
-/// Double Rolling Hash for reduced collision probability
+/// Precomputed pair of independent polynomial hash tables for a string.
+///
+/// Using two separate (base, modulus) pairs makes accidental collisions
+/// astronomically unlikely.  The combined hash of a substring is the
+/// pair `(hash1, hash2)` — two substrings are equal when both components
+/// match.
+///
+/// Fields mirror those of `RollingHash` but are duplicated for each
+/// hashing scheme:
+/// - `prefix_hash1 / pow_base1` : scheme (HASH_BASE,  HASH_MOD)
+/// - `prefix_hash2 / pow_base2` : scheme (HASH_BASE2, HASH_MOD2)
 priv struct DoubleRollingHash {
   n : Int
   prefix_hash1 : Array[Int64]
@@ -165,6 +220,10 @@ priv struct DoubleRollingHash {
 }
 
 ///|
+/// Build a `DoubleRollingHash` from string `s` in O(n) time.
+///
+/// Both power tables and both prefix-hash arrays are populated in a single
+/// pass, giving O(1) `get_hash` queries thereafter.
 fn DoubleRollingHash::new(s : String) -> DoubleRollingHash {
   let n = s.length()
   let pow_base1 = Array::make(n + 1, 1L)
@@ -208,7 +267,11 @@ fn DoubleRollingHash::new(s : String) -> DoubleRollingHash {
 }
 
 ///|
-/// Get double hash as (hash1, hash2)
+/// Return the double hash `(hash1, hash2)` of substring `s[l..r]`
+/// (inclusive, 0-indexed), or `None` if the range is invalid.
+///
+/// Both components are computed independently using the same subtraction
+/// formula as `RollingHash::get_hash` but with their own base and modulus.
 fn DoubleRollingHash::get_hash(
   self : DoubleRollingHash,
   l : Int,
@@ -234,6 +297,11 @@ fn DoubleRollingHash::get_hash(
 }
 
 ///|
+/// Return `true` when substrings `s[l1..r1]` and `s[l2..r2]` (inclusive)
+/// have equal double hashes.
+///
+/// Both hash components must agree for the function to return `true`,
+/// making false positives extremely rare in practice.
 fn DoubleRollingHash::substrings_equal(
   self : DoubleRollingHash,
   l1 : Int,
@@ -251,6 +319,7 @@ fn DoubleRollingHash::substrings_equal(
 }
 
 ///|
+/// Return the length of the string this `DoubleRollingHash` was built from.
 fn DoubleRollingHash::length(self : DoubleRollingHash) -> Int {
   self.n
 }
@@ -260,7 +329,21 @@ fn DoubleRollingHash::length(self : DoubleRollingHash) -> Int {
 // ============================================================================
 
 ///|
-/// Find all occurrences of pattern in text using rolling hash
+/// Find all start positions where `pattern` appears in `text`, using the
+/// Rabin-Karp rolling-hash algorithm.
+///
+/// Returns a sorted array of 0-based indices.  Overlapping occurrences are
+/// included.  Matches are confirmed by a character-by-character scan to
+/// eliminate false positives caused by hash collisions.
+///
+/// Time complexity: O(n + m) expected, O(n * m) worst case (collision storm).
+/// Space complexity: O(n) for the prefix-hash table.
+///
+/// Example:
+/// ```
+/// find_pattern_rabin_karp("aabcaabxaab", "aab")
+/// // => [0, 4, 8]
+/// ```
 pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int] {
   let result : Array[Int] = []
   let n = text.length()
@@ -325,7 +408,17 @@ pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int] {
 }
 
 ///|
-/// Count occurrences of pattern in text
+/// Count the number of (possibly overlapping) occurrences of `pattern` in
+/// `text`.
+///
+/// Delegates to `find_pattern_rabin_karp` and returns the length of the
+/// result array.
+///
+/// Example:
+/// ```
+/// count_pattern_rabin_karp("mississippi", "issi")
+/// // => 2
+/// ```
 pub fn count_pattern_rabin_karp(text : String, pattern : String) -> Int {
   find_pattern_rabin_karp(text, pattern).length()
 }
@@ -335,7 +428,16 @@ pub fn count_pattern_rabin_karp(text : String, pattern : String) -> Int {
 // ============================================================================
 
 ///|
-/// Find length of longest common substring using binary search + hashing
+/// Return the length of the longest substring shared by `s1` and `s2`.
+///
+/// Uses binary search on the candidate length combined with double-hashing
+/// to check feasibility in O((n + m) log(min(n, m))) time.
+///
+/// Example:
+/// ```
+/// longest_common_substring("abcdef", "bcfghi")
+/// // => 2  ("bc")
+/// ```
 fn longest_common_substring(s1 : String, s2 : String) -> Int {
   let n1 = s1.length()
   let n2 = s2.length()
@@ -468,7 +570,17 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
 // ============================================================================
 
 ///|
-/// Count distinct substrings of a string
+/// Return the number of distinct substrings of `s`.
+///
+/// Collects double hashes for every substring, sorts them, then counts
+/// unique pairs.  Time complexity is O(n^2 log n); suitable for moderate
+/// string lengths.
+///
+/// Example:
+/// ```
+/// count_distinct_substrings("abc")
+/// // => 6  ("a", "b", "c", "ab", "bc", "abc")
+/// ```
 fn count_distinct_substrings(s : String) -> Int {
   let n = s.length()
   if n == 0 {

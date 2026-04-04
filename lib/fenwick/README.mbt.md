@@ -3,158 +3,208 @@
 ## Overview
 
 A Fenwick Tree (also called Binary Indexed Tree or BIT) supports:
-- **Point updates**: Add a value to index i in **O(log n)**
-- **Prefix queries**: Sum of elements [0, i] in **O(log n)**
+- **Point updates**: add a value to index `i` in **O(log n)**
+- **Prefix queries**: sum of elements `[0, i]` in **O(log n)**
+- **Range queries**: sum of elements `[l, r]` in **O(log n)**
 
-It's simpler and more cache-friendly than segment trees for sum queries.
+It is simpler and more cache-friendly than a segment tree for sum queries.
 
-## Core Idea
+## Indexing Convention
 
-- Store partial sums for ranges whose size is **lowbit(i)**.
-- Prefix sum walks **down** by subtracting lowbit; updates walk **up** by adding it.
-- Each value participates in O(log n) nodes, giving O(log n) updates/queries.
-
-## Indexing Note (0-indexed API, 1-indexed Internals)
-
-```
-Externally:
-  - You call add(i, delta) with i in [0, n-1]
-  - prefix_sum(i) returns sum of [0..i]
-
-Internally:
-  - The tree uses indices 1..n
-  - We map i -> i+1 for all operations
-```
-
-## The Key Insight: Lowbit
-
-The magic of Fenwick Trees lies in the **lowbit** function:
+The public API is **0-indexed** (`0..n-1`), but the internal storage is
+**1-indexed** (`1..n`). Every public method adds 1 when entering and subtracts
+1 when leaving.
 
 ```
-lowbit(x) = x & (-x) = rightmost set bit
-
-Examples:
-  lowbit(6)  = lowbit(110₂)  = 2  = 10₂
-  lowbit(12) = lowbit(1100₂) = 4  = 100₂
-  lowbit(8)  = lowbit(1000₂) = 8  = 1000₂
+External (you use):   0  1  2  3  4  5  6  7
+Internal (tree uses): 1  2  3  4  5  6  7  8
 ```
 
-## Tree Structure Visualization
+## The Lowbit Primitive
 
-Each index i is responsible for a range of `lowbit(i)` elements:
+The single operation that makes Fenwick Trees work is **lowbit**:
 
 ```
-Index (1-indexed):  1    2    3    4    5    6    7    8
-Lowbit:             1    2    1    4    1    2    1    8
-Range covered:     [1]  [1,2] [3] [1,4] [5] [5,6] [7] [1,8]
+lowbit(x) = x & (-x)   // isolate the rightmost set bit
 
-Tree structure (arrows show parent-child relationships):
+Binary walkthrough:
+  x     =  0 1 1 0  (6 in decimal)
+ -x     =  1 0 1 0  (two's complement of 6)
+  x & -x = 0 0 1 0  (result = 2)
 
-Level 3:                              [8]
-                                    /
-Level 2:           [4]-------------+      (covers 1-8)
-                  /                       (covers 1-4)
-Level 1:    [2]--+        [6]---+
-           /             /       \
-Level 0: [1]   [3]     [5]       [7]
+More examples:
+  x    binary    lowbit
+  1    0001      1      (0001)
+  2    0010      2      (0010)
+  3    0011      1      (0001)
+  4    0100      4      (0100)
+  5    0101      1      (0001)
+  6    0110      2      (0010)
+  7    0111      1      (0001)
+  8    1000      8      (1000)
+```
+
+Each tree node at 1-indexed position `i` is responsible for exactly
+`lowbit(i)` consecutive elements ending at `i`.
+
+## Tree Structure
+
+For an 8-element array (1-indexed), the coverage of each tree node is:
+
+```
+Index:     1    2    3    4    5    6    7    8
+Lowbit:    1    2    1    4    1    2    1    8
+Covers:   [1]  [1,2] [3] [1,4] [5] [5,6] [7] [1,8]
+
+Parent-child relationships (child -> parent via i + lowbit(i)):
+
+         8 [1..8]
+         |
+         4 [1..4] --------- 6 [5..6]
+         |                  |
+    2 [1..2]   3 [3]   5 [5]   7 [7]
+    |
+1 [1]
+
+Reading bottom-up: leaf nodes cover single elements; each parent covers
+the union of its children's ranges plus its own element.
+```
+
+Another way to see the structure - annotated with range widths:
+
+```
+Level 0 (width 1):  [1]       [3]       [5]       [7]
+Level 1 (width 2):       [2]                 [6]
+Level 2 (width 4):             [4]
+Level 3 (width 8):                   [8]
 ```
 
 ## How Prefix Sum Works
 
-To compute sum[1..7], we follow the lowbit chain:
+To compute `prefix_sum(7)` (sum of elements 1 through 7 in 1-indexed terms),
+repeatedly subtract `lowbit` until reaching 0:
 
 ```
-Query: prefix_sum(7)
+Start at index 7.
 
-Step 1: Add tree[7], then 7 - lowbit(7) = 7 - 1 = 6
-Step 2: Add tree[6], then 6 - lowbit(6) = 6 - 2 = 4
-Step 3: Add tree[4], then 4 - lowbit(4) = 4 - 4 = 0
-Step 4: Done!
+Step 1:  idx = 7 (binary 0111)
+         add tree[7]  (covers element 7)
+         7 - lowbit(7) = 7 - 1 = 6
 
-       7 -----> 6 -----> 4 -----> 0
-      [7]      [6]      [4]     done
-    covers   covers   covers
-     [7]     [5,6]    [1,4]
+Step 2:  idx = 6 (binary 0110)
+         add tree[6]  (covers elements 5-6)
+         6 - lowbit(6) = 6 - 2 = 4
 
-Total = tree[7] + tree[6] + tree[4] = sum of [1..7]
+Step 3:  idx = 4 (binary 0100)
+         add tree[4]  (covers elements 1-4)
+         4 - lowbit(4) = 4 - 4 = 0
+
+Step 4:  idx = 0  -> stop
+
+Path:  7 -> 6 -> 4 -> 0
+       |    |    |
+      [7] [5,6] [1,4]   <- disjoint ranges that partition [1,7]
+
+Result = tree[7] + tree[6] + tree[4]
 ```
+
+The key property: the ranges are always **disjoint** and together cover
+exactly `[1, i]`.  The number of steps is at most the number of set bits
+in `i`, which is at most `log2(n)`.
 
 ## How Point Update Works
 
-To update index 3, we follow the lowbit chain upward:
+To update index 3 (1-indexed), repeatedly add `lowbit` to climb to every
+ancestor node whose range contains index 3:
 
 ```
-Update: add(3, delta)
+Start at index 3.
 
-Step 1: Update tree[3], then 3 + lowbit(3) = 3 + 1 = 4
-Step 2: Update tree[4], then 4 + lowbit(4) = 4 + 4 = 8
-Step 3: Update tree[8], then 8 + lowbit(8) = 8 + 8 = 16 (out of range)
-Step 4: Done!
+Step 1:  idx = 3 (binary 011)
+         update tree[3]  (covers element 3)
+         3 + lowbit(3) = 3 + 1 = 4
 
-       3 -----> 4 -----> 8 -----> 16
-      [3]      [4]      [8]     done
-    covers   covers   covers
-     [3]     [1,4]    [1,8]
+Step 2:  idx = 4 (binary 100)
+         update tree[4]  (covers elements 1-4, includes 3)
+         4 + lowbit(4) = 4 + 4 = 8
 
-All ranges containing index 3 are updated!
+Step 3:  idx = 8 (binary 1000)
+         update tree[8]  (covers elements 1-8, includes 3)
+         8 + lowbit(8) = 8 + 8 = 16  > n=8  -> stop
+
+Path:  3 -> 4 -> 8 -> (16, stop)
+       |    |    |
+      [3] [1,4] [1,8]   <- all ranges that contain index 3
+
+Every ancestor that "covers" position 3 is updated, nothing else.
 ```
 
-## Range Sum = Two Prefix Sums
+## Bit-Level Walkthrough: How the Paths Work
+
+Query path from `i` (subtract lowbit, clears the rightmost 1 bit each time):
+```
+7 = 0111  ->  clear bit 0  ->  6 = 0110
+6 = 0110  ->  clear bit 1  ->  4 = 0100
+4 = 0100  ->  clear bit 2  ->  0 = 0000  (stop)
+```
+
+Update path from `i` (add lowbit, increments the position of the rightmost 1):
+```
+3 = 011  ->  set next bit  ->  4 = 100
+4 = 100  ->  set next bit  ->  8 = 1000
+8 = 1000 ->  set next bit  -> 16       (out of range, stop)
+```
+
+## Range Sum via Two Prefix Sums
 
 ```
 range_sum(l, r) = prefix_sum(r) - prefix_sum(l - 1)
 
-Example:
-  arr = [3, 1, 4, 1, 5, 9]
-  prefix_sum(5) = 23
-  prefix_sum(1) = 4
-
-  range_sum(2, 5) = 23 - 4 = 19
-  (4 + 1 + 5 + 9 = 19)
+Example with arr = [3, 1, 4, 1, 5, 9] (0-indexed):
+  prefix_sum(5) = 3+1+4+1+5+9 = 23
+  prefix_sum(1) = 3+1         = 4
+  range_sum(2, 5) = 23 - 4 = 19   (4+1+5+9 = 19, correct)
 ```
 
-## Worked Example
+## Worked Example: Build and Query
 
-Array: `[3, 1, 4, 1, 5, 9, 2, 6]` (0-indexed input)
+Array (0-indexed input): `[3, 1, 4, 1, 5, 9, 2, 6]`
 
-After building (1-indexed internal):
+Internal tree (1-indexed) after `from_array`:
 ```
-Index:     1    2    3    4    5    6    7    8
-Value:     3    1    4    1    5    9    2    6
-Tree:      3    4    4   9     5   14    2   31
-          [1] [1,2] [3] [1-4] [5] [5,6] [7] [1-8]
-```
+Index:    1    2    3    4    5    6    7    8
+Value:    3    1    4    1    5    9    2    6
+                 (raw array values copied in)
 
-Query `prefix_sum(5)` (sum of indices 0-5 = 3+1+4+1+5+9 = 23):
-```
-Internal: sum[1..6]
-  tree[6] = 14 (covers [5,6])
-  6 - 2 = 4
-  tree[4] = 9  (covers [1,4])
-  4 - 4 = 0, done
-Total = 14 + 9 = 23
+After O(n) build propagation:
+Index:    1    2    3    4    5    6    7    8
+Tree:     3    4    4    9    5   14    2   31
+Covers:  [1]  [1,2] [3] [1,4] [5] [5,6] [7] [1,8]
 ```
 
-## Building in O(n)
-
+Verify `prefix_sum(5)` (0-indexed 5 = 1-indexed 6, sum = 3+1+4+1+5+9 = 23):
 ```
-Instead of doing n point updates (O(n log n)),
-we can build in O(n) by propagating each index once.
-
-For each i:
-  parent = i + lowbit(i)
-  tree[parent] += tree[i]
-
-Because parent > i, each value is pushed upward only once.
+idx=6: add tree[6]=14  (covers [5,6] = values 5 and 9)
+       6 - lowbit(6) = 4
+idx=4: add tree[4]=9   (covers [1,4] = values 3,1,4,1)
+       4 - lowbit(4) = 0  -> stop
+Total = 14 + 9 = 23  (correct)
 ```
 
-## Use Cases
+## Building in O(n) vs O(n log n)
 
-1. **Cumulative Frequency Tables**: Count elements in ranges
-2. **Inversion Count**: Count pairs (i,j) where i < j but a[i] > a[j]
-3. **Range Sum Queries**: Answer many sum queries after preprocessing
-4. **2D Range Queries**: Extend to 2D for rectangle sums
-5. **Order Statistics**: Find k-th smallest with binary search on BIT
+```
+Naive build: call add(i, arr[i]) for each i  ->  O(n log n)
+
+O(n) build using propagation:
+  1. Copy arr into tree (1-indexed).
+  2. For each i from 1 to n:
+       parent = i + lowbit(i)
+       if parent <= n: tree[parent] += tree[i]
+
+Why O(n): parent > i always, so each node is visited exactly once.
+Each element's value bubbles up the tree in a single pass.
+```
 
 ## API Reference
 
@@ -184,86 +234,122 @@ test "fenwick tree complete example" {
 }
 ```
 
-## Variants Included
+## Variants
 
-### 1. Range Update + Point Query
+### Variant 1: Range Update + Point Query
 
-Update a range [l, r] with +delta, query single points:
-
-```
-Example (n = 5):
-  add 10 to [1, 3]
-  query(0) = 0
-  query(1) = 10
-  query(2) = 10
-  query(3) = 10
-  query(4) = 0
-
-Idea:
-  Keep a BIT over a difference array.
-  Range add becomes two point adds:
-    diff[l] += delta
-    diff[r+1] -= delta
-```
-
-### 2. Range Update + Range Query
-
-Both range updates and range sum queries:
+Uses a **difference array** stored in a Fenwick Tree.  Adding `delta` to
+`[l, r]` becomes two point adds; reading a single element becomes a prefix sum.
 
 ```
+Encoding: diff[l] += delta,  diff[r+1] -= delta
+
+Before any updates, all elements are 0.
+
+After range_add(1, 3, 10):
+  Difference array: [0, +10, 0, 0, -10, 0] (conceptually)
+
+  query(0) = prefix_sum(diff, 0) = 0
+  query(1) = prefix_sum(diff, 1) = 10
+  query(2) = prefix_sum(diff, 2) = 10
+  query(3) = prefix_sum(diff, 3) = 10
+  query(4) = prefix_sum(diff, 4) = 10 + (-10) = 0
+```
+
+| Operation      | Time     |
+|----------------|----------|
+| range_add(l,r) | O(log n) |
+| query(i)       | O(log n) |
+
+### Variant 2: Range Update + Range Query
+
+Uses **two Fenwick Trees** (`bit1` and `bit2`) to convert range updates into
+prefix sum queries.
+
+The math: let `b(k)` be a difference array.  Then:
+```
+prefix_sum(i) = (i+1) * BIT1.query(i) - BIT2.query(i)
+
+where BIT1 stores b(k) and BIT2 stores b(k)*(k-1).
+
 Example:
-  add 5 to [1, 3]
-  add 2 to [0, 2]
-  range_sum(0, 3) = (2+7+7+5) = 21
+  range_add(0, 4, 1)  ->  all elements become 1
+  range_sum(0, 4) = 5
 
-Idea:
-  Use two BITs (bit1, bit2) to convert
-  range updates into prefix sums:
-    prefix(i) = bit1.sum(i) * i - bit2.sum(i)
+  range_add(1, 3, 2)  ->  array is now [1, 3, 3, 3, 1]
+  range_sum(0, 4) = 11
+  range_sum(1, 3) = 9
 ```
 
-### 3. 2D Fenwick Tree
+| Operation        | Time     |
+|------------------|----------|
+| range_add(l,r)   | O(log n) |
+| range_sum(l,r)   | O(log n) |
 
-Rectangle sum queries and point updates:
+### Variant 3: 2D Fenwick Tree
+
+Extends the 1D idea to a grid: node `(i, j)` covers a sub-rectangle of size
+`lowbit(i) x lowbit(j)`.  Updates and queries walk both the row and column
+lowbit chains.
 
 ```
-Grid:    1 2 3
-         4 5 6
-         7 8 9
+Grid values (0-indexed):
+  col:  0  1  2
+row 0:  1  2  3
+row 1:  4  5  6
+row 2:  7  8  9
 
-Query rectangle (1,1) to (2,2):
-  = 5 + 6 + 8 + 9 = 28
+prefix_sum(1, 1) covers rows 0..1, cols 0..1:
+  1 + 2 + 4 + 5 = 12
 
-Point update:
-  add 10 at (0,0)
-  rectangle (0,0) to (1,1) increases by 10
+range_sum(1, 1, 2, 2) covers rows 1..2, cols 1..2:
+  5 + 6 + 8 + 9 = 28
+
+Inclusion-exclusion formula:
+  range_sum(r1,c1,r2,c2)
+    = prefix(r2,c2) - prefix(r1-1,c2)
+                    - prefix(r2,c1-1)
+                    + prefix(r1-1,c1-1)
 ```
 
-## Complexity Analysis
+| Operation           | Time                    |
+|---------------------|-------------------------|
+| add(r,c,delta)      | O(log rows * log cols)  |
+| prefix_sum(r,c)     | O(log rows * log cols)  |
+| range_sum(r1,c1,..) | O(log rows * log cols)  |
 
-| Operation     | Time     | Space |
-|---------------|----------|-------|
-| Build         | O(n)     | O(n)  |
-| Point Update  | O(log n) | -     |
-| Prefix Sum    | O(log n) | -     |
-| Range Sum     | O(log n) | -     |
+## Complexity Summary
+
+| Operation         | 1D Time  | 2D Time                | Space |
+|-------------------|----------|------------------------|-------|
+| Build             | O(n)     | O(rows*cols)           | O(n)  |
+| Point update      | O(log n) | O(log r * log c)       | -     |
+| Prefix sum        | O(log n) | O(log r * log c)       | -     |
+| Range sum         | O(log n) | O(log r * log c)       | -     |
+| Range add         | O(log n) | -                      | -     |
 
 ## Common Pitfalls
 
-- **Off-by-one**: internal indices are 1-based; external are 0-based.
-- **Negative indices**: prefix_sum(-1) should return 0.
-- **Overflow**: use `Int64` if sums can exceed `Int`.
-- **Wrong range formula**: remember `range_sum(l, r) = pref(r) - pref(l - 1)`.
+- **Off-by-one**: internal indices are 1-based; the public API is 0-based.
+  Always add 1 entering and subtract 1 leaving.
+- **Negative indices**: `prefix_sum(-1)` returns 0 by convention.
+- **Overflow**: use `Int64` when sums can exceed the `Int` range.
+- **Range formula**: `range_sum(l, r) = prefix_sum(r) - prefix_sum(l-1)`,
+  not `prefix_sum(r) - prefix_sum(l)`.
+- **2D inclusion-exclusion sign**: add the corner term `prefix(r1-1, c1-1)`
+  back (it is subtracted twice).
 
-## Fenwick vs Segment Tree
+## Fenwick Tree vs Segment Tree
 
-| Feature              | Fenwick Tree | Segment Tree |
-|----------------------|--------------|--------------|
-| Space                | n            | 2n-4n        |
-| Implementation       | Simple       | Complex      |
-| Cache efficiency     | Better       | Worse        |
-| Operations supported | Sum/XOR/...  | Any monoid   |
-| Range updates        | With tricks  | Native       |
+| Feature               | Fenwick Tree  | Segment Tree  |
+|-----------------------|---------------|---------------|
+| Space                 | O(n)          | O(2n) - O(4n) |
+| Implementation        | ~20 lines     | ~60 lines     |
+| Cache efficiency      | Better        | Worse         |
+| Supported operations  | Sum, XOR, ... | Any monoid    |
+| Native range updates  | No (tricks)   | Yes           |
+| Min / Max queries     | No            | Yes           |
 
-**Choose Fenwick when**: You need sum/XOR queries and prefer simplicity.
-**Choose Segment Tree when**: You need min/max or complex operations.
+**Choose Fenwick** when you need sum or XOR queries and prefer simplicity.  
+**Choose Segment Tree** when you need min/max, lazy propagation, or complex
+interval operations.

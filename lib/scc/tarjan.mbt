@@ -29,7 +29,7 @@
 // ```
 //   Push vertices when first visited.
 //   When SCC root found (disc[v] == low[v]):
-//     Pop all vertices above v (inclusive) → they form the SCC
+//     Pop all vertices above v (inclusive) -> they form the SCC
 //
 //   The stack contains exactly the vertices in the current DFS path
 //   and their descendants that haven't been assigned to an SCC yet.
@@ -37,19 +37,19 @@
 //
 // EXAMPLE:
 // ```
-//   Graph: 0 → 1 → 2 → 0, 2 → 3
+//   Graph: 0 -> 1 -> 2 -> 0, 2 -> 3
 //
 //   DFS from 0:
 //     Visit 0: disc[0]=0, low[0]=0, push 0
 //     Visit 1: disc[1]=1, low[1]=1, push 1
 //     Visit 2: disc[2]=2, low[2]=2, push 2
-//       Edge 2→0: 0 on stack, low[2] = min(2,0) = 0
-//       Edge 2→3: visit 3
+//       Edge 2->0: 0 on stack, low[2] = min(2,0) = 0
+//       Edge 2->3: visit 3
 //     Visit 3: disc[3]=3, low[3]=3, push 3
-//       No edges, disc[3]==low[3] → pop {3} as SCC
+//       No edges, disc[3]==low[3] -> pop {3} as SCC
 //     Back to 2: low[2]=0
 //     Back to 1: low[1] = min(1, low[2]) = 0
-//     Back to 0: low[0]=0, disc[0]==low[0] → pop {2,1,0} as SCC
+//     Back to 0: low[0]=0, disc[0]==low[0] -> pop {2,1,0} as SCC
 //
 //   Result: SCCs = {{3}, {0,1,2}}
 // ```
@@ -58,28 +58,40 @@
 // SPACE: O(V)
 
 ///|
-/// Find all SCCs using Tarjan's algorithm.
+/// Find all strongly connected components using Tarjan's algorithm.
 ///
-/// ALGORITHM:
+/// This is the primary SCC entry point. It performs a single DFS over the
+/// entire graph, using discovery times and low-link values to detect SCC
+/// roots, then pops each completed SCC off the stack.
+///
+/// After all SCCs are identified, it constructs the condensation DAG by
+/// scanning every edge and recording which SCC pairs are connected.
+///
+/// Parameters:
+/// - `n`   : number of vertices (vertices are labelled `0` to `n - 1`).
+/// - `adj` : adjacency list where `adj[v]` is the list of vertices that `v`
+///           has a directed edge to.
+///
+/// Returns an `SCCResult` containing:
+/// - the number of SCCs,
+/// - the SCC index of every vertex,
+/// - the size of every SCC,
+/// - the condensation DAG adjacency list.
+///
+/// SCCs are numbered in the order they are completed (reverse topological
+/// order on the condensation): sink SCCs receive index 0, source SCCs
+/// receive the highest index.
+///
+/// Time: `O(V + E)`. Space: `O(V)` extra (plus the adjacency list).
+///
+/// Example:
 /// ```
-///   1. Initialize disc[], low[], stack
-///   2. For each unvisited vertex, run tarjan_dfs
-///   3. In DFS:
-///      - Assign disc[v] and low[v]
-///      - Push v to stack
-///      - For each neighbor u:
-///        * If unvisited: recurse, then low[v] = min(low[v], low[u])
-///        * If on stack: low[v] = min(low[v], disc[u])
-///      - If disc[v] == low[v]: pop SCC from stack
-///   4. Build condensation graph from component assignments
+/// let adj : Array[Array[Int]] = [[1], [2], [0, 3], []]
+/// let r = find_sccs(4, adj)
+/// // r.num_sccs == 2
+/// // r.component[0] == r.component[1] == r.component[2]  (the cycle)
+/// // r.component[3] != r.component[0]                    (the tail)
 /// ```
-///
-/// PARAMETERS:
-///   - n: number of vertices
-///   - adj: adjacency list (adj[v] = list of neighbors of v)
-///
-/// RETURNS:
-///   SCCResult with component assignments and condensation graph
 pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   if n == 0 {
     return { num_sccs: 0, component: [], scc_sizes: [], scc_adj: [] }
@@ -170,18 +182,24 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
 }
 
 ///|
-/// Tarjan's DFS: discover SCCs rooted in current DFS subtree.
+/// Core DFS subroutine for Tarjan's algorithm.
 ///
-/// ALGORITHM:
-/// ```
-///   1. Assign disc[v] = low[v] = timer++
-///   2. Push v to stack, mark on_stack[v]
-///   3. For each neighbor u:
-///      - Unvisited: recurse, then low[v] = min(low[v], low[u])
-///      - On stack: low[v] = min(low[v], disc[u])  (back edge)
-///      - Finished: ignore (cross edge to other SCC)
-///   4. If disc[v] == low[v]: pop all vertices until v → one SCC
-/// ```
+/// Visits vertex `v`, assigns its discovery time and initial low-link value,
+/// pushes it onto the stack, then recurses into each unvisited neighbour.
+///
+/// After exploring all neighbours:
+/// - For tree edges, propagates the child's `low` value back to `v`.
+/// - For back edges (neighbour is on the stack), updates `low[v]` using the
+///   neighbour's discovery time.
+/// - For cross edges (neighbour already in a finished SCC), does nothing.
+///
+/// If `disc[v] == low[v]` after processing all neighbours, `v` is the root
+/// of its SCC. All vertices from the top of the stack down to (and including)
+/// `v` are popped and assigned to a new SCC.
+///
+/// Parameters mirror the working state threaded through the entire DFS:
+/// `adj`, `disc`, `low`, `on_stack`, `stack`, `component`, `timer`,
+/// `scc_count`, `scc_sizes`.
 fn tarjan_dfs(
   v : Int,
   adj : Array[Array[Int]],
@@ -221,7 +239,7 @@ fn tarjan_dfs(
         low[v] = disc[u]
       }
     }
-    // Cross edge to finished vertex → ignore (leads to other SCC)
+    // Cross edge to finished vertex -> ignore (leads to other SCC)
   } where {
     proof_invariant: i >= 0 && i <= adj[v].length(),
     proof_reasoning: (
@@ -256,7 +274,7 @@ fn tarjan_dfs(
     scc_count.val = scc_count.val + 1
     let size = for size = 0 {
 
-      // Pop all vertices until v (inclusive) → they form the SCC
+      // Pop all vertices until v (inclusive) -> they form the SCC
       let u = stack[stack.length() - 1]
       let _ = stack.pop()
       on_stack[u] = false

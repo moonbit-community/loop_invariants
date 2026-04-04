@@ -39,26 +39,66 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-/// Fenwick Tree for sum queries
+/// A Fenwick Tree (Binary Indexed Tree) for efficient prefix sum queries and
+/// point updates over a sequence of `Int64` values.
+///
+/// Each internal node `tree[i]` stores the sum of a range of elements whose
+/// length equals `lowbit(i) = i & (-i)`. This structure allows both point
+/// updates and prefix sum queries to run in O(log n) time.
+///
+/// The public API is 0-indexed (elements at positions 0..n-1), while the
+/// internal storage is 1-indexed (indices 1..n) for easier bit manipulation.
 pub struct FenwickTree {
   n : Int
   tree : Array[Int64]
 }
 
 ///|
-/// Create a new Fenwick Tree with n elements (all initialized to 0)
+/// Creates a new Fenwick Tree of size `n` with all elements initialized to 0.
+///
+/// Parameters:
+/// - `n`: the number of elements to track (valid indices are `0..n-1`).
+///
+/// Returns a `FenwickTree` ready for updates and queries.
+///
+/// Time complexity: O(n).
+///
+/// Example:
+/// ```
+/// let ft = FenwickTree::new(5)
+/// ft.add(2, 7L)
+/// assert_eq!(ft.prefix_sum(2), 7L)
+/// ```
 pub fn FenwickTree::new(n : Int) -> FenwickTree {
   // 1-indexed, so we need n+1 elements
   { n, tree: Array::make(n + 1, 0L) }
 }
 
 ///|
-/// Build Fenwick Tree from an existing array
-/// TIME: O(n) using the propagation method
+/// Builds a Fenwick Tree from an existing array in O(n) time.
 ///
-/// INVARIANT: After processing index i, tree[i] contains correct partial sum.
-/// Each index propagates its value to index i + lowbit(i).
+/// Uses the propagation method: after copying array values into the tree
+/// buffer, each index `i` pushes its value to its parent at `i + lowbit(i)`.
+/// Because the parent index is always strictly greater than `i`, each element
+/// is propagated at most once, giving linear build time.
+///
+/// Parameters:
+/// - `arr`: the source array of `Int64` values.
+///
+/// Returns a `FenwickTree` equivalent to inserting each element individually,
+/// but built in O(n) rather than O(n log n).
+///
+/// Time complexity: O(n).
+///
+/// INVARIANT: After processing index i, tree[i] contains the correct partial
+/// sum. Each index propagates its value to index i + lowbit(i).
 /// REASONING: Parent index > current index ensures no revisits, O(n) total.
+///
+/// Example:
+/// ```
+/// let ft = FenwickTree::from_array([10L, 20L, 30L])
+/// assert_eq!(ft.prefix_sum(2), 60L)
+/// ```
 pub fn FenwickTree::from_array(arr : Array[Int64]) -> FenwickTree {
   let n = arr.length()
   let tree = Array::make(n + 1, 0L)
@@ -79,18 +119,43 @@ pub fn FenwickTree::from_array(arr : Array[Int64]) -> FenwickTree {
 }
 
 ///|
-/// Get lowest set bit (isolate rightmost 1)
-/// lowbit(6) = lowbit(110₂) = 2 = 10₂
+/// Returns the lowest set bit of `x`, i.e. `x & (-x)`.
+///
+/// This is the core primitive of the Fenwick Tree: the length of the range
+/// that node `x` is responsible for equals `lowbit(x)`.
+///
+/// Examples:
+/// - `lowbit(6)  = lowbit(0b110)  = 2`
+/// - `lowbit(12) = lowbit(0b1100) = 4`
+/// - `lowbit(8)  = lowbit(0b1000) = 8`
 fn lowbit(x : Int) -> Int {
   x & -x
 }
 
 ///|
-/// Add delta to element at index i (0-indexed)
-/// TIME: O(log n)
+/// Adds `delta` to the element at 0-indexed position `i`.
 ///
-/// INVARIANT: idx covers all tree nodes responsible for index i+1.
-/// REASONING: idx increases by at least 1 each step (lowbit >= 1), terminates when > n.
+/// Internally converts to 1-indexed, then walks up the tree by repeatedly
+/// adding `lowbit(idx)` to `idx`, updating every node whose range covers
+/// position `i`.
+///
+/// Parameters:
+/// - `i`: 0-indexed position to update (silently ignored if out of bounds).
+/// - `delta`: value to add (may be negative).
+///
+/// Time complexity: O(log n).
+///
+/// INVARIANT: `idx` covers all tree nodes responsible for index `i+1`.
+/// REASONING: `idx` increases by at least 1 each step (lowbit >= 1),
+/// so the loop terminates when `idx > n`.
+///
+/// Example:
+/// ```
+/// let ft = FenwickTree::new(4)
+/// ft.add(0, 5L)
+/// ft.add(0, -2L) // net value at index 0 is now 3
+/// assert_eq!(ft.get(0), 3L)
+/// ```
 pub fn FenwickTree::add(self : FenwickTree, i : Int, delta : Int64) -> Unit {
   if i < 0 || i >= self.n {
     return
@@ -108,12 +173,30 @@ pub fn FenwickTree::add(self : FenwickTree, i : Int, delta : Int64) -> Unit {
 }
 
 ///|
-/// Query prefix sum [0, i] (inclusive, 0-indexed)
-/// Returns sum of elements arr[0] + arr[1] + ... + arr[i]
-/// TIME: O(log n)
+/// Returns the prefix sum of elements at 0-indexed positions `[0, i]`
+/// (inclusive).
 ///
-/// INVARIANT: sum accumulates prefix sums from tree nodes.
-/// REASONING: idx decreases by at least 1 each step (lowbit >= 1), terminates at 0.
+/// Internally converts to 1-indexed, then walks down the tree by repeatedly
+/// subtracting `lowbit(idx)` from `idx`, accumulating partial sums.
+///
+/// Parameters:
+/// - `i`: the last 0-indexed position to include in the sum.
+///   - If `i < 0`, returns 0.
+///   - If `i >= n`, the sum is clamped to cover all `n` elements.
+///
+/// Returns the sum `arr[0] + arr[1] + ... + arr[i]`.
+///
+/// Time complexity: O(log n).
+///
+/// INVARIANT: `sum` accumulates partial sums from tree nodes already visited.
+/// REASONING: `idx` decreases by at least 1 each step (lowbit >= 1),
+/// so the loop terminates when `idx <= 0`.
+///
+/// Example:
+/// ```
+/// let ft = FenwickTree::from_array([1L, 2L, 3L, 4L, 5L])
+/// assert_eq!(ft.prefix_sum(3), 10L) // 1+2+3+4
+/// ```
 pub fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int64 {
   if i < 0 {
     return 0L
@@ -131,7 +214,22 @@ pub fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int64 {
 }
 
 ///|
-/// Query range sum [l, r] (inclusive, 0-indexed)
+/// Returns the sum of elements at 0-indexed positions `[l, r]` (inclusive).
+///
+/// Uses the identity: `range_sum(l, r) = prefix_sum(r) - prefix_sum(l - 1)`.
+/// Returns 0 if the range is empty or entirely out of bounds.
+///
+/// Parameters:
+/// - `l`: first 0-indexed position (inclusive).
+/// - `r`: last 0-indexed position (inclusive).
+///
+/// Time complexity: O(log n) (two prefix sum calls).
+///
+/// Example:
+/// ```
+/// let ft = FenwickTree::from_array([1L, 2L, 3L, 4L, 5L])
+/// assert_eq!(ft.range_sum(1, 3), 9L) // 2+3+4
+/// ```
 pub fn FenwickTree::range_sum(self : FenwickTree, l : Int, r : Int) -> Int64 {
   if l > r || l < 0 || r >= self.n {
     return 0L
@@ -144,20 +242,63 @@ pub fn FenwickTree::range_sum(self : FenwickTree, l : Int, r : Int) -> Int64 {
 }
 
 ///|
-/// Get single element value at index i
+/// Returns the current value stored at 0-indexed position `i`.
+///
+/// Implemented as `range_sum(i, i)`.
+///
+/// Parameters:
+/// - `i`: 0-indexed position to read.
+///
+/// Returns the element value, or 0 if `i` is out of bounds.
+///
+/// Time complexity: O(log n).
+///
+/// Example:
+/// ```
+/// let ft = FenwickTree::from_array([10L, 20L, 30L])
+/// assert_eq!(ft.get(1), 20L)
+/// ```
 pub fn FenwickTree::get(self : FenwickTree, i : Int) -> Int64 {
   self.range_sum(i, i)
 }
 
 ///|
-/// Set element at index i to value
+/// Sets the element at 0-indexed position `i` to `value`, replacing its
+/// current value.
+///
+/// Computes `delta = value - current` and delegates to `add`.
+///
+/// Parameters:
+/// - `i`: 0-indexed position to modify.
+/// - `value`: the new value to store at position `i`.
+///
+/// Time complexity: O(log n).
+///
+/// Example:
+/// ```
+/// let ft = FenwickTree::from_array([1L, 2L, 3L])
+/// ft.set(1, 99L)
+/// assert_eq!(ft.get(1), 99L)
+/// assert_eq!(ft.prefix_sum(2), 103L) // 1 + 99 + 3
+/// ```
 pub fn FenwickTree::set(self : FenwickTree, i : Int, value : Int64) -> Unit {
   let current = self.get(i)
   self.add(i, value - current)
 }
 
 ///|
-/// Return number of elements tracked by the tree.
+/// Returns the number of elements tracked by this tree.
+///
+/// This is the `n` passed to `FenwickTree::new` or inferred from the array
+/// passed to `FenwickTree::from_array`.
+///
+/// Time complexity: O(1).
+///
+/// Example:
+/// ```
+/// let ft = FenwickTree::new(10)
+/// assert_eq!(ft.length(), 10)
+/// ```
 pub fn FenwickTree::length(self : FenwickTree) -> Int {
   self.n
 }
@@ -167,7 +308,14 @@ pub fn FenwickTree::length(self : FenwickTree) -> Int {
 // ============================================================================
 
 ///|
-/// 2D Fenwick Tree for rectangle sum queries
+/// A 2D Fenwick Tree (Binary Indexed Tree) for efficient rectangle sum queries
+/// and point updates over a 2D grid of `Int64` values.
+///
+/// Extends the 1D idea: each cell `(i, j)` in the internal tree is responsible
+/// for a sub-rectangle of size `lowbit(i) x lowbit(j)`. Updates and queries
+/// walk the 2D lowbit chains, touching O(log rows * log cols) cells.
+///
+/// The public API is 0-indexed; internally rows and columns are 1-indexed.
 priv struct FenwickTree2D {
   rows : Int
   cols : Int
@@ -175,6 +323,14 @@ priv struct FenwickTree2D {
 }
 
 ///|
+/// Creates a new 2D Fenwick Tree with `rows` rows and `cols` columns,
+/// all initialized to 0.
+///
+/// Parameters:
+/// - `rows`: number of rows (valid row indices: `0..rows-1`).
+/// - `cols`: number of columns (valid column indices: `0..cols-1`).
+///
+/// Time complexity: O(rows * cols).
 fn FenwickTree2D::new(rows : Int, cols : Int) -> FenwickTree2D {
   let tree : Array[Array[Int64]] = []
   for _ in 0..<=rows {
@@ -184,7 +340,18 @@ fn FenwickTree2D::new(rows : Int, cols : Int) -> FenwickTree2D {
 }
 
 ///|
-/// Add delta to cell (r, c) (0-indexed)
+/// Adds `delta` to the cell at 0-indexed position `(r, c)`.
+///
+/// Walks the row chain (adding `lowbit(i)` to `i`) and for each row node
+/// walks the column chain (adding `lowbit(j)` to `j`), updating all nodes
+/// whose rectangles cover `(r, c)`.
+///
+/// Parameters:
+/// - `r`: 0-indexed row (silently ignored if out of bounds).
+/// - `c`: 0-indexed column (silently ignored if out of bounds).
+/// - `delta`: value to add (may be negative).
+///
+/// Time complexity: O(log rows * log cols).
 fn FenwickTree2D::add(
   self : FenwickTree2D,
   r : Int,
@@ -212,7 +379,19 @@ fn FenwickTree2D::add(
 }
 
 ///|
-/// Query sum of rectangle [0, 0] to [r, c] (inclusive, 0-indexed)
+/// Returns the sum of all cells in the rectangle `[0, 0]` to `[r, c]`
+/// (inclusive, 0-indexed).
+///
+/// Walks the row chain downward and for each node walks the column chain
+/// downward, accumulating partial sums.
+///
+/// Parameters:
+/// - `r`: last 0-indexed row (clamped to `rows-1` if larger).
+/// - `c`: last 0-indexed column (clamped to `cols-1` if larger).
+///
+/// Returns 0 if `r < 0` or `c < 0`.
+///
+/// Time complexity: O(log rows * log cols).
 fn FenwickTree2D::prefix_sum(self : FenwickTree2D, r : Int, c : Int) -> Int64 {
   if r < 0 || c < 0 {
     return 0L
@@ -236,7 +415,18 @@ fn FenwickTree2D::prefix_sum(self : FenwickTree2D, r : Int, c : Int) -> Int64 {
 }
 
 ///|
-/// Query sum of rectangle [r1, c1] to [r2, c2] (inclusive, 0-indexed)
+/// Returns the sum of all cells in the rectangle `[r1, c1]` to `[r2, c2]`
+/// (inclusive, 0-indexed).
+///
+/// Uses the 2D inclusion-exclusion identity:
+/// ```
+/// range_sum(r1,c1,r2,c2)
+///   = prefix(r2,c2) - prefix(r1-1,c2) - prefix(r2,c1-1) + prefix(r1-1,c1-1)
+/// ```
+///
+/// Returns 0 if the rectangle is empty (`r1 > r2` or `c1 > c2`).
+///
+/// Time complexity: O(log rows * log cols).
 fn FenwickTree2D::range_sum(
   self : FenwickTree2D,
   r1 : Int,
@@ -259,20 +449,45 @@ fn FenwickTree2D::range_sum(
 // ============================================================================
 
 ///|
-/// Fenwick Tree variant that supports range updates and point queries
-/// Uses difference array technique
+/// A Fenwick Tree variant that supports range updates and point queries using
+/// the difference array technique.
+///
+/// Instead of storing element values directly, this tree stores differences:
+/// adding `delta` to range `[l, r]` is encoded as two point updates,
+/// `diff[l] += delta` and `diff[r+1] -= delta`.  A point query for position
+/// `i` then becomes a prefix sum of the difference tree up to `i`.
+///
+/// This is the dual of the standard Fenwick Tree:
+/// - Standard: O(1) range queries, O(log n) point updates.
+/// - This:    O(log n) range updates, O(log n) point queries.
 priv struct FenwickTreeRangeUpdate {
   n : Int
   tree : Array[Int64] // Stores differences
 }
 
 ///|
+/// Creates a new `FenwickTreeRangeUpdate` of size `n`, all values zero.
+///
+/// Parameters:
+/// - `n`: number of elements (valid indices: `0..n-1`).
+///
+/// Time complexity: O(n).
 fn FenwickTreeRangeUpdate::new(n : Int) -> FenwickTreeRangeUpdate {
   { n, tree: Array::make(n + 1, 0L) }
 }
 
 ///|
-/// Internal: add delta at index
+/// Internal helper: adds `delta` to a single position in the difference tree.
+///
+/// This is identical to a standard Fenwick Tree point update. It is called
+/// twice by `range_add` to encode a range update as two point updates on the
+/// difference array.
+///
+/// Parameters:
+/// - `i`: 0-indexed position.
+/// - `delta`: value to add.
+///
+/// Time complexity: O(log n).
 fn FenwickTreeRangeUpdate::point_add(
   self : FenwickTreeRangeUpdate,
   i : Int,
@@ -292,7 +507,17 @@ fn FenwickTreeRangeUpdate::point_add(
 }
 
 ///|
-/// Add delta to range [l, r] (inclusive, 0-indexed)
+/// Adds `delta` to all elements in the range `[l, r]` (inclusive, 0-indexed).
+///
+/// Encodes the range update as two point updates on the internal difference
+/// array: `diff[l] += delta` and `diff[r+1] -= delta` (when `r+1 < n`).
+///
+/// Parameters:
+/// - `l`: first 0-indexed position (inclusive).
+/// - `r`: last 0-indexed position (inclusive, clamped to `n-1`).
+/// - `delta`: value to add to every element in the range.
+///
+/// Time complexity: O(log n).
 fn FenwickTreeRangeUpdate::range_add(
   self : FenwickTreeRangeUpdate,
   l : Int,
@@ -310,7 +535,18 @@ fn FenwickTreeRangeUpdate::range_add(
 }
 
 ///|
-/// Query value at index i (0-indexed)
+/// Returns the current value at 0-indexed position `i`.
+///
+/// Computed as the prefix sum of the difference tree up to `i`, which
+/// recovers the accumulated delta applied to position `i` by all previous
+/// range updates.
+///
+/// Parameters:
+/// - `i`: 0-indexed position to query.
+///
+/// Returns 0 if `i` is out of bounds.
+///
+/// Time complexity: O(log n).
 fn FenwickTreeRangeUpdate::query(
   self : FenwickTreeRangeUpdate,
   i : Int,
@@ -332,8 +568,19 @@ fn FenwickTreeRangeUpdate::query(
 // ============================================================================
 
 ///|
-/// Fenwick Tree that supports both range updates and range queries
-/// Uses two BITs to track coefficients
+/// A Fenwick Tree that supports both range updates and range sum queries by
+/// maintaining two internal BITs (`bit1` and `bit2`).
+///
+/// The mathematical trick: if we let `b(i)` be the difference array such that
+/// `arr[i] = sum_{k=1}^{i} b(k)`, then:
+/// ```
+/// prefix_sum(i) = sum_{j=1}^{i} arr[j]
+///              = sum_{j=1}^{i} sum_{k=1}^{j} b(k)
+///              = sum_{k=1}^{i} b(k) * (i - k + 1)
+///              = (i+1) * sum_{k=1}^{i} b(k) - sum_{k=1}^{i} b(k)*(k-1)
+/// ```
+/// `bit1` stores `b(k)` and `bit2` stores `b(k) * (k-1)`, so each prefix
+/// query is two BIT queries combined.
 priv struct FenwickTreeRangeRange {
   n : Int
   bit1 : Array[Int64] // Coefficient for (i+1) term
@@ -341,11 +588,26 @@ priv struct FenwickTreeRangeRange {
 }
 
 ///|
+/// Creates a new `FenwickTreeRangeRange` of size `n`, all values zero.
+///
+/// Parameters:
+/// - `n`: number of elements (valid indices: `0..n-1`).
+///
+/// Time complexity: O(n).
 fn FenwickTreeRangeRange::new(n : Int) -> FenwickTreeRangeRange {
   { n, bit1: Array::make(n + 1, 0L), bit2: Array::make(n + 1, 0L) }
 }
 
 ///|
+/// Internal helper: standard Fenwick Tree point-add on an arbitrary array.
+///
+/// Parameters:
+/// - `arr`: the internal BIT array (1-indexed, length >= n+1).
+/// - `n`: the logical size bound for the BIT.
+/// - `i`: 1-indexed position to start the update at.
+/// - `delta`: value to add.
+///
+/// Time complexity: O(log n).
 fn add_internal(arr : Array[Int64], n : Int, i : Int, delta : Int64) -> Unit {
   for idx = i {
     if idx > n {
@@ -358,6 +620,16 @@ fn add_internal(arr : Array[Int64], n : Int, i : Int, delta : Int64) -> Unit {
 }
 
 ///|
+/// Internal helper: standard Fenwick Tree prefix-sum query on an arbitrary
+/// array.
+///
+/// Parameters:
+/// - `arr`: the internal BIT array (1-indexed).
+/// - `i`: 1-indexed upper bound for the prefix sum.
+///
+/// Returns the prefix sum from index 1 to `i`.
+///
+/// Time complexity: O(log n).
 fn query_internal(arr : Array[Int64], i : Int) -> Int64 {
   for idx = i, sum = 0L {
     if idx <= 0 {
@@ -369,7 +641,19 @@ fn query_internal(arr : Array[Int64], i : Int) -> Int64 {
 }
 
 ///|
-/// Add delta to range [l, r] (inclusive, 0-indexed)
+/// Adds `delta` to all elements in the range `[l, r]` (inclusive, 0-indexed).
+///
+/// Updates both internal BITs to maintain the invariant required for O(log n)
+/// range prefix queries:
+/// - `bit1`: records the difference-array coefficients.
+/// - `bit2`: records the weighted difference-array coefficients.
+///
+/// Parameters:
+/// - `l`: first 0-indexed position (inclusive).
+/// - `r`: last 0-indexed position (inclusive).
+/// - `delta`: value to add to every element in `[l, r]`.
+///
+/// Time complexity: O(log n).
 fn FenwickTreeRangeRange::range_add(
   self : FenwickTreeRangeRange,
   l : Int,
@@ -390,7 +674,16 @@ fn FenwickTreeRangeRange::range_add(
 }
 
 ///|
-/// Query prefix sum [0, i] (inclusive, 0-indexed)
+/// Returns the prefix sum of elements at 0-indexed positions `[0, i]`
+/// (inclusive).
+///
+/// Uses the two-BIT formula:
+/// `prefix_sum(i) = bit1.query(i) * (i+1) - bit2.query(i)`
+///
+/// Parameters:
+/// - `i`: last 0-indexed position to include (returns 0 if `i < 0`).
+///
+/// Time complexity: O(log n).
 fn FenwickTreeRangeRange::prefix_sum(
   self : FenwickTreeRangeRange,
   i : Int,
@@ -404,7 +697,16 @@ fn FenwickTreeRangeRange::prefix_sum(
 }
 
 ///|
-/// Query range sum [l, r] (inclusive, 0-indexed)
+/// Returns the sum of elements at 0-indexed positions `[l, r]` (inclusive).
+///
+/// Uses the identity: `range_sum(l, r) = prefix_sum(r) - prefix_sum(l - 1)`.
+/// Returns 0 if the range is empty or `l < 0`.
+///
+/// Parameters:
+/// - `l`: first 0-indexed position (inclusive).
+/// - `r`: last 0-indexed position (inclusive).
+///
+/// Time complexity: O(log n).
 fn FenwickTreeRangeRange::range_sum(
   self : FenwickTreeRangeRange,
   l : Int,

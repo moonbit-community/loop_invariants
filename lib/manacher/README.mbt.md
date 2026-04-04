@@ -58,35 +58,58 @@ Manacher handles both at once by transforming the string.
 
 ## 5. The transformation (make everything odd)
 
-Insert separators between characters and at both ends:
+Insert `#` separators between characters and at both ends:
 
 ```
-Original:  a b b a
-Index:     0 1 2 3
+Original:    a  b  b  a
+Index:       0  1  2  3
 
-Transformed:  # a # b # b # a #
-Index:         0 1 2 3 4 5 6 7 8
+Transformed: #  a  #  b  #  b  #  a  #
+Index:       0  1  2  3  4  5  6  7  8
+             ^     ^     ^     ^     ^
+             |     |     |     |     |
+          sentinel  |    center      sentinel
+                 original chars at odd positions
 ```
 
-Now every palindrome in the transformed string has **odd length** with a
-unique center.
+Every character from the original sits at an **odd** index; sentinels sit at
+**even** indices. Now every palindrome in the transformed string has odd length
+with a unique center, so a single radius array covers all cases.
 
 - Even palindrome "bb" becomes "#b#b#" centered at index 4
 - Odd palindrome "aba" becomes "#a#b#a#" centered at index 3
+
+### Sentinel placement detail
+
+```
+Original "abba"  (n=4, transformed length = 2*4+1 = 9)
+
+position:  0  1  2  3  4  5  6  7  8
+           #  a  #  b  #  b  #  a  #
+           ^           ^           ^
+           left       center      right
+         sentinel    (even pos)  sentinel
+```
+
+The `#` character never appears in normal text, so it cannot cause a false
+match across the sentinel boundary.
 
 ## 6. Radii definition in the transformed string
 
 Let `P[i]` be the **radius** at center `i` in the transformed string:
 
-- Radius counts how far we can expand while staying palindrome
-- A radius of 0 means only the center matches
+- A radius of 0 means only the center character matches (degenerate palindrome)
+- A radius of k means the palindrome spans `[i-k, i+k]` in the transformed string
 
 Example for `"cbbd"`:
 
 ```
-Transformed:  # c # b # b # d #
-Index:         0 1 2 3 4 5 6 7 8
-P[i]:          0 1 0 1 2 1 0 1 0
+Transformed:  #  c  #  b  #  b  #  d  #
+Index:         0  1  2  3  4  5  6  7  8
+P[i]:          0  1  0  1  2  1  0  1  0
+                                ^
+                           max radius=2 here
+                           corresponds to "bb" in original
 ```
 
 The maximum radius is 2 at center 4, which corresponds to "bb".
@@ -134,42 +157,174 @@ So for "abba":
 ## 8. The mirror property (the key speedup)
 
 Suppose we already have a palindrome centered at `c` with right boundary `r`.
-If we are at position `i` **inside** that palindrome, there is a mirror
-position `i'` on the other side:
+For every position `i` strictly inside `[c-(r-c), r]`, there is a **mirror**
+position `i' = 2*c - i` on the other side of `c`.
 
 ```
-         c
-... # a # b # a # b # a # ...
-        i'         i
-            r
+  palindrome centered at c, extending to r on the right
+  --------------------------------------------------------
+              c
+  ... # a # b # a # b # a # ...
+      |     |     |     |
+      l     i'    c    i     r
+            |<----|---->|
+             symmetric about c
 ```
 
-Because of symmetry:
+Because the big palindrome is symmetric:
 
 ```
 P[i] >= min(P[i'], r - i)
 ```
 
-This gives a strong lower bound without any comparisons.
-We only expand past `r` if needed. The right boundary `r` only moves forward,
-so total expansions across the whole scan are linear.
+This gives a lower bound on the radius at `i` without any character
+comparisons.  We only need to expand past `r` when the mirror palindrome
+reaches the boundary. Since `r` only ever moves rightward, the total number
+of expansions over all centers is linear.
 
 ### Why the mirror bound is safe
 
-If `i` is inside the current palindrome `[l, r]`:
+If `i` is inside the current palindrome `[l, r]` (where `l = 2*c - r`):
 
 ```
-mirror = l + r - i
+mirror = 2*c - i    (i' in the diagram above)
 ```
 
-Then the palindrome around `i` is at least as large as the mirror, but it
-cannot extend past `r`, so the guaranteed radius is:
+Two cases:
 
 ```
-min(P[mirror], r - i)
+Case A: P[mirror] < r - i
+        The mirror palindrome fits entirely inside [l, r].
+        By symmetry, P[i] = P[mirror].  No expansion needed.
+
+        ... [ l ... [i'-P[i'] ... i' ... i'+P[i']] ... c ... i ... r ] ...
+                     |<-- safe copy, no new comparisons -->|
+
+Case B: P[mirror] >= r - i
+        The mirror palindrome touches or goes past l.
+        We know P[i] >= r - i, but must expand starting at r+1.
 ```
 
-## 9. Walkthrough example: "cbbd"
+In either case we start with the guaranteed lower bound and only compare new
+characters beyond `r`.
+
+## 9. Step-by-step walkthrough: "aabaa"
+
+We trace the full Manacher scan on the transformed string.
+
+```
+Original:    a  a  b  a  a
+Transformed: #  a  #  a  #  b  #  a  #  a  #
+Index:       0  1  2  3  4  5  6  7  8  9  10
+```
+
+Initial state: `c = 0`, `r = 0`, all `P[i] = 0`.
+
+```
+i=0  (#)  c=0, r=0, i >= r -> start with P[0]=0
+          Expand: t[-1] out of bounds -> stop
+          P[0] = 0   r still 0
+
+i=1  (a)  i >= r -> start with P[1]=0
+          Expand: t[0]='#' == t[2]='#' -> P[1]=1
+                  t[-1] out of bounds -> stop
+          P[1] = 1   update c=1, r=2
+
+     State:  c=1, r=2
+     #  a  #  a  #  b  #  a  #  a  #
+     0  1  2  3  4  5  6  7  8  9  10
+        [c=1   r=2]
+
+i=2  (#)  i=2 <= r=2 -> mirror = 2*1-2 = 0
+          P[mirror]=P[0]=0, r-i=0 -> P[2] = min(0,0) = 0
+          Expand: t[1]='a' != t[3]='a' ... wait both 'a': match -> P[2]=1
+                  t[0]='#' != t[4]='#': match -> P[2]=2
+                  t[-1] out of bounds -> stop
+          P[2] = 2   update c=2, r=4
+
+     State:  c=2, r=4
+     #  a  #  a  #  b  #  a  #  a  #
+     0  1  2  3  4  5  6  7  8  9  10
+        [      c=2      r=4]
+
+i=3  (a)  i=3 <= r=4 -> mirror = 2*2-3 = 1
+          P[mirror]=P[1]=1, r-i=1 -> P[3] = min(1,1) = 1
+          Expand: t[1]='a' vs t[5]='b' -> mismatch -> stop
+          P[3] = 1   c and r unchanged
+
+i=4  (#)  i=4 <= r=4 -> mirror = 2*2-4 = 0
+          P[mirror]=P[0]=0, r-i=0 -> P[4] = min(0,0) = 0
+          Expand: t[3]='a' vs t[5]='b' -> mismatch -> stop
+          P[4] = 0   c and r unchanged
+
+i=5  (b)  i=5 > r=4 -> start with P[5]=0
+          Expand: t[4]='#' == t[6]='#' -> P[5]=1
+                  t[3]='a' == t[7]='a' -> P[5]=2
+                  t[2]='#' == t[8]='#' -> P[5]=3
+                  t[1]='a' == t[9]='a' -> P[5]=4
+                  t[0]='#' == t[10]='#' -> P[5]=5
+                  t[-1] out of bounds -> stop
+          P[5] = 5   update c=5, r=10
+
+     State:  c=5, r=10
+     #  a  #  a  #  b  #  a  #  a  #
+     0  1  2  3  4  5  6  7  8  9  10
+     [              c=5              r=10]
+                                      ^-- rightmost boundary
+
+i=6  (#)  i=6 <= r=10 -> mirror = 2*5-6 = 4
+          P[mirror]=P[4]=0, r-i=4 -> P[6] = min(0,4) = 0
+          Expand: t[5]='b' vs t[7]='a' -> mismatch -> stop
+          P[6] = 0   c and r unchanged (mirror copy was sufficient)
+
+i=7  (a)  i=7 <= r=10 -> mirror = 2*5-7 = 3
+          P[mirror]=P[3]=1, r-i=3 -> P[7] = min(1,3) = 1
+          Expand: t[5]='b' vs t[9]='a' -> mismatch -> stop
+          P[7] = 1   c and r unchanged (mirror copy was sufficient)
+
+i=8  (#)  i=8 <= r=10 -> mirror = 2*5-8 = 2
+          P[mirror]=P[2]=2, r-i=2 -> P[8] = min(2,2) = 2
+          Expand: t[5]='b' vs t[11] out of bounds -> stop
+          P[8] = 2   c and r unchanged (boundary was reached)
+
+i=9  (a)  i=9 <= r=10 -> mirror = 2*5-9 = 1
+          P[mirror]=P[1]=1, r-i=1 -> P[9] = min(1,1) = 1
+          Expand: t[7]='a' vs t[11] out of bounds -> stop
+          P[9] = 1   c and r unchanged
+
+i=10 (#)  i=10 <= r=10 -> mirror = 2*5-10 = 0
+          P[mirror]=P[0]=0, r-i=0 -> P[10] = min(0,0) = 0
+          Expand: t[9]='a' vs t[11] out of bounds -> stop
+          P[10] = 0
+```
+
+Final radii array:
+
+```
+Transformed: #  a  #  a  #  b  #  a  #  a  #
+Index:        0  1  2  3  4  5  6  7  8  9  10
+P[i]:         0  1  2  1  0  5  0  1  2  1  0
+                              ^
+                        P[5]=5 is the max
+```
+
+Maximum radius = 5 at center 5.
+
+```
+start = (5 - 5) / 2 = 0
+length = 5
+substring = s[0..5] = "aabaa"
+```
+
+The entire string "aabaa" is a palindrome, as expected.
+
+### Where mirror reuse saved work
+
+At `i=6,7,8,9,10` we were inside the big palindrome `[0..10]` centered at 5.
+For each of those positions we immediately had a lower bound from the mirror,
+avoiding redundant character-by-character expansion.
+
+## 10. Walkthrough example: "cbbd"
 
 ```
 Original:    c b b d
@@ -184,7 +339,7 @@ Interpretation:
 - Start = (4 - 2) / 2 = 1
 - Substring = s[1:3] = "bb"
 
-## 10. Converting back to original indices
+## 11. Converting back to original indices
 
 If you know `(center, radius)` in the transformed string:
 
@@ -204,7 +359,7 @@ length = 2
 substring = s[1..3] = "bb"
 ```
 
-## 11. Counting palindromes from radii
+## 12. Counting palindromes from radii
 
 In the transformed string, each center contributes:
 
@@ -234,7 +389,7 @@ Palindromes:
 
 `count_palindromes("abba")` should be 6.
 
-## 12. Example usage (runnable)
+## 13. Example usage (runnable)
 
 ```mbt check
 ///|
@@ -270,14 +425,14 @@ test "manacher unique longest" {
 }
 ```
 
-## 13. Common pitfalls
+## 14. Common pitfalls
 
 - Confusing odd and even palindromes
 - Forgetting that `d1[i]` is a radius, not a length
 - Assuming the longest palindrome is unique (it is not in general)
 - Using this for grapheme clusters; MoonBit strings are UTF-16 code units
 
-## 14. Complexity
+## 15. Complexity
 
 ```
 Time:  O(n)
@@ -287,7 +442,7 @@ Space: O(n)
 Each position extends the right boundary at most once, so the total work is
 linear.
 
-## 15. When to use Manacher
+## 16. When to use Manacher
 
 - You need **all** palindrome radii in linear time
 - You need longest palindromic substring fast
@@ -297,7 +452,7 @@ If `n` is small or code simplicity matters more than performance, a quadratic
 center-expansion might be simpler to implement. Otherwise Manacher is the
 standard choice.
 
-## 16. API summary
+## 17. API summary
 
 This package provides:
 

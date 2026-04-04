@@ -28,8 +28,24 @@
 // TIME: O(log σ) per query
 
 ///|
-/// Wavelet Tree node
-/// Each node covers a range [lo, hi) of values
+/// A single node in a wavelet tree.
+///
+/// Each node covers a contiguous range `[lo, hi)` of the alphabet and stores
+/// the information needed to route queries down to either child.
+///
+/// Fields:
+/// - `lo`: smallest value represented by this subtree (inclusive).
+/// - `hi`: one past the largest value represented by this subtree (exclusive).
+/// - `bits`: bitvector of length n for this level. `bits[i] = false` means the
+///   element at position i was routed to the left child (value < mid);
+///   `bits[i] = true` means it went to the right child (value >= mid).
+/// - `rank`: prefix-sum array of `bits`. `rank[i]` = number of `true` entries
+///   in `bits[0..i)`. Used to map any range `[l, r)` to the corresponding
+///   range in either child in O(1).
+/// - `left`: index into the owning `WaveletTree.nodes` array for the left
+///   child, or `-1` when this node is a leaf.
+/// - `right`: index into the owning `WaveletTree.nodes` array for the right
+///   child, or `-1` when this node is a leaf.
 priv struct WaveletNode {
   lo : Int // Minimum value in this subtree (inclusive)
   hi : Int // Maximum value in this subtree (exclusive)
@@ -43,7 +59,20 @@ priv struct WaveletNode {
 }
 
 ///|
-/// Wavelet Tree data structure
+/// A wavelet tree built over an integer array with a fixed alphabet `[0, sigma)`.
+///
+/// The tree answers range queries in O(log sigma) time per query:
+/// - `count(l, r, v)`: how many times does `v` appear in `arr[l..r)`?
+/// - `count_less(l, r, v)`: how many values in `arr[l..r)` are less than `v`?
+/// - `count_range(l, r, lo, hi)`: how many values in `arr[l..r)` lie in `[lo, hi)`?
+/// - `quantile(l, r, k)`: what is the k-th smallest value in `arr[l..r)`?
+/// - `select(l, r, v, k)`: what is the index of the k-th occurrence of `v` in `arr[l..r)`?
+///
+/// Fields:
+/// - `nodes`: flat arena of all `WaveletNode` instances for the tree.
+/// - `root`: index of the root node in `nodes` (-1 for an empty tree).
+/// - `n`: length of the original array.
+/// - `sigma`: alphabet size; all values must be in `[0, sigma)`.
 priv struct WaveletTree {
   nodes : Array[WaveletNode]
   root : Int
@@ -52,8 +81,18 @@ priv struct WaveletTree {
 }
 
 ///|
-/// Build wavelet tree from array of values
-/// Values should be in range [0, sigma)
+/// Build a wavelet tree from `arr` with alphabet size `sigma`.
+///
+/// All values in `arr` must satisfy `0 <= v < sigma`. Passing values outside
+/// this range results in undefined query behaviour.
+///
+/// The build algorithm recursively partitions the alphabet at the midpoint and
+/// records, for each position, whether its value went left (`< mid`) or right
+/// (`>= mid`). Nodes are stored in a flat arena (`nodes`) in the order they
+/// are first created; child indices are back-patched after both children are
+/// known.
+///
+/// Time: O(n log sigma). Space: O(n log sigma) bits.
 fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
   let nodes : Array[WaveletNode] = []
   let n = arr.length()
@@ -152,9 +191,17 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
 // ============================================================================
 
 ///|
-/// Count occurrences of value v in range [l, r)
-/// REASONING: At each level, we follow the path for value v,
-/// narrowing [l, r) to the corresponding range in child node
+/// Count the number of occurrences of value `v` in the index range `[l, r)`.
+///
+/// Returns `0` if `l >= r`, `v < 0`, or `v >= self.sigma`.
+///
+/// At each level of the tree, the function follows the unique path for value
+/// `v` and maps the current index range into the corresponding range in the
+/// chosen child using the node's prefix-sum (`rank`) array. When the traversal
+/// reaches a leaf (alphabet range of size 1), the length of the surviving
+/// range is the count.
+///
+/// Time: O(log sigma).
 fn WaveletTree::count(self : WaveletTree, l : Int, r : Int, v : Int) -> Int {
   if self.root < 0 || l >= r || v < 0 || v >= self.sigma {
     return 0
@@ -211,8 +258,17 @@ fn WaveletTree::count(self : WaveletTree, l : Int, r : Int, v : Int) -> Int {
 }
 
 ///|
-/// Count values less than v in range [l, r)
-/// REASONING: Sum up elements going left whenever we go right
+/// Count the number of values strictly less than `v` in the index range
+/// `[l, r)`.
+///
+/// Returns `0` if `l >= r` or `v <= 0`, and `r - l` if `v >= self.sigma`.
+///
+/// The traversal descends the value range in binary-search fashion. Whenever
+/// the query forces a turn to the right child (because `v > mid`), every
+/// element that went to the left child in that range is guaranteed to be
+/// `< mid <= v` and is accumulated into the running count.
+///
+/// Time: O(log sigma).
 fn WaveletTree::count_less(
   self : WaveletTree,
   l : Int,
@@ -283,7 +339,14 @@ fn WaveletTree::count_less(
 }
 
 ///|
-/// Count values in range [lo_val, hi_val) within index range [l, r)
+/// Count the number of values in the value range `[lo_val, hi_val)` that
+/// appear within the index range `[l, r)`.
+///
+/// Returns `0` if `lo_val >= hi_val`.
+///
+/// Implemented as `count_less(l, r, hi_val) - count_less(l, r, lo_val)`.
+///
+/// Time: O(log sigma).
 fn WaveletTree::count_range(
   self : WaveletTree,
   l : Int,
@@ -299,8 +362,21 @@ fn WaveletTree::count_range(
 }
 
 ///|
-/// Find k-th smallest value (1-indexed) in range [l, r)
-/// Returns None if k > r - l
+/// Return the k-th smallest value (1-indexed) in the index range `[l, r)`.
+///
+/// Returns `None` if `l >= r`, `k <= 0`, or `k > r - l`.
+///
+/// At each node, the function counts how many elements in the current range
+/// fall into the left child (`zeros_in_range`). If `k <= zeros_in_range`, the
+/// answer lies in the left subtree; otherwise it lies in the right subtree
+/// and the rank is adjusted by subtracting the left count. Traversal
+/// terminates at a leaf whose `lo` field is the desired value.
+///
+/// Example: `quantile(0, 8, 4)` on `[3,0,1,2,3,1,2,0]` returns `Some(1)`
+/// because the 4th smallest element of the sorted array `[0,0,1,1,2,2,3,3]`
+/// is `1`.
+///
+/// Time: O(log sigma).
 fn WaveletTree::quantile(self : WaveletTree, l : Int, r : Int, k : Int) -> Int? {
   if self.root < 0 || l >= r || k <= 0 || k > r - l {
     return None
@@ -353,8 +429,18 @@ fn WaveletTree::quantile(self : WaveletTree, l : Int, r : Int, k : Int) -> Int? 
 }
 
 ///|
-/// Find index of k-th occurrence of value v in range [l, r)
-/// Returns None if fewer than k occurrences exist
+/// Find the original array index of the k-th occurrence (1-indexed) of value
+/// `v` within the index range `[l, r)`.
+///
+/// Returns `None` if `k <= 0`, `v` is out of range, or fewer than `k`
+/// occurrences of `v` exist in `[l, r)`.
+///
+/// The implementation uses a binary search over positions combined with
+/// `count(l, mid+1, v)` to locate the exact position where the k-th
+/// occurrence falls. This is O(log^2 sigma) in the current implementation.
+///
+/// Example: `select(0, 8, 0, 2)` on `[3,0,1,2,3,1,2,0]` returns `Some(7)`
+/// because the second `0` is at index 7.
 fn WaveletTree::select(
   self : WaveletTree,
   l : Int,
@@ -412,7 +498,15 @@ fn WaveletTree::select(
 // ============================================================================
 
 ///|
-/// Access original value at position i
+/// Return the value at position `i` in the original array, or `None` if `i`
+/// is out of bounds.
+///
+/// Traversal starts at the root. At each node, `bits[pos]` determines
+/// whether the element went left (`false`) or right (`true`), and `rank[pos]`
+/// is used to compute the new position within the chosen child. The loop
+/// terminates at a leaf whose `lo` field holds the original value.
+///
+/// Time: O(log sigma).
 fn WaveletTree::access(self : WaveletTree, i : Int) -> Int? {
   if self.root < 0 || i < 0 || i >= self.n {
     return None
@@ -451,13 +545,15 @@ fn WaveletTree::access(self : WaveletTree, i : Int) -> Int? {
 }
 
 ///|
-/// Get size of original array
+/// Return the number of elements in the original array.
 fn WaveletTree::size(self : WaveletTree) -> Int {
   self.n
 }
 
 ///|
-/// Get alphabet size
+/// Return the alphabet size `sigma` that was passed to `build`.
+///
+/// All values in the array are in the half-open range `[0, sigma)`.
 fn WaveletTree::alphabet_size(self : WaveletTree) -> Int {
   self.sigma
 }
@@ -467,8 +563,17 @@ fn WaveletTree::alphabet_size(self : WaveletTree) -> Int {
 // ============================================================================
 
 ///|
-/// Find the most frequent value in range [l, r)
-/// Returns (value, count) or None if range is empty
+/// Find the most frequent value in the index range `[l, r)`.
+///
+/// Returns `Some((value, count))` where `count` is the maximum frequency, or
+/// `None` if `l >= r`.
+///
+/// When multiple values share the maximum frequency, the one with the smaller
+/// value is returned (because the tree is traversed left-before-right).
+///
+/// The implementation recursively visits every leaf reachable from the
+/// restricted range `[l, r)`, so the running time is O(S log S) where S is
+/// the number of distinct values in the range.
 fn WaveletTree::mode(self : WaveletTree, l : Int, r : Int) -> (Int, Int)? {
   if self.root < 0 || l >= r {
     return None
@@ -529,8 +634,17 @@ fn WaveletTree::mode(self : WaveletTree, l : Int, r : Int) -> (Int, Int)? {
 }
 
 ///|
-/// Get all distinct values in range [l, r) with their counts
-/// Returns array of (value, count) pairs sorted by value
+/// Return all distinct values that appear in the index range `[l, r)`,
+/// together with their occurrence counts, sorted in ascending order of value.
+///
+/// Returns an empty array if `l >= r`.
+///
+/// The function performs a depth-first traversal of the tree restricted to
+/// the range `[l, r)`, collecting one `(value, count)` entry at each
+/// reachable leaf. Because leaves are visited left-to-right (smaller values
+/// first), the result is already sorted.
+///
+/// Time: O(D log sigma) where D is the number of distinct values in the range.
 fn WaveletTree::distinct_values(
   self : WaveletTree,
   l : Int,

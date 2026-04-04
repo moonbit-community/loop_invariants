@@ -20,6 +20,16 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
+/// A precomputed index over a string that stores all suffixes in sorted
+/// (lexicographic) order together with their Longest Common Prefix (LCP) values.
+///
+/// Fields:
+/// - `sa`   : suffix array; `sa[i]` is the start index of the i-th smallest suffix.
+/// - `lcp`  : LCP array; `lcp[i]` is the length of the longest common prefix
+///            shared by the suffixes at SA positions `i-1` and `i`. `lcp[0]` is 0.
+/// - `text` : the original string used to build the index.
+///
+/// Build with `SuffixArray::new`. Time: O(n log^2 n). Space: O(n).
 pub struct SuffixArray {
   sa : Array[Int]
   lcp : Array[Int]
@@ -27,7 +37,20 @@ pub struct SuffixArray {
 }
 
 ///|
-/// Build a suffix array and LCP array for text.
+/// Build a `SuffixArray` index for `text` using the prefix-doubling algorithm.
+///
+/// The suffix array `sa` and LCP array `lcp` are computed together so that
+/// callers can immediately use the full set of query methods without any extra
+/// construction step.
+///
+/// Parameters:
+/// - `text` : the string to index. May be empty, in which case all arrays are
+///            empty and all query methods return neutral values.
+///
+/// Returns a `SuffixArray` value whose fields are fully populated.
+///
+/// Time: O(n log^2 n) where n = `text.length()`.
+/// Space: O(n).
 pub fn SuffixArray::new(text : String) -> SuffixArray {
   let n = text.length()
   if n == 0 {
@@ -130,13 +153,42 @@ pub fn SuffixArray::new(text : String) -> SuffixArray {
 }
 
 ///|
-/// Build the suffix array for s (convenience wrapper).
+/// Build and return just the suffix array for `s`.
+///
+/// This is a convenience wrapper around `SuffixArray::new` for callers that
+/// only need the raw suffix array without the full index object.
+///
+/// Parameters:
+/// - `s` : the string to index.
+///
+/// Returns an `Array[Int]` where element `i` is the starting index of the
+/// i-th lexicographically smallest suffix of `s`.
+///
+/// Time: O(n log^2 n). Space: O(n).
 pub fn suffix_array(s : String) -> Array[Int] {
   SuffixArray::new(s).sa
 }
 
 ///|
-/// Build the LCP array for s using a provided suffix array.
+/// Build the LCP array for `s` given a precomputed suffix array `sa`.
+///
+/// Uses Kasai's algorithm: for each suffix in text order, the LCP with its
+/// predecessor in SA order is computed by extending from the previous LCP
+/// value decremented by at most one. This guarantees O(n) total character
+/// comparisons even though n suffixes are processed.
+///
+/// Parameters:
+/// - `s`  : the original string.
+/// - `sa` : a valid suffix array for `s` (length must equal `s.length()`).
+///          Pass `sa[:]` to convert an `Array[Int]` to the required view.
+///
+/// Returns an `Array[Int]` `lcp` of the same length as `s`, where `lcp[i]`
+/// is the length of the longest common prefix shared by `s[sa[i-1]:]` and
+/// `s[sa[i]:]`. `lcp[0]` is always 0.
+///
+/// Returns an empty array if `s` is empty or if `sa.length() != s.length()`.
+///
+/// Time: O(n). Space: O(n).
 pub fn lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
   let n = s.length()
   if n == 0 || sa.length() != n {
@@ -178,7 +230,21 @@ pub fn lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
 }
 
 ///|
-/// Return the suffix array index range matching pattern, or None if absent.
+/// Find the contiguous range of SA positions whose suffixes start with `pattern`.
+///
+/// Because the suffix array is sorted, all matches form a contiguous block
+/// `[lo, hi]`. Two binary searches locate the left and right boundaries of
+/// that block in O(m log n) time, where m = `pattern.length()`.
+///
+/// Parameters:
+/// - `self`    : the suffix array index to search.
+/// - `pattern` : the substring to look for. Must be non-empty.
+///
+/// Returns `Some((lo, hi))` where `lo` and `hi` are inclusive SA indices such
+/// that for every `i` in `lo..=hi`, `text[sa[i]:]` starts with `pattern`.
+/// Returns `None` if `pattern` is empty, `text` is empty, or no match exists.
+///
+/// Time: O(m log n) where m = `pattern.length()` and n = `text.length()`.
 pub fn SuffixArray::search(self : SuffixArray, pattern : String) -> (Int, Int)? {
   let n = self.sa.length()
   let m = pattern.length()
@@ -255,7 +321,21 @@ fn starts_with(text : String, start : Int, pattern : String) -> Bool {
 }
 
 ///|
-/// Return all match start positions of pattern in text (sorted ascending).
+/// Return all start positions in `text` where `pattern` occurs, sorted in
+/// ascending order.
+///
+/// Calls `search` to locate the SA range, then collects and sorts the
+/// corresponding text indices. If `pattern` does not appear, returns `[]`.
+///
+/// Parameters:
+/// - `self`    : the suffix array index to search.
+/// - `pattern` : the substring to look for.
+///
+/// Returns an `Array[Int]` of starting positions (0-based) in `text`, sorted
+/// ascending. The array is empty when there are no matches.
+///
+/// Time: O(m log n + k log k) where m = `pattern.length()`, n = `text.length()`,
+/// and k = number of matches.
 pub fn SuffixArray::find_all(
   self : SuffixArray,
   pattern : String,
@@ -274,7 +354,17 @@ pub fn SuffixArray::find_all(
 }
 
 ///|
-/// Count how many times pattern appears in text.
+/// Count the number of (possibly overlapping) occurrences of `pattern` in
+/// `text`.
+///
+/// Parameters:
+/// - `self`    : the suffix array index to search.
+/// - `pattern` : the substring to count. Must be non-empty for a non-zero result.
+///
+/// Returns the number of positions in `text` at which `pattern` starts.
+/// Returns 0 when `pattern` is not present or when either string is empty.
+///
+/// Time: O(m log n) where m = `pattern.length()` and n = `text.length()`.
 pub fn SuffixArray::count(self : SuffixArray, pattern : String) -> Int {
   match self.search(pattern) {
     None => 0
@@ -283,7 +373,19 @@ pub fn SuffixArray::count(self : SuffixArray, pattern : String) -> Int {
 }
 
 ///|
-/// Return the longest repeated substring, or "" if none exists.
+/// Return the longest substring that appears at least twice in `text`.
+///
+/// The answer is the suffix of length `max(lcp)` starting at the position
+/// recorded by the SA entry with the highest LCP value. If no suffix pair
+/// shares any common prefix (all LCP values are 0), or if `text` has fewer
+/// than two characters, the empty string `""` is returned.
+///
+/// Parameters:
+/// - `self` : the suffix array index to query.
+///
+/// Returns the longest repeated substring, or `""` if none exists.
+///
+/// Time: O(n). Space: O(n) for the returned substring.
 pub fn SuffixArray::longest_repeated_substring(self : SuffixArray) -> String {
   let n = self.sa.length()
   if n < 2 {
@@ -306,7 +408,25 @@ pub fn SuffixArray::longest_repeated_substring(self : SuffixArray) -> String {
 }
 
 ///|
-/// Count the number of distinct substrings in text.
+/// Count the number of distinct (non-empty) substrings of `text`.
+///
+/// Uses the identity:
+///
+/// ```
+/// distinct = n*(n+1)/2 - sum(lcp[1..n-1])
+/// ```
+///
+/// Intuition: each suffix of length L introduces L new substrings, but the
+/// first `lcp[i]` of them are already counted by the previous suffix in SA
+/// order. Subtracting the total LCP sum removes all duplicates.
+///
+/// Parameters:
+/// - `self` : the suffix array index to query.
+///
+/// Returns the count of distinct substrings as `Int64` (the value can reach
+/// n*(n+1)/2 which exceeds `Int` range for large n).
+///
+/// Time: O(n). Space: O(1).
 pub fn SuffixArray::count_distinct_substrings(self : SuffixArray) -> Int64 {
   let n = self.sa.length()
   if n == 0 {
@@ -319,7 +439,16 @@ pub fn SuffixArray::count_distinct_substrings(self : SuffixArray) -> Int64 {
 }
 
 ///|
-/// Return the i-th suffix in lexicographic order, or "" if out of range.
+/// Return the i-th lexicographically smallest suffix of `text`.
+///
+/// Parameters:
+/// - `self` : the suffix array index to query.
+/// - `i`    : 0-based rank in the sorted suffix order (0 = smallest suffix).
+///
+/// Returns the suffix string `text[sa[i]:]`, or `""` if `i` is out of range
+/// (i.e., `i < 0` or `i >= text.length()`).
+///
+/// Time: O(n) to construct the returned string. Space: O(n).
 pub fn SuffixArray::get_suffix(self : SuffixArray, i : Int) -> String {
   if i < 0 || i >= self.sa.length() {
     return ""

@@ -31,13 +31,23 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
+/// The NTT modulus: 998244353 = 119 * 2^23 + 1.
+///
+/// This prime was chosen because it supports NTT transforms of size up to 2^23
+/// and has primitive root 3, making root-of-unity computation straightforward.
+/// All polynomial coefficients in `ntt_convolution` are reduced modulo this value.
 pub const NTT_MOD : Int64 = 998244353L
 
 ///|
+/// Primitive root of `NTT_MOD`. Satisfies g^((p-1)/2^k) is a primitive 2^k-th
+/// root of unity modulo p for every k up to 23.
 const NTT_ROOT : Int64 = 3L
 
 ///|
-/// Fast modular exponentiation
+/// Computes `base^exp mod m` using fast binary exponentiation.
+///
+/// Each iteration squares the base and halves the exponent, processing one bit
+/// of `exp` at a time. Time complexity: O(log exp).
 fn mod_pow(base : Int64, exp : Int64, m : Int64) -> Int64 {
   for e = exp, result = 1L, b = base % m; e > 0L; {
     let next_result = if e % 2L == 1L { result * b % m } else { result }
@@ -60,7 +70,15 @@ fn mod_pow(base : Int64, exp : Int64, m : Int64) -> Int64 {
 }
 
 ///|
-/// Compute bit reversal of index
+/// Reverses the lowest `bits` bits of `x`.
+///
+/// For example, with `bits = 3`:
+///   bit_reverse(1, 3) = 4  (001 -> 100)
+///   bit_reverse(3, 3) = 6  (011 -> 110)
+///
+/// Used by the Cooley-Tukey NTT to compute the bit-reversal permutation that
+/// reorders input coefficients so that iterative butterfly stages produce the
+/// correct DFT output.
 fn bit_reverse(x : Int, bits : Int) -> Int {
   for i = 0, result = 0, v = x; i < bits; {
     continue i + 1, (result << 1) | (v & 1), v >> 1
@@ -80,7 +98,19 @@ fn bit_reverse(x : Int, bits : Int) -> Int {
 }
 
 ///|
-/// Number Theoretic Transform
+/// Context for a Number Theoretic Transform of a fixed power-of-two size.
+///
+/// An NTT is a Discrete Fourier Transform performed entirely in the finite
+/// field Z/pZ (integers modulo a prime p). It replaces complex roots of unity
+/// with modular primitive roots, giving exact integer results with no
+/// floating-point rounding.
+///
+/// Fields:
+/// - `n`: the transform size (always a power of 2)
+/// - `log_n`: log₂(n), i.e. the number of butterfly stages
+/// - `root`: primitive n-th root of unity modulo `mod_val` (forward transform)
+/// - `root_inv`: modular inverse of `root` (inverse transform)
+/// - `mod_val`: the prime modulus (998244353)
 priv struct NTT {
   n : Int // Must be power of 2
   log_n : Int
@@ -90,6 +120,11 @@ priv struct NTT {
 }
 
 ///|
+/// Creates an `NTT` context sized for a transform of at least `size` elements.
+///
+/// The actual transform size `n` is rounded up to the next power of two.
+/// The primitive n-th root of unity and its inverse are precomputed so that
+/// `transform` can be called cheaply on multiple arrays of this size.
 fn NTT::new(size : Int) -> NTT {
   // Find smallest power of 2 >= size
   let (n, log_n) = for n = 1, log_n = 0; n < size; {
@@ -114,7 +149,22 @@ fn NTT::new(size : Int) -> NTT {
 }
 
 ///|
-/// Perform NTT in-place
+/// Applies the NTT (or its inverse) to `a` in-place using the Cooley-Tukey algorithm.
+///
+/// When `inverse` is `false`, transforms coefficient form to point-value form:
+///   a[k] = sum_{j=0}^{n-1} a[j] * ω^(jk)  for k = 0..n-1
+///
+/// When `inverse` is `true`, transforms point-value form back to coefficients
+/// by using ω^(-1) in place of ω and dividing every element by n at the end.
+///
+/// The algorithm has three phases:
+///   1. Bit-reversal permutation: rearranges elements into the order required
+///      by the iterative butterfly passes.
+///   2. Cooley-Tukey butterfly stages: log₂(n) passes, each combining groups
+///      of size `len` using the butterfly u,v -> u+ω^k*v, u-ω^k*v.
+///   3. (Inverse only) Divide every element by n to normalize.
+///
+/// Time complexity: O(n log n). Modifies `a` in-place; `a` must have length `self.n`.
 fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
   let n = self.n
 
@@ -213,7 +263,17 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
 }
 
 ///|
-/// Multiply two polynomials modulo NTT_MOD
+/// Multiplies polynomials `a` and `b` using this NTT context.
+///
+/// Steps:
+///   1. Copy and zero-pad both inputs to length `self.n`.
+///   2. Forward-transform each padded array.
+///   3. Multiply pointwise modulo `self.mod_val`.
+///   4. Inverse-transform to recover the product coefficients.
+///
+/// The returned array has length `self.n`; callers should trim to
+/// `a.length() + b.length() - 1` to discard the padding zeros.
+/// All coefficients are reduced modulo `NTT_MOD`.
 fn NTT::multiply(
   self : NTT,
   a : Array[Int64],
@@ -285,7 +345,23 @@ fn NTT::multiply(
 }
 
 ///|
-/// Multiply two polynomials modulo NTT_MOD using NTT.
+/// Multiplies two integer polynomials modulo `NTT_MOD` (998244353) in O(n log n) time.
+///
+/// Parameters:
+/// - `a`: coefficients of the first polynomial, constant term first.
+/// - `b`: coefficients of the second polynomial, constant term first.
+///
+/// Returns an `Array[Int64]` of length `a.length() + b.length() - 1` whose
+/// i-th element is the coefficient of x^i in the product A(x) * B(x), reduced
+/// modulo 998244353.
+///
+/// Returns an empty array if either input is empty.
+///
+/// Example:
+///   A(x) = 1 + 2x  =>  a = [1, 2]
+///   B(x) = 3 + 4x  =>  b = [3, 4]
+///   ntt_convolution(a[:], b[:])  =>  [3, 10, 8]
+///   because (1 + 2x)(3 + 4x) = 3 + 10x + 8x²
 pub fn ntt_convolution(
   a : ArrayView[Int64],
   b : ArrayView[Int64],
@@ -304,7 +380,13 @@ pub fn ntt_convolution(
 // ============================================================================
 
 ///|
-/// O(n²) naive polynomial multiplication
+/// Multiplies two polynomials using the schoolbook O(n²) algorithm.
+///
+/// For each coefficient a[i], adds a[i] * b[j] to result[i+j] for every j.
+/// All arithmetic is reduced modulo `NTT_MOD`.
+///
+/// Used as a correctness reference in tests and as the base case inside
+/// `poly_multiply_karatsuba` (for inputs shorter than 32 elements).
 fn poly_multiply_naive(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
   if a.length() == 0 || b.length() == 0 {
     return []
@@ -346,7 +428,23 @@ fn poly_multiply_naive(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
 // ============================================================================
 
 ///|
-/// Karatsuba polynomial multiplication
+/// Multiplies two polynomials using the Karatsuba divide-and-conquer algorithm.
+///
+/// Splits each polynomial at its midpoint:
+///   A(x) = A_low(x) + x^half * A_high(x)
+///   B(x) = B_low(x) + x^half * B_high(x)
+///
+/// Then computes three recursive multiplications instead of four:
+///   z0 = A_low  * B_low
+///   z2 = A_high * B_high
+///   z1 = (A_low + A_high) * (B_low + B_high) - z0 - z2
+///
+/// And assembles the result:
+///   A * B = z0 + x^half * z1 + x^(2*half) * z2
+///
+/// Time complexity: O(n^log₂(3)) ≈ O(n^1.585).
+/// Falls back to `poly_multiply_naive` for inputs shorter than 32 elements.
+/// All arithmetic is reduced modulo `NTT_MOD`.
 fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
   let n = a.length()
   let m = b.length()

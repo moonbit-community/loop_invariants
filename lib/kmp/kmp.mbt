@@ -38,8 +38,33 @@
 // SPACE COMPLEXITY: O(m) for failure function
 
 ///|
-/// Compute the failure function (LPS array) for a pattern
-/// fail[i] = length of longest proper prefix of pattern[0..i+1) that is also a suffix
+/// Compute the failure function (also called LPS array or partial match table)
+/// for a pattern string.
+///
+/// `fail[i]` is the length of the longest proper prefix of `pattern[0..i+1)`
+/// that is also a suffix of `pattern[0..i+1)`.  This value tells the KMP
+/// matcher how far back to jump in the pattern after a mismatch, so no
+/// text character ever needs to be re-examined.
+///
+/// Parameters:
+/// - `pattern` - the pattern string to preprocess
+///
+/// Returns an `Array[Int]` of length `pattern.length()`, or an empty array
+/// when the pattern is empty.
+///
+/// Time complexity: O(m), where m = `pattern.length()`
+/// Space complexity: O(m)
+///
+/// Example:
+/// ```
+/// // Pattern "ABAB":
+/// //   fail[0] = 0  ("A"    - no proper prefix/suffix match)
+/// //   fail[1] = 0  ("AB"   - no match)
+/// //   fail[2] = 1  ("ABA"  - "A" is both prefix and suffix)
+/// //   fail[3] = 2  ("ABAB" - "AB" is both prefix and suffix)
+/// let fail = compute_failure("ABAB")
+/// // fail == [0, 0, 1, 2]
+/// ```
 pub fn compute_failure(pattern : String) -> Array[Int] {
   let m = pattern.length()
   if m == 0 {
@@ -60,13 +85,57 @@ pub fn compute_failure(pattern : String) -> Array[Int] {
 }
 
 ///|
-/// Compute the prefix function (pi array) for the pattern.
+/// Alias for `compute_failure`.  Returns the prefix function (pi array) for
+/// the given pattern, where `pi[i]` equals the length of the longest proper
+/// prefix of `pattern[0..i+1)` that is also a suffix.
+///
+/// Parameters:
+/// - `pattern` - the pattern string to preprocess
+///
+/// Returns an `Array[Int]` identical to `compute_failure(pattern)`.
+///
+/// Time complexity: O(m), where m = `pattern.length()`
+///
+/// Example:
+/// ```
+/// let pi = prefix_function("ababa")
+/// // pi == [0, 0, 1, 2, 3]
+/// ```
 pub fn prefix_function(pattern : String) -> Array[Int] {
   compute_failure(pattern)
 }
 
 ///|
-/// Find all occurrences of pattern in text using KMP algorithm
+/// Search for all (possibly overlapping) occurrences of `pattern` in `text`
+/// using the Knuth-Morris-Pratt algorithm.
+///
+/// The search runs in O(n) time after an O(m) preprocessing step, so the
+/// total cost is O(n + m) regardless of the characters involved.  Each
+/// character in `text` is examined at most a constant number of times; the
+/// text index `i` never moves backward.
+///
+/// Parameters:
+/// - `text`    - the string to search in (length n)
+/// - `pattern` - the string to search for (length m)
+///
+/// Returns an `Array[Int]` of starting indices (0-based) at which `pattern`
+/// begins in `text`.  The array is empty when there are no matches, when
+/// `pattern` is empty, or when `pattern` is longer than `text`.
+///
+/// Time complexity: O(n + m)
+/// Space complexity: O(m) for the failure table, O(k) for the result where k
+/// is the number of matches
+///
+/// Example:
+/// ```
+/// // "ABAB" appears at positions 0, 10, and 15
+/// let matches = kmp_search("ABABDABACDABABCABAB", "ABAB")
+/// // matches == [0, 10, 15]
+///
+/// // Overlapping matches are included
+/// let overlapping = kmp_search("AAAA", "AA")
+/// // overlapping == [0, 1, 2]
+/// ```
 pub fn kmp_search(text : String, pattern : String) -> Array[Int] {
   let n = text.length()
   let m = pattern.length()
@@ -94,7 +163,30 @@ pub fn kmp_search(text : String, pattern : String) -> Array[Int] {
 }
 
 ///|
-/// Return the first index of pattern in text, or -1 if not found.
+/// Return the index of the first occurrence of `pattern` in `text`, or `-1`
+/// if the pattern does not appear.
+///
+/// This is a convenience wrapper around `kmp_search` that avoids allocating
+/// the full match list when only the first match is needed.
+///
+/// Parameters:
+/// - `text`    - the string to search in
+/// - `pattern` - the string to search for
+///
+/// Returns the 0-based starting index of the first match, or `-1` if no
+/// match exists.
+///
+/// Time complexity: O(n + m)
+/// Space complexity: O(m)
+///
+/// Example:
+/// ```
+/// let idx = kmp_find_first("HELLO WORLD", "WORLD")
+/// // idx == 6
+///
+/// let missing = kmp_find_first("HELLO WORLD", "XYZ")
+/// // missing == -1
+/// ```
 pub fn kmp_find_first(text : String, pattern : String) -> Int {
   let matches = kmp_search(text, pattern)
   if matches.length() > 0 {
@@ -105,7 +197,29 @@ pub fn kmp_find_first(text : String, pattern : String) -> Int {
 }
 
 ///|
-/// Count how many times pattern occurs in text.
+/// Count the total number of (possibly overlapping) occurrences of `pattern`
+/// in `text`.
+///
+/// Parameters:
+/// - `text`    - the string to search in
+/// - `pattern` - the string to search for
+///
+/// Returns the number of times `pattern` appears in `text`, counting
+/// overlapping occurrences.  Returns `0` when the pattern is empty or longer
+/// than the text.
+///
+/// Time complexity: O(n + m)
+/// Space complexity: O(m)
+///
+/// Example:
+/// ```
+/// // Three overlapping "AA" matches in "AAAA"
+/// let count = kmp_count("AAAA", "AA")
+/// // count == 3
+///
+/// let none = kmp_count("HELLO", "XYZ")
+/// // none == 0
+/// ```
 pub fn kmp_count(text : String, pattern : String) -> Int {
   kmp_search(text, pattern).length()
 }
@@ -115,8 +229,34 @@ pub fn kmp_count(text : String, pattern : String) -> Int {
 // ============================================================================
 
 ///|
-/// Compute Z-function for a string
-/// z[i] = length of longest substring starting at i that matches prefix
+/// Compute the Z-function (Z-array) for a string.
+///
+/// `z[i]` is the length of the longest substring starting at position `i`
+/// that matches a prefix of `s`.  By convention `z[0]` equals `s.length()`.
+///
+/// The Z-function is maintained efficiently with a "Z-box" `[l, r]`: the
+/// interval `[l, r)` is the rightmost window known to match `s[0..r-l)`.
+/// When `i` falls inside the box, previously computed values are reused
+/// before extending, giving the O(n) amortised bound.
+///
+/// Parameters:
+/// - `s` - the input string (length n)
+///
+/// Returns an `Array[Int]` of length `n`, or an empty array when `s` is
+/// empty.
+///
+/// Time complexity: O(n)
+/// Space complexity: O(n)
+///
+/// Example:
+/// ```
+/// // "AABXAAB":
+/// //  z[0] = 7  (full string)
+/// //  z[1] = 1  ("A" matches prefix "A")
+/// //  z[4] = 3  ("AAB" matches prefix "AAB")
+/// let z = compute_z_function("AABXAAB")
+/// // z == [7, 1, 0, 0, 3, 1, 0]
+/// ```
 pub fn compute_z_function(s : String) -> Array[Int] {
   let n = s.length()
   if n == 0 {
@@ -150,7 +290,29 @@ pub fn compute_z_function(s : String) -> Array[Int] {
 }
 
 ///|
-/// Find all matches of pattern in text using the Z-function.
+/// Find all occurrences of `pattern` in `text` using the Z-function.
+///
+/// Builds the concatenated string `pattern + "$" + text`, computes its
+/// Z-array, and reports every position where the Z-value equals
+/// `pattern.length()`.  The sentinel character `"$"` prevents a prefix
+/// match from bridging the boundary between pattern and text.
+///
+/// Parameters:
+/// - `text`    - the string to search in (length n)
+/// - `pattern` - the string to search for (length m)
+///
+/// Returns an `Array[Int]` of 0-based starting indices in `text` where
+/// `pattern` begins.  Returns an empty array when `pattern` is empty or
+/// longer than `text`.
+///
+/// Time complexity: O(n + m)
+/// Space complexity: O(n + m) for the concatenated string and Z-array
+///
+/// Example:
+/// ```
+/// let matches = z_search("ABABDABACDABABCABAB", "ABAB")
+/// // matches == [0, 10, 15]
+/// ```
 pub fn z_search(text : String, pattern : String) -> Array[Int] {
   let n = text.length()
   let m = pattern.length()

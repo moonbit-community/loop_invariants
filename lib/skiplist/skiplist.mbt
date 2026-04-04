@@ -27,18 +27,33 @@
 // SPACE COMPLEXITY: O(n) expected - each element uses O(1) expected levels
 
 ///|
-/// Maximum number of levels in the skip list
-/// log2(expected max elements) is a good choice
+/// Maximum number of levels in the skip list.
+///
+/// Choosing `log_p(n)` where p is the promotion probability gives expected
+/// logarithmic height for up to `p^max_level` elements.  With p = 4 and
+/// max_level = 16 this covers up to ~4 billion elements comfortably.
 let max_level : Int = 16
 
 ///|
-/// Probability of promotion to next level (1/4 for better space efficiency)
-/// P = 1/4 gives expected 1.33 pointers per element vs 2 for P = 1/2
+/// Reciprocal of the per-level promotion probability (1/4 per level).
+///
+/// A value of 4 means each node is promoted to the next level with
+/// probability 1/4.  Compared to p = 1/2 this yields:
+/// - expected 4/3 forward pointers per node (vs 2 for p = 1/2),
+/// - slightly taller searches but better memory efficiency.
 let promotion_probability : Int = 4 // 1 in 4 chance
 
 ///|
-/// A node in the skip list
-/// Each node contains forward pointers to the next node at each level
+/// A single node in the skip list.
+///
+/// Holds an optional key, an optional associated value, and an array of
+/// forward pointers — one per level this node occupies.  The header
+/// sentinel uses `key = None` to represent negative infinity.
+///
+/// Invariants:
+/// - `forward.length()` equals the level of this node (height).
+/// - `forward[i]` points to the next node at level i in sorted order.
+/// - A node at level h also participates in all levels 0..h-1.
 priv struct SkipNode[K, V] {
   key : K?
   value : V?
@@ -48,13 +63,31 @@ priv struct SkipNode[K, V] {
 }
 
 ///|
-/// Create a new skip list node
+/// Create a new skip list node with the given key, value, and level count.
+///
+/// `level` is the number of forward-pointer slots to allocate; a node at
+/// height h requires `level = h + 1` so that slots 0..h are all present.
+/// All forward pointers are initialised to `None`.
 fn[K, V] SkipNode::new(key : K?, value : V?, level : Int) -> SkipNode[K, V] {
   { key, value, forward: Array::make(level, None) }
 }
 
 ///|
-/// Skip List data structure
+/// An ordered key-value map implemented as a skip list.
+///
+/// Keys must implement `Compare`.  All operations (search, insert, delete,
+/// range query, ceil, floor) run in O(log n) expected time.
+///
+/// Fields:
+/// - `header`     — sentinel node with `key = None`; conceptually -infinity.
+/// - `level`      — index of the highest non-empty level (0-indexed).
+/// - `rand_state` — mutable seed for the internal LCG random number generator.
+/// - `size`       — number of key-value pairs currently stored.
+///
+/// Structural invariants:
+/// 1. `header.forward[i]` is the first real node at level i (or None).
+/// 2. At every level the forward-pointer chain is sorted in ascending order.
+/// 3. `self.level` is always the index of the highest occupied level.
 priv struct SkipList[K, V] {
   // Header node (sentinel) - exists at all levels
   // header.key should be treated as -infinity
@@ -68,7 +101,10 @@ priv struct SkipList[K, V] {
 }
 
 ///|
-/// Create a new empty skip list
+/// Create a new, empty skip list.
+///
+/// Allocates the header sentinel node with `max_level` forward-pointer
+/// slots (all `None`) and seeds the LCG random state to 42.
 fn[K, V] SkipList::new() -> SkipList[K, V] {
   {
     header: SkipNode::new(None, None, max_level), // sentinel node
@@ -79,12 +115,19 @@ fn[K, V] SkipList::new() -> SkipList[K, V] {
 }
 
 ///|
-/// Generate a random level for new node insertion
-/// Uses geometric distribution with parameter 1/promotion_probability
+/// Generate a random height for a newly inserted node.
 ///
-/// REASONING: Each level has 1/p probability of being reached
-/// Expected level = 1/(1-1/p) ≈ 1.33 for p=4
-/// This ensures logarithmic height with high probability
+/// The height follows a geometric distribution: start at level 0 and
+/// keep promoting with probability 1/`promotion_probability` until either
+/// promotion fails or `max_level - 1` is reached.
+///
+/// Expected height = 1 / (1 - 1/p) ≈ 1.33 for p = 4.
+///
+/// The internal LCG formula is:
+/// ```
+/// rand_state = (rand_state * 1103 + 12345) mod 65536
+/// ```
+/// A result divisible by `promotion_probability` counts as "heads".
 fn[K, V] SkipList::random_level(self : SkipList[K, V]) -> Int {
   // Loop invariant: lvl represents the current level being considered
   // We flip coins until we get "heads" (random not divisible by p)
@@ -129,15 +172,19 @@ fn[K, V] SkipList::random_level(self : SkipList[K, V]) -> Int {
 // ============================================================================
 
 ///|
-/// Search for a key in the skip list
-/// Returns Some(value) if found, None otherwise
+/// Look up a key and return its associated value.
 ///
-/// ALGORITHM:
-/// 1. Start at header, highest level
-/// 2. Move right while next key < target
-/// 3. Drop down one level
-/// 4. Repeat until level 0
-/// 5. Check if we found the key
+/// Returns `Some(value)` when `key` is present, `None` otherwise.
+///
+/// Expected time complexity: O(log n).
+///
+/// Algorithm:
+/// 1. Begin at the header sentinel at the highest occupied level.
+/// 2. Move right while the next node's key is strictly less than `key`.
+/// 3. When unable to move right, drop down one level.
+/// 4. Repeat until level 0 is exhausted.
+/// 5. Inspect `forward[0]` of the current node: if its key equals `key`,
+///    return the associated value; otherwise return `None`.
 fn[K : Compare, V] SkipList::search(self : SkipList[K, V], key : K) -> V? {
   // Start at the header node
   // We will traverse from highest level down to level 0
@@ -194,13 +241,22 @@ fn[K : Compare, V] SkipList::search(self : SkipList[K, V], key : K) -> V? {
 // ============================================================================
 
 ///|
-/// Insert a key-value pair into the skip list
-/// If key already exists, updates the value
+/// Insert a key-value pair into the skip list.
 ///
-/// ALGORITHM:
-/// 1. Search while recording update points at each level
-/// 2. Generate random level for new node
-/// 3. Link new node at all levels up to its random level
+/// If `key` already exists the function returns without modifying the
+/// existing entry (in-place value update is not yet implemented).
+///
+/// Expected time complexity: O(log n).
+///
+/// Algorithm:
+/// 1. Descend through all levels, recording in `update[i]` the rightmost
+///    predecessor node at level i (i.e. the node whose `forward[i]` must
+///    be rewired).
+/// 2. Assign a random height to the new node via `random_level`.
+/// 3. If the new height exceeds `self.level`, extend the header's update
+///    entries and raise `self.level`.
+/// 4. Allocate the new node and splice it in at each level 0..new_level by
+///    swapping `update[i].forward[i]` with the new node.
 fn[K : Compare, V] SkipList::insert(
   self : SkipList[K, V],
   key : K,
@@ -299,8 +355,20 @@ fn[K : Compare, V] SkipList::insert(
 // ============================================================================
 
 ///|
-/// Delete a key from the skip list
-/// Returns true if key was found and deleted, false otherwise
+/// Remove a key and its associated value from the skip list.
+///
+/// Returns `true` when the key was present and successfully removed,
+/// `false` when the key was not found.
+///
+/// Expected time complexity: O(log n).
+///
+/// Algorithm:
+/// 1. Descend through all levels building the same `update` array as in
+///    `insert` — each `update[i]` is the predecessor at level i.
+/// 2. Confirm that `update[0].forward[0]` is the target node.
+/// 3. For every level i where `update[i].forward[i]` equals the target,
+///    redirect that pointer to `target.forward[i]`, bypassing the node.
+/// 4. Decrement `self.level` while the top level has become empty.
 fn[K : Compare, V] SkipList::delete(self : SkipList[K, V], key : K) -> Bool {
   let update : Array[SkipNode[K, V]?] = Array::make(max_level, None)
 
@@ -390,10 +458,18 @@ fn[K : Compare, V] SkipList::delete(self : SkipList[K, V], key : K) -> Bool {
 // ============================================================================
 
 ///|
-/// Find all keys in range [low, high]
-/// Returns array of (key, value) pairs in sorted order
+/// Collect all key-value pairs whose key lies in the closed interval
+/// `[low, high]`, returned in ascending key order.
 ///
-/// Time complexity: O(log n + k) where k is number of keys in range
+/// Expected time complexity: O(log n + k), where k is the number of
+/// matching entries.
+///
+/// Algorithm:
+/// 1. Use the standard skip-list descent to locate the predecessor of
+///    `low` in O(log n) expected time.
+/// 2. Walk forward along level 0 — which contains every element — pushing
+///    each node whose key satisfies `key <= high` into the result array.
+/// 3. Stop when the key exceeds `high` or the list ends.
 fn[K : Compare, V] SkipList::range_query(
   self : SkipList[K, V],
   low : K,
@@ -463,19 +539,26 @@ fn[K : Compare, V] SkipList::range_query(
 // ============================================================================
 
 ///|
-/// Get the number of elements in the skip list
+/// Return the number of key-value pairs currently stored in the skip list.
+///
+/// This is an O(1) operation; the count is maintained incrementally.
 fn[K, V] SkipList::length(self : SkipList[K, V]) -> Int {
   self.size
 }
 
 ///|
-/// Check if the skip list is empty
+/// Return `true` when the skip list contains no elements.
+///
+/// This is an O(1) operation equivalent to `self.length() == 0`.
 fn[K, V] SkipList::is_empty(self : SkipList[K, V]) -> Bool {
   self.size == 0
 }
 
 ///|
-/// Get minimum key in the skip list (first element at level 0)
+/// Return the entry with the smallest key, or `None` if the list is empty.
+///
+/// Level 0 contains all elements in sorted order, so the first real node
+/// (`header.forward[0]`) is always the minimum.  This is an O(1) operation.
 fn[K, V] SkipList::min(self : SkipList[K, V]) -> (K, V)? {
   match self.header.forward[0] {
     Some(node) =>
@@ -488,8 +571,12 @@ fn[K, V] SkipList::min(self : SkipList[K, V]) -> (K, V)? {
 }
 
 ///|
-/// Get maximum key in the skip list
-/// Uses skip list structure for O(log n) expected traversal
+/// Return the entry with the largest key, or `None` if the list is empty.
+///
+/// Exploits the multi-level structure: start at the highest level and
+/// always move right until no forward pointer remains, then drop down.
+/// This mirrors a search for positive infinity and runs in O(log n)
+/// expected time — far faster than a linear scan of level 0.
 fn[K, V] SkipList::max(self : SkipList[K, V]) -> (K, V)? {
   // Traverse from top level, always going as far right as possible
   for current = self.header, lvl = self.level; lvl >= 0; {
@@ -535,7 +622,14 @@ fn[K, V] SkipList::max(self : SkipList[K, V]) -> (K, V)? {
 // ============================================================================
 
 ///|
-/// Find the smallest key >= given key (ceiling)
+/// Return the entry with the smallest key that is greater than or equal to
+/// `key` (the ceiling), or `None` if no such entry exists.
+///
+/// Expected time complexity: O(log n).
+///
+/// The search descends exactly like `search`, stopping just before any
+/// forward pointer would reach a node with key >= `key`.  The first node
+/// at level 0 after this stopping point is the ceiling candidate.
 fn[K : Compare, V] SkipList::ceil(self : SkipList[K, V], key : K) -> (K, V)? {
   for current = self.header, lvl = self.level; lvl >= 0; {
     match current.forward[lvl] {
@@ -569,7 +663,15 @@ fn[K : Compare, V] SkipList::ceil(self : SkipList[K, V], key : K) -> (K, V)? {
 }
 
 ///|
-/// Find the largest key <= given key (floor)
+/// Return the entry with the largest key that is less than or equal to
+/// `key` (the floor), or `None` if no such entry exists.
+///
+/// Expected time complexity: O(log n).
+///
+/// Unlike `search` and `ceil`, the guard condition here is `next_key <= key`
+/// (not `< key`), so the traversal includes exact matches when moving right.
+/// After all levels are exhausted, `current` is the largest node with
+/// key <= `key`.
 fn[K : Compare, V] SkipList::floor(self : SkipList[K, V], key : K) -> (K, V)? {
   for current = self.header, lvl = self.level; lvl >= 0; {
     match current.forward[lvl] {
@@ -613,9 +715,15 @@ fn[K : Compare, V] SkipList::floor(self : SkipList[K, V], key : K) -> (K, V)? {
 // ============================================================================
 
 ///|
-/// Count elements less than key
-/// This version traverses level 0 - O(result) time
-/// A more efficient version would maintain size in each node
+/// Count the number of entries whose key is strictly less than `key`.
+///
+/// Traverses level 0 from the beginning, incrementing a counter for each
+/// node with `node_key < key`.  Stops at the first node that does not
+/// satisfy the predicate.
+///
+/// Time complexity: O(result) — proportional to the count returned.
+/// A more efficient augmented version would store subtree sizes in nodes
+/// to answer this in O(log n), but that is not implemented here.
 fn[K : Compare, V] SkipList::count_less_than(
   self : SkipList[K, V],
   key : K,
@@ -643,8 +751,14 @@ fn[K : Compare, V] SkipList::count_less_than(
 }
 
 ///|
-/// Find k-th smallest element (0-indexed)
-/// Returns None if k >= size
+/// Return the k-th smallest entry (0-indexed), or `None` when `k` is out
+/// of bounds (i.e. `k < 0` or `k >= self.size`).
+///
+/// Walks level 0 counting nodes until the i-th node (i == k) is reached.
+/// Time complexity: O(k) — a linear scan from the beginning of level 0.
+///
+/// Example: for keys [1, 3, 5, 7, 9], `kth_element(2)` returns
+/// `Some((5, value_of_5))`.
 fn[K, V] SkipList::kth_element(self : SkipList[K, V], k : Int) -> (K, V)? {
   if k < 0 || k >= self.size {
     return None
@@ -843,8 +957,15 @@ test "skip list stress test" {
 // ============================================================================
 
 ///|
-/// Skip List that allows duplicate keys
-/// Each key can have multiple values (stored as a list)
+/// A node in a skip list that supports duplicate keys.
+///
+/// Instead of a single `value` field, each node holds an `Array[V]` so
+/// that multiple values can be stored under the same key.  The first
+/// insertion for a key creates the node; subsequent insertions for the same
+/// key append to `values`.
+///
+/// The `forward` array plays the same role as in `SkipNode`: `forward[i]`
+/// points to the next node at level i.
 priv struct MultiSkipNode[K, V] {
   key : K?
   values : Array[V] // Multiple values for same key
@@ -852,6 +973,8 @@ priv struct MultiSkipNode[K, V] {
 }
 
 ///|
+/// Create a new `MultiSkipNode` with the given key, initial value array,
+/// and level count.  All forward pointers are initialised to `None`.
 fn[K, V] MultiSkipNode::new(
   key : K?,
   values : Array[V],
@@ -861,6 +984,15 @@ fn[K, V] MultiSkipNode::new(
 }
 
 ///|
+/// An ordered multimap implemented as a skip list.
+///
+/// Unlike `SkipList`, this structure allows multiple values per key.
+/// Inserting the same key a second time appends the new value to the
+/// existing node's `values` array rather than creating a duplicate node.
+///
+/// `size` counts total inserted values (including duplicates), not unique
+/// keys.  All structural invariants from `SkipList` apply to the key
+/// ordering and level hierarchy.
 priv struct MultiSkipList[K, V] {
   header : MultiSkipNode[K, V]
   mut level : Int
@@ -869,6 +1001,10 @@ priv struct MultiSkipList[K, V] {
 }
 
 ///|
+/// Create a new, empty `MultiSkipList`.
+///
+/// The header sentinel is allocated with `max_level` forward slots and
+/// an empty `values` array.  The LCG seed is initialised to 12345.
 fn[K, V] MultiSkipList::new() -> MultiSkipList[K, V] {
   {
     header: MultiSkipNode::new(None, [], max_level),
@@ -879,6 +1015,8 @@ fn[K, V] MultiSkipList::new() -> MultiSkipList[K, V] {
 }
 
 ///|
+/// Generate a random height for a newly inserted node using the same LCG
+/// and geometric distribution as `SkipList::random_level`.
 fn[K, V] MultiSkipList::random_level(self : MultiSkipList[K, V]) -> Int {
   for lvl = 0; lvl < max_level - 1; {
     self.rand_state = (self.rand_state * 1103 + 12345) % 65536
@@ -904,7 +1042,17 @@ fn[K, V] MultiSkipList::random_level(self : MultiSkipList[K, V]) -> Int {
 }
 
 ///|
-/// Insert allows duplicate keys - appends to values array if key exists
+/// Insert a value under `key`, allowing duplicates.
+///
+/// If `key` already exists in the list the new `value` is appended to the
+/// existing node's `values` array; no new node is created.  If `key` is
+/// new a fresh node is allocated and linked in at all levels up to its
+/// randomly chosen height, exactly as in `SkipList::insert`.
+///
+/// `self.size` is incremented unconditionally, so it tracks total inserted
+/// values rather than unique keys.
+///
+/// Expected time complexity: O(log n).
 fn[K : Compare, V] MultiSkipList::insert(
   self : MultiSkipList[K, V],
   key : K,
@@ -969,7 +1117,14 @@ fn[K : Compare, V] MultiSkipList::insert(
 }
 
 ///|
-/// Search returns all values associated with a key
+/// Look up a key and return the array of all values associated with it.
+///
+/// Returns `Some(values)` where `values` is the node's internal array
+/// (not a copy) when the key is present, or `None` when it is absent.
+/// Note that the returned array is a live reference; callers should not
+/// mutate it directly.
+///
+/// Expected time complexity: O(log n).
 fn[K : Compare, V] MultiSkipList::search(
   self : MultiSkipList[K, V],
   key : K,
