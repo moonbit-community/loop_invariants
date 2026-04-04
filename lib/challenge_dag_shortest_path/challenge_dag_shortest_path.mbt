@@ -28,7 +28,7 @@ pub fn dag_shortest_paths(
     }
   }
   let order : Array[Int] = []
-  for head = 0; head < queue.length(); head = head + 1 {
+  for head = 0; head < queue.length(); {
     let u = queue[head]
     order.push(u)
     let neighbors = adj[u]
@@ -39,6 +39,7 @@ pub fn dag_shortest_paths(
         queue.push(v)
       }
     }
+    continue head + 1
   } where {
     invariant: head >= 0 && head <= queue.length(),
     reasoning: (
