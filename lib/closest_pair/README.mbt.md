@@ -47,6 +47,32 @@ next ~7 points** in y-sorted order.
 
 ---
 
+## Algorithm flow
+
+```mermaid
+flowchart TD
+    A([closest_pair\npoints]) --> B{n < 2?}
+    B -- yes --> C([return INF, -1, -1])
+    B -- no --> D[Sort pts_x by x\nSort pts_y by y]
+    D --> E([closest_pair_rec\npts_x, pts_y])
+    E --> F{n <= 3?}
+    F -- yes --> G([brute_force_closest])
+    F -- no --> H[mid = n/2\nmid_point = pts_x mid]
+    H --> I[Split pts_y into\nleft_y / right_y]
+    I --> J([closest_pair_rec\nleft half, left_y])
+    I --> K([closest_pair_rec\nright half, right_y])
+    J --> L[d_left, l1, l2]
+    K --> M[d_right, r1, r2]
+    L --> N[delta = min\nd_left, d_right]
+    M --> N
+    N --> O[Build strip:\npoints with abs x - mid_x < delta]
+    O --> P([strip_closest\nstrip, delta])
+    P --> Q([return dist, idx1, idx2])
+    G --> Q
+```
+
+---
+
 ## Walkthrough example
 
 Points (already x-sorted):
@@ -71,30 +97,55 @@ Their distance is also `sqrt(2)`, so the answer stays the same.
 
 ---
 
-## Visual: the strip
+## Visual: the strip and the merge step
+
+After both halves are solved recursively, `delta` bounds how wide the strip
+must be around the dividing line. Only points inside this band can possibly
+improve the current best distance.
 
 ```
-After recursion, delta is known.
+                    mid
+                     |
+    *   (L)          |          (R)   *
+                     |
+        *   (L)      |    (R)   *
+                     |
+    *   (L)          |          (R)       *
+                     |
+          +----------+----------+
+          |  strip   |  strip   |
+          | (left)   |  (right) |
+          +----------+----------+
+          <--delta--><--delta-->
 
-                |
-    *           |      *
-        *       |         *
-                |
-    *           |      *
-                |
-    <-- delta -->|<-- delta -->
-                |
-        strip = points with |x - mid| < delta
+  Points within |x - mid_x| < delta enter the strip.
+  The strip is then sorted by y-coordinate.
+  Each point in the strip only needs to compare with
+  points whose y-coordinate is within delta above it.
 ```
 
----
+### Why at most 6 comparisons per strip point?
 
-## Why only ~7 comparisons?
+Consider the `delta x 2*delta` rectangle around point `p` in the strip:
 
-In the strip, any closer point must lie inside a rectangle of size
-`delta` by `2 * delta` around a point. Packing arguments show you can fit
-at most 8 points in that rectangle while keeping distances >= delta.
-So each point only checks a constant number of neighbors.
+```
+   y+delta  +----+----+
+            |    |    |
+            | L  | R  |
+            |    |    |
+         p  +----p----+    <- p sits on the mid-line boundary
+            |    |    |
+            | L  | R  |
+            |    |    |
+   y-delta  +----+----+
+           mid-d  mid  mid+d
+```
+
+Each `delta x delta` quadrant can hold at most 2 points that are still
+`>= delta` apart from each other (by the invariant that all pairs within
+each half are already `>= delta` apart). So the full `delta x 2*delta`
+rectangle holds at most 8 points total, and excluding `p` itself, at most 7
+neighbors need to be examined.
 
 ---
 
@@ -114,6 +165,28 @@ closest(points):
     for j in next few points while y-distance < d:
       d = min(d, dist(i, j))
   return d
+```
+
+---
+
+## Recursion tree
+
+The recursion splits the point set in half at each level, producing a balanced
+binary tree of depth `O(log n)`. Each level processes all `n` points in the
+strip in `O(n)` total, giving `O(n log n)` overall.
+
+```mermaid
+graph TD
+    A["closest_pair_rec  [all n points]"] --> B["closest_pair_rec  [left n/2]"]
+    A --> C["closest_pair_rec  [right n/2]"]
+    B --> D["closest_pair_rec  [n/4]"]
+    B --> E["closest_pair_rec  [n/4]"]
+    C --> F["closest_pair_rec  [n/4]"]
+    C --> G["closest_pair_rec  [n/4]"]
+    D --> H["brute_force  n<=3"]
+    E --> I["brute_force  n<=3"]
+    F --> J["brute_force  n<=3"]
+    G --> K["brute_force  n<=3"]
 ```
 
 ---
@@ -216,6 +289,33 @@ the two halves.
 
 ---
 
+## Strip merging: full visual
+
+The diagram below shows the same six-point example, highlighting the midline,
+the strip, and how the y-sorted neighbors are compared.
+
+```
+  y
+  2 |  * (0,2)      * (5,2)       * (8,2)
+    |
+  0 |* (0,0)   *(3,0)       *(6,0)
+    +--0----2---3---5----6---8----> x
+                |
+              midline x=4
+              <-- delta=sqrt(5) ~2.24 -->
+
+  Strip (|x - 4| < 2.24):  (3,0), (5,2)
+
+  After sorting strip by y:
+    [0]: (3,0)
+    [1]: (5,2)   <- y-diff = 2.0 < delta, so compare with [0]
+
+  dist((3,0),(5,2)) = sqrt(4+4) = sqrt(8) > sqrt(5)  -> no improvement
+  Final answer: sqrt(5)
+```
+
+---
+
 ## Closest pair vs other techniques
 
 | Method | Time | Notes |
@@ -260,5 +360,5 @@ the approach.
 ## Reference implementation
 
 ```mbt nocheck
-///| pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int, Int)
+///| pub fn closest_pair(Array[(Double, Double)]) -> (Double, Int, Int)
 ```

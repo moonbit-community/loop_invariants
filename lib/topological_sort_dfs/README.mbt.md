@@ -6,6 +6,8 @@ that every directed edge goes left-to-right in the order.
 If the graph has a **cycle**, no topological order exists.
 This package detects that and returns `None`.
 
+---
+
 ## Problem in plain words
 
 You have tasks with dependencies:
@@ -20,6 +22,8 @@ that depends on it.
 
 That is exactly what topological sort provides.
 
+---
+
 ## API (from this package)
 
 ```
@@ -33,6 +37,51 @@ That is exactly what topological sort provides.
 - Returns `Some(order)` for DAGs, `None` for graphs with cycles.
 - Edges with out-of-range vertices are ignored by this implementation.
 
+---
+
+## Example graph as a Mermaid DAG
+
+The diamond-shaped graph used throughout this document:
+
+```
+0 -> 1 -> 3
+0 -> 2 -> 3
+```
+
+```mermaid
+graph LR
+    0 --> 1
+    0 --> 2
+    1 --> 3
+    2 --> 3
+```
+
+One valid topological order: `0, 2, 1, 3`  (or `0, 1, 2, 3`).
+Both are correct — the sort only guarantees that every prerequisite comes first.
+
+---
+
+## Build system example as a Mermaid DAG
+
+A more realistic dependency graph:
+
+```
+headers -> compile -> link -> run
+headers -> compile -> test
+```
+
+```mermaid
+graph LR
+    headers --> compile
+    compile --> link
+    compile --> test_binary
+    link --> run
+```
+
+A valid topological order: `headers, compile, link, test_binary, run`.
+
+---
+
 ## Key idea (DFS finish order)
 
 DFS has a useful property:
@@ -40,13 +89,15 @@ DFS has a useful property:
 > When DFS finishes a node, **all nodes reachable from it are already finished**.
 
 So if we:
-1) run DFS,
-2) append each node when it finishes,
-3) reverse that list,
+1. run DFS,
+2. append each node when it finishes,
+3. reverse that list,
 
 we get a valid topological order.
 
-## Visual: finish order
+---
+
+## Visual: finish order (ASCII art)
 
 Graph:
 
@@ -58,23 +109,36 @@ Graph:
 DFS from 0 (one possible traversal):
 
 ```
-visit 0
-  visit 1
-    visit 3
-    finish 3   [3]
-  finish 1     [3, 1]
-  visit 2
-  finish 2     [3, 1, 2]
-finish 0       [3, 1, 2, 0]
+Adjacency list:
+  0: [1, 2]
+  1: [3]
+  2: [3]
+  3: []
 
-Reverse: [0, 2, 1, 3]
+DFS call tree            Finish list (push on return)
+--------------------     ----------------------------
+visit(0)
+  visit(1)
+    visit(3)
+    finish(3)         -> [3]
+  finish(1)           -> [3, 1]
+  visit(2)
+    (3 already done, skip)
+  finish(2)           -> [3, 1, 2]
+finish(0)             -> [3, 1, 2, 0]
+
+Reverse finish list:  [0, 2, 1, 3]
 ```
 
-Check edges:
-- 0 before 1 and 2
-- 1 and 2 before 3
+Check edges in the result `[0, 2, 1, 3]`:
+- `0 -> 1`: position 0 < position 2  (ok)
+- `0 -> 2`: position 0 < position 1  (ok)
+- `1 -> 3`: position 2 < position 3  (ok)
+- `2 -> 3`: position 1 < position 3  (ok)
 
 All good.
+
+---
 
 ## Cycle detection (why `None` happens)
 
@@ -82,12 +146,12 @@ During DFS we mark each node with a state:
 
 ```
 0 = unvisited
-1 = visiting (on the current DFS stack)
-2 = done
+1 = visiting  (currently on the DFS call stack)
+2 = done      (all descendants are finished)
 ```
 
-If we ever see an edge to a **visiting** node, that is a back edge and means
-there is a cycle.
+If we ever see an edge to a **visiting** node, that is a **back edge** — it
+closes a cycle.
 
 Example cycle:
 
@@ -95,8 +159,98 @@ Example cycle:
 0 -> 1 -> 2 -> 0
 ```
 
-DFS sees `2 -> 0` while `0` is still "visiting", so the algorithm reports
-`None`.
+```mermaid
+graph LR
+    0 --> 1
+    1 --> 2
+    2 --> 0
+```
+
+DFS trace:
+
+```
+visit(0) [state: 0->1]
+  visit(1) [state: 0->1]
+    visit(2) [state: 0->1]
+      edge 2->0: state[0] == 1 (visiting!)  =>  CYCLE DETECTED
+      return false
+    return false
+  return false
+return false
+
+Result: None
+```
+
+---
+
+## State machine diagram
+
+```
+                        +-------------------+
+   start                |                   |
+   -----> [ unvisited ] --enter--> [ visiting ] --finish--> [ done ]
+               0                      1                       2
+                                       |
+                                sees "visiting" neighbor
+                                       |
+                                   CYCLE => None
+```
+
+---
+
+## Full DFS-based topological sort walkthrough
+
+The algorithm on the 5-node graph:
+
+```
+0 -> 2
+1 -> 2
+2 -> 3
+2 -> 4
+```
+
+```mermaid
+graph LR
+    0 --> 2
+    1 --> 2
+    2 --> 3
+    2 --> 4
+```
+
+Step-by-step trace:
+
+```
+Vertices: 0, 1, 2, 3, 4    State array: [0, 0, 0, 0, 0]
+Finish list: []
+
+--- Outer loop: v=0 (unvisited) ---
+  visit(0) state[0]=1
+    edge 0->2: visit(2) state[2]=1
+      edge 2->3: visit(3) state[3]=1
+        no neighbors
+      finish(3) state[3]=2  finish=[3]
+      edge 2->4: visit(4) state[4]=1
+        no neighbors
+      finish(4) state[4]=2  finish=[3,4]
+    finish(2) state[2]=2    finish=[3,4,2]
+  finish(0) state[0]=2      finish=[3,4,2,0]
+
+--- Outer loop: v=1 (unvisited) ---
+  visit(1) state[1]=1
+    edge 1->2: state[2]==2, skip
+  finish(1) state[1]=2      finish=[3,4,2,0,1]
+
+--- Outer loop: v=2..4 already done ---
+
+Reverse finish list: [1, 0, 2, 4, 3]
+
+Check: 0 before 2 (pos 1 < pos 2): ok
+       1 before 2 (pos 0 < pos 2): ok
+       2 before 3 (pos 2 < pos 4): ok
+       2 before 4 (pos 2 < pos 3): ok
+```
+
+---
 
 ## Helper: verify a topological order
 
@@ -135,10 +289,17 @@ fn is_topological_order(
 }
 ```
 
+---
+
 ## Example 1: simple chain (unique order)
 
 ```
 0 -> 1 -> 2 -> 3
+```
+
+```mermaid
+graph LR
+    0 --> 1 --> 2 --> 3
 ```
 
 Only one valid order exists: `[0, 1, 2, 3]`.
@@ -158,11 +319,19 @@ test "topological sort: chain" {
 }
 ```
 
+---
+
 ## Example 2: multiple valid orders
 
 ```
 0 -> 2
 1 -> 2
+```
+
+```mermaid
+graph LR
+    0 --> 2
+    1 --> 2
 ```
 
 Valid orders include:
@@ -182,11 +351,19 @@ test "topological sort: multiple valid orders" {
 }
 ```
 
+---
+
 ## Example 3: disconnected graph
 
 ```
-0 -> 1    2 -> 3
-4 (isolated)
+0 -> 1    2 -> 3    4 (isolated)
+```
+
+```mermaid
+graph LR
+    0 --> 1
+    2 --> 3
+    4
 ```
 
 Topological sort still works; isolated nodes appear somewhere in the list.
@@ -204,10 +381,19 @@ test "topological sort: disconnected graph" {
 }
 ```
 
+---
+
 ## Example 4: cycle detection
 
 ```
 0 -> 1 -> 2 -> 0
+```
+
+```mermaid
+graph LR
+    0 --> 1
+    1 --> 2
+    2 --> 0
 ```
 
 No topological order exists.
@@ -220,6 +406,8 @@ test "topological sort: cycle" {
   inspect(result is None, content="true")
 }
 ```
+
+---
 
 ## Why the algorithm works (short proof)
 
@@ -237,17 +425,53 @@ The "visiting" state prevents cycles:
 if `u -> v` and `v` is already on the current DFS stack, then there is a path
 `v -> ... -> u`, so `u -> v` closes a loop and the graph is not a DAG.
 
+---
+
+## DFS states at a glance
+
+```
+   state[v] = 0          state[v] = 1          state[v] = 2
+  +-----------+          +-----------+          +-----------+
+  | unvisited |  enter   |  visiting |  finish  |   done    |
+  |           | -------> |  (on DFS  | -------> |           |
+  |           |          |   stack)  |          |           |
+  +-----------+          +-----------+          +-----------+
+                              |
+                  edge to another "visiting" node
+                              |
+                         cycle => None
+```
+
+---
+
 ## Complexity
 
-- Time: `O(V + E)` (each vertex and edge is processed once)
-- Space: `O(V + E)` for adjacency lists and DFS state
+- Time: `O(V + E)` — each vertex and edge is processed once.
+- Space: `O(V + E)` — adjacency lists plus the DFS state and finish list.
+
+---
 
 ## Common applications
 
 - Task scheduling with dependencies
 - Build systems (compile order)
-- DAG dynamic programming (process nodes in topo order)
+- DAG dynamic programming (process nodes in topological order)
 - Course prerequisites
+- Package manager dependency resolution
+
+---
+
+## Algorithm comparison
+
+| Algorithm        | Cycle detection | Extra passes | Notes                        |
+|------------------|-----------------|--------------|------------------------------|
+| DFS (this pkg)   | Yes (state 1)   | 1 DFS        | Simple, one pass             |
+| Kahn (BFS-based) | Yes (leftover)  | 1 BFS        | Gives in-degree count        |
+
+Both run in `O(V + E)`.  Kahn's algorithm is covered in
+`challenge_toposort_kahn`.
+
+---
 
 ## Common pitfalls
 

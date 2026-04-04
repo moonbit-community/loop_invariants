@@ -17,13 +17,26 @@
 ///|
 const INF64 : Int64 = 4611686018427387903L
 
-///|
+///| The result returned by `min_cut_st`.
+///
+/// Fields:
+/// - `value`: the minimum cut capacity, equal to the maximum flow from
+///   `source` to `sink`.
+/// - `source_side`: the set of vertices reachable from `source` in the
+///   residual graph after max flow.  These vertices define the S-side of
+///   the minimum cut.  Every edge from a vertex in `source_side` to a
+///   vertex NOT in `source_side` is a cut edge.
 pub(all) struct MinCutSTResult {
   value : Int64
   source_side : Array[Int]
 }
 
-///|
+///| A directed edge in the internal flow network.
+///
+/// Each original edge `u -> v` with capacity `cap` is paired with a
+/// reverse edge `v -> u` with capacity 0.  The `rev` field stores the
+/// index of the paired edge in the adjacency list of the opposite endpoint,
+/// enabling O(1) residual updates.
 priv struct Edge {
   to : Int
   cap : Int64
@@ -31,7 +44,15 @@ priv struct Edge {
   rev : Int
 }
 
-///|
+///| The internal Dinic flow graph.
+///
+/// Fields:
+/// - `n`: vertex count.
+/// - `adj`: adjacency lists; `adj[u]` contains all edges leaving `u`.
+/// - `level`: BFS level assigned to each vertex during the level-graph build.
+///   `-1` means the vertex was not reached in the current BFS.
+/// - `iter`: current-arc pointer per vertex used by the DFS blocking-flow
+///   phase to skip already-exhausted edges.
 priv struct FlowGraph {
   n : Int
   adj : Array[Array[Edge]]
@@ -39,13 +60,17 @@ priv struct FlowGraph {
   iter : Array[Int]
 }
 
-///|
+///| Create a new flow graph with `n` vertices and no edges.
 fn FlowGraph::new(n : Int) -> FlowGraph {
   let adj = Array::makei(n, _ => [])
   { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0) }
 }
 
-///|
+///| Add a directed edge `from -> to` with the given capacity to the flow
+/// graph.
+///
+/// A corresponding reverse edge with capacity 0 is also added so that the
+/// DFS can cancel flow along the forward edge.
 fn FlowGraph::add_edge(
   self : FlowGraph,
   from : Int,
@@ -58,7 +83,11 @@ fn FlowGraph::add_edge(
   self.adj[to].push({ to: from, cap: 0L, flow: 0L, rev: rev_to })
 }
 
-///|
+///| Run BFS from `source` on the residual graph to assign BFS levels.
+///
+/// Returns `true` if `sink` is reachable, meaning another blocking-flow
+/// phase is possible.  Populates `self.level` with shortest-path distances
+/// in the residual graph.
 fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
   for i in 0..<self.n {
     self.level[i] = -1
@@ -100,7 +129,14 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
   self.level[sink] >= 0
 }
 
-///|
+///| DFS blocking-flow phase for Dinic's algorithm.
+///
+/// Attempts to push `pushed` units of flow from `u` to `sink` along the
+/// current level graph.  Returns the amount successfully pushed (0 if no
+/// augmenting path exists from `u`).
+///
+/// Uses the current-arc optimization: `self.iter[u]` remembers the first
+/// edge from `u` not yet proven useless, avoiding repeated scanning.
 fn FlowGraph::dfs(
   self : FlowGraph,
   u : Int,
@@ -132,7 +168,11 @@ fn FlowGraph::dfs(
   0L
 }
 
-///|
+///| Compute the maximum flow from `source` to `sink` using Dinic's algorithm.
+///
+/// Alternates between BFS (build level graph) and DFS (find blocking flow)
+/// until the sink is unreachable in the residual graph.  Returns the total
+/// flow value.
 fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
   for flow = 0L; self.bfs(source, sink); {
     for i in 0..<self.n {
@@ -172,7 +212,15 @@ fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
   }
 }
 
-///|
+///| BFS the residual graph from `source` and return all reachable vertices.
+///
+/// Called after `max_flow` completes.  A vertex `v` is in the returned set
+/// if there is a directed path from `source` to `v` in the residual graph
+/// (i.e., every edge on the path has strictly positive residual capacity).
+///
+/// The returned array is the S-side of the minimum s-t cut.  Every original
+/// edge from a vertex in this set to a vertex NOT in this set is a saturated
+/// cut edge.
 fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] {
   let visited = Array::make(self.n, false)
   let queue : Array[Int] = [source]
@@ -206,9 +254,46 @@ fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] 
   result
 }
 
-///|
-/// Compute minimum s-t cut by max-flow/min-cut.
-/// Returns None for invalid inputs (n <= 0, source/sink out of range, or equal).
+///| Compute the minimum s-t cut of a directed graph.
+///
+/// Uses the max-flow min-cut theorem: the value of the minimum s-t cut equals
+/// the maximum flow from `source` to `sink`.  The algorithm runs Dinic's max
+/// flow, then BFS-walks the residual graph to identify the source-side
+/// partition S.
+///
+/// Parameters:
+/// - `n`: number of vertices, labeled `0` to `n-1`.
+/// - `edges`: directed edges as `(from, to, capacity)` triples.
+///   Edges with non-positive capacity, self-loops, or out-of-range endpoints
+///   are silently ignored.
+/// - `source`: the source vertex `s`; must satisfy `0 <= source < n`.
+/// - `sink`: the sink vertex `t`; must satisfy `0 <= sink < n` and
+///   `sink != source`.
+///
+/// Returns:
+/// - `None` if any of the following hold:
+///   - `n <= 0`
+///   - `source` or `sink` is out of range
+///   - `source == sink`
+/// - `Some(result)` otherwise, where:
+///   - `result.value` is the minimum cut capacity (equals max flow).
+///   - `result.source_side` is the array of vertices on the S-side of the
+///     cut (reachable from `source` in the residual graph after max flow).
+///     The S-side always contains `source` and never contains `sink`.
+///
+/// The cut edges are all original edges `(u, v, cap)` such that `u` is in
+/// `result.source_side` and `v` is not.  Their capacities sum to
+/// `result.value`.
+///
+/// Example:
+/// ```
+///   Edges: 0->1(3), 0->2(2), 1->3(2), 2->3(3)
+///   source = 0, sink = 3
+///
+///   Max flow = 4  =>  min cut = 4
+///   source_side = {0, 1}
+///   Cut edges: 0->2 (cap 2) and 1->3 (cap 2)
+/// ```
 pub fn min_cut_st(
   n : Int,
   edges : ArrayView[(Int, Int, Int64)],

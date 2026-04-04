@@ -4,6 +4,7 @@ This package implements a **suffix automaton (SAM)** with extra utilities:
 
 - substring checks,
 - distinct substring count,
+- occurrence counting,
 - longest common substring length.
 
 It builds in **O(n)** time and space.
@@ -15,13 +16,11 @@ It builds in **O(n)** time and space.
 A suffix automaton is a minimal DFA that recognizes **all substrings** of a
 string.
 
-That means:
-
 ```
 P is a substring of S  <=>  SAM built from S accepts P
 ```
 
-Unlike a trie of all substrings (which is huge), SAM is compact:
+Unlike a trie of all substrings (which is huge), a SAM is compact:
 
 ```
 at most 2n - 1 states for a string of length n
@@ -29,66 +28,170 @@ at most 2n - 1 states for a string of length n
 
 ---
 
-## 2. Intuition: groups of substrings
+## 2. Core concepts
 
-Many substrings end in the **same positions** in the text.
+### 2a. Endpos equivalence
 
-SAM groups them into one state.
-
-Example with `"abab"`:
+Many substrings end at the **same set of positions** in the text. A SAM groups
+all such substrings into one state. This is the key compression.
 
 ```
-"ab" ends at positions {1, 3}
-"b"  ends at positions {1, 3}
+Example: "abab"  (0-indexed ending positions)
 
-Same end positions -> same SAM state
+  "ab"  ends at {1, 3}
+  "b"   ends at {1, 3}
+  --> same state
+
+  "a"   ends at {0, 2}
+  --> own state
+
+  "aba" ends at {2}
+  --> own state
 ```
 
-This is the key compression.
+### 2b. Length range per state
+
+Each state `q` represents substrings whose lengths fall in a contiguous range:
+
+```
+  (len[link[q]] + 1)  ..  len[q]
+```
+
+This is why the distinct-substring formula works (see Section 6).
+
+### 2c. Suffix links
+
+Every state has a **suffix link** pointing to the state whose string class
+contains the longest proper suffix of any string in the current class.
+
+```
+  "abab"  -->  "bab"  -->  "ab"  -->  "b"  -->  ""
+```
+
+Suffix links form a tree rooted at the initial state. This tree is used for
+topological propagation (e.g., occurrence counts).
 
 ---
 
-## 3. Visual overview (small SAM)
+## 3. State machine diagrams
 
-For `"abab"`:
+### 3a. SAM for "ab"
 
 ```
-init --a--> [a] --b--> [ab] --a--> [aba] --b--> [abab]
-  \                             ^
-   \--b--> [b] --a--> [ba] -----|
+States: init(0), A(1), AB(2)
+
+         a           b
+  (0) -------> (1) -------> (2)
+  init          A            AB
 ```
 
-Each state represents multiple substrings that share the same end positions.
+Suffix links:
+
+```
+  AB(2)  -->  A(1)   [link]
+  A(1)   -->  init(0) [link]
+  init(0) has no link (-1)
+```
+
+### 3b. SAM for "abab" (full Mermaid diagram)
+
+```mermaid
+stateDiagram-v2
+    direction LR
+
+    [*] --> init
+    init --> A   : a
+    init --> B   : b
+    A --> AB     : b
+    B --> BA     : a
+    AB --> ABA   : a
+    BA --> AB    : b
+    ABA --> ABAB : b
+
+    note right of init
+      len=0  link=-1
+    end note
+    note right of A
+      len=1  link=init
+      represents "a"
+    end note
+    note right of B
+      len=1  link=init
+      represents "b"
+    end note
+    note right of AB
+      len=2  link=B
+      represents "ab","b" (shared endpos {1,3})
+    end note
+    note right of BA
+      len=3  link=AB
+      represents "ba","aba"
+    end note
+    note right of ABA
+      len=3  link=AB
+      represents "aba"
+    end note
+    note right of ABAB
+      len=4  link=BA
+      represents "abab"
+    end note
+```
+
+### 3c. Suffix link tree for "abab"
+
+```
+                init(0)
+               /       \
+            A(1)        B(2)
+              \           \
+              AB(3)       ABA(4)
+                \
+               ABAB(5)
+```
+
+Each child's suffix link points to its parent.
 
 ---
 
-## 3b. State counts (why 2n - 1)
+## 4. ASCII art: one extension step
 
-Each new character can create **at most 2 states**:
+When character `c` is added, the algorithm does:
 
-1) a new state for the extended string, and  
-2) sometimes a "clone" state to preserve transitions.
+```
+  Before adding 'b' to SAM of "a":
 
-So total states ≤ 2n - 1.
+    [init] --a--> [A]
+       ^
+       last = A
+
+  Step 1: allocate new state cur for "ab"
+  Step 2: walk suffix links from last=A, set transitions to cur
+
+    [init] --a--> [A] --b--> [cur="ab"]
+    [init] --b--> [cur="ab"]   (via suffix link walk)
+
+  Step 3: set suffix link for cur
+    cur.link = init  (because init.len+1 == cur.len would need checking)
+
+  After: last = cur
+```
+
+If the existing transition target `q` must be split (its length is wrong), a
+**clone** state is created:
+
+```
+  Clone inherits q's transitions and suffix link,
+  then q and cur both point their suffix links at clone.
+
+  ...p --c--> [clone] <-- q.link
+                   \
+                    +--- q.link = clone
+                    +--- cur.link = clone
+```
 
 ---
 
-## 4. Suffix links (backbone)
-
-Each state has a **suffix link** to the state representing its longest proper
-suffix.
-
-Example:
-
-```
-"abab" -> "bab" -> "ab" -> "b" -> ""
-```
-
-Following suffix links is like walking through suffixes.
-
----
-
-## 5. Example usage (public API)
+## 5. Public API and example usage
 
 ```mbt check
 ///|
@@ -125,86 +228,129 @@ test "suffix automaton occurrences" {
 
 ## 6. Distinct substrings count
 
-Each state `q` contributes:
+Each state `q` contributes exactly the substrings with lengths in
+`(len[link[q]] + 1) .. len[q]`, which is:
 
 ```
-len[q] - len[link[q]]
+  len[q] - len[link[q]]  distinct substrings
 ```
 
-Summing over all states gives the number of **distinct substrings**.
+Summing over all non-initial states gives the total distinct count.
 
 Example `"abab"`:
 
 ```
-a, b, ab, ba, aba, bab, abab  -> 7
+  Substrings: a, b, ab, ba, aba, bab, abab  ->  7
+```
+
+Breakdown per state (illustrative):
+
+```
+  State A    : len=1, link.len=0  ->  1 - 0 = 1   ("a")
+  State B    : len=1, link.len=0  ->  1 - 0 = 1   ("b")
+  State AB   : len=2, link.len=1  ->  2 - 1 = 1   ("ab")
+  State BA   : len=3, link.len=2  ->  3 - 2 = 1   ("ba")
+  State ABA  : len=3, link.len=2  ->  3 - 2 = 1   ("aba")
+  State ABAB : len=4, link.len=3  ->  4 - 3 = 2   ("bab", "abab")
+                                               ---
+                                    total =    7
 ```
 
 ---
 
-## 6b. Why the formula works (intuition)
+## 7. Occurrence counting (idea)
 
-Each state `q` represents substrings with lengths in:
-
-```
-(len[link[q]] + 1) .. len[q]
-```
-
-So the count contributed by `q` is exactly:
+1. Walk the SAM with `pattern`; reach state `s`.
+2. Sort all states by `len` descending (topological order of suffix link tree).
+3. Every state reachable from the "last" suffix-link chain counts as a terminal
+   (occurrence). Propagate counts up the suffix link tree.
+4. `cnt[s]` is the answer.
 
 ```
-len[q] - len[link[q]]
-```
+  Suffix link tree propagation (bottom-up):
 
-Summing over all states counts all distinct substrings once.
+  leaf states (long strings) push their counts up to the root.
+  Each parent accumulates the sum of its children.
+```
 
 ---
 
-## 7. Longest common substring (idea)
+## 8. Longest common substring (idea)
 
-Build SAM for S, then walk through T:
+Build SAM for S, then walk through T character by character:
 
 ```
-if transition exists -> extend match
-if not -> follow suffix links
-track max length seen
+  current state = init
+  current match length = 0
+
+  For each character c in T:
+    if transition(state, c) exists:
+      state = next state
+      length += 1
+    else:
+      while state != init and no transition(state, c):
+        state = suffix_link(state)
+        length = len[state]
+      if transition(state, c) exists:
+        state = next state
+        length += 1
+      else:
+        state = init
+        length = 0
+    max_length = max(max_length, length)
 ```
 
 Total time: O(|S| + |T|).
 
-### Tiny example
+### Example
 
 ```
-S = "abcde"
-T = "cdefg"
-Longest common substring = "cde" (length 3)
-```
+  S = "abcde"
+  T = "cdefg"
 
----
+  c -> match "c"   (len=1)
+  d -> match "cd"  (len=2)
+  e -> match "cde" (len=3)
+  f -> no transition, follow suffix links, eventually reset
+  g -> no match
 
-## 8. Complexity
-
-```
-Build SAM: O(n)
-Substring check: O(m)
-Distinct substrings: O(n)
-Longest common substring: O(n + m)
+  LCS length = 3  ("cde")
 ```
 
 ---
 
-## 9. Beginner checklist
+## 9. Complexity
 
-1. SAM works for **substrings**, not just suffixes.
-2. It uses suffix links to compress states.
-3. Maximum states is 2n - 1.
-4. For each query, just walk transitions.
+```
+  Build SAM              : O(n)
+  Substring check        : O(m)
+  Distinct substrings    : O(n)
+  Occurrence count       : O(n + m)
+  Longest common substr  : O(n + m)
+
+  Space                  : O(n * alphabet_size)
+  States                 : <= 2n - 1
+  Transitions            : <= 3n - 4
+```
 
 ---
 
-## 10. Summary
+## 10. Beginner checklist
 
-Suffix automaton is one of the most powerful linear string structures:
+1. SAM accepts all **substrings**, not just suffixes.
+2. Suffix links compress endpos-equivalent substrings into single states.
+3. Maximum states is 2n - 1; maximum transitions is 3n - 4.
+4. For each query, walk transitions from the initial state.
+5. The suffix link tree (not the transition graph) drives occurrence counting.
 
-- compact,
-- fast substring checks,
-- useful for many advanced string tasks.
+---
+
+## 11. Summary
+
+The suffix automaton is one of the most powerful linear-space string structures:
+
+- compact (O(n) states and transitions),
+- O(m) substring checks,
+- O(n) distinct substring enumeration,
+- O(n + m) longest common substring,
+- extensible to many other string tasks.

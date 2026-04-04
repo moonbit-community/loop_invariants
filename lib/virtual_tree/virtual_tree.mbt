@@ -19,6 +19,13 @@ fn make_adj(n : Int) -> Array[Array[Int]] {
 }
 
 ///|
+/// Run a DFS from `root` on `adj` to fill binary-lifting table `up`,
+/// per-node `depth`, DFS entry time `tin`, and DFS exit time `tout`.
+/// Returns `(up, depth, tin, tout)`.
+///
+/// `up[k][v]` is the 2^k-th ancestor of node `v`.  The table has
+/// `log = ceil(log2(n))` rows, which is sufficient for all ancestor jumps
+/// over a tree with `n` nodes.
 fn build_lca(
   adj : Array[Array[Int]],
   root : Int,
@@ -79,6 +86,16 @@ fn build_lca(
 }
 
 ///|
+/// Return the lowest common ancestor of nodes `a0` and `b0` using the
+/// precomputed binary-lifting table `up` and per-node depths `depth`.
+///
+/// Algorithm:
+/// 1. Bring the deeper node up to the same depth as the shallower one.
+/// 2. If they are now equal, return immediately.
+/// 3. Lift both nodes together, jumping the largest power of two that keeps
+///    them on different ancestors, until only one step separates them.
+/// 4. Return the parent of either node (both share the same parent at this
+///    point, which is the LCA).
 fn lca(up : Array[Array[Int]], depth : Array[Int], a0 : Int, b0 : Int) -> Int {
   let log = up.length()
   let (a, b) = if depth[a0] < depth[b0] { (b0, a0) } else { (a0, b0) }
@@ -109,15 +126,46 @@ fn lca(up : Array[Array[Int]], depth : Array[Int], a0 : Int, b0 : Int) -> Int {
 }
 
 ///|
+/// The result of `build_virtual_tree`.
+///
+/// Fields:
+/// - `nodes`: sorted list (by DFS entry time) of node IDs that appear in the
+///   virtual tree.  This set consists of all important nodes plus any LCA
+///   nodes required to connect them.
+/// - `adj`: adjacency list over the **original** node ID space.  Only entries
+///   for nodes listed in `nodes` carry edges; all other entries are empty.
+///   Each edge `(u, v)` stored here corresponds to an ancestor-descendant
+///   relationship in the original tree.
 pub struct VirtualTree {
   nodes : Array[Int]
   adj : Array[Array[Int]]
 }
 
 ///|
-/// Build the virtual tree for the given important nodes.
-/// The returned adjacency uses original node ids, with edges only among
-/// nodes in the virtual tree.
+/// Build the virtual tree for a given set of important nodes.
+///
+/// A virtual tree is the minimal subtree of the original tree that connects
+/// every node in `important`.  It is obtained by:
+/// 1. Sorting `important` by DFS entry time.
+/// 2. Inserting the LCA of each consecutive pair in that order.
+/// 3. Deduplicating and re-sorting the combined node list.
+/// 4. Reconstructing parent-child edges using a monotone stack that tracks
+///    the current root-to-frontier path.
+///
+/// The returned adjacency list uses the **original** node IDs and stores
+/// edges in both directions (undirected representation).
+///
+/// Parameters:
+/// - `adj`: adjacency list of the original tree (0-indexed, undirected).
+/// - `important`: nodes of interest.  May be in any order and may contain
+///   the root.
+/// - `root`: root of the original tree (default: 0).
+///
+/// Returns a `VirtualTree` whose `nodes` field lists every node in the
+/// virtual tree and whose `adj` field holds the corresponding edges.
+///
+/// Complexity: O(k log n) time, O(n + k) space,
+/// where k = `important.length()` and n = `adj.length()`.
 pub fn build_virtual_tree(
   adj : Array[Array[Int]],
   important : Array[Int],

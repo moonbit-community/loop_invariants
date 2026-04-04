@@ -15,6 +15,37 @@ So you get both:
 - the **order** of an array (in-order traversal)
 - the **balance** of a randomized BST
 
+## Architecture Overview
+
+```mermaid
+graph TD
+    A[ImplicitTreap] -->|owns| B[nodes: Array of ImplicitNode]
+    A -->|index| C[root: Int]
+    A -->|recycles| D[free_list: Array of Int]
+    A -->|seeds| E[rand_state: Int]
+
+    B -->|each node has| F[val, priority, size]
+    B -->|aggregates| G[sum, min_val, max_val]
+    B -->|lazy flag| H[rev: Bool]
+    B -->|child indices| I[left: Int, right: Int]
+```
+
+```mermaid
+flowchart LR
+    subgraph "All O(log n) operations"
+        S[split] --> I[insert]
+        S --> D[delete]
+        S --> RV[reverse]
+        S --> RQ[range query]
+        M[merge] --> I
+        M --> D
+        M --> RV
+        M --> RQ
+    end
+    style S fill:#d6e8ff
+    style M fill:#d6e8ff
+```
+
 ## Mental Model
 
 ### 1) Two Properties at Once
@@ -69,7 +100,38 @@ Left  = [10, 20]
 Right = [30, 40, 50]
 ```
 
-What happens at a node?
+#### Step-by-step tree diagram for `split([10,20,30,40,50], k=2)`
+
+The tree before the split (priorities shown as numbers, highest = closest to root):
+
+```
+          30(p=9)
+         /       \
+      20(p=6)   40(p=7)
+      /               \
+   10(p=3)           50(p=4)
+```
+
+Split at k=2.  At node 30: left_size = 2, k <= left_size, so 30 goes RIGHT.
+Recurse: split(20's subtree, 2).  At node 20: left_size = 1, k=2 > left_size,
+so 20 goes LEFT. Recurse: split(right of 20, 2-1-1=0).
+right of 20 is null -> returns (-1, -1).  20.right = -1.
+
+Result:
+
+```
+   LEFT             RIGHT
+
+  20(p=6)          30(p=9)
+  /                /       \
+10(p=3)         null       40(p=7)
+                                \
+                               50(p=4)
+
+In-order: [10,20]   In-order: [30,40,50]
+```
+
+What happens at each node:
 
 ```
 Let left_size = size(left child)
@@ -99,6 +161,34 @@ else:
 
 This preserves heap order and keeps the tree balanced in expectation.
 
+#### Step-by-step tree diagram for `merge([A,B], [C,D,E])`
+
+```
+LEFT              RIGHT
+
+B(p=6)            C(p=9)
+/                 /     \
+A(p=3)          null    D(p=7)
+                             \
+                             E(p=4)
+```
+
+Step 1: compare priorities. C(9) > B(6), so C becomes root.
+        C.left = merge(LEFT, C.left=null).
+
+Step 2: merge([A,B], null).  null -> return B.
+        C.left = B.
+
+```
+         C(p=9)
+        /      \
+     B(p=6)   D(p=7)
+     /              \
+  A(p=3)           E(p=4)
+
+In-order: [A, B, C, D, E]   Heap property: C > B,D; D > E; B > A.
+```
+
 ## Building Operations From Split/Merge
 
 ### Insert at Position
@@ -117,6 +207,20 @@ Diagram (insert C at position 2 into [A, B, D, E]):
 [A,B,D,E] -> split(2) -> [A,B] + [D,E]
 merge([A,B], C) -> [A,B,C]
 merge([A,B,C], [D,E]) -> [A,B,C,D,E]
+```
+
+ASCII view before and after:
+
+```
+BEFORE                     AFTER
+
+    D(p=7)                     C(p=8)
+   /      \                   /      \
+B(p=5)   E(p=3)           B(p=5)   D(p=7)
+/                          /             \
+A(p=2)                  A(p=2)          E(p=3)
+
+[A, B, D, E]               [A, B, C, D, E]
 ```
 
 ### Delete at Position
@@ -147,22 +251,46 @@ on each child. This makes reverse cost **O(log n)**.
 ## Lazy Reversal: Visual Example
 
 Sequence: `[1, 2, 3, 4, 5]`
-Reverse `[1, 4)` (elements 2,3,4)
+Reverse `[1, 4)` (elements 2, 3, 4)
 
 ```
 Split:
 A = [1]
-mid = [2, 3, 4]
+mid = [2, 3, 4]    <- set rev=true on root of this subtree
 C = [5]
 
-Toggle mid.rev
+Toggle mid.rev (no nodes physically moved yet)
 
 Merge back:
-[1] + reversed([2,3,4]) + [5]
-=> [1, 4, 3, 2, 5]
+[1] + mid(rev=true) + [5]
+```
+
+Later, when the subtree is traversed (e.g., for `to_array`), `push_down`
+propagates the flag:
+
+```
+push_down(mid root):
+  swap children
+  toggle rev on both children
+  clear own rev flag
+
+Result after propagation: subtree represents [4, 3, 2]
+
+Final sequence: [1, 4, 3, 2, 5]
 ```
 
 You never move all nodes. The reversal is a flag.
+
+### Lazy flag propagation diagram
+
+```mermaid
+flowchart TD
+    A["mid root\nrev=true"] -->|push_down| B["mid root\nrev=false\nchildren swapped"]
+    B --> C["left child\nrev toggled"]
+    B --> D["right child\nrev toggled"]
+    C -->|"push_down on next access"| E["..."]
+    D -->|"push_down on next access"| F["..."]
+```
 
 ## Range Queries via Split
 
@@ -176,6 +304,17 @@ Range sum on `[l, r)`:
 ```
 
 Same pattern for `min` and `max`.
+
+### Range query pattern diagram
+
+```mermaid
+flowchart LR
+    Root -->|"split(root, l)"| A["[0, l)"]
+    Root -->|"split(rest, r-l)"| Mid["[l, r)"]
+    Root -->|remainder| C["[r, n)"]
+    Mid -->|"read .sum / .min_val / .max_val"| Result
+    A & Mid & C -->|merge back| Root
+```
 
 ## Aggregates Stored Per Node
 
@@ -194,6 +333,21 @@ max   = max(max(left), val, max(right))
 ```
 
 Always call `update(node)` after structural changes.
+
+## Node Memory Layout
+
+```
++----------+----------+------+-----+---------+---------+-----+------+-------+
+|   val    | priority | size | sum | min_val | max_val | rev | left | right |
+| (Int64)  |  (Int)   |(Int) |(I64)|  (I64)  |  (I64)  |(Bool)|(Int)| (Int) |
++----------+----------+------+-----+---------+---------+-----+------+-------+
+                                                                    |       |
+                                                              index into nodes array
+                                                              (-1 = no child)
+```
+
+Nodes are stored in a flat array; `left` and `right` are integer indices, not
+pointers.  Deleted nodes are recycled via `free_list`.
 
 ## Worked Example (Insert + Reverse + Sum)
 

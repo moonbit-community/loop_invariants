@@ -185,6 +185,15 @@ fn lis_binary_search(nums : ArrayView[Int]) -> Int {
 }
 
 ///|
+/// Binary search for the leftmost index in `arr` where `arr[idx] >= target`.
+///
+/// Returns `arr.length()` when all elements are less than `target`.
+/// Used by `lis_binary_search` to locate the insertion point in the sorted
+/// `tails` array in O(log n) time.
+///
+/// Parameters:
+/// - `arr`    : Sorted array to search.
+/// - `target` : Value to find the lower bound for.
 fn lower_bound_lis(arr : ArrayView[Int], target : Int) -> Int {
   for lo = 0, hi = arr.length(); lo < hi; {
     let mid = (lo + hi) / 2
@@ -672,6 +681,15 @@ fn word_break(s : String, word_dict : Array[String]) -> Bool {
 }
 
 ///|
+/// Returns true when the substring of `chars` starting at `start` equals `word`
+/// character-by-character.
+///
+/// Helper used by `word_break` to avoid allocating substring copies.
+///
+/// Parameters:
+/// - `chars` : Full character array of the input string.
+/// - `start` : Index into `chars` where the comparison begins.
+/// - `word`  : The target word as a character array.
 fn matches_word(chars : Array[Char], start : Int, word : Array[Char]) -> Bool {
   let word_len = word.length()
   for i in 0..<word_len {

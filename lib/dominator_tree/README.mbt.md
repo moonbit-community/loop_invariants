@@ -3,29 +3,34 @@
 ## Overview
 
 A vertex **u dominates v** if every path from the start node to v must pass
-through u. The **immediate dominator** (idom) is the closest strict dominator.
-The dominator tree connects each node to its immediate dominator.
+through u. The **immediate dominator** (idom) of v is the closest strict
+dominator: the unique vertex that dominates v and is dominated by every other
+dominator of v.
+
+The **dominator tree** connects each node to its immediate dominator. It is a
+tree rooted at the start node where u is an ancestor of v if and only if u
+dominates v.
 
 This package implements the **Lengauer-Tarjan algorithm**.
 
-- **Time**: O((V + E) · α(V)) ≈ nearly linear
+- **Time**: O((V + E) * alpha(V)) -- nearly linear (alpha is the inverse Ackermann function)
 - **Space**: O(V + E)
-- **Key Feature**: Foundation for compiler optimizations
+- **Key Feature**: Foundation for compiler optimizations (SSA, loop detection, dead code elimination)
 
 ## The Key Insight
 
 ```
-Problem: For each vertex, find the "gateway" from start
+Problem: For each vertex v, find its "gateway" from the start node.
 
-Naive: For each v, remove candidates and check reachability → O(V²·E)
+Naive: For each v, remove each candidate and check reachability -> O(V^2 * E)
 
 Lengauer-Tarjan insight:
   Use DFS tree structure + semi-dominators!
 
 Semi-dominator sdom[v]:
-  Minimum DFS number reachable from v via:
-    - Tree edges (going down)
-    - Followed by ONE non-tree edge (jumping up)
+  The minimum DFS number reachable from v via:
+    - Zero or more tree edges (going down in DFS tree)
+    - Followed by at most ONE non-tree edge (cross/back edge going up)
 
 Key theorem:
   idom[v] is either sdom[v] or idom[sdom[v]]
@@ -34,68 +39,152 @@ Key theorem:
   by processing in reverse DFS order with union-find!
 ```
 
+## Visual: Control Flow Graph and DFS Tree
+
+Given this control flow graph (CFG):
+
+```mermaid
+graph TD
+    0((0)) --> 1((1))
+    1 --> 2((2))
+    1 --> 3((3))
+    2 --> 3
+    2 --> 5((5))
+    3 --> 4((4))
+    4 --> 5
+```
+
+A DFS from node 0 discovers vertices in order and builds a **DFS spanning tree**
+(tree edges shown solid, non-tree edges shown dashed):
+
+```
+DFS Tree (discovery order in brackets):
+
+  0 [dfn=1]
+  |
+  1 [dfn=2]
+ / \
+2   3        <-- tree edges (solid in DFS)
+[3] [4]
+|    \
+5    4       <-- 2->3 and 2->5 are non-tree (cross/forward) edges
+[6]  [5]
+```
+
+Non-tree edges from the same CFG (edges not in DFS tree):
+- 2 -> 3  (forward edge: dfn[2]=3 < dfn[3]=4)
+- 2 -> 5  (forward edge: dfn[2]=3 < dfn[5]=6)
+
 ## Visual: Dominator Tree
 
-```
-Control Flow Graph:        Dominator Tree:
+The dominator tree for the CFG above:
 
-    0 (entry)                   0
-    │                           │
-    ▼                           ├──1
-    1                           │  ├──2
-   / \                          │  └──3
-  ▼   ▼                         └──4
-  2   3                            └──5
-   \ /
-    ▼
-    4
-    │
-    ▼
-    5
-
-Dominance:
-  0 dominates all (entry)
-  1 dominates 2, 3 (before the branch)
-  4 dominates 5 (only path)
-
-idom[1]=0, idom[2]=1, idom[3]=1, idom[4]=1, idom[5]=4
+```mermaid
+graph TD
+    0((0 root)) --> 1((1))
+    1 --> 2((2))
+    1 --> 3((3))
+    1 --> 5((5))
+    3 --> 4((4))
 ```
 
-## The Algorithm (Simplified)
+Reading the dominator tree:
+- `idom[1] = 0` -- only one path to 1, through 0
+- `idom[2] = 1` -- path must go through 1
+- `idom[3] = 1` -- both paths (1->2->3 and 1->3) pass through 1
+- `idom[4] = 3` -- only path to 4 goes through 3
+- `idom[5] = 1` -- paths via 2->5 and 4->5 both require 1
+
+## Lengauer-Tarjan Algorithm: ASCII Walkthrough
+
+The algorithm processes a small graph step by step to show how semi-dominators
+and immediate dominators are computed.
+
+**Input graph** (diamond with shortcut):
 
 ```
-lengauer_tarjan(n, edges, start):
-  // Phase 1: DFS numbering
-  dfs_order = DFS from start
-  for each v in dfs_order:
-    dfn[v] = DFS number
-    parent[v] = DFS parent
+  0
+  |
+  1
+ / \
+2   |
+ \ /
+  3
 
-  // Phase 2: Compute semi-dominators
-  // Process in reverse DFS order
-  for v in reverse(dfs_order):
-    for each predecessor u of v:
-      if dfn[u] < dfn[v]:  // Tree ancestor
-        sdom[v] = min(sdom[v], dfn[u])
-      else:  // u is descendant or unrelated
-        // Find minimum sdom in u's ancestor chain
-        sdom[v] = min(sdom[v], eval(u))
+Edges: 0->1, 1->2, 2->3, 1->3
+```
 
-    bucket[sdom[v]].add(v)
+**Phase 1 -- DFS Numbering:**
 
-    // Process bucket for v's parent
-    for each w in bucket[parent[v]]:
-      u = eval(w)
-      idom[w] = u if sdom[u] < sdom[w] else parent[v]
+```
+  Vertex:  0    1    2    3
+  dfn:     1    2    3    4
+  parent:  -    1    2    3   (parent in DFS tree, by dfn)
 
-    link(parent[v], v)  // Union-find link
+  DFS tree edges: 1->2, 2->3, 3->4
+  Non-tree edge:  1->3  (dfn[1]=2 < dfn[3]=4, so it goes "up")
+```
 
-  // Phase 3: Finalize idom
-  for v in dfs_order:
-    if idom[v] != vertex[sdom[v]]:
-      idom[v] = idom[idom[v]]
+**Phase 2 -- Compute Semi-dominators (reverse DFS order):**
 
-  return idom
+```
+  Initialize: sdom[i] = i for all i
+
+  i=4 (vertex 3):
+    pred = {dfn[2]=3, dfn[1]=2}
+    From dfn=3: 3 < 4 (tree ancestor), sdom[4] = min(4, 3) = 3
+    From dfn=2: 2 < 4 (tree ancestor), sdom[4] = min(3, 2) = 2
+    -> sdom[4] = 2  (vertex 1 is semi-dominator of vertex 3)
+    bucket[2].add(4)
+
+  i=3 (vertex 2):
+    pred = {dfn[1]=2}
+    From dfn=2: 2 < 3, sdom[3] = min(3, 2) = 2
+    -> sdom[3] = 2
+    bucket[2].add(3)
+
+  i=2 (vertex 1):
+    Process bucket[2] = {4, 3}
+      w=4: u = eval(4) = 4, sdom[4]=2 == sdom[4]=2, so idom[4] = sdom[4] = 2
+      w=3: u = eval(3) = 3, sdom[3]=2 == sdom[3]=2, so idom[3] = sdom[3] = 2
+    pred = {dfn[0]=1}
+    From dfn=1: 1 < 2, sdom[2] = min(2, 1) = 1
+    bucket[1].add(2)
+    link(parent[2]=1, 2)
+
+  i=1 (vertex 0):
+    Process bucket[1] = {2}
+      w=2: u = eval(2) = 2, sdom[2]=1 == sdom[2]=1, so idom[2] = sdom[2] = 1
+    (root, no predecessor processing)
+```
+
+**Phase 3 -- Finalize idom:**
+
+```
+  i=2: idom[2]=1 == sdom[2]=1, no change
+  i=3: idom[3]=2 != sdom[3]=2? No (both 2), no change
+  i=4: idom[4]=2 != sdom[4]=2? No (both 2), no change
+
+  Final idom (by dfn index): [_, 1, 1, 2, 2]
+                               0  1  2  3  4
+
+  Convert back to vertex IDs:
+    dfn=1 -> vertex 0: idom = vertex 0 (root)
+    dfn=2 -> vertex 1: idom = vertex(dfn=1) = vertex 0
+    dfn=3 -> vertex 2: idom = vertex(dfn=2) = vertex 1
+    dfn=4 -> vertex 3: idom = vertex(dfn=2) = vertex 1
+
+  Result: idom = [0, 0, 1, 1]
+```
+
+**Result dominator tree:**
+
+```
+    0
+    |
+    1
+   / \
+  2   3
 ```
 
 ## Example Usage
@@ -121,7 +210,7 @@ test "dominator tree example" {
 ```mbt check
 ///|
 test "dominator diamond" {
-  // Diamond: 0 → 1,2 → 3
+  // Diamond: 0 -> 1,2 -> 3
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
   let dom = @dominator_tree.build_dominator_tree(4, edges[:], 0).unwrap()
   inspect(dom.idom[3], content="0")
@@ -140,7 +229,7 @@ test "dominator invalid root" {
 ## Algorithm Walkthrough
 
 ```
-Graph: 0→1→2→3, 1→3 (diamond shortcut)
+Graph: 0->1->2->3, 1->3 (diamond shortcut)
 
 DFS from 0:
   Order: [0, 1, 2, 3]
@@ -185,7 +274,7 @@ Final idom: [-1, 0, 1, 1]
 
 ```
 Theorem: sdom[v] is the minimum dfn of any vertex u where:
-  - There's a path u → v using only vertices with dfn > dfn[v]
+  - There's a path u -> v using only vertices with dfn > dfn[v]
   - (except u itself)
 
 This means:
@@ -201,6 +290,25 @@ Key lemma:
       where sdom[w] is minimized
 
 The union-find tracks this efficiently!
+```
+
+## Union-Find Role
+
+```
+The union-find forest mirrors the DFS tree as it is built.
+
+Initially: each vertex is its own root.
+
+After link(parent[i], i):
+  vertex i is "activated" -- future eval() queries can traverse through it.
+
+eval(v): returns the vertex u on the path from v to its set root
+         such that sdom[u] is minimized.
+
+  Before any links:  eval(v) = v   (no path to explore)
+  After link(p, v):  eval(v) = min-sdom vertex between v and p's root
+
+Path compression in compress() keeps eval() amortized O(alpha(n)).
 ```
 
 ## Common Applications
@@ -234,17 +342,17 @@ Back edges target loop headers that dominate tail.
 | Phase | Time | Notes |
 |-------|------|-------|
 | DFS numbering | O(V + E) | Standard DFS |
-| Compute sdom | O(E · α(V)) | Union-find with path compression |
+| Compute sdom | O(E * alpha(V)) | Union-find with path compression |
 | Build buckets | O(V) | One pass |
 | Finalize idom | O(V) | One pass |
-| **Total** | **O((V+E) · α(V))** | Nearly linear |
+| **Total** | **O((V+E) * alpha(V))** | Nearly linear |
 
 ## Dominator Tree Properties
 
 ```
 Property 1: Tree structure
   Each vertex (except root) has exactly one idom.
-  Edges idom[v] → v form a tree.
+  Edges idom[v] -> v form a tree.
 
 Property 2: Transitivity
   If a dominates b and b dominates c,

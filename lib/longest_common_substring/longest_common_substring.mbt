@@ -11,12 +11,27 @@
 // SPACE COMPLEXITY: O(m)
 
 ///|
+/// The result returned by `longest_common_substring`.
+///
+/// Fields:
+/// - `substring` : the actual longest common contiguous substring (may be
+///                 empty when no characters match).
+/// - `length`    : the length of `substring` in UTF-16 code units; equals
+///                 `0` when `substring` is empty.
+///
+/// When multiple substrings tie for the maximum length the first one
+/// encountered while scanning `a` left to right is returned.
 pub(all) struct LCSResult {
   substring : String
   length : Int
 }
 
 ///|
+/// Build a fresh `String` from code units `s[start..<end]`.
+///
+/// Uses a `StringBuilder` so the result is always a new allocation
+/// independent of the source string.  This helper exists because MoonBit
+/// `String` does not expose a direct slice constructor.
 fn slice_string(s : String, start : Int, end : Int) -> String {
   let sb = StringBuilder::new()
   for idx in start..<end {
@@ -27,8 +42,33 @@ fn slice_string(s : String, start : Int, end : Int) -> String {
 }
 
 ///|
-/// Compute the longest common substring of a and b.
-/// If no common substring exists, returns empty string with length 0.
+/// Return the longest contiguous substring that appears in both `a` and `b`.
+///
+/// Uses a space-optimised dynamic programming approach that keeps only two
+/// rows of the DP table at a time (O(m) space instead of O(n * m)).
+///
+/// The recurrence is:
+///
+/// ```
+/// dp[i][j] = dp[i-1][j-1] + 1   if a[i-1] == b[j-1]
+///          = 0                   otherwise
+/// ```
+///
+/// The value `dp[i][j]` is the length of the longest common suffix of the
+/// prefixes `a[0..i)` and `b[0..j)` that ends exactly at `a[i-1]` and
+/// `b[j-1]`.  The answer is the maximum over all cells, together with the
+/// position in `a` where that maximum ends.
+///
+/// Parameters:
+/// - `a` : first input string (UTF-16, indexed by code unit).
+/// - `b` : second input string (UTF-16, indexed by code unit).
+///
+/// Returns an `LCSResult` with the substring and its length.  If either
+/// input is empty, or if the strings share no characters, the result has
+/// `substring = ""` and `length = 0`.
+///
+/// Time: O(n * m) where `n = a.length()` and `m = b.length()`.
+/// Space: O(m).
 pub fn longest_common_substring(a : String, b : String) -> LCSResult {
   let n = a.length()
   let m = b.length()
