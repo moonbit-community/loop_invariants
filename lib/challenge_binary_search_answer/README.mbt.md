@@ -62,7 +62,7 @@ Pseudocode:
 low = max(weights)
 high = sum(weights)
 
-while low < high:
+repeat until low == high:
   mid = (low + high) / 2
   if feasible(mid):
     high = mid

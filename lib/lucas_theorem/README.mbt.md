@@ -187,7 +187,7 @@ if p <= 1: return 0
 precompute fact[0..p-1] and inv_fact[0..p-1]
 result = 1
 
-while k > 0:
+repeat until k == 0:
   n_i = n mod p
   k_i = k mod p
 

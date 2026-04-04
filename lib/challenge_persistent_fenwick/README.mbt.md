@@ -26,7 +26,7 @@ lowbit(i) = i & -i
 Update (add delta at index `i`):
 
 ```
-while i <= n:
+repeat until i > n:
   bit[i] += delta
   i += lowbit(i)
 ```
@@ -35,7 +35,7 @@ Prefix sum (sum of 1..i):
 
 ```
 res = 0
-while i > 0:
+repeat until i == 0:
   res += bit[i]
   i -= lowbit(i)
 ```

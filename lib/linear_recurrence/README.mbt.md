@@ -90,7 +90,7 @@ We treat `x^n mod P(x)` as a coefficient vector of length k.
 res  = representation of x^0
 base = representation of x^1
 
-while n > 0:
+repeat until n == 0:
   if n is odd: res = combine(res, base)
   base = combine(base, base)
   n >>= 1
