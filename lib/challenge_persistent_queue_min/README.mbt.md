@@ -60,7 +60,7 @@ Each is `O(1)`, so the overall min query is `O(1)`.
 ## Persistence
 
 All stacks are immutable lists. Every enqueue or dequeue creates new nodes
-while sharing old ones. Past versions remain valid.
+and shares old ones. Past versions remain valid.
 
 ---
 

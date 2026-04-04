@@ -157,7 +157,7 @@ of ranges. This structure handles that efficiently.
 ### 3. Online Range Increment
 ```
 Process range increments online (not known in advance),
-while answering range sum queries.
+and answer range sum queries.
 ```
 
 ## Complexity Analysis

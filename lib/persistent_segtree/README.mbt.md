@@ -2,7 +2,7 @@
 
 This package is a **tutorial** package (no exported functions). It explains
 how a persistent segment tree keeps **every historical version** after updates
-while sharing most of the structure.
+and shares most of the structure.
 
 If a regular segment tree is a tree of ranges, a **persistent** segment tree is
 the same tree, but you keep **all old roots** and only copy the update path.

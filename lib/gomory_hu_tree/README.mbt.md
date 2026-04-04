@@ -311,4 +311,4 @@ may produce different (but equally valid) trees.
 - Self-loops and non-positive edges are ignored in this implementation.
 - If the graph is disconnected, min-cut between components is `0`.
 - The tree is not unique; different root orders can produce different trees
-  while preserving all min-cut values.
+  and still preserve all min-cut values.

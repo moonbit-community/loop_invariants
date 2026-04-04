@@ -2,7 +2,7 @@
 
 A **Fenwick tree** (Binary Indexed Tree) supports fast prefix sums with point
 updates. This version is **persistent**, so every update returns a new tree
-while older versions remain valid.
+and older versions remain valid.
 
 This package provides:
 
