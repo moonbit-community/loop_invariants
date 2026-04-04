@@ -42,10 +42,25 @@
 // - Search: O(n + z) where n is text length, z is number of matches
 
 ///|
+/// The number of distinct byte values used as the trie alphabet.
+/// All transition arrays have exactly this many slots (one per byte 0-255).
 const AC_ALPHABET : Int = 256
 
 ///|
-/// A state in the Aho-Corasick automaton
+/// A single state (node) in the Aho-Corasick automaton.
+///
+/// Each state corresponds to a unique string prefix formed by the path from
+/// the root to this node in the underlying trie.
+///
+/// Fields:
+/// - `children`: transition table mapping each byte value (0-255) to the index
+///   of the next state, or -1 when no edge for that byte exists.
+/// - `failure`: index of the failure (suffix link) state, i.e. the state
+///   representing the longest proper suffix of this node's label that also
+///   exists in the trie.  The root sentinel stores -1 here.
+/// - `output`: indices into the pattern array of every pattern whose full text
+///   ends at this state.  This list is populated both when a pattern is
+///   inserted (direct output) and during `build` (inherited via failure links).
 priv struct ACState {
   children : Array[Int] // Transitions for each byte
   mut failure : Int // Failure link (-1 for root)
@@ -53,18 +68,34 @@ priv struct ACState {
 }
 
 ///|
+/// Create a new, empty automaton state.
+///
+/// All child transitions are initialised to -1 (absent), the failure link is
+/// set to -1 (used as a sentinel meaning "not yet computed"), and the output
+/// list is empty.
 fn ACState::new() -> ACState {
   { children: Array::make(AC_ALPHABET, -1), failure: -1, output: [] }
 }
 
 ///|
-/// Aho-Corasick Automaton
+/// The complete Aho-Corasick automaton.
+///
+/// After calling `build`, the automaton can be queried in a single pass over
+/// any text to find all occurrences of every registered pattern.
+///
+/// Fields:
+/// - `states`: the flat array of all trie nodes.  Index 0 is always the root.
+/// - `patterns`: the original pattern strings, stored in insertion order.
+///   Pattern index `i` refers to `patterns[i]`.
 priv struct AhoCorasick {
   states : Array[ACState]
   patterns : Array[String]
 }
 
 ///|
+/// Create a new, empty automaton containing only the root state.
+///
+/// Call `add_pattern` one or more times, then call `build` before searching.
 fn AhoCorasick::new() -> AhoCorasick {
   // Initialize with root state
   let states : Array[ACState] = [ACState::new()]
@@ -72,8 +103,18 @@ fn AhoCorasick::new() -> AhoCorasick {
 }
 
 ///|
-/// Add a pattern to the automaton
-/// Must be called before build()
+/// Insert a pattern into the trie.
+///
+/// Creates trie nodes for each character of `pattern` as needed, sharing
+/// existing prefix nodes with previously added patterns.  The final node is
+/// marked as accepting by appending this pattern's index to its `output` list.
+///
+/// This function must be called **before** `build`.  Calling it after `build`
+/// leaves failure links in an inconsistent state.
+///
+/// Parameters:
+/// - `self`: the automaton being built.
+/// - `pattern`: the pattern string to add (may be any non-empty byte sequence).
 fn AhoCorasick::add_pattern(self : AhoCorasick, pattern : String) -> Unit {
   let pattern_idx = self.patterns.length()
   self.patterns.push(pattern)
@@ -108,10 +149,26 @@ fn AhoCorasick::add_pattern(self : AhoCorasick, pattern : String) -> Unit {
 }
 
 ///|
-/// Build failure links using BFS
-/// REASONING: We process states in BFS order (by depth) because:
-/// - Failure link of state at depth d points to state at depth < d
-/// - So all failure link targets are processed before their sources
+/// Compute failure links and propagate output lists using BFS.
+///
+/// This must be called once after all patterns have been inserted and before
+/// any call to `search` or `contains_any`.
+///
+/// Algorithm:
+/// 1. Children of the root receive failure link 0 (root itself).
+/// 2. All remaining nodes are processed in BFS order (shallowest first).
+/// 3. For each node reached by edge `c` from parent `p`:
+///    - Walk the failure chain starting from `failure(p)` until finding a
+///      node that has a child edge for `c`, or until reaching the root.
+///    - The child's failure link is that edge's destination (or root if none).
+/// 4. The child inherits all output entries from its failure state, so a
+///    single `states[s].output` scan during search reports every matching
+///    pattern that ends at position `i`, including those that are suffixes of
+///    the current match.
+///
+/// Correctness relies on the BFS order guarantee: when we compute the failure
+/// link of a node at depth d, the failure link of its parent (depth d-1) is
+/// already correct.
 fn AhoCorasick::build(self : AhoCorasick) -> Unit {
   // BFS queue
   let queue : Array[Int] = []
@@ -185,8 +242,19 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
 }
 
 ///|
-/// Search for all pattern occurrences in text
-/// Returns array of (position, pattern_index) pairs
+/// Find all pattern occurrences in `text` and return them as (start, index) pairs.
+///
+/// The automaton must have been built with `build` before calling this method.
+///
+/// Each pair `(start, pattern_idx)` indicates that `patterns[pattern_idx]`
+/// starts at position `start` in `text`.  Overlapping matches and multiple
+/// patterns at the same position are all reported.
+///
+/// Returns an `Array[(Int, Int)]` sorted by the order matches are encountered
+/// (left to right in the text; ties between patterns at the same end position
+/// follow the order entries appear in `states[s].output`).
+///
+/// Time complexity: O(n + z) where n = text length, z = number of matches.
 fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[(Int, Int)] {
   let matches : Array[(Int, Int)] = []
 
@@ -236,19 +304,25 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[(Int, Int)] {
 }
 
 ///|
-/// Get pattern by index
+/// Return the pattern string at the given index.
+///
+/// Indices are assigned in insertion order starting from 0.
+/// Panics if `idx` is out of bounds.
 fn AhoCorasick::get_pattern(self : AhoCorasick, idx : Int) -> String {
   self.patterns[idx]
 }
 
 ///|
-/// Get number of patterns
+/// Return the number of patterns registered in this automaton.
 fn AhoCorasick::pattern_count(self : AhoCorasick) -> Int {
   self.patterns.length()
 }
 
 ///|
-/// Get number of states in automaton
+/// Return the total number of states (trie nodes) in the automaton.
+///
+/// This equals 1 (root) plus the number of distinct non-empty prefixes
+/// across all inserted patterns.  Shared prefixes count only once.
 fn AhoCorasick::state_count(self : AhoCorasick) -> Int {
   self.states.length()
 }
@@ -258,7 +332,10 @@ fn AhoCorasick::state_count(self : AhoCorasick) -> Int {
 // ============================================================================
 
 ///|
-/// Build automaton from array of patterns
+/// Build a complete, ready-to-use automaton from an array of patterns.
+///
+/// Equivalent to calling `new`, then `add_pattern` for each element, then
+/// `build`.
 fn AhoCorasick::from_patterns(patterns : Array[String]) -> AhoCorasick {
   let ac = AhoCorasick::new()
   patterns.each(pattern => ac.add_pattern(pattern))
@@ -267,7 +344,12 @@ fn AhoCorasick::from_patterns(patterns : Array[String]) -> AhoCorasick {
 }
 
 ///|
-/// Check if text contains any of the patterns
+/// Return `true` if `text` contains at least one occurrence of any pattern.
+///
+/// Stops as soon as the first match is found, so it may be faster than
+/// `search` when only existence is needed.
+///
+/// The automaton must have been built with `build` before calling this method.
 fn AhoCorasick::contains_any(self : AhoCorasick, text : String) -> Bool {
   for i in 0..<text.length(); state = 0 {
     let c = text[i].to_int()
@@ -303,14 +385,29 @@ fn AhoCorasick::contains_any(self : AhoCorasick, text : String) -> Bool {
 }
 
 ///|
-/// Count total number of matches
+/// Return the total number of pattern occurrences in `text`.
+///
+/// Counts overlapping matches.  Equivalent to `search(text).length()` but
+/// avoids building the intermediate array.
+///
+/// The automaton must have been built with `build` before calling this method.
 fn AhoCorasick::count_matches(self : AhoCorasick, text : String) -> Int {
   let matches = self.search(text)
   matches.length()
 }
 
 ///|
-/// Find all matches and return as (start, end, pattern) tuples
+/// Find all pattern occurrences and return them as `(start, end, pattern)` tuples.
+///
+/// - `start`: inclusive start index in `text`.
+/// - `end`: exclusive end index in `text` (`end = start + pattern.length()`).
+/// - `pattern`: the matched pattern string.
+///
+/// Matches are returned in the order they are encountered during the left-to-
+/// right scan.  Overlapping matches and multiple patterns at the same position
+/// are all included.
+///
+/// The automaton must have been built with `build` before calling this method.
 fn AhoCorasick::find_all(
   self : AhoCorasick,
   text : String,
@@ -327,8 +424,20 @@ fn AhoCorasick::find_all(
 }
 
 ///|
-/// Build an automaton from patterns and return all matches in text.
-/// Each match is (start, end, pattern) with end exclusive.
+/// Build an automaton from `patterns` and return all matches in `text`.
+///
+/// Each match is a triple `(start, end, pattern)` where `start` is the
+/// inclusive start index, `end` is the exclusive end index, and `pattern` is
+/// the matched pattern string.
+///
+/// Overlapping matches are included.  Patterns that are suffixes of other
+/// patterns (e.g. `"he"` inside `"she"`) are reported separately.
+///
+/// Example:
+/// ```
+/// find_all_matches(["he", "she", "his", "hers"][:], "ushers")
+/// // => [(1,4,"she"), (2,4,"he"), (2,6,"hers")]
+/// ```
 pub fn find_all_matches(
   patterns : ArrayView[String],
   text : String,
@@ -338,7 +447,16 @@ pub fn find_all_matches(
 }
 
 ///|
-/// Build an automaton from patterns and count total matches in text.
+/// Build an automaton from `patterns` and count all occurrences in `text`.
+///
+/// Counts overlapping matches.  This is equivalent to
+/// `find_all_matches(patterns, text).length()`.
+///
+/// Example:
+/// ```
+/// count_all_matches(["he", "she", "his", "hers"][:], "ushers")
+/// // => 3
+/// ```
 pub fn count_all_matches(patterns : ArrayView[String], text : String) -> Int {
   let ac = AhoCorasick::from_patterns(patterns.to_array())
   ac.count_matches(text)

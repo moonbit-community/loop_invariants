@@ -5,41 +5,51 @@
 // Public interface for computing biconnected components and articulation points.
 
 ///|
-/// Compute biconnected components of an undirected graph.
+/// Compute all biconnected components and articulation points of an undirected
+/// graph in O(V + E) time using a single DFS pass (Tarjan's algorithm).
 ///
-/// ALGORITHM:
+/// Parameters:
+/// - `n`: number of vertices; vertices are labeled `0` to `n-1`
+/// - `edges`: undirected edges as `(u, v)` pairs; multi-edges and self-loops
+///   are tolerated (self-loops are silently skipped by the edge-ID parent
+///   check)
+///
+/// Returns a `BiconnectedResult` with:
+/// - `components`: each biconnected component as a list of its edges;
+///   a component of size 1 is a bridge; components are in no guaranteed order
+/// - `articulation_points`: vertices whose removal would increase the number
+///   of connected components; order is DFS-dependent, sort for stable output
+///
+/// Edge cases:
+/// - `n <= 0` returns an empty result immediately.
+/// - Out-of-range endpoints in `edges` are silently skipped.
+/// - An isolated vertex (no incident edges) does not appear in any component.
+/// - A disconnected graph is handled by iterating over all unvisited vertices
+///   as DFS roots.
+///
+/// Algorithm sketch:
 /// ```
-///   1. Build adjacency list from edges
-///   2. Run Tarjan's DFS on each connected component
-///   3. Extract biconnected components and articulation points
+///   1. Build adjacency list from edges (each edge gets its index as ID)
+///   2. For each unvisited vertex, run DFS:
+///      a. Assign disc[u] and initialise low[u] = disc[u]
+///      b. For each tree edge (u, v): push edge, recurse, update low[u],
+///         check articulation condition, extract component if low[v] >= disc[u]
+///      c. For each back edge (u, w): push edge, update low[u] = min(low[u], disc[w])
+///      d. Root rule: root is articulation iff it has >= 2 DFS children
+///   3. Collect articulation flags into result array
 /// ```
 ///
-/// PARAMETERS:
-///   - n: number of vertices (labeled 0 to n-1)
-///   - edges: undirected edges as (u, v) pairs
-///
-/// RETURNS:
-///   BiconnectedResult containing:
-///   - components: Array of biconnected components (each as edge list)
-///   - articulation_points: Array of articulation point vertex IDs
-///
-/// TIME: O(V + E)
-/// SPACE: O(V + E)
-///
-/// EXAMPLE:
+/// Example — triangle with a tail:
 /// ```
-///   Graph with triangle and bridge:
-///     0 - 1 - 3
-///     |   |
-///     +---2
+///   Graph:  0 - 1 - 3
+///            \ /
+///             2
 ///
 ///   Edges: [(0,1), (1,2), (2,0), (1,3)]
 ///
 ///   Result:
-///     components: [{(0,1), (1,2), (2,0)}, {(1,3)}]
+///     components:          [{(1,3)}, {(0,1),(1,2),(2,0)}]  (order varies)
 ///     articulation_points: [1]
-///
-///   Vertex 1 is articulation because removing it disconnects 3.
 /// ```
 pub fn biconnected_components(
   n : Int,

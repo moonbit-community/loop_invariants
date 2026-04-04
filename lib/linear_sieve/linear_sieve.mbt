@@ -1,5 +1,5 @@
 // ============================================================================
-// LINEAR SIEVE - Primes, SPF, Phi, and Möbius
+// LINEAR SIEVE - Primes, SPF, Phi, and Mobius
 // ============================================================================
 //
 // The linear sieve computes primes and multiplicative functions in O(n).
@@ -9,7 +9,20 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-/// Linear sieve result up to n (inclusive).
+/// Result of running the linear (Euler) sieve up to `n` (inclusive).
+///
+/// All four arrays are indexed from `0` to `n`.  Index 0 is an unused sentinel;
+/// meaningful values start at index 1.
+///
+/// Fields:
+/// - `n`: the upper bound supplied to `LinearSieve::new`.
+/// - `primes`: all primes in `2..n` in ascending order.
+/// - `spf`: smallest prime factor of each number.  `spf[1]` is 0 (1 has no
+///   prime factor).  For a prime `p`, `spf[p] == p`.
+/// - `phi`: Euler's totient function.  `phi[k]` counts integers in `1..k`
+///   that are coprime with `k`.
+/// - `mu`: Mobius function.  `mu[k]` is 1, -1, or 0 depending on the
+///   squarefreeness and number of prime factors of `k`.
 pub struct LinearSieve {
   n : Int
   primes : Array[Int]
@@ -19,7 +32,30 @@ pub struct LinearSieve {
 }
 
 ///|
-/// Build a linear sieve up to n (inclusive).
+/// Build a linear sieve for all integers in `1..n` (inclusive).
+///
+/// After construction, `primes`, `spf`, `phi`, and `mu` are all fully
+/// populated.  The sieve runs in O(n) time and O(n) space because every
+/// composite number `i * p` is written exactly once — when `p` is the
+/// smallest prime factor of that composite.
+///
+/// The inner loop breaks as soon as `p` divides `i`.  At that point,
+/// `spf[i * p] = p = spf[i]`, so any further prime `q > p` would give
+/// `spf[i * q] = p < q`, meaning `i * q` will be handled later (when the
+/// outer loop reaches `i * q / p`).
+///
+/// Parameters:
+/// - `n`: upper bound of the sieve (inclusive).  Values `<= 0` produce an
+///   empty sieve.
+///
+/// Example:
+/// ```
+/// let s = LinearSieve::new(10)
+/// // s.primes  => [2, 3, 5, 7]
+/// // s.spf[6]  => 2   (smallest prime factor of 6)
+/// // s.phi[6]  => 2   (phi(6) = |{1,5}|)
+/// // s.mu[6]   => 1   (6 = 2*3, squarefree, even number of factors)
+/// ```
 pub fn LinearSieve::new(n : Int) -> LinearSieve {
   if n < 0 {
     return { n: 0, primes: [], spf: [], phi: [], mu: [] }
@@ -83,13 +119,50 @@ pub fn LinearSieve::new(n : Int) -> LinearSieve {
 }
 
 ///|
-/// Check if x is prime (within sieve range).
+/// Return `true` if `x` is prime according to this sieve.
+///
+/// A number `x` is prime if and only if its smallest prime factor equals
+/// itself, i.e. `spf[x] == x`.  This check is O(1).
+///
+/// Returns `false` when `x < 2` or when `x > self.n` (out of sieve range).
+///
+/// Example:
+/// ```
+/// let s = LinearSieve::new(20)
+/// s.is_prime(2)   // true
+/// s.is_prime(17)  // true
+/// s.is_prime(1)   // false  (1 is not prime by convention)
+/// s.is_prime(9)   // false  (9 = 3 * 3)
+/// s.is_prime(25)  // false  (25 > n=20, out of range)
+/// ```
 pub fn LinearSieve::is_prime(self : LinearSieve, x : Int) -> Bool {
   x >= 2 && x <= self.n && self.spf[x] == x
 }
 
 ///|
-/// Factorize x using smallest prime factors.
+/// Factorize `x` into prime factors using the precomputed smallest prime
+/// factor table.
+///
+/// Returns an array of `(prime, exponent)` pairs in ascending order of prime,
+/// e.g. `factorize(84)` returns `[(2, 2), (3, 1), (7, 1)]` because
+/// `84 = 2^2 * 3 * 7`.
+///
+/// The algorithm repeatedly divides `x` by `spf[x]`, collecting runs of the
+/// same prime.  Each division reduces `x` by at least a factor of 2, so the
+/// number of steps is at most `O(log x)`.
+///
+/// Precondition: `x <= self.n`.  If `x > self.n`, the spf table is not
+/// populated for `x`, and the function returns an empty array.  If `x <= 1`,
+/// the function also returns an empty array (1 has no prime factors).
+///
+/// Example:
+/// ```
+/// let s = LinearSieve::new(100)
+/// s.factorize(1)   // []
+/// s.factorize(12)  // [(2, 2), (3, 1)]
+/// s.factorize(60)  // [(2, 2), (3, 1), (5, 1)]
+/// s.factorize(97)  // [(97, 1)]   (97 is prime)
+/// ```
 pub fn LinearSieve::factorize(self : LinearSieve, x : Int) -> Array[(Int, Int)] {
   let result : Array[(Int, Int)] = []
   let _ = for v = x {
