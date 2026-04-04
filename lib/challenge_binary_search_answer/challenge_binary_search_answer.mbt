@@ -11,12 +11,12 @@ fn days_needed_fixed(
   proof_require: capacity_admissible(weights, capacity),
   proof_ensure: result => days_needed_ok(weights, capacity, result),
 } {
-  for i = 0, used = 1, load = 0; i < weights.length(); {
+  for i in 0..<weights.length(); used = 1, load = 0 {
     let w = weights[i]
     if load + w > capacity {
-      continue i + 1, used + 1, w
+      continue used + 1, w
     } else {
-      continue i + 1, used, load + w
+      continue used, load + w
     }
   } nobreak {
     used
