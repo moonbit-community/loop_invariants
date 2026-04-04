@@ -61,17 +61,21 @@ pub fn RollbackDSU::snapshot(self : RollbackDSU) -> Int {
 ///|
 /// Roll back all unions after the given snapshot.
 pub fn RollbackDSU::rollback(self : RollbackDSU, snap : Int) -> Unit {
-  for rollback_next = self.history.length() > snap; rollback_next; {
-    match self.history.pop() {
-      Some((child, parent_size)) =>
-        if child >= 0 {
-          let root = self.parent[child]
-          self.size[root] = parent_size
-          self.parent[child] = child
-        }
-      None => ()
+  for rollback_next = self.history.length() > snap {
+    if !rollback_next {
+      break
+    } else {
+      match self.history.pop() {
+        Some((child, parent_size)) =>
+          if child >= 0 {
+            let root = self.parent[child]
+            self.size[root] = parent_size
+            self.parent[child] = child
+          }
+        None => ()
+      }
+      continue self.history.length() > snap
     }
-    continue self.history.length() > snap
   }
 }
 
