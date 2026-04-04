@@ -93,8 +93,8 @@ pub fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
   dfs_build(0, -1, 0, adj, depth, up, visited)
 
   // Build sparse table for binary lifting
-  for k = 1; k < log_n; k = k + 1 {
-    for v = 0; v < n; v = v + 1 {
+  for k in 1..<log_n {
+    for v in 0..<n {
       if up[v][k - 1] != -1 {
         up[v][k] = up[up[v][k - 1]][k - 1]
       }
