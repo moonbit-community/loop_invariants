@@ -25,8 +25,33 @@
 // SPACE COMPLEXITY: O(k) for deque
 
 ///|
-/// Compute maximum in each sliding window of size k
-fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
+/// Compute the maximum value in each contiguous window of size `k` as the
+/// window slides from left to right across `arr`.
+///
+/// A **monotonic deque** of indices is maintained such that:
+/// - indices are stored in strictly increasing order,
+/// - the values at those indices are in strictly decreasing order,
+/// - every stored index lies within the current window `[i-k+1, i]`.
+///
+/// The front of the deque therefore always holds the index of the window
+/// maximum, giving O(1) per window after an amortized O(n) total deque work.
+///
+/// Parameters:
+/// - `arr` -- input array of `Int64` values.
+/// - `k`   -- window size (must be positive; if >= `arr.length()` a single
+///            window spanning the whole array is returned).
+///
+/// Returns an array of length `max(0, n - k + 1)` where element `j` is the
+/// maximum of `arr[j..j+k]`.
+///
+/// Time: O(n). Space: O(k).
+///
+/// Example:
+/// ```
+/// sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3)
+/// // => [3, 3, 5, 5, 6, 7]
+/// ```
+pub fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
   let n = arr.length()
   if n == 0 || k <= 0 {
     return []
@@ -128,7 +153,32 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
 // ============================================================================
 
 ///|
-fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
+/// Compute the minimum value in each contiguous window of size `k` as the
+/// window slides from left to right across `arr`.
+///
+/// Mirrors `sliding_window_max` but keeps the deque in **strictly increasing**
+/// value order so the front always holds the window minimum index.
+///
+/// Insertion rule: before pushing index `i`, pop every back element whose
+/// value is `>= arr[i]` (elements that can never be the minimum while `i`
+/// is present).
+///
+/// Parameters:
+/// - `arr` -- input array of `Int64` values.
+/// - `k`   -- window size (must be positive; if >= `arr.length()` a single
+///            window spanning the whole array is returned).
+///
+/// Returns an array of length `max(0, n - k + 1)` where element `j` is the
+/// minimum of `arr[j..j+k]`.
+///
+/// Time: O(n). Space: O(k).
+///
+/// Example:
+/// ```
+/// sliding_window_min([1, 3, -1, -3, 5, 3, 6, 7], 3)
+/// // => [-1, -3, -3, -3, 3, 3]
+/// ```
+pub fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
   let n = arr.length()
   if n == 0 || k <= 0 {
     return []
@@ -223,8 +273,30 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
 // ============================================================================
 
 ///|
-/// Sum of each window of size k
-fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
+/// Compute the sum of every contiguous window of size `k` across `arr`.
+///
+/// Uses the O(1) sliding update rule:
+/// ```
+/// new_sum = old_sum - arr[i - k] + arr[i]
+/// ```
+/// so each step takes constant time regardless of window size.
+///
+/// Parameters:
+/// - `arr` -- input array of `Int64` values.
+/// - `k`   -- window size (must satisfy `1 <= k <= arr.length()`; returns
+///            an empty array otherwise).
+///
+/// Returns an array of length `n - k + 1` where element `j` is the sum of
+/// `arr[j..j+k]`.
+///
+/// Time: O(n). Space: O(1) auxiliary (output array excluded).
+///
+/// Example:
+/// ```
+/// sliding_window_sum([1, 2, 3, 4, 5], 3)
+/// // => [6, 9, 12]
+/// ```
+pub fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
   let n = arr.length()
   if n == 0 || k <= 0 || k > n {
     return []
@@ -258,8 +330,33 @@ fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
 // ============================================================================
 
 ///|
-/// Find length of longest subarray with sum <= target
-fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
+/// Find the length of the longest contiguous subarray whose sum is at most
+/// `target`.
+///
+/// Uses the two-pointer (variable sliding window) technique.  The right
+/// pointer expands the window by one element per iteration; when the running
+/// sum exceeds `target`, the left pointer advances until the invariant is
+/// restored.
+///
+/// Assumes all elements are **non-negative** so that advancing `left` can
+/// only decrease the sum.  (With negative elements use prefix sums + binary
+/// search instead.)
+///
+/// Parameters:
+/// - `arr`    -- input array of non-negative `Int64` values.
+/// - `target` -- upper bound on the window sum (inclusive).
+///
+/// Returns the length of the longest valid subarray, or 0 if none exists
+/// (e.g. every element exceeds `target`).
+///
+/// Time: O(n). Space: O(1).
+///
+/// Example:
+/// ```
+/// longest_subarray_with_sum_le([1, 2, 3, 4, 5], 6)
+/// // => 3  ([1, 2, 3])
+/// ```
+pub fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
   let n = arr.length()
   if n == 0 {
     return 0
@@ -313,8 +410,33 @@ fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
 }
 
 ///|
-/// Find minimum length subarray with sum >= target (all positive elements)
-fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int {
+/// Find the minimum length of a contiguous subarray whose sum is at least
+/// `target`.
+///
+/// Uses the two-pointer (variable sliding window) technique.  The right
+/// pointer expands the window; once the running sum meets `target`, the left
+/// pointer advances as far as possible while the sum remains valid, recording
+/// the shortest window seen at each step.
+///
+/// Assumes all elements are **non-negative** (positive elements are the
+/// canonical use case).  With negative elements the shrinking invariant does
+/// not hold.
+///
+/// Parameters:
+/// - `arr`    -- input array of non-negative `Int64` values.
+/// - `target` -- lower bound on the window sum (inclusive).
+///
+/// Returns the minimum window length, or 0 if no subarray meets the target
+/// (i.e. the total array sum is less than `target`).
+///
+/// Time: O(n). Space: O(1).
+///
+/// Example:
+/// ```
+/// min_subarray_with_sum_ge([2, 3, 1, 2, 4, 3], 7)
+/// // => 2  ([4, 3])
+/// ```
+pub fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int {
   let n = arr.length()
   if n == 0 {
     return 0

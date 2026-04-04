@@ -49,7 +49,18 @@
 // SPACE COMPLEXITY: O(n log n)
 
 ///|
-/// Node in the Cartesian Tree
+/// A single node stored inside the flat node array of a `CartesianTree`.
+///
+/// Nodes are allocated contiguously in `CartesianTree.nodes` so that parent,
+/// left-child, and right-child relationships are encoded as integer indices
+/// rather than pointers.  The sentinel value `-1` means "no such node".
+///
+/// Fields:
+/// - `value`  -- the array element at this position
+/// - `index`  -- the original array position (0-based)
+/// - `left`   -- index into `nodes` of the left child, or `-1`
+/// - `right`  -- index into `nodes` of the right child, or `-1`
+/// - `parent` -- index into `nodes` of the parent, or `-1` for the root
 priv struct CartesianNode {
   value : Int64
   index : Int // Position in original array
@@ -59,7 +70,24 @@ priv struct CartesianNode {
 }
 
 ///|
-/// Cartesian Tree with LCA preprocessing for RMQ
+/// A Cartesian tree built from a sequence, with binary-lifting tables for O(log n) LCA.
+///
+/// The structure satisfies two invariants simultaneously:
+///
+/// - **Min-heap property**: every node's value is <= the values of its children,
+///   so the root always holds the global minimum.
+/// - **In-order / BST property**: an in-order traversal of the tree yields the
+///   original array in its original left-to-right order.
+///
+/// Fields:
+/// - `nodes`          -- flat array of all `CartesianNode` records (index = node id)
+/// - `root`           -- node id of the root (the global minimum), or `-1` when empty
+/// - `index_to_node`  -- maps original array position `i` to the node id at that position
+/// - `depth`          -- depth of each node (root has depth 0)
+/// - `ancestors`      -- binary-lifting table: `ancestors[k][v]` is the 2^k-th ancestor
+///                       of node `v`, or `-1` if no such ancestor exists
+/// - `n`              -- number of elements / nodes
+/// - `log_n`          -- ceiling of log2(n), used as the table height for binary lifting
 priv struct CartesianTree {
   nodes : Array[CartesianNode]
   root : Int // Index of root node
@@ -71,7 +99,23 @@ priv struct CartesianTree {
 }
 
 ///|
-/// Build Cartesian Tree from array in O(n) time
+/// Build a `CartesianTree` from `arr` in O(n) time using a monotonic stack.
+///
+/// After construction the tree satisfies:
+/// - **Min-heap**: each node's value <= the values of all descendants.
+/// - **In-order**: left-to-right traversal reproduces `arr` exactly.
+///
+/// The algorithm maintains a stack of node indices representing the rightmost
+/// spine of the tree built so far.  For each new element at position `i`:
+/// 1. Pop nodes whose values are strictly greater than `arr[i]` (they become
+///    part of the left subtree of the new node).
+/// 2. The last popped node becomes the left child of node `i`.
+/// 3. Node `i` becomes the right child of the new stack top (if any).
+/// 4. Push `i` onto the stack.
+///
+/// Every index is pushed and popped at most once, so the total work is O(n).
+/// After tree construction, depths and binary-lifting tables are computed in
+/// O(n log n) for LCA preprocessing.
 fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   let n = arr.length()
   if n == 0 {
@@ -207,6 +251,11 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
 }
 
 ///|
+/// Return floor(log2(x)) for x >= 1, or 0 for x <= 0.
+///
+/// Used to determine the height of the binary-lifting table: `log_n = highest_bit(n) + 1`.
+///
+/// Example: `highest_bit(5)` returns `2` because 2^2 = 4 <= 5 < 8 = 2^3.
 fn highest_bit(x : Int) -> Int {
   if x <= 0 {
     return 0
@@ -229,9 +278,19 @@ fn highest_bit(x : Int) -> Int {
 }
 
 ///|
-/// Find LCA of two nodes using binary lifting
-/// REASONING: Move deeper node up to same level, then move both up together
-/// until they meet at LCA
+/// Find the lowest common ancestor (LCA) of nodes `u` and `v` using binary lifting.
+///
+/// Returns the node index of the LCA, or `-1` if either index is out of bounds.
+///
+/// The algorithm has two phases:
+/// 1. **Depth equalisation**: lift the deeper node up by the depth difference,
+///    using the precomputed `ancestors` table to jump by powers of two.
+/// 2. **Joint lifting**: lift both nodes simultaneously in decreasing powers of
+///    two; skip a jump only when both nodes would reach the same ancestor (that
+///    ancestor is at or above the LCA).  After all bits are processed, both
+///    nodes are the immediate children of the LCA.
+///
+/// Time complexity: O(log n).
 fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
   if u < 0 || v < 0 || u >= self.n || v >= self.n {
     return -1
@@ -292,8 +351,16 @@ fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
 }
 
 ///|
-/// Query minimum in range [l, r] (inclusive)
-/// Uses the property that minimum is at LCA of nodes at positions l and r
+/// Return the minimum value in the subarray corresponding to positions `[l, r]` (inclusive).
+///
+/// The minimum equals the value stored at the lowest common ancestor of the nodes
+/// at array positions `l` and `r`.  This is correct because:
+/// - The heap property guarantees the LCA node holds the minimum of its subtree.
+/// - The in-order property guarantees the LCA's subtree covers exactly `[l, r]`.
+///
+/// Returns `None` when `l < 0`, `r >= n`, or `l > r`.
+///
+/// Time complexity: O(log n).
 fn CartesianTree::query_min(self : CartesianTree, l : Int, r : Int) -> Int64? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None
@@ -312,14 +379,42 @@ fn CartesianTree::query_min(self : CartesianTree, l : Int, r : Int) -> Int64? {
 }
 
 ///|
-/// Return the minimum value in arr[l..=r] using a Cartesian tree.
+/// Return the minimum value in `arr[l..=r]` (inclusive), or `None` for an invalid range.
+///
+/// This function builds a fresh `CartesianTree` from `arr` and answers the query
+/// via LCA lookup.  It is intended for one-shot or illustrative use; callers that
+/// issue many queries over the same array should build the tree once and reuse it.
+///
+/// Parameters:
+/// - `arr` -- a view of the source array (elements are `Int64`)
+/// - `l`   -- left bound of the query range (inclusive, 0-based)
+/// - `r`   -- right bound of the query range (inclusive, 0-based)
+///
+/// Returns `Some(min)` when `0 <= l <= r < arr.length()`, otherwise `None`.
+///
+/// Time complexity: O(n log n) to build + O(log n) per query.
+///
+/// Example:
+/// ```mbt
+/// let arr : Array[Int64] = [3L, 2L, 6L, 1L, 9L]
+/// assert_eq!(@cartesian_tree.range_min(arr[:], 1, 3), Some(1L))
+/// ```
 pub fn range_min(arr : ArrayView[Int64], l : Int, r : Int) -> Int64? {
   let tree = CartesianTree::new(arr.to_array())
   tree.query_min(l, r)
 }
 
 ///|
-/// Query position of minimum in range [l, r]
+/// Return the array position of the minimum value in `arr[l..=r]` (inclusive).
+///
+/// Equivalent to `query_min` but returns the **index** of the minimum element
+/// instead of its value.  When multiple positions share the minimum value the
+/// leftmost one is returned (because ties are broken leftward during tree
+/// construction).
+///
+/// Returns `None` when `l < 0`, `r >= n`, or `l > r`.
+///
+/// Time complexity: O(log n).
 fn CartesianTree::query_min_index(
   self : CartesianTree,
   l : Int,
@@ -338,12 +433,14 @@ fn CartesianTree::query_min_index(
 }
 
 ///|
+/// Return the number of elements in the tree (same as the source array length).
 fn CartesianTree::length(self : CartesianTree) -> Int {
   self.n
 }
 
 ///|
-/// Get the root value
+/// Return the value stored at the root node, which is the global minimum of the
+/// source array.  Returns `None` when the tree is empty.
 fn CartesianTree::root_value(self : CartesianTree) -> Int64? {
   if self.n == 0 {
     None
@@ -353,7 +450,11 @@ fn CartesianTree::root_value(self : CartesianTree) -> Int64? {
 }
 
 ///|
-/// Verify in-order traversal yields original sequence
+/// Return `true` when an in-order traversal of the tree reproduces `arr` exactly.
+///
+/// This checks the BST / sequence property: visiting nodes left-subtree, root,
+/// right-subtree in depth-first order must yield the same values and order as
+/// the source array.  Intended for testing and debugging.
 fn CartesianTree::verify_inorder(
   self : CartesianTree,
   arr : Array[Int64],
@@ -375,6 +476,10 @@ fn CartesianTree::verify_inorder(
 }
 
 ///|
+/// Collect node values into `result` via recursive in-order traversal.
+///
+/// Visits left subtree, appends the current node's value, then visits the right
+/// subtree.  A node index of `-1` is treated as an empty subtree.
 fn inorder_collect(
   nodes : Array[CartesianNode],
   node : Int,
@@ -389,7 +494,10 @@ fn inorder_collect(
 }
 
 ///|
-/// Verify heap property (min-heap)
+/// Return `true` when every node satisfies the min-heap property.
+///
+/// The min-heap property requires that each node's value is less than or equal
+/// to the values of both its children.  Intended for testing and debugging.
 fn CartesianTree::verify_heap(self : CartesianTree) -> Bool {
   if self.n == 0 {
     return true
@@ -398,6 +506,10 @@ fn CartesianTree::verify_heap(self : CartesianTree) -> Bool {
 }
 
 ///|
+/// Recursively verify the min-heap property starting from `node`.
+///
+/// Returns `false` as soon as a violation is found (a child whose value is
+/// strictly less than its parent's value), otherwise returns `true`.
 fn verify_heap_recursive(nodes : Array[CartesianNode], node : Int) -> Bool {
   if node == -1 {
     return true
@@ -423,8 +535,18 @@ fn verify_heap_recursive(nodes : Array[CartesianNode], node : Int) -> Bool {
 // A classic application of Cartesian Tree structure
 
 ///|
-/// Find nearest smaller element to the left for each position
-/// Returns -1 if no smaller element exists
+/// For each position `i`, find the index of the nearest element to the left
+/// that is strictly smaller than `arr[i]`.
+///
+/// Returns an array `result` of length `n` where `result[i]` is the largest
+/// index `j < i` with `arr[j] < arr[i]`, or `-1` if no such index exists.
+///
+/// Uses a monotonic stack that keeps indices in increasing-value order.  Each
+/// element is pushed and popped at most once, so total time is O(n).
+///
+/// This is equivalent to reading off the left-parent pointer in the Cartesian
+/// tree: the left parent of node `i` is exactly the nearest smaller value to
+/// its left.
 fn nearest_smaller_left(arr : Array[Int64]) -> Array[Int] {
   let n = arr.length()
   let result = Array::make(n, -1)
@@ -452,7 +574,14 @@ fn nearest_smaller_left(arr : Array[Int64]) -> Array[Int] {
 }
 
 ///|
-/// Find nearest smaller element to the right for each position
+/// For each position `i`, find the index of the nearest element to the right
+/// that is strictly smaller than `arr[i]`.
+///
+/// Returns an array `result` of length `n` where `result[i]` is the smallest
+/// index `j > i` with `arr[j] < arr[i]`, or `-1` if no such index exists.
+///
+/// Mirrors `nearest_smaller_left` but processes the array right to left.
+/// Time complexity: O(n).
 fn nearest_smaller_right(arr : Array[Int64]) -> Array[Int] {
   let n = arr.length()
   let result = Array::make(n, -1)
@@ -478,8 +607,25 @@ fn nearest_smaller_right(arr : Array[Int64]) -> Array[Int] {
 }
 
 ///|
-/// Largest rectangle in histogram using Cartesian Tree concept
-/// For each bar, find the largest rectangle with that bar as the shortest
+/// Compute the area of the largest axis-aligned rectangle that fits entirely
+/// within a histogram described by `heights`.
+///
+/// For each bar at position `i` with height `h = heights[i]`, the widest
+/// rectangle with height exactly `h` extends from the first bar to the left
+/// that is shorter than `h` (exclusive) to the first bar to the right that is
+/// shorter than `h` (exclusive).  These boundaries are the nearest smaller
+/// values on each side, which are computed in O(n) with monotonic stacks.
+///
+/// The answer is the maximum over all bars of `h * width`.
+///
+/// This is a direct application of the Cartesian tree structure: the nearest
+/// smaller bars on both sides correspond to the node's parent relationships in
+/// the tree.
+///
+/// Time complexity: O(n).
+///
+/// Example: `heights = [2, 1, 5, 6, 2, 3]` returns `10`
+/// (the rectangle spanning indices 2-3 with height 5).
 fn largest_rectangle_histogram(heights : Array[Int64]) -> Int64 {
   let n = heights.length()
   if n == 0 {

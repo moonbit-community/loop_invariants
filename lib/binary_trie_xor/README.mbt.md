@@ -9,16 +9,80 @@ especially useful for problems like:
 Brute force checks all numbers and costs O(n) per query. The trie reduces this
 to O(B), where B is the number of bits.
 
+## Trie structure
+
+Each integer is stored as a path from the root down through B+1 nodes, one node
+per bit from the most significant to the least significant. A `Node` has two
+child slots (`next0` for bit 0, `next1` for bit 1) and a `count` that tracks
+how many inserted values pass through it.
+
+The following diagram shows a trie with `max_bits = 2` (bits 2, 1, 0) after
+inserting 5 (101), 1 (001), and 7 (111):
+
+```
+                   root (count=3)
+                  /               \
+          bit2=0 (c=1)      bit2=1 (c=2)
+              |              /         \
+          bit1=0 (c=1)  bit1=0 (c=1)  bit1=1 (c=1)
+              |              |              |
+          bit0=1 (c=1)  bit0=1 (c=1)  bit0=1 (c=1)
+            = 001           = 101          = 111
+             (1)             (5)            (7)
+```
+
+Shared prefixes merge into the same node. The `count` field at every node equals
+the number of currently inserted values whose bit path passes through that node.
+Removing a value decrements every count along its path; a count reaching zero
+means that subtree is logically empty even though the nodes remain allocated.
+
 ## Key idea: greedily choose bits
 
 XOR is decided bit by bit from most significant to least significant. At each
 bit position:
 
-- To **maximize** XOR, you want the opposite bit if it exists.
-- To **minimize** XOR, you want the same bit if it exists.
+- To **maximize** XOR, choose the child whose bit **differs** from the
+  corresponding bit of the query value (so that XOR bit = 1).
+- To **minimize** XOR, choose the child whose bit **matches** the corresponding
+  bit of the query value (so that XOR bit = 0).
 
-The trie lets you check whether that desired bit exists among the stored
-numbers at the current prefix.
+Fall back to the only available child when the preferred one is absent or empty.
+
+## Step-by-step: max_xor(2) on the trie above
+
+Query value: 2 = 010 in binary (bits 2, 1, 0 = 0, 1, 0).
+
+```
+Bit 2: query bit = 0, prefer opposite = 1
+        root has next1 (count=2) -> go right, XOR bit 2 = 1
+
+Bit 1: query bit = 1, prefer opposite = 0
+        node has next0 (count=1) -> go left, XOR bit 1 = 1
+
+Bit 0: query bit = 0, prefer opposite = 1
+        node has next1 (count=1) -> go right, XOR bit 0 = 1
+
+Result: XOR = 1*4 + 1*2 + 1*1 = 7   (matched key = 5 = 101)
+        2 XOR 5 = 7 [correct]
+```
+
+## Step-by-step: min_xor(2) on the trie above
+
+Query value: 2 = 010 (bits 2, 1, 0 = 0, 1, 0).
+
+```
+Bit 2: query bit = 0, prefer same = 0
+        root has next0 (count=1) -> go left, XOR bit 2 = 0
+
+Bit 1: query bit = 1, prefer same = 1
+        node has no next1 -> fall back to next0 (count=1), XOR bit 1 = 1
+
+Bit 0: query bit = 0, prefer same = 0
+        node has no next0 -> fall back to next1 (count=1), XOR bit 0 = 1
+
+Result: XOR = 0*4 + 1*2 + 1*1 = 3   (matched key = 1 = 001)
+        2 XOR 1 = 3 [correct]
+```
 
 ## What this package provides
 
@@ -99,8 +163,11 @@ use too many bits, the trie is still correct but uses more memory.
 - This trie assumes non-negative values (or that you treat Int64 as an unsigned
   bit pattern). For signed negatives, set `max_bits` high enough to include the
   sign bit.
-- `remove` only deletes if the full path exists and the count is positive.
+- `remove` only decrements counts along a path that was previously inserted; it
+  returns `false` if the path does not exist or is already empty.
 - The structure stores only the XOR value, not which key produced it.
+- Node memory is never freed after removal; only counts are decremented. The
+  allocated node array grows monotonically with distinct inserted prefixes.
 
 ## Complexity
 

@@ -26,20 +26,37 @@
 //   - Clustering
 
 ///|
-/// Large value representing infinity (for finding minimum).
+/// Large sentinel value representing infinity, used to initialize the best
+/// cut weight before any phase is processed.
+///
+/// Chosen as the largest positive Int64 value that avoids overflow when
+/// compared or printed.
 const INF64 : Int64 = 4611686018427387903L
 
 ///|
-/// Result of minimum cut computation.
+/// Result returned by `stoer_wagner_min_cut`.
 ///
-/// FIELDS:
-///   - weight: total weight of edges crossing the cut
-///   - cut: one side of the cut (array of original vertex IDs)
+/// Describes the global minimum cut of an undirected weighted graph:
+/// the cheapest way to split all vertices into two non-empty groups.
 ///
-/// NOTE:
+/// Fields:
+/// - `weight`: total weight of the edges that cross the cut.
+/// - `cut`: the vertices on one side of the cut (original 0-based IDs).
+///
+/// The other side is the complement: all vertices NOT in `cut`.
+///
+/// Example:
 /// ```
-///   The other side of the cut is all vertices NOT in cut[].
-///   The cut weight is the sum of edge weights between these two sides.
+/// Graph:
+///   0 ---1--- 1
+///   |         |
+///   1         1
+///   |         |
+///   3 ---1--- 2
+///
+/// A possible result:  weight = 2,  cut = [3]
+/// Crossing edges:  3-0 (weight 1) and 3-2 (weight 1)
+/// The complement side is {0, 1, 2}.
 /// ```
 pub(all) struct MinCutResult {
   weight : Int64
@@ -47,21 +64,26 @@ pub(all) struct MinCutResult {
 } derive(Debug)
 
 ///|
-/// Select the vertex with maximum w[] value among alive, non-added vertices.
+/// Select the vertex with the maximum `w` value among alive, not-yet-added
+/// vertices.
 ///
-/// This is the core of maximum adjacency search:
+/// This is the inner loop of maximum adjacency search (also called
+/// "maximum cardinality search"). At each step, the vertex most strongly
+/// connected to the current set A is chosen next.
+///
+/// Parameters:
+/// - `alive`: `alive[v]` is true if vertex `v` has not been contracted away.
+/// - `added`: `added[v]` is true if vertex `v` has already been placed in A.
+/// - `w`: `w[v]` is the total edge weight from `v` to the current set A.
+///
+/// Returns the index of the chosen vertex, or -1 if no eligible vertex
+/// exists (all alive vertices are already in A, or none are alive).
+///
 /// ```
-///   At each step, select the vertex most tightly connected to the
-///   current set A (measured by total edge weight to A).
+/// Example (alive = [T,T,T,T], added = [T,F,F,F], w = [-,1,0,2]):
+///   Eligible: 1 (w=1), 2 (w=0), 3 (w=2)
+///   Returns: 3  (highest w)
 /// ```
-///
-/// PARAMETERS:
-///   - alive: which vertices are still active (not contracted)
-///   - added: which vertices have been added to set A this phase
-///   - w: w[v] = total edge weight from v to current set A
-///
-/// RETURNS:
-///   Index of selected vertex, or -1 if none available
 fn select_max_vertex(
   alive : Array[Bool],
   added : Array[Bool],
@@ -81,9 +103,14 @@ fn select_max_vertex(
 }
 
 ///|
-/// Append all elements from source to target.
+/// Append all elements of `source` to `target` in order.
 ///
-/// Used when contracting vertices: merge member lists.
+/// Used during vertex contraction: when supernode `t` is merged into
+/// supernode `s`, all original vertices tracked by `t` are moved into
+/// the member list of `s`.
+///
+/// After this call, `target` contains its original elements followed
+/// by all elements of `source`. `source` is not modified.
 fn append_members(target : Array[Int], source : Array[Int]) -> Unit {
   for v in source {
     target.push(v)

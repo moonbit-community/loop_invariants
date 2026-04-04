@@ -12,6 +12,10 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
+/// Normalize `x` into [0, m).
+///
+/// Reduces `x % m` and adds `m` if the result is negative, so the
+/// return value always satisfies `0 <= result < m`.
 fn mod_norm(x : Int64, m : Int64) -> Int64 {
   let v = x % m
   if v < 0L {
@@ -22,21 +26,28 @@ fn mod_norm(x : Int64, m : Int64) -> Int64 {
 }
 
 ///|
+/// Modular addition: returns `(a + b) mod m` in [0, m).
 fn mod_add(a : Int64, b : Int64, m : Int64) -> Int64 {
   mod_norm(a + b, m)
 }
 
 ///|
+/// Modular subtraction: returns `(a - b) mod m` in [0, m).
 fn mod_sub(a : Int64, b : Int64, m : Int64) -> Int64 {
   mod_norm(a - b, m)
 }
 
 ///|
+/// Modular multiplication: returns `(a * b) mod m` in [0, m).
 fn mod_mul(a : Int64, b : Int64, m : Int64) -> Int64 {
   a * b % m
 }
 
 ///|
+/// Modular exponentiation: returns `base^exp mod m` using binary exponentiation.
+///
+/// The loop invariant maintained is: `result * (b^e) ≡ base^exp (mod m)`.
+/// When `e` reaches zero the invariant reduces to `result ≡ base^exp (mod m)`.
 fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
   let result = for result = 1L % m, b = mod_norm(base, m), e = exp; e > 0L; {
     let next_result = if (e & 1L) == 1L {
@@ -61,14 +72,89 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
 }
 
 ///|
+/// Modular multiplicative inverse of `x` modulo a prime `m`.
+///
+/// Uses Fermat's little theorem: `x^{m-2} ≡ x^{-1} (mod m)` when `m` is prime.
+/// The caller must ensure `x ≢ 0 (mod m)` and that `m` is prime.
 fn inv_mod(x : Int64, m : Int64) -> Int64 {
   pow_mod(x, m - 2L, m)
 }
 
 ///|
-/// Compute minimal recurrence coefficients for the sequence.
-/// Returns coefficients [c0, c1, ..., c_{L-1}].
-/// M must be prime for inverses to exist.
+/// Find the shortest linear recurrence that generates `seq` modulo the prime `m`.
+///
+/// ## What this returns
+///
+/// A coefficient array `[c0, c1, ..., c_{L-1}]` of minimal length `L` such
+/// that for every valid index `i >= L`:
+///
+/// ```
+/// s[i] = c0*s[i-1] + c1*s[i-2] + ... + c_{L-1}*s[i-L]  (mod m)
+/// ```
+///
+/// If `seq` is empty the return value is `[]`.
+///
+/// ## Requirements
+///
+/// - `m` must be a prime number (the algorithm requires modular inverses).
+/// - For reliable recovery of a recurrence of true length `L`, supply at
+///   least `2*L` terms.
+///
+/// ## How the algorithm works
+///
+/// The algorithm scans `seq` left to right and maintains two polynomials:
+///
+/// - `C` — the current shortest connection polynomial (represents the recurrence
+///   found so far, stored with a leading 1 coefficient).
+/// - `B` — a copy of `C` from the last time the recurrence length was increased.
+///
+/// At each position `i` the algorithm computes the **discrepancy**:
+///
+/// ```
+/// d = s[i] - (c1*s[i-1] + ... + c_L*s[i-L])  (mod m)
+/// ```
+///
+/// When `d == 0` the current recurrence already predicts `s[i]` correctly; the
+/// algorithm just advances.  When `d != 0` a correction is applied:
+///
+/// ```
+/// C_new(x) = C(x) - (d / last_d) * x^m_steps * B(x)
+/// ```
+///
+/// This cancels the discrepancy at position `i` while preserving correctness
+/// for all earlier positions.  If the correction forces `L` to grow (i.e.
+/// `2*L <= i`), `B` is updated to the old `C` and `last_d` to `d`.
+///
+/// ## Complexity
+///
+/// - Time: O(n^2) where n = seq.length()
+/// - Space: O(n)
+///
+/// ## Example: Fibonacci
+///
+/// ```mbt check
+/// ///|
+/// test "berlekamp_massey fibonacci" {
+///   let m = 1000000007L
+///   let seq : Array[Int64] = [0L, 1L, 1L, 2L, 3L, 5L, 8L]
+///   let coeffs = @berlekamp_massey.berlekamp_massey(seq[:], m)
+///   // s[i] = 1*s[i-1] + 1*s[i-2]
+///   inspect(coeffs, content="[1, 1]")
+/// }
+/// ```
+///
+/// ## Example: geometric progression
+///
+/// ```mbt check
+/// ///|
+/// test "berlekamp_massey geometric" {
+///   let m = 1000000007L
+///   let seq : Array[Int64] = [1L, 2L, 4L, 8L, 16L]
+///   let coeffs = @berlekamp_massey.berlekamp_massey(seq[:], m)
+///   // s[i] = 2*s[i-1]
+///   inspect(coeffs, content="[2]")
+/// }
+/// ```
 pub fn berlekamp_massey(seq : ArrayView[Int64], m : Int64) -> Array[Int64] {
   let n = seq.length()
   if n == 0 {
