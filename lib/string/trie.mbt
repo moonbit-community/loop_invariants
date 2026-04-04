@@ -315,7 +315,16 @@ fn AhoCorasick::add_pattern(
 }
 
 ///|
-/// Build failure links using BFS
+/// Compute failure links and suffix-output links for all trie nodes via BFS.
+///
+/// After all patterns are inserted, this method is called once to augment
+/// the trie into a full automaton:
+/// - Every depth-1 node's failure link points to the root.
+/// - For deeper nodes, the failure link is found by following the parent's
+///   failure link and then the same character edge (like KMP's failure
+///   function extended to a trie).
+/// - `suffix_output` is set to the nearest failure-link ancestor that has
+///   a non-empty output array, enabling efficient collection of all matches.
 fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
   // Queue for BFS
   let queue : Array[Int] = Array::make(self.node_count, 0)
@@ -397,7 +406,11 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
 }
 
 ///|
-/// Find failure link for a child node
+/// Find the failure link target for the child of `parent` on edge `c`.
+///
+/// Walks up the failure-link chain of `parent` until a node that has an
+/// outgoing edge labeled `c` is found, then returns that child.  If no such
+/// node exists up to the root, returns the root (index `0`).
 fn AhoCorasick::find_fail_link(
   self : AhoCorasick,
   parent : Int,
@@ -427,13 +440,34 @@ fn AhoCorasick::find_fail_link(
 }
 
 ///|
+/// A single pattern match found by the Aho-Corasick search.
+///
+/// - `position`    — the exclusive end position in the text (i.e. the match
+///   covers `text[position - len(pattern) .. position)`).
+/// - `pattern_idx` — the 0-based index into the `patterns` array supplied to
+///   `AhoCorasick::new`.
 priv struct ACMatch {
   position : Int // end position in text (exclusive)
   pattern_idx : Int // index of matched pattern
 }
 
 ///|
-/// Search for all pattern occurrences in text
+/// Find all occurrences of all patterns in `text`.
+///
+/// Runs the automaton on `text` left-to-right.  At each position the current
+/// state is advanced via `transition` (which follows failure links as needed),
+/// then all patterns ending at that position are collected via direct output
+/// and `suffix_output` links.
+///
+/// # Parameters
+/// - `text` — the text to search (only lowercase ASCII letters)
+///
+/// # Returns
+/// An `Array[ACMatch]` with one entry per pattern occurrence (including
+/// overlapping matches), in the order they are encountered left-to-right.
+///
+/// # Complexity
+/// - O(n + total_output) where `n = text.length()`
 fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[ACMatch] {
   let chars = text.to_array()
   let n = chars.length()
@@ -464,7 +498,18 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[ACMatch] {
 }
 
 ///|
-/// Transition function with failure link following
+/// Compute the automaton transition from `state_in` on character index `c`.
+///
+/// If `state_in` has a direct child for `c`, that child is returned.
+/// Otherwise the failure link is followed and the process repeats until
+/// either a child is found or the root is reached.
+///
+/// # Parameters
+/// - `state_in` — the current automaton state index
+/// - `c`        — the character index (`0` = `'a'`, ..., `25` = `'z'`)
+///
+/// # Returns
+/// The index of the next state.
 fn AhoCorasick::transition(self : AhoCorasick, state_in : Int, c : Int) -> Int {
   for state = state_in {
     if self.nodes[state].children[c] != -1 {
@@ -489,7 +534,16 @@ fn AhoCorasick::transition(self : AhoCorasick, state_in : Int, c : Int) -> Int {
 }
 
 ///|
-/// Collect all matches at a state (including via suffix links)
+/// Append all pattern matches ending at text position `end_pos` to `matches`.
+///
+/// Collects both direct outputs stored at `state` and any additional patterns
+/// reachable via the `suffix_output` chain, ensuring all overlapping matches
+/// are reported.
+///
+/// # Parameters
+/// - `state`   — current automaton state index after processing `end_pos - 1`
+/// - `end_pos` — exclusive end position in the text (1-based)
+/// - `matches` — accumulator to which `ACMatch` values are appended
 fn AhoCorasick::collect_matches(
   self : AhoCorasick,
   state : Int,
@@ -525,29 +579,51 @@ fn AhoCorasick::collect_matches(
 // ============================================================================
 
 ///|
+/// A node in a binary (XOR) trie.
+///
+/// Each node branches on a single bit: `children.0` is the child for bit 0
+/// and `children.1` is the child for bit 1.  `count` tracks how many numbers
+/// pass through this node, allowing prefix-count queries.
 priv struct XORTrieNode {
   mut children : (XORTrieNode?, XORTrieNode?) // (bit 0, bit 1)
   mut count : Int
 }
 
 ///|
+/// Create a fresh `XORTrieNode` with no children and count 0.
 fn XORTrieNode::new() -> XORTrieNode {
   { children: (None, None), count: 0 }
 }
 
 ///|
+/// A **binary trie** (XOR trie) that stores non-negative integers by their
+/// binary representation and supports maximum-XOR queries.
+///
+/// Useful for problems such as "find the element in the set that maximises
+/// XOR with a query value" (e.g. maximum XOR subarray).
+///
+/// Construct with `XORTrie::new(max_bits)`, insert with `insert`, and query
+/// with `max_xor`.
 priv struct XORTrie {
   root : XORTrieNode
   bits : Int // number of bits to consider
 }
 
 ///|
+/// Create an empty `XORTrie` that considers the `max_bits` most-significant
+/// bits of each inserted integer (bit `max_bits - 1` down to bit `0`).
 fn XORTrie::new(max_bits : Int) -> XORTrie {
   { root: XORTrieNode::new(), bits: max_bits }
 }
 
 ///|
-/// Insert a number into XOR trie
+/// Insert `num` into the XOR trie.
+///
+/// Processes bits from `self.bits - 1` down to `0`, creating nodes as
+/// needed.  Each node along the path has its `count` incremented.
+///
+/// # Parameters
+/// - `num` — the non-negative integer to insert
 fn XORTrie::insert(self : XORTrie, num : Int) -> Unit {
   for bit = self.bits - 1, node = self.root; bit >= 0; {
     node.count = node.count + 1
@@ -591,7 +667,23 @@ fn XORTrie::insert(self : XORTrie, num : Int) -> Unit {
 }
 
 ///|
-/// Find maximum XOR of num with any number in trie
+/// Return the maximum XOR of `num` with any number stored in the trie.
+///
+/// At each bit position, the algorithm greedily prefers the opposite bit
+/// to `num`'s bit (maximising that position's contribution to the XOR).
+/// If the preferred branch does not exist, the other branch is taken.
+///
+/// Returns `0` if the trie is empty.
+///
+/// # Parameters
+/// - `num` — the query value
+///
+/// # Example
+/// ```
+/// // Trie contains 3, 10, 5.  Query: max XOR with 6.
+/// // 6 XOR 3 = 5, 6 XOR 10 = 12, 6 XOR 5 = 3
+/// // max_xor(6) == 12
+/// ```
 fn XORTrie::max_xor(self : XORTrie, num : Int) -> Int {
   if self.root.count == 0 {
     return 0
@@ -643,6 +735,12 @@ fn XORTrie::max_xor(self : XORTrie, num : Int) -> Int {
 // ============================================================================
 
 ///|
+/// A node in a persistent (versioned) prefix trie.
+///
+/// Each node is stamped with a `version` number.  When inserting into a new
+/// version, nodes on the insertion path are **cloned** (path copying) so that
+/// earlier versions remain unmodified.  Nodes off the insertion path are
+/// shared between versions.
 priv struct PersistentTrieNode {
   children : Array[PersistentTrieNode?]
   is_end : Bool
@@ -650,17 +748,34 @@ priv struct PersistentTrieNode {
 }
 
 ///|
+/// Create a fresh `PersistentTrieNode` for `version` with no children and
+/// `is_end = false`.
 fn PersistentTrieNode::new(version : Int) -> PersistentTrieNode {
   { children: Array::make(26, None), is_end: false, version }
 }
 
 ///|
+/// A **persistent prefix trie** supporting O(|word|) insert while retaining
+/// access to all previous versions.
+///
+/// Insertions use *path copying*: only the O(|word|) nodes on the insertion
+/// path are cloned; all other nodes are shared with the previous version.
+/// Older versions remain fully queryable via `search_version`.
+///
+/// Construct with `PersistentTrie::new(max_versions)`, insert with `insert`
+/// (returns the new version number), and query with `search_version`.
 priv struct PersistentTrie {
   roots : Array[PersistentTrieNode?]
   mut version : Int
 }
 
 ///|
+/// Create an empty `PersistentTrie` with capacity for `max_versions`
+/// versions (version 0 is the empty trie).
+///
+/// # Parameters
+/// - `max_versions` — upper bound on the number of insert operations that
+///   will be performed (must be at least 1)
 fn PersistentTrie::new(max_versions : Int) -> PersistentTrie {
   let roots : Array[PersistentTrieNode?] = Array::make(max_versions, None)
   roots[0] = Some(PersistentTrieNode::new(0))
@@ -668,7 +783,17 @@ fn PersistentTrie::new(max_versions : Int) -> PersistentTrie {
 }
 
 ///|
-/// Insert word creating new version
+/// Insert `word` into the trie, creating a new version.
+///
+/// Clones every node on the insertion path from the current version's root,
+/// stamping each clone with the new version number.  Nodes off the path are
+/// shared with the current version.
+///
+/// # Parameters
+/// - `word` — the word to insert (lowercase ASCII letters only)
+///
+/// # Returns
+/// The new version number (monotonically increasing).
 fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
   let chars = word.to_array()
   let n = chars.length()
@@ -734,7 +859,16 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
 }
 
 ///|
-/// Search in specific version
+/// Return `true` if `word` exists in the trie at `version`.
+///
+/// Follows the path for `word` starting from the root of the specified
+/// version.  Returns `false` if any edge is missing or if the `version`
+/// root is `None`.
+///
+/// # Parameters
+/// - `word`    — the exact word to search for
+/// - `version` — the trie version to query (0 = empty, as returned by
+///   `insert`)
 fn PersistentTrie::search_version(
   self : PersistentTrie,
   word : String,
@@ -773,6 +907,13 @@ fn PersistentTrie::search_version(
 // ============================================================================
 
 ///|
+/// A node in a radix tree (compressed trie / Patricia trie).
+///
+/// Unlike a standard trie that stores one character per edge, a radix node
+/// stores a *string* label on each edge, compressing chains of single-child
+/// nodes.  `children` is a list of `(first_char, child)` pairs, where
+/// `first_char` is the first character of the child's `edge_label` (used for
+/// O(alphabet) dispatch).
 priv struct RadixNode {
   mut edge_label : String // edge label from parent
   children : Array[(Char, RadixNode)]
@@ -780,22 +921,37 @@ priv struct RadixNode {
 }
 
 ///|
+/// Create a fresh `RadixNode` with edge label `label`, no children, and
+/// `is_end = false`.
 fn RadixNode::new(label : String) -> RadixNode {
   { edge_label: label, children: [], is_end: false }
 }
 
 ///|
+/// A **Radix Tree** (compressed trie / Patricia trie) over strings.
+///
+/// Compared to a standard trie, a radix tree stores entire string labels on
+/// edges instead of single characters, merging chains of single-child nodes.
+/// This reduces the number of nodes from O(total characters) to O(number of
+/// words), saving memory for sparse key sets.
+///
+/// Supports O(|word|) insert and search.  Edge splitting is handled
+/// automatically on insert.
 priv struct RadixTree {
   root : RadixNode
 }
 
 ///|
+/// Create an empty `RadixTree` with a root node carrying the empty label.
 fn RadixTree::new() -> RadixTree {
   { root: RadixNode::new("") }
 }
 
 ///|
-/// Find common prefix length of two strings
+/// Return the length of the longest common prefix of `s1` and `s2`.
+///
+/// Compares characters left-to-right and stops at the first mismatch or at
+/// the end of the shorter string.
 fn common_prefix_length(s1 : String, s2 : String) -> Int {
   let chars1 = s1.to_array()
   let chars2 = s2.to_array()
@@ -823,7 +979,10 @@ fn common_prefix_length(s1 : String, s2 : String) -> Int {
 }
 
 ///|
-/// Find child by first character
+/// Find the child of this node whose edge label starts with character `c`.
+///
+/// Returns `(index, Some(child))` if found, or `(-1, None)` if no such child
+/// exists.  The index can be used to replace the child in the parent's list.
 fn RadixNode::find_child(self : RadixNode, c : Char) -> (Int, RadixNode?) {
   for i in 0..<self.children.length() {
     let (first_char, child) = self.children[i]
@@ -845,7 +1004,15 @@ fn RadixNode::find_child(self : RadixNode, c : Char) -> (Int, RadixNode?) {
 }
 
 ///|
-/// Insert word into radix tree
+/// Insert `word` into the radix tree.
+///
+/// Traverses the tree following shared edge prefixes.  When the remaining
+/// suffix of `word` shares only a partial prefix with an existing edge, that
+/// edge is **split** at the common prefix, creating an intermediate node.
+/// The split is performed in O(|word|) time.
+///
+/// # Parameters
+/// - `word` — the string to insert (may contain any characters)
 fn RadixTree::insert(self : RadixTree, word : String) -> Unit {
   if word.length() == 0 {
     self.root.is_end = true
@@ -856,7 +1023,13 @@ fn RadixTree::insert(self : RadixTree, word : String) -> Unit {
 }
 
 ///|
-/// Helper for radix tree insertion
+/// Recursive insertion helper for the radix tree.
+///
+/// Inserts the suffix `word[pos..]` (represented via `chars`) under `node`.
+/// Handles three cases:
+/// 1. No matching child edge — create a new leaf with the remaining suffix.
+/// 2. Matching child edge whose full label is consumed — recurse into child.
+/// 3. Matching child edge with partial overlap — split at the common prefix.
 fn RadixTree::insert_helper(
   self : RadixTree,
   node : RadixNode,
@@ -915,7 +1088,10 @@ fn RadixTree::insert_helper(
 }
 
 ///|
-/// Helper to check if edge matches word substring
+/// Return `true` if `edge_chars` matches `chars[pos .. pos + edge_len)`.
+///
+/// Used during radix tree search to verify that the full edge label matches
+/// the corresponding slice of the query word.
 fn edge_matches(
   chars : Array[Char],
   pos : Int,
@@ -941,7 +1117,14 @@ fn edge_matches(
 }
 
 ///|
-/// Search for word in radix tree
+/// Return `true` if `word` was previously inserted into the radix tree.
+///
+/// Follows edge labels from the root, consuming characters of `word`.
+/// Returns `false` if any edge is missing, the edge label does not match, or
+/// the terminal node is not marked as a word end.
+///
+/// # Parameters
+/// - `word` — the exact word to look up
 fn RadixTree::search(self : RadixTree, word : String) -> Bool {
   if word.length() == 0 {
     return self.root.is_end

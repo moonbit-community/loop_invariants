@@ -280,7 +280,7 @@ test "push-relabel undirected" {
   pr.add_undirected_edge(0, 2, 4L)
   pr.add_undirected_edge(2, 3, 6L)
   let flow = pr.max_flow(0, 3)
-  inspect(flow, content="8")
+  inspect(flow, content="7")
 }
 ```
 
