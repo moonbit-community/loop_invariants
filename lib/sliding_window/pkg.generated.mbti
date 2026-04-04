@@ -2,6 +2,15 @@
 package "bobzhang/loop_invariants/lib/sliding_window"
 
 // Values
+pub fn longest_subarray_with_sum_le(Array[Int64], Int64) -> Int
+
+pub fn min_subarray_with_sum_ge(Array[Int64], Int64) -> Int
+
+pub fn sliding_window_max(Array[Int64], Int) -> Array[Int64]
+
+pub fn sliding_window_min(Array[Int64], Int) -> Array[Int64]
+
+pub fn sliding_window_sum(Array[Int64], Int) -> Array[Int64]
 
 // Errors
 
