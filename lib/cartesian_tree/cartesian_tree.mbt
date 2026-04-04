@@ -653,8 +653,19 @@ fn largest_rectangle_histogram(heights : Array[Int64]) -> Int64 {
 // Unique identifier for tree shape, useful for pattern matching
 
 ///|
-/// Compute Cartesian Tree number (unique for each tree shape)
-/// Uses the bijection between binary trees and balanced parentheses
+/// Compute a compact integer fingerprint that uniquely identifies the **shape**
+/// of the tree (independent of the actual values stored at each node).
+///
+/// The encoding uses a preorder traversal where each non-null node contributes
+/// a `1` bit and each null (absent) child contributes a `0` bit.  The resulting
+/// bit string is interpreted as a big-endian integer.
+///
+/// Two trees have the same tree number if and only if they have the same binary
+/// tree shape.  This is useful for checking whether two arrays with the same
+/// relative ordering produce structurally identical Cartesian trees.
+///
+/// Note: the encoding length is `2n + 1` bits for a tree with `n` nodes, so
+/// the result overflows `Int64` for large trees (safe for n <= 30).
 fn CartesianTree::tree_number(self : CartesianTree) -> Int64 {
   if self.n == 0 {
     return 0L
@@ -675,6 +686,10 @@ fn CartesianTree::tree_number(self : CartesianTree) -> Int64 {
 }
 
 ///|
+/// Append the preorder shape encoding of the subtree rooted at `node` to `bits`.
+///
+/// A present node contributes `1`; an absent child (null, index `-1`)
+/// contributes `0`.  The full encoding of an n-node tree is `2n + 1` bits long.
 fn encode_tree(
   nodes : Array[CartesianNode],
   node : Int,

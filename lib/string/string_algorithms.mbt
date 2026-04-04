@@ -10,8 +10,35 @@
 // ============================================================================
 
 ///|
-/// Compute Z-array: Z[i] = length of longest common prefix of s and s[i..].
-/// Z[0] is undefined (conventionally 0 or n).
+/// Compute the Z-array for the character sequence `s`.
+///
+/// `Z[i]` is the length of the longest substring starting at `s[i]` that is
+/// also a prefix of `s`.  `Z[0]` is set to `n` by convention (the entire
+/// string matches itself).
+///
+/// The algorithm runs in **O(n)** time by maintaining a *Z-box* `[l, r)` —
+/// the rightmost interval where `s[l..r) == s[0..r-l)`.  Whenever `i` falls
+/// inside the Z-box the already-computed value at the mirror position
+/// `k = i - l` gives a free lower bound for `Z[i]`, avoiding redundant
+/// comparisons.
+///
+/// # Parameters
+/// - `s` — the input character slice (may be empty)
+///
+/// # Returns
+/// An `Array[Int]` of length `s.length()` where entry `i` holds `Z[i]`.
+/// Returns an empty array when `s` is empty.
+///
+/// # Example
+/// ```
+/// // s = "aabaaaba"
+/// // Z = [8, 1, 0, 5, 1, 0, 2, 1]
+/// ```
+///
+/// # Application
+/// Concatenate `pattern + '$' + text` and compute the Z-array.
+/// Every position `i > m` with `Z[i] >= m` is a match of `pattern` in
+/// `text`, giving O(n + m) pattern matching.
 #warnings("+missing_invariant+missing_reasoning")
 fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
   let n = s.length()

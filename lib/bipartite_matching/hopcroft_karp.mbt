@@ -26,8 +26,32 @@
 const HK_INF : Int = 2147483647
 
 ///|
-/// Hopcroft-Karp algorithm for maximum bipartite matching.
-/// Time complexity: O(E * sqrt(V)) - faster than Hungarian for large graphs.
+/// State for the Hopcroft-Karp algorithm for maximum bipartite matching.
+///
+/// The algorithm alternates between two phases until no augmenting path
+/// exists:
+///
+/// 1. **BFS phase**: builds a layered (level) graph from all unmatched left
+///    vertices. Layers alternate between unmatched and matched edges. BFS
+///    stops as soon as any unmatched right vertex is reached. This guarantees
+///    that only shortest augmenting paths are considered in the current phase.
+///
+/// 2. **DFS phase**: traverses the layered graph from each unmatched left
+///    vertex, augmenting along valid layer-respecting paths. Vertices that
+///    lead to dead ends are marked with `dist = HK_INF` to prevent revisiting
+///    within the same phase.
+///
+/// Fields:
+/// - `match_left[u]`  : right vertex matched to left vertex `u`, or `-1`
+/// - `match_right[v]` : left vertex matched to right vertex `v`, or `-1`
+/// - `dist[u]`        : BFS layer of left vertex `u` in the current phase;
+///                      `dist[n_left]` serves as a sentinel for unmatched
+///                      right vertices
+///
+/// Create via `BipartiteGraph::hopcroft_karp()`.
+///
+/// Time complexity: O(E * sqrt(V)).
+/// Space complexity: O(V + E).
 struct HopcroftKarp {
   graph : BipartiteGraph
   match_left : Array[Int]
@@ -46,7 +70,16 @@ fn HopcroftKarp::new(graph : BipartiteGraph) -> HopcroftKarp {
 }
 
 ///|
-/// BFS to build layered graph
+/// BFS phase: build a layered graph over left vertices reachable from
+/// unmatched left vertices via alternating (unmatched then matched) edges.
+///
+/// Unmatched left vertices start at layer 0. An unmatched right vertex is
+/// represented by the sentinel index `n_left`. Returns `true` if at least one
+/// unmatched right vertex was reached (i.e., an augmenting path exists).
+///
+/// After this call, `dist[u]` contains the BFS layer for each reachable left
+/// vertex, and `dist[n_left]` holds the layer of the first unmatched right
+/// vertex reached (or `HK_INF` if none was found).
 fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
   let queue : @queue.Queue[Int] = @queue.new()
   for u in 0..<self.graph.n_left {
@@ -85,7 +118,18 @@ fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
 }
 
 ///|
-/// DFS to find augmenting path
+/// DFS phase: attempt to find and augment a path from left vertex `u` that
+/// follows the layered graph produced by the most recent BFS phase.
+///
+/// Only edges to right vertices whose matched partner lies exactly one layer
+/// deeper are followed (`dist[next] == dist[u] + 1`). When the sentinel index
+/// `n_left` is reached, an unmatched right vertex has been found and the path
+/// is augmented on the way back.
+///
+/// Left vertices that lead to dead ends are marked `dist[u] = HK_INF` to
+/// prune them for subsequent DFS calls within the same phase.
+///
+/// Returns `true` if an augmenting path was found and the matching updated.
 fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int) -> Bool {
   if u >= self.graph.n_left {
     return true // Reached unmatched right vertex
@@ -109,7 +153,26 @@ fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int) -> Bool {
 }
 
 ///|
-/// Find maximum matching size using Hopcroft-Karp.
+/// Run the Hopcroft-Karp algorithm and return the maximum matching size.
+///
+/// Each iteration is one BFS+DFS phase. The BFS builds a layered graph of
+/// shortest augmenting paths; the DFS finds and applies all vertex-disjoint
+/// augmenting paths within that layered graph. The number of phases is
+/// O(sqrt(V)), giving the overall O(E * sqrt(V)) complexity.
+///
+/// After this call, `get_matching()` returns the individual matched pairs and
+/// `min_vertex_cover()` returns the minimum vertex cover.
+///
+/// Example:
+/// ```
+/// let graph = BipartiteGraph::new(4, 4)
+/// graph.add_edge(0, 0)
+/// graph.add_edge(1, 1)
+/// graph.add_edge(2, 2)
+/// graph.add_edge(3, 3)
+/// let matcher = graph.hopcroft_karp()
+/// let size = matcher.max_matching() // 4
+/// ```
 pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
   // Keep finding augmenting paths until none exist
   for matching = 0; self.bfs(); {
@@ -151,8 +214,22 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
 }
 
 ///|
-/// Get the matched pairs after running max_matching().
-/// Returns array of (left_vertex, right_vertex) pairs.
+/// Return the matched pairs as an array of `(left_vertex, right_vertex)`.
+///
+/// Must be called after `max_matching()`. Returns only the pairs that are
+/// part of the maximum matching; unmatched left vertices are omitted.
+///
+/// The order of pairs reflects the left-vertex index order and is stable.
+///
+/// Example:
+/// ```
+/// let graph = BipartiteGraph::new(2, 2)
+/// graph.add_edge(0, 0)
+/// graph.add_edge(1, 1)
+/// let matcher = graph.hopcroft_karp()
+/// let _ = matcher.max_matching()
+/// let pairs = matcher.get_matching() // [(0, 0), (1, 1)]
+/// ```
 pub fn HopcroftKarp::get_matching(self : HopcroftKarp) -> Array[(Int, Int)] {
   let result : Array[(Int, Int)] = []
   for u in 0..<self.graph.n_left {
@@ -164,10 +241,35 @@ pub fn HopcroftKarp::get_matching(self : HopcroftKarp) -> Array[(Int, Int)] {
 }
 
 ///|
-/// Find minimum vertex cover using König's theorem.
-/// Calls max_matching() to ensure the matching is maximum.
-/// Returns (left_vertices, right_vertices) that form the cover.
-/// The size of minimum vertex cover equals maximum matching size.
+/// Compute the minimum vertex cover using König's theorem.
+///
+/// A **vertex cover** is a set of vertices such that every edge in the graph
+/// has at least one endpoint in the set. König's theorem states that in any
+/// bipartite graph the minimum vertex cover size equals the maximum matching
+/// size.
+///
+/// This method calls `max_matching()` internally, so it is safe to call
+/// directly without a preceding `max_matching()` call.
+///
+/// The cover is constructed from the maximum matching via an alternating DFS
+/// from all unmatched left vertices:
+/// - Left vertices **not** reachable in the alternating forest are in the cover.
+/// - Right vertices **reachable** in the alternating forest are in the cover.
+///
+/// Returns `(left_cover, right_cover)` where each array contains the vertex
+/// indices belonging to the cover on that side.
+///
+/// Example:
+/// ```
+/// let graph = BipartiteGraph::new(3, 3)
+/// graph.add_edge(0, 0)
+/// graph.add_edge(0, 1)
+/// graph.add_edge(1, 1)
+/// graph.add_edge(2, 2)
+/// let matcher = graph.hopcroft_karp()
+/// let (left_cover, right_cover) = matcher.min_vertex_cover()
+/// // left_cover.length() + right_cover.length() == matcher.max_matching()
+/// ```
 pub fn HopcroftKarp::min_vertex_cover(
   self : HopcroftKarp,
 ) -> (Array[Int], Array[Int]) {

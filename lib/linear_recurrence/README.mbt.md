@@ -43,6 +43,82 @@ reducing modulo the **characteristic polynomial**:
 P(x) = x^k - c0*x^{k-1} - c1*x^{k-2} - ... - c_{k-1}
 ```
 
+## Kitamasa Pipeline
+
+```mermaid
+flowchart TD
+    A["Input: coeffs c[0..k-1],\ninitial f[0..k-1], index n, modulus m"]
+    B{"n < k?"}
+    C["Return initial[n] mod m\n(base case)"]
+    D{"k = 1?"}
+    E["Return initial[0] * coeffs[0]^n mod m\n(fast power, O(log n))"]
+    F["Build characteristic polynomial\nP(x) = x^k - c0*x^(k-1) - ... - c_(k-1)"]
+    G["Initialize:\n  res  = [1, 0, ..., 0]  (represents x^0)\n  base = [0, 1, ..., 0]  (represents x^1)"]
+    H["Binary exponentiation loop\n(O(log n) iterations)"]
+    I{"bit of n is 1?"}
+    J["res = combine(res, base) mod P(x)"]
+    K["base = combine(base, base) mod P(x)"]
+    L["Shift n right by 1 bit"]
+    M{"n = 0?"}
+    N["Dot product:\nans = sum res[i] * initial[i] mod m"]
+    O["Return ans"]
+
+    A --> B
+    B -- yes --> C
+    B -- no --> D
+    D -- yes --> E
+    D -- no --> F
+    F --> G
+    G --> H
+    H --> I
+    I -- yes --> J
+    I -- no --> K
+    J --> K
+    K --> L
+    L --> M
+    M -- no --> H
+    M -- yes --> N
+    N --> O
+```
+
+## Polynomial Modular Exponentiation
+
+The core operation is computing `x^n mod P(x)` in the polynomial ring
+`Z/mZ[x] / P(x)`. A degree-(k-1) polynomial is stored as a coefficient array
+of length k.
+
+```
+Polynomial represented as length-k coefficient vector:
+
+  poly = [a0, a1, a2, ..., a_{k-1}]
+       = a0 + a1*x + a2*x^2 + ... + a_{k-1}*x^(k-1)
+
+Initial states:
+  res  = [1, 0, 0, ..., 0]   represents the constant 1  = x^0
+  base = [0, 1, 0, ..., 0]   represents the monomial x  = x^1
+
+combine(a, b) steps:
+  1. Multiply: form the (2k-1)-length product polynomial
+     tmp[i+j] += a[i] * b[j]   (standard polynomial multiply)
+
+  2. Reduce: fold each high-degree term back using P(x)
+     The identity x^k = c0*x^(k-1) + c1*x^(k-2) + ... + c_{k-1}
+     allows replacing x^k with a degree-(k-1) expression.
+     Scan from degree 2k-2 down to degree k, substituting each time:
+
+     for deg = 2k-2 downto k:
+       v = tmp[deg]
+       tmp[deg - 1] += v * c0
+       tmp[deg - 2] += v * c1
+       ...
+       tmp[deg - k] += v * c_{k-1}
+
+  3. Return: the first k entries of tmp
+
+After log2(n) doublings the result vector res satisfies:
+  f(n) = res[0]*f(0) + res[1]*f(1) + ... + res[k-1]*f(k-1)
+```
+
 ## Fibonacci Example (k=2)
 
 ```
@@ -107,18 +183,39 @@ Binary: `7 = 111₂`
 ```
 start: res = x^0, base = x^1
 
-bit1:
-  res = res * base   => x^1
-  base = base^2      => x^2 = x + 1
+bit1 (LSB):
+  n=7 is odd   => res  = res * base   => x^1        = [0, 1]
+                   base = base^2      => x^2 = x + 1 = [1, 1]
+  n >>= 1  (n=3)
 
 bit2:
-  res = x^1 * x^2    => x^3 = 2x + 1
-  base = (x^2)^2     => x^4 = 3x + 2
+  n=3 is odd   => res  = x^1 * x^2   => x^3 = 2x+1  = [1, 2]
+                   base = (x^2)^2     => x^4 = 3x+2  = [2, 3]
+  n >>= 1  (n=1)
 
 bit3:
-  res = (2x+1)*(3x+2) => x^7 = 13x + 8
+  n=1 is odd   => res  = (2x+1)*(3x+2) => x^7 = 13x+8 = [8, 13]
+                   base = (3x+2)^2      (unused)
+  n >>= 1  (n=0)
 
-f(7) = 8*f(0) + 13*f(1) = 13
+Result vector: [8, 13]
+f(7) = 8*f(0) + 13*f(1) = 8*0 + 13*1 = 13
+```
+
+The reduction step for x^2 (P(x) = x^2 - x - 1, so x^2 = x + 1):
+
+```
+tmp after multiply of [0,1] * [0,1]:
+
+  degree:  0    1    2
+  tmp:    [0,   0,   1]
+
+Fold x^2 back (x^2 = 1*x^1 + 1*x^0):
+  tmp[1] += tmp[2] * coeffs[0] = 1 * 1 = 1
+  tmp[0] += tmp[2] * coeffs[1] = 1 * 1 = 1
+  tmp[2] = 0 (discarded)
+
+Result: [1, 1]  =>  x^2 mod P(x) = x + 1  ✓
 ```
 
 ## Example Usage
@@ -178,12 +275,14 @@ test "tribonacci" {
 
 ## When to Use Kitamasa
 
-- You need a **single term** of a large‑index recurrence.
-- The order `k` is large (saves a factor of `k`).
+- You need a **single term** of a large-index recurrence.
+- The order `k` is large (saves a factor of `k` vs. matrix exponentiation).
 - You are working modulo a number.
 
 ## Implementation Notes (This Package)
 
 - Uses polynomial multiplication + reduction (`combine`).
 - Binary exponentiation drives the doubling.
-- Handles k=1 as a fast power special case.
+- Handles k=1 as a fast power special case via `pow_mod`.
+- All arithmetic is performed modulo `m` throughout; `mod_norm` corrects for
+  MoonBit's sign-preserving `%` on negative values.

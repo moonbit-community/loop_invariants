@@ -1,117 +1,230 @@
-# XOR Basis (Beginner-Friendly Guide)
+# XOR Basis
 
-An XOR basis stores a set of numbers so you can quickly answer:
+## Overview
 
-- Can I make `x` by XORing some subset?
-- What is the maximum `x ^ y` I can get?
-- How many independent values do I have?
+An XOR basis (also called a linear basis over GF(2)) maintains a set of
+`Int64` vectors under XOR so you can answer in O(B) time:
 
-It is like **Gaussian elimination**, but over bits with XOR.
+- Can I make `x` by XORing some subset of inserted values?
+- What is the maximum `x XOR y` where `y` comes from the inserted set?
+- How many linearly independent values have been inserted (the rank)?
 
-This package provides:
+It is Gaussian elimination applied to bit vectors, working in the field GF(2)
+where addition is XOR and the only scalars are 0 and 1.
 
 ```
-@xor_basis.XorBasis::new()
-XorBasis::insert(x)
-XorBasis::can_represent(x)
-XorBasis::max_xor(x)
-XorBasis::rank()
+insert         O(B)
+can_represent  O(B)
+max_xor        O(B)
+rank           O(1)
+```
+
+B is at most 63 for `Int64`, so all operations are effectively constant time.
+
+---
+
+## GF(2) Linear Algebra in One Paragraph
+
+Over the ordinary real numbers, Gaussian elimination reduces a matrix using
+subtraction. Over GF(2) (integers mod 2), subtraction equals addition equals
+XOR. A "row" is an integer interpreted as a bit vector. Eliminating a leading
+bit means XORing with a pivot row whose leading bit matches, cancelling that
+bit to zero. Because XOR is its own inverse, the same operation serves for
+both "add row" and "subtract row".
+
+---
+
+## Echelon Form of the Basis
+
+The basis array has one slot per bit position. Slot `k` is either empty (0)
+or holds a vector whose highest set bit is exactly `k`. This is row echelon
+form over GF(2):
+
+```
+bit position:  62  61  ...  5   4   3   2   1   0
+basis slot:     0   0  ...  0  v4  v3   0   0   0
+
+v4 = some Int64 with bit 4 as its leading bit
+v3 = some Int64 with bit 3 as its leading bit
+
+All bits above each vector's leading bit are already zero within that slot
+(they were eliminated when the vector was inserted).
+```
+
+At most one vector occupies each slot, so the basis holds at most 63 vectors.
+The span of those vectors (all possible XOR subsets) equals the span of every
+value ever inserted.
+
+---
+
+## Gaussian Elimination: Insert Step by Step
+
+Inserting a value reduces it by existing basis vectors from the top bit down.
+
+```
+State: basis is empty
+       basis[ k ] = 0 for all k
+
+Insert 5 = 101:
+
+  remainder = 101
+  bit 2 is set, basis[2] = 0 (empty) -> store 101 in basis[2], rank++
+
+  basis[2] = 101
+  basis[1] = 0
+  basis[0] = 0
+
+Insert 3 = 011:
+
+  remainder = 011
+  bit 2: not set in remainder, skip
+  bit 1: bit 1 is set, basis[1] = 0 (empty) -> store 011 in basis[1], rank++
+
+  basis[2] = 101
+  basis[1] = 011
+  basis[0] = 0
+
+Insert 6 = 110:
+
+  remainder = 110
+  bit 2: set, basis[2] = 101 -> XOR: 110 ^ 101 = 011  (bit 2 eliminated)
+  remainder = 011
+  bit 1: set, basis[1] = 011 -> XOR: 011 ^ 011 = 000  (bit 1 eliminated)
+  remainder = 0 -> 6 is in the span of {5, 3}, rank unchanged
+
+Final basis:
+  basis[2] = 101  (= 5)
+  basis[1] = 011  (= 3)
+  rank = 2
+```
+
+The key rule: when reducing, XOR the remainder with `basis[k]` to cancel the
+leading bit `k`. Both have bit `k` set, so XOR clears it. Bits below `k` may
+change, but bit `k` and higher are eliminated. The process terminates in at
+most B steps because each step either clears the leading bit or stores the
+vector and stops.
+
+---
+
+## Echelon Form After Multiple Inserts
+
+After inserting a collection of values the non-zero slots form an upper-left
+staircase pattern:
+
+```
+         leading bit position
+           (one per row)
+         62         0
+          .         .
+           \
+  row 0:   [  v_a  ]   <- basis[a], leading bit = a
+  row 1:      [v_b ]   <- basis[b], leading bit = b  (b < a)
+  row 2:        [vc]   <- basis[c], leading bit = c  (c < b)
+
+Empty slots have a 0 in the diagram.
+```
+
+No two rows share the same leading bit. This is exactly row echelon form.
+
+---
+
+## Membership Check: can_represent
+
+To test whether `value` is in the span, apply the same reduction as insert
+but without modifying the basis:
+
+```
+Reduce value by basis vectors top-down.
+If remainder reaches 0 -> value is representable.
+Otherwise -> value is not representable.
+
+Example: can_represent(7 = 111) with basis[2]=101, basis[1]=011
+
+  reduced = 111
+  bit 2: set, basis[2]=101 -> XOR -> 111^101 = 010
+  reduced = 010
+  bit 1: bit 1 not set in 010, skip
+  bit 0: not set, skip
+  reduced = 010 != 0 -> false  (7 is not in the span)
+
+Example: can_represent(6 = 110) with same basis
+
+  reduced = 110
+  bit 2: set, basis[2]=101 -> XOR -> 110^101 = 011
+  reduced = 011
+  bit 1: set, basis[1]=011 -> XOR -> 011^011 = 000
+  reduced = 0 -> true  (6 = 5 XOR 3)
+```
+
+---
+
+## Maximum XOR Query: Greedy From High to Low
+
+To maximize `value XOR y` over all `y` in the span, sweep bits from high to
+low. At each step, toggle `basis[k]` if it improves the running value.
+
+Greedy is correct because bit `k` is worth more than the sum of all lower bits
+combined: 2^k > 2^0 + 2^1 + ... + 2^(k-1). So a gain at bit `k` can never be
+undone by losses at lower bits.
+
+```
+Query max_xor(x = 010) with basis[2]=101, basis[1]=011
+
+  x = 010
+  bit 2: candidate = 010 ^ 101 = 111
+         111 > 010, so take it: x = 111
+  bit 1: candidate = 111 ^ 011 = 100
+         100 < 111, so keep:    x = 111
+  bit 0: basis[0] = 0, candidate = 111 ^ 0 = 111, unchanged
+
+  result = 111 = 7
+
+Explanation: the optimal y is basis[2] = 101 = 5, giving 010 ^ 101 = 111.
+```
+
+Decision table at each step:
+
+```
+  x before   basis[k]   candidate = x ^ basis[k]   keep candidate?
+  --------   --------   -------------------------   ---------------
+  010        101        111                         yes (higher)
+  111        011        100                         no  (lower)
+```
+
+`max_xor(0)` gives the largest XOR-combination of inserted values (the maximum
+over all non-empty subsets, including single elements).
+
+---
+
+## Span Size and Rank
+
+The span of a basis with rank `r` contains exactly `2^r` distinct values
+(including 0, the empty XOR). Each independent bit doubles the reachable set.
+
+```
+rank = 0 -> span = {0}              (1 value)
+rank = 1 -> span = {0, v}           (2 values)
+rank = 2 -> span = {0, v, w, v^w}   (4 values)
+rank = 3 -> ...                     (8 values)
+```
+
+---
+
+## API Reference
+
+```
+XorBasis::new()              -> XorBasis
+XorBasis::insert(x)          -> Bool      (true if rank increased)
+XorBasis::can_represent(x)   -> Bool
+XorBasis::max_xor(x)         -> Int64
+XorBasis::rank()             -> Int
 ```
 
 All values are `Int64`.
 
 ---
 
-## 1) XOR as linear algebra (tiny example)
-
-Consider numbers with 3 bits:
-
-```
-5 = 101
-3 = 011
-6 = 110
-```
-
-All XOR combinations of `{5, 3}`:
-
-```
-0   (empty set)
-5   (101)
-3   (011)
-5 ⊕ 3 = 110 = 6
-```
-
-So `{5, 3}` already spans `{0, 3, 5, 6}`.
-
-That means inserting `6` should **not** increase the basis size.
-
----
-
-## 2) Building the basis (visual)
-
-Insert `5 (101)`, `3 (011)`, `6 (110)`:
-
-```
-Start: basis empty
-
-Insert 5 = 101
-  highest bit = 2
-  basis[2] empty -> store 101
-
-Insert 3 = 011
-  highest bit = 1
-  basis[1] empty -> store 011
-
-Insert 6 = 110
-  highest bit = 2
-  110 ⊕ 101 = 011
-  highest bit = 1
-  011 ⊕ 011 = 000
-  reduced to 0 -> already representable
-```
-
-Final basis has 2 vectors: rank = 2.
-
----
-
-## 3) Insert algorithm (intuition)
-
-We try to eliminate the highest set bit using existing basis vectors.
-
-If we end up with 0, the number is already in the span.
-If we end with a new highest bit, we store it.
-
----
-
-## 4) Max XOR query (greedy works)
-
-To maximize `x ^ y`, we try to turn on the highest bits first:
-
-```
-If XORing with a basis vector flips a high bit from 0 to 1,
-do it.
-```
-
-This is optimal because higher bits dominate smaller ones.
-
-Example:
-
-```
-basis = {101, 011}
-x = 010
-
-Try bit2 vector 101:
-010 ⊕ 101 = 111  (better, bit2 becomes 1)
-
-Try bit1 vector 011:
-111 ⊕ 011 = 100  (worse, bit1 becomes 0)
-
-Result = 111 = 7
-```
-
----
-
-## 5) Example: insert + membership
+## Example: Insert and Membership
 
 ```mbt check
 ///|
@@ -131,7 +244,7 @@ test "xor basis membership" {
 
 ---
 
-## 6) Example: rank (independence)
+## Example: Rank (Linear Independence)
 
 ```mbt check
 ///|
@@ -150,7 +263,7 @@ test "xor basis rank" {
 
 ---
 
-## 7) Example: maximum XOR
+## Example: Maximum XOR
 
 ```mbt check
 ///|
@@ -165,50 +278,26 @@ test "xor basis max xor" {
 
 ---
 
-## 8) Why rank matters
-
-If rank = `r`, the basis spans exactly `2^r` values.
-
-Example:
+## Common Applications
 
 ```
-rank = 2 -> 4 values
-rank = 3 -> 8 values
-```
-
-This is useful when counting distinct XOR results.
-
----
-
-## 9) Common applications
-
-```
-Maximum XOR subarray
-Maximum XOR pair queries
-Check linear independence over GF(2)
-Count number of distinct XOR values
-XOR cycle basis in graphs
+Maximum XOR subarray (sliding or static window)
+Maximum XOR pair in a set of numbers
+Check linear independence of a set of bit vectors over GF(2)
+Count distinct XOR values from a set
+XOR cycle basis in graphs (minimum/maximum XOR cycle weight)
+Competitive programming: XOR game problems
 ```
 
 ---
 
-## 10) Complexity
+## Common Pitfalls
 
-Let B be number of bits (<= 63 for Int64):
-
-```
-insert         O(B)
-can_represent  O(B)
-max_xor        O(B)
-rank           O(1)
-```
-
-Since B is tiny, operations are effectively constant time.
-
----
-
-## 11) Common pitfalls
-
-- Forgetting to use `Int64` values.
-- Assuming insert order matters (it does not affect the span).
-- Mixing up "rank" (independent vectors) with "size" of input list.
+- Use `Int64` literals (`5L`, not `5`); the basis slots are `Array[Int64]`.
+- Insert order does not affect the span; it only affects which specific vectors
+  end up stored in which slots.
+- `rank()` counts independent vectors inserted, not the total number of
+  `insert` calls.
+- `can_represent(0)` always returns `true` (the empty XOR is 0, always in span).
+- Copying the basis requires copying both the `basis` array and the `size`
+  field: `{ basis: b.basis.copy(), size: b.size }`.
