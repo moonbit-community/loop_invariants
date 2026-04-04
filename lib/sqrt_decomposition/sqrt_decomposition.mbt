@@ -30,6 +30,10 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
+/// Compute the integer square root of `n` (i.e. `⌊√n⌋`).
+///
+/// Uses Newton's method, converging in O(log n) iterations.
+/// Returns 0 for non-positive inputs.
 fn isqrt(n : Int) -> Int {
   if n <= 0 {
     return 0
@@ -46,6 +50,21 @@ fn isqrt(n : Int) -> Int {
 // ============================================================================
 
 ///|
+/// Sqrt decomposition structure for **range sum queries** with **point updates**.
+///
+/// The array is divided into contiguous blocks of size `block_size ≈ √n`.
+/// Each block stores the sum of its elements so that any range sum `[l, r]`
+/// can be answered in O(√n) by combining:
+///
+/// - a left partial scan (up to `block_size` elements),
+/// - O(√n) precomputed block sums in the middle, and
+/// - a right partial scan (up to `block_size` elements).
+///
+/// Fields:
+/// - `arr` — copy of the original array, mutated in place by `update`.
+/// - `blocks` — `blocks[b]` holds the sum of all elements in block `b`.
+/// - `block_size` — number of elements per block, set to `⌊√n⌋` (min 1).
+/// - `n` — total number of elements.
 pub struct SqrtSum {
   arr : Array[Int64]
   blocks : Array[Int64]
@@ -54,7 +73,17 @@ pub struct SqrtSum {
 }
 
 ///|
-/// Build sqrt decomposition blocks for range sum queries.
+/// Build a `SqrtSum` from an existing array.
+///
+/// Copies `arr`, computes `block_size = ⌊√n⌋` (clamped to 1), and initialises
+/// each block aggregate in a single O(n) pass.
+///
+/// Parameters:
+/// - `arr` — the source array of `Int64` values.
+///
+/// Returns a new `SqrtSum` ready for queries and updates.
+///
+/// Time: O(n).  Space: O(n).
 pub fn SqrtSum::new(arr : Array[Int64]) -> SqrtSum {
   let n = arr.length()
   if n == 0 {
@@ -72,7 +101,14 @@ pub fn SqrtSum::new(arr : Array[Int64]) -> SqrtSum {
 }
 
 ///|
-/// Point update: arr[idx] = val
+/// Set `arr[idx] = val` and update the corresponding block sum in O(1).
+///
+/// Only the single block that contains `idx` is updated. Indices outside
+/// `[0, n)` are silently ignored.
+///
+/// Parameters:
+/// - `idx` — 0-based index of the element to change.
+/// - `val` — new value to assign.
 pub fn SqrtSum::update(self : SqrtSum, idx : Int, val : Int64) -> Unit {
   if idx < 0 || idx >= self.n {
     return
@@ -83,7 +119,18 @@ pub fn SqrtSum::update(self : SqrtSum, idx : Int, val : Int64) -> Unit {
 }
 
 ///|
-/// Range sum query [l, r] inclusive
+/// Return the sum of `arr[l..r]` (both endpoints inclusive) in O(√n).
+///
+/// The range is decomposed into:
+/// 1. A left partial block scanned element by element.
+/// 2. Whole blocks in the middle accumulated via precomputed block sums.
+/// 3. A right partial block scanned element by element.
+///
+/// Returns 0 if the range is empty or out of bounds.
+///
+/// Parameters:
+/// - `l` — inclusive left index (0-based).
+/// - `r` — inclusive right index (0-based).
 pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
   if l > r || l < 0 || r >= self.n {
     return 0L
@@ -172,9 +219,25 @@ pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
 // ============================================================================
 
 ///|
+/// Sentinel value used as the initial minimum in `SqrtMin`: `Int64::max_value`.
+///
+/// Any real element compares less than this value, so it acts as a safe
+/// identity element for the minimum operation.
 const SQRT_INF : Int64 = 9223372036854775807L
 
 ///|
+/// Sqrt decomposition structure for **range minimum queries** with **point
+/// updates**.
+///
+/// Mirrors `SqrtSum` but stores block minimums instead of block sums.
+/// Because a point update may raise the minimum of a block, the entire block
+/// must be rescanned on each update (`rebuild_block`), giving O(√n) per update.
+///
+/// Fields:
+/// - `arr` — copy of the source array, mutated by `update`.
+/// - `blocks` — `blocks[b]` holds `min(arr[b*B .. (b+1)*B))`.
+/// - `block_size` — elements per block (`⌊√n⌋`, min 1).
+/// - `n` — total number of elements.
 priv struct SqrtMin {
   arr : Array[Int64]
   blocks : Array[Int64]
@@ -183,6 +246,9 @@ priv struct SqrtMin {
 }
 
 ///|
+/// Build a `SqrtMin` from an existing array in O(n).
+///
+/// Each block minimum is computed in a single forward pass.
 fn SqrtMin::new(arr : Array[Int64]) -> SqrtMin {
   let n = arr.length()
   if n == 0 {
@@ -201,6 +267,12 @@ fn SqrtMin::new(arr : Array[Int64]) -> SqrtMin {
 }
 
 ///|
+/// Recompute `blocks[block]` by scanning all elements in that block.
+///
+/// Called after a point update because raising an element's value may
+/// invalidate the stored block minimum; a full rescan is required.
+///
+/// Time: O(√n) (at most `block_size` elements scanned).
 fn SqrtMin::rebuild_block(self : SqrtMin, block : Int) -> Unit {
   let start = block * self.block_size
   let end = if (block + 1) * self.block_size < self.n {
@@ -217,6 +289,9 @@ fn SqrtMin::rebuild_block(self : SqrtMin, block : Int) -> Unit {
 }
 
 ///|
+/// Set `arr[idx] = val` and rebuild the block minimum in O(√n).
+///
+/// Indices outside `[0, n)` are silently ignored.
 fn SqrtMin::update(self : SqrtMin, idx : Int, val : Int64) -> Unit {
   if idx < 0 || idx >= self.n {
     return
@@ -226,6 +301,12 @@ fn SqrtMin::update(self : SqrtMin, idx : Int, val : Int64) -> Unit {
 }
 
 ///|
+/// Return the minimum of `arr[l..r]` (both endpoints inclusive) in O(√n).
+///
+/// Uses the same three-phase decomposition as `SqrtSum::query`:
+/// left partial scan, whole-block minimums, right partial scan.
+///
+/// Returns `SQRT_INF` (Int64 max) when the range is empty or out of bounds.
 fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
   if l > r || l < 0 || r >= self.n {
     return SQRT_INF
@@ -313,6 +394,26 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
 // ============================================================================
 
 ///|
+/// Sqrt decomposition with **lazy range-add** and **range sum queries**.
+///
+/// Extends the basic sum structure to support `range_add(l, r, val)` —
+/// adding `val` to every element in `[l, r]` — in O(√n) by deferring
+/// element-level writes for complete blocks:
+///
+/// - **Partial blocks** (at most two): lazy is flushed first, then each
+///   element is updated individually.
+/// - **Complete blocks**: `lazy_add[b] += val` and `blocks[b]` is adjusted
+///   by `val * block_length`; no element is touched.
+///
+/// Queries read `arr[i] + lazy_add[block(i)]` for individual elements and
+/// the already-adjusted `blocks[b]` for whole blocks.
+///
+/// Fields:
+/// - `arr` — element array; partial elements are kept up-to-date after push.
+/// - `blocks` — precomputed block sums, including lazy contributions.
+/// - `lazy_add` — pending addend for each block, applied on demand.
+/// - `block_size` — elements per block (`⌊√n⌋`, min 1).
+/// - `n` — total number of elements.
 priv struct SqrtLazy {
   arr : Array[Int64]
   blocks : Array[Int64] // Block sums
@@ -322,6 +423,10 @@ priv struct SqrtLazy {
 }
 
 ///|
+/// Build a `SqrtLazy` from an existing array in O(n).
+///
+/// Block sums are initialised from the source array; all lazy addends start
+/// at zero.
 fn SqrtLazy::new(arr : Array[Int64]) -> SqrtLazy {
   let n = arr.length()
   if n == 0 {
@@ -338,7 +443,16 @@ fn SqrtLazy::new(arr : Array[Int64]) -> SqrtLazy {
 }
 
 ///|
-/// Push lazy value to elements in a block
+/// Flush the pending lazy addend for `block` down to individual elements.
+///
+/// After this call `lazy_add[block] == 0` and `arr[i]` reflects all
+/// previously deferred additions for every `i` in the block.
+///
+/// This is called before element-level writes in partial-block updates so
+/// that the invariant `arr[i] + lazy_add[block(i)]` always equals the
+/// logical value of element `i`.
+///
+/// Time: O(√n) (scans at most `block_size` elements).
 fn SqrtLazy::push(self : SqrtLazy, block : Int) -> Unit {
   if self.lazy_add[block] == 0L {
     return
@@ -356,7 +470,14 @@ fn SqrtLazy::push(self : SqrtLazy, block : Int) -> Unit {
 }
 
 ///|
-/// Range add: arr[l..r] += val
+/// Add `val` to every element in `arr[l..r]` (inclusive) in O(√n).
+///
+/// Partial blocks at the boundaries are updated element by element (after
+/// flushing their lazy addend). Complete blocks in the middle accumulate
+/// `val` in `lazy_add` and adjust `blocks` without touching individual
+/// elements.
+///
+/// Indices outside `[0, n)` or an empty range `l > r` are silently ignored.
 fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
   if l > r || l < 0 || r >= self.n {
     return
@@ -445,6 +566,14 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
 }
 
 ///|
+/// Return the sum of `arr[l..r]` (inclusive) in O(√n), accounting for
+/// any pending lazy addends.
+///
+/// For partial blocks, each element is read as `arr[i] + lazy_add[block(i)]`.
+/// For complete blocks, `blocks[b]` already incorporates the lazy contribution
+/// (it is updated eagerly in `range_add`), so it is used directly.
+///
+/// Returns 0 if the range is empty or out of bounds.
 fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
   if l > r || l < 0 || r >= self.n {
     return 0L
