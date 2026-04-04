@@ -67,10 +67,11 @@ fn next_greater_right(a : ArrayView[Int]) -> Array[Int] {
   let stack : Array[Int] = []
   for i in 0..<n {
     let ai = a[i]
-    while stack.length() > 0 && a[stack[stack.length() - 1]] < ai {
+    for pop_next = stack.length() > 0 && a[stack[stack.length() - 1]] < ai; pop_next; {
       let top = stack[stack.length() - 1]
       let _ = stack.pop()
       ans[top] = ai
+      continue stack.length() > 0 && a[stack[stack.length() - 1]] < ai
     }
     stack.push(i)
   }
@@ -99,8 +100,9 @@ fn prev_smaller_left(a : ArrayView[Int]) -> Array[Int] {
   let stack : Array[Int] = []
   for i in 0..<n {
     let ai = a[i]
-    while stack.length() > 0 && a[stack[stack.length() - 1]] >= ai {
+    for pop_next = stack.length() > 0 && a[stack[stack.length() - 1]] >= ai; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 && a[stack[stack.length() - 1]] >= ai
     }
     if stack.length() > 0 {
       let top = stack[stack.length() - 1]
@@ -140,8 +142,9 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
   let stack : Array[Int] = []
   for i in 0..<n {
     let p = prices[i]
-    while stack.length() > 0 && prices[stack[stack.length() - 1]] <= p {
+    for pop_next = stack.length() > 0 && prices[stack[stack.length() - 1]] <= p; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 && prices[stack[stack.length() - 1]] <= p
     }
     if stack.length() == 0 {
       span[i] = i + 1

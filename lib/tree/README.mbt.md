@@ -76,7 +76,7 @@ fn parent_and_depth(
   let depth = Array::make(n, 0)
   parent[root] = root
   let stack : Array[Int] = [root]
-  while stack.length() > 0 {
+  for pop_next = stack.length() > 0; pop_next; {
     let v = stack[stack.length() - 1]
     ignore(stack.pop())
     for u in adj[v] {
@@ -86,6 +86,7 @@ fn parent_and_depth(
         stack.push(u)
       }
     }
+    continue stack.length() > 0
   }
   (parent, depth)
 }

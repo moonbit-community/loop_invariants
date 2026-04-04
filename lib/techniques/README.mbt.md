@@ -235,11 +235,12 @@ fn next_greater(xs : ArrayView[Int]) -> Array[Int] {
   let stack : Array[Int] = []
   for i in 0..<n {
     let x = xs[i]
-    while stack.length() > 0 {
+    for pop_next = stack.length() > 0; pop_next; {
       let j = stack[stack.length() - 1]
       if xs[j] < x {
         ignore(stack.pop())
         result[j] = x
+        continue stack.length() > 0
       } else {
         break
       }
