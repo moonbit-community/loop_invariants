@@ -43,8 +43,15 @@
 // - Undo/redo functionality
 
 ///|
-/// A node in the persistent segment tree
-/// Nodes are immutable once created
+/// A single node in the persistent segment tree.
+///
+/// Nodes are **never modified** after creation. An update produces new nodes
+/// along the update path while old nodes remain intact for previous versions.
+///
+/// Fields:
+/// - `sum`   -- aggregate value (range sum) for the segment covered by this node.
+/// - `left`  -- index of the left child in the shared node array; `-1` for leaves.
+/// - `right` -- index of the right child in the shared node array; `-1` for leaves.
 priv struct PNode {
   sum : Int64 // Sum of range
   left : Int // Index of left child (-1 for none)
@@ -52,7 +59,19 @@ priv struct PNode {
 }
 
 ///|
-/// Persistent Segment Tree with version control
+/// Versioned range-sum segment tree.
+///
+/// All nodes ever created are stored in `nodes` (append-only). Each version
+/// is represented by its root index stored in `roots`. Path copying ensures
+/// that updates produce new nodes without touching existing ones, so every
+/// past version remains queryable.
+///
+/// Structural invariants:
+/// 1. `nodes` is append-only; no element is ever modified or removed.
+/// 2. `roots[v]` is the root index in `nodes` for version `v`.
+/// 3. For a non-leaf node at index `i`, `nodes[i].sum` equals
+///    `nodes[nodes[i].left].sum + nodes[nodes[i].right].sum`.
+/// 4. Version 0 is the initial tree built from the input array.
 priv struct PersistentSegTree {
   nodes : Array[PNode] // All nodes ever created
   roots : Array[Int] // Root index for each version
@@ -60,7 +79,10 @@ priv struct PersistentSegTree {
 }
 
 ///|
-/// Create new node and return its index
+/// Append a new node to the shared node pool and return its index.
+///
+/// This is the only place nodes are created. The returned index is stable
+/// for the lifetime of the tree because `nodes` is append-only.
 fn push_node(nodes : Array[PNode], sum : Int64, left : Int, right : Int) -> Int {
   let idx = nodes.length()
   nodes.push({ sum, left, right })
@@ -68,6 +90,12 @@ fn push_node(nodes : Array[PNode], sum : Int64, left : Int, right : Int) -> Int 
 }
 
 ///|
+/// Build a persistent segment tree from `arr` (version 0).
+///
+/// Constructs the initial tree in O(n) time. The result has exactly one
+/// version (index 0). All subsequent versions are created by `update`.
+///
+/// Returns an empty tree with no versions if `arr` is empty.
 fn PersistentSegTree::new(arr : Array[Int64]) -> PersistentSegTree {
   let n = arr.length()
   if n == 0 {
@@ -83,9 +111,11 @@ fn PersistentSegTree::new(arr : Array[Int64]) -> PersistentSegTree {
 }
 
 ///|
-/// Build subtree for range [lo, hi]
-/// Returns index of created node
-/// REASONING: Recursively build left and right subtrees, then combine.
+/// Recursively build the segment tree for `arr[lo..hi]`.
+///
+/// Returns the index of the root node for this subtree. Left and right halves
+/// are built first; the parent node's sum is their combined sum. Leaf nodes
+/// hold the corresponding array element directly with `left = right = -1`.
 fn build_tree(
   nodes : Array[PNode],
   arr : Array[Int64],
@@ -106,10 +136,25 @@ fn build_tree(
 }
 
 ///|
-/// Update value at position, creating a new version
-/// Returns the new version number
-/// REASONING: We create new nodes only along the path from root to the
-/// updated leaf, sharing unchanged subtrees with the previous version.
+/// Set `arr[pos] = val` branching from `version`, and return the new version
+/// number.
+///
+/// Creates exactly `floor(log2 n) + 1` new nodes (one per level on the path
+/// from the root to the updated leaf). Unchanged subtrees are shared with
+/// `version`. Returns `version` unchanged if `version`, `pos`, or `val` are
+/// out of range.
+///
+/// Example -- update index 2 in version 0:
+///
+/// ```
+///   v0 root                v1 root (new)
+///      |                      |
+///   [0..4]               [0..4]' (new)
+///   /    \               /    \
+/// [0..2] [3..4]       [0..2]' [3..4]  <- right half shared
+///  / \                  / \
+/// ... [2]=3           ... [2]=10      <- only affected path copied
+/// ```
 fn PersistentSegTree::update(
   self : PersistentSegTree,
   version : Int,
@@ -132,9 +177,15 @@ fn PersistentSegTree::update(
 }
 
 ///|
-/// Create updated subtree, reusing unchanged nodes
-/// Returns index of new root for this subtree
-/// INVARIANT: Only creates new nodes along path to pos
+/// Path-copy helper for `update`.
+///
+/// Descends from `node_idx` covering `[lo, hi]` toward `pos`. At each level,
+/// one child is recursively updated (producing a new subtree root) while the
+/// other child's index is **reused unchanged** from the previous version.
+/// Returns the index of the newly created root for this subtree.
+///
+/// Invariant: only nodes on the path from `node_idx` to the leaf at `pos`
+/// are created; all other subtrees are shared with the previous version.
 fn update_tree(
   nodes : Array[PNode],
   node_idx : Int,

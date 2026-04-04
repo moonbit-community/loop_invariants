@@ -180,7 +180,34 @@ fn build_tree(
 }
 
 ///|
-/// Encode a tree into a Prufer sequence. Returns None if input is not a tree.
+/// Encode a labeled tree on `n` vertices (labeled `0..n-1`) into its Prufer
+/// sequence.
+///
+/// The Prufer sequence has length `n - 2` and uniquely identifies the tree.
+/// Trees with `n <= 2` have an empty sequence.
+///
+/// **Algorithm** (O(n log n) with a min-heap):
+/// 1. Build an adjacency list and degree array from `edges`.
+/// 2. Initialize a min-heap with all leaves (degree-1 vertices).
+/// 3. Repeat `n - 2` times:
+///    a. Pop the smallest leaf `u` from the heap.
+///    b. Append `u`'s unique remaining neighbor to the code.
+///    c. Decrement that neighbor's degree; if it becomes 1, push it as a leaf.
+///
+/// Returns `None` when:
+/// - `n <= 0`
+/// - `edges.length() != n - 1` (wrong number of edges for a tree)
+/// - An edge vertex is out of range `[0, n)`
+/// - Duplicate edges or self-loops are present
+/// - The graph is not connected (i.e., not actually a tree)
+///
+/// # Example
+///
+/// ```
+/// // Path 0-1-2-3 encodes to [1, 2]
+/// let code = prufer_encode(4, [(0,1),(1,2),(2,3)][:]).unwrap()
+/// // code == [1, 2]
+/// ```
 pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   if n <= 0 {
     return None
@@ -262,8 +289,31 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
 }
 
 ///|
-/// Decode a Prufer sequence into a tree (edge list).
-/// Returns None if the sequence contains invalid vertex IDs.
+/// Decode a Prufer sequence into a labeled tree, returned as an edge list.
+///
+/// Given a code of length `m`, the reconstructed tree has `n = m + 2` vertices
+/// labeled `0..n-1` and exactly `n - 1` edges.
+///
+/// **Algorithm** (O(n log n) with a min-heap):
+/// 1. Compute `degree[v] = 1 + count(v in code)` for each vertex `v`.
+/// 2. Initialize a min-heap with all vertices whose degree is 1 (leaves).
+/// 3. For each value `v` in the code:
+///    a. Pop the smallest leaf `u` from the heap.
+///    b. Add edge `(u, v)`.
+///    c. Decrement `degree[v]`; if it becomes 1, push `v` onto the heap.
+/// 4. Connect the two remaining vertices with the final edge.
+///
+/// Returns `None` when:
+/// - Any code value is outside `[0, n)` where `n = code.length() + 2`
+/// - The heap underflows (indicates a malformed sequence)
+///
+/// # Example
+///
+/// ```
+/// // [1, 2] decodes to the path 0-1-2-3
+/// let edges = prufer_decode([1, 2][:]).unwrap()
+/// // edges contain (0,1), (1,2), (2,3) in some order
+/// ```
 pub fn prufer_decode(code : ArrayView[Int]) -> Array[(Int, Int)]? {
   let n = code.length() + 2
   if n < 2 {

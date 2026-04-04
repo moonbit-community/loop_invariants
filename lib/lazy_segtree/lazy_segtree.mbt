@@ -52,7 +52,32 @@
 // ============================================================================
 
 ///|
-/// Lazy Segment Tree with range add and range sum queries
+/// A lazy segment tree that supports range addition and range sum queries in
+/// O(log n) per operation.
+///
+/// ## Fields
+///
+/// - `n` -- number of elements in the original array.
+/// - `tree` -- 1-indexed flat array of size 4n; `tree[k]` holds the sum of the
+///   sub-range covered by node `k`, already incorporating any pending add that
+///   was applied to node `k` itself.
+/// - `pending` -- 1-indexed flat array of size 4n; `pending[k]` is the addend
+///   that must still be propagated to the two children of node `k` before
+///   those children are read.  For leaf nodes this field is never read.
+///
+/// ## Invariant
+///
+/// `tree[k]` is always the correct aggregate (sum) for node `k`'s range.
+/// `pending[k]` represents work that is *owed to the children* but has not yet
+/// been pushed down.  Together they satisfy:
+///
+/// ```
+/// true_sum(left_child)  = tree[2k]   + pending[k] * left_size
+/// true_sum(right_child) = tree[2k+1] + pending[k] * right_size
+/// ```
+///
+/// This invariant is maintained by `push_down` before any descent and by
+/// recomputing `tree[k]` from its children on the way back up.
 pub struct LazySegTreeSum {
   n : Int
   tree : Array[Int64] // Sum of range
@@ -60,7 +85,14 @@ pub struct LazySegTreeSum {
 }
 
 ///|
-/// Build a lazy segment tree for range add / range sum from array.
+/// Build a lazy segment tree for range-add / range-sum queries from `arr`.
+///
+/// Runs an O(n) bottom-up build that fills `tree` so that each node holds the
+/// sum of its sub-range.  All `pending` slots are initialised to zero (no
+/// deferred updates).
+///
+/// Returns an empty tree (with `n = 0`) when `arr` is empty; all subsequent
+/// operations on an empty tree are no-ops or return `None`.
 pub fn LazySegTreeSum::new(arr : Array[Int64]) -> LazySegTreeSum {
   let n = arr.length()
   if n == 0 {
@@ -73,6 +105,8 @@ pub fn LazySegTreeSum::new(arr : Array[Int64]) -> LazySegTreeSum {
 }
 
 ///|
+/// Recursively fills `tree[node]` with the sum of `arr[start..end]` (inclusive).
+/// Called once during construction; not exposed publicly.
 fn build(
   arr : Array[Int64],
   tree : Array[Int64],
@@ -91,8 +125,32 @@ fn build(
 }
 
 ///|
-/// Push down lazy value to children
-/// INVARIANT: After push_down, node's lazy is 0 and children are updated
+/// Propagate the pending addend at `node` down to its two children, then clear
+/// `pending[node]`.
+///
+/// Must be called before descending into the children of any non-leaf node
+/// during a range update or query that does not fully cover the node's range.
+///
+/// ## What it does
+///
+/// Given node `k` covering `[start..end]` with `mid = (start+end)/2`:
+///
+/// ```
+/// tree[2k]     += pending[k] * (mid - start + 1)
+/// tree[2k+1]   += pending[k] * (end - mid)
+/// pending[2k]  += pending[k]
+/// pending[2k+1]+= pending[k]
+/// pending[k]    = 0
+/// ```
+///
+/// After this call the children's `tree` values are correct for their own
+/// ranges, and `pending[node]` is zero (no pending work at this node).
+///
+/// ## Invariant preserved
+///
+/// Before: `tree[k]` is correct for `[start..end]`; children may be stale.
+/// After:  `tree[k]` is still correct; children are now also correct for their
+///         own ranges (modulo *their* pending values, which are untouched).
 fn push_down(
   tree : Array[Int64],
   pending : Array[Int64],
@@ -119,7 +177,17 @@ fn push_down(
 }
 
 ///|
-/// Range add: add val to all elements in [l, r]
+/// Add `val` to every element in the closed range `[l, r]`.
+///
+/// Uses lazy propagation: nodes whose range is fully contained in `[l, r]`
+/// receive the update immediately (both their `tree` value and their `pending`
+/// slot), while nodes with only partial overlap push their own pending value
+/// down before recursing.  Ancestor sums are recomputed on the way back up.
+///
+/// - Time: O(log n)
+/// - `l` and `r` are 0-indexed and inclusive.
+/// - Out-of-bounds or inverted ranges (`l < 0`, `r >= n`, `l > r`) are silently
+///   ignored.
 pub fn LazySegTreeSum::range_add(
   self : LazySegTreeSum,
   l : Int,
@@ -133,6 +201,10 @@ pub fn LazySegTreeSum::range_add(
 }
 
 ///|
+/// Recursive worker for `range_add`.  Handles the three cases:
+/// - No overlap with `[l..r]`: return immediately.
+/// - Full containment in `[l..r]`: apply update and store in `pending`.
+/// - Partial overlap: push-down, recurse into both halves, recompute parent.
 fn range_add_helper(
   tree : Array[Int64],
   pending : Array[Int64],
@@ -166,7 +238,16 @@ fn range_add_helper(
 }
 
 ///|
-/// Range sum query for [l, r]
+/// Return the sum of elements in the closed range `[l, r]`, or `None` if the
+/// range is empty or out of bounds.
+///
+/// Traverses the tree top-down, calling `push_down` before entering any node
+/// with partial overlap so that the children reflect all accumulated updates.
+/// Nodes fully covered by `[l, r]` contribute their `tree` value directly
+/// without further descent.
+///
+/// - Time: O(log n)
+/// - Returns `None` when `l < 0`, `r >= n`, `l > r`, or the tree is empty.
 pub fn LazySegTreeSum::range_sum(
   self : LazySegTreeSum,
   l : Int,
@@ -179,6 +260,9 @@ pub fn LazySegTreeSum::range_sum(
 }
 
 ///|
+/// Recursive worker for `range_sum`.  Returns 0 for no-overlap nodes and
+/// `tree[node]` for fully-covered nodes.  For partial overlaps it calls
+/// `push_down` then recurses into both children.
 fn range_sum_helper(
   tree : Array[Int64],
   pending : Array[Int64],

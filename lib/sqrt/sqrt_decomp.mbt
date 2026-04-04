@@ -29,7 +29,22 @@
 // SPACE: O(n + √n) = O(n)
 
 ///|
-/// Compute integer square root (ceiling)
+/// Computes the ceiling of sqrt(n) using Newton's method.
+///
+/// Returns the smallest integer x such that x * x >= n.
+/// For n <= 0 the function returns 1 (minimum block size of 1 is always safe).
+///
+/// Parameters:
+/// - `n`: the non-negative integer whose square root ceiling is required.
+///
+/// Returns: ceil(sqrt(n)) as an Int.
+///
+/// Time complexity: O(log n) iterations (Newton's method converges quadratically).
+///
+/// Examples:
+///   isqrt_ceil(9)  = 3   (3*3 = 9, exact)
+///   isqrt_ceil(10) = 4   (3*3 = 9 < 10, so ceil is 4)
+///   isqrt_ceil(12) = 4   (3*3 = 9 < 12, 4*4 = 16 >= 12)
 fn isqrt_ceil(n : Int) -> Int {
   if n <= 0 {
     return 1
@@ -66,7 +81,25 @@ fn isqrt_ceil(n : Int) -> Int {
 // ============================================================================
 
 ///|
-/// Sqrt decomposition for range sum queries with O(√n) query and O(1) update
+/// Sqrt decomposition structure for range sum queries with O(1) point updates.
+///
+/// Internally the array is divided into blocks of size ceil(sqrt(n)).
+/// Each block stores the sum of its elements so that range queries can read
+/// full-block sums in O(1) instead of scanning every element.
+///
+/// Layout (n = 9, block_size = 3):
+/// ```
+/// arr:        [1  2  3  |  4  5  6  |  7  8  9]
+/// blocks:     [   6        15           24   ]
+/// block idx:      0         1            2
+/// ```
+///
+/// Time complexity:
+/// - Build:  O(n)
+/// - Query:  O(sqrt(n))
+/// - Update: O(1)
+///
+/// Space: O(n)
 priv struct SqrtSum {
   arr : Array[Int] // Original array
   blocks : Array[Int] // Block sums
@@ -74,7 +107,17 @@ priv struct SqrtSum {
 }
 
 ///|
-/// Build sqrt decomposition for sum queries
+/// Builds a SqrtSum from an existing array.
+///
+/// Copies the array and computes block sums in a single O(n) pass.
+/// The block size is chosen as ceil(sqrt(n)) to minimise query cost.
+///
+/// Parameters:
+/// - `arr`: the source array of integers.
+///
+/// Returns: a new SqrtSum owning a copy of `arr`.
+///
+/// Time complexity: O(n).
 fn SqrtSum::build(arr : Array[Int]) -> SqrtSum {
   let n = arr.length()
   if n == 0 {

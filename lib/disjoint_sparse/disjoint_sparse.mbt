@@ -51,7 +51,20 @@
 // SPACE COMPLEXITY: O(n log n)
 
 ///|
-/// Disjoint Sparse Table for range sum queries
+/// Disjoint Sparse Table for range sum queries on a static `Int64` array.
+///
+/// After O(n log n) construction, any contiguous sum `arr[l] + ... + arr[r]`
+/// can be answered in O(1) by looking up two precomputed table entries.
+///
+/// The table stores, at each level `k` and index `i`:
+/// - the **suffix sum** `arr[i] + ... + arr[mid]`  when `i` is in the left
+///   half of its block at level `k`, and
+/// - the **prefix sum** `arr[mid+1] + ... + arr[i]` when `i` is in the right
+///   half of its block.
+///
+/// For any query `[l, r]` with `l != r`, `highest_bit(l XOR r)` identifies
+/// the unique level at which `l` and `r` lie in different halves, and the
+/// answer is `table[k][l] + table[k][r]`.
 pub struct DisjointSparseSum {
   table : Array[Array[Int64]] // table[level][i]
   arr : Array[Int64]
@@ -59,7 +72,17 @@ pub struct DisjointSparseSum {
 }
 
 ///|
-/// Find highest set bit position (floor(log2(x)))
+/// Return the position of the highest set bit in `x`, i.e. `floor(log2(x))`.
+///
+/// Returns `0` when `x <= 1`.  Used to identify the level at which two indices
+/// first appear in different block halves:
+///
+/// ```
+/// highest_bit(1) = 0   (binary: 1)
+/// highest_bit(2) = 1   (binary: 10)
+/// highest_bit(4) = 2   (binary: 100)
+/// highest_bit(7) = 2   (binary: 111 -- highest set bit is bit 2)
+/// ```
 fn highest_bit(x : Int) -> Int {
   if x <= 0 {
     return 0
@@ -74,7 +97,14 @@ fn highest_bit(x : Int) -> Int {
 }
 
 ///|
-/// Build a disjoint sparse table for range sum queries.
+/// Build a `DisjointSparseSum` from `arr` in O(n log n) time and space.
+///
+/// For each level `k` from `0` to `ceil(log2(n)) - 1`, the array is divided
+/// into blocks of size `2^(k+1)`.  For the midpoint `m` of each block:
+/// - indices `[block_start .. m]` receive the suffix sum from that index to `m`.
+/// - indices `[m+1 .. block_end]` receive the prefix sum from `m+1` to that index.
+///
+/// Returns an empty table for an empty input array.
 pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
   let n = arr.length()
   if n == 0 {
@@ -156,9 +186,19 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
 }
 
 ///|
-/// Query sum in range [l, r] (inclusive)
-/// REASONING: Find level where l and r are in different halves of same block,
-/// then combine suffix[l] and prefix[r]
+/// Return `Some(arr[l] + arr[l+1] + ... + arr[r])` in O(1), or `None` if the
+/// range is invalid.
+///
+/// A range `[l, r]` is invalid when any of the following hold:
+/// - `l < 0`
+/// - `r >= n`
+/// - `l > r`
+/// - the table was built from an empty array
+///
+/// When `l == r` the element is returned directly without a table lookup.
+/// Otherwise, `k = highest_bit(l XOR r)` identifies the unique level where `l`
+/// and `r` are in different block halves, and the answer is
+/// `table[k][l] + table[k][r]`.
 pub fn DisjointSparseSum::query(
   self : DisjointSparseSum,
   l : Int,
@@ -178,6 +218,7 @@ pub fn DisjointSparseSum::query(
 }
 
 ///|
+/// Return the number of elements in the original array.
 fn DisjointSparseSum::length(self : DisjointSparseSum) -> Int {
   self.n
 }
@@ -187,7 +228,15 @@ fn DisjointSparseSum::length(self : DisjointSparseSum) -> Int {
 // ============================================================================
 
 ///|
-/// Disjoint Sparse Table for range XOR queries
+/// Disjoint Sparse Table for range XOR queries on a static `Int64` array.
+///
+/// Identical in structure to `DisjointSparseSum` but with `^` (XOR) as the
+/// combining operation instead of `+`.  XOR is associative and non-idempotent,
+/// so a regular sparse table cannot be used.
+///
+/// `table[k][i]` stores:
+/// - the **suffix XOR** `arr[i] ^ ... ^ arr[mid]`  when `i` is in the left half, and
+/// - the **prefix XOR** `arr[mid+1] ^ ... ^ arr[i]` when `i` is in the right half.
 priv struct DisjointSparseXor {
   table : Array[Array[Int64]]
   arr : Array[Int64]
@@ -195,6 +244,10 @@ priv struct DisjointSparseXor {
 }
 
 ///|
+/// Build a `DisjointSparseXor` from `arr` in O(n log n) time and space.
+///
+/// The construction mirrors `DisjointSparseSum::new` with `^` replacing `+`.
+/// Returns an empty table for an empty input array.
 fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
   let n = arr.length()
   if n == 0 {
@@ -266,6 +319,8 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
 }
 
 ///|
+/// Return `Some(arr[l] ^ arr[l+1] ^ ... ^ arr[r])` in O(1), or `None` if the
+/// range is invalid (see `DisjointSparseSum::query` for the validity conditions).
 fn DisjointSparseXor::query(
   self : DisjointSparseXor,
   l : Int,
@@ -282,6 +337,7 @@ fn DisjointSparseXor::query(
 }
 
 ///|
+/// Return the number of elements in the original array.
 fn DisjointSparseXor::length(self : DisjointSparseXor) -> Int {
   self.n
 }
@@ -291,7 +347,20 @@ fn DisjointSparseXor::length(self : DisjointSparseXor) -> Int {
 // ============================================================================
 
 ///|
-/// Disjoint Sparse Table for range product queries (modular arithmetic)
+/// Disjoint Sparse Table for range product queries under a given modulus.
+///
+/// Computes `(arr[l] * arr[l+1] * ... * arr[r]) mod modulo` in O(1) after
+/// O(n log n) preprocessing.  Multiplication is associative but not idempotent,
+/// so a disjoint sparse table is required.
+///
+/// `table[k][i]` stores:
+/// - the **suffix product** `arr[i] * ... * arr[mid] mod modulo` when `i` is
+///   in the left half of its block at level `k`, and
+/// - the **prefix product** `arr[mid+1] * ... * arr[i] mod modulo` when `i` is
+///   in the right half.
+///
+/// The `modulo` field is stored in the struct so that `query` can apply it to
+/// the final combination `table[k][l] * table[k][r] mod modulo`.
 priv struct DisjointSparseProd {
   table : Array[Array[Int64]]
   arr : Array[Int64]
@@ -300,6 +369,11 @@ priv struct DisjointSparseProd {
 }
 
 ///|
+/// Build a `DisjointSparseProd` from `arr` with the given `modulo` in
+/// O(n log n) time and space.
+///
+/// All intermediate products are reduced modulo `modulo` at each step to
+/// prevent integer overflow.  Returns an empty table for an empty input array.
 fn DisjointSparseProd::new(
   arr : Array[Int64],
   modulo : Int64,

@@ -14,15 +14,34 @@
 // SPACE COMPLEXITY: O(n^2)
 
 ///|
+/// Sentinel value used to initialise dp cells before minimisation.
+/// Equal to `Int64::max_value / 2` to prevent overflow when two sentinels are
+/// added together during the recurrence evaluation.
 const INF64 : Int64 = 4611686018427387903L
 
 ///|
+/// A two-dimensional point with integer coordinates.
+///
+/// Coordinates are `Int64` so that squared distances
+/// `(x1 - x2)^2 + (y1 - y2)^2` never overflow for inputs in the range
+/// `-10^9 .. 10^9`.
+///
+/// # Example
+///
+/// ```mbt
+/// let p : @polygon_triangulation.Point = { x: 3L, y: -4L }
+/// assert_eq!(p.x, 3L)
+/// ```
 pub(all) struct Point {
   x : Int64
   y : Int64
 } derive(Debug, Eq)
 
 ///|
+/// Returns the squared Euclidean distance between two points.
+///
+/// Using squared distance avoids floating-point arithmetic and keeps all
+/// intermediate values in `Int64`.
 fn dist2(a : Point, b : Point) -> Int64 {
   let dx = a.x - b.x
   let dy = a.y - b.y
@@ -30,6 +49,11 @@ fn dist2(a : Point, b : Point) -> Int64 {
 }
 
 ///|
+/// Returns the cost of triangle `(points[i], points[j], points[k])`, defined
+/// as the sum of squared lengths of its three sides.
+///
+/// This is the local cost added to the DP when a triangulation splits interval
+/// `[i, j]` at vertex `k`.
 fn triangle_cost(points : Array[Point], i : Int, j : Int, k : Int) -> Int64 {
   dist2(points[i], points[j]) +
   dist2(points[j], points[k]) +
@@ -37,8 +61,43 @@ fn triangle_cost(points : Array[Point], i : Int, j : Int, k : Int) -> Int64 {
 }
 
 ///|
-/// Minimum weight triangulation for a convex polygon in CCW order.
-/// Returns None for n < 3.
+/// Computes the minimum-weight triangulation of a **convex** polygon.
+///
+/// The polygon is given as an array of vertices in order (clockwise or
+/// counter-clockwise). The weight of a triangulation is the sum of each
+/// triangle's cost, where a triangle's cost is the sum of the squared lengths
+/// of its three sides.
+///
+/// Returns `None` when the polygon has fewer than 3 vertices (a triangle or
+/// polygon cannot be formed).
+///
+/// # Algorithm
+///
+/// Interval DP: `dp[i][j]` is the minimum cost to triangulate the sub-polygon
+/// formed by the chain of vertices from index `i` to index `j`.
+///
+/// ```
+/// dp[i][j] = min over k in (i+1 .. j-1):
+///                dp[i][k] + dp[k][j] + cost(i, k, j)
+/// ```
+///
+/// The table is filled bottom-up by increasing interval length, so every
+/// sub-problem `dp[i][k]` and `dp[k][j]` is already optimal when `dp[i][j]`
+/// is computed.
+///
+/// Time: O(n^3). Space: O(n^2).
+///
+/// # Example
+///
+/// ```mbt
+/// let square : Array[@polygon_triangulation.Point] = [
+///   { x: 0L, y: 0L },
+///   { x: 1L, y: 0L },
+///   { x: 1L, y: 1L },
+///   { x: 0L, y: 1L },
+/// ]
+/// assert_eq!(@polygon_triangulation.min_weight_triangulation(square), Some(8L))
+/// ```
 pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
   let n = points.length()
   if n < 3 {
