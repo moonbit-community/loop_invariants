@@ -118,7 +118,7 @@ last = root(0)
 
 for each character c at position i:
   cur = last
-  while s[i - len(cur) - 1] != c:
+  repeat until s[i - len(cur) - 1] == c:
     cur = suffix_link[cur]
 
   if edge(cur, c) exists:
@@ -131,7 +131,7 @@ for each character c at position i:
       suffix_link[new] = root(0)
     else:
       link_candidate = suffix_link[cur]
-      while s[i - len(link_candidate) - 1] != c:
+      repeat until s[i - len(link_candidate) - 1] == c:
         link_candidate = suffix_link[link_candidate]
       suffix_link[new] = edge(link_candidate, c)
     last = new
@@ -179,7 +179,7 @@ such that the character just before P equals c.
 
 We try:
   cur = last
-  while s[i - len(cur) - 1] != c:
+  repeat until s[i - len(cur) - 1] == c:
     cur = suffix_link[cur]
 
 The first match tells us we can build c + P + c.

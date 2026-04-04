@@ -205,7 +205,7 @@ pollard_rho(n):
   loop:
     choose random x, c
     x = y = x
-    while d == 1:
+    repeat until d != 1:
       x = f(x)
       y = f(f(y))
       d = gcd(|x - y|, n)

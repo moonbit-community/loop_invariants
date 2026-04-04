@@ -109,7 +109,7 @@ left = 0
 for right in 0..n-1:
   add(arr[right])
 
-  while window invalid:
+  repeat until window valid:
     remove(arr[left])
     left++
 
