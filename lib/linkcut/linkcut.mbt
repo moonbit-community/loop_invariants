@@ -209,7 +209,7 @@ fn LinkCutTree::splay(self : LinkCutTree, v : Int) -> Unit {
 
   // Splay v to root
   // INVARIANT: Each iteration moves v closer to root
-  while !self.is_splay_root(v) {
+  for keep_splaying = !self.is_splay_root(v); keep_splaying; {
     let p = self.nodes[v].parent
     if !self.is_splay_root(p) {
       let g = self.nodes[p].parent
@@ -228,6 +228,7 @@ fn LinkCutTree::splay(self : LinkCutTree, v : Int) -> Unit {
       // Zig: single rotation
       self.rotate(v)
     }
+    continue !self.is_splay_root(v)
   }
 }
 

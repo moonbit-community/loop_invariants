@@ -149,7 +149,7 @@ fn[T] SplayTree::splay(self : SplayTree[T], x : Int) -> Unit {
   if x < 0 {
     return
   }
-  while self.nodes[x].parent >= 0 {
+  for keep_splaying = self.nodes[x].parent >= 0; keep_splaying; {
     let p = self.nodes[x].parent
     let g = self.nodes[p].parent
     if g < 0 {
@@ -176,6 +176,7 @@ fn[T] SplayTree::splay(self : SplayTree[T], x : Int) -> Unit {
       self.rotate_right(x)
       self.rotate_left(x)
     }
+    continue self.nodes[x].parent >= 0
   }
   self.root = x
 }

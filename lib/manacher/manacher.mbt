@@ -77,10 +77,13 @@ fn manacher(s : String) -> ManacherResult {
     }
 
     // Expand around center i
-    while i - p[i] - 1 >= 0 &&
+    for expand_next = i - p[i] - 1 >= 0 &&
           i + p[i] + 1 < t_len &&
-          t[i - p[i] - 1] == t[i + p[i] + 1] {
+          t[i - p[i] - 1] == t[i + p[i] + 1]; expand_next; {
       p[i] = p[i] + 1
+      continue i - p[i] - 1 >= 0 &&
+        i + p[i] + 1 < t_len &&
+        t[i - p[i] - 1] == t[i + p[i] + 1]
     }
 
     // Update rightmost boundary
