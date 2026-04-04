@@ -433,10 +433,11 @@ fn nearest_smaller_left(arr : Array[Int64]) -> Array[Int] {
   let stack : Array[Int] = []
   for i in 0..<n {
     // Pop elements >= arr[i]
-    while stack.length() > 0 {
+    for pop_next = stack.length() > 0; pop_next; {
       let top = stack[stack.length() - 1]
       if arr[top] >= arr[i] {
         let _ = stack.pop()
+        continue stack.length() > 0
       } else {
         break
       }
@@ -458,10 +459,11 @@ fn nearest_smaller_right(arr : Array[Int64]) -> Array[Int] {
   // Process from right to left
   let stack : Array[Int] = []
   for i in n>..0 {
-    while stack.length() > 0 {
+    for pop_next = stack.length() > 0; pop_next; {
       let top = stack[stack.length() - 1]
       if arr[top] >= arr[i] {
         let _ = stack.pop()
+        continue stack.length() > 0
       } else {
         break
       }
