@@ -54,7 +54,7 @@ fn manacher(s : String) -> ManacherResult {
   let t_len = 2 * n + 1
   let separator : UInt16 = '#'
   let t : Array[UInt16] = Array::make(t_len, separator)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     t[2 * i + 1] = s[i]
   } where {
     invariant: i >= 0 && i <= n,
@@ -324,7 +324,7 @@ fn ManacherResult::get_all_palindromes(
   self : ManacherResult,
 ) -> Array[(Int, Int)] {
   let result : Array[(Int, Int)] = []
-  for i = 0; i < self.radii.length(); i = i + 1 {
+  for i in 0..<self.radii.length() {
     if self.radii[i] > 0 {
       let start = (i - self.radii[i]) / 2
       let end = start + self.radii[i]

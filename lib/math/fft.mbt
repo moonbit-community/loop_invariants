@@ -78,7 +78,7 @@ fn bit_reverse(x_in : Int, bits : Int) -> Int {
 ///|
 /// Reorder array elements using bit reversal permutation
 fn bit_reverse_permute(arr : Array[Complex], n : Int, log_n : Int) -> Unit {
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let j = bit_reverse(i, log_n)
     if i < j {
       // Swap arr[i] and arr[j]
@@ -315,7 +315,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
   // For inverse FFT, divide by n
   if inverse {
     let scale = 1.0 / n.to_double()
-    for i = 0; i < n; i = i + 1 {
+    for i in 0..<n {
       arr[i] = Complex::new(arr[i].re * scale, arr[i].im * scale)
     } where {
       invariant: i >= 0 && i <= n,
@@ -360,7 +360,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
   // Convert to complex arrays
   let fa : Array[Complex] = Array::make(n, Complex::from_real(0.0))
   let fb : Array[Complex] = Array::make(n, Complex::from_real(0.0))
-  for i = 0; i < n1; i = i + 1 {
+  for i in 0..<n1 {
     fa[i] = Complex::from_real(a[i].to_double())
   } where {
     invariant: i >= 0 && i <= n1,
@@ -373,7 +373,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
       #|At i = n1, all coefficients of a are loaded.
     ),
   }
-  for i = 0; i < n2; i = i + 1 {
+  for i in 0..<n2 {
     fb[i] = Complex::from_real(b[i].to_double())
   } where {
     invariant: i >= 0 && i <= n2,
@@ -390,7 +390,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
   fft_in_place(fa, n, false)
   fft_in_place(fb, n, false)
   // Point-wise multiplication
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     fa[i] = fa[i].mul(fb[i])
   } where {
     invariant: i <= n,
@@ -412,7 +412,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
   fft_in_place(fa, n, true)
   // Extract result and round to integers
   let result : Array[Int] = Array::make(result_len, 0)
-  for i = 0; i < result_len; i = i + 1 {
+  for i in 0..<result_len {
     // Round to nearest integer (FFT introduces floating-point errors)
     result[i] = (fa[i].re + 0.5).to_int()
   } where {
@@ -497,7 +497,7 @@ fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
     ),
   }
   // Bit-reversal permutation
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let j = bit_reverse(i, log_n)
     if i < j {
       let temp = arr[i]
@@ -588,7 +588,7 @@ fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
   // For inverse NTT, multiply by n^(-1)
   if inverse {
     let n_inv = ntt_mod_pow(n.to_int64(), ntt_mod - 2L, ntt_mod)
-    for i = 0; i < n; i = i + 1 {
+    for i in 0..<n {
       arr[i] = arr[i] * n_inv % ntt_mod
     } where {
       invariant: i >= 0 && i <= n,
@@ -633,7 +633,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
   // Prepare arrays
   let fa : Array[Int64] = Array::make(n, 0L)
   let fb : Array[Int64] = Array::make(n, 0L)
-  for i = 0; i < n1; i = i + 1 {
+  for i in 0..<n1 {
     fa[i] = a[i] % ntt_mod
   } where {
     invariant: i >= 0 && i <= n1,
@@ -646,7 +646,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       #|At i = n1, all coefficients of a are loaded.
     ),
   }
-  for i = 0; i < n2; i = i + 1 {
+  for i in 0..<n2 {
     fb[i] = b[i] % ntt_mod
   } where {
     invariant: i >= 0 && i <= n2,
@@ -663,7 +663,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
   ntt_in_place(fa, n, false)
   ntt_in_place(fb, n, false)
   // Point-wise multiplication
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     fa[i] = fa[i] * fb[i] % ntt_mod
   } where {
     invariant: i <= n,
@@ -681,7 +681,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
   ntt_in_place(fa, n, true)
   // Extract result
   let result : Array[Int64] = Array::make(result_len, 0L)
-  for i = 0; i < result_len; i = i + 1 {
+  for i in 0..<result_len {
     result[i] = fa[i]
   } where {
     invariant: i >= 0 && i <= result_len,
@@ -713,9 +713,9 @@ fn count_change_polynomial(coins : Array[Int], max_amount : Int) -> Array[Int] {
   result[0] = 1 // Base case: 1 way to make 0
   // For each coin, update the DP array (standard knapsack approach)
   // This is equivalent to polynomial multiplication with truncation
-  for i = 0; i < coins.length(); i = i + 1 {
+  for i in 0..<coins.length() {
     let coin = coins[i]
-    for amount = coin; amount <= max_amount; amount = amount + 1 {
+    for amount in coin..<=max_amount {
       result[amount] = result[amount] + result[amount - coin]
     } where {
       invariant: amount >= coin && amount <= max_amount + 1,
@@ -767,7 +767,7 @@ fn pattern_match_fft(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
   // The middle term is a convolution (with reversed pattern)
   // Reverse pattern
   let pattern_rev : Array[Int] = Array::make(m, 0)
-  for i = 0; i < m; i = i + 1 {
+  for i in 0..<m {
     pattern_rev[i] = pattern[m - 1 - i]
   } where {
     invariant: i >= 0 && i <= m,
@@ -787,7 +787,7 @@ fn pattern_match_fft(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
   // (full implementation would compute f(i) and check for zeros)
   let result_len = n - m + 1
   let result : Array[Int] = Array::make(result_len, 0)
-  for i = 0; i < result_len; i = i + 1 {
+  for i in 0..<result_len {
     // The convolution at position i+m-1 gives sum_j text[i+j]*pattern[m-1-j]
     // which equals sum_j text[i+j]*pattern_rev[j]
     if i + m - 1 < conv.length() {

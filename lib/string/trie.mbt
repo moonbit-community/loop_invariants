@@ -717,7 +717,7 @@ fn common_prefix_length(s1 : String, s2 : String) -> Int {
   } else {
     chars2.length()
   }
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     if chars1[i] != chars2[i] {
       break i
     }
@@ -738,7 +738,7 @@ fn common_prefix_length(s1 : String, s2 : String) -> Int {
 ///|
 /// Find child by first character
 fn RadixNode::find_child(self : RadixNode, c : Char) -> (Int, RadixNode?) {
-  for i = 0; i < self.children.length(); i = i + 1 {
+  for i in 0..<self.children.length() {
     let (first_char, child) = self.children[i]
     if first_char == c {
       break (i, Some(child))
@@ -835,7 +835,7 @@ fn edge_matches(
   edge_chars : Array[Char],
 ) -> Bool {
   let edge_len = edge_chars.length()
-  for i = 0; i < edge_len; i = i + 1 {
+  for i in 0..<edge_len {
     if chars[pos + i] != edge_chars[i] {
       break false
     }

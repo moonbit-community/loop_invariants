@@ -143,7 +143,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
 
     // Scale pivot row
     let pivot = aug[row][col]
-    for j = col; j <= m; j = j + 1 {
+    for j in col..<=m {
       aug[row][j] = aug[row][j] / pivot
     } where {
       invariant: j >= col && j <= m + 1,
@@ -170,10 +170,10 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
     }
 
     // Eliminate column
-    for i = 0; i < n; i = i + 1 {
+    for i in 0..<n {
       if i != row && abs(aug[i][col]) > GAUSS_EPS {
         let factor = aug[i][col]
-        for j = col; j <= m; j = j + 1 {
+        for j in col..<=m {
           aug[i][j] = aug[i][j] - factor * aug[row][j]
         } where {
           invariant: j >= col && j <= m + 1,
@@ -265,9 +265,12 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let solution = Array::make(m, 0.0)
   if has_solution {
     // Back substitute (already in RREF from Gauss-Jordan)
-    for i = 0; i < rank && i < m; i = i + 1 {
+    for i in 0..<rank {
+      if i >= m {
+        break
+      }
       // Find pivot column for this row
-      for j = 0; j < m; j = j + 1 {
+      for j in 0..<m {
         if abs(aug[i][j] - 1.0) < GAUSS_EPS {
           solution[j] = aug[i][m]
           break
@@ -379,7 +382,7 @@ fn gauss_mod(
 
     // Scale pivot row
     let inv = mod_inverse(aug[row][col], p)
-    for j = col; j <= m; j = j + 1 {
+    for j in col..<=m {
       aug[row][j] = aug[row][j] * inv % p
     } where {
       invariant: j >= col && j <= m + 1,
@@ -394,10 +397,10 @@ fn gauss_mod(
     }
 
     // Eliminate column
-    for i = 0; i < n; i = i + 1 {
+    for i in 0..<n {
       if i != row && aug[i][col] != 0L {
         let factor = aug[i][col]
-        for j = col; j <= m; j = j + 1 {
+        for j in col..<=m {
           aug[i][j] = ((aug[i][j] - factor * aug[row][j]) % p + p) % p
         } where {
           invariant: j >= col && j <= m + 1,
@@ -447,7 +450,7 @@ fn gauss_mod(
   }
 
   // Check for inconsistency
-  for i = row; i < n; i = i + 1 {
+  for i in row..<n {
     if aug[i][m] != 0L {
       return ([], false)
     }
@@ -465,8 +468,11 @@ fn gauss_mod(
 
   // Extract solution
   let solution = Array::make(m, 0L)
-  for i = 0; i < row && i < m; i = i + 1 {
-    for j = 0; j < m; j = j + 1 {
+  for i in 0..<row {
+    if i >= m {
+      break
+    }
+    for j in 0..<m {
       if aug[i][j] == 1L {
         solution[j] = aug[i][m]
         break
@@ -545,9 +551,9 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
     }
 
     // XOR eliminate column
-    for i = 0; i < n; i = i + 1 {
+    for i in 0..<n {
       if i != row && aug[i][col] == 1 {
-        for j = col; j <= m; j = j + 1 {
+        for j in col..<=m {
           aug[i][j] = aug[i][j] ^ aug[row][j]
         } where {
           invariant: j >= col && j <= m + 1,
@@ -597,7 +603,7 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
   }
 
   // Check for inconsistency
-  for i = row; i < n; i = i + 1 {
+  for i in row..<n {
     if aug[i][m] == 1 {
       return ([], false)
     }
@@ -615,8 +621,11 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
 
   // Extract solution
   let solution = Array::make(m, 0)
-  for i = 0; i < row && i < m; i = i + 1 {
-    for j = 0; j < m; j = j + 1 {
+  for i in 0..<row {
+    if i >= m {
+      break
+    }
+    for j in 0..<m {
       if aug[i][j] == 1 {
         solution[j] = aug[i][m]
         break

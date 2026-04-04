@@ -133,7 +133,7 @@ fn dijkstra_original(
         if u == sink {
           break ()
         }
-        for i = 0; i < adj[u].length(); i = i + 1 {
+        for i in 0..<adj[u].length() {
           let edge_id = adj[u][i]
           let v = to[edge_id]
           let nd = dist[u] + weight[edge_id]
@@ -196,7 +196,7 @@ fn dijkstra_modified(
         if u == sink {
           break ()
         }
-        for i = 0; i < adj[u].length(); i = i + 1 {
+        for i in 0..<adj[u].length() {
           let e = adj[u][i]
           let nd = dist[u] + e.weight
           if nd < dist[e.to] {
@@ -233,7 +233,7 @@ fn dijkstra_modified(
 
 ///|
 fn remove_edge(adj : Array[Array[Int]], u : Int, v : Int) -> Bool {
-  for i = 0; i < adj[u].length(); i = i + 1 {
+  for i in 0..<adj[u].length() {
     if adj[u][i] == v {
       let _ = adj[u].remove(i)
       return true
@@ -306,7 +306,7 @@ pub fn suurballe_disjoint_paths(
   let to = Array::make(m, 0)
   let weight = Array::make(m, 0L)
   let adj = Array::makei(n, _ => [])
-  for i = 0; i < m; i = i + 1 {
+  for i in 0..<m {
     let (u, v, w) = edges[i]
     if u < 0 || u >= n || v < 0 || v >= n || w < 0L {
       return None
@@ -353,7 +353,7 @@ pub fn suurballe_disjoint_paths(
   }
   path_edges.rev_in_place()
   let on_path = Array::make(m, false)
-  for idx = 0; idx < path_edges.length(); idx = idx + 1 {
+  for idx in 0..<path_edges.length() {
     let e = path_edges[idx]
     on_path[e] = true
   } where {
@@ -369,7 +369,7 @@ pub fn suurballe_disjoint_paths(
     ),
   }
   let reduced = Array::make(m, 0L)
-  for i = 0; i < m; i = i + 1 {
+  for i in 0..<m {
     reduced[i] = weight[i] + dist[from[i]] - dist[to[i]]
   } where {
     invariant: i >= 0 && i <= m,
@@ -384,7 +384,7 @@ pub fn suurballe_disjoint_paths(
     ),
   }
   let adj2 = Array::makei(n, _ => [])
-  for i = 0; i < m; i = i + 1 {
+  for i in 0..<m {
     let u = from[i]
     let v2 = to[i]
     if on_path[i] {
@@ -432,7 +432,7 @@ pub fn suurballe_disjoint_paths(
   }
   path2.rev_in_place()
   let combined_adj = Array::makei(n, _ => [])
-  for idx = 0; idx < path_edges.length(); idx = idx + 1 {
+  for idx in 0..<path_edges.length() {
     let e = path_edges[idx]
     combined_adj[from[e]].push(to[e])
   } where {
@@ -446,7 +446,7 @@ pub fn suurballe_disjoint_paths(
       #|At idx = len, all path1 edges are included.
     ),
   }
-  for idx = 0; idx < path2.length(); idx = idx + 1 {
+  for idx in 0..<path2.length() {
     let (u, e) = path2[idx]
     if e.reversed {
       let orig_u = from[e.orig_id]

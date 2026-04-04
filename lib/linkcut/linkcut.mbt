@@ -59,7 +59,7 @@ priv struct LinkCutTree {
 ///|
 fn LinkCutTree::new(n : Int) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
-  for i = 0; i < n; i = i + 1 {
+  for _ in 0..<n {
     nodes.push({
       parent: -1,
       left: -1,
@@ -69,16 +69,6 @@ fn LinkCutTree::new(n : Int) -> LinkCutTree {
       value: 0L,
       path_sum: 0L,
     })
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (init nodes):
-      #|nodes[0..i) are initialized with default values.
-      #|MAINTENANCE:
-      #|Push a node initialized with zero value and empty pointers.
-      #|TERMINATION:
-      #|At i = n, all nodes are initialized.
-    ),
   }
   { nodes, }
 }
@@ -572,33 +562,13 @@ test "linkcut star topology" {
   let lct = LinkCutTree::new(6)
 
   // Build star: 0 is center, 1-5 are leaves
-  for i = 1; i < 6; i = i + 1 {
+  for i in 1..<6 {
     let _ = lct.link(i, 0)
-  } where {
-    invariant: i >= 1 && i <= 6,
-    reasoning: (
-      #|INVARIANT (build star):
-      #|Leaves [1..i) are linked to the center 0.
-      #|MAINTENANCE:
-      #|Link leaf i to the center.
-      #|TERMINATION:
-      #|At i = 6, the star is fully built.
-    ),
   }
 
   // All nodes should be in same tree
-  for i = 1; i < 6; i = i + 1 {
+  for i in 1..<6 {
     inspect(lct.connected(0, i), content="true")
-  } where {
-    invariant: i >= 1 && i <= 6,
-    reasoning: (
-      #|INVARIANT (verify star):
-      #|Leaves [1..i) have been verified connected to the center.
-      #|MAINTENANCE:
-      #|Check connectivity for leaf i.
-      #|TERMINATION:
-      #|At i = 6, all leaves are verified connected.
-    ),
   }
 
   // All pairs of leaves should be connected

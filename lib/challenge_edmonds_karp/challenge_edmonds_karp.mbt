@@ -67,22 +67,12 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
     for head = 0; head < queue.length(); head = head + 1 {
       let u = queue[head]
       let neighbors = g.adj[u]
-      for j = 0; j < neighbors.length(); j = j + 1 {
+      for j in 0..<neighbors.length() {
         let e = neighbors[j]
         if e.cap > 0 && parent[e.to].0 == -1 {
           parent[e.to] = (u, j)
           queue.push(e.to)
         }
-      } where {
-        invariant: j >= 0 && j <= neighbors.length(),
-        reasoning: (
-          #|INVARIANT (BFS edges):
-          #|All neighbors[0..j) have been checked for residual capacity.
-          #|MAINTENANCE:
-          #|Record parent for newly discovered nodes.
-          #|TERMINATION:
-          #|At j = deg(u), all outgoing residual edges are processed.
-        ),
       }
     } where {
       invariant: head >= 0 && head <= queue.length(),

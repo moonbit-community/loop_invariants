@@ -128,7 +128,7 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
   let order : Array[Int] = []
 
   // First DFS: compute finish order
-  for i = 0; i < num_nodes; i = i + 1 {
+  for i in 0..<num_nodes {
     if !visited[i] {
       dfs1(self.adj, visited, order, i)
     }
@@ -159,7 +159,7 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
 
   // Check satisfiability: x and ¬x must be in different SCCs
   let assignment = Array::make(self.n, false)
-  for i = 0; i < self.n; i = i + 1 {
+  for i in 0..<self.n {
     let node_true = 2 * i
     let node_false = 2 * i + 1
     if comp[node_true] == comp[node_false] {
@@ -217,7 +217,7 @@ fn dfs2(
 ///|
 /// Verify that an assignment satisfies all implications
 fn TwoSat::verify(self : TwoSat, assignment : Array[Bool]) -> Bool {
-  for u = 0; u < 2 * self.n; u = u + 1 {
+  for u in 0..<(2 * self.n) {
     let var_u = u / 2
     let neg_u = u % 2 == 1
     let val_u = if neg_u { !assignment[var_u] } else { assignment[var_u] }

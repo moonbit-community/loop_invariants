@@ -564,7 +564,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
   let v : Array[Int] = Array::make(m + 1, 0)
   let p : Array[Int] = Array::make(m + 1, 0) // p[j] = row assigned to column j
   let way : Array[Int] = Array::make(m + 1, 0)
-  for i = 1; i <= n; i = i + 1 {
+  for i in 1..<=n {
     p[0] = i
     let minv : Array[Int] = Array::make(m + 1, inf)
     let used : Array[Bool] = Array::make(m + 1, false)
@@ -573,7 +573,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
     let j0 = for j0 = 0 {
       used[j0] = true
       let i0 = p[j0]
-      let (delta, j1) = for j = 1, delta = inf, j1 = 0; j <= m; j = j + 1 {
+      let (delta, j1) = for j in 1..<=m; delta = inf, j1 = 0 {
         if !used[j] {
           let cur = cost[i0 - 1][j - 1] - u[i0] - v[j]
           if cur < minv[j] {
@@ -581,10 +581,10 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
             way[j] = j0
           }
           if minv[j] < delta {
-            continue j + 1, minv[j], j
+            continue minv[j], j
           }
         }
-        continue j + 1, delta, j1
+        continue delta, j1
       } nobreak {
         (delta, j1)
       } where {
@@ -606,7 +606,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
       }
 
       // Update potentials
-      for j = 0; j <= m; j = j + 1 {
+      for j in 0..<=m {
         if used[j] {
           u[p[j]] = u[p[j]] + delta
           v[j] = v[j] - delta
@@ -686,11 +686,11 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
   }
 
   // Compute total cost
-  let total_cost = for j = 1, total_cost = 0; j <= m; j = j + 1 {
+  let total_cost = for j in 1..<=m; total_cost = 0 {
     if p[j] > 0 && p[j] <= n {
-      continue j + 1, total_cost + cost[p[j] - 1][j - 1]
+      continue total_cost + cost[p[j] - 1][j - 1]
     }
-    continue j + 1, total_cost
+    continue total_cost
   } nobreak {
     total_cost
   } where {

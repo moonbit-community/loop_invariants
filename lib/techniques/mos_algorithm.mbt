@@ -54,9 +54,9 @@ fn mos_algorithm_range_sum(
 
   // Create and sort query indices using bubble sort
   let query_order = Array::makei(q, i => i)
-  for i = 0; i < q - 1; i = i + 1 {
+  for i in 0..<(q - 1) {
     let last = q - 1 - i
-    for j = 0; j < last; j = j + 1 {
+    for j in 0..<last {
       let idx1 = query_order[j]
       let idx2 = query_order[j + 1]
       let (l1, r1) = queries[idx1]
@@ -68,33 +68,10 @@ fn mos_algorithm_range_sum(
         query_order[j] = idx2
         query_order[j + 1] = idx1
       }
-    } where {
-      invariant: j >= 0 && j <= last,
-      reasoning: (
-        #|INVARIANT (bubble inner):
-        #|After j steps, the largest query (by Mo ordering) among positions
-        #|[0..j] is at index j.
-        #|MAINTENANCE:
-        #|Compare adjacent queries and swap if out of order, pushing the
-        #|largest element one step to the right.
-        #|TERMINATION:
-        #|At j == last, the maximum of the unsorted prefix is fixed at last.
-      ),
     }
-  } where {
-    invariant: i >= 0 && i <= q - 1,
-    reasoning: (
-      #|INVARIANT (bubble outer):
-      #|After i passes, the last i positions are fixed in Mo ordering.
-      #|MAINTENANCE:
-      #|The inner pass moves the next-largest remaining query into position
-      #|q - 1 - i.
-      #|TERMINATION:
-      #|At i == q - 1, the entire order is sorted.
-    ),
   }
   let results : Array[Int] = Array::make(q, 0)
-  for i = 0, curr_l = 0, curr_r = 0, curr_sum = 0; i < q; {
+  for i in 0..<q; curr_l = 0, curr_r = 0, curr_sum = 0 {
     let query_idx = query_order[i]
     let (ql, qr) = queries[query_idx]
 
@@ -166,11 +143,11 @@ fn mos_algorithm_range_sum(
       ),
     }
     results[query_idx] = sum5
-    continue i + 1, curr_l3, curr_r3, sum5
+    continue curr_l3, curr_r3, sum5
   } nobreak {
     ()
   } where {
-    invariant: i >= 0 && i <= q,
+    invariant: curr_l >= 0 && curr_r >= 0,
     reasoning: (
       #|INVARIANT (mo main loop):
       #|curr_sum = sum(arr[curr_l..curr_r)) and results are filled for all
@@ -217,22 +194,11 @@ fn SqrtDecomposition::new(arr : Array[Int]) -> SqrtDecomposition {
   let block_size = mo_isqrt(n)
   let num_blocks = (n + block_size - 1) / block_size
   let block_mins : Array[Int] = Array::make(num_blocks, 2147483647)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let block_idx = i / block_size
     if arr[i] < block_mins[block_idx] {
       block_mins[block_idx] = arr[i]
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (build block mins):
-      #|For every fully processed block, block_mins stores the minimum of its
-      #|elements; the current block is minimized over its processed prefix.
-      #|MAINTENANCE:
-      #|Update block_mins[block_idx] with arr[i] when smaller.
-      #|TERMINATION:
-      #|At i == n, all block minimums are computed.
-    ),
   }
   { arr, block_mins, block_size }
 }
@@ -289,20 +255,10 @@ fn SqrtDecomposition::update_sqrt(
   let block_start = block_idx * self.block_size
   let block_end = @cmp.minimum(block_start + self.block_size, self.arr.length())
   self.block_mins[block_idx] = 2147483647
-  for i = block_start; i < block_end; i = i + 1 {
+  for i in block_start..<block_end {
     if self.arr[i] < self.block_mins[block_idx] {
       self.block_mins[block_idx] = self.arr[i]
     }
-  } where {
-    invariant: i >= block_start && i <= block_end,
-    reasoning: (
-      #|INVARIANT (recompute block min):
-      #|block_mins[block_idx] is the minimum of arr[block_start..i).
-      #|MAINTENANCE:
-      #|Compare arr[i] to the current minimum and update if smaller.
-      #|TERMINATION:
-      #|At i == block_end, block_mins[block_idx] is fully recomputed.
-    ),
   }
 }
 
@@ -332,52 +288,32 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
   let results : Array[Int] = Array::make(q, 0)
   let max_val = 1000
   let freq : Array[Int] = Array::make(max_val + 1, 0)
-  for qi = 0; qi < q; qi = qi + 1 {
+  for qi in 0..<q {
     let (l, r) = queries[qi]
 
     // Reset frequencies
-    for i = 0; i <= max_val; i = i + 1 {
+    for i in 0..<=max_val {
       freq[i] = 0
-    } where {
-      invariant: i >= 0 && i <= max_val,
-      reasoning: (
-        #|INVARIANT (reset freq):
-        #|freq[0..i) has been reset to zero for the new query.
-        #|MAINTENANCE:
-        #|Set freq[i] = 0 and advance i.
-        #|TERMINATION:
-        #|At i == max_val, all frequencies are cleared.
-      ),
     }
 
     // Count frequencies
-    for i = l; i < r; i = i + 1 {
+    for i in l..<r {
       let val = arr[i]
       if val >= 0 && val <= max_val {
         freq[val] = freq[val] + 1
       }
-    } where {
-      invariant: i >= l && i <= r,
-      reasoning: (
-        #|INVARIANT (count freq):
-        #|freq reflects counts for arr[l..i); indices [i..r) remain.
-        #|MAINTENANCE:
-        #|Increment freq[val] for arr[i] when in range and advance i.
-        #|TERMINATION:
-        #|At i == r, freq holds counts for the full query range.
-      ),
     }
 
     // Find mode
-    let mode = for i = 0, best = 0, best_freq = 0; i <= max_val; {
+    let mode = for i in 0..<=max_val; best = 0, best_freq = 0 {
       if freq[i] > best_freq {
-        continue i + 1, i, freq[i]
+        continue i, freq[i]
       }
-      continue i + 1, best, best_freq
+      continue best, best_freq
     } nobreak {
       best
     } where {
-      invariant: i >= 0 && i <= max_val + 1,
+      invariant: best >= 0 && best_freq >= 0,
       reasoning: (
         #|INVARIANT (find mode):
         #|best/best_freq is the most frequent value in [0..i).
@@ -388,16 +324,6 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
       ),
     }
     results[qi] = mode
-  } where {
-    invariant: qi >= 0 && qi <= q,
-    reasoning: (
-      #|INVARIANT (range mode):
-      #|results[0..qi) have been computed for previous queries.
-      #|MAINTENANCE:
-      #|Reset freq, count occurrences, compute mode, and store results[qi].
-      #|TERMINATION:
-      #|At qi == q, all modes are computed.
-    ),
   }
   results
 }
@@ -431,18 +357,8 @@ fn BlockSum::new(arr : Array[Int]) -> BlockSum {
   let block_size = mo_isqrt(n)
   let num_blocks = (n + block_size - 1) / block_size
   let block_sums : Array[Int] = Array::make(num_blocks, 0)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     block_sums[i / block_size] = block_sums[i / block_size] + arr[i]
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (build block sums):
-      #|block_sums for blocks fully covered in arr[0..i) are correct.
-      #|MAINTENANCE:
-      #|Add arr[i] to its block sum and advance i.
-      #|TERMINATION:
-      #|At i == n, all block sums are computed.
-    ),
   }
   { arr, block_sums, block_size }
 }
@@ -608,7 +524,7 @@ fn offline_lca_simple(
   }
 
   // Answer queries
-  for qi = 0; qi < q; qi = qi + 1 {
+  for qi in 0..<q {
     let (u, v) = queries[qi]
     let u_curr = for u_curr = u; depth[u_curr] > depth[v]; {
       continue parent[u_curr]
@@ -626,17 +542,6 @@ fn offline_lca_simple(
       u_curr
     }
     results[qi] = u_curr
-  } where {
-    invariant: qi >= 0 && qi <= q,
-    reasoning: (
-      #|INVARIANT (offline LCA):
-      #|results[0..qi) contains correct LCAs for processed queries.
-      #|MAINTENANCE:
-      #|Lift deeper node, then move both up until they meet; store the meeting
-      #|node as LCA in results[qi].
-      #|TERMINATION:
-      #|At qi == q, all queries have their LCAs.
-    ),
   }
   results
 }
@@ -689,7 +594,7 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
   let tree_size = subtree_size[root]
   for i = 0, centroid = root; i < n; {
     let node = order[i]
-    let is_centroid = for neighbor_i = 0; neighbor_i < adj[node].length(); {
+    let is_centroid = for neighbor_i in 0..<adj[node].length() {
       let neighbor = adj[node][neighbor_i]
       let subtree = if neighbor == parent[node] {
         tree_size - subtree_size[node]
@@ -699,7 +604,6 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
       if subtree > tree_size / 2 {
         break false
       }
-      continue neighbor_i + 1
     } nobreak {
       true
     }
@@ -819,33 +723,13 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
       None => break
     }
   }
-  for k = 1; k < log_n; k = k + 1 {
-    for v = 0; v < n; v = v + 1 {
+  for k in 1..<log_n {
+    for v in 0..<n {
       let half_ancestor = up[v][k - 1]
       if half_ancestor >= 0 {
         up[v][k] = up[half_ancestor][k - 1]
       }
-    } where {
-      invariant: v >= 0 && v <= n,
-      reasoning: (
-        #|INVARIANT (lift table row):
-        #|For fixed k, up[0..v) have their 2^k ancestors computed.
-        #|MAINTENANCE:
-        #|Compute up[v][k] from the 2^(k-1) ancestor when it exists.
-        #|TERMINATION:
-        #|At v == n, the k-th column is complete.
-      ),
     }
-  } where {
-    invariant: k >= 1 && k <= log_n,
-    reasoning: (
-      #|INVARIANT (lift table columns):
-      #|For all j < k, up[v][j] stores the 2^j ancestor of v.
-      #|MAINTENANCE:
-      #|Use up[v][k] = up[up[v][k-1]][k-1] to build the next column.
-      #|TERMINATION:
-      #|At k == log_n, the binary lifting table is complete.
-    ),
   }
   { up, depth, log_n }
 }
@@ -862,13 +746,13 @@ fn BinaryLifting::lca_binary_lifting(
     (u_in, v_in)
   }
   let diff = self.depth[u] - self.depth[v]
-  let u = for k = 0, u = u; k < self.log_n; {
+  let u = for k in 0..<self.log_n; u = u {
     let u = if ((diff >> k) & 1) == 1 { self.up[u][k] } else { u }
-    continue k + 1, u
+    continue u
   } nobreak {
     u
   } where {
-    invariant: k >= 0 && k <= self.log_n,
+    invariant: u >= 0,
     reasoning: (
       #|INVARIANT (lift to depth):
       #|After processing bits < k, u has been lifted by those bits of diff.
@@ -881,14 +765,14 @@ fn BinaryLifting::lca_binary_lifting(
   if u == v {
     return u
   }
-  let u = for bit = self.log_n, u = u, v = v; bit > 0; {
+  let u = for bit in self.log_n>=..1; u = u, v = v {
     let k = bit - 1
     let (u, v) = if self.up[u][k] != self.up[v][k] {
       (self.up[u][k], self.up[v][k])
     } else {
       (u, v)
     }
-    continue k, u, v
+    continue u, v
   } nobreak {
     u
   }

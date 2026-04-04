@@ -73,8 +73,8 @@ fn Matrix::set(self : Matrix, i : Int, j : Int, v : Int64) -> Unit {
 /// Matrix multiplication with modulo
 fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix::new(self.rows, other.cols)
-  for i = 0; i < self.rows; i = i + 1 {
-    for j = 0; j < other.cols; j = j + 1 {
+  for i in 0..<self.rows {
+    for j in 0..<other.cols {
       let sum = for k = 0, sum = 0L; k < self.cols; {
         continue k + 1, (sum + self.data[i][k] * other.data[k][j]) % MATRIX_MOD
       } nobreak {
@@ -93,29 +93,7 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
         ),
       }
       result.data[i][j] = sum
-    } where {
-      invariant: j >= 0 && j <= other.cols,
-      reasoning: (
-        #|INVARIANT (Row fill):
-        #|After processing columns [0..j), result[i][c] is correct for all c < j.
-        #|Each column is computed by a full dot product over the shared dimension.
-        #|MAINTENANCE:
-        #|Computing column j extends the verified prefix.
-        #|TERMINATION:
-        #|At j == other.cols, row i is complete.
-      ),
     }
-  } where {
-    invariant: i >= 0 && i <= self.rows,
-    reasoning: (
-      #|INVARIANT (Matrix fill):
-      #|After processing rows [0..i), every entry in those rows matches the
-      #|matrix product. The loop constructs the result row by row.
-      #|MAINTENANCE:
-      #|Filling row i preserves correctness for the processed prefix.
-      #|TERMINATION:
-      #|At i == self.rows, the full product matrix is computed.
-    ),
   }
   result
 }
@@ -124,8 +102,8 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
 /// Matrix multiplication without modulo
 fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix::new(self.rows, other.cols)
-  for i = 0; i < self.rows; i = i + 1 {
-    for j = 0; j < other.cols; j = j + 1 {
+  for i in 0..<self.rows {
+    for j in 0..<other.cols {
       let sum = for k = 0, sum = 0L; k < self.cols; {
         continue k + 1, sum + self.data[i][k] * other.data[k][j]
       } nobreak {
@@ -142,27 +120,7 @@ fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
         ),
       }
       result.data[i][j] = sum
-    } where {
-      invariant: j >= 0 && j <= other.cols,
-      reasoning: (
-        #|INVARIANT (Row fill):
-        #|After processing columns [0..j), result[i][c] is correct for all c < j.
-        #|MAINTENANCE:
-        #|Compute the dot product for column j and store it in result[i][j].
-        #|TERMINATION:
-        #|At j = other.cols, row i is fully computed.
-      ),
     }
-  } where {
-    invariant: i >= 0 && i <= self.rows,
-    reasoning: (
-      #|INVARIANT (Matrix fill):
-      #|Rows [0..i) are fully computed for the product without modulo.
-      #|MAINTENANCE:
-      #|Compute row i using dot products with all columns.
-      #|TERMINATION:
-      #|At i = self.rows, the full product matrix is computed.
-    ),
   }
   result
 }

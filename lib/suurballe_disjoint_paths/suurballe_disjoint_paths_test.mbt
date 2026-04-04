@@ -1,7 +1,7 @@
 ///|
 fn edges_of_path(path : Array[Int]) -> Array[(Int, Int)] {
   let edges : Array[(Int, Int)] = []
-  for i = 0; i + 1 < path.length(); i = i + 1 {
+  for i in 0..<(path.length() - 1) {
     edges.push((path[i], path[i + 1]))
   } where {
     invariant: i >= 0 && i + 1 <= path.length(),
@@ -19,7 +19,7 @@ fn edges_of_path(path : Array[Int]) -> Array[(Int, Int)] {
 
 ///|
 fn edge_weight(edges : Array[(Int, Int, Int64)], u : Int, v : Int) -> Int64? {
-  for i = 0; i < edges.length(); i = i + 1 {
+  for i in 0..<edges.length() {
     let (a, b, c) = edges[i]
     if a == u && b == v {
       return Some(c)
@@ -84,8 +84,8 @@ test "suurballe disjoint paths basic" {
     Some((p1, p2)) => {
       let e1 = edges_of_path(p1)
       let e2 = edges_of_path(p2)
-      for i = 0; i < e1.length(); i = i + 1 {
-        for j = 0; j < e2.length(); j = j + 1 {
+      for i in 0..<e1.length() {
+        for j in 0..<e2.length() {
           assert_true(e1[i] != e2[j])
         } where {
           invariant: j >= 0 && j <= e2.length(),

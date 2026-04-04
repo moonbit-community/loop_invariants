@@ -77,10 +77,10 @@ fn three_sum(arr : Array[Int], target : Int) -> Array[(Int, Int, Int)] {
   // Sort the array first
   let sorted = arr.copy()
   sorted.sort()
-  for i = 0; i < n - 2; i = i + 1 {
+  for i in 0..<(n - 2) {
     // Skip duplicates for first element
     if i > 0 && sorted[i] == sorted[i - 1] {
-      continue i + 1
+      continue
     }
     let remaining = target - sorted[i]
 
@@ -110,18 +110,6 @@ fn three_sum(arr : Array[Int], target : Int) -> Array[(Int, Int, Int)] {
         #|When left >= right, no additional pairs exist for this fixed i.
       ),
     }
-  } where {
-    invariant: i >= 0 && i <= n - 2,
-    reasoning: (
-      #|LOOP INVARIANT: All valid triplets with first element < sorted[i] have been found
-      #|
-      #|For each fixed first element, we use two-pointer to find pairs summing to target - arr[i].
-      #|Skipping duplicates ensures each unique triplet is found exactly once.
-      #|MAINTENANCE:
-      #|Fix sorted[i], run the inner two-pointer, and skip duplicate anchors.
-      #|TERMINATION:
-      #|At i == n - 2, all triplets are enumerated.
-    ),
   }
   result
 }
@@ -313,7 +301,7 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
 
   // Deque stores indices, front is maximum
   let deque : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     // Remove elements outside window
     for ;; {
       if deque.length() > 0 && deque[0] <= i - k {
@@ -359,28 +347,6 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
     if i >= k - 1 {
       result.push(nums[deque[0]])
     }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|LOOP INVARIANT:
-      #|  - deque contains indices j where i - k < j <= i
-      #|  - Elements nums[deque[j]] are in strictly decreasing order
-      #|  - deque[0] is the index of maximum in current window
-      #|
-      #|BASE CASE (i = 0):
-      #|  - deque is empty, we add index 0
-      #|
-      #|INDUCTIVE STEP:
-      #|  1. Remove indices outside window [i-k+1, i]
-      #|  2. Remove indices with smaller values (they can never be max)
-      #|  3. Add current index i
-      #|  4. Front of deque is always the window maximum
-      #|MAINTENANCE:
-      #|Each step removes expired/smaller indices and appends i, preserving the
-      #|deque invariants.
-      #|
-      #|TERMINATION: After processing all elements, result has n-k+1 maximums.
-    ),
   }
   result
 }
@@ -415,28 +381,18 @@ fn min_window_substring(s : String, t : String) -> String {
 
   // Count required characters
   let required : Array[Int] = Array::make(128, 0)
-  for i = 0; i < t_len; i = i + 1 {
+  for i in 0..<t_len {
     required[t_chars[i].to_int()] = required[t_chars[i].to_int()] + 1
-  } where {
-    invariant: i >= 0 && i <= t_len,
-    reasoning: (
-      #|INVARIANT (count required):
-      #|required reflects counts for t_chars[0..i).
-      #|MAINTENANCE:
-      #|Increment required for t_chars[i] and advance i.
-      #|TERMINATION:
-      #|At i == t_len, required holds full target counts.
-    ),
   }
 
   // Count distinct required characters
-  let required_count = for i = 0, required_count = 0; i < 128; {
+  let required_count = for i in 0..<128; required_count = 0 {
     let required_count = if required[i] > 0 {
       required_count + 1
     } else {
       required_count
     }
-    continue i + 1, required_count
+    continue required_count
   } nobreak {
     required_count
   }
@@ -473,18 +429,8 @@ fn min_window_substring(s : String, t : String) -> String {
     } else {
       // Extract substring
       let result : Array[Char] = []
-      for i = min_left; i < min_left + min_len; i = i + 1 {
+      for i in min_left..<(min_left + min_len) {
         result.push(s_chars[i])
-      } where {
-        invariant: i >= min_left && i <= min_left + min_len,
-        reasoning: (
-          #|INVARIANT (collect window):
-          #|result holds s_chars[min_left..i) in order.
-          #|MAINTENANCE:
-          #|Append s_chars[i] and advance i.
-          #|TERMINATION:
-          #|At i == min_left + min_len, result is the minimal window substring.
-        ),
       }
       String::from_array(result)
     }
@@ -577,18 +523,18 @@ fn longest_unique_substring(s : String) -> Int {
 
   // Last seen position of each character
   let last_seen : Array[Int] = Array::make(128, -1)
-  for i = 0, start = 0, max_len = 0; i < n; i = i + 1 {
+  for i in 0..<n; start = 0, max_len = 0 {
     let c = chars[i].to_int()
     // If character seen in current window, move start past it
     let new_start = if last_seen[c] >= start { last_seen[c] + 1 } else { start }
     last_seen[c] = i
     let current_len = i - new_start + 1
     let new_max = if current_len > max_len { current_len } else { max_len }
-    continue i + 1, new_start, new_max
+    continue new_start, new_max
   } nobreak {
     max_len
   } where {
-    invariant: i >= 0 && start >= 0 && max_len >= 0,
+    invariant: start >= 0 && max_len >= 0,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - s[start..i] contains no duplicate characters
@@ -630,7 +576,7 @@ fn subarray_sum_equals_k(nums : ArrayView[Int], k : Int) -> Int {
   let offset = 10000 // Handle negative sums
   let count : Array[Int] = Array::make(20001, 0)
   count[offset] = 1 // Empty prefix has sum 0
-  for i = 0, prefix = 0, result = 0; i < n; i = i + 1 {
+  for i in 0..<n; prefix = 0, result = 0 {
     let new_prefix = prefix + nums[i]
     // Count subarrays ending at i with sum = k
     let target = new_prefix - k + offset
@@ -640,11 +586,11 @@ fn subarray_sum_equals_k(nums : ArrayView[Int], k : Int) -> Int {
     if idx >= 0 && idx < 20001 {
       count[idx] = count[idx] + 1
     }
-    continue i + 1, new_prefix, result + matches
+    continue new_prefix, result + matches
   } nobreak {
     result
   } where {
-    invariant: i >= 0 && i <= n,
+    invariant: result >= 0,
     reasoning: (
       #|LOOP INVARIANT:
       #|  - prefix = sum(nums[0..i])
@@ -994,31 +940,11 @@ test "partition" {
   let p = partition(arr, 0, 7)
   // All elements before p should be < arr[p]
   // All elements after p should be >= arr[p]
-  for i = 0; i < p; i = i + 1 {
+  for i in 0..<p {
     assert_true(arr[i] < arr[p])
-  } where {
-    invariant: i >= 0 && i <= p,
-    reasoning: (
-      #|INVARIANT (pivot left check):
-      #|All elements in arr[0..i) are < arr[p].
-      #|MAINTENANCE:
-      #|Check arr[i] and advance i.
-      #|TERMINATION:
-      #|At i == p, all elements before p satisfy the partition.
-    ),
   }
-  for i = p + 1; i < 8; i = i + 1 {
+  for i in (p + 1)..<8 {
     assert_true(arr[i] >= arr[p])
-  } where {
-    invariant: i >= p + 1 && i <= 8,
-    reasoning: (
-      #|INVARIANT (pivot right check):
-      #|All elements in arr[p+1..i) are >= arr[p].
-      #|MAINTENANCE:
-      #|Check arr[i] and advance i.
-      #|TERMINATION:
-      #|At i == 8, all elements after p satisfy the partition.
-    ),
   }
 }
 

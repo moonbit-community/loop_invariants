@@ -286,7 +286,7 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
 
   // Coordinate compression
   let sorted_vals : Array[Int64] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     sorted_vals.push(arr[i])
   } where {
     invariant: i >= 0 && i <= n,
@@ -304,7 +304,7 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
   // Remove duplicates and build value -> index map
   let unique_vals : Array[Int64] = []
   let val_to_idx : Map[Int64, Int] = {}
-  for i = 0; i < sorted_vals.length(); i = i + 1 {
+  for i in 0..<sorted_vals.length() {
     if i == 0 || sorted_vals[i] != sorted_vals[i - 1] {
       val_to_idx[sorted_vals[i]] = unique_vals.length()
       unique_vals.push(sorted_vals[i])
@@ -331,7 +331,7 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
 
   // Insert elements one by one
   // INVARIANT: After processing arr[i], roots[i+1] contains frequencies for arr[0..i]
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let idx = match val_to_idx.get(arr[i]) {
       Some(v) => v
       None => 0

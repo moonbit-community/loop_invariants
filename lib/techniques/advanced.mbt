@@ -426,66 +426,31 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
   let curr : Array[Int] = Array::make(n + 1, 0)
 
   // Initialize first row: edit distance from empty string to s2[0..j)
-  for j = 0; j <= n; j = j + 1 {
+  for j in 0..<=n {
     prev[j] = j
-  } where {
-    invariant: j >= 0 && j <= n + 1,
-    reasoning: (
-      #|INVARIANT (Base row):
-      #|After processing columns [0..j), prev[t] = t for each t in [0..j),
-      #|matching the definition D[0][t] = t (insert t characters into empty).
-      #|This row anchors the DP recurrence for all later rows.
-      #|MAINTENANCE:
-      #|Assign prev[j] = j and advance j, extending the initialized prefix.
-      #|TERMINATION:
-      #|At j = n + 1, the entire base row is initialized.
-    ),
   }
-  for i = 1, prev = prev, curr = curr {
-    if i > m {
-      break prev[n]
-    } else {
-      // First column: edit distance from s1[0..i) to empty string
-      curr[0] = i
-      for j = 1 {
-        if j > n {
-          break
-        } else {
-          if s1[i - 1] == s2[j - 1] {
-            // Characters match: no operation needed
-            curr[j] = prev[j - 1]
-          } else {
-            // Take minimum of three operations:
-            // - Delete from s1: prev[j] + 1
-            // - Insert into s1: curr[j-1] + 1
-            // - Replace: prev[j-1] + 1
-            curr[j] = 1 + min3(prev[j], curr[j - 1], prev[j - 1])
-          }
-          continue j + 1
-        }
-      } where {
-        invariant: j >= 1 && j <= n + 1,
-        reasoning: (
-          #|INVARIANT (Row DP construction):
-          #|After processing columns [1..j), curr[t] is the edit distance
-          #|D[i][t] = edit_dist(s1[0..i), s2[0..t)) for each t in that range.
-          #|Each step uses the three neighboring DP states:
-          #|  prev[j]   = D[i-1][j]
-          #|  curr[j-1] = D[i][j-1]
-          #|  prev[j-1] = D[i-1][j-1]
-          #|so curr[j] is computed exactly by the recurrence.
-          #|MAINTENANCE:
-          #|Compute curr[j] from the three neighbors and advance j.
-          #|TERMINATION:
-          #|At j = n + 1, row i is complete.
-        ),
+  for i in 1..<=m; prev = prev, curr = curr {
+    // First column: edit distance from s1[0..i) to empty string
+    curr[0] = i
+    for j in 1..<=n {
+      if s1[i - 1] == s2[j - 1] {
+        // Characters match: no operation needed
+        curr[j] = prev[j - 1]
+      } else {
+        // Take minimum of three operations:
+        // - Delete from s1: prev[j] + 1
+        // - Insert into s1: curr[j-1] + 1
+        // - Replace: prev[j-1] + 1
+        curr[j] = 1 + min3(prev[j], curr[j - 1], prev[j - 1])
       }
-
-      // Swap rows
-      continue i + 1, curr, prev
     }
+
+    // Swap rows
+    continue curr, prev
+  } nobreak {
+    prev[n]
   } where {
-    invariant: i >= 1 && i <= m + 1,
+    invariant: prev.length() == n + 1 && curr.length() == n + 1,
     reasoning: (
       #|INVARIANT 1 (Outer loop bounds):
       #|i tracks which prefix of s1 is being processed. After each iteration
@@ -496,10 +461,10 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
       #|TERMINATION:
       #|At i = m + 1, all rows are processed.
     ),
-    invariant: i >= 1,
+    invariant: prev.length() > 0,
     reasoning: (
       #|INVARIANT 2 (DP correctness): After processing row i,
-      #|prev[j] = edit_dist(s1[0..i), s2[0..j)) for all j ∈ [0, n].
+      #|prev[j] = edit_dist(s1[0..i), s2[0..j)) for all j in [0, n].
       #|
       #|This is the classic DP recurrence for edit distance:
       #|
@@ -524,9 +489,9 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
       #|Case s1[i-1] == s2[j-1]:
       #|  The last characters already match. Any edit sequence that
       #|  transforms s1[0..i) to s2[0..j) can ignore these matching
-      #|  characters. So D[i][j] = D[i-1][j-1]. ✓
+      #|  characters. So D[i][j] = D[i-1][j-1].
       #|
-      #|Case s1[i-1] ≠ s2[j-1]:
+      #|Case s1[i-1] != s2[j-1]:
       #|  Consider the last operation in an optimal sequence:
       #|
       #|  1. DELETE s1[i-1]:
@@ -541,10 +506,10 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
       #|
       #|  3. REPLACE s1[i-1] with s2[j-1]:
       #|     First transform s1[0..i-1) to s2[0..j-1), costing D[i-1][j-1].
-      #|     Then replace s1[i-1] → s2[j-1], costing 1.
+      #|     Then replace s1[i-1] -> s2[j-1], costing 1.
       #|     Total: D[i-1][j-1] + 1.
       #|
-      #|  Taking the minimum gives the optimal solution. ✓
+      #|  Taking the minimum gives the optimal solution.
       #|
       #|SPACE OPTIMIZATION:
       #|  Notice that D[i][j] only depends on D[i-1][j], D[i][j-1], D[i-1][j-1].
@@ -628,133 +593,47 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
   let hull : Array[Point] = []
 
   // Build lower hull (left to right)
-  for i = 0 {
-    if i >= points.length() {
-      break
-    } else {
-      // Remove points that make clockwise turn
-      for pop_next = hull.length() >= 2 &&
-            cross_product(
-              hull[hull.length() - 2],
-              hull[hull.length() - 1],
-              points[i],
-            ) <=
-            0; pop_next; {
-        let _ = hull.pop()
-        continue hull.length() >= 2 &&
+  for i in 0..<points.length() {
+    // Remove points that make clockwise turn
+    for pop_next = hull.length() >= 2 &&
           cross_product(
             hull[hull.length() - 2],
             hull[hull.length() - 1],
             points[i],
           ) <=
-          0
-      }
-      hull.push(points[i])
-      continue i + 1
+          0; pop_next; {
+      let _ = hull.pop()
+      continue hull.length() >= 2 &&
+        cross_product(
+          hull[hull.length() - 2],
+          hull[hull.length() - 1],
+          points[i],
+        ) <=
+        0
     }
-  } where {
-    invariant: i >= 0 && i <= points.length(),
-    reasoning: (
-      #|INVARIANT 1 (Bounds and progress):
-      #|i is the next point to consider in the sorted order. All points with
-      #|index < i have either been added to the lower hull or discarded as
-      #|non-hull points, so the scan proceeds left-to-right and terminates.
-      #|MAINTENANCE:
-      #|After processing points[i], increment i to move to the next point.
-      #|TERMINATION:
-      #|At i = points.length(), all points were considered for the lower hull.
-    ),
-    invariant: i >= 0,
-    reasoning: (
-      #|INVARIANT 2 (Lower hull convexity):
-      #|hull[0..hull.length()) forms a convex chain where each consecutive
-      #|triple makes a counterclockwise (or straight) turn.
-      #|
-      #|More precisely: for all j ∈ [0, hull.length()-2),
-      #|  cross_product(hull[j], hull[j+1], hull[j+2]) > 0
-      #|  (strictly counterclockwise)
-      #|
-      #|Base: hull has < 3 points → trivially convex. ✓
-      #|
-      #|Inductive: When adding points[i]:
-      #|  - We pop from hull while the last three points (including new one)
-      #|    would make a clockwise or collinear turn.
-      #|  - After popping, adding points[i] maintains convexity.
-      #|
-      #|WHY THIS WORKS:
-      #|  Since points are sorted by x-coordinate, points[i] is the rightmost
-      #|  point seen so far. For the hull to be convex, the sequence must
-      #|  "turn left" (counterclockwise) at each vertex.
-      #|
-      #|  If adding points[i] creates a right turn, the previous point
-      #|  cannot be on the convex hull (it's "inside" the triangle formed
-      #|  by its neighbors and the new point).
-      #|
-      #|VISUAL:
-      #|     * points[i]
-      #|    /
-      #|   * hull[k-1]  ← This point gets removed if turn is clockwise
-      #|  /
-      #| * hull[k-2]
-      #|MAINTENANCE:
-      #|Pop while the turn is non-left, then push points[i], preserving
-      #|strict counterclockwise turns in the hull chain.
-      #|TERMINATION:
-      #|At i = points.length(), the lower hull is convex and complete.
-    ),
+    hull.push(points[i])
   }
   let lower_size = hull.length()
 
   // Build upper hull (right to left)
-  for i = points.length() - 2 {
-    if i < 0 {
-      break
-    } else {
-      for pop_next = hull.length() > lower_size &&
-            cross_product(
-              hull[hull.length() - 2],
-              hull[hull.length() - 1],
-              points[i],
-            ) <=
-            0; pop_next; {
-        let _ = hull.pop()
-        continue hull.length() > lower_size &&
+  for i in (points.length() - 2)>=..0 {
+    for pop_next = hull.length() > lower_size &&
           cross_product(
             hull[hull.length() - 2],
             hull[hull.length() - 1],
             points[i],
           ) <=
-          0
-      }
-      hull.push(points[i])
-      continue i - 1
+          0; pop_next; {
+      let _ = hull.pop()
+      continue hull.length() > lower_size &&
+        cross_product(
+          hull[hull.length() - 2],
+          hull[hull.length() - 1],
+          points[i],
+        ) <=
+        0
     }
-  } where {
-    invariant: i >= -1 && i < points.length(),
-    reasoning: (
-      #|INVARIANT 3 (Upper hull construction):
-      #|Similar to lower hull, but we traverse right-to-left.
-      #|
-      #|After building lower hull from leftmost to rightmost point,
-      #|we build upper hull from rightmost back to leftmost.
-      #|
-      #|The invariant hull.length() > lower_size ensures we only pop
-      #|points from the upper hull portion, preserving the lower hull.
-      #|
-      #|COMPLETENESS: Every point on the true convex hull is either:
-      #|  - On the lower hull (below the line from leftmost to rightmost), or
-      #|  - On the upper hull (above that line)
-      #|
-      #|By processing all points in both directions, we capture both.
-      #|
-      #|TIME COMPLEXITY: O(n log n) for sorting + O(n) for hull construction.
-      #|Each point is pushed at most once to lower hull and once to upper hull.
-      #|Each point is popped at most once from each. Total: O(n).
-      #|MAINTENANCE:
-      #|Decrement i each step and maintain convexity by popping when needed.
-      #|TERMINATION:
-      #|At i < 0, the upper hull is complete.
-    ),
+    hull.push(points[i])
   }
 
   // Remove last point (it's the same as first)

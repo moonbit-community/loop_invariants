@@ -64,7 +64,7 @@ pub fn MinCostMaxFlow::spfa(
     self.in_queue[u] = false
 
     // Relax all outgoing edges
-    for i = 0; i < self.adj[u].length(); i = i + 1 {
+    for i in 0..<self.adj[u].length() {
       let e = self.adj[u][i]
 
       // Check if edge has residual capacity and offers improvement
@@ -80,30 +80,6 @@ pub fn MinCostMaxFlow::spfa(
           self.in_queue[e.to] = true
         }
       }
-    } where {
-      invariant: i >= 0 &&
-      i <= self.adj[u].length() &&
-      self.dist[u] < MCMF_INF &&
-      self.prev_v.length() == self.n,
-      reasoning: (
-        #|INVARIANT (SPFA relax):
-        #|  Edges adj[u][0..i) have been considered for relaxation.
-        #|
-        #|RELAXATION CONDITION:
-        #|  - Edge must have residual capacity (cap > flow)
-        #|  - New path must be shorter (dist[u] + cost < dist[to])
-        #|
-        #|CORRECTNESS:
-        #|  SPFA correctly handles negative edge weights.
-        #|  Each vertex can be enqueued multiple times but
-        #|  converges when no more improvements possible.
-        #|
-        #|MAINTENANCE:
-        #|  Process edge i, update dist/prev/queue as needed.
-        #|
-        #|TERMINATION:
-        #|  At i = deg(u), all edges from u are processed.
-      ),
     }
     continue front + 1
   }

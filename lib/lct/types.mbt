@@ -120,7 +120,7 @@ pub(all) struct LinkCutTree {
 /// Create a new Link-Cut Tree with n nodes, all with value 0.
 pub fn LinkCutTree::new(n : Int) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     nodes.push(LCTNode::new(0))
   } where {
     invariant: i >= 0 && i <= n,

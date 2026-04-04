@@ -393,24 +393,19 @@ fn bellman_ford(
   dist[source] = 0
 
   // Relax all edges n-1 times
-  for i = 0 {
-    if i >= n - 1 {
-      break
-    } else {
-      let changed = for edge in edges; changed = false {
-        let (u, v, w) = edge
-        if dist[u] != inf && dist[u] + w < dist[v] {
-          dist[v] = dist[u] + w
-          continue true
-        }
-        continue changed
-      } nobreak {
-        changed
+  for i in 0..<(n - 1) {
+    let changed = for edge in edges; changed = false {
+      let (u, v, w) = edge
+      if dist[u] != inf && dist[u] + w < dist[v] {
+        dist[v] = dist[u] + w
+        continue true
       }
-      if !changed {
-        break // Early termination if no changes
-      }
-      continue i + 1
+      continue changed
+    } nobreak {
+      changed
+    }
+    if !changed {
+      break // Early termination if no changes
     }
   } where {
     invariant: i >= 0 && i <= n - 1,
@@ -512,8 +507,8 @@ fn floyd_warshall(
     if k >= n {
       break dist
     } else {
-      for i = 0; i < n; i = i + 1 {
-        for j = 0; j < n; j = j + 1 {
+      for i in 0..<n {
+        for j in 0..<n {
           if dist[i][k] != inf && dist[k][j] != inf {
             let through_k = dist[i][k] + dist[k][j]
             if through_k < dist[i][j] {
@@ -607,7 +602,7 @@ test "floyd_warshall" {
 ///|
 /// Simple edge sorting (insertion sort for demonstration).
 fn sort_edge_tuples(edges : Array[(Int, Int, Int)]) -> Unit {
-  for i = 1; i < edges.length(); i = i + 1 {
+  for i in 1..<edges.length() {
     let key = edges[i]
     let (_, _, key_weight) = key
     let insert_pos = for j = i - 1 {

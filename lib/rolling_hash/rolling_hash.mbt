@@ -65,7 +65,7 @@ fn RollingHash::new(s : String) -> RollingHash {
 
   // Compute powers of base
   let pow_base = Array::make(n + 1, 1L)
-  for i = 1; i <= n; i = i + 1 {
+  for i in 1..<=n {
     pow_base[i] = pow_base[i - 1] * HASH_BASE % HASH_MOD
   } where {
     invariant: i >= 1 && i <= n + 1,
@@ -85,7 +85,7 @@ fn RollingHash::new(s : String) -> RollingHash {
   // Compute prefix hashes
   // INVARIANT: prefix_hash[i] = hash of s[0..i-1]
   let prefix_hash = Array::make(n + 1, 0L)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let char_val = (s[i].to_int() - 'a'.to_int() + 1).to_int64()
     prefix_hash[i + 1] = (prefix_hash[i] * HASH_BASE + char_val) % HASH_MOD
   } where {
@@ -169,7 +169,7 @@ fn DoubleRollingHash::new(s : String) -> DoubleRollingHash {
   let n = s.length()
   let pow_base1 = Array::make(n + 1, 1L)
   let pow_base2 = Array::make(n + 1, 1L)
-  for i = 1; i <= n; i = i + 1 {
+  for i in 1..<=n {
     pow_base1[i] = pow_base1[i - 1] * HASH_BASE % HASH_MOD
     pow_base2[i] = pow_base2[i - 1] * HASH_BASE2 % HASH_MOD2
   } where {
@@ -188,7 +188,7 @@ fn DoubleRollingHash::new(s : String) -> DoubleRollingHash {
   }
   let prefix_hash1 = Array::make(n + 1, 0L)
   let prefix_hash2 = Array::make(n + 1, 0L)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let char_val = (s[i].to_int() - 'a'.to_int() + 1).to_int64()
     prefix_hash1[i + 1] = (prefix_hash1[i] * HASH_BASE + char_val) % HASH_MOD
     prefix_hash2[i + 1] = (prefix_hash2[i] * HASH_BASE2 + char_val) % HASH_MOD2
@@ -279,7 +279,7 @@ pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int] {
 
   // Check each position
   // INVARIANT: Check all positions where pattern could start
-  for i = 0; i <= n - m; i = i + 1 {
+  for i in 0..<=(n - m) {
     match text_hash.get_hash(i, i + m - 1) {
       Some(h) =>
         if h == target {
@@ -356,7 +356,7 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
   ) -> Bool {
     // Collect all hashes of length `len` from s1
     let hashes : Array[(Int64, Int64)] = []
-    for i = 0; i <= n1 - len; i = i + 1 {
+    for i in 0..<=(n1 - len) {
       match hash1.get_hash(i, i + len - 1) {
         Some(h) => hashes.push(h)
         None => ()
@@ -396,7 +396,7 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
     })
 
     // Check if any hash from s2 exists in s1's hashes
-    for i = 0; i <= n2 - len; i = i + 1 {
+    for i in 0..<=(n2 - len) {
       match hash2.get_hash(i, i + len - 1) {
         Some(h) => {
           // Binary search
@@ -478,8 +478,8 @@ fn count_distinct_substrings(s : String) -> Int {
   let seen : Array[(Int64, Int64)] = []
 
   // Collect all substring hashes
-  for len = 1; len <= n; len = len + 1 {
-    for i = 0; i <= n - len; i = i + 1 {
+  for len in 1..<=n {
+    for i in 0..<=(n - len) {
       match hash.get_hash(i, i + len - 1) {
         Some(h) => seen.push(h)
         None => ()

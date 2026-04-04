@@ -426,8 +426,8 @@ fn knuth_optimization(
   })
 
   // Process by increasing length
-  for len = 2; len <= n; len = len + 1 {
-    for i = 0; i + len - 1 < n; i = i + 1 {
+  for len in 2..<=n {
+    for i in 0..<(n - len + 1) {
       let j = i + len - 1
       dp[i][j] = 9223372036854775807L
 
@@ -506,11 +506,11 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
   let deque : Array[Int] = [] // Indices
   dp[0] = arr[0]
   deque.push(0)
-  for i = 1; i < n; i = i + 1 {
+  for i in 1..<n {
     // Remove elements outside window
     for pop_front = deque.length() > 0 && deque[0] < i - k; pop_front; {
       // Remove front
-      for j = 0; j < deque.length() - 1; j = j + 1 {
+      for j in 0..<(deque.length() - 1) {
         deque[j] = deque[j + 1]
       } where {
         invariant: j >= 0 && j <= deque.length() - 1,

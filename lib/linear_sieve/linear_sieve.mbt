@@ -33,14 +33,14 @@ pub fn LinearSieve::new(n : Int) -> LinearSieve {
     phi[1] = 1
     mu[1] = 1
   }
-  for i = 2; i <= n; i = i + 1 {
+  for i in 2..<=n {
     if spf[i] == 0 {
       spf[i] = i
       primes.push(i)
       phi[i] = i - 1
       mu[i] = -1
     }
-    for j = 0; j < primes.length(); j = j + 1 {
+    for j in 0..<primes.length() {
       let p = primes[j]
       let ip = i * p
       if ip > n {

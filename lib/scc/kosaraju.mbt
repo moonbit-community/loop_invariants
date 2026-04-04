@@ -73,7 +73,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // =========================================================================
   let visited = Array::make(n, false)
   let order : Array[Int] = []
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     if !visited[v] {
       dfs_order(v, adj, visited, order)
     }
@@ -100,8 +100,8 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // TRANSPOSE: Build reverse graph
   // =========================================================================
   let radj : Array[Array[Int]] = Array::makei(n, _ => [])
-  for u = 0; u < n; u = u + 1 {
-    for j = 0; j < adj[u].length(); j = j + 1 {
+  for u in 0..<n {
+    for j in 0..<adj[u].length() {
       let v = adj[u][j]
       radj[v].push(u) // Reverse: u→v becomes v→u
     } where {
@@ -153,9 +153,9 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // Build condensation graph
   // =========================================================================
   let scc_adj : Array[Array[Int]] = Array::makei(scc_count, _ => [])
-  for u = 0; u < n; u = u + 1 {
+  for u in 0..<n {
     let comp_u = component[u]
-    for j = 0; j < adj[u].length(); j = j + 1 {
+    for j in 0..<adj[u].length() {
       let v = adj[u][j]
       let comp_v = component[v]
       guard comp_u != comp_v else { continue }
@@ -202,7 +202,7 @@ fn dfs_order(
   order : Array[Int],
 ) -> Unit {
   visited[v] = true
-  for i = 0; i < adj[v].length(); i = i + 1 {
+  for i in 0..<adj[v].length() {
     let u = adj[v][i]
     if !visited[u] {
       dfs_order(u, adj, visited, order)
@@ -237,7 +237,7 @@ fn dfs_assign(
 ) -> Unit {
   component[v] = scc_id
   size.val = size.val + 1
-  for i = 0; i < radj[v].length(); i = i + 1 {
+  for i in 0..<radj[v].length() {
     let u = radj[v][i]
     if component[u] == -1 {
       dfs_assign(u, radj, component, scc_id, size)

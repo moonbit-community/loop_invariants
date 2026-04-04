@@ -96,7 +96,7 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   let scc_sizes : Array[Int] = []
 
   // Run DFS from each unvisited vertex
-  for v = 0; v < n; v = v + 1 {
+  for v in 0..<n {
     if disc[v] == -1 {
       tarjan_dfs(
         v, adj, disc, low, on_stack, stack, component, timer, scc_count, scc_sizes,
@@ -129,9 +129,9 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   let scc_adj : Array[Array[Int]] = Array::makei(num_sccs, _ => [])
 
   // Add edges between SCCs (avoiding duplicates)
-  for u = 0; u < n; u = u + 1 {
+  for u in 0..<n {
     let comp_u = component[u]
-    for j = 0; j < adj[u].length(); j = j + 1 {
+    for j in 0..<adj[u].length() {
       let v = adj[u][j]
       let comp_v = component[v]
       guard comp_u != comp_v else { continue }
@@ -204,7 +204,7 @@ fn tarjan_dfs(
   on_stack[v] = true
 
   // Step 3: Explore neighbors
-  for i = 0; i < adj[v].length(); i = i + 1 {
+  for i in 0..<adj[v].length() {
     let u = adj[v][i]
     if disc[u] == -1 {
       // Tree edge: recurse

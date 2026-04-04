@@ -30,7 +30,7 @@ fn next_greater_element(arr : Array[Int64]) -> Array[Int] {
   let n = arr.length()
   let result = Array::make(n, -1)
   let stack : Array[Int] = [] // Stack of indices
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     // Pop elements smaller than current
     for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]; pop_next; {
       let top = stack[stack.length() - 1]
@@ -62,7 +62,7 @@ fn next_smaller_element(arr : Array[Int64]) -> Array[Int] {
   let n = arr.length()
   let result = Array::make(n, -1)
   let stack : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]; pop_next; {
       let top = stack[stack.length() - 1]
       let _ = stack.pop()
@@ -92,7 +92,7 @@ fn previous_greater_element(arr : Array[Int64]) -> Array[Int] {
   let n = arr.length()
   let result = Array::make(n, -1)
   let stack : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     // Pop elements smaller than or equal to current
     for pop_next = stack.length() > 0 &&
           arr[stack[stack.length() - 1]] <= arr[i]; pop_next; {
@@ -126,7 +126,7 @@ fn previous_smaller_element(arr : Array[Int64]) -> Array[Int] {
   let n = arr.length()
   let result = Array::make(n, -1)
   let stack : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     for pop_next = stack.length() > 0 &&
           arr[stack[stack.length() - 1]] >= arr[i]; pop_next; {
       let _ = stack.pop()
@@ -171,7 +171,7 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
 
   // Compute previous smaller
   let stack : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     for pop_next = stack.length() > 0 &&
           heights[stack[stack.length() - 1]] >= heights[i]; pop_next; {
       let _ = stack.pop()
@@ -212,10 +212,10 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
   }
 
   // Calculate max area using fold
-  for i = 0, max_area = 0L; i < n; {
+  for i in 0..<n; max_area = 0L {
     let width = (next_smaller[i] - prev_smaller[i] - 1).to_int64()
     let area = heights[i] * width
-    continue i + 1, if area > max_area { area } else { max_area }
+    continue if area > max_area { area } else { max_area }
   } nobreak {
     max_area
   } where {
@@ -246,7 +246,7 @@ fn trap_rain_water(heights : Array[Int64]) -> Int64 {
 
   // Method 1: Using monotonic stack
   let stack : Array[Int] = []
-  let water = for i = 0, water = 0L; i < n; {
+  let water = for i in 0..<n; water = 0L {
     let water = for water = water; stack.length() > 0 &&
                    heights[stack[stack.length() - 1]] < heights[i]; {
       let mid = stack[stack.length() - 1]
@@ -267,7 +267,7 @@ fn trap_rain_water(heights : Array[Int64]) -> Int64 {
       water
     }
     stack.push(i)
-    continue i + 1, water
+    continue water
   } nobreak {
     water
   } where {
@@ -297,7 +297,7 @@ fn stock_span(prices : Array[Int64]) -> Array[Int] {
   let n = prices.length()
   let span = Array::make(n, 0)
   let stack : Array[Int] = []
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     // Pop days with price <= current
     for pop_next = stack.length() > 0 &&
           prices[stack[stack.length() - 1]] <= prices[i]; pop_next; {
@@ -349,7 +349,7 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
   let stack : Array[Int] = []
 
   // Previous smaller (strictly less)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     for pop_next = stack.length() > 0 &&
           arr[stack[stack.length() - 1]] >= arr[i]; pop_next; {
       let _ = stack.pop()
@@ -391,13 +391,13 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
   }
 
   // Sum contributions using functional for loop
-  for i = 0, result = 0L; i < n; {
+  for i in 0..<n; result = 0L {
     let contribution = arr[i] *
       left[i].to_int64() %
       mod_val *
       right[i].to_int64() %
       mod_val
-    continue i + 1, (result + contribution) % mod_val
+    continue (result + contribution) % mod_val
   } nobreak {
     result
   } where {

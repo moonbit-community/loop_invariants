@@ -684,25 +684,8 @@ fn iterative_segment_tree_build(arr : ArrayView[Int]) -> IterativeSegmentTree {
   let tree = Array::make(2 * n, 0L)
 
   // Copy leaves
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     tree[n + i] = arr[i].to_int64()
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|LOOP INVARIANT: tree[n..n+i] contains arr[0..i]
-      #|
-      #|BASE CASE (i = 0):
-      #|  - No elements copied yet, trivially true
-      #|
-      #|INDUCTIVE STEP (i → i + 1):
-      #|  - We set tree[n + i] = arr[i]
-      #|  - Now tree[n..n+i+1] contains arr[0..i+1]
-      #|
-      #|TERMINATION (i = n):
-      #|  - All leaves tree[n..2n] contain arr[0..n]
-      #|MAINTENANCE:
-      #|Assign tree[n+i] from arr[i] and advance i by one.
-    ),
   }
 
   // Build internal nodes bottom-up
@@ -853,19 +836,8 @@ fn max_count_segment_tree_build(arr : ArrayView[Int]) -> MaxCountSegmentTree {
   let tree = Array::make(2 * n, { max_val: -9223372036854775808L, count: 0 })
 
   // Copy leaves
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     tree[n + i] = { max_val: arr[i].to_int64(), count: 1 }
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (build leaves):
-      #|tree[n..n+i) contains leaf nodes for arr[0..i); each has count=1 because
-      #|it represents exactly one element.
-      #|MAINTENANCE:
-      #|Store arr[i] at tree[n+i], extending the leaf range by one.
-      #|TERMINATION:
-      #|At i == n, all leaves for arr[0..n) are initialized.
-    ),
   }
 
   // Build internal nodes
@@ -963,51 +935,21 @@ fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
   let st = { rows, cols, tree }
 
   // Build leaf rows
-  for i = 0; i < rows; i = i + 1 {
-    for j = 0; j < cols; j = j + 1 {
+  for i in 0..<rows {
+    for j in 0..<cols {
       st.tree[rows + i][cols + j] = matrix[i][j].to_int64()
-    } where {
-      invariant: j >= 0 && j <= cols,
-      reasoning: (
-        #|INVARIANT (row leaves):
-        #|For row i, leaves for columns [0, j) are set from matrix[i].
-        #|MAINTENANCE:
-        #|Assign leaf at column j with matrix[i][j].
-        #|TERMINATION:
-        #|At j = cols, all leaves for row i are set.
-      ),
     }
     // Build inner tree for this row
     for j in cols>..1 {
       st.tree[rows + i][j] = st.tree[rows + i][2 * j] +
         st.tree[rows + i][2 * j + 1]
     }
-  } where {
-    invariant: i >= 0 && i <= rows,
-    reasoning: (
-      #|INVARIANT (leaf rows):
-      #|Rows in [0, i) have their leaf values filled and inner trees built.
-      #|MAINTENANCE:
-      #|Fill leaves and build the inner tree for row i.
-      #|TERMINATION:
-      #|At i = rows, all leaf rows are built.
-    ),
   }
 
   // Build internal rows
   for i in rows>..1 {
-    for j = 0; j < 2 * cols; j = j + 1 {
+    for j in 0..<(2 * cols) {
       st.tree[i][j] = st.tree[2 * i][j] + st.tree[2 * i + 1][j]
-    } where {
-      invariant: j >= 0 && j <= 2 * cols,
-      reasoning: (
-        #|INVARIANT (row combine):
-        #|For row i, columns [0, j) have been updated from child rows.
-        #|MAINTENANCE:
-        #|Combine column j from the two child rows.
-        #|TERMINATION:
-        #|At j = 2 * cols, row i is fully updated.
-      ),
     }
   }
   st

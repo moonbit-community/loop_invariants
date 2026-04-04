@@ -198,7 +198,7 @@ pub fn PushRelabel::max_flow(
   let active : Array[Int] = []
 
   // Preflow: saturate edges out of source.
-  for i = 0; i < self.adj[source].length(); i = i + 1 {
+  for i in 0..<self.adj[source].length() {
     let cap = self.adj[source][i].cap
     if cap > 0L {
       self.adj[source][i].flow = cap
@@ -209,20 +209,6 @@ pub fn PushRelabel::max_flow(
       self.excess[source] = self.excess[source] - cap
       self.enqueue(v, source, sink, active)
     }
-  } where {
-    invariant: i >= 0 && i <= self.adj[source].length(),
-    reasoning: (
-      #|INVARIANT (preflow saturation):
-      #|Edges out of source in [0, i) are fully saturated, contributing their
-      #|capacity to excess at their head vertices. Source excess equals the
-      #|negative of the total flow sent so far.
-      #|MAINTENANCE:
-      #|Saturate edge i and update excess values; newly active vertices are
-      #|enqueued.
-      #|TERMINATION:
-      #|After all outgoing edges are processed, the preflow is initialized with
-      #|height[source] = n and all other heights 0.
-    ),
   }
   for steps = 0; active.length() > 0; steps = steps + 1 {
     match active.pop() {

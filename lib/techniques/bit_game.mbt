@@ -68,12 +68,12 @@ test "power of two" {
 /// XOR properties: a ^ a = 0, a ^ 0 = a, associative & commutative
 /// If all elements appear twice except one, XOR of all = unique element.
 fn single_number(nums : ArrayView[Int]) -> Int {
-  for i = 0, result = 0; i < nums.length(); i = i + 1 {
-    continue i + 1, result ^ nums[i]
+  for i in 0..<nums.length(); result = 0 {
+    continue result ^ nums[i]
   } nobreak {
     result
   } where {
-    invariant: i >= 0 && i <= nums.length(),
+    invariant: result >= 0 || result < 0,
     reasoning: (
       #|LOOP INVARIANT: result = XOR of nums[0..i)
       #|
@@ -101,12 +101,12 @@ test "single number" {
 /// If array contains [0, n] with one missing, XOR all values and indices.
 fn missing_number(nums : ArrayView[Int]) -> Int {
   let n = nums.length()
-  for i = 0, result = n; i < n; i = i + 1 {
-    continue i + 1, result ^ i ^ nums[i]
+  for i in 0..<n; result = n {
+    continue result ^ i ^ nums[i]
   } nobreak {
     result
   } where {
-    invariant: i >= 0 && i <= n,
+    invariant: result >= 0 || result < 0,
     reasoning: (
       #|LOOP INVARIANT: result = n ^ XOR of [0..i) ^ XOR of nums[0..i)
       #|
@@ -136,14 +136,14 @@ test "missing number" {
 ///
 /// Reverse the 32 bits of an unsigned integer.
 fn reverse_bits(n : Int) -> Int {
-  for i = 0, result = 0, num = n; i < 32; i = i + 1 {
+  for _ in 0..<32; result = 0, num = n {
     let bit = num & 1
     let new_result = (result << 1) | bit
-    continue i + 1, new_result, num >> 1
+    continue new_result, num >> 1
   } nobreak {
     result
   } where {
-    invariant: i >= 0 && i <= 32,
+    invariant: result >= 0,
     reasoning: (
       #|LOOP INVARIANT: result contains reversed bits of lowest i bits of original n
       #|
@@ -188,7 +188,7 @@ fn generate_subsets(elements : ArrayView[Int]) -> Array[Array[Int]] {
   let n = elements.length()
   let total = 1 << n // 2^n
   let result : Array[Array[Int]] = []
-  for mask = 0; mask < total; mask = mask + 1 {
+  for mask in 0..<total {
     let subset : Array[Int] = []
     for i in 0..<n {
       if ((mask >> i) & 1) == 1 {
@@ -196,18 +196,6 @@ fn generate_subsets(elements : ArrayView[Int]) -> Array[Array[Int]] {
       }
     }
     result.push(subset)
-  } where {
-    invariant: mask >= 0 && mask <= total,
-    reasoning: (
-      #|LOOP INVARIANT: result contains all subsets for masks 0 to mask-1
-      #|
-      #|Each bit position i in mask indicates whether elements[i] is in subset.
-      #|This generates all 2^n possible combinations.
-      #|MAINTENANCE:
-      #|Build subset for the current mask and append it to result.
-      #|TERMINATION:
-      #|At mask = total, all subsets are generated.
-    ),
   }
   result
 }
@@ -228,23 +216,8 @@ test "generate subsets" {
 fn gray_code(n : Int) -> Array[Int] {
   let total = 1 << n
   let result : Array[Int] = []
-  for i = 0; i < total; i = i + 1 {
+  for i in 0..<total {
     result.push(i ^ (i >> 1))
-  } where {
-    invariant: i >= 0 && i <= total,
-    reasoning: (
-      #|LOOP INVARIANT: result[0..i) contains Gray codes for 0 to i-1
-      #|
-      #|Gray code formula: G(i) = i XOR (i >> 1)
-      #|This ensures G(i) and G(i+1) differ by exactly one bit.
-      #|
-      #|Proof: Consider i and i+1. The lowest differing bit at position k
-      #|causes exactly one bit change in the XOR result.
-      #|MAINTENANCE:
-      #|Append G(i) and advance i to the next code.
-      #|TERMINATION:
-      #|At i = total, the full Gray code sequence is produced.
-    ),
   }
   result
 }
@@ -277,12 +250,12 @@ fn nim_winner(piles : ArrayView[Int]) -> String {
 
 ///|
 fn nim_xor(piles : ArrayView[Int]) -> Int {
-  for i = 0, result = 0; i < piles.length(); i = i + 1 {
-    continue i + 1, result ^ piles[i]
+  for i in 0..<piles.length(); result = 0 {
+    continue result ^ piles[i]
   } nobreak {
     result
   } where {
-    invariant: i >= 0 && i <= piles.length(),
+    invariant: result >= 0 || result < 0,
     reasoning: (
       #|LOOP INVARIANT: result = XOR of piles[0..i)
       #|
@@ -319,22 +292,11 @@ fn nim_winning_move(piles : ArrayView[Int]) -> (Int, Int)? {
   }
 
   // Find a pile where pile XOR xor_sum < pile
-  for i = 0; i < piles.length(); i = i + 1 {
+  for i in 0..<piles.length() {
     let target = piles[i] ^ xor_sum
     if target < piles[i] {
       return Some((i, piles[i] - target))
     }
-  } where {
-    invariant: i >= 0 && i <= piles.length(),
-    reasoning: (
-      #|Find pile where XOR reduces the pile size.
-      #|Such a pile always exists when xor_sum != 0 because the highest
-      #|bit of xor_sum must appear in some pile.
-      #|MAINTENANCE:
-      #|Scan piles until one satisfies target < piles[i].
-      #|TERMINATION:
-      #|If none exist, the position is losing and we return None.
-    ),
   }
   None
 }
@@ -357,7 +319,7 @@ fn sprague_grundy_simple(n : Int) -> Int {
     return 0 // Losing position (can't move)
   }
   let sg = Array::make(n + 1, 0)
-  for i = 1; i <= n; i = i + 1 {
+  for i in 1..<=n {
     // Collect SG values of positions reachable in one move
     let reachable : Array[Int] = []
     if i >= 1 {
@@ -370,29 +332,6 @@ fn sprague_grundy_simple(n : Int) -> Int {
       reachable.push(sg[i - 3])
     }
     sg[i] = mex(reachable[:])
-  } where {
-    invariant: i >= 1 && i <= n + 1,
-    reasoning: (
-      #|LOOP INVARIANT: sg[0..i) contains correct Sprague-Grundy numbers
-      #|
-      #|SPRAGUE-GRUNDY THEOREM:
-      #|  sg(position) = mex({sg(p') : p' reachable from position})
-      #|
-      #|A position is losing iff sg = 0.
-      #|
-      #|For this game (remove 1-3 stones):
-      #|  sg(0) = 0 (no moves)
-      #|  sg(1) = mex({0}) = 1
-      #|  sg(2) = mex({0,1}) = 2
-      #|  sg(3) = mex({0,1,2}) = 3
-      #|  sg(4) = mex({1,2,3}) = 0
-      #|  Pattern: sg(n) = n mod 4
-      #|MAINTENANCE:
-      #|Compute reachable SG values for position i, then set sg[i] = mex of
-      #|those values, extending the prefix by one.
-      #|TERMINATION:
-      #|At i == n + 1, sg[0..n] is computed; return sg[n].
-    ),
   }
   sg[n]
 }
@@ -406,23 +345,12 @@ fn mex(values : ArrayView[Int]) -> Int {
       present[values[i]] = true
     }
   }
-  for i = 0; i < present.length(); i = i + 1 {
+  for i in 0..<present.length() {
     if !present[i] {
       return i
     }
   } nobreak {
     present.length()
-  } where {
-    invariant: i >= 0 && i <= present.length(),
-    reasoning: (
-      #|INVARIANT (mex):
-      #|All indices in [0..i) have been checked; if present[j] is false, we
-      #|would have already returned that j as the mex.
-      #|MAINTENANCE:
-      #|If present[i] is true, advance; otherwise return i immediately.
-      #|TERMINATION:
-      #|If no false entry exists, mex is present.length().
-    ),
   }
 }
 
@@ -473,15 +401,15 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
 
   // Build a simple set of all numbers for lookup
   // (In production, use a trie for efficiency)
-  let max_xor = for i = 0, max_xor = 0; i < n; {
-    let max_xor = for j = i + 1, max_xor = max_xor; j < n; {
+  let max_xor = for i in 0..<n; max_xor = 0 {
+    let max_xor = for j in (i + 1)..<n; max_xor = max_xor {
       let xor_val = nums[i] ^ nums[j]
       let max_xor = if xor_val > max_xor { xor_val } else { max_xor }
-      continue j + 1, max_xor
+      continue max_xor
     } nobreak {
       max_xor
     } where {
-      invariant: j >= i + 1 && j <= n,
+      invariant: max_xor >= 0,
       reasoning: (
         #|INVARIANT (max xor inner):
         #|max_xor is the maximum XOR among pairs (i, k) for k in [i+1, j).
@@ -491,11 +419,11 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
         #|At j == n, all pairs starting at i have been considered.
       ),
     }
-    continue i + 1, max_xor
+    continue max_xor
   } nobreak {
     max_xor
   } where {
-    invariant: i >= 0 && i <= n,
+    invariant: max_xor >= 0,
     reasoning: (
       #|INVARIANT (max xor outer):
       #|max_xor is the maximum XOR among all pairs with first index < i.

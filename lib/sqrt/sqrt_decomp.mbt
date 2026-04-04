@@ -86,21 +86,9 @@ fn SqrtSum::build(arr : Array[Int]) -> SqrtSum {
 
   // INVARIANT: After processing element i, blocks[i/block_size] contains
   // sum of elements from (i/block_size)*block_size to i (inclusive)
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let block_idx = i / block_size
     blocks[block_idx] = blocks[block_idx] + arr[i]
-  } where {
-    invariant: i >= 0 && i <= n,
-    reasoning: (
-      #|INVARIANT (Block sums):
-      #|After processing elements [0..i), each block sum equals the sum of
-      #|arr entries assigned to that block within that prefix. Since every
-      #|index maps to exactly one block, the invariant accumulates correctly.
-      #|MAINTENANCE:
-      #|Add arr[i] to its block, extending the prefix sums.
-      #|TERMINATION:
-      #|At i = n, all blocks contain the total sums for the full array.
-    ),
   }
   { arr: arr.copy(), blocks, block_size }
 }
@@ -245,23 +233,11 @@ fn SqrtMin::build(arr : Array[Int]) -> SqrtMin {
   let pending = Array::make(num_blocks, 0)
 
   // INVARIANT: blocks[b] contains minimum of block b's elements
-  for i = 0; i < n; i = i + 1 {
+  for i in 0..<n {
     let block_idx = i / block_size
     if arr[i] < blocks[block_idx] {
       blocks[block_idx] = arr[i]
     }
-  } where {
-    invariant: i >= 0,
-    reasoning: (
-      #|INVARIANT (Block minima):
-      #|After processing elements [0..i), blocks[b] is the minimum of all
-      #|arr indices in that block that lie within the processed prefix.
-      #|By scanning all indices, each block minimum becomes correct.
-      #|MAINTENANCE:
-      #|Update the current block minimum with arr[i] if needed.
-      #|TERMINATION:
-      #|At i = n, all blocks have the correct minimums.
-    ),
   }
   { arr: arr.copy(), blocks, pending, block_size }
 }
@@ -287,18 +263,8 @@ fn SqrtMin::push_block(self : SqrtMin, block_idx : Int) -> Unit {
   }
 
   // Apply lazy update to all elements
-  for i = start; i < end; i = i + 1 {
+  for i in start..<end {
     self.arr[i] = self.arr[i] + self.pending[block_idx]
-  } where {
-    invariant: i >= start && i <= end,
-    reasoning: (
-      #|INVARIANT (push block):
-      #|Elements in [start..i) have had the pending delta applied.
-      #|MAINTENANCE:
-      #|Add pending[block_idx] to arr[i] and advance.
-      #|TERMINATION:
-      #|At i = end, the entire block is updated.
-    ),
   }
   self.pending[block_idx] = 0
 }
@@ -467,19 +433,8 @@ fn SqrtMin::range_add(self : SqrtMin, l : Int, r : Int, val : Int) -> Unit {
   if left_block == right_block {
     // Same block: push lazy and update individually
     self.push_block(left_block)
-    for i = l; i <= r; i = i + 1 {
+    for i in l..<=r {
       self.arr[i] = self.arr[i] + val
-    } where {
-      invariant: i >= l && i <= r + 1,
-      reasoning: (
-        #|INVARIANT (Single-block update):
-        #|All elements in arr[l..i) have been incremented by val. We update
-        #|individually because lazy tags are pushed for this block.
-        #|MAINTENANCE:
-        #|Increment arr[i] and advance i to extend the updated prefix.
-        #|TERMINATION:
-        #|At i = r + 1, the entire block segment is updated.
-      ),
     }
     self.recompute_block(left_block)
     return
@@ -488,55 +443,21 @@ fn SqrtMin::range_add(self : SqrtMin, l : Int, r : Int, val : Int) -> Unit {
   // Left partial block
   self.push_block(left_block)
   let left_block_end = (left_block + 1) * self.block_size - 1
-  for i = l; i <= left_block_end; i = i + 1 {
+  for i in l..<=left_block_end {
     self.arr[i] = self.arr[i] + val
-  } where {
-    invariant: i >= l && i <= left_block_end + 1,
-    reasoning: (
-      #|INVARIANT (Left boundary update):
-      #|Elements in arr[l..i) within the left boundary block have been updated
-      #|by val after pushing any pending lazy tag.
-      #|MAINTENANCE:
-      #|Increment arr[i] and advance i to extend the updated prefix.
-      #|TERMINATION:
-      #|At i = left_block_end + 1, the left boundary update is complete.
-    ),
   }
   self.recompute_block(left_block)
 
   // Complete middle blocks: just update lazy
-  for b = left_block + 1; b < right_block; b = b + 1 {
+  for b in (left_block + 1)..<right_block {
     self.pending[b] = self.pending[b] + val
-  } where {
-    invariant: b >= left_block + 1 && b <= right_block,
-    reasoning: (
-      #|INVARIANT (Middle blocks lazy):
-      #|All fully covered blocks in [left_block+1..b) have had their lazy
-      #|pending tag increased by val, so queries will reflect the update
-      #|without touching individual elements.
-      #|MAINTENANCE:
-      #|Increment pending[b] for the next full block and advance b.
-      #|TERMINATION:
-      #|At b = right_block, all full blocks are updated lazily.
-    ),
   }
 
   // Right partial block
   self.push_block(right_block)
   let right_block_start = right_block * self.block_size
-  for i = right_block_start; i <= r; i = i + 1 {
+  for i in right_block_start..<=r {
     self.arr[i] = self.arr[i] + val
-  } where {
-    invariant: i >= right_block_start && i <= r + 1,
-    reasoning: (
-      #|INVARIANT (Right boundary update):
-      #|Elements in arr[right_block_start..i) have been incremented by val
-      #|after pushing the block's lazy tag.
-      #|MAINTENANCE:
-      #|Increment arr[i] and advance i to extend the updated prefix.
-      #|TERMINATION:
-      #|At i = r + 1, the right boundary update is complete.
-    ),
   }
   self.recompute_block(right_block)
 }
@@ -896,20 +817,8 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
     // and replace with single interval [l, r] with value v
     // Using multiple removes (simple but O(n) per remove)
     let num_to_remove = right_idx - left_idx + 1
-    for j = 0; j < num_to_remove; j = j + 1 {
+    for j in 0..<num_to_remove {
       let _ = self.intervals.remove(left_idx)
-    } where {
-      invariant: j >= 0 && j <= num_to_remove,
-      reasoning: (
-        #|INVARIANT (Interval removal):
-        #|After removing j intervals, all original intervals in [left_idx, left_idx+j)
-        #|have been deleted. This clears the overlapping range so the new
-        #|single interval can be inserted.
-        #|MAINTENANCE:
-        #|Remove one more interval at left_idx, increasing j by one.
-        #|TERMINATION:
-        #|At j = num_to_remove, the entire overlapping range is cleared.
-      ),
     }
     self.intervals.insert(left_idx, { l, r, v })
   }
