@@ -9,9 +9,9 @@ fn scan_min_index(
   proof_require: nonempty(arr),
   proof_ensure: result => is_min_index(arr, result),
 } {
-  for i = 1, best = 0; i < arr.length(); {
+  for i in 1..<arr.length(); best = 0 {
     let new_best = if arr[i] < arr[best] { i } else { best }
-    continue i + 1, new_best
+    continue new_best
   } nobreak {
     best
   } where {
