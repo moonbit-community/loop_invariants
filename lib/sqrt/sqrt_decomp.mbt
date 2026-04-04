@@ -644,6 +644,9 @@ fn SqrtMin::range_add(self : SqrtMin, l : Int, r : Int, val : Int) -> Unit {
 }
 
 ///|
+/// Returns the number of elements in the underlying array.
+///
+/// Time complexity: O(1).
 fn SqrtMin::length(self : SqrtMin) -> Int {
   self.arr.length()
 }
@@ -662,7 +665,11 @@ fn SqrtMin::length(self : SqrtMin) -> Int {
 // Total complexity: O((n + q)√n) for q queries
 
 ///|
-/// A query with its original index
+/// Internal representation of a range query for Mo's algorithm.
+///
+/// Stores the query range [l, r] together with its original position in the
+/// input slice so that results can be written back to the correct output index
+/// after queries are reordered by the Mo sort key.
 priv struct MoQuery {
   l : Int
   r : Int
@@ -670,14 +677,37 @@ priv struct MoQuery {
 }
 
 ///|
-/// Mo's algorithm solver for distinct count queries
-/// Given an array, answer queries "how many distinct elements in [l, r]?"
+/// Mo's algorithm solver for offline range distinct-count queries.
+///
+/// Given an array of integers and a set of range queries (l, r), answers each
+/// query "how many distinct values appear in arr[l..r]?" efficiently by
+/// sorting the queries in a specific order that minimises total pointer
+/// movement.
+///
+/// Queries must be provided all at once (offline). The result order matches
+/// the original query order, not the processing order.
+///
+/// Time complexity: O((n + q) * sqrt(n)) total for q queries.
+/// Space: O(n + q) for the count array and reordered query list.
 priv struct MoSolver {
   arr : Array[Int]
   block_size : Int
 }
 
 ///|
+/// Creates a MoSolver for the given array.
+///
+/// The block size is set to ceil(sqrt(n)), which balances left-pointer
+/// movement (O(q * sqrt(n))) against right-pointer movement (O(n * sqrt(n))).
+///
+/// Parameters:
+/// - `arr`: the source array of non-negative integers.
+///          All values must satisfy 0 <= v <= max(arr) so they can be used
+///          as indices into an internal count array.
+///
+/// Returns: a new MoSolver referencing `arr` (does not copy the array).
+///
+/// Time complexity: O(1).
 fn MoSolver::new(arr : Array[Int]) -> MoSolver {
   let n = arr.length()
   let block_size = if n > 0 { isqrt_ceil(n) } else { 1 }
@@ -685,7 +715,24 @@ fn MoSolver::new(arr : Array[Int]) -> MoSolver {
 }
 
 ///|
-/// Answer multiple range distinct count queries using Mo's algorithm
+/// Answers all queries "how many distinct values appear in arr[l..r]?"
+/// using Mo's algorithm.
+///
+/// Queries are sorted by (l / block_size, r) before processing. A sliding
+/// window [cur_l, cur_r] is maintained together with a count array and a
+/// running distinct total. Each of the four pointer moves (extend/shrink left
+/// or right) costs O(1) by updating count and distinct atomically.
+///
+/// Parameters:
+/// - `queries`: slice of (l, r) pairs in any order. Indices are 0-based and
+///              must satisfy 0 <= l <= r < n.
+///
+/// Returns: an Array[Int] of the same length as `queries`, where result[i] is
+///          the number of distinct values in arr[queries[i].0 .. queries[i].1].
+///          Returns an empty array when queries is empty.
+///
+/// Time complexity: O(q log q) for sorting + O((n + q) * sqrt(n)) for processing.
+/// Space: O(n + q).
 fn MoSolver::solve_distinct(
   self : MoSolver,
   queries : Array[(Int, Int)],

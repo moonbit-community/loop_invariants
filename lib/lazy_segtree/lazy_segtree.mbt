@@ -743,6 +743,7 @@ fn LazySegTreeMin::range_min(self : LazySegTreeMin, l : Int, r : Int) -> Int64? 
 }
 
 ///|
+/// Recursive worker for `LazySegTreeMin::range_min`.
 fn range_min_helper(
   tree : Array[Int64],
   pending : Array[Int64],
@@ -770,6 +771,7 @@ fn range_min_helper(
 }
 
 ///|
+/// Return the number of elements tracked by this tree.
 fn LazySegTreeMin::length(self : LazySegTreeMin) -> Int {
   self.n
 }
