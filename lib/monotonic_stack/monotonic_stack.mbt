@@ -32,10 +32,11 @@ fn next_greater_element(arr : Array[Int64]) -> Array[Int] {
   let stack : Array[Int] = [] // Stack of indices
   for i = 0; i < n; i = i + 1 {
     // Pop elements smaller than current
-    while stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i] {
+    for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]; pop_next; {
       let top = stack[stack.length() - 1]
       let _ = stack.pop()
       result[top] = i
+      continue stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]
     }
     stack.push(i)
   } where {
@@ -62,10 +63,11 @@ fn next_smaller_element(arr : Array[Int64]) -> Array[Int] {
   let result = Array::make(n, -1)
   let stack : Array[Int] = []
   for i = 0; i < n; i = i + 1 {
-    while stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i] {
+    for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]; pop_next; {
       let top = stack[stack.length() - 1]
       let _ = stack.pop()
       result[top] = i
+      continue stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]
     }
     stack.push(i)
   } where {
@@ -92,8 +94,10 @@ fn previous_greater_element(arr : Array[Int64]) -> Array[Int] {
   let stack : Array[Int] = []
   for i = 0; i < n; i = i + 1 {
     // Pop elements smaller than or equal to current
-    while stack.length() > 0 && arr[stack[stack.length() - 1]] <= arr[i] {
+    for pop_next = stack.length() > 0 &&
+          arr[stack[stack.length() - 1]] <= arr[i]; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 && arr[stack[stack.length() - 1]] <= arr[i]
     }
     // Top of stack (if exists) is previous greater
     if stack.length() > 0 {
@@ -123,8 +127,10 @@ fn previous_smaller_element(arr : Array[Int64]) -> Array[Int] {
   let result = Array::make(n, -1)
   let stack : Array[Int] = []
   for i = 0; i < n; i = i + 1 {
-    while stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i] {
+    for pop_next = stack.length() > 0 &&
+          arr[stack[stack.length() - 1]] >= arr[i]; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i]
     }
     if stack.length() > 0 {
       result[i] = stack[stack.length() - 1]
@@ -166,8 +172,11 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
   // Compute previous smaller
   let stack : Array[Int] = []
   for i = 0; i < n; i = i + 1 {
-    while stack.length() > 0 && heights[stack[stack.length() - 1]] >= heights[i] {
+    for pop_next = stack.length() > 0 &&
+          heights[stack[stack.length() - 1]] >= heights[i]; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 &&
+        heights[stack[stack.length() - 1]] >= heights[i]
     }
     if stack.length() > 0 {
       prev_smaller[i] = stack[stack.length() - 1]
@@ -190,8 +199,11 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
   // Compute next smaller
   stack.clear()
   for i in n>..0 {
-    while stack.length() > 0 && heights[stack[stack.length() - 1]] >= heights[i] {
+    for pop_next = stack.length() > 0 &&
+          heights[stack[stack.length() - 1]] >= heights[i]; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 &&
+        heights[stack[stack.length() - 1]] >= heights[i]
     }
     if stack.length() > 0 {
       next_smaller[i] = stack[stack.length() - 1]
@@ -287,8 +299,11 @@ fn stock_span(prices : Array[Int64]) -> Array[Int] {
   let stack : Array[Int] = []
   for i = 0; i < n; i = i + 1 {
     // Pop days with price <= current
-    while stack.length() > 0 && prices[stack[stack.length() - 1]] <= prices[i] {
+    for pop_next = stack.length() > 0 &&
+          prices[stack[stack.length() - 1]] <= prices[i]; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 &&
+        prices[stack[stack.length() - 1]] <= prices[i]
     }
     // Span is distance to previous greater element (or i+1 if none)
     span[i] = if stack.length() == 0 {
@@ -335,8 +350,10 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
 
   // Previous smaller (strictly less)
   for i = 0; i < n; i = i + 1 {
-    while stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i] {
+    for pop_next = stack.length() > 0 &&
+          arr[stack[stack.length() - 1]] >= arr[i]; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i]
     }
     left[i] = if stack.length() == 0 {
       i + 1
@@ -361,8 +378,9 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
   // Next smaller or equal (to handle duplicates correctly)
   stack.clear()
   for i in n>..0 {
-    while stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i] {
+    for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]; pop_next; {
       let _ = stack.pop()
+      continue stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]
     }
     right[i] = if stack.length() == 0 {
       n - i
