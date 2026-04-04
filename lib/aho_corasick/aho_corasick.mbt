@@ -93,7 +93,7 @@ fn AhoCorasick::add_pattern(self : AhoCorasick, pattern : String) -> Unit {
     state
   } where {
     proof_invariant: 0 <= i && i < pattern.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (pattern insert):
       #|i ranges over valid code-unit indices of the pattern.
       #|MAINTENANCE:
@@ -160,7 +160,7 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
             }
           } where {
             proof_invariant: f >= -1 && f < self.states.length(),
-            reasoning: (
+            proof_reasoning: (
               #|INVARIANT (failure chain):
               #|f is a valid state index or -1; it represents a proper suffix state.
               #|MAINTENANCE:
@@ -222,7 +222,7 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[(Int, Int)] {
     continue next_state
   } where {
     proof_invariant: 0 <= i && i < text.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (search scan):
       #|Characters in text[0..i) have been processed and all matches ending
       #|before i are reported.
@@ -291,7 +291,7 @@ fn AhoCorasick::contains_any(self : AhoCorasick, text : String) -> Bool {
     false
   } where {
     proof_invariant: 0 <= i && i < text.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (contains_any):
       #|Characters in text[0..i) have been scanned with no match found.
       #|MAINTENANCE:

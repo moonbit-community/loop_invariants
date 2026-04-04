@@ -102,7 +102,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
       continue smallest
     } where {
       proof_invariant: i >= 0 && i < len,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (heapify down):
         #|All nodes except the path from root to i satisfy the heap order.
         #|MAINTENANCE:
@@ -236,7 +236,7 @@ pub fn MinCostFlowPotentials::compute_with_limit(
       add_flow
     } where {
       proof_invariant: steps >= 0 && add_flow > 0L,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (bottleneck search):
         #|add_flow is the minimum residual capacity along the suffix of the
         #|shortest path processed so far.
@@ -255,7 +255,7 @@ pub fn MinCostFlowPotentials::compute_with_limit(
       continue steps + 1, u
     } where {
       proof_invariant: steps >= 0,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (augment path):
         #|Flow has been augmented by add_flow on the processed suffix of the
         #|shortest path, maintaining skew symmetry via reverse edges.
@@ -270,7 +270,7 @@ pub fn MinCostFlowPotentials::compute_with_limit(
     (total_flow, total_cost)
   } where {
     proof_invariant: iter >= 0 && total_flow >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (successive shortest paths):
       #|total_flow and total_cost describe a min-cost flow for the amount sent
       #|so far. Potentials ensure non-negative reduced costs, so each iteration

@@ -7,19 +7,19 @@
 enum Node {
   Leaf(value~ : Int)
   Branch(left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 struct PArray {
   root : Node
   n : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct DSU {
   parent : PArray
   size : PArray
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {

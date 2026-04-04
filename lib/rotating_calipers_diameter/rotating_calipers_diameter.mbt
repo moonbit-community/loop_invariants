@@ -13,14 +13,14 @@
 pub(all) struct Point {
   x : Int64
   y : Int64
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub(all) struct DiameterResult {
   i : Int
   j : Int
   dist2 : Int64
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn cross(a : Point, b : Point, c : Point) -> Int64 {
@@ -68,7 +68,7 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
       }
     } where {
       proof_invariant: j >= 0 && j < n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (advance antipodal):
         #|j is a candidate antipodal vertex for edge (i, i+1). Each step moves j
         #|forward only when the area of the triangle increases, so area_now is
@@ -91,7 +91,7 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
     (best_i, best_j, best)
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (outer calipers):
       #|For all processed edges up to i, best stores the maximum distance found
       #|among pairs (edge_vertex, antipodal_vertex). The pointer j is positioned

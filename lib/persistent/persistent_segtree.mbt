@@ -404,7 +404,7 @@ fn binary_search(arr : Array[Int], value : Int) -> Int {
     -1
   } where {
     proof_invariant: lo >= 0 && hi < arr.length(),
-    reasoning: (
+    proof_reasoning: (
       #|BINARY SEARCH INVARIANT:
       #|
       #|1. If value exists, it's in arr[lo..hi]

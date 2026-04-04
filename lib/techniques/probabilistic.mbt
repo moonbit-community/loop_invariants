@@ -56,7 +56,7 @@ fn reservoir_sample(stream : ArrayView[Int], k : Int, rng : RNG) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= k && i <= stream.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Uniform sampling):
       #|After processing i elements (i ≥ k), each of the first i elements
       #|has equal probability k/i of being in the reservoir.
@@ -137,7 +137,7 @@ fn fisher_yates_shuffle(arr : Array[Int], rng : RNG) -> Unit {
     }
   } where {
     proof_invariant: i >= -1 && i < arr.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Partial permutation):
       #|After processing position i, arr[i+1..n) is a uniformly random
       #|permutation of some i+1 elements from the original array, and
@@ -216,7 +216,7 @@ fn weighted_select(weights : ArrayView[Int], rng : RNG) -> Int {
     }
   } where {
     proof_invariant: i >= 0 && i <= weights.length() && sum >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Prefix sum construction):
       #|prefix_sum[j] = Σ(weights[0..j+1)) for all j < i.
       #|sum = Σ(weights[0..i)).
@@ -248,7 +248,7 @@ fn weighted_select(weights : ArrayView[Int], rng : RNG) -> Int {
     }
   } where {
     proof_invariant: lo >= 0 && hi <= weights.length() && lo <= hi,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Weighted selection correctness):
       #|We're finding the smallest i such that prefix_sum[i] > target.
       #|
@@ -434,7 +434,7 @@ fn count_leading_zeros(x : Int) -> Int {
       }
     } where {
       proof_invariant: n >= 0 && val == x << n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Shift tracking):
         #|val equals x shifted left by n positions, so each loop iteration
         #|advances the check to the next bit without losing prior progress.
@@ -539,7 +539,7 @@ fn skip_list_search(list : SkipList, target : Int) -> Int {
         }
       } where {
         proof_invariant: curr >= 0 && curr < list.nodes.length(),
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Skip list search):
           #|curr is always a valid node index, and all nodes before curr
           #|at the current level have values < target.
@@ -577,7 +577,7 @@ fn skip_list_search(list : SkipList, target : Int) -> Int {
     level < list.max_level &&
     current >= 0 &&
     current < list.nodes.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Level descent):
       #|Before processing level, current is the rightmost node we can reach
       #|at the next higher level whose value is still < target (or the head

@@ -138,7 +138,7 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
     max_area
   } where {
     proof_invariant: max_area >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Bounds and sentinel):
       #|i scans bars from left to right, and the extra step at i == n acts
       #|as a sentinel height 0 that flushes any remaining bars on the stack.
@@ -148,7 +148,7 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
       #|At i = n + 1, all bars have been flushed and max_area is final.
     ),
     proof_invariant: max_area >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Stack property):
       #|Stack contains indices in increasing order, AND heights at those
       #|indices are in strictly increasing order.
@@ -235,7 +235,7 @@ fn trap_rain_water(heights : ArrayView[Int]) -> Int {
     }
   } where {
     proof_invariant: 0 <= lo && lo <= hi + 1 && hi < n && water >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Bounds and processed region):
       #|All positions outside [lo, hi] have been finalized and their trapped
       #|water accounted for in water. The pointers only move inward, so the
@@ -246,7 +246,7 @@ fn trap_rain_water(heights : ArrayView[Int]) -> Int {
       #|When lo > hi, every position is finalized and water is complete.
     ),
     proof_invariant: left_max >= 0 && right_max >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Maximum tracking):
       #|  left_max = max(heights[0..lo))
       #|  right_max = max(heights[hi+1..n))
@@ -364,7 +364,7 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
     total
   } where {
     proof_invariant: total >= 0 && total < modulus,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Contribution counting):
       #|total = Σ(contribution of arr[0..i) as minimums)
       #|

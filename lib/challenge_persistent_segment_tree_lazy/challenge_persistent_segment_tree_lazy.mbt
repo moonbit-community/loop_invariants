@@ -7,7 +7,7 @@
 pub enum Node {
   Leaf(sum~ : Int, tag~ : Int)
   Branch(sum~ : Int, tag~ : Int, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn node_sum(node : Node) -> Int {

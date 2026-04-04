@@ -162,7 +162,7 @@ test "lct stress test" {
     lct.link(i, i - 1)
   } where {
     proof_invariant: i >= 1 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (build chain):
       #|  Nodes [0..i) form a single chain rooted at 0.
       #|
@@ -179,7 +179,7 @@ test "lct stress test" {
     guard lct.find_root(i) == 0 else { fail("Wrong root") }
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (verify roots):
       #|  Nodes [0..i) are verified to have root 0.
       #|

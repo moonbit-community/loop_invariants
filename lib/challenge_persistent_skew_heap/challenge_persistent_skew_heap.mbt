@@ -7,7 +7,7 @@
 pub enum Heap[T] {
   Empty
   Node(value~ : T, left~ : Heap[T], right~ : Heap[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] heap_size(h : Heap[T]) -> Int {

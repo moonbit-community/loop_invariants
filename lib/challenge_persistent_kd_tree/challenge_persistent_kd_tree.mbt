@@ -7,13 +7,13 @@
 pub(all) struct Point {
   x : Int
   y : Int
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub enum Kd {
   Empty
   Node(point~ : Point, axis~ : Int, left~ : Kd, right~ : Kd)
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Return the number of points stored in the tree.

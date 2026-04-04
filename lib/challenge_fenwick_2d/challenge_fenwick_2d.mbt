@@ -39,7 +39,7 @@ pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
         }
       } where {
         proof_invariant: j > 0 && j <= self.cols + 1,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (col update):
           #|j visits all Fenwick column indices that cover the update position.
           #|MAINTENANCE:
@@ -52,7 +52,7 @@ pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
     }
   } where {
     proof_invariant: i > 0 && i <= self.rows + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (row update):
       #|i visits all Fenwick row indices that cover the update position.
       #|MAINTENANCE:
@@ -78,7 +78,7 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, r : Int, c : Int) -> Int {
       }
     } where {
       proof_invariant: j >= 0 && j <= c,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (col prefix):
         #|row_sum accumulates tree[i][j] contributions for columns in (j, c].
         #|MAINTENANCE:
@@ -90,7 +90,7 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, r : Int, c : Int) -> Int {
     continue i - lowbit(i), sum + row_sum
   } where {
     proof_invariant: i >= 0 && i <= r,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (row prefix):
       #|sum accumulates prefix contributions for rows in (i, r].
       #|MAINTENANCE:

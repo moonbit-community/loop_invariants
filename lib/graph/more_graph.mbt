@@ -40,7 +40,7 @@ fn bellman_ford_with_neg_cycle(
     }
   } where {
     proof_invariant: i >= 0 && i <= n - 1,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dist[v] <= shortest path to v using at most i+1 edges
       #|
       #|BASE CASE (i = 0): dist[source] = 0, others = inf
@@ -128,7 +128,7 @@ fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
         }
       } where {
         proof_invariant: j >= 0 && j <= n,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Inner update):
           #|After processing columns [0..j), dist[i][t] is the shortest path
           #|from i to t using intermediate vertices from {0..k}. Each step
@@ -143,7 +143,7 @@ fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
       }
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Row completion):
         #|After processing rows [0..i), dist[x][*] is correct using
         #|intermediates from {0..k} for all x < i.
@@ -156,7 +156,7 @@ fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
     }
   } where {
     proof_invariant: k >= 0 && k <= n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dist[i][j] = shortest path from i to j using
       #|only vertices {0, ..., k-1} as intermediate nodes.
       #|
@@ -280,7 +280,7 @@ fn is_bipartite(n : Int, adj : Array[Array[Int]]) -> Bool {
     }
   } where {
     proof_invariant: start >= 0 && start <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Component scan):
       #|All vertices in [0, start) belong to components already checked and
       #|found bipartite. Each new start launches BFS for an unvisited component.
@@ -322,7 +322,7 @@ fn has_cycle_directed(n : Int, adj : Array[Array[Int]]) -> Bool {
     }
   } where {
     proof_invariant: start >= 0 && start <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (DFS forest):
       #|All vertices in [0, start) have been considered; any BLACK vertex is
       #|fully explored with no back edges found. If a cycle exists in those
@@ -385,7 +385,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
     }
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Finish order):
       #|All vertices in [0..i) have been considered as DFS roots. Any vertex
       #|reachable from those roots is marked visited, and appears in order
@@ -406,7 +406,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
     }
   } where {
     proof_invariant: u >= 0 && u <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Transpose build):
       #|After processing vertices [0..u), all outgoing edges from those vertices
       #|have been reversed into rev_adj.
@@ -491,7 +491,7 @@ fn prim_mst(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
       (u, min_key)
     } where {
       proof_invariant: v >= 0 && v <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Extract-min):
         #|After scanning vertices [0..v), min_key/u holds the smallest key
         #|among those not yet in the MST. This selects the safest next vertex
@@ -521,7 +521,7 @@ fn prim_mst(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
     total_weight
   } where {
     proof_invariant: count >= 0 && count <= n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT:
       #|  - in_mst marks vertices in current MST
       #|  - key[v] = minimum edge weight connecting v to MST (for v not in MST)
@@ -580,7 +580,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
       }
     } where {
       proof_invariant: j >= i + 1 && j <= sorted_edges.length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Selection in bubble sort):
         #|After scanning indices [i+1..j), sorted_edges[i] holds the smallest
         #|weight edge among sorted_edges[i..j) seen so far.
@@ -593,7 +593,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
     }
   } where {
     proof_invariant: i >= 0 && i <= sorted_edges.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Sorted prefix):
       #|After iteration i, sorted_edges[0..i) contains the i smallest edges in
       #|non-decreasing order. The remaining suffix is unsorted.
@@ -631,7 +631,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
     total_weight
   } where {
     proof_invariant: i >= 0 && edges_added >= 0 && edges_added <= n - 1,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT:
       #|  - Edges added form a forest (no cycles)
       #|  - total_weight = sum of edge weights in forest
@@ -660,7 +660,7 @@ fn find_root(parent : Array[Int], x : Int) -> Int {
     p
   } where {
     proof_invariant: p >= 0 && p < parent.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (find root):
       #|p is always a valid index on the path from x to its root.
       #|MAINTENANCE:

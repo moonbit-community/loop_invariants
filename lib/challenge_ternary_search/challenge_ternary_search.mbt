@@ -20,7 +20,7 @@ fn scan_min_index(
     proof_invariant: 0 <= best,
     proof_invariant: best < i,
     proof_invariant: min_in_prefix(arr, best, i),
-    reasoning: (
+    proof_reasoning: (
       #|This helper proves the final linear scan over the narrowed ternary
       #|search window.
       #|

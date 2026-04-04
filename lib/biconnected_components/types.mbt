@@ -48,7 +48,7 @@
 pub(all) struct BiconnectedResult {
   components : Array[Array[(Int, Int)]]
   articulation_points : Array[Int]
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Internal working structure for Tarjan's algorithm.

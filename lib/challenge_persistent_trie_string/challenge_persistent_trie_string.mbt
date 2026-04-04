@@ -7,7 +7,7 @@
 pub struct Node {
   end : Bool
   children : Array[Node?]
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Create an empty persistent trie.

@@ -20,7 +20,7 @@ fn count_set_bits(n : Int) -> Int {
     count
   } where {
     proof_invariant: num >= 0 && count >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: count = number of set bits cleared so far
       #|
       #|KEY INSIGHT: n & (n-1) removes the lowest set bit
@@ -74,7 +74,7 @@ fn single_number(nums : ArrayView[Int]) -> Int {
     result
   } where {
     proof_invariant: result >= 0 || result < 0,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: result = XOR of nums[0..i)
       #|
       #|Since a ^ a = 0 and XOR is commutative/associative,
@@ -107,7 +107,7 @@ fn missing_number(nums : ArrayView[Int]) -> Int {
     result
   } where {
     proof_invariant: result >= 0 || result < 0,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: result = n ^ XOR of [0..i) ^ XOR of nums[0..i)
       #|
       #|Initialize with n (since indices are 0 to n-1).
@@ -144,7 +144,7 @@ fn reverse_bits(n : Int) -> Int {
     result
   } where {
     proof_invariant: result >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: result contains reversed bits of lowest i bits of original n
       #|
       #|Each iteration:
@@ -256,7 +256,7 @@ fn nim_xor(piles : ArrayView[Int]) -> Int {
     result
   } where {
     proof_invariant: result >= 0 || result < 0,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: result = XOR of piles[0..i)
       #|
       #|BOUTON'S THEOREM:
@@ -410,7 +410,7 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
       max_xor
     } where {
       proof_invariant: max_xor >= 0,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (max xor inner):
         #|max_xor is the maximum XOR among pairs (i, k) for k in [i+1, j).
         #|MAINTENANCE:
@@ -424,7 +424,7 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
     max_xor
   } where {
     proof_invariant: max_xor >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (max xor outer):
       #|max_xor is the maximum XOR among all pairs with first index < i.
       #|MAINTENANCE:
@@ -466,7 +466,7 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
       (temp, multiple)
     } where {
       proof_invariant: multiple >= 1 && temp >= dvs,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (doubling step):
         #|temp == dvs * multiple and temp <= dvd; multiple is a power of two.
         #|MAINTENANCE:
@@ -484,7 +484,7 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
     }
   } where {
     proof_invariant: dvd >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (division):
       #|quotient * dvs + dvd equals the absolute original dividend.
       #|MAINTENANCE:

@@ -21,7 +21,7 @@ const ZERO_ONE_INF : Int = 1000000000
 pub struct Edge {
   to : Int
   weight : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Graph as an adjacency list.

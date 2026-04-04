@@ -23,7 +23,7 @@ const DIAL_INF : Int = 1000000000
 pub struct Edge {
   to : Int
   weight : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Graph with bounded edge weights.

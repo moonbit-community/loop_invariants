@@ -124,7 +124,7 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
       count
     } where {
       proof_invariant: u >= 0 && u <= self.graph.n_left,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (HK phase):
         #|All unmatched left vertices in [0, u) have been attempted for DFS
         #|augmentations in the current BFS layer graph.
@@ -139,7 +139,7 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
     matching
   } where {
     proof_invariant: matching >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (HK phases):
       #|matching accumulates successful augmentations from previous phases.
       #|MAINTENANCE:

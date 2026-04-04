@@ -7,7 +7,7 @@
 pub enum Stack[T] {
   Nil
   Cons(head~ : T, tail~ : Stack[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Create an empty persistent stack.

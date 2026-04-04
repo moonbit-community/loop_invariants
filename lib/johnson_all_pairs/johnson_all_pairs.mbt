@@ -138,7 +138,7 @@ fn dijkstra(
     }
   } where {
     proof_invariant: dist.length() == n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Dijkstra):
       #|For every node already finalized (popped with d == dist[u]), dist[u] is
       #|its true shortest distance in the reweighted graph. For all others,

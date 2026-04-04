@@ -7,7 +7,7 @@
 pub enum Tree {
   Empty
   Node(start~ : Int, end~ : Int, left~ : Tree, right~ : Tree)
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn inorder(t : Tree) -> Array[(Int, Int)] {

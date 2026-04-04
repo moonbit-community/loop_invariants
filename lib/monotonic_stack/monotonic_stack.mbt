@@ -41,7 +41,7 @@ fn next_greater_element(arr : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (NGE scan):
       #|Indices in stack are in decreasing value order, and result is finalized
       #|for all indices < i that have already found their next greater element.
@@ -72,7 +72,7 @@ fn next_smaller_element(arr : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (NSE scan):
       #|Indices in stack are in increasing value order, and result is finalized
       #|for processed indices whose next smaller element has been found.
@@ -106,7 +106,7 @@ fn previous_greater_element(arr : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (PGE scan):
       #|Stack holds indices with strictly decreasing values from bottom to top,
       #|so the top is the nearest previous greater element for the next index.
@@ -138,7 +138,7 @@ fn previous_smaller_element(arr : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (PSE scan):
       #|Stack holds indices with strictly increasing values, so the top is the
       #|nearest previous smaller element for the next index.
@@ -184,7 +184,7 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
     stack.push(i)
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (prev smaller):
       #|Stack stores indices of a strictly increasing height sequence for
       #|positions in [0, i). For processed bars, prev_smaller is correct.
@@ -220,7 +220,7 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
     max_area
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (max area):
       #|max_area is the largest rectangle area among bars in [0, i).
       #|MAINTENANCE:
@@ -272,7 +272,7 @@ fn trap_rain_water(heights : Array[Int64]) -> Int64 {
     water
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (rain water):
       #|Stack holds indices of bars in decreasing height order. All trapped
       #|water for positions < i that can be bounded on the right is accounted for.
@@ -314,7 +314,7 @@ fn stock_span(prices : Array[Int64]) -> Array[Int] {
     stack.push(i)
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (stock span):
       #|Stack holds indices with strictly greater prices, so the top is the
       #|nearest previous greater day for the current index.
@@ -363,7 +363,7 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
     stack.push(i)
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (left distances):
       #|Stack stores indices with strictly increasing values for [0, i), so
       #|the top is the nearest previous smaller element.
@@ -402,7 +402,7 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
     result
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (sum mins):
       #|result equals the sum of contributions from indices in [0, i). Each
       #|contribution counts subarrays where arr[i] is the minimum.

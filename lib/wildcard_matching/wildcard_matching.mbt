@@ -28,7 +28,7 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
     }
   } where {
     proof_invariant: j >= 1 && j <= m + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (init dp):
       #|dp[j] is true iff pattern[0..j) consists only of '*' characters.
       #|MAINTENANCE:
@@ -55,7 +55,7 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
       prev
     } where {
       proof_invariant: j >= 1 && j <= m + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (row update):
         #|dp[0..j) reflects matches for text[0..i) and pattern[0..j).
         #|prev stores the old dp[j-1] (diagonal) from the previous row.
@@ -67,7 +67,7 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
     }
   } where {
     proof_invariant: i >= 1 && i <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (outer DP):
       #|dp encodes matches for text[0..i) against all pattern prefixes.
       #|MAINTENANCE:

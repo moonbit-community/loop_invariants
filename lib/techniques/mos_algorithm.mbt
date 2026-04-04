@@ -15,7 +15,7 @@ fn mo_isqrt(n : Int) -> Int {
     continue next
   } where {
     proof_invariant: x > 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (integer sqrt):
       #|x is a positive estimate for sqrt(n); the sequence stays positive and
       #|moves toward a fixed point.
@@ -82,7 +82,7 @@ fn mos_algorithm_range_sum(
       (r, s)
     } where {
       proof_invariant: r >= curr_r && r <= qr,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (expand right):
         #|s equals sum(arr[curr_l..r)); the range grows to the right.
         #|MAINTENANCE:
@@ -99,7 +99,7 @@ fn mos_algorithm_range_sum(
       (r, s)
     } where {
       proof_invariant: r >= qr && r <= curr_r2,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (shrink right):
         #|s equals sum(arr[curr_l..r)); the range shrinks from the right.
         #|MAINTENANCE:
@@ -116,7 +116,7 @@ fn mos_algorithm_range_sum(
       (l, s)
     } where {
       proof_invariant: l >= curr_l && l <= ql,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (shrink left):
         #|s equals sum(arr[l..curr_r3)); the range shrinks from the left.
         #|MAINTENANCE:
@@ -133,7 +133,7 @@ fn mos_algorithm_range_sum(
       (l, s)
     } where {
       proof_invariant: l >= ql && l <= curr_l2,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (expand left):
         #|s equals sum(arr[l..curr_r3)); the range grows to the left.
         #|MAINTENANCE:
@@ -148,7 +148,7 @@ fn mos_algorithm_range_sum(
     ()
   } where {
     proof_invariant: curr_l >= 0 && curr_r >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (mo main loop):
       #|curr_sum = sum(arr[curr_l..curr_r)) and results are filled for all
       #|queries in query_order[0..i).
@@ -229,7 +229,7 @@ fn SqrtDecomposition::query_min(
     result
   } where {
     proof_invariant: i >= l && i <= r,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (range min):
       #|result = min(arr[l..i)); indices [i..r) remain to be processed.
       #|MAINTENANCE:
@@ -314,7 +314,7 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
       best
     } where {
       proof_invariant: best >= 0 && best_freq >= 0,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (find mode):
         #|best/best_freq is the most frequent value in [0..i).
         #|MAINTENANCE:
@@ -385,7 +385,7 @@ fn BlockSum::query_sum(self : BlockSum, l : Int, r : Int) -> Int {
     result
   } where {
     proof_invariant: i >= l && i <= r,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (range sum):
       #|result = sum(arr[l..i)); indices [i..r) remain.
       #|MAINTENANCE:
@@ -445,7 +445,7 @@ fn MoUnionFind::find_mo(self : MoUnionFind, x : Int) -> Int {
     curr
   } where {
     proof_invariant: curr >= 0 && curr < self.parent.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (find with compression):
       #|curr is on the path from x to the root; parent pointers remain valid.
       #|MAINTENANCE:
@@ -615,7 +615,7 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
     centroid
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (find centroid):
       #|All nodes in order[0..i) have been checked; centroid holds any found.
       #|MAINTENANCE:
@@ -753,7 +753,7 @@ fn BinaryLifting::lca_binary_lifting(
     u
   } where {
     proof_invariant: u >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (lift to depth):
       #|After processing bits < k, u has been lifted by those bits of diff.
       #|MAINTENANCE:

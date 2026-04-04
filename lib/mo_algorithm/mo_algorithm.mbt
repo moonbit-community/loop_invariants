@@ -80,7 +80,7 @@ fn max_element(arr : Array[Int]) -> Int {
     mx
   } where {
     proof_invariant: i >= 0 && i <= arr.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (max scan):
       #|mx equals the maximum value in arr[0..i).
       #|MAINTENANCE:
@@ -144,7 +144,7 @@ fn MoDistinct::process_queries(
     mo_queries.push({ l, r, idx: i })
   } where {
     proof_invariant: i >= 0 && i <= q,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (query prep):
       #|mo_queries contains converted queries for indices [0, i), preserving
       #|their original positions in idx.
@@ -201,7 +201,7 @@ fn MoDistinct::process_queries(
     results[query.idx] = self.distinct
   } where {
     proof_invariant: i >= 0 && i <= q,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (process queries):
       #|Before processing query i, curr_l..curr_r matches the previous query
       #|range and distinct reflects counts within that range.
@@ -261,7 +261,7 @@ fn MoSum::process_queries(
     mo_queries.push({ l, r, idx: i })
   } where {
     proof_invariant: i >= 0 && i <= q,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (query prep):
       #|mo_queries contains converted queries for indices [0, i), preserving
       #|their original positions in idx.
@@ -307,7 +307,7 @@ fn MoSum::process_queries(
     results[query.idx] = self.sum
   } where {
     proof_invariant: i >= 0 && i <= q,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (process sums):
       #|curr_l..curr_r matches the previous query range, and sum equals the
       #|sum of arr[curr_l..curr_r].

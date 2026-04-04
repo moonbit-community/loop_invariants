@@ -64,7 +64,7 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
     self.level[i] = -1
   } where {
     proof_invariant: i >= 0 && i <= self.n && self.level.length() == self.n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (level reset):
       #|level[0..i) have been cleared to -1 for the next BFS layer build.
       #|MAINTENANCE:
@@ -85,7 +85,7 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
       }
     } where {
       proof_invariant: i >= 0 && i <= self.adj[u].length() && self.level[u] >= 0,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (BFS edge scan):
         #|Edges adj[u][0..i) have been scanned. Any vertex reachable from u via
         #|a residual edge has been assigned its correct BFS level and enqueued.
@@ -139,7 +139,7 @@ fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
       self.iter[i] = 0
     } where {
       proof_invariant: i >= 0 && i <= self.n && self.iter.length() == self.n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (iter reset):
         #|iter[0..i) are reset so DFS starts at edge 0 for those vertices.
         #|MAINTENANCE:
@@ -155,7 +155,7 @@ fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
       flow
     } where {
       proof_invariant: flow >= 0L,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (blocking flow augmentation):
         #|flow equals the total amount sent so far. Each DFS call augments along
         #|the current level graph, preserving feasibility and increasing flow.
@@ -191,7 +191,7 @@ fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] 
       proof_invariant: i >= 0 &&
       i <= self.adj[u].length() &&
       visited.length() == self.n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (residual BFS edges):
         #|Edges adj[u][0..i) are scanned; any vertex reachable by a residual edge
         #|from u is marked visited and enqueued.
@@ -231,7 +231,7 @@ pub fn min_cut_st(
     }
   } where {
     proof_invariant: i >= 0 && i <= edges.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (edge load):
       #|All edges in edges[0..i) that are valid (in range, non-self-loop, cap>0)
       #|have been inserted into the flow network.

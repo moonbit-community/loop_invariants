@@ -7,13 +7,13 @@
 enum Node {
   Leaf(value~ : Int)
   Branch(left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct Fenwick {
   root : Node
   n : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn build_zero(l : Int, r : Int) -> Node {
@@ -105,7 +105,7 @@ pub fn add(fw : Fenwick, idx : Int, delta : Int) -> Fenwick {
   } where {
     proof_invariant: i >= 1 && i <= size,
     proof_invariant: tree_shape(tree, size),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Fenwick update):
       #|tree stores the original BIT with delta applied to all visited indices.
       #|MAINTENANCE:
@@ -134,7 +134,7 @@ pub fn prefix_sum(fw : Fenwick, idx : Int) -> Int {
   } where {
     proof_invariant: i >= 0 && i <= size,
     proof_invariant: tree_shape(fw.root, size),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Prefix sum accumulation):
       #|acc equals the sum of BIT blocks already traversed for the prefix.
       #|MAINTENANCE:

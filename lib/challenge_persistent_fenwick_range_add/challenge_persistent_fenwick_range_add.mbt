@@ -7,20 +7,20 @@
 enum Node {
   Leaf(value~ : Int)
   Branch(left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 struct Fenwick {
   root : Node
   n : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct RangeFenwick {
   bit1 : Fenwick
   bit2 : Fenwick
   n : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn build_zero(l : Int, r : Int) -> Node {
@@ -84,7 +84,7 @@ fn add_point(bit : Fenwick, idx : Int, delta : Int) -> Fenwick {
     }
   } where {
     proof_invariant: i >= 1 && i <= bit.n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (BIT add):
       #|tree reflects delta applied to all visited indices so far.
       #|MAINTENANCE:
@@ -106,7 +106,7 @@ fn prefix_sum(bit : Fenwick, idx : Int) -> Int {
     }
   } where {
     proof_invariant: i >= 0 && i <= bit.n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (BIT prefix):
       #|acc equals the sum of BIT nodes already traversed.
       #|MAINTENANCE:

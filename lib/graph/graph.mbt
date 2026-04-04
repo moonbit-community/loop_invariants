@@ -57,7 +57,7 @@ fn topological_sort(graph : Array[Array[Int]]) -> Array[Int]? {
     }
   } where {
     proof_invariant: head >= 0 && head <= queue.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Queue processing):
       #|head points at the next vertex to process. All vertices in queue[0..head)
       #|have been removed and appended to result, while queue[head..] contains
@@ -71,7 +71,7 @@ fn topological_sort(graph : Array[Array[Int]]) -> Array[Int]? {
       #|vertex has been processed and no further work remains.
     ),
     proof_invariant: result.length() == head,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Progress):
       #|result mirrors the processed prefix of the queue, so result.length()
       #|tracks how many vertices have been popped and fixed in order.
@@ -82,7 +82,7 @@ fn topological_sort(graph : Array[Array[Int]]) -> Array[Int]? {
       #|At loop exit, result length equals the number of processed vertices.
     ),
     proof_invariant: head >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 3 (Topological property):
       #|For all u in result[0..head), all edges u→v have been "removed"
       #|(v's in-degree decremented). Moreover, result is a valid partial
@@ -185,7 +185,7 @@ fn dijkstra(graph : Array[Array[(Int, Int)]], source : Int) -> Array[Int] {
         }
       } where {
         proof_invariant: i >= 0 && i <= n,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Min scan):
           #|After scanning indices [0..i), min_vertex is the unvisited vertex
           #|with the smallest dist among those scanned, and min_dist is its
@@ -217,7 +217,7 @@ fn dijkstra(graph : Array[Array[(Int, Int)]], source : Int) -> Array[Int] {
     }
   } where {
     proof_invariant: count >= 0 && count <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Progress):
       #|Each iteration selects one new unvisited vertex u and marks it visited,
       #|so count equals the number of finalized vertices. If no such u exists,
@@ -230,7 +230,7 @@ fn dijkstra(graph : Array[Array[(Int, Int)]], source : Int) -> Array[Int] {
       #|remains (u == -1).
     ),
     proof_invariant: count >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Dijkstra's correctness):
       #|For all visited vertices u: dist[u] = shortest path from source to u.
       #|
@@ -409,7 +409,7 @@ fn bellman_ford(
     }
   } where {
     proof_invariant: i >= 0 && i <= n - 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Bellman-Ford correctness):
       #|After i iterations, dist[v] ≤ shortest path using ≤ i edges.
       #|
@@ -517,7 +517,7 @@ fn floyd_warshall(
           }
         } where {
           proof_invariant: j >= 0 && j <= n,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (Column update):
             #|After processing columns [0..j), dist[i][c] is the shortest path
             #|from i to c using intermediates from {0..k} for all c < j.
@@ -530,7 +530,7 @@ fn floyd_warshall(
         }
       } where {
         proof_invariant: i >= 0 && i <= n,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Row update):
           #|After processing rows [0..i), every dist[r][*] with r < i has been
           #|updated to allow intermediate vertex k.
@@ -545,7 +545,7 @@ fn floyd_warshall(
     }
   } where {
     proof_invariant: k >= 0 && k <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Floyd-Warshall DP):
       #|After processing vertices 0, 1, ..., k-1 as intermediates:
       #|dist[i][j] = shortest path from i to j using only vertices
@@ -618,7 +618,7 @@ fn sort_edge_tuples(edges : Array[(Int, Int, Int)]) -> Unit {
       }
     } where {
       proof_invariant: j >= -1 && j < i,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Insertion scan):
         #|The subarray edges[j+1..i] contains elements from the original
         #|edges[0..i) that are strictly heavier than key_weight, shifted
@@ -637,7 +637,7 @@ fn sort_edge_tuples(edges : Array[(Int, Int, Int)]) -> Unit {
     edges[insert_pos] = key
   } where {
     proof_invariant: i >= 1 && i <= edges.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Insertion sort):
       #|edges[0..i) is sorted by weight, and edges[i] is inserted into its
       #|correct position by shifting larger elements one step to the right.
@@ -678,7 +678,7 @@ fn kruskal(
     }
   } where {
     proof_invariant: i >= 0 && i <= edges.length() && mst.length() <= n - 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Kruskal's cut property):
       #|At each step, mst contains a subset of some MST.
       #|

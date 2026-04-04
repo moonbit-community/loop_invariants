@@ -63,7 +63,7 @@ pub fn Dinic::max_flow(self : Dinic, source : Int, sink : Int) -> Int64 {
       flow
     } where {
       proof_invariant: flow >= 0L,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (blocking flow accumulation):
         #|  flow = total flow pushed so far.
         #|  Each positive DFS augments along a level-respecting path.

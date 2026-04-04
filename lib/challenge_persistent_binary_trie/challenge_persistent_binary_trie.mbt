@@ -7,7 +7,7 @@
 pub enum Node {
   Empty
   Node(count~ : Int, zero~ : Node, one~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Create an empty binary trie.

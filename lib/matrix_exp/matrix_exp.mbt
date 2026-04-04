@@ -81,7 +81,7 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
         sum
       } where {
         proof_invariant: k >= 0 && k <= self.cols,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Dot product):
           #|sum equals the partial dot product
           #|  sum_{t < k} self[i,t] * other[t,j] (mod MATRIX_MOD).
@@ -110,7 +110,7 @@ fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
         sum
       } where {
         proof_invariant: k >= 0 && k <= self.cols,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Dot product):
           #|sum equals the partial dot product sum_{t < k} self[i,t] * other[t,j].
           #|MAINTENANCE:
@@ -141,7 +141,7 @@ fn Matrix::power(self : Matrix, exp : Int64) -> Matrix {
     result
   } where {
     proof_invariant: e >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Binary exponentiation):
       #|result * base^e = M^exp holds at each step. When e is odd we fold one
       #|factor of base into result, then square base and halve e. This preserves
@@ -243,7 +243,7 @@ fn solve_recurrence(
     ans
   } where {
     proof_invariant: j >= 0 && j <= k,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (recurrence sum):
       #|ans is the partial sum of result[0][t] * initial[k-1-t] for t in [0,j).
       #|MAINTENANCE:

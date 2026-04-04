@@ -52,7 +52,7 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
     node.count = node.count + 1
   } where {
     proof_invariant: i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (insert):
       #|node is the trie node reached after processing word[0..i), and every
       #|node along that path has had prefix_count incremented for this word.
@@ -82,7 +82,7 @@ fn Trie::search(self : Trie, word : String) -> Bool {
     node.is_end
   } where {
     proof_invariant: i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (search):
       #|node is reached by following word[0..i) from the root, so all processed
       #|edges exist in the trie.
@@ -110,7 +110,7 @@ fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
     true
   } where {
     proof_invariant: i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (starts_with):
       #|node is the trie node for prefix[0..i), so some word has that prefix.
       #|MAINTENANCE:
@@ -137,7 +137,7 @@ fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
     node.prefix_count
   } where {
     proof_invariant: i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (count_prefix):
       #|node is the trie node for prefix[0..i), and node.prefix_count equals the
       #|number of words that share that prefix.
@@ -214,7 +214,7 @@ fn AhoCorasick::add_pattern(
     self.nodes[node_idx].output = new_output
   } where {
     proof_invariant: i <= n && node_idx >= 0 && node_idx < self.node_count,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (insert pattern):
       #|node_idx is the trie node after reading pattern[0..i), and all edges for
       #|that prefix exist in the automaton.
@@ -245,7 +245,7 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
     back
   } where {
     proof_invariant: c >= 0 && c <= 26,
-    reasoning: (
+    proof_reasoning: (
       #|Scan all alphabet characters to seed the BFS queue.
       #|Each root child discovered is enqueued and assigned fail = 0.
       #|MAINTENANCE:
@@ -254,7 +254,7 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
       #|At c = 26, all root children are initialized.
     ),
     proof_invariant: back >= 0 && back <= 26,
-    reasoning: (
+    proof_reasoning: (
       #|back equals the number of root children enqueued so far.
       #|MAINTENANCE:
       #|Increment back each time a child is enqueued.
@@ -287,7 +287,7 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
       back
     } where {
       proof_invariant: c >= 0 && c <= 26,
-      reasoning: (
+      proof_reasoning: (
         #|Iterate through all outgoing edges of curr across the alphabet.
         #|Each child is enqueued exactly once and gets its failure link set.
         #|MAINTENANCE:
@@ -296,7 +296,7 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
         #|At c = 26, all outgoing edges are processed.
       ),
       proof_invariant: back >= front && back <= self.node_count,
-      reasoning: (
+      proof_reasoning: (
         #|Queue indices maintain a contiguous range of discovered nodes
         #|that will be processed in BFS order.
         #|MAINTENANCE:
@@ -326,7 +326,7 @@ fn AhoCorasick::find_fail_link(
     }
   } where {
     proof_invariant: fail >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (find_fail_link):
       #|fail is a suffix-state candidate for the parent path, and all longer
       #|suffixes have been ruled out as lacking an edge labeled c.
@@ -363,7 +363,7 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[ACMatch] {
     matches
   } where {
     proof_invariant: i <= n && state >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (aho-corasick search):
       #|state is the node for the longest suffix of text[0..i) that is a prefix
       #|of some pattern, and matches contains all occurrences ending at < i.
@@ -389,7 +389,7 @@ fn AhoCorasick::transition(self : AhoCorasick, state_in : Int, c : Int) -> Int {
     }
   } where {
     proof_invariant: state >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (transition):
       #|state is a suffix candidate of state_in's path; we seek the longest
       #|suffix that has an outgoing edge labeled c.
@@ -421,7 +421,7 @@ fn AhoCorasick::collect_matches(
     continue self.nodes[suf].suffix_output
   } where {
     proof_invariant: suf == -1 || suf >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (collect_matches):
       #|All outputs for suffix_output nodes visited so far have been appended to
       #|matches; suf is the next suffix_output node to process.
@@ -490,7 +490,7 @@ fn XORTrie::insert(self : XORTrie, num : Int) -> Unit {
     node.count = node.count + 1
   } where {
     proof_invariant: bit >= -1 && bit < self.bits,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (xor insert):
       #|node corresponds to the prefix num[bits-1..bit+1) in binary, and all
       #|nodes for processed bits exist in the trie.
@@ -538,7 +538,7 @@ fn XORTrie::max_xor(self : XORTrie, num : Int) -> Int {
     result
   } where {
     proof_invariant: bit >= -1 && bit < self.bits,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (xor max):
       #|result stores the XOR value for processed bits [bits-1..bit+1), and
       #|node is the trie node reached by the chosen path so far.
@@ -624,7 +624,7 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
     // (already guaranteed by loop invariant)
 
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|i counts how many characters of word have been inserted.
       #|node is the trie node representing prefix word[0..i) in the new version.
       #|MAINTENANCE:
@@ -633,7 +633,7 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
       #|At i = n, the full word has been inserted.
     ),
     proof_invariant: node.version == new_version,
-    reasoning: (
+    proof_reasoning: (
       #|When traversing a child from an older version, we clone it first.
       #|Thus the path we update is fully owned by the new version.
       #|MAINTENANCE:
@@ -669,7 +669,7 @@ fn PersistentTrie::search_version(
         node.is_end
       } where {
         proof_invariant: i <= n,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (persistent search):
           #|node is the trie node for word[0..i) in the specified version.
           #|MAINTENANCE:
@@ -725,7 +725,7 @@ fn common_prefix_length(s1 : String, s2 : String) -> Int {
     n
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|chars1[0..i) == chars2[0..i) holds for all processed positions.
       #|MAINTENANCE:
       #|Advance i while characters match.
@@ -747,7 +747,7 @@ fn RadixNode::find_child(self : RadixNode, c : Char) -> (Int, RadixNode?) {
     (-1, None)
   } where {
     proof_invariant: i >= 0 && i <= self.children.length(),
-    reasoning: (
+    proof_reasoning: (
       #|No child with first_char == c exists in indices [0, i).
       #|MAINTENANCE:
       #|Check child i and advance if it doesn't match.
@@ -843,7 +843,7 @@ fn edge_matches(
     true
   } where {
     proof_invariant: i >= 0 && i <= edge_len,
-    reasoning: (
+    proof_reasoning: (
       #|chars[pos..pos+i) matches edge_chars[0..i) for all processed i.
       #|MAINTENANCE:
       #|Advance i while characters match.
@@ -888,7 +888,7 @@ fn RadixTree::search(self : RadixTree, word : String) -> Bool {
     node.is_end
   } where {
     proof_invariant: pos <= chars.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (radix search):
       #|pos characters of word have been matched, and node is the radix node for
       #|word[0..pos), respecting compressed edges.

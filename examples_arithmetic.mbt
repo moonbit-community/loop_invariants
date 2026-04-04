@@ -15,7 +15,7 @@ fn div_mod_nonneg(n : Int, d : Int) -> (Int, Int) {
     }
   } where {
     proof_invariant: n == q * d + r,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (division identity):
       #|n == q * d + r holds with r as the remaining remainder.
       #|MAINTENANCE:
@@ -24,7 +24,7 @@ fn div_mod_nonneg(n : Int, d : Int) -> (Int, Int) {
       #|When r < d, (q, r) is the quotient-remainder pair.
     ),
     proof_invariant: r >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (non-negative remainder):
       #|r starts at n and decreases by d; we stop before r would go negative.
       #|MAINTENANCE:
@@ -73,7 +73,7 @@ fn horner_eval(coeffs : ArrayView[Int], x : Int) -> Int {
     }
   } where {
     proof_invariant: 1 <= i && i <= coeffs.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (progress):
       #|i is the number of coefficients folded into acc, within [1..len].
       #|MAINTENANCE:
@@ -82,7 +82,7 @@ fn horner_eval(coeffs : ArrayView[Int], x : Int) -> Int {
       #|At i = coeffs.length(), all coefficients are processed.
     ),
     proof_invariant: acc == poly_prefix(coeffs, i, x),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Horner):
       #|acc equals the value of the polynomial prefix of length i at x.
       #|MAINTENANCE:

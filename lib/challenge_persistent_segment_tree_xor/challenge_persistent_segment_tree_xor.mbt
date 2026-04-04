@@ -7,7 +7,7 @@
 pub enum Node {
   Leaf(xor~ : Int)
   Branch(xor~ : Int, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn node_xor(node : Node) -> Int {

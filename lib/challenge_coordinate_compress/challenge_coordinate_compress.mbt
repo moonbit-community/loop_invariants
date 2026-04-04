@@ -25,7 +25,7 @@ fn lower_bound_fixed(
     proof_invariant: hi <= arr.length(),
     proof_invariant: all_less_before(arr, target, lo),
     proof_invariant: all_geq_from(arr, target, hi),
-    reasoning: (
+    proof_reasoning: (
       #|This is the package's proof-carrying lower-bound kernel.
       #|Every index before `lo` is already known to be `< target`, and every
       #|index from `hi` onward is already known to be `>= target`.

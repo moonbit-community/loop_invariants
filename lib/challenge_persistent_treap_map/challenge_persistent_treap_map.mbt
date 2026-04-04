@@ -14,7 +14,7 @@ pub enum TreapMap[K, V] {
     left~ : TreapMap[K, V],
     right~ : TreapMap[K, V]
   )
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Return the number of entries in the map.

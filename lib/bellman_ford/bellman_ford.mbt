@@ -158,7 +158,7 @@ pub fn BellmanFord::get_path(self : BellmanFord, target : Int) -> Array[Int]? {
     continue self.parent[current]
   } where {
     proof_invariant: current >= -1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (path traversal):
       #|path contains vertices from target back to current's predecessor.
       #|MAINTENANCE:

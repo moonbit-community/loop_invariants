@@ -7,7 +7,7 @@
 pub enum Avl[T] {
   Empty
   Node(key~ : T, height~ : Int, left~ : Avl[T], right~ : Avl[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn max2(a : Int, b : Int) -> Int {
@@ -176,7 +176,7 @@ pub fn[T : Compare] contains(t : Avl[T], key : T) -> Bool {
   } where {
     proof_invariant: avl_valid(cur, lo, hi),
     proof_invariant: within_bounds(key, lo, hi),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (AVL search bounds):
       #|cur is a valid AVL subtree respecting (lo, hi), and key respects bounds.
       #|MAINTENANCE:
@@ -208,7 +208,7 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Avl[T] {
     proof_invariant: i >= 0 && i <= n,
     proof_invariant: size(tree) == i,
     proof_invariant: avl_valid(tree, None, None),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (AVL build):
       #|tree contains the first i elements and maintains AVL balance.
       #|MAINTENANCE:

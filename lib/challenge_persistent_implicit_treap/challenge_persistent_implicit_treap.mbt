@@ -13,7 +13,7 @@ pub enum Treap[T] {
     left~ : Treap[T],
     right~ : Treap[T]
   )
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Return the number of elements in the treap.

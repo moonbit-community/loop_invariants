@@ -25,7 +25,7 @@ pub fn binary_search(
     proof_invariant: all_less_before(xs, key, lo),
     proof_invariant: all_greater_from(xs, key, hi),
     proof_yield: res => binary_search_ok(xs, key, res),
-    reasoning: (
+    proof_reasoning: (
       #| This is the formal counterpart of the repo's binary-search invariant:
       #| `[lo, hi)` is the only remaining candidate window.
       #|

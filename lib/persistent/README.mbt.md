@@ -110,7 +110,7 @@ We can show version branching without any mutation.
 enum PStack[T] {
   Nil
   Cons(T, PStack[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] PStack::push(self : PStack[T], x : T) -> PStack[T] {

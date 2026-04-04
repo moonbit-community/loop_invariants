@@ -28,7 +28,7 @@ pub fn gcd(a : Int, b : Int) -> Int {
 pub enum Node {
   Leaf(g~ : Int)
   Branch(g~ : Int, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn node_gcd(node : Node) -> Int {

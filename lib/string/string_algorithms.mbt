@@ -61,7 +61,7 @@ fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= 1 && i <= n && l >= 0 && r >= l && r <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Bounds and progress):
       #|i advances left-to-right, and [l, r) always denotes a valid Z-box
       #|within the string. This ensures every access into s is in range and
@@ -72,7 +72,7 @@ fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
       #|At i == n, all Z-values have been computed.
     ),
     proof_invariant: l < i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Z-box property):
       #|If r > l, then s[l..r) == s[0..r-l).
       #|
@@ -188,7 +188,7 @@ fn manacher(s : ArrayView[Char]) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= 0 && i <= t_len && c >= 0 && c < t_len && r >= c,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 1 (Bounds and center validity):
       #|c and r identify the rightmost palindrome seen so far, and i never
       #|exceeds t_len. This keeps all computed radii inside the transformed
@@ -199,7 +199,7 @@ fn manacher(s : ArrayView[Char]) -> Array[Int] {
       #|At i == t_len, all radii are computed.
     ),
     proof_invariant: c <= i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT 2 (Palindrome boundary):
       #|r is the rightmost boundary we've seen: t[c-p[c]..c+p[c]+1) is
       #|a palindrome, and r = c + p[c].
@@ -264,7 +264,7 @@ pub fn longest_palindrome_range(s : ArrayView[Char]) -> (Int, Int) {
     best
   } where {
     proof_invariant: i >= 0 && i <= p.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (max scan):
       #|best is (center, radius) of the longest palindrome in p[0..i).
       #|MAINTENANCE:
@@ -328,7 +328,7 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= 0 && i <= m - 1 && acc >= 0 && acc < modulus,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Base power):
       #|acc = base^i mod modulus after i steps, so when i reaches m-1,
       #|acc equals base^(m-1) mod modulus. This factor is used to remove the
@@ -358,7 +358,7 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
     ph < modulus &&
     th >= 0 &&
     th < modulus,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Polynomial hash):
       #|hash(s[0..i)) = Σ(s[j] * base^(i-1-j)) mod modulus
       #|
@@ -386,7 +386,7 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
           match_found
         } where {
           proof_invariant: j >= 0 && j <= m,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (Verification scan):
             #|After j comparisons, match_found is true iff the prefix
             #|text[i..i+j) equals pattern[0..j). Any mismatch sets it to false
@@ -418,7 +418,7 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= 0 && i <= n - m + 1 && th >= 0 && th < modulus,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Rolling hash correctness):
       #|th = hash(text[i..i+m))
       #|
@@ -501,7 +501,7 @@ pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
         }
       } where {
         proof_invariant: j >= 1 && j <= n + 1,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Row update):
           #|After processing columns [1..j), curr[t] for t < j equals
           #|LCS(s1[0..i), s2[0..t)). The recurrence uses prev (row i-1)
@@ -518,7 +518,7 @@ pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
     }
   } where {
     proof_invariant: i >= 1 && i <= m + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (LCS DP):
       #|After processing row i, prev[j] = LCS(s1[0..i), s2[0..j)).
       #|
@@ -618,7 +618,7 @@ fn booth_smallest_rotation(s : ArrayView[Char]) -> Int {
         }
       } where {
         proof_invariant: jj >= -1,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Failure link walk):
           #|jj represents the length of the longest prefix of the current
           #|candidate rotation s[k..] that matches a suffix ending at i-1.
@@ -651,7 +651,7 @@ fn booth_smallest_rotation(s : ArrayView[Char]) -> Int {
     }
   } where {
     proof_invariant: i >= 1 && i <= 2 * n && k >= 0 && k < n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Booth's algorithm):
       #|k is the starting position of the current best candidate for
       #|the lexicographically smallest rotation.

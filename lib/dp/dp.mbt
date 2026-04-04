@@ -41,7 +41,7 @@ fn knapsack_01(
     }
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dp[w] = max value achievable with capacity w using items [0..i)
       #|
       #|BASE CASE (i = 0): dp[w] = 0 for all w (no items considered)
@@ -95,7 +95,7 @@ fn knapsack_unbounded(
       }
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Item scan for fixed w):
         #|After processing items[0..i), dp[w] equals the best value for
         #|capacity w using only those items with unlimited multiplicity.
@@ -112,7 +112,7 @@ fn knapsack_unbounded(
     }
   } where {
     proof_invariant: w >= 1 && w <= capacity + 1,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dp[0..w) contains optimal values for capacities 0 to w-1
       #|
       #|For each capacity w, we try all items and take the best option.
@@ -163,7 +163,7 @@ fn lis_binary_search(nums : ArrayView[Int]) -> Int {
     }
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT:
       #|  - tails[j] = smallest ending element of LIS of length j+1 in nums[0..i)
       #|  - tails is strictly increasing
@@ -197,7 +197,7 @@ fn lower_bound_lis(arr : ArrayView[Int], target : Int) -> Int {
     lo
   } where {
     proof_invariant: lo >= 0 && hi >= 0 && lo <= hi + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Lower bound):
       #|All indices in [0..lo) satisfy arr[idx] < target, and all indices
       #|in [hi..len) satisfy arr[idx] >= target. The loop shrinks the
@@ -241,7 +241,7 @@ fn coin_change_min(coins : ArrayView[Int], amount : Int) -> Int {
       }
     } where {
       proof_invariant: i >= 0 && i <= coins.length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Coin scan for amount a):
         #|After processing coins[0..i), dp[a] is the minimum number of coins
         #|needed to form amount a using those coins. Each candidate uses
@@ -254,7 +254,7 @@ fn coin_change_min(coins : ArrayView[Int], amount : Int) -> Int {
     }
   } where {
     proof_invariant: a >= 1 && a <= amount + 1,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dp[0..a) contains minimum coins needed for amounts 0 to a-1
       #|
       #|For amount a, we try each coin and take the minimum.
@@ -295,7 +295,7 @@ fn coin_change_ways(coins : ArrayView[Int], amount : Int) -> Int {
       dp[a] = dp[a] + dp[a - coin]
     } where {
       proof_invariant: a >= coin && a <= amount + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (ways inner):
         #|dp[0..a) already includes combinations using coins[0..i], including coin i.
         #|MAINTENANCE:
@@ -306,7 +306,7 @@ fn coin_change_ways(coins : ArrayView[Int], amount : Int) -> Int {
     }
   } where {
     proof_invariant: i >= 0 && i <= coins.length(),
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dp[a] = number of ways to make amount a using coins[0..i]
       #|
       #|By processing coins one at a time (outer loop on coins),
@@ -357,7 +357,7 @@ fn longest_common_subsequence(s1 : String, s2 : String) -> Int {
       }
     } where {
       proof_invariant: j >= 1 && j <= n + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Row fill):
         #|After processing columns [1..j), curr[t] equals LCS length for
         #|s1[0..i) vs s2[0..t). Each update uses prev[j], prev[j-1],
@@ -374,7 +374,7 @@ fn longest_common_subsequence(s1 : String, s2 : String) -> Int {
     }
   } where {
     proof_invariant: i >= 1 && i <= m + 1,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: prev[j] = LCS(i-1, j) for all j
       #|
       #|After processing row i:
@@ -422,7 +422,7 @@ fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
     max_so_far
   } where {
     proof_invariant: i >= 1 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT:
       #|  - max_ending_here = max sum of subarray ending at index i-1
       #|  - max_so_far = max sum of any subarray in nums[0..i)
@@ -473,7 +473,7 @@ fn house_robber(nums : ArrayView[Int]) -> Int {
     prev1
   } where {
     proof_invariant: i >= 2 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT:
       #|  - prev2 = dp[i-2] = max sum robbing from houses [0..i-2]
       #|  - prev1 = dp[i-1] = max sum robbing from houses [0..i-1]
@@ -515,7 +515,7 @@ fn unique_paths(m : Int, n : Int) -> Int {
       dp[j] = dp[j] + dp[j - 1]
     } where {
       proof_invariant: j >= 1 && j <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (row paths):
         #|dp[1..j) stores paths to row i for columns already updated.
         #|MAINTENANCE:
@@ -526,7 +526,7 @@ fn unique_paths(m : Int, n : Int) -> Int {
     }
   } where {
     proof_invariant: i >= 1 && i <= m,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: After row i, dp[j] = number of paths to cell (i, j)
       #|
       #|First row is all 1s (only one path: all right moves)
@@ -580,7 +580,7 @@ fn min_path_sum(grid : Array[Array[Int]]) -> Int {
         (if from_above < from_left { from_above } else { from_left })
     } where {
       proof_invariant: j >= 1 && j <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Cell update):
         #|dp[j] is updated to the minimum path sum to cell (i, j). Before
         #|the update, dp[j] stores the value from the row above (i-1, j),
@@ -594,7 +594,7 @@ fn min_path_sum(grid : Array[Array[Int]]) -> Int {
     }
   } where {
     proof_invariant: i >= 1 && i <= m,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dp[j] = minimum path sum to cell (i, j)
       #|
       #|Each cell's min path = its value + min(path from above, path from left)
@@ -641,7 +641,7 @@ fn word_break(s : String, word_dict : Array[String]) -> Bool {
       }
     } where {
       proof_invariant: w >= 0 && w <= words.length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Dictionary scan):
         #|After processing words[0..w), dp[i] is true iff some word in that
         #|prefix completes a valid segmentation of s[0..i). If none match,
@@ -654,7 +654,7 @@ fn word_break(s : String, word_dict : Array[String]) -> Bool {
     }
   } where {
     proof_invariant: i >= 1 && i <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dp[0..i) correctly indicates segmentability
       #|
       #|dp[i] = true iff s[0..i) can be segmented into dictionary words
@@ -682,7 +682,7 @@ fn matches_word(chars : Array[Char], start : Int, word : Array[Char]) -> Bool {
     true
   } where {
     proof_invariant: i >= 0 && i <= word_len,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Prefix match):
       #|All characters in word[0..i) match chars[start..start+i). On the
       #|first mismatch we return false; if we reach the end, the word matches.
@@ -734,7 +734,7 @@ fn min_palindrome_cuts(s : String) -> Int {
       }
     } where {
       proof_invariant: i >= 0 && i <= n - length + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Palindrome table):
         #|After processing starts [0..i), all substrings of the current
         #|length have been classified. Each entry uses the shorter
@@ -747,7 +747,7 @@ fn min_palindrome_cuts(s : String) -> Int {
     }
   } where {
     proof_invariant: length >= 2 && length <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Length order):
       #|Before processing length, all palindromes of smaller lengths are
       #|finalized. This ensures the length-2 and length>2 cases have the
@@ -777,7 +777,7 @@ fn min_palindrome_cuts(s : String) -> Int {
         }
       } where {
         proof_invariant: j >= 1 && j <= i,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Last cut):
           #|After processing j in [1..i), dp[i] is the minimum of
           #|dp[j] + 1 over all starts j where s[j..i) is a palindrome.
@@ -791,7 +791,7 @@ fn min_palindrome_cuts(s : String) -> Int {
     }
   } where {
     proof_invariant: i >= 1 && i <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dp[0..i) contains minimum cuts for prefixes
       #|
       #|dp[i] = min over j < i where s[j..i) is palindrome of (dp[j] + 1)
@@ -845,7 +845,7 @@ fn egg_drop(eggs : Int, floors : Int) -> Int {
     trials - 1
   } where {
     proof_invariant: trials >= 1,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: dp[k] = max floors checkable with k eggs and trials-1 trials
       #|
       #|We increment trials until dp[eggs] >= floors.
@@ -903,7 +903,7 @@ fn longest_palindromic_subsequence(s : String) -> Int {
       }
     } where {
       proof_invariant: i >= 0 && i <= n - length + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Substring DP):
         #|After processing starts [0..i), dp[s][s+length-1] holds the LPS
         #|length for all substrings of the current length. Each update uses
@@ -916,7 +916,7 @@ fn longest_palindromic_subsequence(s : String) -> Int {
     }
   } where {
     proof_invariant: length >= 2 && length <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Length order):
       #|All substrings shorter than length are already computed, so the
       #|recurrence for length uses only known values. The rule matches:
@@ -972,7 +972,7 @@ fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
         }
       } where {
         proof_invariant: k >= i && k <= j,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (Split scan):
           #|After processing k in [i..j), dp[i][j] is the minimum cost among
           #|all splits up to k. Each split considers multiplying the left
@@ -985,7 +985,7 @@ fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
       }
     } where {
       proof_invariant: i >= 1 && i <= n - len + 2,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Chain start):
         #|For the current chain length, dp[i][j] is computed for every
         #|start position i, so all chains of this length are covered.
@@ -997,7 +997,7 @@ fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
     }
   } where {
     proof_invariant: len >= 2 && len <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Length order):
       #|All chains shorter than len have their optimal costs computed, so
       #|each dp[i][j] for length len can safely use dp on smaller subchains.

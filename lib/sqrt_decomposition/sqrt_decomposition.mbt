@@ -98,7 +98,7 @@ pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
       sum
     } where {
       proof_invariant: i >= l && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Single block sum):
         #|sum equals the sum of arr[l..i). Each step adds arr[i], so after
         #|i reaches r+1 we have the full sum for [l, r].
@@ -116,7 +116,7 @@ pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
       sum
     } where {
       proof_invariant: i >= l && i <= (block_l + 1) * self.block_size,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Left partial sum):
         #|sum equals the sum of arr[l..i) within the left boundary block.
         #|After reaching the block boundary, the left partial block is fully
@@ -134,7 +134,7 @@ pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
       sum
     } where {
       proof_invariant: b >= block_l + 1 && b <= block_r,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Complete blocks):
         #|sum already includes the left partial block and complete blocks
         #|up to b-1. Each iteration adds the precomputed sum of block b.
@@ -151,7 +151,7 @@ pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
       sum
     } where {
       proof_invariant: i >= block_r * self.block_size && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Right partial sum):
         #|sum includes left partial and complete blocks, plus arr from the
         #|right boundary block prefix. After i reaches r+1, the full range
@@ -240,7 +240,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
       result
     } where {
       proof_invariant: i >= l && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Single block min):
         #|result is the minimum of arr[l..i). Each step compares arr[i]
         #|and updates result, yielding the min over [l, r] at termination.
@@ -259,7 +259,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
       result
     } where {
       proof_invariant: i >= l && i <= (block_l + 1) * self.block_size,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Left partial min):
         #|result is the minimum of arr[l..i) in the left boundary block.
         #|After reaching the boundary, the left partial block is fully scanned.
@@ -276,7 +276,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
       result
     } where {
       proof_invariant: b >= block_l + 1 && b <= block_r,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Complete blocks min):
         #|result is the minimum over the left partial block and complete
         #|blocks up to b-1. Each iteration considers block b's minimum.
@@ -293,7 +293,7 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
       result
     } where {
       proof_invariant: i >= block_r * self.block_size && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Right partial min):
         #|result includes the left partial block, all complete blocks, and the
         #|right block prefix arr[block_r*bs..i). After i reaches r+1, result
@@ -370,7 +370,7 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
       self.blocks[block_l] = self.blocks[block_l] + val
     } where {
       proof_invariant: i >= l && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Same block update):
         #|For indices [l..i), arr has been incremented by val and the block sum
         #|reflects those updates. After i reaches r+1, the entire range in this
@@ -389,7 +389,7 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
       self.blocks[block_l] = self.blocks[block_l] + val
     } where {
       proof_invariant: i >= l && i <= (block_l + 1) * self.block_size,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Left partial update):
         #|After pushing lazy, indices [l..i) are incremented by val and the
         #|block sum is adjusted. This completes the left partial block update.
@@ -411,7 +411,7 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
       self.blocks[b] = self.blocks[b] + val * block_len.to_int64()
     } where {
       proof_invariant: b >= block_l + 1 && b <= block_r,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Complete blocks lazy):
         #|All complete blocks in [block_l+1..b) have their lazy add and block
         #|sum updated. Each iteration updates one full block without touching
@@ -430,7 +430,7 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
       self.blocks[block_r] = self.blocks[block_r] + val
     } where {
       proof_invariant: i >= block_r * self.block_size && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Right partial update):
         #|After pushing lazy for block_r, indices [block_r*bs..i) are updated
         #|and the block sum reflects those changes. After i reaches r+1, the
@@ -458,7 +458,7 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
       sum
     } where {
       proof_invariant: i >= l && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Single block query):
         #|sum equals the sum of arr[l..i) with the block's lazy add applied.
         #|When i reaches r+1, sum is the full range sum.
@@ -475,7 +475,7 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
       sum
     } where {
       proof_invariant: i >= l && i <= (block_l + 1) * self.block_size,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Left partial query):
         #|sum equals the left partial block sum for indices [l..i) with the
         #|lazy add applied. After the boundary, the left partial block is done.
@@ -491,7 +491,7 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
       sum
     } where {
       proof_invariant: b >= block_l + 1 && b <= block_r,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Complete blocks query):
         #|sum includes the left partial block and complete blocks up to b-1.
         #|Each blocks[b] already includes lazy contributions, so adding it is
@@ -508,7 +508,7 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
       sum
     } where {
       proof_invariant: i >= block_r * self.block_size && i <= r + 1,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Right partial query):
         #|sum includes left partial and complete blocks plus the right block
         #|prefix [block_r*bs..i). After i reaches r+1, the full range is covered.

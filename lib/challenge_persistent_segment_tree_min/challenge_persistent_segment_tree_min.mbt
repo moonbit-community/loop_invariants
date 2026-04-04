@@ -7,7 +7,7 @@
 pub enum Node {
   Leaf(min~ : Int)
   Branch(min~ : Int, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn node_min(node : Node) -> Int {

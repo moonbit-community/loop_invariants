@@ -98,7 +98,7 @@ fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
     self.level[i] = -1
   } where {
     proof_invariant: i >= 0 && i <= self.n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (reset levels):
       #|level[0..i) are reset to -1 from the previous BFS phase.
       #|MAINTENANCE:
@@ -126,7 +126,7 @@ fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
       }
     } where {
       proof_invariant: i >= 0 && i <= self.adj[u].length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (bfs edges):
         #|Edges adj[u][0..i) have been scanned; reachable neighbors are leveled.
         #|MAINTENANCE:
@@ -184,7 +184,7 @@ fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
       self.iter[i] = 0
     } where {
       proof_invariant: i >= 0 && i <= self.n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (reset iter):
         #|iter[0..i) are reset for the new level graph.
         #|MAINTENANCE:
@@ -202,7 +202,7 @@ fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
       flow
     } where {
       proof_invariant: flow >= 0L,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (blocking flow):
         #|flow is the total pushed in this phase plus prior phases.
         #|MAINTENANCE:
@@ -234,7 +234,7 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
       }
     } where {
       proof_invariant: i >= 0 && i <= self.adj[u].length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (min-cut BFS edges):
         #|Edges adj[u][0..i) have been scanned for residual reachability.
         #|MAINTENANCE:
@@ -257,7 +257,7 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
         }
       } where {
         proof_invariant: i >= 0 && i <= self.adj[u].length(),
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (cut edges):
           #|Edges adj[u][0..i) have been checked for cut crossings.
           #|MAINTENANCE:
@@ -269,7 +269,7 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
     }
   } where {
     proof_invariant: u >= 0 && u <= self.n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (cut scan):
       #|Vertices [0..u) have been scanned for cut edges.
       #|MAINTENANCE:
@@ -395,7 +395,7 @@ test "max flow min cut" {
     cut_capacity
   } where {
     proof_invariant: i >= 0 && i <= cut.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (cut sum):
       #|cut_capacity equals the sum of cut[0..i) capacities.
       #|MAINTENANCE:

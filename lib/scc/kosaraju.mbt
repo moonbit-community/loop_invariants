@@ -79,7 +79,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
     }
   } where {
     proof_invariant: v >= 0 && v <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (post-order construction):
       #|  Vertices [0..v) are processed. Every visited vertex appears
       #|  in 'order' exactly once, after all its descendants.
@@ -106,7 +106,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       radj[v].push(u) // Reverse: u→v becomes v→u
     } where {
       proof_invariant: j >= 0 && j <= adj[u].length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (per-vertex transpose):
         #|  Edges adj[u][0..j) have been reversed into radj.
         #|
@@ -119,7 +119,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
     }
   } where {
     proof_invariant: u >= 0 && u <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (full transpose):
       #|  All edges from vertices [0..u) are reversed in radj.
       #|
@@ -166,7 +166,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       }
     } where {
       proof_invariant: j >= 0 && j <= adj[u].length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (edge processing):
         #|  Edges adj[u][0..j) checked for SCC crossings.
         #|
@@ -179,7 +179,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
     }
   } where {
     proof_invariant: u >= 0 && u <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (condensation):
       #|  All edges from vertices [0..u) reflected in scc_adj.
       #|
@@ -209,7 +209,7 @@ fn dfs_order(
     }
   } where {
     proof_invariant: i >= 0 && i <= adj[v].length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (DFS traversal):
       #|  Neighbors adj[v][0..i) are processed.
       #|  Their entire subtrees are visited and in 'order'.
@@ -244,7 +244,7 @@ fn dfs_assign(
     }
   } where {
     proof_invariant: i >= 0 && i <= radj[v].length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (SCC assignment):
       #|  Neighbors radj[v][0..i) in the same SCC are assigned.
       #|

@@ -53,7 +53,7 @@ fn max_profit_single(prices : ArrayView[Int]) -> Int {
     }
   } where {
     proof_invariant: 1 <= i && i <= prices.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (progress):
       #|i counts processed prices, so 1 <= i <= prices.length().
       #|MAINTENANCE:
@@ -62,7 +62,7 @@ fn max_profit_single(prices : ArrayView[Int]) -> Int {
       #|At i = prices.length(), all prices are processed.
     ),
     proof_invariant: min_price == min_prefix(prices, i),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (min prefix):
       #|min_price equals the minimum of prices[0..i).
       #|MAINTENANCE:
@@ -71,7 +71,7 @@ fn max_profit_single(prices : ArrayView[Int]) -> Int {
       #|At the end, min_price reflects the global minimum.
     ),
     proof_invariant: best == max_profit_prefix(prices, i),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (best profit):
       #|best is the maximum profit achievable using only prices[0..i).
       #|MAINTENANCE:
@@ -136,7 +136,7 @@ fn is_balanced_parens(chars : ArrayView[Char]) -> Bool {
     }
   } where {
     proof_invariant: 0 <= i && i <= chars.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (progress):
       #|i is the length of the processed prefix, bounded by chars.length().
       #|MAINTENANCE:
@@ -145,7 +145,7 @@ fn is_balanced_parens(chars : ArrayView[Char]) -> Bool {
       #|At i = chars.length(), the entire string is processed.
     ),
     proof_invariant: balance == balance_prefix(chars, i),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (prefix balance):
       #|balance equals the net '(' minus ')' in chars[0..i).
       #|MAINTENANCE:
@@ -154,7 +154,7 @@ fn is_balanced_parens(chars : ArrayView[Char]) -> Bool {
       #|At the end, balance reflects the full-string net balance.
     ),
     proof_invariant: balance >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (non-negative prefix):
       #|balance is never negative for processed prefixes.
       #|MAINTENANCE:

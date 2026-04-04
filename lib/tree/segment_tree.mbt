@@ -714,7 +714,7 @@ fn IterativeSegmentTree::update(
     self.tree[i] = self.tree[2 * i] + self.tree[2 * i + 1]
   } where {
     proof_invariant: i >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: All nodes from leaf to tree[2i] have been updated
       #|
       #|The path from leaf to root has O(log n) nodes.
@@ -763,7 +763,7 @@ fn IterativeSegmentTree::range_sum(
     result
   } where {
     proof_invariant: l >= 0 && r >= 0 && l <= r + 1,
-    reasoning: (
+    proof_reasoning: (
       #|LOOP INVARIANT: result contains the sum of all processed leaves in [ql, qr)
       #|
       #|INSIGHT: At each level, l and r bracket the unprocessed query range.
@@ -872,7 +872,7 @@ fn MaxCountSegmentTree::range_query(
     result
   } where {
     proof_invariant: l >= 0 && r >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (range query):
       #|result combines all segments fully processed so far; [l, r) encodes the
       #|remaining range in the implicit tree.
@@ -975,7 +975,7 @@ fn SegmentTree2D::update(
       self.tree[init_r][2 * j + 1]
   } where {
     proof_invariant: j >= 1 && j <= c / 2,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (update row):
       #|Nodes below j on the column path in row init_r reflect the updated leaf.
       #|MAINTENANCE:
@@ -993,7 +993,7 @@ fn SegmentTree2D::update(
       self.tree[r][j] = self.tree[r][2 * j] + self.tree[r][2 * j + 1]
     } where {
       proof_invariant: j >= 1 && j <= c / 2,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (update inner tree):
         #|For row r, nodes below j on the column path are updated.
         #|MAINTENANCE:
@@ -1004,7 +1004,7 @@ fn SegmentTree2D::update(
     }
   } where {
     proof_invariant: r >= 1 && r <= init_r / 2,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (update outer tree):
       #|Rows below r on the path to the root reflect the updated column c.
       #|MAINTENANCE:
@@ -1042,7 +1042,7 @@ fn SegmentTree2D::range_sum(
     result
   } where {
     proof_invariant: row_l >= 0 && row_r >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (2D row query):
       #|result is the sum of processed row segments; [row_l, row_r) represents
       #|the remaining rows in the implicit tree.
@@ -1080,7 +1080,7 @@ fn SegmentTree2D::col_sum(
     result
   } where {
     proof_invariant: l >= 0 && r >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (2D col query):
       #|result sums processed column segments; [l, r) is the remaining range.
       #|MAINTENANCE:

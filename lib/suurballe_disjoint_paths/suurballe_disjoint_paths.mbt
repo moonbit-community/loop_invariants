@@ -91,7 +91,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
       continue smallest
     } where {
       proof_invariant: i >= 0 && i < len,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (heapify down):
         #|All nodes except the path from root to i satisfy the heap order.
         #|MAINTENANCE:
@@ -144,7 +144,7 @@ fn dijkstra_original(
           }
         } where {
           proof_invariant: i >= 0 && i <= adj[u].length(),
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (relax edges):
             #|Edges adj[u][0..i) have been considered for relaxation.
             #|MAINTENANCE:
@@ -207,7 +207,7 @@ fn dijkstra_modified(
           }
         } where {
           proof_invariant: i >= 0 && i <= adj[u].length(),
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (relax modified edges):
             #|Edges adj[u][0..i) have been relaxed under reduced weights.
             #|MAINTENANCE:
@@ -240,7 +240,7 @@ fn remove_edge(adj : Array[Array[Int]], u : Int, v : Int) -> Bool {
     }
   } where {
     proof_invariant: i >= 0 && i <= adj[u].length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (edge removal):
       #|Edges adj[u][0..i) have been checked for the target v.
       #|MAINTENANCE:
@@ -266,7 +266,7 @@ fn extract_path(
     continue steps + 1, v
   } where {
     proof_invariant: steps >= 0 && path.length() == steps,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (path extraction):
       #|path contains the prefix from source to cur using edges already removed
       #|from the combined graph.
@@ -317,7 +317,7 @@ pub fn suurballe_disjoint_paths(
     adj[u].push(i)
   } where {
     proof_invariant: i >= 0 && i <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (edge load):
       #|Edges in edges[0..i) are loaded into from/to/weight and adj.
       #|MAINTENANCE:
@@ -341,7 +341,7 @@ pub fn suurballe_disjoint_paths(
     continue steps + 1, from[e]
   } where {
     proof_invariant: steps >= 0 && path_edges.length() == steps,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (shortest path reconstruction):
       #|path_edges holds the suffix of the shortest path from v to sink in
       #|reverse order.
@@ -358,7 +358,7 @@ pub fn suurballe_disjoint_paths(
     on_path[e] = true
   } where {
     proof_invariant: idx >= 0 && idx <= path_edges.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (mark path edges):
       #|Edges in path_edges[0..idx) are marked as belonging to the first
       #|shortest path.
@@ -373,7 +373,7 @@ pub fn suurballe_disjoint_paths(
     reduced[i] = weight[i] + dist[from[i]] - dist[to[i]]
   } where {
     proof_invariant: i >= 0 && i <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (reduced costs):
       #|Reduced weights for edges[0..i) are computed using dist.
       #|MAINTENANCE:
@@ -394,7 +394,7 @@ pub fn suurballe_disjoint_paths(
     }
   } where {
     proof_invariant: i >= 0 && i <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (modified graph):
       #|Edges in [0..i) are added to adj2 with path edges reversed and assigned
       #|weight 0, others reweighted by reduced cost.
@@ -420,7 +420,7 @@ pub fn suurballe_disjoint_paths(
     continue steps + 1, u
   } where {
     proof_invariant: steps >= 0 && path2.length() == steps,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (second path reconstruction):
       #|path2 holds the suffix of the second path from v to sink in reverse
       #|order, including reversed edges.
@@ -437,7 +437,7 @@ pub fn suurballe_disjoint_paths(
     combined_adj[from[e]].push(to[e])
   } where {
     proof_invariant: idx >= 0 && idx <= path_edges.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (combine path1):
       #|combined_adj contains the first idx edges of the original shortest path.
       #|MAINTENANCE:
@@ -457,7 +457,7 @@ pub fn suurballe_disjoint_paths(
     }
   } where {
     proof_invariant: idx >= 0 && idx <= path2.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (combine path2):
       #|The combined graph contains all non-cancelled edges from path2[0..idx).
       #|Reversed edges cancel their counterparts in path1.

@@ -12,7 +12,7 @@
 pub(all) struct Point {
   x : Int64
   y : Int64
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 fn cross(a : Point, b : Point, c : Point) -> Int64 {

@@ -104,7 +104,7 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
     }
   } where {
     proof_invariant: v >= 0 && v <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (full graph coverage):
       #|  Vertices [0..v) are fully processed:
       #|    - Each has disc[v] != -1
@@ -142,7 +142,7 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       }
     } where {
       proof_invariant: j >= 0 && j <= adj[u].length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (edge processing):
         #|  Edges adj[u][0..j) have been checked for SCC crossings.
         #|
@@ -155,7 +155,7 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
     }
   } where {
     proof_invariant: u >= 0 && u <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (condensation construction):
       #|  All edges from vertices [0..u) are reflected in scc_adj.
       #|
@@ -224,7 +224,7 @@ fn tarjan_dfs(
     // Cross edge to finished vertex → ignore (leads to other SCC)
   } where {
     proof_invariant: i >= 0 && i <= adj[v].length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (low-link computation):
       #|  After processing adj[v][0..i), low[v] equals the minimum
       #|  discovery time reachable from v through those edges while
@@ -269,7 +269,7 @@ fn tarjan_dfs(
       }
     } where {
       proof_invariant: stack.length() >= 0 && size >= 0,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (SCC extraction):
         #|  All popped vertices belong to the SCC rooted at v.
         #|  They are removed from stack and assigned to scc_id.

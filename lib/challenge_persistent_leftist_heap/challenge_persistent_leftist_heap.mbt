@@ -7,7 +7,7 @@
 pub enum Heap[T] {
   Empty
   Node(value~ : T, rank~ : Int, left~ : Heap[T], right~ : Heap[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] rank(h : Heap[T]) -> Int {

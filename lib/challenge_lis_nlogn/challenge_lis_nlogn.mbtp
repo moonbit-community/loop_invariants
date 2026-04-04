@@ -1,7 +1,3 @@
-predicate in_bounds(arr : FixedArray[Int], i : Int) {
-  0 <= i && i < arr.length()
-}
-
 predicate in_prefix(arr : FixedArray[Int], len : Int, i : Int) {
   0 <= i && i < len && i < arr.length()
 }

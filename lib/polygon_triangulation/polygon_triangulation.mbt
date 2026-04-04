@@ -20,7 +20,7 @@ const INF64 : Int64 = 4611686018427387903L
 pub(all) struct Point {
   x : Int64
   y : Int64
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 fn dist2(a : Point, b : Point) -> Int64 {
@@ -56,7 +56,7 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
         }
       } where {
         proof_invariant: k >= i + 1 && k <= j,
-        reasoning: (
+        proof_reasoning: (
           #|INVARIANT (split scan):
           #|dp[i][j] is the minimum cost among splits in [i+1..k). Each split
           #|forms triangle (i, k, j) plus optimal subproblems on both sides.
@@ -68,7 +68,7 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
       }
     } where {
       proof_invariant: i >= 0 && i + len <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (fixed length):
         #|For all indices i' in [0..i), dp[i'][i'+len] is finalized for the
         #|current length len.
@@ -80,7 +80,7 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
     }
   } where {
     proof_invariant: len >= 2 && len <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (length expansion):
       #|All dp intervals with length < len are already optimal. This ensures
       #|subproblems dp[i][k] and dp[k][j] are solved before dp[i][j].

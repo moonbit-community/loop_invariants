@@ -27,7 +27,7 @@ const INF64 : Int64 = 4611686018427387903L
 pub(all) struct KPath {
   nodes : Array[Int]
   cost : Int64
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn has_prefix(path : Array[Int], prefix : Array[Int]) -> Bool {

@@ -228,7 +228,7 @@ fn LinkCutTree::push_down_path(self : LinkCutTree, x : Int) -> Unit {
     path.push(node) // Include the splay root
   } where {
     proof_invariant: node >= 0 && node < self.nodes.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (collect path):
       #|  path contains nodes from x toward splay root.
       #|  node is the current ancestor being added.
@@ -298,7 +298,7 @@ fn LinkCutTree::splay(self : LinkCutTree, x : Int) -> Unit {
     }
   } where {
     proof_invariant: x >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|SPLAY INVARIANT:
       #|
       #|1. Each iteration moves x closer to splay root

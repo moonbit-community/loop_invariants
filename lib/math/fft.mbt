@@ -56,7 +56,7 @@ fn bit_reverse(x_in : Int, bits : Int) -> Int {
     result
   } where {
     proof_invariant: result < 1 << i && i <= bits,
-    reasoning: (
+    proof_reasoning: (
       #|BIT REVERSAL INVARIANT:
       #|  result contains the reversed bits of x_in[0..i)
       #|  in positions [0..i)
@@ -88,7 +88,7 @@ fn bit_reverse_permute(arr : Array[Complex], n : Int, log_n : Int) -> Unit {
     }
   } where {
     proof_invariant: i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|BIT REVERSAL PERMUTATION INVARIANT:
       #|  For all k < i, arr[k] and arr[bit_reverse(k)] have been swapped
       #|  if needed (i.e., if k < bit_reverse(k))
@@ -127,7 +127,7 @@ fn fft_sin(x_in : Double) -> Double {
     x
   } where {
     proof_invariant: x <= x0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Normalize positive angle):
       #|x equals x0 minus some multiple of 2*pi and remains <= x0.
       #|MAINTENANCE:
@@ -144,7 +144,7 @@ fn fft_sin(x_in : Double) -> Double {
     x
   } where {
     proof_invariant: x >= x1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Normalize negative angle):
       #|x equals x1 plus some multiple of 2*pi and remains >= x1.
       #|MAINTENANCE:
@@ -176,7 +176,7 @@ fn fft_cos(x_in : Double) -> Double {
     x
   } where {
     proof_invariant: x <= x0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Normalize positive angle):
       #|x equals x0 minus some multiple of 2*pi and remains <= x0.
       #|MAINTENANCE:
@@ -193,7 +193,7 @@ fn fft_cos(x_in : Double) -> Double {
     x
   } where {
     proof_invariant: x >= x1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Normalize negative angle):
       #|x equals x1 plus some multiple of 2*pi and remains >= x1.
       #|MAINTENANCE:
@@ -224,7 +224,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
   } where {
     proof_invariant: i >= 0,
     proof_invariant: temp == n >> i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Log2 count):
       #|temp is n shifted right by i bits, so i counts how many times we
       #|halve n until it reaches 1. This yields log2(n) for power-of-two n.
@@ -256,7 +256,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
         arr[i + j + len / 2] = u.sub(v)
       } where {
         proof_invariant: j <= len / 2,
-        reasoning: (
+        proof_reasoning: (
           #|BUTTERFLY OPERATION INVARIANT:
           #|  w = exp(-2πi * j / len) for forward FFT
           #|  w = exp(+2πi * j / len) for inverse FFT
@@ -281,7 +281,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
       }
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Stage blocks):
         #|Blocks of size len starting before i are fully transformed for
         #|this stage. Each block merges two len/2 DFTs into a len DFT.
@@ -294,7 +294,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
     }
   } where {
     proof_invariant: len >= 2 && len <= 2 * n,
-    reasoning: (
+    proof_reasoning: (
       #|FFT SIZE DOUBLING INVARIANT:
       #|  After processing size len, all sub-DFTs of size len are computed.
       #|
@@ -319,7 +319,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
       arr[i] = Complex::new(arr[i].re * scale, arr[i].im * scale)
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Inverse normalization):
         #|After processing indices [0..i), arr[t] has been divided by n.
         #|This rescales the inverse FFT to recover the original signal.
@@ -348,7 +348,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
     size
   } where {
     proof_invariant: size >= 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (FFT size):
       #|size stays a power of two and grows until it reaches result_len.
       #|MAINTENANCE:
@@ -364,7 +364,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
     fa[i] = Complex::from_real(a[i].to_double())
   } where {
     proof_invariant: i >= 0 && i <= n1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Load a):
       #|fa[0..i) stores a[0..i) as complex values; remaining entries stay 0.
       #|MAINTENANCE:
@@ -377,7 +377,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
     fb[i] = Complex::from_real(b[i].to_double())
   } where {
     proof_invariant: i >= 0 && i <= n2,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Load b):
       #|fb[0..i) stores b[0..i) as complex values, padding with zeros beyond n2.
       #|MAINTENANCE:
@@ -394,7 +394,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
     fa[i] = fa[i].mul(fb[i])
   } where {
     proof_invariant: i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|CONVOLUTION THEOREM INVARIANT:
       #|  DFT(a * b) = DFT(a) · DFT(b)  (point-wise multiplication)
       #|
@@ -417,7 +417,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
     result[i] = (fa[i].re + 0.5).to_int()
   } where {
     proof_invariant: i <= result_len,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Extract coefficients):
       #|result[0..i) contains the rounded convolution coefficients for
       #|degrees < i. Rounding mitigates floating-point drift from FFT.
@@ -447,7 +447,7 @@ fn ntt_mod_pow(base_in : Int64, exp_in : Int64, m : Int64) -> Int64 {
     result
   } where {
     proof_invariant: exp >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|MODULAR EXPONENTIATION INVARIANT:
       #|  result * base^exp ≡ base_in^exp_in (mod m)
       #|
@@ -486,7 +486,7 @@ fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
   } where {
     proof_invariant: i >= 0,
     proof_invariant: temp == n >> i,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Log2 count):
       #|temp equals n shifted right by i bits, so i counts the power-of-two
       #|levels in the iterative NTT stages.
@@ -506,7 +506,7 @@ fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
     }
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Bit reversal):
       #|Indices < i are placed at their bit-reversed positions. Swapping only
       #|when i < j avoids double swaps and prepares for in-place butterflies.
@@ -540,7 +540,7 @@ fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
         arr[i + j + len / 2] = (u - v % ntt_mod + ntt_mod) % ntt_mod
       } where {
         proof_invariant: j <= len / 2,
-        reasoning: (
+        proof_reasoning: (
           #|NTT BUTTERFLY INVARIANT:
           #|  wj = g^((mod-1)/len * j) for forward NTT
           #|  wj = g^(-(mod-1)/len * j) for inverse NTT
@@ -561,7 +561,7 @@ fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
       }
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Stage blocks):
         #|Blocks of size len starting before i are fully transformed for this
         #|stage. Each block merges two len/2 sub-transforms.
@@ -574,7 +574,7 @@ fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
     }
   } where {
     proof_invariant: len >= 2 && len <= 2 * n,
-    reasoning: (
+    proof_reasoning: (
       #|NTT SIZE INVARIANT:
       #|  Same as FFT - sub-transforms double in size each iteration.
       #|  All arithmetic is exact modulo the NTT prime.
@@ -592,7 +592,7 @@ fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
       arr[i] = arr[i] * n_inv % ntt_mod
     } where {
       proof_invariant: i >= 0 && i <= n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Inverse normalization):
         #|After processing indices [0..i), arr[t] has been multiplied by n^{-1}
         #|to rescale the inverse transform.
@@ -621,7 +621,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
     size
   } where {
     proof_invariant: size >= 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (NTT size):
       #|size stays a power of two and grows until it reaches result_len.
       #|MAINTENANCE:
@@ -637,7 +637,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
     fa[i] = a[i] % ntt_mod
   } where {
     proof_invariant: i >= 0 && i <= n1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Load a):
       #|fa[0..i) holds a[0..i) modulo ntt_mod, padded with zeros beyond n1.
       #|MAINTENANCE:
@@ -650,7 +650,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
     fb[i] = b[i] % ntt_mod
   } where {
     proof_invariant: i >= 0 && i <= n2,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Load b):
       #|fb[0..i) holds b[0..i) modulo ntt_mod, with zero padding.
       #|MAINTENANCE:
@@ -667,7 +667,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
     fa[i] = fa[i] * fb[i] % ntt_mod
   } where {
     proof_invariant: i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Point-wise product):
       #|After processing indices [0..i), fa[t] equals NTT(a)[t] * NTT(b)[t]
       #|mod ntt_mod. The inverse NTT then yields the exact convolution.
@@ -685,7 +685,7 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
     result[i] = fa[i]
   } where {
     proof_invariant: i >= 0 && i <= result_len,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Extract result):
       #|result[0..i) contains the first i coefficients of the inverse NTT,
       #|which correspond to the polynomial product.
@@ -719,7 +719,7 @@ fn count_change_polynomial(coins : Array[Int], max_amount : Int) -> Array[Int] {
       result[amount] = result[amount] + result[amount - coin]
     } where {
       proof_invariant: amount >= coin && amount <= max_amount + 1,
-      reasoning: (
+      proof_reasoning: (
         #|GENERATING FUNCTION INVARIANT:
         #|  result[k] = coefficient of x^k in product of all processed coins
         #|
@@ -736,7 +736,7 @@ fn count_change_polynomial(coins : Array[Int], max_amount : Int) -> Array[Int] {
     }
   } where {
     proof_invariant: i >= 0 && i <= coins.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Coin sequence):
       #|After processing coins[0..i), result holds the generating function
       #|for those coins. Each new coin multiplies by its geometric series.
@@ -771,7 +771,7 @@ fn pattern_match_fft(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
     pattern_rev[i] = pattern[m - 1 - i]
   } where {
     proof_invariant: i >= 0 && i <= m,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Pattern reverse):
       #|pattern_rev[0..i) equals pattern[m-1..m-i] reversed, preparing the
       #|sequence for convolution-based matching.
@@ -795,7 +795,7 @@ fn pattern_match_fft(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
     }
   } where {
     proof_invariant: i <= result_len,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Match score):
       #|result[0..i) contains convolution-based match scores for offsets
       #|0..i-1. Each score is the dot product of the text window and pattern.

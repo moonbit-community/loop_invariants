@@ -134,7 +134,7 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
     }
   } where {
     proof_invariant: i >= 0 && i <= num_nodes,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (finish order):
       #|All nodes in [0, i) have been visited and added to order by finish time.
       #|MAINTENANCE:
@@ -170,7 +170,7 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
     assignment[i] = comp[node_true] > comp[node_false]
   } where {
     proof_invariant: i >= 0 && i <= self.n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (assignment):
       #|All variables in [0, i) have been assigned consistently with SCC order.
       #|MAINTENANCE:
@@ -234,7 +234,7 @@ fn TwoSat::verify(self : TwoSat, assignment : Array[Bool]) -> Bool {
     }
   } where {
     proof_invariant: u >= 0 && u <= 2 * self.n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (verify all nodes):
       #|All implication nodes in [0..u) have been validated against assignment.
       #|MAINTENANCE:

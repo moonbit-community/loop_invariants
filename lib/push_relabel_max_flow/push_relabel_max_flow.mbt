@@ -163,7 +163,7 @@ fn PushRelabel::discharge(
     }
   } where {
     proof_invariant: steps >= 0 && self.excess[u] >= 0L,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (discharge scan):
       #|Edges with index < next_edge[u] are known to be non-admissible under
       #|the current height: either saturated or height condition violated.
@@ -220,7 +220,7 @@ pub fn PushRelabel::max_flow(
     }
   } where {
     proof_invariant: steps >= 0 && active.length() >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (active vertices):
       #|Every vertex in active has positive excess and is neither source nor
       #|sink. Vertices not in active (except source/sink) have zero excess.

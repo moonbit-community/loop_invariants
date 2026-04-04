@@ -98,4 +98,15 @@ pub(all) struct DominatorTree {
   root : Int
   idom : Array[Int]
   tree : Array[Array[Int]]
-} derive(Show)
+} derive(Debug)
+
+///|
+pub impl Show for DominatorTree with output(self, logger) {
+  logger.write_string("{root: ")
+  Show::output(self.root, logger)
+  logger.write_string(", idom: ")
+  Show::output(self.idom, logger)
+  logger.write_string(", tree: ")
+  Show::output(self.tree, logger)
+  logger.write_string("}")
+}

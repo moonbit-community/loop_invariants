@@ -13,14 +13,23 @@
 pub(all) struct Point {
   x : Int64
   y : Int64
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 pub enum Location {
   Inside
   Outside
   Boundary
-} derive(Show, Eq)
+} derive(Debug, Eq)
+
+///|
+pub impl Show for Location with output(self, logger) {
+  match self {
+    Inside => logger.write_string("Inside")
+    Outside => logger.write_string("Outside")
+    Boundary => logger.write_string("Boundary")
+  }
+}
 
 ///|
 fn cross(a : Point, b : Point, c : Point) -> Int64 {

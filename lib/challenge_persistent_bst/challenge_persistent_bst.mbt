@@ -7,7 +7,7 @@
 pub enum Tree[T] {
   Empty
   Node(value~ : T, left~ : Tree[T], right~ : Tree[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] tree_size(t : Tree[T]) -> Int {

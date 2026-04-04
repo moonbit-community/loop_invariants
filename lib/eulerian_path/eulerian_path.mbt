@@ -53,7 +53,7 @@ fn is_connected_undirected(
     }
   } where {
     proof_invariant: idx >= 0 && idx <= stack.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (DFS reachability):
       #|Vertices in stack[0..idx) are processed; seen marks all vertices
       #|reachable from start discovered so far.
@@ -161,7 +161,7 @@ pub fn eulerian_path_directed(
     }
   } where {
     proof_invariant: path.length() + stack.length() >= 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Hierholzer stack):
       #|stack is a valid trail using only unused outgoing edges; path contains
       #|vertices whose outgoing edges are exhausted in the current traversal.
@@ -172,7 +172,7 @@ pub fn eulerian_path_directed(
       #|When stack is empty, all reachable edges are exhausted and path is built.
     ),
     proof_invariant: next_index.length() == n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (edge cursor):
       #|next_index[v] is the count of outgoing edges from v already consumed.
       #|MAINTENANCE:
@@ -281,7 +281,7 @@ pub fn eulerian_path_undirected(
     }
   } where {
     proof_invariant: path.length() + stack.length() >= 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Hierholzer undirected):
       #|stack is a valid trail using unused edges; path contains vertices whose
       #|incident edges are exhausted.
@@ -291,7 +291,7 @@ pub fn eulerian_path_undirected(
       #|When stack is empty, every reachable edge is consumed.
     ),
     proof_invariant: cursor.length() == n && used.length() == edges.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (edge usage):
       #|used[e] is true iff edge e has been traversed once.
       #|MAINTENANCE:

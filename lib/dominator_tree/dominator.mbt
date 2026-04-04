@@ -99,7 +99,7 @@ fn DominatorWork::compute_idom(self : DominatorWork, root_idx : Int) -> Unit {
     }
   } where {
     proof_invariant: i >= 2 && i <= n + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (idom fix):
       #|  For DFS indices in [2..i), idom[j] is the correct
       #|  immediate dominator.
@@ -201,7 +201,7 @@ pub fn build_dominator_tree(
     idom_vertex[v] = work.rev[id] // convert back to vertex ID
   } where {
     proof_invariant: i >= 1 && i <= work.time.val + 1,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (index conversion):
       #|  idom_vertex is filled for all vertices with DFS index < i.
       #|
@@ -221,7 +221,7 @@ pub fn build_dominator_tree(
     tree[p].push(v) // Add edge idom[v] → v
   } where {
     proof_invariant: v >= 0 && v <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (tree build):
       #|  Dominator tree edges are added for vertices [0..v).
       #|
@@ -273,7 +273,7 @@ pub fn DominatorTree::dominates(self : DominatorTree, u : Int, v : Int) -> Bool 
     continue p
   } where {
     proof_invariant: cur >= 0 && cur < self.idom.length(),
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (dominator walk):
       #|cur is on the path from v toward the root in the dominator tree.
       #|MAINTENANCE:

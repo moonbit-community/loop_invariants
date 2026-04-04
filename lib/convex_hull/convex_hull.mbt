@@ -41,7 +41,7 @@
 pub(all) struct Point {
   x : Int64
   y : Int64
-} derive(Show, Eq)
+} derive(Debug, Eq)
 
 ///|
 /// Cross product of vectors OA and OB
@@ -304,7 +304,7 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
     continue next
   } where {
     proof_invariant: current >= 0 && current < n && hull.length() <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Jarvis march):
       #|current is a valid point index on the hull; hull stores the path so far.
       #|MAINTENANCE:
@@ -415,7 +415,7 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
       }
     } where {
       proof_invariant: j >= 0 && j < n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (advance antipodal):
         #|j stays a valid hull index; it is the best antipodal candidate so far.
         #|MAINTENANCE:
@@ -439,7 +439,7 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
     max_dist
   } where {
     proof_invariant: i >= 0 && i <= n,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (rotating calipers):
       #|j is the current antipodal candidate for edge (i, i+1), and max_dist
       #|tracks the best diameter so far.

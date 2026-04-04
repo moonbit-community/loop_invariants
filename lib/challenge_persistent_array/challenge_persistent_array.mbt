@@ -7,13 +7,13 @@
 enum Node[T] {
   Leaf(value~ : T)
   Branch(left~ : Node[T], right~ : Node[T])
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct PArray[T] {
   root : Node[T]
   n : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn[T] build(arr : ArrayView[T], l : Int, r : Int) -> Node[T] {

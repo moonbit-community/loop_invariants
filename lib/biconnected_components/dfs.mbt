@@ -104,7 +104,7 @@ fn BiconnectedFinder::dfs(
           }
         } where {
           proof_invariant: comp.length() + self.edge_stack.length() >= 0,
-          reasoning: (
+          proof_reasoning: (
             #|INVARIANT (component extraction):
             #|  comp contains edges popped from stack, which are exactly
             #|  the edges in the biconnected component bounded by (u,v).

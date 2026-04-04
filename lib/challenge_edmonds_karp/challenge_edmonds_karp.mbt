@@ -11,12 +11,12 @@ struct Edge {
   to : Int
   rev : Int
   cap : Int
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct FlowGraph {
   adj : Array[Array[Edge]]
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Create a flow graph with n vertices.
@@ -76,7 +76,7 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
       }
     } where {
       proof_invariant: head >= 0 && head <= queue.length(),
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (BFS frontier):
         #|parent marks the BFS tree of reachable nodes from s.
         #|MAINTENANCE:
@@ -98,7 +98,7 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
       }
     } where {
       proof_invariant: best > 0 && best <= INF,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Bottleneck):
         #|best is the minimum residual capacity on the path from cur to t.
         #|MAINTENANCE:
@@ -121,7 +121,7 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
       }
     } where {
       proof_invariant: cur >= 0 && cur < n,
-      reasoning: (
+      proof_reasoning: (
         #|INVARIANT (Augment path):
         #|All edges from cur to t have been updated with augment flow.
         #|MAINTENANCE:
@@ -136,7 +136,7 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
   } where {
     proof_invariant: iter >= 0 && iter <= limit,
     proof_invariant: flow >= 0,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Flow augmentation):
       #|flow equals the total amount sent from s to t so far.
       #|MAINTENANCE:

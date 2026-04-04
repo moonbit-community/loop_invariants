@@ -27,7 +27,7 @@ fn days_needed_fixed(
     proof_invariant: used <= i + 1,
     proof_invariant: 0 <= load,
     proof_invariant: load <= capacity,
-    reasoning: (
+    proof_reasoning: (
       #|This helper proves the boundedness properties of the greedy day scan.
       #|
       #|`used` is the number of days opened so far, and `load` is the current
@@ -85,7 +85,7 @@ pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
     }
   } where {
     proof_invariant: lo <= low && low <= high && high <= hi,
-    reasoning: (
+    proof_reasoning: (
       #|INVARIANT (Binary search bounds):
       #|The feasible capacity lies in [low, high].
       #|MAINTENANCE:

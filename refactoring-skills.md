@@ -13,7 +13,7 @@ for i = 0; i < n; i = i + 1 {
   sum = sum + arr[i]
 } where {
   invariant: i >= 0 && i <= n,
-  reasoning: (
+  proof_reasoning: (
     #|sum equals the prefix sum of arr[0..i).
   ),
 }
@@ -33,7 +33,7 @@ for i = mid - 1; i >= block_start; i = i - 1 {
   row[i] = arr[i] + row[i + 1]
 } where {
   invariant: i >= block_start - 1 && i < mid,
-  reasoning: (
+  proof_reasoning: (
     #|row[i+1..mid] already holds suffix sums to mid.
   ),
 }
@@ -93,7 +93,7 @@ for i = 0; i < n; i = i + 1 {
   out.push(values[i])
 } where {
   invariant: i >= 0 && i <= n,
-  reasoning: (
+  proof_reasoning: (
     #|out contains values[0..i).
   ),
 }
