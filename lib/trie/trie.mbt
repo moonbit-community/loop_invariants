@@ -93,7 +93,7 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
   } nobreak {
     current
   } where {
-    invariant: i >= 0 && i <= word.length(),
+    proof_invariant: i >= 0 && i <= word.length(),
     reasoning: (
       #|INVARIANT (insert):
       #|current represents prefix word[0..i), and prefix_count is incremented
@@ -163,7 +163,7 @@ fn Trie::find_node(self : Trie, s : String) -> TrieNode? {
   } nobreak {
     Some(current)
   } where {
-    invariant: i >= 0 && i <= s.length(),
+    proof_invariant: i >= 0 && i <= s.length(),
     reasoning: (
       #|INVARIANT (find node):
       #|current represents prefix s[0..i), and all characters so far exist in
@@ -199,7 +199,7 @@ fn Trie::delete(self : Trie, word : String) -> Bool {
   } nobreak {
     Some(current)
   } where {
-    invariant: i >= 0 && i <= word.length(),
+    proof_invariant: i >= 0 && i <= word.length(),
     reasoning: (
       #|INVARIANT (delete):
       #|current represents prefix word[0..i), and prefix_count has been
@@ -245,7 +245,7 @@ fn collect_words(
     } nobreak {
       s
     } where {
-      invariant: i >= 0 && i <= current.length(),
+      proof_invariant: i >= 0 && i <= current.length(),
       reasoning: (
         #|INVARIANT (collect_words):
         #|s equals the concatenation of current[0..i) and current itself is
@@ -261,7 +261,7 @@ fn collect_words(
     for j in 0..<node.count {
       result.push(s)
     } where {
-      invariant: j >= 0 && j <= node.count,
+      proof_invariant: j >= 0 && j <= node.count,
       reasoning: (
         #|INVARIANT (collect_words copies):
         #|result already includes the original entries plus exactly j copies
@@ -283,7 +283,7 @@ fn collect_words(
       None => ()
     }
   } where {
-    invariant: c >= 0 && c <= 26,
+    proof_invariant: c >= 0 && c <= 26,
     reasoning: (
       #|INVARIANT (collect_words children):
       #|All child edges with labels < c have been fully explored, and after
@@ -312,7 +312,7 @@ fn Trie::autocomplete(self : Trie, prefix : String) -> Array[String] {
           None => ()
         }
       } where {
-        invariant: i >= 0 && i <= prefix.length(),
+        proof_invariant: i >= 0 && i <= prefix.length(),
         reasoning: (
           #|INVARIANT (autocomplete prefix):
           #|current contains the characters prefix[0..i) in order, so the
@@ -347,7 +347,7 @@ fn Trie::longest_prefix(self : Trie, word : String) -> String {
   } nobreak {
     last_end
   } where {
-    invariant: i >= 0 && i <= word.length(),
+    proof_invariant: i >= 0 && i <= word.length(),
     reasoning: (
       #|INVARIANT (longest_prefix):
       #|current is the trie node for prefix word[0..i); last_end is the length
@@ -516,7 +516,7 @@ fn common_prefix_len(a : String, b : String) -> Int {
       return i
     }
   } where {
-    invariant: i >= 0 && i <= min_len,
+    proof_invariant: i >= 0 && i <= min_len,
     reasoning: (
       #|INVARIANT (common prefix):
       #|a[0..i) equals b[0..i); all characters before i match.
@@ -564,7 +564,7 @@ fn search_in_node(
       return false
     }
   } where {
-    invariant: i >= 0 && i <= label_len,
+    proof_invariant: i >= 0 && i <= label_len,
     reasoning: (
       #|INVARIANT (compressed search):
       #|word[0..i) matches label[0..i), so the label prefix is verified.

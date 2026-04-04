@@ -118,7 +118,7 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
         for i in (mid + 2)..<=right_end {
           row[i] = row[i - 1] + arr[i]
         } where {
-          invariant: i >= mid + 2 && i <= right_end + 1,
+          proof_invariant: i >= mid + 2 && i <= right_end + 1,
           reasoning: (
             #|INVARIANT (sum prefix):
             #|row[mid+1..i-1] stores sums arr[mid+1..j] for j in [mid+1..i-1].
@@ -130,7 +130,7 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
         }
       }
     } where {
-      invariant: block_start >= 0 && block_start <= n,
+      proof_invariant: block_start >= 0 && block_start <= n,
       reasoning: (
         #|INVARIANT (sum blocks):
         #|Blocks in [0..block_start) already have correct suffix/prefix sums.
@@ -142,7 +142,7 @@ pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
     }
     table.push(row)
   } where {
-    invariant: k >= 0 && k <= log_n,
+    proof_invariant: k >= 0 && k <= log_n,
     reasoning: (
       #|INVARIANT (sum levels):
       #|Levels [0..k) are built with block size 2^(lvl+1) for level lvl.
@@ -228,7 +228,7 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
         for i in (mid + 2)..<=right_end {
           row[i] = row[i - 1] ^ arr[i]
         } where {
-          invariant: i >= mid + 2 && i <= right_end + 1,
+          proof_invariant: i >= mid + 2 && i <= right_end + 1,
           reasoning: (
             #|INVARIANT (xor prefix):
             #|row[mid+1..i-1] stores XORs arr[mid+1..j] for j in [mid+1..i-1].
@@ -240,7 +240,7 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
         }
       }
     } where {
-      invariant: block_start >= 0 && block_start <= n,
+      proof_invariant: block_start >= 0 && block_start <= n,
       reasoning: (
         #|INVARIANT (xor blocks):
         #|Blocks in [0..block_start) already have correct suffix/prefix XORs.
@@ -252,7 +252,7 @@ fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
     }
     table.push(row)
   } where {
-    invariant: k >= 0 && k <= log_n,
+    proof_invariant: k >= 0 && k <= log_n,
     reasoning: (
       #|INVARIANT (xor levels):
       #|Levels [0..k) are built with block size 2^(lvl+1) for level lvl.
@@ -336,7 +336,7 @@ fn DisjointSparseProd::new(
         for i in (mid + 2)..<=right_end {
           row[i] = row[i - 1] * arr[i] % modulo
         } where {
-          invariant: i >= mid + 2 && i <= right_end + 1,
+          proof_invariant: i >= mid + 2 && i <= right_end + 1,
           reasoning: (
             #|INVARIANT (prod prefix):
             #|row[mid+1..i-1] stores products arr[mid+1..j] mod modulo.
@@ -348,7 +348,7 @@ fn DisjointSparseProd::new(
         }
       }
     } where {
-      invariant: block_start >= 0 && block_start <= n,
+      proof_invariant: block_start >= 0 && block_start <= n,
       reasoning: (
         #|INVARIANT (prod blocks):
         #|Blocks in [0..block_start) already have correct suffix/prefix products.
@@ -360,7 +360,7 @@ fn DisjointSparseProd::new(
     }
     table.push(row)
   } where {
-    invariant: k >= 0 && k <= log_n,
+    proof_invariant: k >= 0 && k <= log_n,
     reasoning: (
       #|INVARIANT (prod levels):
       #|Levels [0..k) are built with block size 2^(lvl+1) for level lvl.

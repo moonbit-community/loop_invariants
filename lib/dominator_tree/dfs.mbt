@@ -64,7 +64,7 @@ fn DominatorWork::dfs(self : DominatorWork, u : Int) -> Unit {
     // If arr[v] != 0, it's already visited (back/cross edge)
     // These are handled later via predecessor lists
   } where {
-    invariant: i >= 0 && i <= self.adj[u].length(),
+    proof_invariant: i >= 0 && i <= self.adj[u].length(),
     reasoning: (
       #|INVARIANT (neighbor exploration):
       #|  adj[u][0..i) have been processed.

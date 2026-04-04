@@ -56,7 +56,7 @@ pub fn XorBasis::can_represent(self : XorBasis, value : Int64) -> Bool {
   } nobreak {
     reduced == 0L
   } where {
-    invariant: bit >= -1 && bit <= MAX_BITS,
+    proof_invariant: bit >= -1 && bit <= MAX_BITS,
     reasoning: (
       #|INVARIANT (representation reduction):
       #|reduced equals value xor'd with basis vectors whose leading bits are
@@ -78,7 +78,7 @@ pub fn XorBasis::max_xor(self : XorBasis, value : Int64) -> Int64 {
   } nobreak {
     x
   } where {
-    invariant: bit >= -1 && bit <= MAX_BITS,
+    proof_invariant: bit >= -1 && bit <= MAX_BITS,
     reasoning: (
       #|INVARIANT (greedy max):
       #|x is the maximum possible value considering basis vectors with leading

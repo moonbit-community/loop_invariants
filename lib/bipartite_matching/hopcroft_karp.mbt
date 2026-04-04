@@ -123,7 +123,7 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
     } nobreak {
       count
     } where {
-      invariant: u >= 0 && u <= self.graph.n_left,
+      proof_invariant: u >= 0 && u <= self.graph.n_left,
       reasoning: (
         #|INVARIANT (HK phase):
         #|All unmatched left vertices in [0, u) have been attempted for DFS
@@ -138,7 +138,7 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
   } nobreak {
     matching
   } where {
-    invariant: matching >= 0,
+    proof_invariant: matching >= 0,
     reasoning: (
       #|INVARIANT (HK phases):
       #|matching accumulates successful augmentations from previous phases.

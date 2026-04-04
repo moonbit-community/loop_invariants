@@ -75,7 +75,7 @@ pub fn SuffixArray::new(text : String) -> SuffixArray {
       break
     }
   } where {
-    invariant: k >= 1 && k <= n * 2,
+    proof_invariant: k >= 1 && k <= n * 2,
     reasoning: (
       #|INVARIANT (prefix doubling):
       #|At the start of each iteration, sa is sorted by the first k characters
@@ -113,7 +113,7 @@ pub fn SuffixArray::new(text : String) -> SuffixArray {
     }
     continue i + 1, curr_h
   } where {
-    invariant: i >= 0 && i <= n && h >= 0,
+    proof_invariant: i >= 0 && i <= n && h >= 0,
     reasoning: (
       #|INVARIANT (Kasai):
       #|For all positions < i, lcp is correctly computed. h equals the LCP
@@ -163,7 +163,7 @@ pub fn lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
     lcp[rank[i]] = curr_h
     continue i + 1, if curr_h > 0 { curr_h - 1 } else { curr_h }
   } where {
-    invariant: i >= 0 && i <= n && h >= 0,
+    proof_invariant: i >= 0 && i <= n && h >= 0,
     reasoning: (
       #|INVARIANT (Kasai scan):
       #|lcp is correct for suffixes with start < i. h is the current reuse

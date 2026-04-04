@@ -303,7 +303,7 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
     }
     continue next
   } where {
-    invariant: current >= 0 && current < n && hull.length() <= n,
+    proof_invariant: current >= 0 && current < n && hull.length() <= n,
     reasoning: (
       #|INVARIANT (Jarvis march):
       #|current is a valid point index on the hull; hull stores the path so far.
@@ -414,7 +414,7 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
         break j
       }
     } where {
-      invariant: j >= 0 && j < n,
+      proof_invariant: j >= 0 && j < n,
       reasoning: (
         #|INVARIANT (advance antipodal):
         #|j stays a valid hull index; it is the best antipodal candidate so far.
@@ -438,7 +438,7 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
   } nobreak {
     max_dist
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT (rotating calipers):
       #|j is the current antipodal candidate for edge (i, i+1), and max_dist

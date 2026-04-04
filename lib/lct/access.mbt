@@ -117,7 +117,7 @@ fn LinkCutTree::access(self : LinkCutTree, v : Int) -> Unit {
     // Splay v again (it's in a larger splay tree now)
     self.splay(v)
   } where {
-    invariant: v >= 0,
+    proof_invariant: v >= 0,
     reasoning: (
       #|ACCESS INVARIANT:
       #|

@@ -68,7 +68,7 @@ fn RollingHash::new(s : String) -> RollingHash {
   for i in 1..<=n {
     pow_base[i] = pow_base[i - 1] * HASH_BASE % HASH_MOD
   } where {
-    invariant: i >= 1 && i <= n + 1,
+    proof_invariant: i >= 1 && i <= n + 1,
     reasoning: (
       #|INVARIANT (powers table):
       #|pow_base contains correct base powers for indices [0, i). In
@@ -89,7 +89,7 @@ fn RollingHash::new(s : String) -> RollingHash {
     let char_val = (s[i].to_int() - 'a'.to_int() + 1).to_int64()
     prefix_hash[i + 1] = (prefix_hash[i] * HASH_BASE + char_val) % HASH_MOD
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT (prefix hashes):
       #|prefix_hash[k] equals hash(s[0..k)) for all k in [0, i]. This
@@ -173,7 +173,7 @@ fn DoubleRollingHash::new(s : String) -> DoubleRollingHash {
     pow_base1[i] = pow_base1[i - 1] * HASH_BASE % HASH_MOD
     pow_base2[i] = pow_base2[i - 1] * HASH_BASE2 % HASH_MOD2
   } where {
-    invariant: i >= 1 && i <= n + 1,
+    proof_invariant: i >= 1 && i <= n + 1,
     reasoning: (
       #|INVARIANT (dual powers):
       #|pow_base1 and pow_base2 are correct for all exponents in [0, i),
@@ -193,7 +193,7 @@ fn DoubleRollingHash::new(s : String) -> DoubleRollingHash {
     prefix_hash1[i + 1] = (prefix_hash1[i] * HASH_BASE + char_val) % HASH_MOD
     prefix_hash2[i + 1] = (prefix_hash2[i] * HASH_BASE2 + char_val) % HASH_MOD2
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT (dual prefix hashes):
       #|prefix_hash1/2 are correct for all prefix lengths in [0, i]. This
@@ -289,7 +289,7 @@ pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int] {
           } nobreak {
             matches
           } where {
-            invariant: j >= 0 && j <= m,
+            proof_invariant: j >= 0 && j <= m,
             reasoning: (
               #|INVARIANT (verification scan):
               #|If matches is true, then text[i..i+j) equals pattern[0..j).
@@ -309,7 +309,7 @@ pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int] {
       None => ()
     }
   } where {
-    invariant: i >= 0 && i <= n - m + 1,
+    proof_invariant: i >= 0 && i <= n - m + 1,
     reasoning: (
       #|INVARIANT (window scan):
       #|All start positions in [0, i) have been checked, and result contains
@@ -362,7 +362,7 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
         None => ()
       }
     } where {
-      invariant: i >= 0 && i <= n1 - len + 1,
+      proof_invariant: i >= 0 && i <= n1 - len + 1,
       reasoning: (
         #|INVARIANT (collect s1 hashes):
         #|hashes contains the hash of every length-len substring of s1 with
@@ -423,7 +423,7 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
         None => ()
       }
     } where {
-      invariant: i >= 0 && i <= n2 - len + 1,
+      proof_invariant: i >= 0 && i <= n2 - len + 1,
       reasoning: (
         #|INVARIANT (scan s2 hashes):
         #|No substring of s2 with start in [0, i) matches any hash from s1.
@@ -449,7 +449,7 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
   } nobreak {
     result
   } where {
-    invariant: lo >= 0 && hi <= max_len && result >= 0,
+    proof_invariant: lo >= 0 && hi <= max_len && result >= 0,
     reasoning: (
       #|INVARIANT (length search):
       #|All lengths <= result are known to be feasible, and any feasible
@@ -485,7 +485,7 @@ fn count_distinct_substrings(s : String) -> Int {
         None => ()
       }
     } where {
-      invariant: i >= 0 && i <= n - len + 1,
+      proof_invariant: i >= 0 && i <= n - len + 1,
       reasoning: (
         #|INVARIANT (fixed length):
         #|seen holds hashes for all length-len substrings starting in [0, i).
@@ -496,7 +496,7 @@ fn count_distinct_substrings(s : String) -> Int {
       ),
     }
   } where {
-    invariant: len >= 1 && len <= n + 1,
+    proof_invariant: len >= 1 && len <= n + 1,
     reasoning: (
       #|INVARIANT (all lengths):
       #|seen contains hashes for all substring lengths in [1, len). Duplicates
@@ -544,7 +544,7 @@ fn count_distinct_substrings(s : String) -> Int {
   } nobreak {
     count
   } where {
-    invariant: i >= 1 && i <= seen.length() && count >= 1,
+    proof_invariant: i >= 1 && i <= seen.length() && count >= 1,
     reasoning: (
       #|INVARIANT (distinct count):
       #|Because seen is sorted, equal hashes are contiguous. count equals the

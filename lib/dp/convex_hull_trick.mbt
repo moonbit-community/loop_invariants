@@ -86,7 +86,7 @@ fn ConvexHullTrick::query_min(self : ConvexHullTrick, x : Int64) -> Int64 {
   } nobreak {
     eval_line(self.lines[lo], x)
   } where {
-    invariant: lo >= 0 && hi < n && lo <= hi,
+    proof_invariant: lo >= 0 && hi < n && lo <= hi,
     reasoning: (
       #|LOOP INVARIANT: Optimal line is in range [lo, hi]
       #|
@@ -362,7 +362,7 @@ fn divide_conquer_dp(
     } nobreak {
       (best_val, best_opt)
     } where {
-      invariant: j >= opt_lo && j <= opt_hi + 1,
+      proof_invariant: j >= opt_lo && j <= opt_hi + 1,
       reasoning: (
         #|INVARIANT (mid candidate scan):
         #|best_val is the minimum value seen in [opt_lo..j) with best_opt as argmin.
@@ -441,7 +441,7 @@ fn knuth_optimization(
           opt[i][j] = k
         }
       } where {
-        invariant: k >= lo_opt && k <= hi_opt + 1,
+        proof_invariant: k >= lo_opt && k <= hi_opt + 1,
         reasoning: (
           #|KNUTH'S OPTIMIZATION: opt(i,j-1) <= opt(i,j) <= opt(i+1,j)
           #|
@@ -454,7 +454,7 @@ fn knuth_optimization(
         ),
       }
     } where {
-      invariant: i >= 0 && i <= n,
+      proof_invariant: i >= 0 && i <= n,
       reasoning: (
         #|INVARIANT (interval start scan):
         #|Intervals of length len starting before i are fully processed.
@@ -465,7 +465,7 @@ fn knuth_optimization(
       ),
     }
   } where {
-    invariant: len >= 2 && len <= n + 1,
+    proof_invariant: len >= 2 && len <= n + 1,
     reasoning: (
       #|INVARIANT (length layers):
       #|All interval lengths in [2..len) are complete before processing len.
@@ -513,7 +513,7 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
       for j in 0..<(deque.length() - 1) {
         deque[j] = deque[j + 1]
       } where {
-        invariant: j >= 0 && j <= deque.length() - 1,
+        proof_invariant: j >= 0 && j <= deque.length() - 1,
         reasoning: (
           #|INVARIANT (shift left):
           #|deque[0..j) has been shifted one position left to remove the front.
@@ -537,7 +537,7 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
     }
     deque.push(i)
   } where {
-    invariant: i >= 1 && i <= n,
+    proof_invariant: i >= 1 && i <= n,
     reasoning: (
       #|LOOP INVARIANT: deque contains indices in [i-k+1, i] in increasing order
       #|with dp values in increasing order.
@@ -594,7 +594,7 @@ fn aliens_trick(
   } nobreak {
     hi
   } where {
-    invariant: iter >= 0 && iter <= 100,
+    proof_invariant: iter >= 0 && iter <= 100,
     reasoning: (
       #|WQS BINARY SEARCH:
       #|- Adding penalty λ per item makes DP choose fewer items as λ increases

@@ -14,7 +14,7 @@ fn sqrt_ceil(n : Int) -> Int {
       continue b + 1
     }
   } where {
-    invariant: b >= 1,
+    proof_invariant: b >= 1,
     reasoning: (
       #|INVARIANT (sqrt ceil):
       #|b is the smallest candidate tested so far; all smaller values satisfy

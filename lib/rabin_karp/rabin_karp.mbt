@@ -87,7 +87,7 @@ pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
     }
     continue i + 1, next_hash
   } where {
-    invariant: i >= 0 && i <= n - m + 1,
+    proof_invariant: i >= 0 && i <= n - m + 1,
     reasoning: (
       #|INVARIANT (window scan):
       #|text_hash equals hash(text[i..i+m)), and all positions in [0, i) have
@@ -159,7 +159,7 @@ pub fn rabin_karp_multi(
           }
         }
       } where {
-        invariant: j >= 0 && j <= pattern_list.length(),
+        proof_invariant: j >= 0 && j <= pattern_list.length(),
         reasoning: (
           #|INVARIANT (check patterns):
           #|All patterns in pattern_list[0..j) have been checked against the
@@ -185,7 +185,7 @@ pub fn rabin_karp_multi(
       }
       continue i + 1, next_hash
     } where {
-      invariant: i >= 0 && i <= n - len + 1,
+      proof_invariant: i >= 0 && i <= n - len + 1,
       reasoning: (
         #|INVARIANT (window scan):
         #|text_hash corresponds to text[i..i+len), and all positions in [0, i)

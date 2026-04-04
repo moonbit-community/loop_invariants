@@ -4,7 +4,7 @@ fn edges_of_path(path : Array[Int]) -> Array[(Int, Int)] {
   for i in 0..<(path.length() - 1) {
     edges.push((path[i], path[i + 1]))
   } where {
-    invariant: i >= 0 && i + 1 <= path.length(),
+    proof_invariant: i >= 0 && i + 1 <= path.length(),
     reasoning: (
       #|INVARIANT (edges of path):
       #|edges contains path edges for indices in [0, i).
@@ -25,7 +25,7 @@ fn edge_weight(edges : Array[(Int, Int, Int64)], u : Int, v : Int) -> Int64? {
       return Some(c)
     }
   } where {
-    invariant: i >= 0 && i <= edges.length(),
+    proof_invariant: i >= 0 && i <= edges.length(),
     reasoning: (
       #|INVARIANT (edge lookup):
       #|edges[0..i) have been checked for the pair (u, v).
@@ -50,7 +50,7 @@ fn path_cost(path : Array[Int], edges : Array[(Int, Int, Int64)]) -> Int64? {
   } nobreak {
     total
   } where {
-    invariant: i >= 0 && i + 1 <= path.length() && total >= 0L,
+    proof_invariant: i >= 0 && i + 1 <= path.length() && total >= 0L,
     reasoning: (
       #|INVARIANT (path cost):
       #|total equals the sum of edge weights along path[0..i].
@@ -88,7 +88,7 @@ test "suurballe disjoint paths basic" {
         for j in 0..<e2.length() {
           assert_true(e1[i] != e2[j])
         } where {
-          invariant: j >= 0 && j <= e2.length(),
+          proof_invariant: j >= 0 && j <= e2.length(),
           reasoning: (
             #|INVARIANT (pairwise check):
             #|e1[i] has been compared against e2[0..j).
@@ -99,7 +99,7 @@ test "suurballe disjoint paths basic" {
           ),
         }
       } where {
-        invariant: i >= 0 && i <= e1.length(),
+        proof_invariant: i >= 0 && i <= e1.length(),
         reasoning: (
           #|INVARIANT (edge-disjoint check):
           #|Edges e1[0..i) have been checked against all edges in e2.

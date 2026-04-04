@@ -151,7 +151,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
       }
       break
     } where {
-      invariant: head >= 0 && head <= deque.length(),
+      proof_invariant: head >= 0 && head <= deque.length(),
       reasoning: (
         #|INVARIANT (pop back):
         #|The deque stores half-planes whose intersection is non-empty. If the
@@ -174,7 +174,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
     } nobreak {
       head
     } where {
-      invariant: head >= 0 && head <= deque.length(),
+      proof_invariant: head >= 0 && head <= deque.length(),
       reasoning: (
         #|INVARIANT (pop front):
         #|If the front intersection point violates the new line, the front line
@@ -203,7 +203,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
     }
     break
   } where {
-    invariant: head >= 0 && head <= deque.length(),
+    proof_invariant: head >= 0 && head <= deque.length(),
     reasoning: (
       #|INVARIANT (final back trim):
       #|The deque represents a feasible intersection except possibly at the back.
@@ -224,7 +224,7 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
   } nobreak {
     head
   } where {
-    invariant: head >= 0 && head <= deque.length(),
+    proof_invariant: head >= 0 && head <= deque.length(),
     reasoning: (
       #|INVARIANT (final front trim):
       #|The deque represents a feasible intersection except possibly at the front.

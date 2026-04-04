@@ -101,7 +101,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
       self.data[smallest] = temp
       continue smallest
     } where {
-      invariant: i >= 0 && i < len,
+      proof_invariant: i >= 0 && i < len,
       reasoning: (
         #|INVARIANT (heapify down):
         #|All nodes except the path from root to i satisfy the heap order.
@@ -235,7 +235,7 @@ pub fn MinCostFlowPotentials::compute_with_limit(
     } nobreak {
       add_flow
     } where {
-      invariant: steps >= 0 && add_flow > 0L,
+      proof_invariant: steps >= 0 && add_flow > 0L,
       reasoning: (
         #|INVARIANT (bottleneck search):
         #|add_flow is the minimum residual capacity along the suffix of the
@@ -254,7 +254,7 @@ pub fn MinCostFlowPotentials::compute_with_limit(
       self.adj[v][rev].flow = self.adj[v][rev].flow - add_flow
       continue steps + 1, u
     } where {
-      invariant: steps >= 0,
+      proof_invariant: steps >= 0,
       reasoning: (
         #|INVARIANT (augment path):
         #|Flow has been augmented by add_flow on the processed suffix of the
@@ -269,7 +269,7 @@ pub fn MinCostFlowPotentials::compute_with_limit(
   } nobreak {
     (total_flow, total_cost)
   } where {
-    invariant: iter >= 0 && total_flow >= 0L,
+    proof_invariant: iter >= 0 && total_flow >= 0L,
     reasoning: (
       #|INVARIANT (successive shortest paths):
       #|total_flow and total_cost describe a min-cost flow for the amount sent

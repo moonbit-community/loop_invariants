@@ -103,8 +103,8 @@ pub fn add(fw : Fenwick, idx : Int, delta : Int) -> Fenwick {
       continue i + (i & -i), updated
     }
   } where {
-    invariant: i >= 1 && i <= size,
-    invariant: tree_shape(tree, size),
+    proof_invariant: i >= 1 && i <= size,
+    proof_invariant: tree_shape(tree, size),
     reasoning: (
       #|INVARIANT (Fenwick update):
       #|tree stores the original BIT with delta applied to all visited indices.
@@ -132,8 +132,8 @@ pub fn prefix_sum(fw : Fenwick, idx : Int) -> Int {
       continue i - (i & -i), acc + current
     }
   } where {
-    invariant: i >= 0 && i <= size,
-    invariant: tree_shape(fw.root, size),
+    proof_invariant: i >= 0 && i <= size,
+    proof_invariant: tree_shape(fw.root, size),
     reasoning: (
       #|INVARIANT (Prefix sum accumulation):
       #|acc equals the sum of BIT blocks already traversed for the prefix.

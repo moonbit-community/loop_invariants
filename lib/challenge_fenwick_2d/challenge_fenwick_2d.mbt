@@ -38,7 +38,7 @@ pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
           continue j + lowbit(j)
         }
       } where {
-        invariant: j > 0 && j <= self.cols + 1,
+        proof_invariant: j > 0 && j <= self.cols + 1,
         reasoning: (
           #|INVARIANT (col update):
           #|j visits all Fenwick column indices that cover the update position.
@@ -51,7 +51,7 @@ pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
       continue i + lowbit(i)
     }
   } where {
-    invariant: i > 0 && i <= self.rows + 1,
+    proof_invariant: i > 0 && i <= self.rows + 1,
     reasoning: (
       #|INVARIANT (row update):
       #|i visits all Fenwick row indices that cover the update position.
@@ -77,7 +77,7 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, r : Int, c : Int) -> Int {
         continue j - lowbit(j), row_sum + self.tree[i][j]
       }
     } where {
-      invariant: j >= 0 && j <= c,
+      proof_invariant: j >= 0 && j <= c,
       reasoning: (
         #|INVARIANT (col prefix):
         #|row_sum accumulates tree[i][j] contributions for columns in (j, c].
@@ -89,7 +89,7 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, r : Int, c : Int) -> Int {
     }
     continue i - lowbit(i), sum + row_sum
   } where {
-    invariant: i >= 0 && i <= r,
+    proof_invariant: i >= 0 && i <= r,
     reasoning: (
       #|INVARIANT (row prefix):
       #|sum accumulates prefix contributions for rows in (i, r].

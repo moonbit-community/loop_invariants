@@ -90,7 +90,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
       self.data[smallest] = tmp
       continue smallest
     } where {
-      invariant: i >= 0 && i < len,
+      proof_invariant: i >= 0 && i < len,
       reasoning: (
         #|INVARIANT (heapify down):
         #|All nodes except the path from root to i satisfy the heap order.
@@ -143,7 +143,7 @@ fn dijkstra_original(
             heap.push({ dist: nd, vertex: v })
           }
         } where {
-          invariant: i >= 0 && i <= adj[u].length(),
+          proof_invariant: i >= 0 && i <= adj[u].length(),
           reasoning: (
             #|INVARIANT (relax edges):
             #|Edges adj[u][0..i) have been considered for relaxation.
@@ -206,7 +206,7 @@ fn dijkstra_modified(
             heap.push({ dist: nd, vertex: e.to })
           }
         } where {
-          invariant: i >= 0 && i <= adj[u].length(),
+          proof_invariant: i >= 0 && i <= adj[u].length(),
           reasoning: (
             #|INVARIANT (relax modified edges):
             #|Edges adj[u][0..i) have been relaxed under reduced weights.
@@ -239,7 +239,7 @@ fn remove_edge(adj : Array[Array[Int]], u : Int, v : Int) -> Bool {
       return true
     }
   } where {
-    invariant: i >= 0 && i <= adj[u].length(),
+    proof_invariant: i >= 0 && i <= adj[u].length(),
     reasoning: (
       #|INVARIANT (edge removal):
       #|Edges adj[u][0..i) have been checked for the target v.
@@ -265,7 +265,7 @@ fn extract_path(
     guard next is Some(v) else { return None }
     continue steps + 1, v
   } where {
-    invariant: steps >= 0 && path.length() == steps,
+    proof_invariant: steps >= 0 && path.length() == steps,
     reasoning: (
       #|INVARIANT (path extraction):
       #|path contains the prefix from source to cur using edges already removed
@@ -316,7 +316,7 @@ pub fn suurballe_disjoint_paths(
     weight[i] = w
     adj[u].push(i)
   } where {
-    invariant: i >= 0 && i <= m,
+    proof_invariant: i >= 0 && i <= m,
     reasoning: (
       #|INVARIANT (edge load):
       #|Edges in edges[0..i) are loaded into from/to/weight and adj.
@@ -340,7 +340,7 @@ pub fn suurballe_disjoint_paths(
     path_edges.push(e)
     continue steps + 1, from[e]
   } where {
-    invariant: steps >= 0 && path_edges.length() == steps,
+    proof_invariant: steps >= 0 && path_edges.length() == steps,
     reasoning: (
       #|INVARIANT (shortest path reconstruction):
       #|path_edges holds the suffix of the shortest path from v to sink in
@@ -357,7 +357,7 @@ pub fn suurballe_disjoint_paths(
     let e = path_edges[idx]
     on_path[e] = true
   } where {
-    invariant: idx >= 0 && idx <= path_edges.length(),
+    proof_invariant: idx >= 0 && idx <= path_edges.length(),
     reasoning: (
       #|INVARIANT (mark path edges):
       #|Edges in path_edges[0..idx) are marked as belonging to the first
@@ -372,7 +372,7 @@ pub fn suurballe_disjoint_paths(
   for i in 0..<m {
     reduced[i] = weight[i] + dist[from[i]] - dist[to[i]]
   } where {
-    invariant: i >= 0 && i <= m,
+    proof_invariant: i >= 0 && i <= m,
     reasoning: (
       #|INVARIANT (reduced costs):
       #|Reduced weights for edges[0..i) are computed using dist.
@@ -393,7 +393,7 @@ pub fn suurballe_disjoint_paths(
       adj2[u].push({ to: v2, weight: reduced[i], orig_id: i, reversed: false })
     }
   } where {
-    invariant: i >= 0 && i <= m,
+    proof_invariant: i >= 0 && i <= m,
     reasoning: (
       #|INVARIANT (modified graph):
       #|Edges in [0..i) are added to adj2 with path edges reversed and assigned
@@ -419,7 +419,7 @@ pub fn suurballe_disjoint_paths(
     path2.push((u, e))
     continue steps + 1, u
   } where {
-    invariant: steps >= 0 && path2.length() == steps,
+    proof_invariant: steps >= 0 && path2.length() == steps,
     reasoning: (
       #|INVARIANT (second path reconstruction):
       #|path2 holds the suffix of the second path from v to sink in reverse
@@ -436,7 +436,7 @@ pub fn suurballe_disjoint_paths(
     let e = path_edges[idx]
     combined_adj[from[e]].push(to[e])
   } where {
-    invariant: idx >= 0 && idx <= path_edges.length(),
+    proof_invariant: idx >= 0 && idx <= path_edges.length(),
     reasoning: (
       #|INVARIANT (combine path1):
       #|combined_adj contains the first idx edges of the original shortest path.
@@ -456,7 +456,7 @@ pub fn suurballe_disjoint_paths(
       combined_adj[u].push(e.to)
     }
   } where {
-    invariant: idx >= 0 && idx <= path2.length(),
+    proof_invariant: idx >= 0 && idx <= path2.length(),
     reasoning: (
       #|INVARIANT (combine path2):
       #|The combined graph contains all non-cancelled edges from path2[0..idx).

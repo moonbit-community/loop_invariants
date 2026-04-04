@@ -45,7 +45,7 @@ fn mod_pow(base : Int64, exp : Int64, m : Int64) -> Int64 {
   } nobreak {
     result
   } where {
-    invariant: e >= 0L,
+    proof_invariant: e >= 0L,
     reasoning: (
       #|INVARIANT (fast exponentiation):
       #|result * b^e (mod m) equals base^exp (mod m), and b holds the current
@@ -67,7 +67,7 @@ fn bit_reverse(x : Int, bits : Int) -> Int {
   } nobreak {
     result
   } where {
-    invariant: i >= 0 && i <= bits,
+    proof_invariant: i >= 0 && i <= bits,
     reasoning: (
       #|INVARIANT (bit reverse):
       #|result is the reverse of the lowest i bits of x; v equals x >> i.
@@ -97,8 +97,8 @@ fn NTT::new(size : Int) -> NTT {
   } nobreak {
     (n, log_n)
   } where {
-    invariant: n >= 1,
-    invariant: log_n >= 0,
+    proof_invariant: n >= 1,
+    proof_invariant: log_n >= 0,
     reasoning: (
       #|INVARIANT (power-of-two growth):
       #|n equals 2^log_n and is the smallest power of two checked so far.
@@ -127,7 +127,7 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
       a[j] = tmp
     }
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT (Bit-reversal):
       #|For all indices < i, a has been swapped into its bit-reversed position.
@@ -155,7 +155,7 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
           self.mod_val
         continue j + 1, wn * w % self.mod_val
       } where {
-        invariant: j >= 0 && j <= len / 2,
+        proof_invariant: j >= 0 && j <= len / 2,
         reasoning: (
           #|INVARIANT (butterflies):
           #|Within this block, positions [0..j) are transformed; wn equals w^j.
@@ -166,7 +166,7 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
         ),
       }
     } where {
-      invariant: i >= 0 && i <= n,
+      proof_invariant: i >= 0 && i <= n,
       reasoning: (
         #|INVARIANT (stage blocks):
         #|All blocks starting at indices < i are transformed for length len.
@@ -178,7 +178,7 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
     }
     continue len * 2
   } where {
-    invariant: len >= 2 && len <= n * 2,
+    proof_invariant: len >= 2 && len <= n * 2,
     reasoning: (
       #|INVARIANT (NTT stages):
       #|len is the current butterfly size; all previous stages with smaller
@@ -197,7 +197,7 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
     for i in 0..<n {
       a[i] = a[i] * n_inv % self.mod_val
     } where {
-      invariant: i >= 0 && i <= n,
+      proof_invariant: i >= 0 && i <= n,
       reasoning: (
         #|INVARIANT (Inverse scaling):
         #|After processing indices [0..i), a[t] has been multiplied by n_inv
@@ -230,7 +230,7 @@ fn NTT::multiply(
     }
     pa[i] = a[i] % self.mod_val
   } where {
-    invariant: i >= 0 && i <= a.length() && i <= n,
+    proof_invariant: i >= 0 && i <= a.length() && i <= n,
     reasoning: (
       #|INVARIANT (Pad a):
       #|pa[0..i) matches a[0..i) modulo mod_val, and remaining entries are 0.
@@ -246,7 +246,7 @@ fn NTT::multiply(
     }
     pb[i] = b[i] % self.mod_val
   } where {
-    invariant: i >= 0 && i <= b.length() && i <= n,
+    proof_invariant: i >= 0 && i <= b.length() && i <= n,
     reasoning: (
       #|INVARIANT (Pad b):
       #|pb[0..i) matches b[0..i) modulo mod_val, and remaining entries are 0.
@@ -265,7 +265,7 @@ fn NTT::multiply(
   for i in 0..<n {
     pa[i] = pa[i] * pb[i] % self.mod_val
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT (Point-wise product):
       #|After processing indices [0..i), pa[t] equals NTT(a)[t] * NTT(b)[t]
@@ -314,7 +314,7 @@ fn poly_multiply_naive(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
     for j in 0..<b.length() {
       result[i + j] = (result[i + j] + a[i] * b[j]) % NTT_MOD
     } where {
-      invariant: j >= 0 && j <= b.length(),
+      proof_invariant: j >= 0 && j <= b.length(),
       reasoning: (
         #|INVARIANT (Inner products):
         #|After processing j, result[i + t] includes contribution from
@@ -326,7 +326,7 @@ fn poly_multiply_naive(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       ),
     }
   } where {
-    invariant: i >= 0 && i <= a.length(),
+    proof_invariant: i >= 0 && i <= a.length(),
     reasoning: (
       #|INVARIANT (Outer accumulation):
       #|After processing i, result includes contributions from all pairs
@@ -368,7 +368,7 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       a_high.push(a[i])
     }
   } where {
-    invariant: i >= 0 && i <= a.length(),
+    proof_invariant: i >= 0 && i <= a.length(),
     reasoning: (
       #|INVARIANT (Split a):
       #|a_low contains a[0..min(i,half)) and a_high contains a[half..i) for
@@ -388,7 +388,7 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       b_high.push(b[i])
     }
   } where {
-    invariant: i >= 0 && i <= b.length(),
+    proof_invariant: i >= 0 && i <= b.length(),
     reasoning: (
       #|INVARIANT (Split b):
       #|b_low contains b[0..min(i,half)) and b_high contains b[half..i)
@@ -417,7 +417,7 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
     let ah = if i < a_high.length() { a_high[i] } else { 0L }
     a_sum.push((av + ah) % NTT_MOD)
   } where {
-    invariant: i >= 0 && i <= max_low,
+    proof_invariant: i >= 0 && i <= max_low,
     reasoning: (
       #|INVARIANT (a_low + a_high):
       #|a_sum[0..i) holds the coefficient-wise sum of a_low and a_high,
@@ -438,7 +438,7 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
     let bh = if i < b_high.length() { b_high[i] } else { 0L }
     b_sum.push((bv + bh) % NTT_MOD)
   } where {
-    invariant: i >= 0 && i <= max_low_b,
+    proof_invariant: i >= 0 && i <= max_low_b,
     reasoning: (
       #|INVARIANT (b_low + b_high):
       #|b_sum[0..i) holds the coefficient-wise sum of b_low and b_high,
@@ -457,7 +457,7 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
   for i in 0..<z0.length() {
     result[i] = (result[i] + z0[i]) % NTT_MOD
   } where {
-    invariant: i >= 0 && i <= z0.length(),
+    proof_invariant: i >= 0 && i <= z0.length(),
     reasoning: (
       #|INVARIANT (z0 add):
       #|result[0..i) includes the low-part contribution z0, corresponding to
@@ -478,7 +478,7 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
         NTT_MOD
     }
   } where {
-    invariant: i >= 0 && i <= z1_full.length(),
+    proof_invariant: i >= 0 && i <= z1_full.length(),
     reasoning: (
       #|INVARIANT (z1 correction):
       #|result[half..half+i) has been updated with z1_full minus z0 and z2,
@@ -494,7 +494,7 @@ fn poly_multiply_karatsuba(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
       result[i + 2 * half] = (result[i + 2 * half] + z2[i]) % NTT_MOD
     }
   } where {
-    invariant: i >= 0 && i <= z2.length(),
+    proof_invariant: i >= 0 && i <= z2.length(),
     reasoning: (
       #|INVARIANT (z2 add):
       #|result[2*half..2*half+i) includes the high-part contribution z2,

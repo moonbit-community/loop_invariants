@@ -98,7 +98,7 @@ fn[T : Compare] find_pos(keys : Array[T], key : T) -> (Int, Bool) {
       break (i, true)
     }
   } where {
-    invariant: i >= 0 && i <= keys.length(),
+    proof_invariant: i >= 0 && i <= keys.length(),
     reasoning: (
       #|INVARIANT (Find position):
       #|keys[0..i) are strictly less than key.

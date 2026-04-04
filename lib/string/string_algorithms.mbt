@@ -60,7 +60,7 @@ fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
       }
     }
   } where {
-    invariant: i >= 1 && i <= n && l >= 0 && r >= l && r <= n,
+    proof_invariant: i >= 1 && i <= n && l >= 0 && r >= l && r <= n,
     reasoning: (
       #|INVARIANT 1 (Bounds and progress):
       #|i advances left-to-right, and [l, r) always denotes a valid Z-box
@@ -71,7 +71,7 @@ fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
       #|TERMINATION:
       #|At i == n, all Z-values have been computed.
     ),
-    invariant: l < i,
+    proof_invariant: l < i,
     reasoning: (
       #|INVARIANT 2 (Z-box property):
       #|If r > l, then s[l..r) == s[0..r-l).
@@ -187,7 +187,7 @@ fn manacher(s : ArrayView[Char]) -> Array[Int] {
       }
     }
   } where {
-    invariant: i >= 0 && i <= t_len && c >= 0 && c < t_len && r >= c,
+    proof_invariant: i >= 0 && i <= t_len && c >= 0 && c < t_len && r >= c,
     reasoning: (
       #|INVARIANT 1 (Bounds and center validity):
       #|c and r identify the rightmost palindrome seen so far, and i never
@@ -198,7 +198,7 @@ fn manacher(s : ArrayView[Char]) -> Array[Int] {
       #|TERMINATION:
       #|At i == t_len, all radii are computed.
     ),
-    invariant: c <= i,
+    proof_invariant: c <= i,
     reasoning: (
       #|INVARIANT 2 (Palindrome boundary):
       #|r is the rightmost boundary we've seen: t[c-p[c]..c+p[c]+1) is
@@ -263,7 +263,7 @@ pub fn longest_palindrome_range(s : ArrayView[Char]) -> (Int, Int) {
   } nobreak {
     best
   } where {
-    invariant: i >= 0 && i <= p.length(),
+    proof_invariant: i >= 0 && i <= p.length(),
     reasoning: (
       #|INVARIANT (max scan):
       #|best is (center, radius) of the longest palindrome in p[0..i).
@@ -327,7 +327,7 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
       continue i + 1, acc * base % modulus
     }
   } where {
-    invariant: i >= 0 && i <= m - 1 && acc >= 0 && acc < modulus,
+    proof_invariant: i >= 0 && i <= m - 1 && acc >= 0 && acc < modulus,
     reasoning: (
       #|INVARIANT (Base power):
       #|acc = base^i mod modulus after i steps, so when i reaches m-1,
@@ -352,7 +352,7 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
       continue i + 1, new_ph, new_th
     }
   } where {
-    invariant: i >= 0 &&
+    proof_invariant: i >= 0 &&
     i <= m &&
     ph >= 0 &&
     ph < modulus &&
@@ -385,7 +385,7 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
         } nobreak {
           match_found
         } where {
-          invariant: j >= 0 && j <= m,
+          proof_invariant: j >= 0 && j <= m,
           reasoning: (
             #|INVARIANT (Verification scan):
             #|After j comparisons, match_found is true iff the prefix
@@ -417,7 +417,7 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
       }
     }
   } where {
-    invariant: i >= 0 && i <= n - m + 1 && th >= 0 && th < modulus,
+    proof_invariant: i >= 0 && i <= n - m + 1 && th >= 0 && th < modulus,
     reasoning: (
       #|INVARIANT (Rolling hash correctness):
       #|th = hash(text[i..i+m))
@@ -500,7 +500,7 @@ pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
           continue j + 1
         }
       } where {
-        invariant: j >= 1 && j <= n + 1,
+        proof_invariant: j >= 1 && j <= n + 1,
         reasoning: (
           #|INVARIANT (Row update):
           #|After processing columns [1..j), curr[t] for t < j equals
@@ -517,7 +517,7 @@ pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
       continue i + 1, curr, prev
     }
   } where {
-    invariant: i >= 1 && i <= m + 1,
+    proof_invariant: i >= 1 && i <= m + 1,
     reasoning: (
       #|INVARIANT (LCS DP):
       #|After processing row i, prev[j] = LCS(s1[0..i), s2[0..j)).
@@ -617,7 +617,7 @@ fn booth_smallest_rotation(s : ArrayView[Char]) -> Int {
           break jj
         }
       } where {
-        invariant: jj >= -1,
+        proof_invariant: jj >= -1,
         reasoning: (
           #|INVARIANT (Failure link walk):
           #|jj represents the length of the longest prefix of the current
@@ -650,7 +650,7 @@ fn booth_smallest_rotation(s : ArrayView[Char]) -> Int {
       }
     }
   } where {
-    invariant: i >= 1 && i <= 2 * n && k >= 0 && k < n,
+    proof_invariant: i >= 1 && i <= 2 * n && k >= 0 && k < n,
     reasoning: (
       #|INVARIANT (Booth's algorithm):
       #|k is the starting position of the current best candidate for

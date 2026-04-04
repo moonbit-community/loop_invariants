@@ -207,7 +207,7 @@ fn[T] AVLTree::find_min(self : AVLTree[T], node : Int) -> Int {
   } nobreak {
     cur
   } where {
-    invariant: cur >= 0 && cur < self.nodes.length(),
+    proof_invariant: cur >= 0 && cur < self.nodes.length(),
     reasoning: (
       #|INVARIANT (find min):
       #|cur points to a valid node in the left subtree of the original node.
@@ -288,7 +288,7 @@ fn[T : Compare] AVLTree::search(self : AVLTree[T], key : T) -> Bool {
   } nobreak {
     false
   } where {
-    invariant: node >= -1,
+    proof_invariant: node >= -1,
     reasoning: (
       #|INVARIANT (BST search):
       #|If key exists in tree, it must be in subtree rooted at node.
@@ -320,7 +320,7 @@ fn[T] AVLTree::max(self : AVLTree[T]) -> T? {
   } nobreak {
     cur
   } where {
-    invariant: cur >= 0 && cur < self.nodes.length(),
+    proof_invariant: cur >= 0 && cur < self.nodes.length(),
     reasoning: (
       #|INVARIANT (find max):
       #|cur points to a valid node in the right subtree.

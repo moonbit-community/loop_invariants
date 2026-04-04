@@ -165,8 +165,8 @@ pub fn[T : Compare] contains(t : Tree[T], key : T) -> Bool {
         }
     }
   } where {
-    invariant: tree_valid(cur, lo, hi),
-    invariant: within_bounds(key, lo, hi),
+    proof_invariant: tree_valid(cur, lo, hi),
+    proof_invariant: within_bounds(key, lo, hi),
     reasoning: (
       #|INVARIANT (2-3 search bounds):
       #|cur is a valid subtree constrained by (lo, hi); key respects bounds.
@@ -187,9 +187,9 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Tree[T] {
   } nobreak {
     tree
   } where {
-    invariant: i >= 0 && i <= n,
-    invariant: size(tree) == i,
-    invariant: tree_valid(tree, None, None),
+    proof_invariant: i >= 0 && i <= n,
+    proof_invariant: size(tree) == i,
+    proof_invariant: tree_valid(tree, None, None),
     reasoning: (
       #|INVARIANT (2-3 build):
       #|tree contains the first i keys and preserves 2-3 ordering.

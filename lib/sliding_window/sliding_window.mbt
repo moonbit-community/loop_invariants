@@ -75,7 +75,7 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
       result.push(arr[front])
     }
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT 1 (Bounds): i iterates through [0, n], and deque stores indices
       #|from the processed prefix [0, i).
@@ -84,7 +84,7 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
       #|TERMINATION:
       #|At i = n, all positions are processed.
     ),
-    invariant: dq.length() >= 0 && dq.length() <= i,
+    proof_invariant: dq.length() >= 0 && dq.length() <= i,
     reasoning: (
       #|INVARIANT 2 (Deque size): deque contains at most i indices from [0, i).
       #|MAINTENANCE:
@@ -92,7 +92,7 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
       #|TERMINATION:
       #|At loop end, deque indices refer only to processed elements.
     ),
-    invariant: match dq.front() {
+    proof_invariant: match dq.front() {
       None => true
       Some(f) => f >= i - k && f <= i - 1
     },
@@ -104,7 +104,7 @@ fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
       #|TERMINATION:
       #|At i = n, the front belongs to the last window.
     ),
-    invariant: result.length() == (if i >= k { i - k + 1 } else { 0 }),
+    proof_invariant: result.length() == (if i >= k { i - k + 1 } else { 0 }),
     reasoning: (
       #|INVARIANT 4 (Output size): after processing indices [0, i), we have
       #|exactly one maximum per full window.
@@ -170,7 +170,7 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
       result.push(arr[front])
     }
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT 1 (Bounds): i advances through [0, n], deque stores indices
       #|from the processed prefix [0, i).
@@ -179,7 +179,7 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
       #|TERMINATION:
       #|At i = n, all positions are processed.
     ),
-    invariant: dq.length() >= 0 && dq.length() <= i,
+    proof_invariant: dq.length() >= 0 && dq.length() <= i,
     reasoning: (
       #|INVARIANT 2 (Deque size): deque contains at most i indices from [0, i).
       #|MAINTENANCE:
@@ -187,7 +187,7 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
       #|TERMINATION:
       #|At loop end, deque indices refer only to processed elements.
     ),
-    invariant: match dq.front() {
+    proof_invariant: match dq.front() {
       None => true
       Some(f) => f >= i - k && f <= i - 1
     },
@@ -199,7 +199,7 @@ fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
       #|TERMINATION:
       #|At i = n, the front belongs to the last window.
     ),
-    invariant: result.length() == (if i >= k { i - k + 1 } else { 0 }),
+    proof_invariant: result.length() == (if i >= k { i - k + 1 } else { 0 }),
     reasoning: (
       #|INVARIANT 4 (Output size): after processing indices [0, i), we have
       #|exactly one minimum per full window.
@@ -241,7 +241,7 @@ fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
   } nobreak {
     result
   } where {
-    invariant: i >= k && i <= n,
+    proof_invariant: i >= k && i <= n,
     reasoning: (
       #|INVARIANT (sliding sum):
       #|sum equals the sum of arr[i-k..i) at each step.
@@ -285,7 +285,7 @@ fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
   } nobreak {
     max_len
   } where {
-    invariant: right >= 0 && right <= n && left >= 0 && left <= right + 1,
+    proof_invariant: right >= 0 && right <= n && left >= 0 && left <= right + 1,
     reasoning: (
       #|INVARIANT 1 (Bounds): left/right stay within [0, n] with at most one-step
       #|gap when the window becomes empty.
@@ -294,7 +294,7 @@ fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
       #|TERMINATION:
       #|At right = n, all elements have been processed.
     ),
-    invariant: max_len >= 0 && max_len <= right,
+    proof_invariant: max_len >= 0 && max_len <= right,
     reasoning: (
       #|INVARIANT 2 (Best-so-far): max_len is the longest valid window found
       #|in the processed prefix [0, right).
@@ -333,7 +333,7 @@ fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int {
   } nobreak {
     min_len
   } where {
-    invariant: right >= 0 && right <= n && left >= 0 && left <= right + 1,
+    proof_invariant: right >= 0 && right <= n && left >= 0 && left <= right + 1,
     reasoning: (
       #|INVARIANT 1 (Bounds): left/right stay within [0, n] with at most one-step
       #|gap when the window becomes empty.
@@ -342,7 +342,7 @@ fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int {
       #|TERMINATION:
       #|At right = n, all elements have been processed.
     ),
-    invariant: min_len >= 1 && min_len <= n + 1,
+    proof_invariant: min_len >= 1 && min_len <= n + 1,
     reasoning: (
       #|INVARIANT 2 (Best-so-far): min_len is the shortest window with sum >= target
       #|seen in the processed prefix, or n+1 if none exists yet.

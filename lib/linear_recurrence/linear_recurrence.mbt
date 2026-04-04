@@ -38,7 +38,7 @@ fn pow_mod(base : Int64, exp : Int64, m : Int64) -> Int64 {
   } nobreak {
     result
   } where {
-    invariant: e >= 0L,
+    proof_invariant: e >= 0L,
     reasoning: (
       #|INVARIANT (binary exponentiation):
       #|result * (b^e) equals base^exp modulo m. Each step consumes one bit
@@ -114,7 +114,7 @@ pub fn linear_recurrence_nth(
   } nobreak {
     (res, base)
   } where {
-    invariant: e >= 0L,
+    proof_invariant: e >= 0L,
     reasoning: (
       #|INVARIANT (Kitamasa exponent):
       #|res encodes x^processed modulo the characteristic polynomial, base

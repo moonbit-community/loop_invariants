@@ -68,7 +68,7 @@ fn FenwickTree::update(self : FenwickTree, i : Int, delta : Int) -> Unit {
       continue idx + lowbit(idx)
     }
   } where {
-    invariant: idx >= i,
+    proof_invariant: idx >= i,
     reasoning: (
       #|INVARIANT: idx traverses through all positions whose ranges include i.
       #|
@@ -113,7 +113,7 @@ fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int {
       continue idx - lowbit(idx), sum + self.tree[idx]
     }
   } where {
-    invariant: idx >= 0 && idx <= i,
+    proof_invariant: idx >= 0 && idx <= i,
     reasoning: (
       #|INVARIANT: sum = arr[idx+1] + arr[idx+2] + ... + arr[i]
       #|          (sum of elements from idx+1 to i)
@@ -189,7 +189,7 @@ fn FenwickTree::from_array(arr : ArrayView[Int]) -> FenwickTree {
       continue i + 1
     }
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT (Copy step):
       #|After processing indices [0..i), tree[t+1] = arr[t] for all t < i.
@@ -213,7 +213,7 @@ fn FenwickTree::from_array(arr : ArrayView[Int]) -> FenwickTree {
       continue i + 1
     }
   } where {
-    invariant: i >= 1 && i <= n + 1,
+    proof_invariant: i >= 1 && i <= n + 1,
     reasoning: (
       #|INVARIANT: After processing index i, tree[j] for j ≤ i contains
       #|the correct partial sum for its range (considering only indices ≤ i).
@@ -291,7 +291,7 @@ fn FenwickTree::find_kth(self : FenwickTree, k : Int) -> Int {
       }
     }
   } where {
-    invariant: bit >= 0 && pos >= 0 && pos <= self.n,
+    proof_invariant: bit >= 0 && pos >= 0 && pos <= self.n,
     reasoning: (
       #|INVARIANT (Binary lifting):
       #|pos is the largest index such that prefix_sum(pos) < k, and
@@ -390,7 +390,7 @@ fn FenwickTree2D::update(
           continue y + lowbit(y)
         }
       } where {
-        invariant: y >= j,
+        proof_invariant: y >= j,
         reasoning: (
           #|INVARIANT (Column traversal):
           #|y walks the Fenwick ancestors of column j: j, j+lowbit(j), ...
@@ -405,7 +405,7 @@ fn FenwickTree2D::update(
       continue x + lowbit(x)
     }
   } where {
-    invariant: x >= i,
+    proof_invariant: x >= i,
     reasoning: (
       #|INVARIANT: We update all cells (x, y) whose 2D ranges include (i, j).
       #|
@@ -440,7 +440,7 @@ fn FenwickTree2D::prefix_sum(self : FenwickTree2D, i : Int, j : Int) -> Int {
           continue y - lowbit(y), acc + self.tree[idx]
         }
       } where {
-        invariant: y >= 0,
+        proof_invariant: y >= 0,
         reasoning: (
           #|INVARIANT (Column sum):
           #|acc accumulates the 1D Fenwick prefix sum for column y at fixed x,
@@ -455,7 +455,7 @@ fn FenwickTree2D::prefix_sum(self : FenwickTree2D, i : Int, j : Int) -> Int {
       continue x - lowbit(x), sum + inner_sum
     }
   } where {
-    invariant: x >= 0,
+    proof_invariant: x >= 0,
     reasoning: (
       #|INVARIANT: sum accumulates the 2D prefix sum for rectangle (1,1) to (i,j).
       #|
@@ -705,7 +705,7 @@ fn count_inversions(arr : ArrayView[Int], max_val : Int) -> Int {
       continue i - 1, count + smaller
     }
   } where {
-    invariant: i >= -1 && i < n,
+    proof_invariant: i >= -1 && i < n,
     reasoning: (
       #|INVARIANT: After processing index i:
       #|  - tree[v] = frequency of value v in arr[i+1..n-1]

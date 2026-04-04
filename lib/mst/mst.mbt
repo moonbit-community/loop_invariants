@@ -64,7 +64,7 @@ fn UF::new(n : Int) -> UF {
   for i in 0..<n {
     parent[i] = i
   } where {
-    invariant: i >= 0 && i <= n && parent.length() == n && rank.length() == n,
+    proof_invariant: i >= 0 && i <= n && parent.length() == n && rank.length() == n,
     reasoning: (
       #|INVARIANT (UF init):
       #|parent[j] = j for all j in [0, i); each vertex is its own set.
@@ -203,7 +203,7 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
     } nobreak {
       (u, min_w)
     } where {
-      invariant: i >= 0 &&
+      proof_invariant: i >= 0 &&
       i <= self.n &&
       min_edge.length() == self.n &&
       in_mst.length() == self.n,
@@ -234,7 +234,7 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
   } nobreak {
     (total_weight, edges_added)
   } where {
-    invariant: iter >= 0 && iter <= self.n && in_mst.length() == self.n,
+    proof_invariant: iter >= 0 && iter <= self.n && in_mst.length() == self.n,
     reasoning: (
       #|INVARIANT (Prim):
       #|The set in_mst forms a tree, and min_edge holds the cheapest crossing

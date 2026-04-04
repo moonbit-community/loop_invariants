@@ -63,7 +63,7 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
   for i in 0..<self.n {
     self.level[i] = -1
   } where {
-    invariant: i >= 0 && i <= self.n && self.level.length() == self.n,
+    proof_invariant: i >= 0 && i <= self.n && self.level.length() == self.n,
     reasoning: (
       #|INVARIANT (level reset):
       #|level[0..i) have been cleared to -1 for the next BFS layer build.
@@ -84,7 +84,7 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
         queue.push(e.to)
       }
     } where {
-      invariant: i >= 0 && i <= self.adj[u].length() && self.level[u] >= 0,
+      proof_invariant: i >= 0 && i <= self.adj[u].length() && self.level[u] >= 0,
       reasoning: (
         #|INVARIANT (BFS edge scan):
         #|Edges adj[u][0..i) have been scanned. Any vertex reachable from u via
@@ -138,7 +138,7 @@ fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
     for i in 0..<self.n {
       self.iter[i] = 0
     } where {
-      invariant: i >= 0 && i <= self.n && self.iter.length() == self.n,
+      proof_invariant: i >= 0 && i <= self.n && self.iter.length() == self.n,
       reasoning: (
         #|INVARIANT (iter reset):
         #|iter[0..i) are reset so DFS starts at edge 0 for those vertices.
@@ -154,7 +154,7 @@ fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
     } nobreak {
       flow
     } where {
-      invariant: flow >= 0L,
+      proof_invariant: flow >= 0L,
       reasoning: (
         #|INVARIANT (blocking flow augmentation):
         #|flow equals the total amount sent so far. Each DFS call augments along
@@ -188,7 +188,7 @@ fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] 
         queue.push(e.to)
       }
     } where {
-      invariant: i >= 0 &&
+      proof_invariant: i >= 0 &&
       i <= self.adj[u].length() &&
       visited.length() == self.n,
       reasoning: (
@@ -230,7 +230,7 @@ pub fn min_cut_st(
       flow.add_edge(u, v, cap)
     }
   } where {
-    invariant: i >= 0 && i <= edges.length(),
+    proof_invariant: i >= 0 && i <= edges.length(),
     reasoning: (
       #|INVARIANT (edge load):
       #|All edges in edges[0..i) that are valid (in range, non-self-loop, cap>0)

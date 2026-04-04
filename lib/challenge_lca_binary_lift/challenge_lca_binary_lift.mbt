@@ -11,7 +11,7 @@ fn highest_bit(x : Int) -> Int {
       continue v >> 1, k + 1
     }
   } where {
-    invariant: v >= 1,
+    proof_invariant: v >= 1,
     reasoning: (
       #|INVARIANT (highest bit):
       #|v equals x >> k, so k counts shifts so far.
@@ -69,7 +69,7 @@ pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
       continue head + 1
     }
   } where {
-    invariant: head >= 0 && head <= queue.length(),
+    proof_invariant: head >= 0 && head <= queue.length(),
     reasoning: (
       #|INVARIANT (BFS tree):
       #|Nodes in queue[0..head) have fixed depth and parent up[0]. The queue

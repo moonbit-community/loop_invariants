@@ -52,7 +52,7 @@ fn max_profit_single(prices : ArrayView[Int]) -> Int {
       continue i + 1, new_min, new_best
     }
   } where {
-    invariant: 1 <= i && i <= prices.length(),
+    proof_invariant: 1 <= i && i <= prices.length(),
     reasoning: (
       #|INVARIANT (progress):
       #|i counts processed prices, so 1 <= i <= prices.length().
@@ -61,7 +61,7 @@ fn max_profit_single(prices : ArrayView[Int]) -> Int {
       #|TERMINATION:
       #|At i = prices.length(), all prices are processed.
     ),
-    invariant: min_price == min_prefix(prices, i),
+    proof_invariant: min_price == min_prefix(prices, i),
     reasoning: (
       #|INVARIANT (min prefix):
       #|min_price equals the minimum of prices[0..i).
@@ -70,7 +70,7 @@ fn max_profit_single(prices : ArrayView[Int]) -> Int {
       #|TERMINATION:
       #|At the end, min_price reflects the global minimum.
     ),
-    invariant: best == max_profit_prefix(prices, i),
+    proof_invariant: best == max_profit_prefix(prices, i),
     reasoning: (
       #|INVARIANT (best profit):
       #|best is the maximum profit achievable using only prices[0..i).
@@ -135,7 +135,7 @@ fn is_balanced_parens(chars : ArrayView[Char]) -> Bool {
       }
     }
   } where {
-    invariant: 0 <= i && i <= chars.length(),
+    proof_invariant: 0 <= i && i <= chars.length(),
     reasoning: (
       #|INVARIANT (progress):
       #|i is the length of the processed prefix, bounded by chars.length().
@@ -144,7 +144,7 @@ fn is_balanced_parens(chars : ArrayView[Char]) -> Bool {
       #|TERMINATION:
       #|At i = chars.length(), the entire string is processed.
     ),
-    invariant: balance == balance_prefix(chars, i),
+    proof_invariant: balance == balance_prefix(chars, i),
     reasoning: (
       #|INVARIANT (prefix balance):
       #|balance equals the net '(' minus ')' in chars[0..i).
@@ -153,7 +153,7 @@ fn is_balanced_parens(chars : ArrayView[Char]) -> Bool {
       #|TERMINATION:
       #|At the end, balance reflects the full-string net balance.
     ),
-    invariant: balance >= 0,
+    proof_invariant: balance >= 0,
     reasoning: (
       #|INVARIANT (non-negative prefix):
       #|balance is never negative for processed prefixes.

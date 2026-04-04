@@ -25,7 +25,7 @@ fn dsu_find(dsu : DSU, x : Int) -> Int {
       continue p
     }
   } where {
-    invariant: cur >= 0 && cur < dsu.parent.length(),
+    proof_invariant: cur >= 0 && cur < dsu.parent.length(),
     reasoning: (
       #|INVARIANT (DSU root walk):
       #|cur stays on the parent chain of x.

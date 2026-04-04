@@ -289,7 +289,7 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
   for i in 0..<n {
     sorted_vals.push(arr[i])
   } where {
-    invariant: i >= 0 && i <= n,
+    proof_invariant: i >= 0 && i <= n,
     reasoning: (
       #|INVARIANT (copy values):
       #|sorted_vals contains arr[0..i).
@@ -310,7 +310,7 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
       unique_vals.push(sorted_vals[i])
     }
   } where {
-    invariant: i >= 0 && i <= sorted_vals.length(),
+    proof_invariant: i >= 0 && i <= sorted_vals.length(),
     reasoning: (
       #|INVARIANT (deduplicate):
       #|unique_vals holds distinct values from sorted_vals[0..i) in order, and
@@ -340,7 +340,7 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
     let new_root = kth_insert_tree(nodes, prev_root, 0, m - 1, idx)
     roots.push(new_root)
   } where {
-    invariant: i >= 0 && i <= n && roots.length() == i + 1,
+    proof_invariant: i >= 0 && i <= n && roots.length() == i + 1,
     reasoning: (
       #|INVARIANT (build versions):
       #|roots[k] stores frequencies for prefix arr[0..k-1], so roots has i+1

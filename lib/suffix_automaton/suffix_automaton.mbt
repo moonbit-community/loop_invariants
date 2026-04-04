@@ -193,7 +193,7 @@ pub fn longest_common_substring(s1 : String, s2 : String) -> Int {
   } nobreak {
     max_len
   } where {
-    invariant: i >= 0 && i <= s2.length() && state >= 0 && state < sam.size,
+    proof_invariant: i >= 0 && i <= s2.length() && state >= 0 && state < sam.size,
     reasoning: (
       #|INVARIANT (LCS traversal):
       #|len is the length of the longest suffix of s2[0..i) that is a substring

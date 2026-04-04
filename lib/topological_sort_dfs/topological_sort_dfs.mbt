@@ -74,7 +74,7 @@ fn TopoSorter::sort(self : TopoSorter) -> Array[Int]? {
   } nobreak {
     true
   } where {
-    invariant: v >= 0 && v <= self.n,
+    proof_invariant: v >= 0 && v <= self.n,
     reasoning: (
       #|INVARIANT (full coverage):
       #|Vertices in [0..v) have already been processed successfully.

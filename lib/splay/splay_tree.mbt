@@ -198,7 +198,7 @@ fn[T] SplayTree::splay(self : SplayTree[T], x : Int) -> Unit {
       }
     }
   } where {
-    invariant: x >= 0 && x < self.nodes.length(),
+    proof_invariant: x >= 0 && x < self.nodes.length(),
     reasoning: (
       #|SPLAY INVARIANT:
       #|
@@ -251,7 +251,7 @@ fn[T : Compare] SplayTree::search(self : SplayTree[T], key : T) -> Bool {
       break node
     }
   } where {
-    invariant: node >= 0,
+    proof_invariant: node >= 0,
     reasoning: (
       #|SEARCH INVARIANT:
       #|
@@ -282,7 +282,7 @@ fn[T] SplayTree::find_min(self : SplayTree[T], x : Int) -> Int {
       continue self.nodes[node].left
     }
   } where {
-    invariant: node >= 0,
+    proof_invariant: node >= 0,
     reasoning: (
       #|FIND MIN INVARIANT:
       #|node remains on the left spine toward the minimum.
@@ -307,7 +307,7 @@ fn[T] SplayTree::find_max(self : SplayTree[T], x : Int) -> Int {
       continue self.nodes[node].right
     }
   } where {
-    invariant: node >= 0,
+    proof_invariant: node >= 0,
     reasoning: (
       #|FIND MAX INVARIANT:
       #|node remains on the right spine toward the maximum.
@@ -350,7 +350,7 @@ fn[T : Compare] SplayTree::insert(self : SplayTree[T], key : T) -> Bool {
       break node
     }
   } where {
-    invariant: node >= 0,
+    proof_invariant: node >= 0,
     reasoning: (
       #|INSERT SEARCH INVARIANT:
       #|
@@ -511,7 +511,7 @@ fn[T] SplayTree::kth_element(self : SplayTree[T], k : Int) -> T? {
       continue self.nodes[node].right, remaining - left_size - 1
     }
   } where {
-    invariant: node >= 0 && remaining > 0,
+    proof_invariant: node >= 0 && remaining > 0,
     reasoning: (
       #|KTH ELEMENT INVARIANT:
       #|
@@ -560,7 +560,7 @@ fn[T : Compare] SplayTree::count_less(self : SplayTree[T], key : T) -> Int {
       }
     }
   } where {
-    invariant: node >= 0 && count >= 0,
+    proof_invariant: node >= 0 && count >= 0,
     reasoning: (
       #|COUNT LESS INVARIANT:
       #|

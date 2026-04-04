@@ -52,8 +52,8 @@ fn compute_log(n : Int) -> Int {
   } nobreak {
     log + 1
   } where {
-    invariant: log >= 0,
-    invariant: val == 1 << log,
+    proof_invariant: log >= 0,
+    proof_invariant: val == 1 << log,
     reasoning: (
       #|INVARIANT (power-of-two growth):
       #|val equals 2^log and is the smallest power of two checked so far.
@@ -99,7 +99,7 @@ pub fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
         up[v][k] = up[up[v][k - 1]][k - 1]
       }
     } where {
-      invariant: v >= 0 && v <= n,
+      proof_invariant: v >= 0 && v <= n,
       reasoning: (
         #|INVARIANT (Level k table fill):
         #|After processing vertices [0..v), up[x][k] is computed for all x < v.
@@ -113,7 +113,7 @@ pub fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
       ),
     }
   } where {
-    invariant: k >= 1 && k <= log_n,
+    proof_invariant: k >= 1 && k <= log_n,
     reasoning: (
       #|INVARIANT (Binary lifting table):
       #|After completing level k-1, up[v][t] is correct for all t < k.
@@ -181,7 +181,7 @@ pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
   } nobreak {
     curr_u
   } where {
-    invariant: k >= 0 && k <= self.log_n,
+    proof_invariant: k >= 0 && k <= self.log_n,
     reasoning: (
       #|INVARIANT (Leveling by bits):
       #|After processing bits [0..k), curr_u has been lifted by the sum of
@@ -252,8 +252,8 @@ fn LCA::kth_ancestor(self : LCA, v : Int, k : Int) -> Int {
   } nobreak {
     curr
   } where {
-    invariant: bit >= 0 && bit <= self.log_n,
-    invariant: curr >= -1 && curr < self.n,
+    proof_invariant: bit >= 0 && bit <= self.log_n,
+    proof_invariant: curr >= -1 && curr < self.n,
     reasoning: (
       #|INVARIANT (binary lifting):
       #|Bits [0..bit) of k are processed; curr is the ancestor after those jumps.
@@ -286,7 +286,7 @@ fn LCA::get_path(self : LCA, u : Int, v : Int) -> Array[Int] {
     path_u.push(curr)
     continue self.up[curr][0]
   } where {
-    invariant: curr >= 0 && curr < self.n,
+    proof_invariant: curr >= 0 && curr < self.n,
     reasoning: (
       #|INVARIANT (u to LCA):
       #|path_u contains the nodes from u up to (but excluding) curr, and curr
@@ -304,7 +304,7 @@ fn LCA::get_path(self : LCA, u : Int, v : Int) -> Array[Int] {
     path_v.push(curr)
     continue self.up[curr][0]
   } where {
-    invariant: curr >= 0 && curr < self.n,
+    proof_invariant: curr >= 0 && curr < self.n,
     reasoning: (
       #|INVARIANT (v to LCA):
       #|path_v contains the nodes from v up to (but excluding) curr, and curr
