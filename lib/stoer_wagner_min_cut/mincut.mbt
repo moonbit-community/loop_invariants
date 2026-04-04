@@ -7,75 +7,95 @@
 //
 // ALGORITHM OVERVIEW:
 // ```
-//   Repeat n-1 times (until only one vertex remains):
+//   Repeat n-1 times (until only one supernode remains):
 //     1. MAXIMUM ADJACENCY SEARCH:
-//        Build set A by repeatedly adding the vertex most connected to A
-//        Let s = second-to-last vertex, t = last vertex
+//        Start with set A = {any alive vertex}.
+//        Repeatedly add the alive vertex with the highest total edge weight
+//        to A.  Let s = second-to-last added, t = last added.
 //
 //     2. PHASE CUT:
-//        The cut {t} vs {all others} has weight w[t]
-//        This is a valid s-t cut (s ∈ A, t isolated)
+//        The cut {t} vs {all others} has weight w[t].
+//        This equals the minimum s-t cut value for this phase.
+//        Record it as a global candidate.
 //
 //     3. CONTRACT:
-//        Merge t into s (combine into supernode)
-//        Update edge weights to reflect merged vertex
+//        Merge t into s (combine into a single supernode).
+//        Update adj so edges to t are redirected to s.
+//        Mark t as no longer alive.
 //
-//   The minimum cut seen across all phases is the global min cut.
+//   Return the minimum candidate seen across all n-1 phases.
 // ```
 //
 // WHY IT WORKS:
 // ```
-//   Theorem: The maximum adjacency search produces a cut where the last
-//   vertex t is separated from the rest. This cut has weight equal to
-//   the sum of edges from t.
+//   Theorem (Stoer-Wagner 1997):
+//     For the ordering produced by maximum adjacency search,
+//     the last vertex t is such that w[t] equals the minimum s-t cut.
 //
-//   Key insight: If the global min cut separates s and t, we'll find it
-//   in this phase. If not, contracting s and t doesn't affect the min cut,
-//   so we'll find it in a later phase.
+//   Key insight: If the global min cut separates s and t, we find it
+//   in this phase.  If it does not separate s and t, contracting s and t
+//   does not destroy that cut, so we find it in a later phase.
+//
+//   Therefore some phase will always find the global minimum cut.
 // ```
 //
-// TIME COMPLEXITY: O(V³) with simple implementation
-//   (Can be improved to O(VE + V² log V) with priority queue)
-// SPACE COMPLEXITY: O(V²) for adjacency matrix
+// TIME COMPLEXITY: O(V^3) with simple adjacency matrix implementation.
+//   (Can be improved to O(VE + V^2 log V) with a priority queue.)
+// SPACE COMPLEXITY: O(V^2) for the adjacency matrix.
 
 ///|
-/// Compute the global minimum cut using Stoer-Wagner algorithm.
+/// Compute the global minimum cut of an undirected weighted graph.
 ///
-/// ALGORITHM:
+/// The **global minimum cut** is the cheapest way to partition all vertices
+/// into two non-empty groups, where cost is the total weight of edges
+/// crossing between the groups.
+///
+/// This implements the Stoer-Wagner algorithm (1997):
+///
 /// ```
+/// Algorithm sketch:
+///   Build adjacency matrix from edges.
 ///   FOR phase = 0 TO n-2:
-///     1. Initialize w[v] = 0 for all v, A = ∅
-///     2. REPEAT alive_count times:
-///        - Select v with max w[v] among alive, not-in-A vertices
-///        - Add v to A
-///        - Update w[u] += adj[v][u] for all u not in A
-///     3. The last vertex t defines cut weight w[t]
-///     4. Contract t into second-to-last vertex s
-///        (merge members, sum edge weights)
+///     1. Maximum adjacency search:
+///        w[v] = 0 for all alive v,  A = empty set
+///        FOR iter = 0 TO alive_count-1:
+///          - pick v = argmax w[v] among alive vertices not in A
+///          - add v to A
+///          - for all alive u not in A: w[u] += adj[v][u]
+///        s = second-to-last added,  t = last added
+///     2. Phase cut weight = w[t]
+///        (total edge weight from t to A, equals min s-t cut)
+///     3. Contract: merge t into s
+///        adj[s][u] += adj[t][u] for all alive u != s, t
+///        members[s] += members[t]
+///        alive[t] = false
+///   Global min cut = minimum phase cut weight seen.
 /// ```
 ///
-/// PARAMETERS:
-///   - n: number of vertices (labeled 0 to n-1)
-///   - edges: undirected edges as (u, v, weight) triples
+/// Parameters:
+/// - `n`: number of vertices, labeled 0 to n-1.
+/// - `edges`: undirected edges as `(u, v, weight)` triples.
+///   Each edge is counted once (the algorithm uses it in both directions).
+///   Parallel edges between the same pair of vertices are summed.
+///   Self-loops and out-of-range vertices are silently ignored.
 ///
-/// RETURNS:
-///   Some(result) with minimum cut, or None if n <= 1
+/// Returns:
+/// - `None` if `n <= 1` (a cut requires at least two vertices).
+/// - `Some(result)` otherwise, where `result.weight` is the minimum cut
+///   weight and `result.cut` is the set of original vertex IDs on one side.
 ///
-/// NOTE:
-///   Edge weights should be non-negative.
-///   Parallel edges are handled (weights summed).
+/// Edge weights must be non-negative for the algorithm to be correct.
 ///
-/// EXAMPLE:
+/// Example (square graph, unit weights):
 /// ```
-///   Square graph:
-///     0 ---1--- 1
-///     |         |
-///     1         1
-///     |         |
-///     3 ---1--- 2
+///   0 ---1--- 1
+///   |         |
+///   1         1
+///   |         |
+///   3 ---1--- 2
 ///
-///   Min cut separates one vertex from the rest.
-///   Cut weight = 2 (e.g., cut = {0}, crossing edges 0-1 and 0-3)
+///   Min cut weight = 2.
+///   One side: {3}  (crossing edges: 3-0 and 3-2)
 /// ```
 pub fn stoer_wagner_min_cut(
   n : Int,

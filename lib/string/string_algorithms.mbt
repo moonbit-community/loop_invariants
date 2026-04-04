@@ -159,10 +159,39 @@ test "z_algorithm" {
 // ============================================================================
 
 ///|
-/// Manacher's algorithm: compute palindrome radii centered at each position.
-/// Uses transformed string with separators to handle even-length palindromes.
-/// Returns array where p[i] = radius of palindrome centered at position i
-/// in the transformed string (including the center).
+/// Compute palindrome radii for every center in the transformed string using
+/// Manacher's algorithm.
+///
+/// The input `s` of length `n` is conceptually transformed into a string of
+/// length `2n + 1` by inserting `#` sentinels between (and around) every
+/// character:
+/// ```
+/// "abc"  ->  "#a#b#c#"
+///  idx:   0  1 2 3 4 5 6
+/// ```
+/// This maps every palindrome (odd **or** even length in the original) to an
+/// odd-length palindrome with a well-defined center in the transformed string,
+/// allowing a single unified pass.
+///
+/// The algorithm keeps track of the **rightmost palindrome** seen so far,
+/// centred at `c` with right boundary `r = c + p[c]`.  For position `i`:
+/// - If `i < r`: the mirror position `mirror = 2*c - i` provides a free
+///   lower bound `p[i] >= min(p[mirror], r - i)`.
+/// - Otherwise: start expanding from scratch.
+///
+/// Expansion is attempted after setting the lower bound, and `(c, r)` are
+/// updated whenever the palindrome at `i` reaches beyond `r`.
+///
+/// Because `r` only increases and each character comparison either increments
+/// `r` or is "free", the total work is **O(n)**.
+///
+/// # Parameters
+/// - `s` — the original character slice
+///
+/// # Returns
+/// An array `p` of length `2n + 1` where `p[i]` is the radius (in the
+/// transformed string) of the palindrome centred at position `i`.
+/// A radius of `k` corresponds to a palindrome of original length `k`.
 #warnings("+missing_invariant+missing_reasoning")
 fn manacher(s : ArrayView[Char]) -> Array[Int] {
   let n = s.length()
@@ -274,7 +303,42 @@ fn manacher(s : ArrayView[Char]) -> Array[Int] {
 }
 
 ///|
-/// Find longest palindromic substring using Manacher's algorithm.
+/// Find the longest palindromic substring of `s` using Manacher's algorithm.
+///
+/// A palindrome is a string that reads the same forwards and backwards.
+/// This function returns the **start index** and **length** of the longest
+/// such substring in `s`, running in **O(n)** time and **O(n)** space.
+///
+/// Internally the algorithm:
+/// 1. Constructs a transformed string by inserting `#` sentinels so that odd-
+///    and even-length palindromes are handled uniformly.
+/// 2. Computes the palindrome-radius array with `manacher`, reusing mirror
+///    symmetry to avoid redundant comparisons.
+/// 3. Scans the radius array to find the maximum radius and converts the
+///    transformed-string center back to original-string coordinates.
+///
+/// # Parameters
+/// - `s` — a view of the character array to search
+///
+/// # Returns
+/// `(start, len)` where
+/// - `start` is the 0-based index of the first character of the longest
+///   palindrome, and
+/// - `len` is its length in characters.
+///
+/// Returns `(0, 0)` for an empty slice.
+///
+/// # Examples
+/// ```
+/// // "abacaba" is itself a palindrome
+/// // longest_palindrome_range(['a','b','a','c','a','b','a']) == (0, 7)
+///
+/// // even-length palindrome "abba"
+/// // longest_palindrome_range(['a','b','b','a']) == (0, 4)
+///
+/// // "bcb" inside "abcbd"
+/// // longest_palindrome_range(['a','b','c','b','d']) == (1, 3)
+/// ```
 pub fn longest_palindrome_range(s : ArrayView[Char]) -> (Int, Int) {
   let n = s.length()
   guard n > 0 else { return (0, 0) }
@@ -336,8 +400,39 @@ test "manacher" {
 // ============================================================================
 
 ///|
-/// Rabin-Karp string matching using rolling hash.
-/// Returns all starting positions where pattern occurs in text.
+/// Find all occurrences of `pattern` in `text` using the Rabin-Karp
+/// rolling-hash algorithm.
+///
+/// A **polynomial hash** is maintained over the current window of `m`
+/// characters in `text`.  Sliding the window by one position takes O(1):
+/// ```
+/// new_hash = (old_hash - text[i] * B^(m-1)) * B + text[i+m]   (mod P)
+/// ```
+/// where `B = 256` and `P = 1_000_000_007`.  When the hash matches the
+/// pattern hash, a character-by-character verification confirms or rejects
+/// the match (handles hash collisions).
+///
+/// # Parameters
+/// - `text`    — the text to search in
+/// - `pattern` — the pattern to search for
+///
+/// # Returns
+/// A sorted `Array[Int]` of 0-based starting indices in `text` where
+/// `pattern` occurs.  Returns an empty array if `pattern` is empty,
+/// `text` is shorter than `pattern`, or no match is found.
+///
+/// # Complexity
+/// - Expected **O(n + m)** when collisions are rare.
+/// - Worst case O(n * m) (rare with the chosen prime modulus).
+///
+/// # Examples
+/// ```
+/// // "abc" occurs at positions 0 and 3 in "abcabcabd"
+/// // rabin_karp("abcabcabd", "abc") == [0, 3]
+///
+/// // overlapping matches
+/// // rabin_karp("aaaaa", "aa") == [0, 1, 2, 3]
+/// ```
 #warnings("+missing_invariant+missing_reasoning")
 fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
   let n = text.length()
@@ -503,7 +598,45 @@ test "rabin_karp" {
 // ============================================================================
 
 ///|
-/// LCS length using space-optimized DP (two rows).
+/// Compute the length of the **Longest Common Subsequence** (LCS) of `s1`
+/// and `s2`.
+///
+/// A *common subsequence* is a sequence of characters that appears in both
+/// strings in order but not necessarily contiguously.  The LCS is the longest
+/// such sequence.
+///
+/// The implementation uses the standard DP recurrence with a **two-row
+/// space optimisation** (O(n) space instead of O(n*m)):
+/// ```
+/// L[i][j] = L[i-1][j-1] + 1             if s1[i-1] == s2[j-1]
+///          = max(L[i-1][j], L[i][j-1])  otherwise
+/// ```
+/// Only `prev` (row `i-1`) and `curr` (row `i`) are kept in memory.
+/// After each row the two buffers are swapped.
+///
+/// # Parameters
+/// - `s1` — first character slice (length `m`)
+/// - `s2` — second character slice (length `n`)
+///
+/// # Returns
+/// The LCS **length** as an `Int`.  Returns `0` if either slice is empty or
+/// if the sequences share no common characters.
+///
+/// # Complexity
+/// - Time:  **O(m * n)**
+/// - Space: **O(n)** (two rows of length `n + 1`)
+///
+/// # Examples
+/// ```
+/// // LCS of "ABCDEF" and "ACBCF" is "ABCF" or "ACBF" (length 4)
+/// // lcs_length(['A','B','C','D','E','F'], ['A','C','B','C','F']) == 4
+///
+/// // no common characters
+/// // lcs_length(['A','B','C'], ['D','E','F']) == 0
+///
+/// // repeated character
+/// // lcs_length(['A','A','A'], ['A','A']) == 2
+/// ```
 #warnings("+missing_invariant+missing_reasoning")
 pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
   let m = s1.length()

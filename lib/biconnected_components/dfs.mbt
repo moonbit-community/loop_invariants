@@ -6,59 +6,65 @@
 //
 // ALGORITHM OVERVIEW:
 // ```
-//   1. DFS the graph, computing disc[u] and low[u] for each vertex
-//   2. Push edges onto a stack as we traverse
-//   3. When low[v] >= disc[u] for tree edge (u,v):
-//      - Pop edges from stack until (u,v) → one biconnected component
-//      - Mark u as articulation point (with special case for root)
+//   1. DFS the graph, computing disc[u] and low[u] for each vertex.
+//   2. Push each traversed edge onto a stack.
+//   3. When returning from a tree child v of u and low[v] >= disc[u]:
+//      - Pop edges from the stack until edge (u,v) is popped.
+//      - The popped edges form one biconnected component.
+//      - Mark u as an articulation point (with a special case for the root).
+// ```
+//
+// WHY THE EDGE STACK WORKS:
+// ```
+//   All edges pushed after (u,v) were discovered inside v's DFS subtree.
+//   Because low[v] >= disc[u], none of those edges has a back edge that
+//   escapes above u. They are therefore all confined to the same block.
+//   Popping down to and including (u,v) collects exactly that block.
 // ```
 //
 // ARTICULATION POINT DETECTION:
 // ```
-//   For non-root vertex u with tree child v:
-//     If low[v] >= disc[u], then u is an articulation point.
-//     Reason: v's subtree has no back edge going above u.
+//   Non-root vertex u is an articulation point when it has at least one
+//   tree child v satisfying low[v] >= disc[u].
 //
-//   For root vertex:
-//     Root is articulation point iff it has >= 2 DFS children.
-//     Reason: root has no ancestor, so back edges don't help.
-// ```
-//
-// COMPONENT EXTRACTION:
-// ```
-//   When we detect low[v] >= disc[u]:
-//     All edges pushed after (u,v) belong to the same block.
-//     Pop until we see (u,v) → that's one biconnected component.
-//
-//   Example DFS on triangle 0-1-2-0:
-//     Push (0,1), push (1,2), see back edge (2,0) updates low
-//     When returning to 0: low[1] = 0 < disc[0], no split
-//     Continue... eventually extract {(0,1), (1,2), (2,0)}
+//   Root vertex u is an articulation point only when it has >= 2 DFS
+//   children. (The root has no ancestor, so back edges from its subtrees
+//   cannot reconnect them through the root itself.)
 // ```
 
 ///|
-/// DFS from vertex u, computing disc/low and extracting components.
+/// Perform a DFS from vertex `u`, computing low-link values and extracting
+/// biconnected components as they are completed.
 ///
-/// ALGORITHM:
-/// ```
-///   1. Assign discovery time disc[u] = timer++
-///   2. Initialize low[u] = disc[u]
-///   3. For each neighbor v:
-///      - If unvisited (tree edge):
-///        * Push (u,v) to stack
-///        * Recurse on v
-///        * Update low[u] = min(low[u], low[v])
-///        * If low[v] >= disc[u]: extract component, mark articulation
-///      - If visited and disc[v] < disc[u] (back edge):
-///        * Push (u,v) to stack
-///        * Update low[u] = min(low[u], disc[v])
-///   4. Special root check: articulation if >= 2 children
-/// ```
+/// This implements the core of Tarjan's biconnected component algorithm.
+/// The function is called once for every unvisited vertex by `run`, which
+/// handles disconnected graphs by looping over all vertices.
 ///
-/// PARAMETERS:
-///   - self: the finder state
-///   - u: current vertex
-///   - p_edge: parent edge ID (-1 for root)
+/// Parameters:
+/// - `self`: the shared mutable finder state (disc, low, stacks, etc.)
+/// - `u`: the vertex to visit; must satisfy `self.disc[u] == -1` on entry
+/// - `p_edge`: the edge ID used to arrive at `u` (`-1` for the DFS root);
+///   edges with this ID are skipped to avoid immediately reversing the tree
+///
+/// Side effects (all stored in `self`):
+/// - `disc[u]` and `low[u]` are set for every visited vertex.
+/// - Edges are pushed to `self.edge_stack` during traversal and popped into
+///   `self.components` when a block boundary is detected.
+/// - `self.articulation[u]` is set to `true` when `u` qualifies as an
+///   articulation point.
+///
+/// Low-link update rules applied inside this function:
+/// ```
+///   Tree edge (u -> v, unvisited v):
+///     push (u,v); recurse; low[u] = min(low[u], low[v])
+///     if low[v] >= disc[u]: extract block, maybe mark u as AP
+///
+///   Back edge (u -> w, already visited, disc[w] < disc[u]):
+///     push (u,w); low[u] = min(low[u], disc[w])
+///
+///   Forward/cross edges (disc[w] > disc[u]): skip
+///     (these are already-handled tree descendants; no update needed)
+/// ```
 fn BiconnectedFinder::dfs(
   self : BiconnectedFinder,
   u : Int,
@@ -82,14 +88,14 @@ fn BiconnectedFinder::dfs(
       // Update low-link from child
       self.low[u] = min(self.low[u], self.low[v])
 
-      // Articulation point check (non-root)
-      // If v's subtree can't reach above u, u is critical
+      // Articulation point check (non-root):
+      // v's subtree cannot reach above u, so removing u disconnects v.
       if p_edge != -1 && self.low[v] >= self.disc[u] {
         self.articulation[u] = true
       }
 
-      // Component extraction
-      // When low[v] >= disc[u], edges from (u,v) to stack top form a block
+      // Component extraction:
+      // All edges pushed since (u,v) belong to one biconnected component.
       if self.low[v] >= self.disc[u] {
         let comp : Array[(Int, Int)] = []
         for ;; {
@@ -127,8 +133,9 @@ fn BiconnectedFinder::dfs(
       }
       continue children + 1
     } else if self.disc[v] < self.disc[u] {
-      // Case 2: Back edge - v is ancestor of u
-      // Only process if disc[v] < disc[u] to avoid duplicate processing
+      // Case 2: Back edge - v is a proper ancestor of u.
+      // Only process edges going strictly upward (disc[v] < disc[u]) to
+      // avoid double-counting each undirected edge.
       self.edge_stack.push((u, v))
       self.low[u] = min(self.low[u], self.disc[v])
       continue children
@@ -139,15 +146,21 @@ fn BiconnectedFinder::dfs(
     children
   }
 
-  // Root articulation check
-  // Root is articulation iff it has >= 2 children in DFS tree
+  // Root articulation check:
+  // The DFS root is an articulation point iff it has >= 2 DFS children.
+  // With one child, removing the root still leaves the rest connected.
   if p_edge == -1 && children > 1 {
     self.articulation[u] = true
   }
 }
 
 ///|
-/// Run DFS on all connected components.
+/// Run the DFS on every connected component of the graph.
+///
+/// Iterates over all vertices and calls `dfs` for each unvisited vertex,
+/// treating it as the root of its connected component. This ensures that
+/// disconnected graphs are handled correctly: each connected component is
+/// explored independently and contributes its own set of blocks.
 fn BiconnectedFinder::run(self : BiconnectedFinder) -> Unit {
   for v in 0..<self.n {
     if self.disc[v] == -1 {
@@ -157,7 +170,12 @@ fn BiconnectedFinder::run(self : BiconnectedFinder) -> Unit {
 }
 
 ///|
-/// Collect all articulation points.
+/// Collect and return all articulation points found during the DFS.
+///
+/// Scans the `articulation` boolean array and returns the indices of all
+/// vertices marked as articulation points, in ascending vertex order.
+/// The result array may be empty if the graph has no articulation points
+/// (e.g., a single cycle or an empty graph).
 fn BiconnectedFinder::collect_articulation_points(
   self : BiconnectedFinder,
 ) -> Array[Int] {
