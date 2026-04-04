@@ -49,6 +49,11 @@ priv struct SAMState {
 }
 
 ///|
+/// Size of the character alphabet used by the automaton.
+///
+/// All transition arrays are sized to `alphabet_size` entries indexed by the
+/// integer value of an ASCII character.  Characters outside the range
+/// `[0, 127]` are not supported by this implementation.
 let alphabet_size : Int = 128 // ASCII alphabet
 
 ///|
@@ -75,7 +80,31 @@ fn SAMState::copy_trans(self : SAMState) -> SAMState {
 }
 
 ///|
-/// Suffix Automaton data structure
+/// The suffix automaton (SAM) for a string.
+///
+/// A SAM is a minimal DFA that accepts every substring of the text it was
+/// built from and no other strings.  It is constructed incrementally by
+/// calling `extend` once per character (or via the convenience constructor
+/// `build`).
+///
+/// Structural invariants maintained at all times:
+/// - `states[0]` is the unique **initial state** with `len = 0` and
+///   `link = -1`.
+/// - `last` is the index of the state representing the full string built so
+///   far (i.e., the state reached from the initial state by reading the
+///   entire text).
+/// - For every state `q` other than the initial, `states[q].link` is the
+///   index of a state whose `len` is strictly less than `states[q].len`.
+/// - The total number of states never exceeds `2 * n - 1` where `n` is the
+///   current text length.
+///
+/// After construction, use:
+/// - `contains(pattern)` to test substring membership in O(|pattern|).
+/// - `count_distinct_substrings()` to enumerate distinct substrings in O(n).
+/// - `compute_counts()` + `count_occurrences(pattern)` for frequency queries.
+/// - `longest_common_substring(other)` or
+///   `longest_common_substring_length(other)` for LCS queries.
+/// - `kth_substring(k)` to retrieve the k-th lexicographic substring.
 priv struct SuffixAutomaton {
   states : Array[SAMState]
   mut last : Int // index of last state
@@ -90,8 +119,25 @@ fn SuffixAutomaton::new() -> SuffixAutomaton {
 }
 
 ///|
-/// Extend the suffix automaton with a new character
-/// This is the core algorithm that maintains all SAM invariants
+/// Extend the suffix automaton with one more character.
+///
+/// `c` is the **integer character code** of the new character (e.g.,
+/// `'a'.to_int()`).  After this call the automaton recognizes every
+/// substring of the text seen so far.
+///
+/// Algorithm outline (one step of the online SAM construction):
+/// 1. Allocate a new state `cur` with `len = last.len + 1`.
+/// 2. Walk the suffix-link chain starting from `last`.  For every state on
+///    the chain that has no outgoing edge on `c`, add an edge to `cur`.
+/// 3. When the walk finds a state `p` with an existing edge `c -> q`:
+///    - If `q.len == p.len + 1` the suffix link for `cur` is simply `q`.
+///    - Otherwise **clone** `q` into a new state `clone` with
+///      `len = p.len + 1`, redirect all suffix-link-chain states that
+///      pointed to `q` via `c` to point to `clone` instead, and set
+///      both `cur.link` and `q.link` to `clone`.
+/// 4. Update `last = cur`.
+///
+/// Time per call: amortized O(1).
 fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
   let pos = self.states[self.last].len
 
@@ -171,7 +217,13 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
 }
 
 ///|
-/// Build suffix automaton from a string
+/// Build a suffix automaton for the given string.
+///
+/// Calls `extend` once per character in left-to-right order.
+/// The resulting automaton accepts every substring of `s` and no other
+/// strings.
+///
+/// Time: O(n).  Space: O(n).
 fn SuffixAutomaton::build(s : String) -> SuffixAutomaton {
   let sam = SuffixAutomaton::new()
   for c in s {
@@ -181,7 +233,22 @@ fn SuffixAutomaton::build(s : String) -> SuffixAutomaton {
 }
 
 ///|
-/// Check if pattern is a substring of text using a suffix automaton.
+/// Test whether `pattern` occurs as a substring of `text`.
+///
+/// Builds a suffix automaton for `text` and walks it character by character
+/// using `pattern`.  Returns `true` if and only if every character of
+/// `pattern` can be consumed without a missing transition.
+///
+/// The empty pattern is always a substring of any text.
+///
+/// Time: O(|text| + |pattern|).
+///
+/// # Example
+///
+/// ```moonbit
+/// assert_true!(@sam.contains_substring("abab", "aba"))
+/// assert_false!(@sam.contains_substring("abab", "ac"))
+/// ```
 pub fn contains_substring(text : String, pattern : String) -> Bool {
   SuffixAutomaton::build(text).contains(pattern)
 }

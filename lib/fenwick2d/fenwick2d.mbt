@@ -238,29 +238,51 @@ pub fn Fenwick2D::get(self : Fenwick2D, x : Int, y : Int) -> Int64 {
 }
 
 ///|
-/// Return number of rows in the grid.
+/// Return the number of rows in the grid (as passed to `Fenwick2D::new`).
+///
+/// Valid row indices for all other methods are `1..get_rows()`.
 pub fn Fenwick2D::get_rows(self : Fenwick2D) -> Int {
   self.rows
 }
 
 ///|
-/// Return number of columns in the grid.
+/// Return the number of columns in the grid (as passed to `Fenwick2D::new`).
+///
+/// Valid column indices for all other methods are `1..get_cols()`.
 pub fn Fenwick2D::get_cols(self : Fenwick2D) -> Int {
   self.cols
 }
 
 // ============================================================================
-// 2D FENWICK TREE WITH RANGE UPDATE
+// 2D FENWICK TREE WITH RANGE UPDATE, POINT QUERY
 // ============================================================================
 //
-// To support range updates efficiently, we use a different approach:
-// Instead of storing values directly, we store differences.
+// This variant stores a 2D difference array inside a Fenwick Tree so that:
+// - range_add(x1,y1,x2,y2, delta): add delta to every cell in the rectangle
+// - query(x, y): retrieve the current value at a single cell
 //
-// For range add on [(x1,y1), (x2,y2)] by delta:
-// We update 4 corners using inclusion-exclusion in the difference array.
+// TRICK: A range-add on [(x1,y1)..(x2,y2)] in the difference array requires
+// only four point updates at the corners (inclusion-exclusion):
+//
+//   internal_update(x1,   y1,   +delta)
+//   internal_update(x1,   y2+1, -delta)
+//   internal_update(x2+1, y1,   -delta)
+//   internal_update(x2+1, y2+1, +delta)
+//
+// A point query at (x, y) then equals internal_prefix(x, y), which accumulates
+// the net difference values covering that cell.
+//
+// Both operations are O(log n * log m).
 
 ///|
-/// 2D Fenwick Tree supporting range updates and point queries
+/// A private 2D Fenwick Tree that stores a 2D difference array, enabling
+/// rectangle range-add updates in O(log n x log m) and single-cell point
+/// queries in O(log n x log m).
+///
+/// This struct is not part of the public API; it is kept private because the
+/// `Fenwick2D` struct already covers the common point-update / range-query
+/// use case. Use `Fenwick2DRange` when your workload is the inverse: many
+/// rectangle-add operations and occasional single-cell reads.
 priv struct Fenwick2DRange {
   tree : Array[Array[Int64]]
   rows : Int

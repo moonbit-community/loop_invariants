@@ -455,7 +455,10 @@ fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
 }
 
 ///|
-/// Build empty segment tree (all counts = 0)
+/// Build an empty frequency segment tree covering value ranks `[lo, hi]`.
+///
+/// All counts are 0. This becomes `roots[0]` (the empty prefix) for the
+/// k-th smallest structure. Returns the index of the root node.
 fn build_empty_tree(nodes : Array[PNode], lo : Int, hi : Int) -> Int {
   if lo == hi {
     return push_node(nodes, 0L, -1, -1)
@@ -467,7 +470,12 @@ fn build_empty_tree(nodes : Array[PNode], lo : Int, hi : Int) -> Int {
 }
 
 ///|
-/// Insert value at compressed index, incrementing count
+/// Path-copy insert helper: increment the count at compressed rank `pos`.
+///
+/// Starting from `node_idx` covering `[lo, hi]`, descends toward `pos`,
+/// creating new nodes along the path. Each new internal node's sum is
+/// the old node's sum incremented by 1 (one more element in this subtree).
+/// Returns the index of the new root for this subtree.
 fn kth_insert_tree(
   nodes : Array[PNode],
   node_idx : Int,
@@ -490,8 +498,14 @@ fn kth_insert_tree(
 }
 
 ///|
-/// Find k-th smallest in range [l, r] (1-indexed k)
-/// Returns None if k is out of range
+/// Return the k-th smallest value in `arr[l..r]` (1-indexed k).
+///
+/// Uses the two-version difference trick: `roots[r+1]` holds counts for
+/// `arr[0..r]` and `roots[l]` holds counts for `arr[0..l-1]`; their
+/// difference gives counts for `arr[l..r]`. A single top-down walk through
+/// these two trees simultaneously finds the k-th element in O(log n).
+///
+/// Returns `None` if `k <= 0`, `k > r - l + 1`, or the range is invalid.
 fn KthSmallest::query(self : KthSmallest, l : Int, r : Int, k : Int) -> Int64? {
   if l < 0 ||
     r >= self.roots.length() - 1 ||
@@ -512,10 +526,21 @@ fn KthSmallest::query(self : KthSmallest, l : Int, r : Int, k : Int) -> Int64? {
 }
 
 ///|
-/// Binary search for k-th smallest using two trees
-/// INVARIANT: We search for k-th element in the difference (right - left)
-/// REASONING: By comparing counts in left subtrees, we determine which
-/// subtree contains the k-th element, recursively narrowing down.
+/// Top-down walk using two-version difference to locate the k-th element.
+///
+/// `left_root` and `right_root` are roots of frequency trees for prefixes
+/// `[0, l-1]` and `[0, r]` respectively. Their subtree-sum difference gives
+/// the count of elements in `arr[l..r]` that fall within the current value
+/// range `[lo, hi]`.
+///
+/// At each node, compare the left-child count against `k`:
+/// - If `left_count >= k`, the answer lies in the left half; recurse left.
+/// - Otherwise, subtract `left_count` from `k` and recurse right.
+///
+/// Terminates when `lo == hi`, returning that rank index.
+///
+/// Invariant: at every call, the k-th element (1-indexed) in the subarray
+/// restricted to value range `[lo, hi]` exists and is reachable.
 fn kth_query_tree(
   nodes : Array[PNode],
   left_root : Int,
@@ -558,6 +583,9 @@ fn kth_query_tree(
 }
 
 ///|
+/// Return the number of elements in the original array.
+///
+/// This is `roots.length() - 1` because `roots[0]` is the empty prefix.
 fn KthSmallest::size(self : KthSmallest) -> Int {
   self.roots.length() - 1 // Subtract 1 for empty tree
 }

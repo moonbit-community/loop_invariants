@@ -434,7 +434,13 @@ fn push_down_set(
 }
 
 ///|
-/// Range set: set all elements in [l, r] to val
+/// Set every element in the closed range `[l, r]` to `val`.
+///
+/// Nodes whose range is fully contained in `[l, r]` are updated in O(1):
+/// `tree[k] = val * size` and `pending[k] = val`, `has_pending[k] = true`.
+/// Ancestor sums are recomputed on the way back up.
+///
+/// - Time: O(log n)
 fn LazySegTreeSetSum::range_set(
   self : LazySegTreeSetSum,
   l : Int,
@@ -458,6 +464,7 @@ fn LazySegTreeSetSum::range_set(
 }
 
 ///|
+/// Recursive worker for `range_set`.
 fn range_set_helper(
   tree : Array[Int64],
   pending : Array[Int64],
@@ -497,7 +504,11 @@ fn range_set_helper(
 }
 
 ///|
-/// Range sum query
+/// Return the sum of elements in the closed range `[l, r]`, or `None` if the
+/// range is empty or out of bounds.  All pending assignments are applied via
+/// push-down before the value is read.
+///
+/// - Time: O(log n)
 fn LazySegTreeSetSum::range_sum(
   self : LazySegTreeSetSum,
   l : Int,
@@ -521,6 +532,7 @@ fn LazySegTreeSetSum::range_sum(
 }
 
 ///|
+/// Recursive worker for `LazySegTreeSetSum::range_sum`.
 fn range_sum_set_helper(
   tree : Array[Int64],
   pending : Array[Int64],
@@ -563,6 +575,7 @@ fn range_sum_set_helper(
 }
 
 ///|
+/// Return the number of elements tracked by this tree.
 fn LazySegTreeSetSum::length(self : LazySegTreeSetSum) -> Int {
   self.n
 }
@@ -572,7 +585,21 @@ fn LazySegTreeSetSum::length(self : LazySegTreeSetSum) -> Int {
 // ============================================================================
 
 ///|
-/// Lazy Segment Tree with range add and min queries
+/// A private lazy segment tree that supports range addition and range minimum
+/// queries.
+///
+/// The aggregation function is `min` instead of `+`, so `tree[k]` holds the
+/// minimum value in node `k`'s range.  The lazy tag is the same addend
+/// mechanism as in `LazySegTreeSum`: `pending[k]` is an addend owed to all
+/// elements in the range.  Because adding a constant to all elements in a range
+/// shifts the minimum by the same constant, push-down simply adds `pending[k]`
+/// to both children's `tree` values (no multiplication by size is needed).
+///
+/// ## Fields
+///
+/// - `tree` -- `tree[k]` is the minimum of the sub-range covered by node `k`,
+///   already accounting for `pending[k]` itself.
+/// - `pending` -- addend owed to the children of node `k`.
 priv struct LazySegTreeMin {
   n : Int
   tree : Array[Int64] // Min of range
@@ -580,6 +607,9 @@ priv struct LazySegTreeMin {
 }
 
 ///|
+/// Sentinel value used as the identity element for `min` queries.  Returned
+/// for no-overlap nodes during range-min queries so that `min(INT64_MAX, x) = x`
+/// for any real element `x`.
 const INT64_MAX : Int64 = 9223372036854775807L
 
 ///|
