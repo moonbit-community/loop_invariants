@@ -19,7 +19,27 @@
 // 4. TRANSITION COUNT: At most 3n-4 transitions
 
 ///|
-/// State in the suffix automaton
+/// A single state in the suffix automaton.
+///
+/// Each state represents an **endpos equivalence class**: the set of all
+/// non-empty substrings that end at exactly the same positions in the
+/// original text.  The substrings in this class have lengths in the
+/// contiguous range `(link.len + 1) .. len` (both inclusive).
+///
+/// Fields:
+/// - `trans`     : Transition table indexed by ASCII character code.
+///                 `trans[c] == -1` means no transition on character `c`.
+/// - `link`      : Suffix link -- index of the state whose class contains
+///                 the longest proper suffix of every string in this class.
+///                 Set to `-1` only for the initial state.
+/// - `len`       : Length of the **longest** string represented by this state.
+/// - `cnt`       : Occurrence count populated by `compute_counts`.
+///                 Before that call the value is undefined (0 for clones,
+///                 1 for non-clone states).
+/// - `first_pos` : Zero-based index of the position (in the original text)
+///                 where this state was first created; equals the 0-based
+///                 index of the last character of the first occurrence of
+///                 the longest string in this class.
 priv struct SAMState {
   trans : Array[Int] // transitions: char_code -> state_id (-1 if none)
   mut link : Int // suffix link (-1 for initial)

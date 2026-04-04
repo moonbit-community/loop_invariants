@@ -346,7 +346,20 @@ fn PersistentSegTree::add(
 // count_in_range = tree[r].count - tree[l-1].count
 
 ///|
-/// K-th smallest query structure
+/// Structure for answering k-th smallest element queries over arbitrary
+/// subarrays in O(log n) per query.
+///
+/// Internally maintains `n + 1` versions of a persistent frequency segment
+/// tree over coordinate-compressed values. Version `i` holds the frequency
+/// counts for the prefix `arr[0..i-1]`. To answer "k-th smallest in
+/// `arr[l..r]`", the two-pointer difference `roots[r+1] - roots[l]` gives
+/// the frequency distribution for that subarray, and a single top-down walk
+/// identifies the k-th element.
+///
+/// Fields:
+/// - `nodes`       -- shared node pool for all frequency tree versions.
+/// - `roots`       -- `roots[i]` is the root index after inserting `arr[0..i-1]`.
+/// - `sorted_vals` -- coordinate-compressed unique values in sorted order.
 priv struct KthSmallest {
   nodes : Array[PNode]
   roots : Array[Int] // roots[i] = tree after inserting elements [0, i-1]
@@ -354,6 +367,17 @@ priv struct KthSmallest {
 }
 
 ///|
+/// Build the k-th smallest query structure from `arr`.
+///
+/// Steps:
+/// 1. Coordinate-compress `arr`: sort and deduplicate to get `sorted_vals`,
+///    then record each value's rank in `val_to_idx`.
+/// 2. Construct an empty frequency tree of size `m` (number of unique values).
+/// 3. Insert each element of `arr` left-to-right, producing `n + 1` versions
+///    (`roots[0]` is the empty prefix; `roots[i]` covers `arr[0..i-1]`).
+///
+/// Time: O(n log n) for sorting + O(n log m) for building versions.
+/// Space: O(n log m) nodes in the shared pool.
 fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
   let n = arr.length()
   if n == 0 {

@@ -154,9 +154,28 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, x : Int, y : Int) -> Int64 {
 }
 
 ///|
-/// Query range sum: sum of [(x1,y1), (x2,y2)] (inclusive)
-/// Using inclusion-exclusion principle:
-/// sum(x1,y1,x2,y2) = prefix(x2,y2) - prefix(x1-1,y2) - prefix(x2,y1-1) + prefix(x1-1,y1-1)
+/// Return the sum of all cells in the rectangle `[x1..x2][y1..y2]`
+/// (both endpoints inclusive, 1-indexed).
+///
+/// Uses the inclusion-exclusion identity over four prefix sums:
+///
+/// ```
+/// range_sum(x1,y1,x2,y2)
+///   = prefix(x2,  y2 )
+///   - prefix(x1-1,y2 )
+///   - prefix(x2,  y1-1)
+///   + prefix(x1-1,y1-1)
+/// ```
+///
+/// Returns `0` when `x1 > x2` or `y1 > y2` (empty rectangle).
+///
+/// ```moonbit
+/// let fw = Fenwick2D::new(3, 3)
+/// fw.update(2, 2, 5L)
+/// fw.update(3, 3, 3L)
+/// assert_eq!(fw.range_sum(2, 2, 3, 3), 8L)
+/// assert_eq!(fw.range_sum(1, 1, 1, 1), 0L)
+/// ```
 pub fn Fenwick2D::range_sum(
   self : Fenwick2D,
   x1 : Int,
@@ -174,8 +193,20 @@ pub fn Fenwick2D::range_sum(
 }
 
 ///|
-/// Set value at position (x, y) (1-indexed)
-/// Requires knowing the current value
+/// Replace the value at cell `(x, y)` (1-indexed) with `new_val`.
+///
+/// The caller must supply the cell's current value as `old_val`. Internally
+/// this calls `update(x, y, new_val - old_val)`, so its complexity is the
+/// same as `update`: O(log rows x log cols).
+///
+/// If the old value is unknown, use `get(x, y)` first (at the same cost).
+///
+/// ```moonbit
+/// let fw = Fenwick2D::new(3, 3)
+/// fw.update(1, 1, 7L)
+/// fw.set(1, 1, 7L, 10L)
+/// assert_eq!(fw.get(1, 1), 10L)
+/// ```
 pub fn Fenwick2D::set(
   self : Fenwick2D,
   x : Int,
@@ -187,8 +218,21 @@ pub fn Fenwick2D::set(
 }
 
 ///|
-/// Get value at single position (x, y)
-/// This is less efficient than point query in regular array
+/// Return the value stored at cell `(x, y)` (1-indexed).
+///
+/// Implemented as `range_sum(x, y, x, y)` (four prefix-sum queries), so
+/// it runs in O(log rows x log cols) -- slower than direct array access but
+/// consistent with the tree's internal representation where no single cell
+/// holds its own value directly.
+///
+/// Returns `0` for coordinates outside `[1..rows] x [1..cols]`.
+///
+/// ```moonbit
+/// let fw = Fenwick2D::new(3, 3)
+/// fw.update(2, 3, 42L)
+/// assert_eq!(fw.get(2, 3), 42L)
+/// assert_eq!(fw.get(1, 1), 0L)
+/// ```
 pub fn Fenwick2D::get(self : Fenwick2D, x : Int, y : Int) -> Int64 {
   self.range_sum(x, y, x, y)
 }
