@@ -59,7 +59,9 @@ The negative reverse edge allows canceling expensive flow later.
 flow = 0, cost = 0
 pi[v] = 0 for all v
 
-while Dijkstra finds a path in reduced costs:
+repeat:
+  if Dijkstra cannot find a path in reduced costs:
+    break
   path_cost = dist[t] + pi[t] - pi[s]
   bottleneck = min residual capacity on path
   augment flow by bottleneck

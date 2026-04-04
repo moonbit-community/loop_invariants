@@ -159,7 +159,7 @@ edmonds(n, edges, root):
   if not all nodes reachable from root:
     return None
 
-  while true:
+  loop:
     // Step 1: Find min incoming edge for each node
     for each node v ≠ root:
       in_edge[v] = cheapest edge into v

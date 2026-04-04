@@ -68,7 +68,7 @@ dial_shortest_path(graph, source, max_weight):
   buckets[0].add(source)
 
   for d = 0 to max_dist:
-    while buckets[d] is not empty:
+    repeat until buckets[d] is empty:
       u = buckets[d].remove_any()
 
       if dist[u] < d:  // Already processed with shorter distance
@@ -222,4 +222,3 @@ Works because:
 
 Space: O(V + C) instead of O(CV)
 ```
-

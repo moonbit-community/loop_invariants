@@ -169,7 +169,7 @@ When querying a path:
 ## LCA via HLD
 
 ```
-while head[u] != head[v]:
+repeat until head[u] == head[v]:
   if depth[head[u]] < depth[head[v]]: v = parent[head[v]]
   else: u = parent[head[u]]
 return (deeper of u,v)

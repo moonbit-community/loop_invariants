@@ -41,7 +41,9 @@ path must handle negative edges (SPFA is used here).
 
 ```
 flow = 0, cost = 0
-while shortest path s->t exists (by cost) in residual graph:
+repeat:
+  if no shortest path s->t exists (by cost) in residual graph:
+    break
   bottleneck = min residual capacity on that path
   push bottleneck flow along the path
   flow += bottleneck
