@@ -55,7 +55,7 @@ So you can only do that about log2(n) times before reaching size 1.
 
 We do a DFS to get sizes and pick the heaviest child at each node.
 
-Example tree:
+Example tree (8 nodes):
 
 ```
       0
@@ -77,6 +77,30 @@ Heavy: 1  4  -  6  7  -  -  -
 
 Heaviest edges: `0-1`, `1-4`, `4-7`, and `3-6`.
 
+### Mermaid tree with heavy/light annotations
+
+```mermaid
+graph TD
+    0((0\nsize=8))
+    1((1\nsize=4))
+    2((2\nsize=1))
+    3((3\nsize=2))
+    4((4\nsize=2))
+    5((5\nsize=1))
+    6((6\nsize=1))
+    7((7\nsize=1))
+
+    0 -->|"heavy"| 1
+    0 -.->|"light"| 2
+    0 -.->|"light"| 3
+    1 -->|"heavy"| 4
+    1 -.->|"light"| 5
+    4 -->|"heavy"| 7
+    3 -->|"heavy"| 6
+```
+
+Solid arrows are heavy edges; dashed arrows are light edges.
+
 ## Step 2: Build Chains and Positions
 
 We run a second DFS, always visiting the heavy child first.
@@ -94,11 +118,41 @@ Chain D (head=3): 3 -> 6
 Positions (used by a segment tree):
 
 ```
-Node:     0  1  4  7  2  5  3  6
+Node:     0  1  4  7  5  2  3  6
 Position: 0  1  2  3  4  5  6  7
 ```
 
-Notice each chain is a continuous slice.
+Notice each chain is a continuous slice:
+
+```
+pos: |  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  |
+     [ Chain A (head=0)       ] [ C ] [ B ] [ Chain D  ]
+       0      1      4      7    5     2     3      6
+```
+
+### Mermaid view of chains and positions
+
+```mermaid
+graph LR
+    subgraph "Chain A (head=0)  pos 0..3"
+        A0["0 pos=0"]
+        A1["1 pos=1"]
+        A4["4 pos=2"]
+        A7["7 pos=3"]
+        A0 --> A1 --> A4 --> A7
+    end
+    subgraph "Chain C (head=5)  pos 4"
+        C5["5 pos=4"]
+    end
+    subgraph "Chain B (head=2)  pos 5"
+        B2["2 pos=5"]
+    end
+    subgraph "Chain D (head=3)  pos 6..7"
+        D3["3 pos=6"]
+        D6["6 pos=7"]
+        D3 --> D6
+    end
+```
 
 ### Why heavy-first DFS matters
 
@@ -110,27 +164,60 @@ contiguously in the linear order. This is what lets a chain be a single range.
 To query `u -> v`, you repeatedly climb the deeper chain head.
 Each climb produces one **contiguous** range in the segment tree.
 
-Example: `u=7`, `v=6`
+### Path decomposition: `u=7` to `v=6`
 
 ```
-Chains: 7 in head=0, 6 in head=3
-Depth(head 0) < depth(head 3) -> climb v side
+Tree (chains annotated):
 
-Ranges touched:
-1) chain D segment: pos[3]..pos[6] = [6..7]
-2) now v jumps to parent(head 3) = 0
-3) u and v now in same chain (head 0)
-4) final segment: pos[0]..pos[7] = [0..3]
+              [Chain A]
+          0 (pos 0, head=0)
+         /|\
+        1  2  3          2 = [Chain B], 3 = [Chain D]
+       /|   |
+      4  5   6           5 = [Chain C], 6 in [Chain D]
+     /
+    7
+    ^
+    start u=7 (pos 3, head=0)          end v=6 (pos 7, head=3)
+
+Step 1: heads differ (head[7]=0, head[6]=3).
+        depth(head 0)=0 < depth(head 3)=1 -> climb v side.
+        Collect range [pos(3)..pos(6)] = [6..7].
+        Move v to parent(head 3) = parent(3) = 0.
+
+Step 2: heads equal (head[7]=0, head[0]=0).
+        Collect final range [pos(0)..pos(7)] = [0..3].
+
+Total: 2 segment tree queries.
 ```
 
-Total = 2 segment tree queries.
-
-### Visual decomposition (same example)
+### ASCII art of the two ranges on the position array
 
 ```
-Path 7 -> 6:
-  chain D: [pos(3) .. pos(6)] = [6..7]
-  chain A: [pos(0) .. pos(7)] = [0..3]
+Segment-tree position array (8 slots):
+
+ pos: [  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  ]
+ node:   0     1     4     7     5     2     3     6
+
+Range 1 (Chain D tail):              [===========]
+                                      pos 6  pos 7
+
+Range 2 (Chain A, full):  [===================]
+                            pos 0            pos 3
+```
+
+### Mermaid diagram of the climbing steps
+
+```mermaid
+sequenceDiagram
+    participant u as u=7 (head=0, depth 0)
+    participant v as v=6 (head=3, depth 1)
+    Note over u,v: heads differ
+    v->>v: collect [pos(3)..pos(6)] = [6..7]
+    v->>v: jump to parent(head 3) = 0
+    Note over u,v: u=7, v=0  both head=0  same chain
+    u->>v: collect [pos(0)..pos(7)] = [0..3]
+    Note over u,v: done  total 2 queries
 ```
 
 ## Subtree Queries Are One Range
@@ -146,25 +233,38 @@ So subtree sums or subtree updates are just one range in the segment tree.
 ### Subtree example
 
 ```
-subtree(1) = nodes {1,4,5,7}
-positions  = [1..3] and [5] in the example ordering
-```
+subtree(1) contains nodes {1, 4, 5, 7}
 
-In the heavy-first ordering shown above, subtree(1) is contiguous.
+ pos: [  0  |  1  |  2  |  3  |  4  |  5  |  6  |  7  ]
+ node:   0     1     4     7     5     2     3     6
+
+subtree(1) = [pos(1) .. pos(1)+size(1)-1] = [1..4]
+
+             [===================]
+              pos 1    (4 nodes)  pos 4
+              ^nodes: 1, 4, 7, 5^
+```
 
 ## Edge vs Vertex Values
 
 HLD can handle both, but the mapping differs:
 
 ### Vertex values
+
 Store value at `position[u]` directly.
 
 ### Edge values
+
 Store the edge `(parent[u], u)` at `position[u]` (the deeper endpoint).
 When querying a path:
 
 - compute LCA
 - **exclude** `position[lca]` if you only want edge values
+
+```
+Vertex mode:   query [pos(lca) .. pos(u)]  (includes LCA vertex)
+Edge mode:     query [pos(lca)+1 .. pos(u)]  (excludes LCA vertex)
+```
 
 ## LCA via HLD
 
@@ -183,6 +283,17 @@ This finds the LCA in O(log n) chain jumps.
 LCA(7, 6):
   head[7]=0, head[6]=3 -> climb 6 to parent(head 3) = 0
   now same head, LCA = 0
+```
+
+### Mermaid LCA walkthrough
+
+```mermaid
+flowchart TD
+    S([Start: u=7  v=6]) --> C1{head_u == head_v?}
+    C1 -->|No\nhead_u=0 depth 0\nhead_v=3 depth 1| J1[depth head_v > depth head_u\nclimb v: v = parent 3 = 0]
+    J1 --> C2{head_u == head_v?}
+    C2 -->|Yes\nboth head=0| D{depth_u vs depth_v}
+    D -->|depth 7 = 3\ndepth 0 = 0\nu deeper| R([LCA = 0])
 ```
 
 ## Example Usage (Conceptual)
@@ -223,7 +334,7 @@ let ans = loop (u, v, 0) {
 ### Micro example with explicit ranges
 
 ```
-pos:  [0,1,4,6,2,5,7,3]  (from earlier example)
+pos:  [0,1,5,6,2,4,7,3]  (from earlier example)
 head: [0,0,2,3,0,5,3,0]
 
 query path 7 -> 6:
@@ -235,7 +346,7 @@ query path 7 -> 6:
 ```
 Given the earlier tree:
 head = [0,0,2,3,0,5,3,0]
-pos  = [0,1,4,6,2,5,7,3]
+pos  = [0,1,5,6,2,4,7,3]
 
 Path 7 -> 6 produces ranges:
 - [6..7]  (chain head 3 to node 6)
@@ -275,10 +386,84 @@ position when querying edge-paths.
 
 ## Implementation Notes (This Package)
 
+- `HLD::new(n)` allocates arrays for `n` nodes
+- `HLD::add_edge(u, v)` adds an undirected edge (call before `build`)
 - `HLD::build(root)` runs both DFS passes
-- `HLD::lca(u, v)` uses chain heads
-- `HLD::path_length(u, v)` is provided for convenience
-- `HLD::count_chains(u, v)` shows the logarithmic chain jump property
+- `HLD::lca(u, v)` uses chain heads to find the LCA in O(log n)
+- `HLD::path_length(u, v)` returns the number of edges on the path
+- `HLD::count_chains(u, v)` counts chain segments (for complexity analysis)
+- `HLD::get_position(u)` returns the segment-tree index for node `u`
+- `HLD::get_chain_head(u)` returns the topmost node on `u`'s heavy chain
 
 This package provides the decomposition and helper queries. You provide the
 segment tree (or Fenwick) on top of `position[]` to answer your own queries.
+
+## Runnable Examples
+
+```mbt nocheck
+///|
+test "lca on a small tree" {
+  //       0
+  //      / \
+  //     1   2
+  //    / \
+  //   3   4
+  let hld = HLD::new(5)
+  hld.add_edge(0, 1)
+  hld.add_edge(0, 2)
+  hld.add_edge(1, 3)
+  hld.add_edge(1, 4)
+  hld.build(0)
+  inspect(hld.lca(3, 4), content="1")
+  inspect(hld.lca(3, 2), content="0")
+  inspect(hld.lca(0, 4), content="0")
+}
+```
+
+```mbt nocheck
+///|
+test "path length on a linear chain" {
+  // 0 - 1 - 2 - 3 - 4
+  let hld = HLD::new(5)
+  hld.add_edge(0, 1)
+  hld.add_edge(1, 2)
+  hld.add_edge(2, 3)
+  hld.add_edge(3, 4)
+  hld.build(0)
+  inspect(hld.path_length(0, 4), content="4")
+  inspect(hld.path_length(1, 3), content="2")
+  inspect(hld.path_length(2, 2), content="0")
+}
+```
+
+```mbt nocheck
+///|
+test "linear tree is one chain" {
+  let hld = HLD::new(8)
+  for i in 0..<7 {
+    hld.add_edge(i, i + 1)
+  }
+  hld.build(0)
+  // A linear tree is a single heavy chain: all nodes share head 0
+  inspect(hld.count_chains(0, 7), content="1")
+  inspect(hld.get_chain_head(7), content="0")
+}
+```
+
+```mbt nocheck
+///|
+test "positions and chain heads on a star" {
+  // Star: 0 is center, 1-4 are leaves
+  let hld = HLD::new(5)
+  hld.add_edge(0, 1)
+  hld.add_edge(0, 2)
+  hld.add_edge(0, 3)
+  hld.add_edge(0, 4)
+  hld.build(0)
+  // Each leaf forms its own chain (only one child can be heavy)
+  let p0 = hld.get_position(0)
+  inspect(p0 >= 0 && p0 < 5, content="true")
+  inspect(hld.path_length(1, 4), content="2")
+  inspect(hld.lca(1, 4), content="0")
+}
+```
