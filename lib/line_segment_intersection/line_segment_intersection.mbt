@@ -32,7 +32,7 @@
 ///
 /// # Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let p : Point = { x: 3L, y: 4L }
 /// ```
 pub(all) struct Point {
@@ -115,7 +115,7 @@ fn on_segment(a : Point, b : Point, p : Point) -> Bool {
 ///
 /// Crossing diagonals of a unit square:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let a = Point::{ x: 0L, y: 0L }
 /// let b = Point::{ x: 4L, y: 4L }
 /// let c = Point::{ x: 0L, y: 4L }
@@ -125,7 +125,7 @@ fn on_segment(a : Point, b : Point, p : Point) -> Bool {
 ///
 /// Parallel horizontal segments with a gap:
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let a = Point::{ x: 0L, y: 0L }
 /// let b = Point::{ x: 1L, y: 0L }
 /// let c = Point::{ x: 2L, y: 0L }

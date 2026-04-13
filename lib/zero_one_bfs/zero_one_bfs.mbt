@@ -53,7 +53,7 @@ pub struct Graph {
 /// let g = Graph::new(5)   // vertices 0..4
 /// ```
 pub fn Graph::new(n : Int) -> Graph {
-  let adj : Array[Array[Edge]] = Array::makei(n, _ => [])
+  let adj : Array[Array[Edge]] = [| for _ in 0..<n => [] |]
   { n, adj }
 }
 

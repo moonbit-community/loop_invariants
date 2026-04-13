@@ -12,7 +12,7 @@ pub fn min_palindrome_cuts(s : String) -> Int {
   if n == 0 {
     return 0
   }
-  let pal : Array[Array[Bool]] = Array::makei(n, _ => Array::make(n, false))
+  let pal : Array[Array[Bool]] = [| for _ in 0..<n => Array::make(n, false) |]
   for i in 0..<n {
     pal[i][i] = true
   }

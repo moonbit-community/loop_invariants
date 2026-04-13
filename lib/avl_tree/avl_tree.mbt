@@ -292,7 +292,7 @@ fn[T] AVLTree::to_sorted_array(self : AVLTree[T]) -> Array[T] {
 ///
 /// # Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let sorted = avl_sorted([3L, 1L, 4L, 1L, 5L][:])
 /// // sorted == [1, 1, 3, 4, 5]
 /// ```

@@ -768,10 +768,12 @@ fn MoSolver::solve_distinct(
   }
 
   // Create query objects with indices
-  let mo_queries = Array::makei(q, i => {
-    let (l, r) = queries[i]
-    { l, r, idx: i }
-  })
+  let mo_queries = [|
+    for i in 0..<q => {
+      let (l, r) = queries[i]
+      { l, r, idx: i }
+    }
+  |]
 
   // Sort queries by (l / block_size, r)
   // This is the key to Mo's algorithm efficiency
@@ -1438,7 +1440,7 @@ test "isqrt ceil" {
 ///|
 test "sqrt decomposition stress" {
   // Test with larger array
-  let arr = Array::makei(100, i => i + 1)
+  let arr = [| for i in 0..<100 => i + 1 |]
   let sq = SqrtSum::build(arr)
 
   // Sum 1 to 100 = 5050

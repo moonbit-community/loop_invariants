@@ -27,6 +27,7 @@
 ///
 /// Using 10^9 + 7 (a prime) prevents Int64 overflow during multiplication
 /// and keeps values in range for large exponents.
+
 ///|
 const MATRIX_MOD : Int64 = 1000000007L
 
@@ -36,6 +37,7 @@ const MATRIX_MOD : Int64 = 1000000007L
 /// operate on exact integers (via `multiply_no_mod`).  Use the modular path
 /// whenever `n` is large; use the exact path only when you know intermediate
 /// values stay within Int64 bounds.
+
 ///|
 priv struct Matrix {
   data : Array[Array[Int64]]
@@ -44,9 +46,10 @@ priv struct Matrix {
 }
 
 /// Creates a zero-filled `rows x cols` matrix.
+
 ///|
 fn Matrix::new(rows : Int, cols : Int) -> Matrix {
-  let data = Array::makei(rows, _ => Array::make(cols, 0L))
+  let data = [| for _ in 0..<rows => Array::make(cols, 0L) |]
   { data, rows, cols }
 }
 
@@ -64,6 +67,7 @@ fn Matrix::new(rows : Int, cols : Int) -> Matrix {
 /// // i2 = [ [1, 0],
 /// //         [0, 1] ]
 /// ```
+
 ///|
 fn Matrix::identity(n : Int) -> Matrix {
   let m = Matrix::new(n, n)
@@ -85,6 +89,7 @@ fn Matrix::identity(n : Int) -> Matrix {
 /// let m = Matrix::from_array([[1L, 2L], [3L, 4L]])
 /// // m[0][0] = 1, m[0][1] = 2, m[1][0] = 3, m[1][1] = 4
 /// ```
+
 ///|
 fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
   let rows = arr.length()
@@ -92,17 +97,19 @@ fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
     return Matrix::new(0, 0)
   }
   let cols = arr[0].length()
-  let data = Array::makei(rows, i => arr[i].copy())
+  let data = [| for i in 0..<rows => arr[i].copy() |]
   { data, rows, cols }
 }
 
 /// Returns the element at row `i`, column `j`.
+
 ///|
 fn Matrix::get(self : Matrix, i : Int, j : Int) -> Int64 {
   self.data[i][j]
 }
 
 /// Sets the element at row `i`, column `j` to `v`.
+
 ///|
 fn Matrix::set(self : Matrix, i : Int, j : Int, v : Int64) -> Unit {
   self.data[i][j] = v
@@ -124,6 +131,7 @@ fn Matrix::set(self : Matrix, i : Int, j : Int, v : Int64) -> Unit {
 ///
 /// When `k` reaches `self.cols`, `sum` is the complete dot product for
 /// that cell.
+
 ///|
 fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix::new(self.rows, other.cols)
@@ -168,6 +176,7 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
 ///   `sum = sum_{t < k} self[i,t] * other[t,j]`
 ///
 /// When `k` reaches `self.cols`, `sum` is the complete exact dot product.
+
 ///|
 fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix::new(self.rows, other.cols)
@@ -223,6 +232,7 @@ fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
 /// let m10 = m.power(10L)
 /// // m10.get(0, 1) == F(10) == 55
 /// ```
+
 ///|
 fn Matrix::power(self : Matrix, exp : Int64) -> Matrix {
   if self.rows != self.cols {
@@ -254,6 +264,7 @@ fn Matrix::power(self : Matrix, exp : Int64) -> Matrix {
 /// Returns a deep copy of the matrix.
 ///
 /// Mutations to the returned matrix do not affect the original.
+
 ///|
 fn Matrix::copy(self : Matrix) -> Matrix {
   let m = Matrix::new(self.rows, self.cols)
@@ -267,6 +278,7 @@ fn Matrix::copy(self : Matrix) -> Matrix {
 
 /// Returns `true` if `self` and `other` have the same dimensions and all
 /// corresponding elements are equal.
+
 ///|
 fn Matrix::equals(self : Matrix, other : Matrix) -> Bool {
   if self.rows != other.rows || self.cols != other.cols {
@@ -309,6 +321,7 @@ fn Matrix::equals(self : Matrix, other : Matrix) -> Bool {
 /// fibonacci(20L) // 6765
 /// fibonacci(50L) // 586268941  (= F(50) mod 10^9+7)
 /// ```
+
 ///|
 fn fibonacci(n : Int64) -> Int64 {
   if n <= 0L {
@@ -379,6 +392,7 @@ fn fibonacci(n : Int64) -> Int64 {
 ///   `ans = sum_{t < j} result[0][t] * initial[k-1-t]  (mod MATRIX_MOD)`
 ///
 /// When `j` reaches `k`, `ans` is the complete recurrence value `f(n)`.
+
 ///|
 fn solve_recurrence(
   coefficients : Array[Int64],
@@ -456,6 +470,7 @@ fn solve_recurrence(
 /// let paths3 = count_paths(adj, 3L)
 /// // paths3.get(0, 0) == 1  (exactly one 3-step walk from 0 back to 0)
 /// ```
+
 ///|
 fn count_paths(adj_matrix : Array[Array[Int64]], k : Int64) -> Matrix {
   let m = Matrix::from_array(adj_matrix)

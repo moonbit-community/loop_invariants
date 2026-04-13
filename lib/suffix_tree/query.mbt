@@ -82,7 +82,10 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
       guard self.text[k] == p[pi] else { break outer~ false }
       continue k + 1, pi + 1
     } where {
-      proof_invariant: k >= edge.start && k <= edge.end && pi >= i && pi <= p.length(),
+      proof_invariant: k >= edge.start &&
+      k <= edge.end &&
+      pi >= i &&
+      pi <= p.length(),
       proof_reasoning: (
         #|INVARIANT (edge label matching):
         #|  self.text[edge.start..k) == p[i..pi)
@@ -184,7 +187,10 @@ pub fn SuffixTree::count_occurrences(
       guard self.text[k] == p[pi] else { break outer~ 0 }
       continue k + 1, pi + 1
     } where {
-      proof_invariant: k >= edge.start && k <= edge.end && pi >= i && pi <= p.length(),
+      proof_invariant: k >= edge.start &&
+      k <= edge.end &&
+      pi >= i &&
+      pi <= p.length(),
       proof_reasoning: (
         #|INVARIANT (edge label matching):
         #|  self.text[edge.start..k) == p[i..pi)

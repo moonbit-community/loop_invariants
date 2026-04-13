@@ -109,7 +109,7 @@ pub fn stoer_wagner_min_cut(
   // Step 1: Build adjacency matrix
   // Using matrix for O(1) edge weight lookup
   // Parallel edges are summed
-  let adj : Array[Array[Int64]] = Array::makei(n, _ => Array::make(n, 0L))
+  let adj : Array[Array[Int64]] = [| for _ in 0..<n => Array::make(n, 0L) |]
   for i in 0..<edges.length() {
     let (u, v, w) = edges[i]
     guard u >= 0 && u < n && v >= 0 && v < n && u != v else { continue }
@@ -138,7 +138,7 @@ pub fn stoer_wagner_min_cut(
   let alive = Array::make(n, true)
 
   // members[v] = original vertices represented by supernode v
-  let members : Array[Array[Int]] = Array::makei(n, i => [i])
+  let members : Array[Array[Int]] = [| for i in 0..<n => [i] |]
   let empty_cut : Array[Int] = []
 
   // Step 2: Run n-1 phases of contraction

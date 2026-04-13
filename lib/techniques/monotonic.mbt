@@ -19,8 +19,7 @@ fn next_greater_element(arr : ArrayView[Int]) -> Array[Int] {
   let stack : Array[Int] = [] // Indices of elements waiting for their NGE
   for i in 0..<n {
     // Pop elements smaller than current - current is their NGE
-    for pop_next = stack.length() > 0 &&
-          arr[stack[stack.length() - 1]] < arr[i]; pop_next; {
+    for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]; pop_next; {
       match stack.pop() {
         Some(top) => result[top] = i
         None => break

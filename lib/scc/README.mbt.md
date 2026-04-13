@@ -220,7 +220,7 @@ Example for `0->1->2->0, 2->3`:
 ```mbt check
 ///|
 test "scc example" {
-  let adj : Array[Array[Int]] = Array::makei(4, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<4 => [] |]
   adj[0].push(1)
   adj[1].push(2)
   adj[2].push(0)
@@ -242,7 +242,7 @@ test "scc example" {
 ```mbt check
 ///|
 test "scc condensation dag" {
-  let adj : Array[Array[Int]] = Array::makei(5, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<5 => [] |]
   // SCC A: 0 <-> 1
   adj[0].push(1)
   adj[1].push(0)

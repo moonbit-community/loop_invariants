@@ -62,7 +62,7 @@ pub struct UnionFind {
 /// Time complexity: O(n).
 pub fn UnionFind::new(n : Int) -> UnionFind {
   // Each element is its own parent (self-loop = root)
-  let parent = Array::makei(n, i => i)
+  let parent = [| for i in 0..<n => i |]
   let rank = Array::make(n, 0)
   { parent, rank, num_sets: n }
 }
@@ -242,7 +242,7 @@ priv struct WeightedUnionFind {
 ///
 /// Time complexity: O(n).
 fn WeightedUnionFind::new(n : Int) -> WeightedUnionFind {
-  let parent = Array::makei(n, i => i)
+  let parent = [| for i in 0..<n => i |]
   let rank = Array::make(n, 0)
   let weight = Array::make(n, 0L)
   { parent, rank, weight }

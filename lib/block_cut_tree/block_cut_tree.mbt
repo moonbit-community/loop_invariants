@@ -80,7 +80,7 @@ pub struct BlockCutTree {
 /// is greater than 1 (it connects to more than one block node).
 ///
 /// Example:
-/// ```mbt
+/// ```mbt nocheck
 /// let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
 /// let tree = @block_cut_tree.build_block_cut_tree(4, edges[:])
 /// // two components: the triangle {0,1,2} and the bridge {1,3}
@@ -104,7 +104,7 @@ pub fn build_block_cut_tree(
   let comps = result.components
   let c = comps.length()
   let total = n + c
-  let adj = Array::makei(total, _ => [])
+  let adj = [| for _ in 0..<total => [] |]
   for ci in 0..<c {
     let comp_edges = comps[ci]
     let in_comp = Array::make(n, false)

@@ -31,7 +31,8 @@
 ///|
 const SAM_ALPHABET : Int = 26
 
-///| A single state in the suffix automaton.
+///|
+/// A single state in the suffix automaton.
 ///
 /// Each state represents an endpos-equivalence class: the set of all
 /// substrings that end at exactly the same positions in the original
@@ -58,7 +59,8 @@ fn SAMState::new() -> SAMState {
   { len: 0, link: -1, next: Array::make(SAM_ALPHABET, -1), first_pos: -1 }
 }
 
-///| A suffix automaton (SAM) for a string over the lowercase Latin alphabet.
+///|
+/// A suffix automaton (SAM) for a string over the lowercase Latin alphabet.
 ///
 /// The SAM is the minimal DFA that accepts every substring of the string it
 /// was built from. It has at most `2n - 1` states and `3n - 4` transitions
@@ -85,7 +87,8 @@ pub struct SuffixAutomaton {
   mut size : Int // Number of states
 }
 
-///| Allocate a suffix automaton large enough for strings up to `max_len`
+///|
+/// Allocate a suffix automaton large enough for strings up to `max_len`
 /// characters.
 ///
 /// The backing array is pre-allocated to `2 * max_len + 1` slots so that
@@ -107,11 +110,12 @@ pub fn SuffixAutomaton::new(max_len : Int) -> SuffixAutomaton {
   states.push(init)
 
   // Reserve space for states
-  states.append(Array::makei(2 * max_len, _ => SAMState::new()))
+  states.append([| for _ in 0..<(2 * max_len) => SAMState::new() |])
   { states, last: 0, size: 1 }
 }
 
-///| Extend the automaton by one character `c` (given as an integer offset
+///|
+/// Extend the automaton by one character `c` (given as an integer offset
 /// from `'a'`, i.e. `'a'=0`, `'b'=1`, ..., `'z'=25`).
 ///
 /// This is the core online-construction step. Each call:
@@ -169,7 +173,8 @@ pub fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
   self.last = cur
 }
 
-///| Build the suffix automaton from string `s` by calling `extend` for every
+///|
+/// Build the suffix automaton from string `s` by calling `extend` for every
 /// character in order.
 ///
 /// Only lowercase Latin letters ('a'-'z') are indexed; any other character is
@@ -186,7 +191,8 @@ pub fn SuffixAutomaton::build(self : SuffixAutomaton, s : String) -> Unit {
   }
 }
 
-///| Return `true` if `s` is a substring of the string the automaton was
+///|
+/// Return `true` if `s` is a substring of the string the automaton was
 /// built from.
 ///
 /// The check walks the transition graph from the initial state, following one
@@ -212,7 +218,8 @@ pub fn SuffixAutomaton::contains(self : SuffixAutomaton, s : String) -> Bool {
   true
 }
 
-///| Count the number of **distinct** (non-empty) substrings of the string the
+///|
+/// Count the number of **distinct** (non-empty) substrings of the string the
 /// automaton was built from.
 ///
 /// Each state `q` (except the initial state) represents a set of substrings
@@ -236,7 +243,8 @@ pub fn SuffixAutomaton::count_distinct_substrings(
   }
 }
 
-///| Find the length of the longest common substring of `s1` and `s2`.
+///|
+/// Find the length of the longest common substring of `s1` and `s2`.
 ///
 /// The algorithm builds a SAM for `s1` and then traverses `s2` through that
 /// SAM, tracking the length of the current match. When a character cannot
@@ -282,7 +290,10 @@ pub fn longest_common_substring(s1 : String, s2 : String) -> Int {
   } nobreak {
     max_len
   } where {
-    proof_invariant: i >= 0 && i <= s2.length() && state >= 0 && state < sam.size,
+    proof_invariant: i >= 0 &&
+    i <= s2.length() &&
+    state >= 0 &&
+    state < sam.size,
     proof_reasoning: (
       #|INVARIANT (LCS traversal):
       #|len is the length of the longest suffix of s2[0..i) that is a substring
@@ -297,7 +308,8 @@ pub fn longest_common_substring(s1 : String, s2 : String) -> Int {
   }
 }
 
-///| Return the number of states currently allocated in the automaton.
+///|
+/// Return the number of states currently allocated in the automaton.
 ///
 /// For a string of length `n`, this value is at most `2n - 1`. The initial
 /// state (index 0, representing the empty string) is always counted, so an
@@ -308,7 +320,8 @@ pub fn SuffixAutomaton::state_count(self : SuffixAutomaton) -> Int {
   self.size
 }
 
-///| Count the number of (possibly overlapping) occurrences of `pattern` in
+///|
+/// Count the number of (possibly overlapping) occurrences of `pattern` in
 /// the string the automaton was built from.
 ///
 /// The algorithm:
@@ -355,7 +368,7 @@ pub fn SuffixAutomaton::count_occurrences(
     .map(s => s.len)
     .maximum()
     .unwrap_or(0)
-  let by_len : Array[Array[Int]] = Array::makei(max_len + 1, _ => [])
+  let by_len : Array[Array[Int]] = [| for _ in 0..<(max_len + 1) => [] |]
   for i in 0..<self.size {
     by_len[self.states[i].len].push(i)
   }

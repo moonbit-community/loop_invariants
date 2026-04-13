@@ -29,7 +29,7 @@ pub fn build_sparse_table(arr : ArrayView[Int]) -> SparseTable {
     log[i] = log[i / 2] + 1
   }
   let kmax = log[n]
-  let table = Array::makei(kmax + 1, _ => Array::make(n, 0))
+  let table = [| for _ in 0..<(kmax + 1) => Array::make(n, 0) |]
   for i in 0..<n {
     table[0][i] = arr[i]
   }

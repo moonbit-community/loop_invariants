@@ -25,7 +25,8 @@
 /// Equal to `Int64::max_value() / 2` to avoid overflow in arithmetic.
 const INF64 : Int64 = 4611686018427387903L
 
-///| A single simple path in the graph, storing the sequence of visited nodes
+///|
+/// A single simple path in the graph, storing the sequence of visited nodes
 /// and the total edge weight.
 ///
 /// `nodes` is in traversal order from source to target. `cost` is the sum of
@@ -37,7 +38,8 @@ pub(all) struct KPath {
   cost : Int64
 } derive(Debug)
 
-///| Return `true` when `prefix` is an exact leading sub-sequence of `path`.
+///|
+/// Return `true` when `prefix` is an exact leading sub-sequence of `path`.
 ///
 /// Used to identify which previously found paths share the same root as the
 /// current spur candidate, so that their outgoing edges can be blocked.
@@ -53,7 +55,8 @@ fn has_prefix(path : Array[Int], prefix : Array[Int]) -> Bool {
   true
 }
 
-///| Return `true` when arrays `a` and `b` contain identical elements in the
+///|
+/// Return `true` when arrays `a` and `b` contain identical elements in the
 /// same order.
 ///
 /// Used as an equality predicate for node-sequence arrays where structural
@@ -70,7 +73,8 @@ fn paths_equal(a : Array[Int], b : Array[Int]) -> Bool {
   true
 }
 
-///| Return `true` when any path in `paths` has the same node sequence as
+///|
+/// Return `true` when any path in `paths` has the same node sequence as
 /// `nodes`.
 ///
 /// Used to prevent duplicate entries in the candidate set `B` and to skip
@@ -84,7 +88,8 @@ fn path_in_list(paths : Array[KPath], nodes : Array[Int]) -> Bool {
   false
 }
 
-///| Return the index of the `KPath` with the smallest `cost` in `paths`.
+///|
+/// Return the index of the `KPath` with the smallest `cost` in `paths`.
 ///
 /// Returns `-1` when `paths` is empty.  Used instead of a priority queue to
 /// pop the best candidate from the candidate set `B`.
@@ -100,7 +105,8 @@ fn min_cost_index(paths : Array[KPath]) -> Int {
   idx
 }
 
-///| Return `true` when the directed edge `(u, v)` appears in `blocked`.
+///|
+/// Return `true` when the directed edge `(u, v)` appears in `blocked`.
 ///
 /// Called for every edge in the original graph before adding it to the
 /// temporary spur-search graph, so that edges that would recreate a previously
@@ -115,7 +121,8 @@ fn is_blocked_edge(blocked : Array[(Int, Int)], u : Int, v : Int) -> Bool {
   false
 }
 
-///| Build a plain adjacency-list representation of the graph.
+///|
+/// Build a plain adjacency-list representation of the graph.
 ///
 /// Returns `None` if any edge weight is negative (Dijkstra requires
 /// non-negative weights) or if any endpoint is out of range `[0, n)`.
@@ -124,7 +131,7 @@ fn build_adj(
   n : Int,
   edges : ArrayView[(Int, Int, Int64)],
 ) -> Array[Array[(Int, Int64)]]? {
-  let adj : Array[Array[(Int, Int64)]] = Array::makei(n, _ => [])
+  let adj : Array[Array[(Int, Int64)]] = [| for _ in 0..<n => [] |]
   for edge in edges {
     let (u, v, w) = edge
     if w < 0L {
@@ -137,7 +144,8 @@ fn build_adj(
   Some(adj)
 }
 
-///| Return the minimum weight of any directed edge from `u` to `v` in the
+///|
+/// Return the minimum weight of any directed edge from `u` to `v` in the
 /// adjacency list `adj`, or `None` when no such edge exists.
 ///
 /// The minimum is taken because parallel edges are allowed; the algorithm
@@ -166,7 +174,8 @@ fn min_edge_weight(
   }
 }
 
-///| Compute the total edge cost of the path described by `nodes` using the
+///|
+/// Compute the total edge cost of the path described by `nodes` using the
 /// adjacency list `adj`.
 ///
 /// Returns `Some(total)` when every consecutive pair `(nodes[i], nodes[i+1])`
@@ -189,7 +198,8 @@ fn path_cost(adj : Array[Array[(Int, Int64)]], nodes : Array[Int]) -> Int64? {
   }
 }
 
-///| Extract the prefix of `nodes` up to and including index `end_idx`
+///|
+/// Extract the prefix of `nodes` up to and including index `end_idx`
 /// (inclusive).
 ///
 /// The resulting slice becomes the "root path" used when computing spur
@@ -202,7 +212,8 @@ fn prefix_nodes(nodes : Array[Int], end_idx : Int) -> Array[Int] {
   prefix
 }
 
-///| Concatenate a root path and a spur path into one complete candidate path.
+///|
+/// Concatenate a root path and a spur path into one complete candidate path.
 ///
 /// The last element of `root` is the spur node, which is the first element of
 /// `spur`, so it must not be duplicated.  The function therefore appends all
@@ -220,7 +231,8 @@ fn combine_paths(root : Array[Int], spur : Array[Int]) -> Array[Int] {
   combined
 }
 
-///| Find the shortest path from `source` to `target` in a temporarily
+///|
+/// Find the shortest path from `source` to `target` in a temporarily
 /// restricted version of the graph.
 ///
 /// Edges listed in `blocked_edges` and edges incident to any node flagged
@@ -269,7 +281,8 @@ fn shortest_path_filtered(
   }
 }
 
-///| Compute up to `k` shortest loopless (simple) paths from `source` to
+///|
+/// Compute up to `k` shortest loopless (simple) paths from `source` to
 /// `target` in a directed, non-negatively weighted graph with `n` nodes.
 ///
 /// The graph is given as a flat edge list `edges` where each entry is a tuple
@@ -313,7 +326,6 @@ fn shortest_path_filtered(
 /// ## Example
 ///
 /// ```mbt check
-/// ///|
 /// test "yen k shortest paths" {
 ///   let edges : Array[(Int, Int, Int64)] = [
 ///     (0, 1, 1L),

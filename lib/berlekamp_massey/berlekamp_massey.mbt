@@ -133,7 +133,6 @@ fn inv_mod(x : Int64, m : Int64) -> Int64 {
 /// ## Example: Fibonacci
 ///
 /// ```mbt check
-/// ///|
 /// test "berlekamp_massey fibonacci" {
 ///   let m = 1000000007L
 ///   let seq : Array[Int64] = [0L, 1L, 1L, 2L, 3L, 5L, 8L]
@@ -146,7 +145,6 @@ fn inv_mod(x : Int64, m : Int64) -> Int64 {
 /// ## Example: geometric progression
 ///
 /// ```mbt check
-/// ///|
 /// test "berlekamp_massey geometric" {
 ///   let m = 1000000007L
 ///   let seq : Array[Int64] = [1L, 2L, 4L, 8L, 16L]

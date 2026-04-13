@@ -9,14 +9,15 @@
 // TIME COMPLEXITY: O(n)
 // SPACE COMPLEXITY: O(1)
 
-///| A 2-D point with 64-bit integer coordinates.
+///|
+/// A 2-D point with 64-bit integer coordinates.
 ///
 /// Integer coordinates are required so that all arithmetic (cross products,
 /// bounding-box checks) is exact with no floating-point rounding error.
 ///
 /// # Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let p : @point_in_polygon.Point = { x: 3L, y: 7L }
 /// ```
 pub(all) struct Point {
@@ -24,7 +25,8 @@ pub(all) struct Point {
   y : Int64
 } derive(Debug, Eq)
 
-///| The result of a point-in-polygon query.
+///|
+/// The result of a point-in-polygon query.
 ///
 /// - `Inside`   -- the point is strictly inside the polygon.
 /// - `Outside`  -- the point is strictly outside the polygon.
@@ -35,7 +37,8 @@ pub enum Location {
   Boundary
 } derive(Debug, Eq)
 
-///| Renders a `Location` value as a human-readable string.
+///|
+/// Renders a `Location` value as a human-readable string.
 ///
 /// Produces `"Inside"`, `"Outside"`, or `"Boundary"`.
 pub impl Show for Location with output(self, logger) {
@@ -50,7 +53,8 @@ pub impl Show for Location with output(self, logger) {
 // Internal helpers
 // ----------------------------------------------------------------------------
 
-///| Signed 2-D cross product of vectors AB and AC.
+///|
+/// Signed 2-D cross product of vectors AB and AC.
 ///
 /// Returns `(b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)`.
 ///
@@ -61,7 +65,8 @@ fn cross(a : Point, b : Point, c : Point) -> Int64 {
   (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
 }
 
-///| Returns true when point `p` lies inside the axis-aligned bounding box of
+///|
+/// Returns true when point `p` lies inside the axis-aligned bounding box of
 /// segment AB (inclusive on all sides).
 ///
 /// This is used together with `cross == 0` to test whether a collinear point
@@ -78,7 +83,8 @@ fn on_segment(a : Point, b : Point, p : Point) -> Bool {
 // Public API
 // ----------------------------------------------------------------------------
 
-///| Determine whether point `p` lies inside, outside, or on the boundary of
+///|
+/// Determine whether point `p` lies inside, outside, or on the boundary of
 /// `poly`.
 ///
 /// ## Algorithm
@@ -107,17 +113,20 @@ fn on_segment(a : Point, b : Point, p : Point) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let square : Array[@point_in_polygon.Point] = [
 ///   { x: 0L, y: 0L },
 ///   { x: 4L, y: 0L },
 ///   { x: 4L, y: 4L },
 ///   { x: 0L, y: 4L },
 /// ]
+///
 /// let r1 = @point_in_polygon.point_in_polygon(square, { x: 2L, y: 2L })
 /// // r1 is Inside
+///
 /// let r2 = @point_in_polygon.point_in_polygon(square, { x: 5L, y: 2L })
 /// // r2 is Outside
+///
 /// let r3 = @point_in_polygon.point_in_polygon(square, { x: 4L, y: 2L })
 /// // r3 is Boundary
 /// ```

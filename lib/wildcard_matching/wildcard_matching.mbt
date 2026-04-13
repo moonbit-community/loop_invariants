@@ -47,7 +47,7 @@
 ///
 /// ## Examples
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// // Literal match with wildcards
 /// assert_true!(wildcard_match("aaabxc", "a*b?c"))
 /// assert_true!(wildcard_match("abc",    "a?c"))

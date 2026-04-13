@@ -181,7 +181,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
   }
 
   // Create initial index array
-  let indices = Array::makei(n, i => i)
+  let indices = [| for i in 0..<n => i |]
   let root = build_node(nodes, arr.copy(), indices, 0, sigma)
   { nodes, root, n, sigma }
 }
@@ -243,7 +243,9 @@ fn WaveletTree::count(self : WaveletTree, l : Int, r : Int, v : Int) -> Int {
       continue node.right, new_left, new_right
     }
   } where {
-    proof_invariant: node_idx >= 0 && node_idx < self.nodes.length() && left <= right,
+    proof_invariant: node_idx >= 0 &&
+    node_idx < self.nodes.length() &&
+    left <= right,
     proof_reasoning: (
       #|INVARIANT (count path):
       #|[left, right) is the subrange in the current node that corresponds to

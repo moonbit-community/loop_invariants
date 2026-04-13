@@ -257,7 +257,7 @@ priv struct AhoCorasick {
 /// ```
 fn AhoCorasick::new(patterns : Array[String]) -> AhoCorasick {
   let max_nodes = 1 + patterns.fold(init=0, (acc, p) => acc + p.length())
-  let nodes : Array[ACNode] = Array::makei(max_nodes, _ => ACNode::new())
+  let nodes : Array[ACNode] = [| for _ in 0..<max_nodes => ACNode::new() |]
   let ac : AhoCorasick = { nodes, node_count: 1 }
   // Build trie
   for pattern_idx, pattern in patterns {

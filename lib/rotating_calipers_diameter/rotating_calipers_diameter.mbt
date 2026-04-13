@@ -9,7 +9,8 @@
 // TIME COMPLEXITY: O(n)
 // SPACE COMPLEXITY: O(1)
 
-///| A two-dimensional point with integer coordinates.
+///|
+/// A two-dimensional point with integer coordinates.
 ///
 /// Both fields use `Int64` so that squared distances between any two points
 /// whose coordinates fit in a 32-bit integer never overflow.
@@ -23,7 +24,8 @@ pub(all) struct Point {
   y : Int64
 } derive(Debug, Eq)
 
-///| The result of `convex_diameter`.
+///|
+/// The result of `convex_diameter`.
 ///
 /// - `i` and `j` are the indices (into the input array) of the two vertices
 ///   that are farthest apart.
@@ -37,7 +39,8 @@ pub(all) struct DiameterResult {
   dist2 : Int64
 } derive(Debug)
 
-///| Compute twice the signed area of triangle (a, b, c) using the cross product.
+///|
+/// Compute twice the signed area of triangle (a, b, c) using the cross product.
 ///
 /// Returns a positive value when the turn a -> b -> c is counter-clockwise,
 /// zero when the three points are collinear, and a negative value when the
@@ -46,7 +49,8 @@ fn cross(a : Point, b : Point, c : Point) -> Int64 {
   (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
 }
 
-///| Return the squared Euclidean distance between points `a` and `b`.
+///|
+/// Return the squared Euclidean distance between points `a` and `b`.
 ///
 /// Using squared distance avoids square roots and keeps the result an exact
 /// integer for integer input coordinates.
@@ -56,7 +60,8 @@ fn dist2(a : Point, b : Point) -> Int64 {
   dx * dx + dy * dy
 }
 
-///| Compute the diameter of a convex polygon using the rotating-calipers method.
+///|
+/// Compute the diameter of a convex polygon using the rotating-calipers method.
 ///
 /// The **diameter** is the maximum squared Euclidean distance between any two
 /// vertices of the polygon.  This function returns the two vertex indices and
@@ -80,11 +85,14 @@ fn dist2(a : Point, b : Point) -> Int64 {
 ///
 /// # Examples
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let square : Array[Point] = [
-///   { x: 0L, y: 0L }, { x: 2L, y: 0L },
-///   { x: 2L, y: 2L }, { x: 0L, y: 2L },
+///   { x: 0L, y: 0L },
+///   { x: 2L, y: 0L },
+///   { x: 2L, y: 2L },
+///   { x: 0L, y: 2L },
 /// ]
+///
 /// let r = convex_diameter(square).unwrap()
 /// // r.dist2 == 8  (diagonal of a 2x2 square)
 /// ```

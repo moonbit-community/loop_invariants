@@ -17,7 +17,8 @@
 ///|
 const INF64 : Int64 = 4611686018427387903L
 
-///| The result returned by `min_cut_st`.
+///|
+/// The result returned by `min_cut_st`.
 ///
 /// Fields:
 /// - `value`: the minimum cut capacity, equal to the maximum flow from
@@ -31,7 +32,8 @@ pub(all) struct MinCutSTResult {
   source_side : Array[Int]
 }
 
-///| A directed edge in the internal flow network.
+///|
+/// A directed edge in the internal flow network.
 ///
 /// Each original edge `u -> v` with capacity `cap` is paired with a
 /// reverse edge `v -> u` with capacity 0.  The `rev` field stores the
@@ -44,7 +46,8 @@ priv struct Edge {
   rev : Int
 }
 
-///| The internal Dinic flow graph.
+///|
+/// The internal Dinic flow graph.
 ///
 /// Fields:
 /// - `n`: vertex count.
@@ -60,13 +63,15 @@ priv struct FlowGraph {
   iter : Array[Int]
 }
 
-///| Create a new flow graph with `n` vertices and no edges.
+///|
+/// Create a new flow graph with `n` vertices and no edges.
 fn FlowGraph::new(n : Int) -> FlowGraph {
-  let adj = Array::makei(n, _ => [])
+  let adj = [| for _ in 0..<n => [] |]
   { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0) }
 }
 
-///| Add a directed edge `from -> to` with the given capacity to the flow
+///|
+/// Add a directed edge `from -> to` with the given capacity to the flow
 /// graph.
 ///
 /// A corresponding reverse edge with capacity 0 is also added so that the
@@ -83,7 +88,8 @@ fn FlowGraph::add_edge(
   self.adj[to].push({ to: from, cap: 0L, flow: 0L, rev: rev_to })
 }
 
-///| Run BFS from `source` on the residual graph to assign BFS levels.
+///|
+/// Run BFS from `source` on the residual graph to assign BFS levels.
 ///
 /// Returns `true` if `sink` is reachable, meaning another blocking-flow
 /// phase is possible.  Populates `self.level` with shortest-path distances
@@ -129,7 +135,8 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
   self.level[sink] >= 0
 }
 
-///| DFS blocking-flow phase for Dinic's algorithm.
+///|
+/// DFS blocking-flow phase for Dinic's algorithm.
 ///
 /// Attempts to push `pushed` units of flow from `u` to `sink` along the
 /// current level graph.  Returns the amount successfully pushed (0 if no
@@ -168,7 +175,8 @@ fn FlowGraph::dfs(
   0L
 }
 
-///| Compute the maximum flow from `source` to `sink` using Dinic's algorithm.
+///|
+/// Compute the maximum flow from `source` to `sink` using Dinic's algorithm.
 ///
 /// Alternates between BFS (build level graph) and DFS (find blocking flow)
 /// until the sink is unreachable in the residual graph.  Returns the total
@@ -212,7 +220,8 @@ fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
   }
 }
 
-///| BFS the residual graph from `source` and return all reachable vertices.
+///|
+/// BFS the residual graph from `source` and return all reachable vertices.
 ///
 /// Called after `max_flow` completes.  A vertex `v` is in the returned set
 /// if there is a directed path from `source` to `v` in the residual graph
@@ -254,7 +263,8 @@ fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] 
   result
 }
 
-///| Compute the minimum s-t cut of a directed graph.
+///|
+/// Compute the minimum s-t cut of a directed graph.
 ///
 /// Uses the max-flow min-cut theorem: the value of the minimum s-t cut equals
 /// the maximum flow from `source` to `sink`.  The algorithm runs Dinic's max

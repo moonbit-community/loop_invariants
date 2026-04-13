@@ -119,10 +119,12 @@ fn MoDistinct::answer_queries(
   }
 
   // Create query objects with original indices
-  let mo_queries = Array::makei(q, i => {
-    let (l, r) = queries[i]
-    { left: l, right: r, index: i }
-  })
+  let mo_queries = [|
+    for i in 0..<q => {
+      let (l, r) = queries[i]
+      { left: l, right: r, index: i }
+    }
+  |]
 
   // Sort queries by (left_block, right)
   // INVARIANT: After sort, queries in same block have increasing right
@@ -288,10 +290,12 @@ fn MoSum::answer_queries(
   if q == 0 || self.n == 0 {
     return []
   }
-  let mo_queries = Array::makei(q, i => {
-    let (l, r) = queries[i]
-    { left: l, right: r, index: i }
-  })
+  let mo_queries = [|
+    for i in 0..<q => {
+      let (l, r) = queries[i]
+      { left: l, right: r, index: i }
+    }
+  |]
   mo_queries.sort_by((a, b) => {
     if a.left / self.block_size != b.left / self.block_size {
       a.left / self.block_size - b.left / self.block_size
@@ -442,10 +446,12 @@ fn MoRangeCount::answer_queries(
   let freq : Array[Int] = Array::make(100001, 0)
 
   // Create MoQuery with extended info
-  let mo_queries = Array::makei(q, i => {
-    let (l, r, lo, hi) = queries[i]
-    ({ left: l, right: r, index: i }, lo, hi)
-  })
+  let mo_queries = [|
+    for i in 0..<q => {
+      let (l, r, lo, hi) = queries[i]
+      ({ left: l, right: r, index: i }, lo, hi)
+    }
+  |]
 
   // Sort by Mo ordering
   mo_queries.sort_by((a, b) => {
@@ -591,10 +597,12 @@ fn MoMode::answer_queries(
     return []
   }
   let freq : Array[Int] = Array::make(100001, 0)
-  let mo_queries = Array::makei(q, i => {
-    let (l, r) = queries[i]
-    { left: l, right: r, index: i }
-  })
+  let mo_queries = [|
+    for i in 0..<q => {
+      let (l, r) = queries[i]
+      { left: l, right: r, index: i }
+    }
+  |]
   mo_queries.sort_by((a, b) => {
     if a.left / self.block_size != b.left / self.block_size {
       a.left / self.block_size - b.left / self.block_size

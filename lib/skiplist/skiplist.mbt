@@ -322,7 +322,9 @@ fn[K : Compare, V] SkipList::insert(
       }
     }
   } where {
-    proof_invariant: lvl >= -1 && lvl <= self.level && update.length() == max_level,
+    proof_invariant: lvl >= -1 &&
+    lvl <= self.level &&
+    update.length() == max_level,
     proof_reasoning: (
       #|INSERT INVARIANT: update[lvl] tracks the predecessor at each level
       #|
@@ -431,7 +433,9 @@ fn[K : Compare, V] SkipList::delete(self : SkipList[K, V], key : K) -> Bool {
       _ => false // Key not found
     }
   } where {
-    proof_invariant: lvl >= -1 && lvl <= self.level && update.length() == max_level,
+    proof_invariant: lvl >= -1 &&
+    lvl <= self.level &&
+    update.length() == max_level,
     proof_reasoning: (
       #|DELETE INVARIANT: Same search invariant as insert
       #|
@@ -1099,7 +1103,9 @@ fn[K : Compare, V] MultiSkipList::insert(
       }
     }
   } where {
-    proof_invariant: lvl >= -1 && lvl <= self.level && update.length() == max_level,
+    proof_invariant: lvl >= -1 &&
+    lvl <= self.level &&
+    update.length() == max_level,
     proof_reasoning: (
       #|MULTI-INSERT INVARIANT:
       #|

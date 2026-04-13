@@ -127,7 +127,7 @@ pub(all) struct Dinic {
 /// Vertices are numbered `0` to `n-1`.  No edges are added; use
 /// `add_edge` to build the network before calling `max_flow`.
 pub fn Dinic::new(n : Int) -> Dinic {
-  let adj = Array::makei(n, _ => [])
+  let adj = [| for _ in 0..<n => [] |]
   { n, adj, level: Array::make(n, 0), iter: Array::make(n, 0) }
 }
 

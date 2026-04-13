@@ -161,7 +161,9 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 ///
 /// Time complexity: O(n).
 fn build_adj(n : Int) -> Array[Array[(Int, Int64)]] {
-  Array::makei(n, _ => [])
+  [|
+    for _ in 0..<n => []
+  |]
 }
 
 ///|

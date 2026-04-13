@@ -110,7 +110,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // =========================================================================
   // TRANSPOSE: Build reverse graph
   // =========================================================================
-  let radj : Array[Array[Int]] = Array::makei(n, _ => [])
+  let radj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   for u in 0..<n {
     for j in 0..<adj[u].length() {
       let v = adj[u][j]
@@ -163,7 +163,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // =========================================================================
   // Build condensation graph
   // =========================================================================
-  let scc_adj : Array[Array[Int]] = Array::makei(scc_count, _ => [])
+  let scc_adj : Array[Array[Int]] = [| for _ in 0..<scc_count => [] |]
   for u in 0..<n {
     let comp_u = component[u]
     for j in 0..<adj[u].length() {

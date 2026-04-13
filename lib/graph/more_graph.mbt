@@ -107,17 +107,21 @@ fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
   let inf = 2147483647 / 2 // Avoid overflow
 
   // Initialize distance matrix using makei
-  let dist : Array[Array[Int]] = Array::makei(n, i => {
-    Array::makei(n, j => {
-      if i == j {
-        0
-      } else if adj[i][j] != 0 {
-        adj[i][j]
-      } else {
-        inf
-      }
-    })
-  })
+  let dist : Array[Array[Int]] = [|
+    for i in 0..<n => {
+      [|
+        for j in 0..<n => {
+          if i == j {
+            0
+          } else if adj[i][j] != 0 {
+            adj[i][j]
+          } else {
+            inf
+          }
+        }
+      |]
+    }
+  |]
 
   // Main algorithm: consider each vertex as intermediate
   for k in 0..<n {
@@ -200,7 +204,7 @@ test "floyd warshall" {
 fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   // Calculate in-degrees
   let in_degree = Array::make(n, 0)
-  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   for edge in edges {
     let (u, v) = edge
     adj[u].push(v)
@@ -399,7 +403,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
   }
 
   // Build reverse graph using makei
-  let rev_adj : Array[Array[Int]] = Array::makei(n, _ => [])
+  let rev_adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   for u in 0..<n {
     for v in adj[u] {
       rev_adj[v].push(u)
@@ -605,7 +609,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
   }
 
   // Union-Find
-  let parent = Array::makei(n, i => i)
+  let parent = [| for i in 0..<n => i |]
   let rank = Array::make(n, 0)
   let total_weight = for i = 0, total_weight = 0, edges_added = 0; i <
                         sorted_edges.length() &&
