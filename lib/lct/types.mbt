@@ -60,20 +60,43 @@
 //   - Network flow algorithms
 
 ///|
-/// Node in the Link-Cut Tree
+/// A single node in the Link-Cut Tree auxiliary structure.
 ///
-/// STRUCTURE:
+/// Each node occupies exactly one splay tree at any moment. Splay trees
+/// represent preferred paths — contiguous chains in the original tree ordered
+/// by depth (shallower nodes on the left, deeper nodes on the right).
+///
+/// POINTER SEMANTICS:
 /// ```
-///   Each node maintains:
-///   - Splay tree pointers (parent, left, right)
-///   - Path-parent pointer (connection to ancestor splay tree)
-///   - Lazy reversal flag (for re-rooting)
-///   - Data fields (value, aggregate)
+///   Three distinct cases for the (parent, path_parent) pair:
 ///
-///   Pointer semantics:
-///   - parent >= 0: splay tree parent
-///   - parent < 0 AND path_parent >= 0: root of splay tree with connection above
-///   - parent < 0 AND path_parent < 0: root of entire tree
+///   Splay-internal node:
+///     parent >= 0  AND  nodes[parent].left == self OR nodes[parent].right == self
+///
+///   Splay root with an upward link (not tree root):
+///     parent < 0  AND  path_parent >= 0
+///     path_parent points to the topmost node of the next splay tree above.
+///
+///   Tree root (topmost node in the entire represented tree):
+///     parent < 0  AND  path_parent < 0
+/// ```
+///
+/// AGGREGATE MAINTENANCE:
+/// ```
+///   subtree_sum is kept in sync via push_up after every rotation or
+///   structural change:
+///     subtree_sum = value + left.subtree_sum + right.subtree_sum
+///
+///   It represents the sum of all node values on the portion of the
+///   preferred path covered by this node's splay subtree.
+/// ```
+///
+/// LAZY REVERSAL:
+/// ```
+///   The reversed flag is a lazy propagation marker set by make_root.
+///   When true, the node's left and right children should be considered
+///   swapped (and the flag should be forwarded to them before any
+///   structural access). push_down applies the reversal and clears the flag.
 /// ```
 pub(all) struct LCTNode {
   mut parent : Int // Parent in splay tree (-1 if root of splay tree)
@@ -87,7 +110,13 @@ pub(all) struct LCTNode {
 }
 
 ///|
-/// Create a new LCT node with given value.
+/// Create a new LCTNode with the given value.
+///
+/// The node starts as an isolated tree: no splay-tree edges (`parent`,
+/// `left`, `right` all -1), no upward connection (`path_parent` = -1),
+/// and no pending reversal (`reversed` = false).
+/// `subtree_sum` is initialised to `value` because a lone node's path
+/// aggregate is just its own value.
 pub fn LCTNode::new(value : Int) -> LCTNode {
   {
     parent: -1,
@@ -101,23 +130,47 @@ pub fn LCTNode::new(value : Int) -> LCTNode {
 }
 
 ///|
-/// Link-Cut Tree data structure
+/// Link-Cut Tree data structure for dynamic forests.
+///
+/// Maintains a forest of rooted trees under a sequence of link and cut
+/// operations, with O(log n) amortized time per operation.
 ///
 /// REPRESENTATION:
 /// ```
-///   A forest of rooted trees where each tree is decomposed into
-///   preferred paths stored in splay trees.
+///   nodes[i] is vertex i in the forest.  All vertices are indexed 0..n-1.
 ///
-///   nodes[i] represents vertex i in the forest.
+///   Internally each tree is decomposed into preferred paths (see module
+///   header).  Each preferred path is stored as a splay tree ordered by
+///   depth:
 ///
-///   Initial state: n isolated nodes, each its own tree root.
+///     Left in splay  <->  shallower in original tree
+///     Right in splay <->  deeper in original tree
+///
+///   Splay trees belonging to the same original tree are chained via
+///   path_parent pointers.  A node with path_parent == -1 and parent == -1
+///   is the root of the entire original tree.
 /// ```
+///
+/// INITIAL STATE:
+/// ```
+///   LinkCutTree::new(n) creates n isolated nodes.  Each node is its own
+///   splay tree (trivially a single-node tree) and its own original tree
+///   root.  No edges exist.
+/// ```
+///
+/// THREAD SAFETY:
+///   Not thread-safe. All operations mutate internal state.
 pub(all) struct LinkCutTree {
   nodes : Array[LCTNode]
 }
 
 ///|
-/// Create a new Link-Cut Tree with n nodes, all with value 0.
+/// Create a new Link-Cut Tree with `n` nodes, all with value 0.
+///
+/// Produces `n` isolated nodes (no edges). Each node is simultaneously its
+/// own splay-tree root and its own original-tree root.
+///
+/// Time: O(n).
 pub fn LinkCutTree::new(n : Int) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
   for i in 0..<n {
@@ -143,7 +196,13 @@ pub fn LinkCutTree::new(n : Int) -> LinkCutTree {
 }
 
 ///|
-/// Create Link-Cut Tree with initial values.
+/// Create a Link-Cut Tree with given initial node values.
+///
+/// Equivalent to `LinkCutTree::new(values.length())` followed by setting
+/// each node's value from the array. Useful when path-sum queries are
+/// planned from the start.
+///
+/// Time: O(n).
 pub fn LinkCutTree::with_values(values : Array[Int]) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
   for value in values {

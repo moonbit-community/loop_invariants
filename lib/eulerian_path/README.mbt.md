@@ -34,49 +34,175 @@ Hierholzer's algorithm:
   Key: Build path from the END by reversing the traversal.
 ```
 
+## Graph Examples
+
+### Undirected Eulerian Circuit
+
+All vertices have even degree, so a circuit exists. Every vertex can be
+reached from every other vertex (the graph is connected).
+
+```mermaid
+graph LR
+    0 --- 1
+    1 --- 2
+    2 --- 0
+    0 --- 4
+    4 --- 3
+    3 --- 0
+```
+
+Degrees: vertex 0 = 4, vertex 1 = 2, vertex 2 = 2, vertex 3 = 2, vertex 4 = 2.
+All even. Circuit: 0 - 1 - 2 - 0 - 3 - 4 - 0.
+
+### Undirected Eulerian Path (not a circuit)
+
+Exactly two vertices have odd degree. Those two vertices are the start and end.
+
+```mermaid
+graph LR
+    0 --- 1
+    1 --- 2
+    2 --- 3
+```
+
+Degrees: vertex 0 = 1 (odd), vertex 1 = 2, vertex 2 = 2, vertex 3 = 1 (odd).
+Two odd-degree vertices. Path: 0 - 1 - 2 - 3.
+
+### Directed Eulerian Circuit
+
+Every vertex has equal in-degree and out-degree. The underlying undirected
+graph is connected.
+
+```mermaid
+graph LR
+    0 -->|a| 1
+    1 -->|b| 2
+    2 -->|c| 0
+```
+
+In-degree = out-degree = 1 for all vertices. Circuit: 0 -> 1 -> 2 -> 0.
+
+### Directed Eulerian Path (not a circuit)
+
+Exactly one vertex has out - in = 1 (the start), exactly one has in - out = 1
+(the end), and all others are balanced.
+
+```mermaid
+graph LR
+    0 -->|a| 1
+    1 -->|b| 2
+    2 -->|c| 0
+    0 -->|d| 2
+```
+
+Vertex 0: out = 2, in = 1 (start). Vertex 2: out = 1, in = 2 (end).
+Vertex 1: out = 1, in = 1 (balanced). Path: 0 -> 1 -> 2 -> 0 -> 2.
+
 ## Visual: Hierholzer's Algorithm
 
-```
-Graph (undirected, two cycles sharing a vertex):
+### Undirected Example Trace
 
-      1
-     / \
-    0---2
-    |   |
-    4---3
+Graph (two triangles sharing vertex 0):
 
-Edges: 0-1-2-0 and 0-3-4-0
-All vertices have even degree → Eulerian circuit exists.
-
-Hierholzer trace (stack grows, then backtracks):
-  stack: [0]
-  take 0-1-2-0, stack: [0, 1, 2, 0]
-  0 still has unused edges, take 0-3-4-0, stack: [0, 1, 2, 0, 3, 4, 0]
-  0 has no unused edges → pop to path
-  continue popping until stack empty
-
-Reverse of pop order is the Eulerian circuit:
-  0 → 1 → 2 → 0 → 3 → 4 → 0
+```mermaid
+graph LR
+    0 --- 1
+    1 --- 2
+    2 --- 0
+    0 --- 3
+    3 --- 4
+    4 --- 0
 ```
 
-## Visual: Directed Graph Example
+Step-by-step Hierholzer trace:
 
 ```
-Directed graph:
-    0 ──► 1 ──► 2
-    ▲           │
-    └───────────┘
+Initial state:
+  stack: [0]    path: []
 
-In-degree:  [1, 1, 1]
-Out-degree: [1, 1, 1]
-All equal → Eulerian circuit exists!
+Step 1: vertex 0 has unused edge to 1
+  stack: [0, 1]    path: []
 
-Traversal:
-  Start at 0
-  0 → 1 → 2 → 0 (back to start, all edges used)
+Step 2: vertex 1 has unused edge to 2
+  stack: [0, 1, 2]    path: []
 
-Path: [0, 1, 2, 0]
+Step 3: vertex 2 has unused edge to 0
+  stack: [0, 1, 2, 0]    path: []
+
+Step 4: vertex 0 has unused edge to 3
+  stack: [0, 1, 2, 0, 3]    path: []
+
+Step 5: vertex 3 has unused edge to 4
+  stack: [0, 1, 2, 0, 3, 4]    path: []
+
+Step 6: vertex 4 has unused edge to 0
+  stack: [0, 1, 2, 0, 3, 4, 0]    path: []
+
+Step 7: vertex 0 has NO unused edges -> pop to path
+  stack: [0, 1, 2, 0, 3, 4]    path: [0]
+
+Step 8: vertex 4 has NO unused edges -> pop to path
+  stack: [0, 1, 2, 0, 3]    path: [0, 4]
+
+Step 9: vertex 3 has NO unused edges -> pop to path
+  stack: [0, 1, 2, 0]    path: [0, 4, 3]
+
+Step 10: vertex 0 has NO unused edges -> pop to path
+  stack: [0, 1, 2]    path: [0, 4, 3, 0]
+
+Step 11: vertex 2 has NO unused edges -> pop to path
+  stack: [0, 1]    path: [0, 4, 3, 0, 2]
+
+Step 12: vertex 1 has NO unused edges -> pop to path
+  stack: [0]    path: [0, 4, 3, 0, 2, 1]
+
+Step 13: vertex 0 has NO unused edges -> pop to path
+  stack: []    path: [0, 4, 3, 0, 2, 1, 0]
+
+Reverse path: [0, 1, 2, 0, 3, 4, 0]
 ```
+
+Result: 0 - 1 - 2 - 0 - 3 - 4 - 0 (circuit, 6 edges used).
+
+### Directed Example Trace
+
+Edges: 0->1, 1->2, 2->0, 0->2 (the path example from the usage section).
+
+```
+Initial state:
+  stack: [0]    path: []    next_index: [0, 0, 0]
+
+Step 1: adj[0][0] = 1, advance cursor
+  stack: [0, 1]    next_index: [1, 0, 0]
+
+Step 2: adj[1][0] = 2, advance cursor
+  stack: [0, 1, 2]    next_index: [1, 1, 0]
+
+Step 3: adj[2][0] = 0, advance cursor
+  stack: [0, 1, 2, 0]    next_index: [1, 1, 1]
+
+Step 4: adj[0][1] = 2, advance cursor
+  stack: [0, 1, 2, 0, 2]    next_index: [2, 1, 1]
+
+Step 5: adj[2] exhausted -> pop 2 to path
+  stack: [0, 1, 2, 0]    path: [2]    next_index: [2, 1, 1]
+
+Step 6: adj[0] exhausted -> pop 0 to path
+  stack: [0, 1, 2]    path: [2, 0]
+
+Step 7: adj[2] exhausted -> pop 2 to path
+  stack: [0, 1]    path: [2, 0, 2]
+
+Step 8: adj[1] exhausted -> pop 1 to path
+  stack: [0]    path: [2, 0, 2, 1]
+
+Step 9: adj[0] exhausted -> pop 0 to path
+  stack: []    path: [2, 0, 2, 1, 0]
+
+Reverse: [0, 1, 2, 0, 2]
+```
+
+Result: 0 -> 1 -> 2 -> 0 -> 2 (path, 4 edges used).
 
 ## The Algorithm
 
@@ -106,7 +232,7 @@ hierholzer(graph, start):
 DIRECTED GRAPH:
 
 Eulerian circuit:
-  ∀v: in(v) = out(v)
+  forall v: in(v) = out(v)
   All non-isolated vertices connected
 
 Eulerian path (not circuit):
@@ -136,6 +262,23 @@ Example (undirected):
   Triangle {0,1,2} and triangle {3,4,5} are separate.
   Each vertex has even degree, but no single Eulerian circuit
   can cover edges from both components.
+```
+
+Connectivity failure is illustrated below. Both triangles satisfy the degree
+condition independently, yet no single walk can cross from one to the other:
+
+```mermaid
+graph LR
+    subgraph component_A
+        0 --- 1
+        1 --- 2
+        2 --- 0
+    end
+    subgraph component_B
+        3 --- 4
+        4 --- 5
+        5 --- 3
+    end
 ```
 
 ## Example Usage
@@ -194,7 +337,7 @@ test "undirected path endpoints" {
 
 ```
 Directed graph:
-  Edges: 0→1, 1→2, 2→0, 0→2
+  Edges: 0->1, 1->2, 2->0, 0->2
 
   Degrees:
     0: out=2, in=1 (start candidate)
@@ -205,22 +348,22 @@ Directed graph:
 
   Stack: [0]
     0 has edges to 1 and 2
-    Take 0→1, mark used
+    Take 0->1, mark used
     Stack: [0, 1]
 
   Stack: [0, 1]
     1 has edge to 2
-    Take 1→2, mark used
+    Take 1->2, mark used
     Stack: [0, 1, 2]
 
   Stack: [0, 1, 2]
     2 has edge to 0
-    Take 2→0, mark used
+    Take 2->0, mark used
     Stack: [0, 1, 2, 0]
 
   Stack: [0, 1, 2, 0]
     0 has edge to 2
-    Take 0→2, mark used
+    Take 0->2, mark used
     Stack: [0, 1, 2, 0, 2]
 
   Stack: [0, 1, 2, 0, 2]
@@ -238,7 +381,7 @@ Directed graph:
 
   Reverse: [0, 1, 2, 0, 2]
 
-  Verify: 0→1 ✓, 1→2 ✓, 2→0 ✓, 0→2 ✓
+  Verify: 0->1, 1->2, 2->0, 0->2 (all 4 edges used exactly once)
 ```
 
 ## Why Hierholzer Works
@@ -283,11 +426,11 @@ Isolated vertices:
 
 ## Common Applications
 
-### 1. Seven Bridges of Königsberg
+### 1. Seven Bridges of Konigsberg
 ```
 The original Eulerian problem!
 Can you cross all bridges exactly once?
-Answer: Only if ≤ 2 odd-degree vertices.
+Answer: Only if <= 2 odd-degree vertices.
 ```
 
 ### 2. DNA Sequencing

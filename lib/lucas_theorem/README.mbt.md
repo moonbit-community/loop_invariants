@@ -66,6 +66,21 @@ C(6, 1) mod 5 = C(1, 0) * C(1, 1) mod 5 = 1
 
 Each digit pair is small (0..p-1), so it is easy to compute.
 
+### Mermaid: base-p decomposition pipeline
+
+```mermaid
+flowchart LR
+    A["Input n, k, p"] --> B["Write n in base p\nn = n_d ... n_1 n_0"]
+    A --> C["Write k in base p\nk = k_d ... k_1 k_0"]
+    B --> D["Pair digits\n(n_0, k_0), (n_1, k_1), ..."]
+    C --> D
+    D --> E["For each pair\ncompute C(n_i, k_i) mod p"]
+    E --> F{"any k_i > n_i?"}
+    F -- yes --> G["Return 0"]
+    F -- no  --> H["Multiply all\nsmall C values mod p"]
+    H --> I["Return product mod p"]
+```
+
 ## 5. The theorem (formal statement)
 
 Let `p` be prime, and write
@@ -178,6 +193,29 @@ So we compute:
 
 This costs O(p) time and space, plus a single `pow_mod` in O(log p).
 
+### ASCII art: factorial table construction
+
+```
+Index:      0    1    2    3   ...  p-2  p-1
+            |    |    |    |         |    |
+fact[]:     1    1    2    6   ...   *    *
+                                          |
+                                     pow_mod(fact[p-1], p-2, p)
+                                          |
+inv_fact[]: *    *    *    *   ...   *  <-+
+            ^----fill backwards: inv_fact[i] = inv_fact[i+1]*(i+1) mod p
+```
+
+### Mermaid: precomputation and lookup
+
+```mermaid
+flowchart TD
+    A["Start: prime p"] --> B["Build fact table\nfact[0] = 1\nfact[i] = fact[i-1] * i mod p"]
+    B --> C["Compute inv_fact[p-1]\n= fact[p-1]^(p-2) mod p\n(Fermat's little theorem)"]
+    C --> D["Fill inv_fact downward\ninv_fact[i] = inv_fact[i+1] * (i+1) mod p"]
+    D --> E["Lookup C(n_i, k_i)\n= fact[n_i]\n  * inv_fact[k_i]\n  * inv_fact[n_i - k_i]\n  mod p"]
+```
+
 ## 10. Algorithm (high level)
 
 ```
@@ -211,6 +249,40 @@ Step | n_i | k_i | C(n_i, k_i) | product
   1  |  1  |  0  |      1      |   1
 
 Final answer = 1
+```
+
+### ASCII art: digit peeling loop
+
+```
+Iteration 0          Iteration 1          kk = 0, done
++-----------+        +-----------+        +----------+
+| nn = 10   |        | nn =  1   |        | result=1 |
+| kk =  3   |        | kk =  0   |        +----------+
+|           |        |           |
+| n_i = 3   |        | (kk == 0, |
+| k_i = 3   |        |  loop     |
+| C(3,3)= 1 |        |  ends)    |
+| result= 1 |        +-----------+
++-----------+
+    | nn /= 7
+    | kk /= 7
+    v
+```
+
+### Mermaid: Lucas loop state machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Init : k <= n, p prime
+    Init --> CheckK : build fact / inv_fact tables
+    CheckK --> ExtractDigits : kk > 0
+    CheckK --> Done : kk == 0
+    ExtractDigits --> ZeroReturn : k_i > n_i
+    ExtractDigits --> Multiply : k_i <= n_i
+    Multiply --> Shift : result *= C(n_i, k_i) mod p
+    Shift --> CheckK : nn /= p, kk /= p
+    ZeroReturn --> [*] : return 0
+    Done --> [*] : return result
 ```
 
 ## 12. Example usage (runnable)
@@ -267,6 +339,21 @@ Space: O(p)
 If you will call this many times for the same `p`, consider caching the
 factorials and inverse factorials. This implementation recomputes them on
 each call for simplicity.
+
+### Complexity breakdown table
+
+```
+Phase                  | Work         | Notes
+-----------------------+--------------+---------------------------------
+Build fact[]           | O(p)         | one multiply per entry
+pow_mod for inv_fact   | O(log p)     | Fermat's little theorem
+Build inv_fact[]       | O(p)         | one multiply per entry
+Lucas digit loop       | O(log_p n)   | at most log_p(n) iterations
+Per-digit C(n_i, k_i)  | O(1)         | two table lookups
+-----------------------+--------------+---------------------------------
+Total time             | O(p + log n) |
+Total space            | O(p)         | two arrays of size p
+```
 
 ## 14. Why the theorem is true (short intuition)
 

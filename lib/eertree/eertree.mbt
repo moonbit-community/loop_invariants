@@ -35,7 +35,21 @@
 // SPACE COMPLEXITY: O(n) nodes (at most n distinct palindromes)
 
 ///|
-/// A node in the palindromic tree
+/// A single node in the palindromic tree.
+///
+/// Each node corresponds to exactly one distinct palindromic substring.
+/// The two special root nodes (indices 0 and 1) use sentinel lengths -1
+/// and 0 respectively; all other nodes hold the actual character length
+/// of the palindrome they represent.
+///
+/// Fields:
+/// - `len`: length of the palindrome (-1 for the odd root, 0 for the even root)
+/// - `suffix_link`: index of the node whose palindrome is the longest proper
+///   palindromic suffix of this node's palindrome
+/// - `edges`: transition array indexed by ASCII value; `edges[c]` is the
+///   index of the node whose palindrome is `c + this_palindrome + c`
+/// - `count`: number of positions in the processed string at which this
+///   palindrome occurs as the longest palindromic suffix (before propagation)
 priv struct EertreeNode {
   len : Int // Length of palindrome (-1 for odd root, 0 for even root)
   mut suffix_link : Int // Index of longest proper palindromic suffix
@@ -54,7 +68,17 @@ fn EertreeNode::new(len : Int) -> EertreeNode {
 }
 
 ///|
-/// Palindromic Tree (Eertree)
+/// The palindromic tree (eertree) for a string.
+///
+/// Nodes are stored in `nodes`; indices 0 and 1 are the two permanent roots:
+///   - Node 0: odd-length root (imaginary palindrome of length -1).
+///     Every single-character palindrome hangs off this root.
+///   - Node 1: even-length root (empty palindrome of length 0).
+///     Every two-character palindrome hangs off this root.
+///
+/// `last` tracks the node representing the longest palindromic suffix of the
+/// string seen so far, which is the starting point for the next extension.
+/// `size` counts the real palindrome nodes (all nodes except the two roots).
 priv struct Eertree {
   nodes : Array[EertreeNode]
   text : Array[Int] // Store characters as integers for faster access
@@ -336,19 +360,57 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
 }
 
 ///|
-/// Count distinct palindromic substrings in s.
+/// Count the number of distinct palindromic substrings in `s`.
+///
+/// Each position in the string contributes at most one new palindrome,
+/// so the result is always between 0 and `s.length()` inclusive.
+///
+/// Time complexity: O(n) where n = s.length().
+///
+/// Example:
+/// ```
+/// distinct_count("ababa")  // => 5  ("a", "b", "aba", "bab", "ababa")
+/// distinct_count("aaaa")   // => 4  ("a", "aa", "aaa", "aaaa")
+/// distinct_count("")        // => 0
+/// ```
 pub fn distinct_count(s : String) -> Int {
   Eertree::from_string(s).count_distinct()
 }
 
 ///|
-/// Return the length of the longest palindromic substring in s.
+/// Return the length of the longest palindromic substring of `s`.
+///
+/// Builds the palindromic tree in O(n) and scans all real nodes for the
+/// maximum length in O(n).  Returns 0 for the empty string.
+///
+/// Example:
+/// ```
+/// longest_length("abacaba")  // => 7  (the whole string)
+/// longest_length("abba")     // => 4  ("abba")
+/// longest_length("")          // => 0
+/// ```
 pub fn longest_length(s : String) -> Int {
   Eertree::from_string(s).longest_length()
 }
 
 ///|
-/// List all distinct palindromic substrings in s.
+/// Return all distinct palindromic substrings of `s` as an array of strings.
+///
+/// The array contains exactly `distinct_count(s)` elements.  The order
+/// follows the DFS traversal of the palindromic tree: odd-length palindromes
+/// (rooted at the imaginary -1 node) come before even-length ones, and
+/// within each group siblings appear in ascending character order.
+///
+/// Time and space complexity: O(n) for building the tree plus O(n * L) in
+/// the worst case to materialise the strings, where L is the average
+/// palindrome length.
+///
+/// Example:
+/// ```
+/// palindromes("aba")   // => ["a", "b", "aba"]  (order may vary)
+/// palindromes("abba")  // => ["a", "b", "bb", "abba"]  (order may vary)
+/// palindromes("")       // => []
+/// ```
 pub fn palindromes(s : String) -> Array[String] {
   Eertree::from_string(s).get_palindromes()
 }

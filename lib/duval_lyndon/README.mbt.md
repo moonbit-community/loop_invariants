@@ -2,189 +2,333 @@
 
 ## Overview
 
-**Duval's algorithm** decomposes any string into a unique sequence of **Lyndon words**
-in non-increasing lexicographic order. A Lyndon word is a string that is strictly
-smaller than all of its non-trivial rotations.
+**Duval's algorithm** decomposes any string into a unique sequence of **Lyndon
+words** in non-increasing lexicographic order. A Lyndon word is a string that
+is strictly smaller than all of its non-trivial rotations.
 
 - **Time**: O(n)
-- **Space**: O(n)
-- **Output**: Unique factorization into Lyndon words
+- **Space**: O(n) for the output array
+- **Output**: Unique factorization into Lyndon words (Chen-Fox-Lyndon theorem)
 
-## The Key Insight
+---
 
-```
-Problem: Decompose a string into "primitive" building blocks
+## What Is a Lyndon Word?
 
-What makes Lyndon words special?
-  - "a" is Lyndon: smallest rotation of itself
-  - "ab" is Lyndon: "ab" < "ba"
-  - "abc" is Lyndon: "abc" < "bca" < "cab"
-  - "ba" is NOT Lyndon: "ab" < "ba"
-  - "aa" is NOT Lyndon: "aa" = "aa" (not strictly smaller)
-
-Theorem (Chen-Fox-Lyndon):
-  Every string has a UNIQUE factorization into Lyndon words
-  in non-increasing lexicographic order.
-```
-
-## Understanding Lyndon Words
+A string `w` is a **Lyndon word** if and only if it is strictly lexicographically
+smaller than every one of its non-trivial rotations (cyclic shifts).
 
 ```
-Lyndon word: Strictly smallest among all its rotations
+Lyndon word: strictly smallest among ALL its rotations
 
-Examples:
-  "a"     → rotations: "a"           → Lyndon ✓
-  "ab"    → rotations: "ab", "ba"    → "ab" < "ba" ✓
-  "abc"   → rotations: "abc","bca","cab" → "abc" smallest ✓
-  "aab"   → rotations: "aab","aba","baa" → "aab" smallest ✓
+  "a"   rotations: ["a"]            smallest = "a"   Lyndon
+  "ab"  rotations: ["ab","ba"]      smallest = "ab"  Lyndon
+  "abc" rotations: ["abc","bca","cab"] smallest="abc" Lyndon
+  "aab" rotations: ["aab","aba","baa"] smallest="aab" Lyndon
 
-Non-examples:
-  "ba"    → rotations: "ba", "ab"    → "ab" < "ba" ✗
-  "cba"   → rotations: "cba","bac","acb" → "acb" smallest ✗
-  "aa"    → rotations: "aa", "aa"    → equal, not strictly smaller ✗
-
-Key property: Lyndon words are primitive (not a repetition of a shorter string)
+  "ba"  rotations: ["ba","ab"]      smallest = "ab"  NOT Lyndon
+  "aa"  rotations: ["aa","aa"]      equal, not strict NOT Lyndon
+  "aba" rotations: ["aba","baa","aab"] smallest="aab" NOT Lyndon
 ```
 
 ### Rotations as a Wheel
 
 ```
-Take "abac" and rotate it by cutting at different positions:
+Take "abac" - rotate by cutting at each position:
 
-  cut at 0: abac
-  cut at 1: baca
-  cut at 2: acab
-  cut at 3: caba
+  Position 0: a b a c   <-- this is the smallest rotation
+  Position 1: b a c a
+  Position 2: a c a b
+  Position 3: c a b a
 
-The smallest rotation is "abac" itself, so "abac" is Lyndon.
+"abac" is its own minimum rotation, so it IS a Lyndon word.
 
-Now take "abab":
-  rotations: abab, baba, abab, baba
-  "abab" repeats, so it is NOT strictly smaller than all rotations.
-  Therefore "abab" is NOT Lyndon.
+Take "abab" - rotate by cutting at each position:
+
+  Position 0: a b a b   <-- ties with position 2
+  Position 1: b a b a
+  Position 2: a b a b   <-- same as position 0
+  Position 3: b a b a
+
+"abab" is NOT strictly smaller than all rotations, so it is NOT Lyndon.
+It factors as "ab" + "ab".
 ```
+
+**Key property**: Lyndon words are **primitive** -- they cannot be expressed as
+a shorter string repeated more than once.
+
+---
 
 ## The Unique Factorization
 
-```
-Every string can be written as w = L1 · L2 · ... · Lk where:
-  - Each Li is a Lyndon word
-  - L1 ≥ L2 ≥ ... ≥ Lk (lexicographically non-increasing)
-
-Examples:
-  "banana" = "b" · "an" · "an" · "a"
-             (b ≥ an ≥ an ≥ a ✓)
-
-  "ababab" = "ab" · "ab" · "ab"
-             (ab = ab = ab ✓)
-
-  "abracadabra" = "abracadabr" · "a"
-             (Check: is "abracadabr" Lyndon? Yes!)
-```
-
-## Algorithm Walkthrough
+The **Chen-Fox-Lyndon theorem** guarantees that every string has a unique
+decomposition:
 
 ```
-Duval's algorithm uses three pointers: i, j, k
+w = L1 * L2 * ... * Lk   where each Li is Lyndon and L1 >= L2 >= ... >= Lk
+```
 
-i = start of current potential Lyndon factor
-j = scanning position
-k = comparison position within the repeating pattern
+```
+Factorization examples (Lyndon words separated by |):
 
-Process "banana":
+  "banana"     ->  b | an | an | a
+                   b >= an >= an >= a  (lexicographic non-increase)
 
-Initial: i=0, j=1, k=0
-         b a n a n a
-         i j
-         k
+  "ababab"     ->  ab | ab | ab
+                   ab = ab = ab
 
-Step 1: Compare s[j]=a vs s[k]=b
-        'a' < 'b' → current block breaks
-        Output: "b" (length j-k = 1)
-        i = j = 1, k = 1
+  "abcabcab"   ->  abc | abc | ab
+                   abc >= abc >= ab
 
-Step 2: i=1, j=2, k=1
-        Compare s[2]='n' vs s[1]='a'
-        'n' > 'a' → extend pattern
-        j = 3, k = 1
+  "abcd"       ->  abcd
+                   (the whole string is already Lyndon)
 
-Step 3: i=1, j=3, k=2
-        Compare s[3]='a' vs s[2]='n'
-        'a' < 'n' → break
-        Output: "an" (from i=1, length 2)
-        i = j = 3, k = 3
+  "dcba"       ->  d | c | b | a
+                   (strictly decreasing characters)
 
-Step 4: Similar process...
-        Output: "an"
+  "cabca"      ->  c | abc | a
+```
 
-Step 5: Output: "a"
+### Lyndon Factorization Diagram
+
+```
+String:   c  a  b  c  a
+Index:    0  1  2  3  4
+
+Factors:
+  [0,0]   c          <-- "c" is Lyndon (single char)
+  [1,3]   a b c      <-- "abc" is Lyndon (abc < bca < cab)
+  [4,4]   a          <-- "a" is Lyndon (single char)
+
+Result: ["c", "abc", "a"]
+
+Non-increasing check:
+  "c" >= "abc"  (c > a, so yes)
+  "abc" >= "a"  (abc > a, so yes)
+  OK
+```
+
+---
+
+## Duval's Algorithm
+
+### Three-Pointer Technique
+
+The algorithm maintains three indices into the string:
+
+```
+  i  -- start of the current candidate Lyndon block
+  j  -- scanning position (the leading edge)
+  k  -- comparison position inside the current period
+         (always satisfies i <= k < j)
+
+Invariant: s[i..j) is a power of its Lyndon root,
+           and that root compares >= s[k..] so far.
+```
+
+### Transition Rules
+
+```
+Compare s[j] with s[k]:
+
+  s[j] > s[k]  -->  extend: we found a new, larger character,
+                    so the current block can grow.
+                    Move j forward, reset k to i.
+
+                    j += 1,  k = i
+
+  s[j] = s[k]  -->  match: still inside the repeating pattern.
+                    Both pointers advance together.
+
+                    j += 1,  k += 1
+
+  s[j] < s[k]  -->  break: the current run of the Lyndon word ends.
+                    The period length is (j - k).
+                    Emit copies of s[i .. i+period) while i <= k.
+                    Restart with i = j.
+```
+
+### State-Machine View
+
+```
+                 s[j] = s[k]
+                  +------+
+                  |      |
+       start      v      |
+  i,j,k=0 --> [SCAN] ----+
+                  |
+          s[j] > s[k] -------> reset k to i, j++
+                  |
+          s[j] < s[k]    or    j == n
+                  |
+                  v
+             [EMIT]  -- emit copies of length (j-k) from position i
+                  |
+                  v
+             advance i to j, loop
+```
+
+---
+
+## Step-by-Step Trace: "banana"
+
+```
+String:  b  a  n  a  n  a
+Index:   0  1  2  3  4  5
+```
+
+```
+Step  i  j  k   s[j]  s[k]  action
+----  -  -  --  ----  ----  -------------------------------------------
+  1   0  1   0   a     b    a < b  ->  break, period = j-k = 1
+                             emit s[0..1) = "b",  i = 1
+  2   1  2   1   n     a    n > a  ->  extend,  j = 3,  k = 1
+  3   1  3   1   a     a    a = a  ->  match,   j = 4,  k = 2
+  4   1  4   2   n     n    n = n  ->  match,   j = 5,  k = 3
+  5   1  5   3   a     a    a = a  ->  match,   j = 6,  k = 4
+  6   1  6   4   end         j=n  ->  break, period = j-k = 6-4 = 2
+                             emit s[1..3) = "an",  i = 3
+                             emit s[3..5) = "an",  i = 5
+  7   5  6   5   end         j=n  ->  period = 6-5 = 1
+                             emit s[5..6) = "a",   i = 6
+  done: i = 6 = n
 
 Result: ["b", "an", "an", "a"]
 ```
 
-### Pointer Trace Table (banana)
+### Period Derivation Diagram
 
 ```
-String: banana
-Index : 0 1 2 3 4 5
-Char  : b a n a n a
+After the inner scan, the indices satisfy:
+   i         k    j
+   |         |    |
+   v         v    v
+   . . . . . . . .
+   [-- period --]
+       = j - k
 
-Step | i  j  k | compare s[k] vs s[j] | action
------+---------+----------------------|-------------------------------
-  1  | 0  1  0 | b > a                | stop scan, period = 1
-     |         |                      | emit "b", i = 1
-  2  | 1  2  1 | a < n                | j = 3, k = i
-  3  | 1  3  1 | a = a                | j = 4, k = 2
-  4  | 1  4  2 | n = n                | j = 5, k = 3
-  5  | 1  5  3 | a = a                | j = 6, k = 4
-  6  | 1  6  4 | end                  | period = 2
-     |         |                      | emit "an", "an", i = 5
-  7  | 5  6  5 | end                  | emit "a"
+The block s[i..j) is exactly  (j-k)  copies of the Lyndon root.
+The loop emits them one at a time:
+   emit s[i .. i+period),  i += period
+   emit s[i .. i+period),  i += period
+   ...  until  i > k
 ```
 
-## Visual: Pattern Detection
+---
+
+## Step-by-Step Trace: "ababab"
 
 ```
-Processing "ababab":
-
-i=0, j=1: s[1]='b' > s[0]='a' → extend
-i=0, j=2: s[2]='a' = s[0]='a' → continue matching
-i=0, j=3: s[3]='b' = s[1]='b' → continue matching
-i=0, j=4: s[4]='a' = s[0]='a' → continue matching
-i=0, j=5: s[5]='b' = s[1]='b' → continue matching
-End of string
-
-We found "ab" repeated 3 times!
-Output: ["ab", "ab", "ab"]
-
-Key insight: When s[j] = s[k], we're detecting repetition.
-The Lyndon word is s[i..i+period], repeated as many times as it fits.
+String:  a  b  a  b  a  b
+Index:   0  1  2  3  4  5
 ```
+
+```
+Step  i  j  k   s[j]  s[k]  action
+----  -  -  --  ----  ----  -------------------------------------------
+  1   0  1   0   b     a    b > a  ->  extend,  j = 2,  k = 0
+  2   0  2   0   a     a    a = a  ->  match,   j = 3,  k = 1
+  3   0  3   1   b     b    b = b  ->  match,   j = 4,  k = 2
+  4   0  4   2   a     a    a = a  ->  match,   j = 5,  k = 3
+  5   0  5   3   b     b    b = b  ->  match,   j = 6,  k = 4
+  6   0  6   4   end         j=n  ->  break, period = 6-4 = 2
+                             emit s[0..2) = "ab",  i = 2
+                             emit s[2..4) = "ab",  i = 4
+                             emit s[4..6) = "ab",  i = 6
+  done: i = 6 = n
+
+Result: ["ab", "ab", "ab"]
+```
+
+---
 
 ## Why the Period Is `j - k`
 
 ```
-At the moment we stop scanning, we know:
-  - s[i..j) is the current candidate block
-  - k points inside that block where the comparison last matched
+At the end of the inner scan (either s[j] < s[k], or j == n):
 
-So the distance (j - k) is the length of the repeating pattern.
+  i          k     j
+  |          |     |
+  |<-- period -->| |
+        p = j - k
 
-Example: s = "abcabcab"
-Indices:   0 1 2 3 4 5 6 7
-Chars:     a b c a b c a b
+s[i .. i+p)  is the Lyndon root (the smallest rotation in the block).
+s[i .. j)    is exactly  (j - i) / p  complete copies of that root,
+plus possibly a partial copy from i to k.
 
-At the end of the scan:
-  i = 0, j = 8, k = 5
-  period = j - k = 3
-
-That means the Lyndon word is "abc" and we can emit it repeatedly:
-  "abc" + "abc" + "ab"
+The outer loop emits:
+  s[i   .. i+p)   first copy
+  s[i+p .. i+2p)  second copy
+  ...
+  stopping when  i > k  (no more complete copies remain).
 ```
+
+### Concrete Example: "abcabcab"
+
+```
+String:  a  b  c  a  b  c  a  b
+Index:   0  1  2  3  4  5  6  7
+
+After full scan:  i=0,  j=8,  k=5
+  period = j - k = 8 - 5 = 3
+  Lyndon root: s[0..3) = "abc"
+
+Emit loop (i <= k means i <= 5):
+  i=0: emit "abc", i=3
+  i=3: emit "abc", i=6    (6 > 5, stop)
+
+  But j=8 and i=6, so: emit s[6..8) = "ab" as a separate factor.
+
+Result: ["abc", "abc", "ab"]
+```
+
+---
+
+## Mermaid Diagram: Algorithm Flow
+
+```mermaid
+flowchart TD
+    A([Start]) --> B[i = 0]
+    B --> C{i >= n?}
+    C -- yes --> Z([Return factors])
+    C -- no --> D["j = i + 1, k = i"]
+    D --> E{j < n AND s[k] <= s[j]?}
+    E -- no --> F["period = j - k"]
+    F --> G["Emit copies of s[i..i+period)\nwhile i <= k"]
+    G --> H[i = next_i after emit loop]
+    H --> C
+    E -- yes --> I{s[k] < s[j]?}
+    I -- yes --> J["j += 1, k = i\n(extend: new max char)"]
+    J --> E
+    I -- no --> K["j += 1, k += 1\n(match: advance both)"]
+    K --> E
+```
+
+---
+
+## Mermaid Diagram: Lyndon Word Factorization Tree
+
+```mermaid
+graph LR
+    ROOT["banana"] --> F1["b\n(Lyndon)"]
+    ROOT --> F2["an\n(Lyndon)"]
+    ROOT --> F3["an\n(Lyndon)"]
+    ROOT --> F4["a\n(Lyndon)"]
+
+    style F1 fill:#d4edda,stroke:#28a745
+    style F2 fill:#d4edda,stroke:#28a745
+    style F3 fill:#d4edda,stroke:#28a745
+    style F4 fill:#d4edda,stroke:#28a745
+```
+
+---
 
 ## API
 
-- `duval_factorization(s)` returns an array of factors (strings)
+| Function | Signature | Description |
+|---|---|---|
+| `duval_factorization` | `(String) -> Array[String]` | Compute the Lyndon factorization of a string |
+
+---
 
 ## Example Usage
 
@@ -254,93 +398,120 @@ test "duval empty" {
 }
 ```
 
+---
+
+## Edge Cases
+
+```
+Input          Result                   Note
+-----------    ---------------------    ----------------------------
+""             []                       empty string
+"a"            ["a"]                    single character
+"aaaa"         ["a","a","a","a"]        all equal: each char alone
+"abcd"         ["abcd"]                 already a Lyndon word
+"dcba"         ["d","c","b","a"]        strictly decreasing
+"abcabcab"     ["abc","abc","ab"]       period with incomplete tail
+```
+
+---
+
 ## Common Applications
 
 ### 1. Minimum Rotation
-```
-Duval's algorithm is a building block for minimum-rotation routines.
-A common approach is to run Duval on s + s and pick the smallest
-starting position within the first n characters, then take length n.
-
-Example: s = "baca"
-All rotations:
-  baca, acab, caba, abac
-Minimum rotation is "abac".
-```
-
-### 2. Lexicographically Smallest Suffix
-```
-Related to Lyndon factorization through the "standard decomposition"
-Used in suffix array construction.
-```
-
-### 3. String Periodicity
-```
-If the factorization is L repeated k times,
-the string has period |L|.
-```
-
-### 4. Combinatorics on Words
-```
-Lyndon words are the "prime" building blocks of strings.
-Used in bijective BWT, necklace enumeration, etc.
-```
-
-## Edge Cases to Remember
 
 ```
-Empty string:
-  "" -> []
+Run duval_factorization on s + s, then scan the first n factor
+starts to find the position giving the lexicographically smallest
+rotation of length n.
 
-All equal characters:
-  "aaaa" -> ["a", "a", "a", "a"]
-
-Strictly decreasing:
-  "dcba" -> ["d", "c", "b", "a"]
-
-Already Lyndon:
-  "abcd" -> ["abcd"]
+Example: s = "baca"  (n = 4)
+  s+s = "bacabaca"
+  factorization = ["b","ac","ab","ac","a"]
+  Factor starts inside the first n = 4 characters: positions 0, 1, 3
+  Rotations starting there:
+    pos 0: "baca"
+    pos 1: "acab"
+    pos 3: "abac"
+  Minimum rotation = "abac" (starts at index 3)
 ```
+
+### 2. String Periodicity
+
+```
+If the factorization consists of the same Lyndon word repeated k times,
+then the string has period equal to the length of that word.
+
+Example: "ababab" -> ["ab","ab","ab"]
+  period = len("ab") = 2
+```
+
+### 3. Suffix Array Construction
+
+```
+The Lyndon factorization has a close relationship to the suffix array.
+The suffix array can be computed from the Lyndon factorization, and the
+Lyndon array (which Lyndon word each suffix starts within) can be derived
+from the suffix array in linear time.
+```
+
+### 4. Bijective BWT and Necklace Enumeration
+
+```
+Lyndon words are the "prime" elements in the free monoid over an alphabet.
+They appear in bijective Burrows-Wheeler transforms and in algorithms that
+enumerate lexicographically distinct necklaces (equivalence classes of
+rotations).
+```
+
+---
 
 ## Properties of Lyndon Factorization
 
 ```
-1. Uniqueness: Every string has exactly one Lyndon factorization
-   with non-increasing factors.
+1. Uniqueness
+   Every string has exactly one factorization L1 * L2 * ... * Lk
+   into Lyndon words with L1 >= L2 >= ... >= Lk.
 
-2. Concatenation: If u < v are Lyndon words, then uv is Lyndon.
+2. Concatenation closure
+   If u and v are Lyndon words with u < v, then uv is also a Lyndon word.
 
-3. Counting: There are (1/n) Σ μ(d) * k^(n/d) Lyndon words
-   of length n over alphabet of size k.
+3. Counting Lyndon words
+   The number of Lyndon words of length n over an alphabet of size k is:
+     (1/n) * sum over divisors d of n of  mu(n/d) * k^d
+   where mu is the Mobius function.
 
-4. Relation to suffix array: The Lyndon factorization can be
-   computed from the suffix array, and vice versa.
+4. Connection to suffix arrays
+   The Lyndon factorization of a string and its suffix array are related:
+   the suffix array encodes a total order on suffixes whose structure
+   mirrors the Lyndon decomposition.
 ```
 
-## Complexity Analysis
+---
 
-| Operation | Time |
-|-----------|------|
-| Factorization | O(n) |
-| Space | O(n) for output |
+## Algorithm Comparison
 
-## Duval's Algorithm vs Other Approaches
+| Method | Time | Space | Output |
+|--------|------|-------|--------|
+| **Duval** | O(n) | O(n) | Full Lyndon factorization |
+| Booth | O(n) | O(n) | Minimum rotation only |
+| Suffix Array | O(n log n) | O(n) | General suffix queries |
 
-| Method | Time | Use Case |
-|--------|------|----------|
-| **Duval** | O(n) | Lyndon factorization |
-| Booth | O(n) | Minimum rotation only |
-| Suffix Array | O(n log n) | More general queries |
+Choose **Duval** when you need the complete Lyndon factorization or want to
+build applications on top of it (minimum rotation, periodicity, BWT, etc.).
 
-**Choose Duval when**: You need the full Lyndon factorization or related string properties.
+---
 
 ## Implementation Notes
 
-- The algorithm is online: processes characters left to right
-- Three-pointer technique: i (block start), j (scan), k (compare)
-- When s[j] > s[k]: extend the current run
-- When s[j] = s[k]: continue comparing within the period
-- When s[j] < s[k]: output complete Lyndon words, restart
-- Handle empty string and single characters as edge cases
-- This implementation slices with a StringBuilder to avoid repeated substring copies
-- Comparisons are by String code units (usual lexicographic order for ASCII)
+- The algorithm is **online**: it processes characters strictly left to right
+  and never moves the scan pointer `j` backwards.
+- Each character is examined **at most twice** in the inner comparison loop,
+  giving the O(n) time bound.
+- **Three pointers**: `i` (block start), `j` (scan front), `k` (period probe).
+- When `s[j] > s[k]`: extend the candidate block and reset the probe.
+- When `s[j] = s[k]`: advance both `j` and `k` (still within the same period).
+- When `s[j] < s[k]` or `j == n`: emit complete copies of the Lyndon root.
+- The `slice_string` helper builds each factor in a `StringBuilder` to avoid
+  repeated string concatenation.
+- Comparisons use MoonBit code units, which give standard lexicographic order
+  for ASCII strings.

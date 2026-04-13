@@ -60,7 +60,20 @@
 //   - Range queries with modifications
 
 ///|
-/// Node in implicit treap.
+/// A single node in the implicit treap's arena-allocated node pool.
+///
+/// Nodes are stored in a flat array (`ImplicitTreap.nodes`) and reference
+/// their children by integer index rather than by pointer. The sentinel value
+/// `-1` represents the absence of a child (analogous to `null`).
+///
+/// Each node caches three aggregate values (`sum`, `min_val`, `max_val`) that
+/// cover its entire subtree. These are refreshed by `update` after every
+/// structural change and are used to answer range queries in O(1) once the
+/// range is isolated by split/merge.
+///
+/// The `rev` field is a *lazy reversal flag*. Setting it to `true` marks the
+/// subtree as logically reversed without physically moving any nodes. The flag
+/// is pushed down to children by `push_down` before any traversal into them.
 ///
 /// FIELDS:
 /// ```
@@ -70,9 +83,9 @@
 ///   sum:      Sum of values in subtree (for range sum queries)
 ///   min_val:  Minimum value in subtree
 ///   max_val:  Maximum value in subtree
-///   rev:      Lazy reversal flag (children should be swapped)
-///   left:     Index of left child (-1 if none)
-///   right:    Index of right child (-1 if none)
+///   rev:      Lazy reversal flag (children should be swapped on next access)
+///   left:     Index of left child in nodes array (-1 if none)
+///   right:    Index of right child in nodes array (-1 if none)
 /// ```
 ///
 /// IMPLICIT KEY COMPUTATION:
@@ -81,7 +94,7 @@
 ///     size(left_subtree) + sum of (size(left_subtree) + 1)
 ///     for each ancestor where we went right
 ///
-///   This is computed dynamically during traversal.
+///   This is computed dynamically during traversal; nothing is stored here.
 /// ```
 pub(all) struct ImplicitNode {
   mut val : Int64 // Value stored at this position
@@ -96,21 +109,35 @@ pub(all) struct ImplicitNode {
 }
 
 ///|
-/// Implicit Treap data structure.
+/// An implicit treap that represents a mutable sequence of `Int64` values.
+///
+/// The treap maintains the following invariants at all times:
+///
+/// - **BST order**: in-order traversal of the tree produces the sequence in
+///   its current logical order.
+/// - **Heap order**: every node's `priority` is greater than its children's
+///   priorities, ensuring O(log n) expected height.
+/// - **Aggregate validity**: each node's `size`, `sum`, `min_val`, and
+///   `max_val` correctly describe its entire subtree (after any pending
+///   `push_down` operations have been applied).
+///
+/// All structural operations (insert, delete, reverse, range queries) are
+/// implemented via `split` and `merge` and run in **O(log n) expected time**.
 ///
 /// COMPONENTS:
 /// ```
 ///   nodes:      Array-based node storage (indices instead of pointers)
 ///   root:       Index of root node (-1 if empty)
-///   rand_state: State for random priority generation
-///   free_list:  Recycled node indices for reuse
+///   rand_state: State for the LCG random priority generator
+///   free_list:  Recycled node indices for O(1) amortized allocation
 /// ```
 ///
 /// MEMORY MANAGEMENT:
 /// ```
 ///   Nodes are stored in a flat array with index-based references.
-///   When a node is deleted, its index goes to free_list.
-///   Allocation prefers free_list, then appends to array.
+///   When a node is deleted, its index is pushed onto free_list.
+///   Allocation checks free_list first, then appends to the array.
+///   This keeps allocation O(1) amortized and avoids GC pressure.
 /// ```
 pub(all) struct ImplicitTreap {
   nodes : Array[ImplicitNode]
@@ -120,13 +147,33 @@ pub(all) struct ImplicitTreap {
 }
 
 ///|
-/// Create a new empty implicit treap.
+/// Create a new, empty implicit treap.
+///
+/// The treap starts with no elements (`root = -1`). The LCG random number
+/// generator is seeded with a fixed value so that priority generation is
+/// deterministic across runs.
+///
+/// Example:
+/// ```
+/// let treap = ImplicitTreap::new()
+/// treap.push_back(42L)
+/// inspect(treap.size(), content="1")
+/// ```
 pub fn ImplicitTreap::new() -> ImplicitTreap {
   { nodes: [], root: -1, rand_state: 12345, free_list: [] }
 }
 
 ///|
-/// Get the number of elements in the treap.
+/// Return the number of elements currently stored in the treap.
+///
+/// This is an O(1) operation: the count is read directly from the root
+/// node's cached `size` field (or returns 0 for an empty treap).
+///
+/// Example:
+/// ```
+/// let treap = ImplicitTreap::from_array([1L, 2L, 3L])
+/// inspect(treap.size(), content="3")
+/// ```
 pub fn ImplicitTreap::size(self : ImplicitTreap) -> Int {
   self.get_size(self.root)
 }

@@ -215,6 +215,10 @@ priv struct LiChaoNode {
 }
 
 ///|
+/// Segment tree node for the Li Chao Tree.
+///
+/// Each node stores the "dominant" line for its x-range midpoint and
+/// delegates to child nodes for the left and right sub-ranges.
 priv struct LiChaoTree {
   mut root : LiChaoNode?
   lo : Int64
@@ -222,11 +226,26 @@ priv struct LiChaoTree {
 }
 
 ///|
+/// Create an empty Li Chao Tree covering the coordinate range `[lo, hi]`.
+///
+/// Parameters:
+/// - `lo` : Inclusive lower bound of the query domain.
+/// - `hi` : Inclusive upper bound of the query domain.
 fn LiChaoTree::new(lo : Int64, hi : Int64) -> LiChaoTree {
   { root: None, lo, hi }
 }
 
 ///|
+/// Recursively insert `line` into the Li Chao node covering `[lo, hi]`.
+///
+/// At each node the line that is optimal at the midpoint is stored; the
+/// other line is pushed into the appropriate child where it may still win.
+///
+/// Parameters:
+/// - `node` : Current node (may be `None` for an empty slot).
+/// - `lo`   : Inclusive lower bound of this node's x-range.
+/// - `hi`   : Inclusive upper bound of this node's x-range.
+/// - `line` : The new line `(slope, intercept)` to insert.
 fn add_line_li_chao_node(
   node : LiChaoNode?,
   lo : Int64,
