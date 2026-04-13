@@ -864,10 +864,7 @@ test "wavelet tree single element" {
 ///|
 test "wavelet tree stress" {
   // Build tree with pattern
-  let arr : Array[Int] = []
-  for i in 0..<100 {
-    arr.push(i % 10)
-  }
+  let arr : Array[Int] = [| for i in 0..<100 => i % 10 |]
   let wt = WaveletTree::build(arr, 10)
 
   // Each value 0-9 appears 10 times

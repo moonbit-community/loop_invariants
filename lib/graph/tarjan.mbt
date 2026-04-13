@@ -609,12 +609,7 @@ fn find_articulation_points(graph : Array[Array[Int]]) -> Array[Int] {
       finder.dfs(v)
     }
   }
-  let aps : Array[Int] = []
-  for v in 0..<finder.n {
-    if finder.is_ap[v] {
-      aps.push(v)
-    }
-  }
+  let aps : Array[Int] = [| for v in 0..<finder.n if finder.is_ap[v] => v |]
   aps
 }
 

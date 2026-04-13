@@ -225,10 +225,9 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   // Binary lifting preprocessing
   // ancestors[k][v] = 2^k-th ancestor of v
   // INVARIANT: ancestors[k][v] = ancestors[k-1][ancestors[k-1][v]]
-  let ancestors : Array[Array[Int]] = []
-  for _ in 0..<log_n {
-    ancestors.push(Array::make(n, -1))
-  }
+  let ancestors : Array[Array[Int]] = [|
+    for _ in 0..<log_n => Array::make(n, -1)
+  |]
 
   // Base case: 2^0 = 1st ancestor is parent
   for i in 0..<n {

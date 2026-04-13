@@ -191,10 +191,7 @@ pub fn berlekamp_massey(seq : ArrayView[Int64], m : Int64) -> Array[Int64] {
   } nobreak {
     (c, l)
   }
-  let result : Array[Int64] = []
-  for i in 1..<(l + 1) {
-    result.push(mod_norm(-c[i], m))
-  }
+  let result : Array[Int64] = [| for i in 1..<(l + 1) => mod_norm(-c[i], m) |]
   result
 }
 

@@ -37,10 +37,7 @@ fn reservoir_sample(stream : ArrayView[Int], k : Int, rng : RNG) -> Array[Int] {
   guard k > 0 && k <= stream.length() else { return [] }
 
   // Initialize reservoir with first k elements
-  let reservoir : Array[Int] = []
-  for i in 0..<k {
-    reservoir.push(stream[i])
-  }
+  let reservoir : Array[Int] = [| for i in 0..<k => stream[i] |]
 
   // Process remaining elements
   for i = k {

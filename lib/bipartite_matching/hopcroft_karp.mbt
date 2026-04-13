@@ -231,12 +231,11 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
 /// let pairs = matcher.get_matching() // [(0, 0), (1, 1)]
 /// ```
 pub fn HopcroftKarp::get_matching(self : HopcroftKarp) -> Array[(Int, Int)] {
-  let result : Array[(Int, Int)] = []
-  for u in 0..<self.graph.n_left {
-    if self.match_left[u] >= 0 {
-      result.push((u, self.match_left[u]))
+  let result : Array[(Int, Int)] = [|
+    for u in 0..<self.graph.n_left if self.match_left[u] >= 0 => {
+      (u, self.match_left[u])
     }
-  }
+  |]
   result
 }
 

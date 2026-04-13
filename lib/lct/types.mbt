@@ -204,9 +204,6 @@ pub fn LinkCutTree::new(n : Int) -> LinkCutTree {
 ///
 /// Time: O(n).
 pub fn LinkCutTree::with_values(values : Array[Int]) -> LinkCutTree {
-  let nodes : Array[LCTNode] = []
-  for value in values {
-    nodes.push(LCTNode::new(value))
-  }
+  let nodes : Array[LCTNode] = [| for value in values => LCTNode::new(value) |]
   { nodes, }
 }

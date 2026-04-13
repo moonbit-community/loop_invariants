@@ -189,12 +189,9 @@ fn generate_subsets(elements : ArrayView[Int]) -> Array[Array[Int]] {
   let total = 1 << n // 2^n
   let result : Array[Array[Int]] = []
   for mask in 0..<total {
-    let subset : Array[Int] = []
-    for i in 0..<n {
-      if ((mask >> i) & 1) == 1 {
-        subset.push(elements[i])
-      }
-    }
+    let subset : Array[Int] = [|
+      for i in 0..<n if ((mask >> i) & 1) == 1 => elements[i]
+    |]
     result.push(subset)
   }
   result
@@ -215,10 +212,7 @@ test "generate subsets" {
 /// Adjacent codes differ by exactly one bit.
 fn gray_code(n : Int) -> Array[Int] {
   let total = 1 << n
-  let result : Array[Int] = []
-  for i in 0..<total {
-    result.push(i ^ (i >> 1))
-  }
+  let result : Array[Int] = [| for i in 0..<total => i ^ (i >> 1) |]
   result
 }
 

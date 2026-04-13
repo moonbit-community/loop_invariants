@@ -212,12 +212,7 @@ fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? 
   }
 
   // Queue of vertices with in-degree 0
-  let queue : Array[Int] = []
-  for i in 0..<n {
-    if in_degree[i] == 0 {
-      queue.push(i)
-    }
-  }
+  let queue : Array[Int] = [| for i in 0..<n if in_degree[i] == 0 => i |]
   let result : Array[Int] = []
   let _ = for front = 0 {
     match queue.get(front) {

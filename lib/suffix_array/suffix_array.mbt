@@ -343,10 +343,7 @@ pub fn SuffixArray::find_all(
   match self.search(pattern) {
     None => []
     Some((first, last)) => {
-      let result : Array[Int] = []
-      for i in first..<(last + 1) {
-        result.push(self.sa[i])
-      }
+      let result : Array[Int] = [| for i in first..<(last + 1) => self.sa[i] |]
       result.sort_by((a, b) => a - b)
       result
     }
