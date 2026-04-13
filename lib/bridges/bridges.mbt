@@ -151,12 +151,9 @@ fn BridgeFinder::find(self : BridgeFinder) -> Unit {
 /// Return the indices of all articulation points found after `find()`.
 /// The vertices are listed in DFS discovery order.
 fn BridgeFinder::get_articulation_points(self : BridgeFinder) -> Array[Int] {
-  let result : Array[Int] = []
-  for i in 0..<self.n {
-    if self.articulation_points[i] {
-      result.push(i)
-    }
-  }
+  let result : Array[Int] = [|
+    for i in 0..<self.n if self.articulation_points[i] => i
+  |]
   result
 }
 

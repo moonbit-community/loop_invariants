@@ -217,10 +217,7 @@ test "euler tour subtree sums" {
   let values : Array[Int] = [5, 1, 4, 2, 3, 6]
   let adj = build_adj(n, edges[:])
   let (tin, tout, order) = euler_tour(n, adj, 0)
-  let euler_values : Array[Int] = []
-  for v in order {
-    euler_values.push(values[v])
-  }
+  let euler_values : Array[Int] = [| for v in order => values[v] |]
   let pref = prefix_sums(euler_values)
   let subtree_sum = (v : Int) => {
     let l = tin[v]

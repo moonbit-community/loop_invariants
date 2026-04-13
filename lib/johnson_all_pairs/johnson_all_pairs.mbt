@@ -318,7 +318,7 @@ pub fn johnson_all_pairs(
   }
 
   // Run Dijkstra from each vertex
-  let result : Array[Array[Int64]] = Array::make(n, [])
+  let result : Array[Array[Int64]] = [| for _ in 0..<n => [] |]
   for s in 0..<n {
     let dist = dijkstra(n, adj, s)
     let row = Array::make(n, INF64)

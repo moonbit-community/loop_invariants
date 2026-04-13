@@ -718,10 +718,7 @@ test "sqrt empty" {
 
 ///|
 test "sqrt large" {
-  let arr : Array[Int64] = []
-  for i in 0..<1000 {
-    arr.push(i.to_int64())
-  }
+  let arr : Array[Int64] = [| for i in 0..<1000 => i.to_int64() |]
   let sqrt = SqrtSum::new(arr)
   // Sum 0..999 = 999*1000/2 = 499500
   inspect(sqrt.query(0, 999), content="499500")

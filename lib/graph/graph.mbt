@@ -31,12 +31,7 @@ fn topological_sort(graph : Array[Array[Int]]) -> Array[Int]? {
   let result : Array[Int] = []
 
   // Initialize queue with all vertices having in-degree 0
-  let queue : Array[Int] = []
-  for v in 0..<n {
-    if in_degree[v] == 0 {
-      queue.push(v)
-    }
-  }
+  let queue : Array[Int] = [| for v in 0..<n if in_degree[v] == 0 => v |]
 
   // Process vertices in topological order
   for head = 0 {

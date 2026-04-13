@@ -21,12 +21,7 @@ pub fn dag_shortest_paths(
       indeg[v] = indeg[v] + 1
     }
   }
-  let queue : Array[Int] = []
-  for i in 0..<n {
-    if indeg[i] == 0 {
-      queue.push(i)
-    }
-  }
+  let queue : Array[Int] = [| for i in 0..<n if indeg[i] == 0 => i |]
   let order : Array[Int] = []
   for head = 0 {
     if head >= queue.length() {

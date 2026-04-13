@@ -39,10 +39,7 @@ fn lower_bound_fixed(
 /// Compress values to 0..(unique-1) preserving order.
 pub fn coordinate_compress(values : ArrayView[Int]) -> (Array[Int], Array[Int]) {
   let n = values.length()
-  let sorted : Array[Int] = []
-  for val in values {
-    sorted.push(val)
-  }
+  let sorted : Array[Int] = [| for val in values => val |]
   sorted.sort_by_key(x => x)
   let unique : Array[Int] = []
   for i, val in sorted {

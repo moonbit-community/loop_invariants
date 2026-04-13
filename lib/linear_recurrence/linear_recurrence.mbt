@@ -108,11 +108,9 @@ fn combine(
       }
     }
   }
-  let result = Array::make(k, 0L)
-  for i in 0..<k {
-    result[i] = tmp[i]
-  }
-  result
+  [|
+    for i in 0..<k => tmp[i]
+  |]
 }
 
 ///|

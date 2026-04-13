@@ -390,10 +390,7 @@ test "mo empty queries" {
 ///|
 test "mo large block" {
   // Test with more elements to verify sqrt blocking
-  let arr : Array[Int] = []
-  for i in 0..<100 {
-    arr.push(i % 10)
-  }
+  let arr : Array[Int] = [| for i in 0..<100 => i % 10 |]
   let mo = MoDistinct::new(arr)
   let queries = [(0, 99), (0, 9), (50, 59), (25, 75)]
   let results = mo.process_queries(queries)
