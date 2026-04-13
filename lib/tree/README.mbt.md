@@ -6,7 +6,7 @@ public API. Instead, it explains how to:
 - represent a tree,
 - run DFS/BFS iteratively (no recursion),
 - compute Euler tour ranges,
-- answer subtree queries,
+- answer subtree queries with a Fenwick tree or segment tree,
 - compute LCA (lowest common ancestor).
 
 All code snippets are small, runnable, and use only basic arrays and loops.
@@ -171,6 +171,26 @@ nodes: order[3..5] = [1, 4, 3]
 
 The subtree is always a **contiguous segment**.
 
+### Euler tour as a linearization
+
+The diagram below shows how the tree maps to a flat array. Each node occupies
+exactly the positions `[tin[v], tout[v]]` in `order[]`:
+
+```
+Tree:                   Euler order array (index 0..5):
+                        +---+---+---+---+---+---+
+      0                 | 0 | 2 | 5 | 1 | 4 | 3 |
+     / \                +---+---+---+---+---+---+
+    1   2                 0   1   2   3   4   5
+   / \   \
+  3   4   5       tin[0]=0  tout[0]=5   (whole tree)
+                  tin[2]=1  tout[2]=2   (subtree: 2,5)
+                  tin[1]=3  tout[1]=5   (subtree: 1,4,3)
+```
+
+A range query `[tin[v], tout[v]]` on this flat array answers any subtree
+question in O(1) (prefix sums) or O(log n) (Fenwick / segment tree).
+
 ---
 
 ## 5) Subtree sums with Euler + prefix sums
@@ -221,7 +241,106 @@ tree built over the Euler order.
 
 ---
 
-## 6) LCA (lowest common ancestor) by parent climbing
+## 6) Fenwick tree on the Euler tour (dynamic subtree updates)
+
+When node values change, a Fenwick tree (Binary Indexed Tree) replaces the
+static prefix-sum array. The Euler tour converts "subtree of v" into a plain
+range `[tin[v], tout[v]]` in the flat array, and the Fenwick tree answers
+range sums in O(log n).
+
+```
+  Tree nodes                  Fenwick array (1-indexed, over Euler order)
+  ----------                  -----------------------------------------
+  node 0 (val=5)              index: 1  2  3  4  5  6
+  node 2 (val=4)              value: 5  4  6  1  3  2
+  node 5 (val=6)              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  node 1 (val=1)              subtree(1) = Fenwick.range_sum(4, 6) = 6
+  node 4 (val=3)              subtree(2) = Fenwick.range_sum(2, 3) = 10
+  node 3 (val=2)
+```
+
+Steps:
+1. Run `euler_tour` to get `tin`, `tout`, `order`.
+2. Build a `FenwickTree` over `euler_values` (values reordered by `order`).
+3. Subtree sum of node v = `fenwick.range_sum(tin[v]+1, tout[v]+1)`.
+4. Point update on node v = `fenwick.update(tin[v]+1, delta)`.
+
+The `fenwick.mbt` file contains `FenwickTree` with `update`, `prefix_sum`,
+`range_sum`, and `find_kth`, all with loop invariants proving correctness.
+
+### How the Fenwick tree represents ranges
+
+Each index i in the Fenwick array stores the sum of a range whose length is
+`lowbit(i) = i & (-i)`:
+
+```
+n = 8   (array indices 1..8)
+
+tree[1] covers [1,1]      lowbit(1)=1
+tree[2] covers [1,2]      lowbit(2)=2
+tree[3] covers [3,3]      lowbit(3)=1
+tree[4] covers [1,4]      lowbit(4)=4
+tree[5] covers [5,5]      lowbit(5)=1
+tree[6] covers [5,6]      lowbit(6)=2
+tree[7] covers [7,7]      lowbit(7)=1
+tree[8] covers [1,8]      lowbit(8)=8
+
+Query prefix_sum(7):  tree[7] + tree[6] + tree[4]
+                   = [7,7]  + [5,6]  + [1,4]  = [1,7]  (correct)
+
+Update at position 5: tree[5], tree[6], tree[8]
+                    = [5,5],  [5,6],  [1,8]   (all contain 5, correct)
+```
+
+---
+
+## 7) Segment tree on the Euler tour (lazy range updates)
+
+A segment tree over the Euler array supports both range queries **and** lazy
+range updates in O(log n). This is useful when you need to add a value to all
+nodes in a subtree at once.
+
+### Segment tree memory layout
+
+For n leaves the iterative segment tree uses indices `[1, 2n)`:
+
+```
+n = 4 leaves (values a, b, c, d)
+
+                   tree[1]
+                  /        \
+           tree[2]          tree[3]
+           /    \            /    \
+       tree[4] tree[5]  tree[6] tree[7]
+         a        b        c        d
+         (n+0)   (n+1)   (n+2)   (n+3)
+```
+
+Leaves live at indices `n` through `2n-1`. Internal node `i` combines
+children `2i` and `2i+1`.
+
+### Lazy propagation for subtree range-add
+
+To add delta to all nodes in the subtree of v:
+1. Convert to Euler range: `l = tin[v]`, `r = tout[v]`.
+2. Call `segment_tree.range_update(l, r+1, delta)`.
+3. Lazy values are pushed down only when a partial-overlap node is visited,
+   so the O(log n) guarantee holds.
+
+```
+Lazy segment tree node at index i covering interval [l, r):
+
+  tree[i]    = true sum of arr[l..r) (with lazy already applied to this node)
+  lazy[i]    = pending delta to add to every element in [l, r)
+
+  true_sum(i) = tree[i]   (already up to date AT this node)
+  child sums  = tree[2i]  + lazy[i]*(mid-l)     (lazy not yet pushed)
+                tree[2i+1]+ lazy[i]*(r-mid)
+```
+
+---
+
+## 8) LCA (lowest common ancestor) by parent climbing
 
 The LCA of two nodes is their deepest shared ancestor.
 This simple version is O(height), good for small trees.
@@ -266,9 +385,30 @@ test "lca by parent climbing" {
 For large inputs or many queries, use **binary lifting**:
 precompute `up[v][k] = 2^k-th ancestor`. Then LCA is O(log n).
 
+### LCA parent-climbing diagram
+
+```
+      0   depth=0
+     / \
+    1   2   depth=1
+   / \   \
+  3   4   5   depth=2
+
+LCA(3, 5):
+  Step 1 - equalize depths:
+    a=3 (depth 2) vs b=5 (depth 2)  -- already equal
+  Step 2 - climb together:
+    a=3, b=5  -> parent: a=1, b=2
+    a=1, b=2  -> parent: a=0, b=0  -> LCA = 0
+
+LCA(3, 4):
+  Depths equal at 2.
+  a=3, b=4  -> parent: a=1, b=1  -> LCA = 1
+```
+
 ---
 
-## 7) When to use which technique
+## 9) When to use which technique
 
 ```
 Need subtree sum (static)      -> Euler tour + prefix sums
@@ -292,10 +432,17 @@ Need path queries + updates    -> HLD or Link-Cut Tree
 ## Complexity at a glance
 
 ```
-Build adjacency list      O(n)
-Iterative DFS             O(n)
-Euler tour                O(n)
-Subtree sum query         O(1) with prefix sums
-LCA (parent climbing)     O(height)
-LCA (binary lifting)      O(log n) per query
+Build adjacency list                O(n)
+Iterative DFS                       O(n)
+Euler tour                          O(n)
+Subtree sum query (prefix sums)     O(1)
+Subtree point update (Fenwick)      O(log n)
+Subtree range query (Fenwick)       O(log n)
+Subtree range update (lazy seg)     O(log n)
+LCA (parent climbing)               O(height)
+LCA (binary lifting)                O(log n) per query
+Fenwick find-kth                    O(log n)
+Inversion count                     O(n log n)
+2D Fenwick update/query             O(log n * log m)
+Persistent segment tree update      O(log n) time, O(log n) new nodes
 ```

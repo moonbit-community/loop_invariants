@@ -119,6 +119,104 @@ Final tree:
   0 ─(5)─ 1 ─(3)─ 2 ─(1)─ 3
 ```
 
+## Mermaid Diagram: Algorithm Step by Step
+
+The following diagram shows how the Gomory-Hu construction processes each
+vertex in order, growing the tree one edge at a time.
+
+```mermaid
+flowchart TD
+    A([Start\nn vertices, all parents = 0]) --> B
+
+    B["i = 1\nCompute max-flow: i ↔ parent[i]"]
+    B --> C{"Does the min-cut\nput parent[i]\non i's side?"}
+
+    C -- "No" --> D["Add edge i ─(cut value)─ parent[i]\nRedirect later vertices on i's side"]
+    C -- "Yes" --> E["Swap parent/value between\ni and parent[i], then add edge"]
+
+    D --> F{i < n-1?}
+    E --> F
+
+    F -- "Yes" --> G["i = i + 1"]
+    G --> B
+    F -- "No" --> H([Done: Gomory-Hu tree built])
+```
+
+## Mermaid Diagram: Tree Construction for a Line Graph
+
+This diagram shows the final Gomory-Hu tree built from the line graph
+`0 --5-- 1 --3-- 2 --1-- 3`.  Each tree edge weight equals the bottleneck
+capacity on that segment of the original graph.
+
+```mermaid
+graph LR
+    subgraph Original["Original graph (undirected)"]
+        direction LR
+        A0((0)) -- "cap=5" --- A1((1))
+        A1       -- "cap=3" --- A2((2))
+        A2       -- "cap=1" --- A3((3))
+    end
+
+    subgraph Tree["Gomory-Hu tree"]
+        direction LR
+        B0((0)) -- "w=5" --- B1((1))
+        B1      -- "w=3" --- B2((2))
+        B2      -- "w=1" --- B3((3))
+    end
+
+    Original -.->|"n-1 max-flow runs"| Tree
+```
+
+## Mermaid Diagram: Min-Cut Query Path
+
+To answer `min_cut(u, v)`, walk the unique path from `u` to `v` in the tree
+and return the minimum edge weight encountered.
+
+```mermaid
+flowchart LR
+    subgraph Query["Query: min_cut(0, 3)"]
+        direction LR
+        Q0((0)) -- "5" --> Q1((1))
+        Q1      -- "3" --> Q2((2))
+        Q2      -- "1" --> Q3((3))
+    end
+
+    Q0 -. "path: 0→1→2→3\nmin(5,3,1) = 1" .-> Q3
+```
+
+## Mermaid Diagram: Two-Cluster Structure
+
+A graph with two dense clusters connected by a thin bridge demonstrates how
+the Gomory-Hu tree naturally captures the weak cross-cluster cut.
+
+```mermaid
+graph TD
+    subgraph ClusterA["Cluster A (cap=5 internal)"]
+        A0((0)) -- "5" --- A1((1))
+        A1      -- "5" --- A2((2))
+        A0      -- "5" --- A2
+    end
+
+    subgraph ClusterB["Cluster B (cap=5 internal)"]
+        B3((3)) -- "5" --- B4((4))
+        B4      -- "5" --- B5((5))
+        B3      -- "5" --- B5
+    end
+
+    A2 -- "bridge cap=1" --- B3
+
+    subgraph GHTree["Resulting Gomory-Hu tree (schematic)"]
+        T0((0)) -- "10" --- T2((2))
+        T1((1)) -- "10" --- T2
+        T2      -- "1"  --- T3((3))
+        T3      -- "10" --- T4((4))
+        T3      -- "10" --- T5((5))
+    end
+```
+
+Cuts within Cluster A or B return 10 (two internal edges must be severed).
+Any cross-cluster cut returns 1 (only the bridge matters).
+
 ## Visual: Querying the Tree
 
 ```

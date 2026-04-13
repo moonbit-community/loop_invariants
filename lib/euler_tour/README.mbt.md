@@ -9,138 +9,190 @@ each node during a DFS traversal.
 - **Build**: O(n)
 - **Space**: O(n)
 
-## What You Get From the Tour
+## The Tree Used in All Examples
+
+Throughout this document the following six-node tree is used:
 
 ```
-For each node u:
-  entry[u] = time when DFS first enters u
-  exit[u]  = time after DFS finishes u's subtree
+         1          (root)
+       / | \
+      2  3  4
+     / \
+    5   6
+```
 
-And:
-  tour[]   = nodes in preorder (each node once)
-  depth[]  = depth of each node (if you track it)
-  parent[] = parent in rooted tree
+As a Mermaid diagram:
+
+```mermaid
+graph TD
+    1 --> 2
+    1 --> 3
+    1 --> 4
+    2 --> 5
+    2 --> 6
 ```
 
 ## The Key Insight
 
-```
-DFS visits nodes in a specific order. By recording when we
-enter and exit each node, subtrees become contiguous ranges!
+DFS visits nodes in a specific order. By recording when we enter and exit each
+node, subtrees become contiguous ranges in the preorder array.
 
-Tree:           DFS Order:
-     1              1 (enter)
-    /|\             2 (enter)
-   2 3 4            5 (enter, exit)
-  /|                6 (enter, exit)
- 5 6                2 (exit)
-                    3 (enter, exit)
-                    4 (enter, exit)
-                    1 (exit)
-
-Preorder tour (entry only): [1, 2, 5, 6, 3, 4]
-                           └──subtree of 2──┘
 ```
+DFS trace (enter / exit events):
+
+  1 enter
+    2 enter
+      5 enter
+      5 exit
+      6 enter
+      6 exit
+    2 exit
+    3 enter
+    3 exit
+    4 enter
+    4 exit
+  1 exit
+
+Preorder tour (entry events only):
+
+  pos:   0   1   2   3   4   5
+  node:  1   2   5   6   3   4
+         ^---subtree of 2---^
+```
+
+The subtree of node 2 is the contiguous slice at positions 1..3 (inclusive).
 
 ## Entry and Exit Times
 
 ```
-      tin  tout
-  1:   0     6
-  2:   1     4
-  3:   4     5
-  4:   5     6
-  5:   2     3
-  6:   3     4
+       tin   tout
+  1:    0      6      (covers the whole tree)
+  2:    1      4      (covers 2, 5, 6)
+  5:    2      3
+  6:    3      4
+  3:    4      5
+  4:    5      6
 
-Subtree of node u = all nodes with tin in [tin[u], tout[u])
+Rule: subtree of u = all nodes v with tin[v] in [tin[u], tout[u])
+      tout is exclusive.
 
-Subtree of 2: tin in [1, 4)
-  → Nodes 2, 5, 6 (check: tin[5]=2, tin[6]=3 are in [1,4) ✓)
+Subtree of 2: tin in [1, 4)  ->  nodes 2 (tin=1), 5 (tin=2), 6 (tin=3)  ✓
 ```
 
-## Subtree Sum as a Range Sum
+## Flattening a Tree for Range Queries
+
+The following diagram shows how node values are mapped to a flat array using
+entry times, turning a subtree sum into a prefix-sum range query.
 
 ```
-Tree (root = 0):
-    0
-   / \
-  1   2
- / \
-3   4
+Tree (root = 0, zero-indexed):
 
-Values:
-  val[0]=5, val[1]=1, val[2]=4, val[3]=2, val[4]=3
+        0           val = 5
+       / \
+      1   2         val = 1, 4
+     / \
+    3   4           val = 2, 3
 
-Suppose the tour gives:
-  entry = [0, 1, 4, 2, 3]
-  exit  = [5, 4, 5, 3, 4]
+DFS assigns entry positions:
 
-Flatten by entry:
-  flat[entry[u]] = val[u]
-  flat = [5, 1, 2, 3, 4]
+  node:   0    1    2    3    4
+  entry:  0    1    4    2    3
+  exit:   5    4    5    3    4
+
+Flatten: flat[entry[u]] = val[u]
+
+  pos:    0    1    2    3    4
+  flat:   5    1    2    3    4
+               ^----^         <- subtree of 1
 
 Subtree sum of node 1:
-  range = [entry[1], exit[1]) = [1, 4)
+  range [entry[1], exit[1]) = [1, 4)
   flat[1..4) = [1, 2, 3]
   sum = 6
+```
+
+Visual alignment:
+
+```
+         0
+        / \
+       1   2
+      / \
+     3   4
+
+ flat array after entry-time mapping:
+
+  pos | 0  | 1  | 2  | 3  | 4  |
+ node | 0  | 1  | 3  | 4  | 2  |
+  val | 5  | 1  | 2  | 3  | 4  |
+             [--- subtree 1 ---)
 ```
 
 ## Algorithm Walkthrough
 
 ```
-DFS from root 1:
+timer = 0
 
-  timer = 0
+Visit 1:  tin[1] = 0,  timer = 1
+  Visit 2:  tin[2] = 1,  timer = 2
+    Visit 5:  tin[5] = 2,  timer = 3
+    tout[5] = 3
+    Visit 6:  tin[6] = 3,  timer = 4
+    tout[6] = 4
+  tout[2] = 4
+  Visit 3:  tin[3] = 4,  timer = 5
+  tout[3] = 5
+  Visit 4:  tin[4] = 5,  timer = 6
+  tout[4] = 6
+tout[1] = 6
 
-  Visit 1: tin[1] = 0
-    Visit 2: tin[2] = 1
-      Visit 5: tin[5] = 2, tout[5] = 3
-      Visit 6: tin[6] = 3, tout[6] = 4
-    tout[2] = 4
-    Visit 3: tin[3] = 4, tout[3] = 5
-    Visit 4: tin[4] = 5, tout[4] = 6
-  tout[1] = 6
-
-Final:
-  Node:  1  2  3  4  5  6
-  tin:   0  1  4  5  2  3
-  tout:  6  4  5  6  3  4
+Final table:
+  Node:  1   2   3   4   5   6
+  tin:   0   1   4   5   2   3
+  tout:  6   4   5   6   3   4
 ```
 
 ## Two Types of Euler Tours
 
 ```
-Type 1: Entry/Exit times only
-  Array size: n (each node once)
-  tin[u], tout[u] are times
+Type 1 – Entry/Exit times only
+  Array size: n  (each node appears once)
+  tin[u], tout[u] are integer time-stamps
+  Used for: subtree queries, ancestor checks
 
-Type 2: Full tour with entries and exits
-  Array size: 2n (each node twice)
+Type 2 – Full walk with re-visits
+  Array size: 2n - 1  (each node appears 2..3 times)
   tour[i] = node visited at step i
-
-For subtree queries, Type 1 suffices.
-For LCA queries, Type 2 is often used.
+  Used for: LCA via RMQ
 ```
 
 ### Type 2 Example (for LCA)
 
-```
-Tree:
-    0
-   / \
-  1   2
-     / \
-    3   4
+Tree for this example (zero-indexed):
 
+```mermaid
+graph TD
+    0 --> 1
+    0 --> 2
+    2 --> 3
+    2 --> 4
+```
+
+```
 Full Euler walk (node, depth):
-  0(0), 1(1), 0(0), 2(1), 3(2), 2(1), 4(2), 2(1), 0(0)
+
+  step:   0     1     2     3     4     5     6     7     8
+  node:   0(0), 1(1), 0(0), 2(1), 3(2), 2(1), 4(2), 2(1), 0(0)
 
 First occurrence:
-  first[1] = 1, first[3] = 4, first[4] = 6
+  first[0] = 0,  first[1] = 1,  first[2] = 3
+  first[3] = 4,  first[4] = 6
 
-LCA(3, 4) is the node with minimum depth between
-positions 4..6 in the Euler walk => node 2.
+LCA(3, 4): look at steps first[3]..first[4] = 4..6
+  depths:  2, 1, 2   ->   minimum depth = 1 at step 5  ->  node 2
+
+LCA(1, 3): look at steps first[1]..first[3] = 1..4
+  depths:  1, 0, 1, 2  ->  minimum depth = 0 at step 2  ->  node 0
 ```
 
 ## Example Usage
@@ -197,32 +249,35 @@ test "euler tour subtree sum" {
 
 ### 1. Subtree Queries
 ```
-Query: Sum/min/max of values in subtree
-Solution:
-  1. Build Euler tour to get tin/tout
-  2. Put values at positions tin[u]
-  3. Use segment tree/Fenwick tree on flattened array
-  4. Query range [tin[u], tout[u]-1]
+Goal: Sum / min / max of values in a subtree.
 
-Time: O(log n) per query after O(n) preprocessing
+Steps:
+  1. Build Euler tour to get tin / tout.
+  2. Write val[u] into flat[tin[u]] for every node u.
+  3. Build a segment tree or Fenwick tree over flat[].
+  4. Answer: query range [tin[u], tout[u] - 1].
+
+Time: O(log n) per query after O(n) preprocessing.
 ```
 
 ### 2. Subtree Updates
 ```
-Query: Add value to all nodes in subtree
-Solution:
-  1. Flatten tree via Euler tour
-  2. Range update on [tin[u], tout[u]-1]
-  3. Use lazy segment tree for range updates
+Goal: Add delta to every node in a subtree.
+
+Steps:
+  1. Flatten tree via Euler tour.
+  2. Issue a range update on [tin[u], tout[u] - 1].
+  3. Use a lazy segment tree for O(log n) range updates.
 ```
 
 ### 3. LCA via RMQ
 ```
-Record depths in Euler tour (Type 2).
-LCA(u, v) = node with minimum depth between
-            first occurrence of u and first occurrence of v.
+Record depths in the full Euler tour (Type 2).
 
-Use sparse table for O(1) LCA queries!
+LCA(u, v) = node with minimum depth between
+            first[u] and first[v] in the walk.
+
+Pair with a sparse table for O(1) LCA queries after O(n log n) build.
 ```
 
 ### 4. Path Queries
@@ -230,72 +285,95 @@ Use sparse table for O(1) LCA queries!
 Combine with LCA:
   path(u, v) = path(u, lca) + path(lca, v)
 
-Or use Heavy-Light Decomposition for more complex queries.
+For heavier workloads, use Heavy-Light Decomposition.
 ```
 
 ## Visual: Subtree as Range
 
 ```
-Tree:                 Flattened (by tin):
-      A                pos: 0  1  2  3  4  5
-     /|\               val: A  B  D  E  C  F
+Tree:                  Flattened array (indexed by tin):
+
+      A                pos:  0   1   2   3   4   5
+     /|\               node: A   B   D   E   C   F
     B C F
-   /|
-  D E
+   / \
+  D   E
 
-tin: A=0, B=1, C=4, D=2, E=3, F=5
-tout: A=6, B=4, C=5, D=3, E=4, F=6
+  tin:  A=0, B=1, C=4, D=2, E=3, F=5
+  tout: A=6, B=4, C=5, D=3, E=4, F=6
 
-Subtree of B: positions [1, 3] = [B, D, E]
-              (tout[B]=4, so range is [1, 4-1])
+  Subtree of B occupies positions [1, 4) = [B, D, E]
+  (range is [tin[B], tout[B]) = [1, 4))
 ```
 
-## Complexity Analysis
+Mermaid view of the same tree:
 
-| Operation | Time |
-|-----------|------|
-| Build Euler tour | O(n) |
-| Check if u is ancestor of v | O(1) |
-| Subtree query (with seg tree) | O(log n) |
-
-## Euler Tour vs Other Tree Techniques
-
-| Technique | Preprocess | Query | Best For |
-|-----------|------------|-------|----------|
-| **Euler Tour** | O(n) | O(log n) | Subtree queries |
-| Heavy-Light | O(n) | O(log² n) | Path queries/updates |
-| Centroid | O(n log n) | O(log n) | Distance queries |
-| LCA | O(n log n) | O(log n) | Ancestor queries |
-
-**Choose Euler Tour when**: You need efficient subtree operations.
+```mermaid
+graph TD
+    A --> B
+    A --> C
+    A --> F
+    B --> D
+    B --> E
+```
 
 ## Checking Ancestor Relationship
 
 ```
 u is an ancestor of v iff:
-  tin[u] ≤ tin[v] AND tout[u] ≥ tout[v]
+  tin[u] <= tin[v]  AND  tout[v] <= tout[u]
 
-This is O(1) after preprocessing!
+This is O(1) after preprocessing.
 
-Example:
-  Is 1 ancestor of 5?
-  tin[1]=0 ≤ tin[5]=2 ✓
-  tout[1]=11 ≥ tout[5]=3 ✓
-  Yes!
+Example (original six-node tree, 1-indexed):
+  Is 1 an ancestor of 5?
+    tin[1]=0  <= tin[5]=2  ✓
+    tout[5]=3 <= tout[1]=6 ✓
+    Answer: yes.
+
+  Is 3 an ancestor of 5?
+    tin[3]=4  <= tin[5]=2  ✗
+    Answer: no.
 ```
+
+## Complexity Analysis
+
+| Operation                         | Time       |
+|-----------------------------------|------------|
+| Build Euler tour                  | O(n)       |
+| Check if u is ancestor of v       | O(1)       |
+| Get subtree range                 | O(1)       |
+| Subtree query (with segment tree) | O(log n)   |
+| Build LCA structure               | O(n log n) |
+| LCA query                         | O(1)       |
+
+## Euler Tour vs Other Tree Techniques
+
+| Technique       | Preprocess   | Query      | Best For              |
+|-----------------|--------------|------------|-----------------------|
+| **Euler Tour**  | O(n)         | O(log n)   | Subtree queries       |
+| Heavy-Light     | O(n)         | O(log^2 n) | Path queries/updates  |
+| Centroid        | O(n log n)   | O(log n)   | Distance queries      |
+| LCA (sparse)    | O(n log n)   | O(1)       | Ancestor queries      |
+
+**Choose Euler Tour when**: you need efficient subtree operations.
 
 ## Common Pitfalls
 
 - **Not a tree**: Euler tour assumes a tree (connected, n-1 edges).
 - **Wrong root**: entry/exit times depend on the chosen root.
 - **Off-by-one**: subtree range is `[entry[u], exit[u])` (exit is exclusive).
-- **Mixing tour types**: LCA needs the full tour, subtree queries need entry/exit.
+- **Mixing tour types**: LCA needs the full re-visit tour; subtree queries
+  only need entry/exit times.
 
 ## Implementation Notes
 
-- This implementation uses recursive DFS for clarity
-- For very deep trees, consider an iterative stack-based DFS
-- For Type 2 tour, record node on both entry and exit
-- tin[u] is always < tout[u] for the same node
-- Children of u have tin values in (tin[u], tout[u])
-- Size of subtree = (tout[u] - tin[u] + 1) / 2 for Type 2
+- This implementation uses recursive DFS for clarity.
+- For very deep trees (stack overflow risk), convert to an iterative
+  stack-based DFS.
+- For the Type 2 (LCA) tour, each node is appended to the walk both on
+  entry and on return from each child, giving a walk of length `2n - 1`.
+- `tin[u]` is always strictly less than `tout[u]` for any node `u`.
+- Children of `u` have `tin` values strictly inside `(tin[u], tout[u])`.
+- Subtree size equals `tout[u] - tin[u]` (Type 1 tour).
+- For the Type 2 tour, subtree size equals `(tout[u] - tin[u] + 1) / 2`.

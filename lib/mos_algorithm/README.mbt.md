@@ -92,7 +92,34 @@ together and sorted by R.
 
 ---
 
-## 4. Step-by-step example
+## 4. Query sorting visualized
+
+Given four queries on the array with block size `B = 3`:
+
+```
+Unsorted queries (original order):
+  Q0: L=7, R=8   block(L)=2
+  Q1: L=1, R=5   block(L)=0
+  Q2: L=2, R=9   block(L)=0
+  Q3: L=4, R=6   block(L)=1
+
+After sorting by (block(L), R):
+  +-------+-------+-------+-------+
+  |  Q1   |  Q2   |  Q3   |  Q0   |
+  | [1,5] | [2,9] | [4,6] | [7,8] |
+  | blk=0 | blk=0 | blk=1 | blk=2 |
+  +-------+-------+-------+-------+
+    R=5 -> R=9        R=6    R=8
+    (ascending       (new    (new
+    within blk)      block)  block)
+```
+
+Within block 0, R increases: 5 -> 9.
+When the block changes, R may jump, but L is now confined to a new block.
+
+---
+
+## 5. Step-by-step example
 
 Array:
 
@@ -159,23 +186,83 @@ Q3 -> 3
 
 ---
 
-## 5. Diagram: how the window moves
+## 6. How the window moves (ASCII diagram)
+
+The diagram below shows [L..R] for each query in Mo order. R increases
+monotonically within each block, and L only hops within a block-wide band.
 
 ```
-Array:   [1, 2, 1, 3, 1, 2, 4]
-Index:    0  1  2  3  4  5  6
+Array index:  0  1  2  3  4  5  6
+              |  |  |  |  |  |  |
+Q1 [0,2]:    [L========R]
+Q3 [1,3]:       [L========R]
+Q0 [0,6]:    [L====================R]
+Q2 [2,4]:          [L========R]
 
-Q1 [0,2]:  L-----R
-Q3 [1,3]:    L-----R
-Q0 [0,6]:  L-----------------R
-Q2 [2,4]:       L-----R
+Block 0 (L in {0,1}):  R sweeps right: 2 -> 3 -> 6
+Block 1 (L in {2,3}):  R restarts: 4
+```
 
-R mostly moves forward. L moves only within a small block.
+Pointer motion summary:
+
+```
+Step       L moves   R moves   direction
+------     --------  --------  ---------
+empty->Q1  0->0      -1->2     R right
+Q1->Q3     0->1      2->3      L right, R right
+Q3->Q0     1->0      3->6      L left,  R right
+Q0->Q2     0->2      6->4      L right, R left (block change)
 ```
 
 ---
 
-## 6. Conceptual MoonBit template
+## 7. Mermaid diagram: algorithm phases
+
+```mermaid
+flowchart TD
+    A[Input: array a and queries Q] --> B[Compute block size B = sqrt n]
+    B --> C[Attach original index to each query]
+    C --> D["Sort queries by (block of L, then R)"]
+    D --> E[Initialize window L=0 R=-1 and state]
+    E --> F{More queries?}
+    F -- yes --> G[Expand or shrink R to target_r]
+    G --> H[Expand or shrink L to target_l]
+    H --> I[Record answer at original query index]
+    I --> F
+    F -- no --> J[Return answers array in original order]
+```
+
+---
+
+## 8. Mermaid diagram: state transitions per pointer step
+
+```mermaid
+stateDiagram-v2
+    [*] --> Idle : init L=0 R=-1
+
+    Idle --> ExpandR : cur_r < target_r
+    ExpandR --> ExpandR : add arr[cur_r+1], cur_r++
+    ExpandR --> Idle : cur_r == target_r
+
+    Idle --> ShrinkR : cur_r > target_r
+    ShrinkR --> ShrinkR : remove arr[cur_r], cur_r--
+    ShrinkR --> Idle : cur_r == target_r
+
+    Idle --> ExpandL : cur_l > target_l
+    ExpandL --> ExpandL : add arr[cur_l-1], cur_l--
+    ExpandL --> Idle : cur_l == target_l
+
+    Idle --> ShrinkL : cur_l < target_l
+    ShrinkL --> ShrinkL : remove arr[cur_l], cur_l++
+    ShrinkL --> Idle : cur_l == target_l
+
+    Idle --> Record : window matches query
+    Record --> [*] : all queries done
+```
+
+---
+
+## 9. Conceptual MoonBit template
 
 No public API is defined in this package. The following is an **illustration**
 of the workflow:
@@ -281,7 +368,7 @@ fn solve(a : ArrayView[Int], qs : Array[Query]) -> Array[Int] {
 
 ---
 
-## 7. More examples (what Mo can support)
+## 10. More examples (what Mo can support)
 
 Mo's algorithm works for any range query where add/remove is easy.
 
@@ -325,7 +412,7 @@ Add/remove just toggles that value.
 
 ---
 
-## 8. Complexity (why sqrt appears)
+## 11. Complexity (why sqrt appears)
 
 Let `B = sqrt(n)`.
 
@@ -343,7 +430,7 @@ Sorting queries costs O(q log q), which is usually smaller.
 
 ---
 
-## 9. Practical tips
+## 12. Practical tips
 
 1. **Coordinate-compress values** if they are large (so counts fit in arrays).
 2. **Odd-even block order** can reduce R backtracking:
@@ -357,7 +444,7 @@ Sorting queries costs O(q log q), which is usually smaller.
 
 ---
 
-## 10. Summary
+## 13. Summary
 
 Mo's algorithm is a reordering technique:
 

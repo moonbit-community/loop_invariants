@@ -1,7 +1,7 @@
 # Minimum s-t Cut (via Max Flow)
 
 This package computes the **minimum s-t cut** of a directed graph by running
-max flow and reading the residual graph.
+max flow (Dinic's algorithm) and reading the residual graph.
 
 If you are new to flows, think of each edge as a pipe with capacity. The min
 cut is the cheapest set of pipes you must cut to stop all flow from `s` to `t`.
@@ -44,7 +44,38 @@ Intuition: if you push as much flow as possible, every remaining path from `s`
 to `t` must be blocked by a fully saturated edge. Those saturated edges form
 the bottleneck that is exactly the min cut.
 
-## 3. Residual graph refresher
+## 3. Mermaid diagram: s-t cut concept
+
+The diagram below shows a 4-vertex network. Vertices `0` and `1` (green) form
+the source side S; vertices `2` and `3` (blue) form the sink side T. The two
+dashed arrows crossing the cut boundary are the cut edges.
+
+```mermaid
+graph LR
+    0((s=0))
+    1((1))
+    2((2))
+    3((t=3))
+
+    0 -->|"cap 3"| 1
+    0 -->|"cap 2"| 2
+    1 -->|"cap 2"| 3
+    2 -->|"cap 3"| 3
+
+    style 0 fill:#c8e6c9,stroke:#388e3c
+    style 1 fill:#c8e6c9,stroke:#388e3c
+    style 2 fill:#bbdefb,stroke:#1565c0
+    style 3 fill:#bbdefb,stroke:#1565c0
+```
+
+Cut edges crossing from S={0,1} to T={2,3}:
+
+- `0 -> 2` (capacity 2)
+- `1 -> 3` (capacity 2)
+
+Total cut capacity = 4 = max flow.
+
+## 4. Residual graph refresher
 
 For each edge `u -> v` with capacity `c` and current flow `f`:
 
@@ -56,7 +87,79 @@ Residual backward capacity = f
 You can traverse an edge in the residual graph only if its residual capacity is
 positive.
 
-## 4. The algorithm (step by step)
+After pushing max flow, the saturated cut edges have zero residual forward
+capacity, so no path from `s` to `t` remains in the residual graph.
+
+## 5. ASCII art: max flow run and residual state
+
+Consider the 4-vertex graph from section 3.
+
+### Step 1: initial network
+
+```
+         cap 3          cap 2
+    0 ──────────► 1 ──────────► 3
+    │                            ▲
+    │ cap 2          cap 3       │
+    └────────────► 2 ────────────┘
+
+flow on every edge = 0
+```
+
+### Step 2: augment path 0 -> 1 -> 3, push 2 units
+
+```
+     flow 2/cap 3       flow 2/cap 2
+    0 ──────────► 1 ──────────► 3
+    │                            ▲
+    │ flow 0/cap 2   flow 0/cap 3│
+    └────────────► 2 ────────────┘
+```
+
+### Step 3: augment path 0 -> 2 -> 3, push 2 units
+
+```
+     flow 2/cap 3       flow 2/cap 2
+    0 ──────────► 1 ──────────► 3
+    │                            ▲
+    │ flow 2/cap 2   flow 2/cap 3│
+    └────────────► 2 ────────────┘
+
+Total flow = 4.  No more augmenting paths exist.
+```
+
+### Step 4: residual graph after max flow
+
+```
+Forward residual capacities:
+  0->1: 3-2=1    1->3: 2-2=0 (saturated)
+  0->2: 2-2=0 (saturated)    2->3: 3-2=1
+
+Backward residual capacities (cancellation arcs):
+  1->0: 2    3->1: 2
+  2->0: 2    3->2: 2
+
+BFS from 0 in the residual graph:
+  0 -> 1  (residual 0->1 = 1, reachable)
+  0 -> 2  (residual 0->2 = 0, BLOCKED)
+  1 -> 3  (residual 1->3 = 0, BLOCKED)
+
+Reachable from 0: {0, 1}  =>  S = {0, 1}
+Unreachable:      {2, 3}  =>  T = {2, 3}
+```
+
+### Step 5: identify cut edges
+
+```
+Cut = all original edges (u in S) -> (v in T):
+
+  0 -> 2  (cap 2, saturated)    <- cut edge
+  1 -> 3  (cap 2, saturated)    <- cut edge
+
+Sum of cut capacities = 2 + 2 = 4 = max flow.  (confirms min-cut theorem)
+```
+
+## 6. The algorithm (step by step)
 
 1. Build the flow network from `n` and `edges`.
 2. Run max flow (Dinic).
@@ -68,7 +171,19 @@ positive.
 
 The cut edges are **all original edges from `S` to `T`**.
 
-## 5. Example A: balanced branches
+## 7. Mermaid diagram: algorithm phases
+
+```mermaid
+graph TD
+    A["Build flow graph\n(n vertices, add edges)"]
+    B["Run Dinic max flow\nBFS level graph + DFS blocking flow"]
+    C["BFS residual graph from s"]
+    D["source_side = reachable vertices\nvalue = max flow"]
+
+    A --> B --> C --> D
+```
+
+## 8. Example A: balanced branches
 
 Edges:
 
@@ -114,6 +229,24 @@ T = {2, 3}
 
 Cut edges are `0->2 (2)` and `1->3 (2)`, total capacity 4.
 
+```mermaid
+graph LR
+    0((s=0))
+    1((1))
+    2((2))
+    3((t=3))
+
+    0 -->|"3"| 1
+    0 -->|"2 CUT"| 2
+    1 -->|"2 CUT"| 3
+    2 -->|"3"| 3
+
+    style 0 fill:#c8e6c9,stroke:#388e3c
+    style 1 fill:#c8e6c9,stroke:#388e3c
+    style 2 fill:#bbdefb,stroke:#1565c0
+    style 3 fill:#bbdefb,stroke:#1565c0
+```
+
 ```mbt check
 ///|
 test "min cut st balanced branches" {
@@ -128,7 +261,7 @@ test "min cut st balanced branches" {
 }
 ```
 
-## 6. Example B: a narrow bottleneck into the sink
+## 9. Example B: a narrow bottleneck into the sink
 
 Here the bottleneck is obvious: only two unit edges enter the sink.
 
@@ -138,6 +271,39 @@ Here the bottleneck is obvious: only two unit edges enter the sink.
 ```
 
 The min cut is the two edges into `3`, so capacity `2`.
+
+```mermaid
+graph LR
+    0((s=0))
+    1((1))
+    2((2))
+    3((t=3))
+
+    0 -->|"5"| 1
+    0 -->|"5"| 2
+    1 -->|"1 CUT"| 3
+    2 -->|"1 CUT"| 3
+
+    style 0 fill:#c8e6c9,stroke:#388e3c
+    style 1 fill:#c8e6c9,stroke:#388e3c
+    style 2 fill:#c8e6c9,stroke:#388e3c
+    style 3 fill:#bbdefb,stroke:#1565c0
+```
+
+The source side is `{0, 1, 2}` because even after max flow the edges
+`0->1` and `0->2` still have residual capacity (5 was never the
+bottleneck). Only the two unit edges into `3` are saturated.
+
+```
+ASCII: flow after max flow
+
+  0 --flow 1/cap 5--> 1 --flow 1/cap 1--> 3
+   \--flow 1/cap 5--> 2 --flow 1/cap 1--> 3
+
+Saturated edges (residual = 0): 1->3, 2->3  (the bottleneck)
+S = {0, 1, 2},  T = {3}
+Cut capacity = 1 + 1 = 2
+```
 
 ```mbt check
 ///|
@@ -153,7 +319,7 @@ test "min cut st bottleneck into sink" {
 }
 ```
 
-## 7. Input format and return value
+## 10. Input format and return value
 
 Signature (from `pkg.generated.mbti`):
 
@@ -176,7 +342,7 @@ On success, you get:
 - `value`: min cut capacity (equals max flow)
 - `source_side`: vertices in `S` (reachable from `source` in residual graph)
 
-## 8. Listing the actual cut edges
+## 11. Listing the actual cut edges
 
 The package does not list cut edges directly, but it gives you `source_side`,
 which is enough to compute them.
@@ -235,7 +401,7 @@ edge (u -> v) is in the cut if
   source_side.contains(u) && !(source_side.contains(v))
 ```
 
-## 9. Example C: no path from s to t
+## 12. Example C: no path from s to t
 
 If `t` is unreachable, the max flow (and min cut) is `0`.
 
@@ -248,7 +414,38 @@ test "min cut st no path" {
 }
 ```
 
-## 10. Complexity
+## 13. ASCII art: Dinic level graph
+
+Dinic's algorithm builds a **level graph** (BFS layering) and then finds a
+**blocking flow** by DFS. Here is an example of what the level graph looks
+like for Example A:
+
+```
+BFS from 0 (using residual capacities):
+  Level 0: {0}
+  Level 1: {1, 2}    (0->1 cap 3, 0->2 cap 2)
+  Level 2: {3}       (1->3 cap 2, 2->3 cap 3)
+
+Level graph (only forward edges kept):
+
+  Level 0    Level 1    Level 2
+     0 ──(3)──► 1 ──(2)──► 3
+     └──(2)──► 2 ──(3)──► 3
+
+DFS blocking flow (phase 1):
+  Path 0->1->3: push min(3,2) = 2    1->3 now saturated
+  Path 0->2->3: push min(2,3) = 2    0->2 now saturated
+  Blocking flow = 4
+
+BFS phase 2 (residual):
+  0->1 has residual 1, but 1->3 has residual 0 (saturated)
+  0->2 has residual 0 (saturated)
+  Sink 3 unreachable.  Algorithm stops.
+
+Max flow = 4
+```
+
+## 14. Complexity
 
 The heavy part is Dinic's algorithm:
 
@@ -259,14 +456,17 @@ Space: O(V + E)
 
 The final residual BFS is just `O(V + E)`.
 
-## 11. s-t min cut vs global min cut
+## 15. s-t min cut vs global min cut
 
-- **s-t min cut**: source and sink are fixed (this package)
-- **global min cut**: minimum cut over all pairs of vertices
+| Property | s-t Min Cut (this package) | Global Min Cut (Stoer-Wagner) |
+|----------|---------------------------|-------------------------------|
+| Source/sink required | Yes | No |
+| Finds | One specific s-t cut | Best cut over all vertex pairs |
+| Algorithm | Dinic | Stoer-Wagner |
+| Time | O(V^2 E) | O(V^3) |
+| Use case | Flow bottleneck, routing | Network reliability, clustering |
 
-Global min cut uses other algorithms (e.g., Stoer-Wagner).
-
-## 12. Summary
+## 16. Summary
 
 This package gives you:
 
@@ -275,3 +475,16 @@ This package gives you:
 
 With those two pieces, you can easily list cut edges, visualize the cut, or
 confirm the bottleneck in your network.
+
+```
+Quick reference:
+
+  min_cut_st(n, edges[:], source, sink)
+    -> Some({ value, source_side })   on success
+    -> None                           on invalid input
+
+  Cut edges: all (u, v, cap) where source_side.contains(u)
+                                 && !source_side.contains(v)
+
+  Cut capacity: sum of cap over cut edges  ==  value
+```

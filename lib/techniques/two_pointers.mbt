@@ -196,13 +196,17 @@ test "three sum" {
 }
 
 ///|
-/// Container With Most Water - Maximum area between two lines
+/// Container With Most Water - find the maximum water volume between two bars.
 ///
-/// MATHEMATICAL FOUNDATION:
-/// Given heights h[0..n), find max area = min(h[i], h[j]) * (j - i).
-/// Greedy two-pointer: always move the shorter line inward.
+/// Given an array of bar heights, returns the largest area that can be formed
+/// by choosing two bars as walls.  Area = min(h[i], h[j]) * (j - i).
+///
+/// Greedy two-pointer: always move the shorter bar inward because keeping it
+/// cannot increase the area (width shrinks, height is already capped by it).
 ///
 /// INVARIANT: The maximum area is either already found or lies within [left, right].
+///
+/// Time: O(n).  Space: O(1).
 fn max_water_container(heights : ArrayView[Int]) -> Int {
   for left = 0, right = heights.length() - 1, max_area = 0; left < right; {
     let width = right - left

@@ -83,17 +83,26 @@ fn DominatorWork::add_edge(self : DominatorWork, u : Int, v : Int) -> Unit {
 }
 
 ///|
-/// Final dominator tree result.
+/// The result of running the Lengauer-Tarjan dominator tree algorithm on a
+/// directed graph.
 ///
-/// FIELDS:
-///   - root: the root vertex
-///   - idom: immediate dominator for each vertex (-1 if unreachable)
-///   - tree: children of each vertex in dominator tree
+/// A vertex u **dominates** v when every path from the root to v must pass
+/// through u. The **immediate dominator** (idom) of v is the unique closest
+/// strict dominator. Together, the idom relation forms a tree rooted at the
+/// start vertex.
 ///
-/// PROPERTIES:
-///   - idom[root] = root (root dominates itself)
-///   - For reachable v ≠ root: idom[v] strictly dominates v
-///   - tree[u] contains all v where idom[v] = u
+/// Fields:
+/// - `root` -- the root (start) vertex used when building the tree.
+/// - `idom` -- `idom[v]` is the immediate dominator of vertex v.
+///   * `idom[root] == root` (the root dominates itself).
+///   * `idom[v] == -1` for any vertex v that is unreachable from root.
+/// - `tree` -- adjacency list of the dominator tree.
+///   `tree[u]` contains every vertex v for which `idom[v] == u`.
+///
+/// The struct is derived `Debug` for inspection during development.
+///
+/// To query dominance between two arbitrary vertices use `dominates`.
+/// To build a dominator tree use `build_dominator_tree`.
 pub(all) struct DominatorTree {
   root : Int
   idom : Array[Int]

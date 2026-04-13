@@ -189,6 +189,40 @@ Q2 [2,4]:       L-----R
 Notice R mostly moves forward, with fewer large backtracks.
 ```
 
+```mermaid
+sequenceDiagram
+    participant L as L pointer
+    participant W as Window state
+    participant R as R pointer
+
+    Note over L,R: Initial: L=0, R=-1, window empty
+
+    Note over L,R: Q1 = [0, 2]
+    R->>W: add index 0 (val=1)  distinct=1
+    R->>W: add index 1 (val=2)  distinct=2
+    R->>W: add index 2 (val=1)  distinct=2
+    Note over W: answer Q1 = 2
+
+    Note over L,R: Q3 = [1, 3]
+    L->>W: remove index 0 (val=1)  distinct=2
+    R->>W: add index 3 (val=3)     distinct=3
+    Note over W: answer Q3 = 3
+
+    Note over L,R: Q0 = [0, 6]
+    L->>W: add index 0 (val=1)  distinct=4
+    R->>W: add index 4 (val=1)  distinct=4
+    R->>W: add index 5 (val=2)  distinct=4
+    R->>W: add index 6 (val=4)  distinct=4
+    Note over W: answer Q0 = 4
+
+    Note over L,R: Q2 = [2, 4]
+    L->>W: remove index 0 (val=1)  distinct=4
+    L->>W: remove index 1 (val=2)  distinct=4
+    R->>W: remove index 6 (val=4)  distinct=3
+    R->>W: remove index 5 (val=2)  distinct=2
+    Note over W: answer Q2 = 2
+```
+
 ---
 
 ## 7. Simple pseudocode (MoonBit style)
@@ -357,7 +391,157 @@ Sorting the queries costs O(q log q), which is usually smaller.
 
 ---
 
-## 10. Practical tips
+## 10. Mo's Algorithm with Rollback
+
+Some problems cannot support a `remove` operation efficiently. For example,
+queries on graphs asking "how many connected components are there in the
+subgraph induced by edges in [l, r]?" If the data structure is a Union-Find
+(DSU), you can union but not un-union in O(1).
+
+**Mo's algorithm with rollback** (also called "Mo on trees" or "offline LCT")
+solves this by restructuring how the window moves so that `remove` is never
+needed. Instead, it uses a **rollback-capable DSU** that can undo unions.
+
+### How rollback changes the algorithm
+
+Standard Mo's algorithm expands and shrinks both L and R freely. With rollback:
+
+- Queries within each block are processed in a special two-phase pattern.
+- The **right endpoint R** only expands, never shrinks.
+- The **left endpoint L** is handled by saving a snapshot of the DSU before
+  each query and rolling back after.
+
+This avoids ever calling `remove`, at the cost of redoing L-side work per query.
+
+### Block structure for rollback
+
+```
+Array indices:  0  1  2  3  4  5  6  7  8
+Blocks (B=3):   [---0---] [---1---] [---2---]
+
+For block 0, queries with l in [0,2]:
+  R expands monotonically from block boundary to n-1.
+  L is set fresh for each query by adding from block boundary down to l,
+  then rolled back after answering.
+
+For block 1, queries with l in [3,5]:
+  Same pattern: R only grows, L rolled back per query.
+```
+
+### State machine for one query in rollback mode
+
+```
++----------------------------+
+|  Snapshot DSU state        |   <-- save checkpoint before touching L
++----------------------------+
+           |
+           v
++----------------------------+
+|  Add elements from R to    |   <-- R expansion (permanent, cumulative)
+|  block_end+1 up to query.r |
++----------------------------+
+           |
+           v
++----------------------------+
+|  Add elements from          |   <-- L contraction (temporary)
+|  block_start-1 down to l  |
++----------------------------+
+           |
+           v
++----------------------------+
+|  Answer the query          |   <-- read from DSU
++----------------------------+
+           |
+           v
++----------------------------+
+|  Rollback DSU to snapshot  |   <-- undo L-side additions
++----------------------------+
+```
+
+### Mermaid diagram: rollback algorithm flow
+
+```mermaid
+flowchart TD
+    A([Start block b]) --> B[Sort queries in block b by R ascending]
+    B --> C[Set R_cur = block_end]
+    C --> D{More queries in block b?}
+    D -- No --> Z([Next block])
+    D -- Yes --> E[Take snapshot of DSU]
+    E --> F{R_cur < query.r?}
+    F -- Yes --> G[Add edge/element at R_cur+1\nR_cur += 1]
+    G --> F
+    F -- No --> H[Add elements from block_start-1 down to query.l\ntemporary L additions]
+    H --> I[Answer query using DSU state]
+    I --> J[Rollback DSU to snapshot\nundo L additions]
+    J --> D
+```
+
+### Complexity of rollback variant
+
+```
+Block size: B = sqrt(n)
+Number of blocks: n / B = sqrt(n)
+
+R movement:
+  Within each block, R only moves forward from block_end to n-1.
+  Per block: O(n) moves.
+  Total: O(n * sqrt(n)).
+
+L movement (temporary, rolled back):
+  Each query adds at most B elements from L down to query.l.
+  Total: O(q * B) = O(q * sqrt(n)).
+
+Rollback cost:
+  Each rollback undoes at most B operations.
+  Total: O(q * B) = O(q * sqrt(n)).
+
+Overall: O((n + q) * sqrt(n))
+```
+
+The complexity matches standard Mo's, but `remove` is never called. Only
+`add` and a rollback-capable snapshot mechanism are required.
+
+### What you need for rollback variant
+
+| Requirement     | Standard Mo   | Mo with Rollback     |
+|-----------------|---------------|----------------------|
+| add(i)          | required      | required             |
+| remove(i)       | required      | NOT needed           |
+| rollback / undo | not needed    | required             |
+| sorting order   | (block_L, R)  | (block_L, R)         |
+| L movement      | free both way | only expands inward  |
+| R movement      | free both way | only expands outward |
+
+### ASCII art: comparison of standard vs rollback window movement
+
+```
+Standard Mo (queries Q0..Q3 across two blocks, B=3):
+
+  Index:  0  1  2  3  4  5  6
+          [--block0--][--block1--]
+
+  Q1 l=0, r=4:   L===========R
+  Q2 l=1, r=6:    L===============R   (R expands, L shifts right)
+  Q3 l=3, r=2:          L====R        (R shrinks back -- requires remove!)
+
+Mo with Rollback (same queries):
+
+  Block 0 (l in [0,2]):
+
+    R starts at block_end=2, expands only rightward:
+    Q1 l=0, r=4:   [snapshot] L......R===========  [rollback L side]
+    Q2 l=1, r=6:   [snapshot]  L.....R===============  [rollback L side]
+    (R never moves left within a block pass)
+
+  Block 1 (l in [3,5]):
+
+    R resets to block_end=5, expands only rightward:
+    Q3 l=3, r=6:   [snapshot]        L===========R  [rollback L side]
+```
+
+---
+
+## 11. Practical tips
 
 1. **Coordinate compression**: If values are large, compress them so `count`
    is a small array instead of a map.
@@ -367,16 +551,24 @@ Sorting the queries costs O(q log q), which is usually smaller.
 4. **Offline requirement**: You must know all queries first.
 5. **No updates**: Standard Mo does not support point updates; that is a
    different variant (Mo's with modifications).
+6. **Rollback DSU**: When `remove` is impossible, use a union-by-rank DSU
+   with no path compression and an explicit history stack for rollback.
 
 ---
 
-## 11. When to use (and when not to)
+## 12. When to use (and when not to)
 
 Use Mo's algorithm when:
 
 - Queries are offline and static.
 - Your add/remove is O(1) or O(log n).
 - The answer is hard to compute from scratch.
+
+Use Mo's with rollback when:
+
+- Queries are offline and static.
+- Only `add` is efficient; `remove` is not possible.
+- A snapshot/rollback mechanism exists (e.g., rollback DSU).
 
 Avoid Mo's when:
 
@@ -386,13 +578,19 @@ Avoid Mo's when:
 
 ---
 
-## 12. Summary
+## 13. Summary
 
 Mo's algorithm is a powerful reordering technique:
 
 - It turns expensive per-query recomputation into cheap incremental updates.
 - It is simple once you define `add` and `remove`.
 - It trades ordering freedom (offline queries) for speed.
+
+Mo's with rollback extends this to structures where only `add` is reversible:
+
+- It eliminates `remove` by using snapshots and rollback.
+- It is the standard approach for offline graph connectivity queries.
+- Same asymptotic complexity: O((n + q) * sqrt(n)).
 
 If your problem fits the add/remove model, Mo's algorithm is often the
 cleanest way to reach near-linear performance.

@@ -47,55 +47,79 @@
 // SPACE COMPLEXITY: O(V + E) for graph representation
 
 ///|
-/// Compute minimum arborescence rooted at the given root vertex.
+/// Compute the minimum-cost arborescence rooted at `root`.
 ///
-/// ALGORITHM:
+/// An **arborescence** is a directed spanning tree where every vertex except
+/// the root has exactly one incoming edge and all vertices are reachable from
+/// the root.  This function implements the Chu-Liu/Edmonds algorithm, which
+/// repeatedly contracts directed cycles until the greedy in-edge selection
+/// is cycle-free, then expands back to recover the solution.
+///
+/// ## Algorithm outline
+///
 /// ```
-///   1. Verify all vertices are reachable from root
-///   2. For each vertex, select minimum incoming edge (greedy)
-///   3. If no cycle, return the solution
-///   4. Otherwise:
-///      a. Contract cycle into supernode (component 0)
-///      b. Map other vertices to components 1, 2, ...
-///      c. Create contracted edges with adjusted weights
-///      d. Recurse on contracted graph
-///      e. Expand solution back to original vertices
+/// // Phase 1 — reachability guard
+/// if any vertex is unreachable from root → return None
+///
+/// // Phase 2 — greedy in-edge selection
+/// for each v ≠ root:
+///   in_edge[v] = cheapest edge entering v
+///
+/// // Phase 3 — termination or contraction
+/// if no cycle in in_edge:
+///   return { cost: sum of in_edge weights, parent: in_edge sources }
+/// else:
+///   C = one cycle in in_edge
+///   build contracted graph G':
+///     - merge C into supernode 0
+///     - for edges u→v with v in C: w'(u→v) = w(u→v) - in_cost[v]
+///   recurse on G'
+///   expand contracted solution back to original vertices
 /// ```
 ///
-/// THE WEIGHT ADJUSTMENT (crucial insight):
+/// ## Weight adjustment — the key insight
+///
+/// When an external edge `u → v` (with `v` in cycle `C`) is selected in the
+/// contracted graph, it replaces the in-cycle edge entering `v`.  The adjusted
+/// weight `w(u→v) - in_cost[v]` represents only the *extra* cost beyond what
+/// the cycle already contributes, so adding `cycle_cost(C)` back during
+/// expansion yields the true total.
+///
 /// ```
-///   For an edge u→v where v is in a cycle:
-///     new_weight = old_weight - in_cost[v]
-///
-///   This normalizes the cost of "breaking into" the cycle at vertex v.
-///   If we select this edge, we remove the cycle edge entering v
-///   and gain (old_weight - in_cost[v]) extra cost.
+/// // Edge enters cycle at v, replacing the cycle's own in-edge to v:
+/// //
+/// //   True extra cost = w(u→v) - in_cost[v]
+/// //                       ↑           ↑
+/// //               external edge   saved cycle edge
 /// ```
 ///
-/// PARAMETERS:
-///   - n: number of vertices (labeled 0 to n-1)
-///   - edges: directed edges with weights
-///   - root: the root vertex of the desired arborescence
+/// ## Parameters
 ///
-/// RETURNS:
-///   Some(arborescence) if a valid arborescence exists,
-///   None if some vertex is unreachable from root.
+/// - `n`     — Number of vertices (labeled `0` to `n-1`).
+/// - `edges` — Directed edges with integer weights.  Parallel edges are
+///             allowed and may all be needed during contraction.
+/// - `root`  — Root vertex of the desired arborescence.
 ///
-/// EXAMPLE:
+/// ## Returns
+///
+/// `Some(arborescence)` if a valid arborescence exists.
+/// `None` if any vertex is unreachable from `root`, or if `n`, `root` are
+/// out of range.
+///
+/// ## Example
+///
 /// ```
-///   Graph:
-///     0 →(1)→ 1 →(1)→ 2
-///     0 →(5)→ 2
-///     2 →(1)→ 3
-///     1 →(2)→ 3
-///
-///   Minimum arborescence from root 0:
-///     0→1 (cost 1)
-///     1→2 (cost 1)
-///     2→3 (cost 1)
-///     Total: 3
-///
-///   Result: parent = [-1, 0, 1, 2], cost = 3
+/// // Graph (root = 0):
+/// //
+/// //   0 →(1)→ 1 →(1)→ 2
+/// //   |               |
+/// //   └────(5)→ 2  (1)→ 3
+/// //            1 →(2)→ 3
+/// //
+/// // Minimum arborescence:
+/// //   0→1 (1) + 1→2 (1) + 2→3 (1) = 3
+/// //
+/// // Result: parent = [-1, 0, 1, 2], cost = 3
 /// ```
 pub fn min_arborescence(
   n : Int,
