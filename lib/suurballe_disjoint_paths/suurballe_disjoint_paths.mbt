@@ -19,6 +19,7 @@
 
 /// Sentinel value representing an unreachable distance (effectively infinity).
 /// Chosen as `Int64::max_value / 2` to avoid overflow when adding edge weights.
+
 ///|
 const SD_INF : Int64 = 4611686018427387903L
 
@@ -28,6 +29,7 @@ const SD_INF : Int64 = 4611686018427387903L
 
 /// A single entry in the priority queue used by Dijkstra's algorithm.
 /// Holds the tentative distance to a vertex so the heap can order by distance.
+
 ///|
 priv struct HeapEntry {
   dist : Int64
@@ -36,18 +38,21 @@ priv struct HeapEntry {
 
 /// A binary min-heap over `HeapEntry` values, ordered by `dist`.
 /// Used as the priority queue in both Dijkstra passes.
+
 ///|
 priv struct MinHeap {
   data : Array[HeapEntry]
 }
 
 /// Creates a new, empty `MinHeap`.
+
 ///|
 fn MinHeap::new() -> MinHeap {
   { data: [] }
 }
 
 /// Inserts `entry` into the heap and restores the heap property by sifting up.
+
 ///|
 fn MinHeap::push(self : MinHeap, entry : HeapEntry) -> Unit {
   self.data.push(entry)
@@ -67,6 +72,7 @@ fn MinHeap::push(self : MinHeap, entry : HeapEntry) -> Unit {
 /// Removes and returns the entry with the smallest `dist`, or `None` when the
 /// heap is empty.  Restores the heap property by sifting the last element down
 /// from the root.
+
 ///|
 fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
   let n = self.data.length()
@@ -135,6 +141,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 ///   or `-1` if `v` was not reached.
 ///
 /// Returns `None` when `sink` is unreachable from `source`.
+
 ///|
 fn dijkstra_original(
   n : Int,
@@ -200,6 +207,7 @@ fn dijkstra_original(
 /// - `reversed` : `true` when this edge is a reversal of a first-path edge.
 ///                Traversing a reversed edge during path reconstruction cancels
 ///                the original directed edge in the combined graph.
+
 ///|
 priv struct Edge2 {
   to : Int
@@ -226,6 +234,7 @@ priv struct Edge2 {
 /// - `prev_e[v]` is the index into `adj[prev_v[v]]` of the edge used.
 ///
 /// Returns `None` when `sink` is unreachable.
+
 ///|
 fn dijkstra_modified(
   n : Int,
@@ -290,6 +299,7 @@ fn dijkstra_modified(
 /// Returns `true` if the edge was found and removed, `false` otherwise.
 /// Used during edge cancellation to eliminate opposite-direction edges between
 /// the combined first and second paths.
+
 ///|
 fn remove_edge(adj : Array[Array[Int]], u : Int, v : Int) -> Bool {
   for i in 0..<adj[u].length() {
@@ -320,6 +330,7 @@ fn remove_edge(adj : Array[Array[Int]], u : Int, v : Int) -> Bool {
 ///
 /// Returns `Some(path)` where `path` is a vertex list starting at `source` and
 /// ending at `sink`, or `None` if no path can be completed.
+
 ///|
 fn extract_path(
   adj : Array[Array[Int]],
@@ -373,6 +384,7 @@ fn extract_path(
 ///
 /// Time complexity:  `O(E log V)`
 /// Space complexity: `O(V + E)`
+
 ///|
 pub fn suurballe_disjoint_paths(
   n : Int,
@@ -392,7 +404,7 @@ pub fn suurballe_disjoint_paths(
   let from = Array::make(m, 0)
   let to = Array::make(m, 0)
   let weight = Array::make(m, 0L)
-  let adj = Array::makei(n, _ => [])
+  let adj = [| for _ in 0..<n => [] |]
   for i in 0..<m {
     let (u, v, w) = edges[i]
     if u < 0 || u >= n || v < 0 || v >= n || w < 0L {
@@ -470,7 +482,7 @@ pub fn suurballe_disjoint_paths(
       #|At i = m, all reduced costs are ready.
     ),
   }
-  let adj2 = Array::makei(n, _ => [])
+  let adj2 = [| for _ in 0..<n => [] |]
   for i in 0..<m {
     let u = from[i]
     let v2 = to[i]
@@ -518,7 +530,7 @@ pub fn suurballe_disjoint_paths(
     ),
   }
   path2.rev_in_place()
-  let combined_adj = Array::makei(n, _ => [])
+  let combined_adj = [| for _ in 0..<n => [] |]
   for idx in 0..<path_edges.length() {
     let e = path_edges[idx]
     combined_adj[from[e]].push(to[e])

@@ -44,7 +44,7 @@ Edges:
 ```mbt check
 ///|
 fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   for edge in edges {
     let (u, v) = edge
     if u < 0 || u >= n || v < 0 || v >= n {

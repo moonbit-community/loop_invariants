@@ -365,7 +365,7 @@ fn divide_conquer_dp(
   cost : (Int, Int) -> Int64,
   initial : Array[Int64],
 ) -> Array[Int64] {
-  let dp = Array::makei(n, i => initial[i])
+  let dp = [| for i in 0..<n => initial[i] |]
 
   // Divide and conquer helper
   // Computes dp[lo..hi] given that opt is in [opt_lo, opt_hi]
@@ -448,12 +448,14 @@ fn knuth_optimization(
   n : Int,
   cost : (Int, Int) -> Int64,
 ) -> Array[Array[Int64]] {
-  let dp = Array::makei(n, _ => Array::make(n, 0L))
-  let opt = Array::makei(n, i => {
-    let row = Array::make(n, 0)
-    row[i] = i
-    row
-  })
+  let dp = [| for _ in 0..<n => Array::make(n, 0L) |]
+  let opt = [|
+    for i in 0..<n => {
+      let row = Array::make(n, 0)
+      row[i] = i
+      row
+    }
+  |]
 
   // Process by increasing length
   for len in 2..<=n {

@@ -54,7 +54,7 @@ priv struct BridgeFinder {
 /// Create a new `BridgeFinder` for a graph with `n` vertices and no edges.
 /// All discovery timestamps are initialised to -1 (unvisited).
 fn BridgeFinder::new(n : Int) -> BridgeFinder {
-  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   {
     n,
     adj,

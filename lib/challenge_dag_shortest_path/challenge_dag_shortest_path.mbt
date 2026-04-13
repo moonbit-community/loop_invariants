@@ -12,7 +12,7 @@ pub fn dag_shortest_paths(
   edges : ArrayView[(Int, Int, Int)],
   src : Int,
 ) -> Array[Int]? {
-  let adj : Array[Array[(Int, Int)]] = Array::makei(n, _ => [])
+  let adj : Array[Array[(Int, Int)]] = [| for _ in 0..<n => [] |]
   let indeg : Array[Int] = Array::make(n, 0)
   for edge in edges {
     let (u, v, w) = edge

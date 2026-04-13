@@ -25,7 +25,7 @@ fn highest_bit(x : Int) -> Int {
 
 ///|
 fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj = Array::makei(n, _ => [])
+  let adj = [| for _ in 0..<n => [] |]
   for edge in edges {
     let (u, v) = edge
     adj[u].push(v)
@@ -47,7 +47,7 @@ pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
     return { up: [], depth: [] }
   }
   let log = highest_bit(n) + 1
-  let up = Array::makei(log, _ => Array::make(n, -1))
+  let up = [| for _ in 0..<log => Array::make(n, -1) |]
   let depth = Array::make(n, 0)
   let adj = build_adj(n, edges)
   let queue : Array[Int] = []

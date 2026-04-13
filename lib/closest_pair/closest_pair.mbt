@@ -22,7 +22,8 @@
 // TIME COMPLEXITY: O(n log n)
 // SPACE COMPLEXITY: O(n)
 
-///| Computes the square root of `x`, returning `0.0` for non-positive inputs.
+///|
+/// Computes the square root of `x`, returning `0.0` for non-positive inputs.
 /// This wrapper avoids NaN from negative values produced by floating-point
 /// rounding.
 fn sqrt_f64(x : Double) -> Double {
@@ -33,7 +34,8 @@ fn sqrt_f64(x : Double) -> Double {
   }
 }
 
-///| Internal representation of a 2D point that preserves the original array
+///|
+/// Internal representation of a 2D point that preserves the original array
 /// index so that the returned `(index1, index2)` pair refers back to the
 /// caller-supplied `Array[(Double, Double)]`.
 priv struct Point {
@@ -42,12 +44,14 @@ priv struct Point {
   idx : Int // Original index
 }
 
-///| Returns the Euclidean distance between two `Point` values.
+///|
+/// Returns the Euclidean distance between two `Point` values.
 fn distance(p1 : Point, p2 : Point) -> Double {
   sqrt_f64(distance_sq(p1, p2))
 }
 
-///| Returns the squared Euclidean distance between two `Point` values.
+///|
+/// Returns the squared Euclidean distance between two `Point` values.
 /// Used internally to avoid a `sqrt` call when only comparisons are needed.
 fn distance_sq(p1 : Point, p2 : Point) -> Double {
   let dx = p1.x - p2.x
@@ -55,11 +59,13 @@ fn distance_sq(p1 : Point, p2 : Point) -> Double {
   dx * dx + dy * dy
 }
 
-///| Sentinel value used as the initial "infinity" distance when no valid pair
+///|
+/// Sentinel value used as the initial "infinity" distance when no valid pair
 /// has been found yet (e.g. fewer than 2 points in the input).
 const CP_INF : Double = 1.0e18
 
-///| Finds the closest pair among a small slice of points by checking every
+///|
+/// Finds the closest pair among a small slice of points by checking every
 /// pair in `O(n^2)`.  Used as the base case of the divide-and-conquer
 /// recursion when `n <= 3`.
 ///
@@ -85,7 +91,8 @@ fn brute_force_closest(points : ArrayView[Point]) -> (Double, Int, Int) {
   }
 }
 
-///| Merge step of the divide-and-conquer algorithm.
+///|
+/// Merge step of the divide-and-conquer algorithm.
 ///
 /// Searches the strip — the vertical band of width `2 * delta` centered on the
 /// dividing line — for a pair closer than `delta`.  The strip is first sorted
@@ -132,7 +139,8 @@ fn strip_closest(
   }
 }
 
-///| Core recursive routine of the divide-and-conquer closest-pair algorithm.
+///|
+/// Core recursive routine of the divide-and-conquer closest-pair algorithm.
 ///
 /// - `points_x` — the current sub-array of points sorted by x-coordinate
 ///   (used for dividing into left/right halves).
@@ -206,11 +214,9 @@ pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int, Int) {
   }
 
   // Create Point array with indices
-  let pts : Array[Point] = Array::makei(n, i => {
-    x: points[i].0,
-    y: points[i].1,
-    idx: i,
-  })
+  let pts : Array[Point] = [|
+    for i in 0..<n => { x: points[i].0, y: points[i].1, idx: i }
+  |]
 
   // Sort by x for divide and conquer
   let pts_x = pts.copy()

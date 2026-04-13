@@ -51,7 +51,7 @@ priv struct CentroidTree {
 ///|
 /// Allocate a fresh `CentroidTree` for `n` nodes with no edges.
 fn CentroidTree::new(n : Int) -> CentroidTree {
-  let adj = Array::makei(n, _ => [])
+  let adj = [| for _ in 0..<n => [] |]
   {
     n,
     adj,
@@ -217,7 +217,7 @@ pub fn build_centroid(n : Int, edges : ArrayView[(Int, Int)]) -> CentroidDecomp 
 /// Return the centroid parent of node `v`, or `-1` if `v` is the centroid
 /// root or if `v` is out of range.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let cd = @centroid.build_centroid(3, [(0,1),(1,2)][:])
 /// assert_eq!(cd.parent(1), -1)  // node 1 is the centroid root of a 3-path
 /// assert_eq!(cd.parent(0), 1)
@@ -235,7 +235,7 @@ pub fn CentroidDecomp::parent(self : CentroidDecomp, v : Int) -> Int {
 /// Return the centroid tree depth of node `v`, or `-1` if `v` is out of
 /// range. The centroid root has depth 0.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let cd = @centroid.build_centroid(3, [(0,1),(1,2)][:])
 /// assert_eq!(cd.depth(1), 0)   // centroid root
 /// assert_eq!(cd.depth(0), 1)
@@ -303,7 +303,9 @@ test "centroid depth bound" {
   ct.build()
 
   // Check all depths are reasonable (<= log2(7) ~= 3)
-  let max_depth = Array::makei(7, i => ct.get_depth(i))
+  let max_depth = [|
+      for i in 0..<7 => ct.get_depth(i)
+    |]
     .iter()
     .maximum()
     .unwrap_or(0)

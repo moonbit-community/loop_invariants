@@ -15,7 +15,9 @@ const NO_PARENT : Int = -1
 
 ///|
 fn make_adj(n : Int) -> Array[Array[Int]] {
-  Array::makei(n, _ => [])
+  [|
+    for _ in 0..<n => []
+  |]
 }
 
 ///|
@@ -45,7 +47,7 @@ fn build_lca(
       #|When pow >= n, log is large enough for binary lifting.
     ),
   }
-  let up : Array[Array[Int]] = Array::makei(log, _ => Array::make(n, root))
+  let up : Array[Array[Int]] = [| for _ in 0..<log => Array::make(n, root) |]
   let depth = Array::make(n, 0)
   let tin = Array::make(n, 0)
   let tout = Array::make(n, 0)

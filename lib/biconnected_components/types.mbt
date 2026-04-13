@@ -118,7 +118,7 @@ priv struct BiconnectedFinder {
 /// list, edge stack, and component array are empty. The timer starts at `0`.
 /// Call `add_edge` to populate the graph before calling `run`.
 fn BiconnectedFinder::new(n : Int) -> BiconnectedFinder {
-  let adj : Array[Array[(Int, Int)]] = Array::makei(n, _ => [])
+  let adj : Array[Array[(Int, Int)]] = [| for _ in 0..<n => [] |]
   {
     n,
     adj,

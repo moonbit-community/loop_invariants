@@ -233,7 +233,10 @@ test "min vertex cover" {
   let matching_size = matcher.max_matching()
   let (left_cover, right_cover) = matcher.min_vertex_cover()
   // König's theorem: cover size equals matching size
-  inspect(left_cover.length() + right_cover.length() == matching_size, content="true")
+  inspect(
+    left_cover.length() + right_cover.length() == matching_size,
+    content="true",
+  )
 }
 ```
 

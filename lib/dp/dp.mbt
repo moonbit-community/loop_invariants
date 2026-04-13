@@ -464,12 +464,9 @@ fn house_robber(nums : ArrayView[Int]) -> Int {
   if n == 1 {
     return nums[0]
   }
-  for i in 2..<n
-      prev2 = nums[0], prev1 = (if nums[1] > nums[0] {
-          nums[1]
-        } else {
-          nums[0]
-        }) {
+  for
+    i in 2..<n
+    prev2 = nums[0], prev1 = (if nums[1] > nums[0] { nums[1] } else { nums[0] }) {
     let rob_current = prev2 + nums[i]
     let skip_current = prev1
     let current = if rob_current > skip_current {

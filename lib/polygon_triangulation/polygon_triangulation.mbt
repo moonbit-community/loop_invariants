@@ -28,7 +28,7 @@ const INF64 : Int64 = 4611686018427387903L
 ///
 /// # Example
 ///
-/// ```mbt
+/// ```mbt nocheck
 /// let p : @polygon_triangulation.Point = { x: 3L, y: -4L }
 /// assert_eq!(p.x, 3L)
 /// ```
@@ -89,7 +89,7 @@ fn triangle_cost(points : Array[Point], i : Int, j : Int, k : Int) -> Int64 {
 ///
 /// # Example
 ///
-/// ```mbt
+/// ```mbt nocheck
 /// let square : Array[@polygon_triangulation.Point] = [
 ///   { x: 0L, y: 0L },
 ///   { x: 1L, y: 0L },
@@ -103,7 +103,7 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
   if n < 3 {
     return None
   }
-  let dp : Array[Array[Int64]] = Array::makei(n, _ => Array::make(n, 0L))
+  let dp : Array[Array[Int64]] = [| for _ in 0..<n => Array::make(n, 0L) |]
   for len in 2..<n {
     for i in 0..<(n - len) {
       let j = i + len

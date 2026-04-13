@@ -310,7 +310,7 @@ priv struct UnionFind {
 
 ///|
 fn make_union_find(n : Int) -> UnionFind {
-  let parent : Array[Int] = Array::makei(n, i => i)
+  let parent : Array[Int] = [| for i in 0..<n => i |]
   { parent, rank: Array::make(n, 0) }
 }
 
@@ -488,11 +488,13 @@ fn floyd_warshall(
   edges : ArrayView[(Int, Int, Int)],
 ) -> Array[Array[Int]] {
   let inf = 0x7FFFFFFF
-  let dist : Array[Array[Int]] = Array::makei(n, i => {
-    let row = Array::make(n, inf)
-    row[i] = 0
-    row
-  })
+  let dist : Array[Array[Int]] = [|
+    for i in 0..<n => {
+      let row = Array::make(n, inf)
+      row[i] = 0
+      row
+    }
+  |]
 
   // Initialize with direct edges
   for edge in edges {

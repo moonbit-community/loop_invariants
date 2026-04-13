@@ -289,7 +289,7 @@ priv struct KosarajuSCC {
 fn KosarajuSCC::new(graph : Array[Array[Int]]) -> KosarajuSCC {
   let n = graph.length()
   // Build reversed graph
-  let reversed : Array[Array[Int]] = Array::makei(n, _ => [])
+  let reversed : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   for v in 0..<n {
     for w in graph[v] {
       reversed[w].push(v)

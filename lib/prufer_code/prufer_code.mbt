@@ -103,7 +103,9 @@ fn MinHeap::pop(self : MinHeap) -> Int? {
 
 ///|
 fn build_adj(n : Int) -> Array[Array[Int]] {
-  Array::makei(n, _ => [])
+  [|
+    for _ in 0..<n => []
+  |]
 }
 
 ///|

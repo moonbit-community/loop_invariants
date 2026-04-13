@@ -43,7 +43,7 @@ priv struct EulerTour {
 /// Allocate a fresh `EulerTour` for a tree with `n` nodes.
 /// All times are initialised to 0; the adjacency list is empty.
 fn EulerTour::new(n : Int) -> EulerTour {
-  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   {
     adj,
     entry: Array::make(n, 0),
@@ -318,7 +318,7 @@ priv struct EulerTourLCA {
 ///|
 /// Allocate a fresh `EulerTourLCA` for a tree with `n` nodes.
 fn EulerTourLCA::new(n : Int) -> EulerTourLCA {
-  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   {
     adj,
     first: Array::make(n, -1),
@@ -381,7 +381,7 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
 
   // Build sparse table for minimum depth
   let k = self.log[m] + 1
-  self.sparse = Array::makei(k, _ => Array::make(m, 0))
+  self.sparse = [| for _ in 0..<k => Array::make(m, 0) |]
 
   // Initialize with indices
   for i in 0..<m {

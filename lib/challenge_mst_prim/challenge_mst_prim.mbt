@@ -11,7 +11,7 @@ pub fn build_adj(
   n : Int,
   edges : ArrayView[(Int, Int, Int)],
 ) -> Array[Array[(Int, Int)]] {
-  let adj : Array[Array[(Int, Int)]] = Array::makei(n, _ => [])
+  let adj : Array[Array[(Int, Int)]] = [| for _ in 0..<n => [] |]
   for edge in edges {
     let (u, v, w) = edge
     if u >= 0 && u < n && v >= 0 && v < n {

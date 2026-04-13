@@ -5,7 +5,7 @@
 ///|
 /// Return a topological ordering, or None if the graph has a cycle.
 pub fn topo_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
-  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   let indeg : Array[Int] = Array::make(n, 0)
   for edge in edges {
     let (u, v) = edge

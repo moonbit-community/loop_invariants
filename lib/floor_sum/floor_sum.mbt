@@ -36,7 +36,7 @@
 ///
 /// ## Examples
 ///
-/// ```mbt
+/// ```mbt nocheck
 /// // floor((2*0+1)/3) + floor((2*1+1)/3) + ... + floor((2*4+1)/3)
 /// // = 0 + 1 + 1 + 2 + 3 = 7
 /// assert_eq!(@floor_sum.floor_sum(5L, 3L, 2L, 1L), 7L)

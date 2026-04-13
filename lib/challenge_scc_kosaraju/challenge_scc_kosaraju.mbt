@@ -6,8 +6,8 @@
 ///|
 /// Compute strongly connected components using Kosaraju's algorithm.
 pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
-  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
-  let rev : Array[Array[Int]] = Array::makei(n, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let rev : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {

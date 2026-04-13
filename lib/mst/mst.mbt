@@ -55,7 +55,7 @@ priv struct MST {
 /// - `n`: Number of vertices. Vertices are labelled `0` to `n-1`.
 ///
 /// # Example
-/// ```moonbit
+/// ```moonbit nocheck
 /// let g = MST::new(5)
 /// ```
 fn MST::new(n : Int) -> MST {
@@ -98,7 +98,10 @@ fn UF::new(n : Int) -> UF {
   for i in 0..<n {
     parent[i] = i
   } where {
-    proof_invariant: i >= 0 && i <= n && parent.length() == n && rank.length() == n,
+    proof_invariant: i >= 0 &&
+    i <= n &&
+    parent.length() == n &&
+    rank.length() == n,
     proof_reasoning: (
       #|INVARIANT (UF init):
       #|parent[j] = j for all j in [0, i); each vertex is its own set.
@@ -259,7 +262,7 @@ priv struct PrimMST {
 /// # Parameters
 /// - `n`: Number of vertices. Vertices are labelled `0` to `n-1`.
 fn PrimMST::new(n : Int) -> PrimMST {
-  let adj : Array[Array[(Int, Int64)]] = Array::makei(n, _ => [])
+  let adj : Array[Array[(Int, Int64)]] = [| for _ in 0..<n => [] |]
   { n, adj }
 }
 

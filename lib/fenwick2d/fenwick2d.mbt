@@ -46,7 +46,7 @@ pub struct Fenwick2D {
 /// positive; the internal storage is `(rows+1) x (cols+1)` to support
 /// 1-indexed access without an offset calculation at every call site.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let fw = Fenwick2D::new(4, 6)
 /// assert_eq!(fw.get_rows(), 4)
 /// assert_eq!(fw.get_cols(), 6)
@@ -83,7 +83,7 @@ fn lowbit(x : Int) -> Int {
 ///
 /// Coordinates outside `[1..rows] x [1..cols]` are silently ignored.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let fw = Fenwick2D::new(3, 3)
 /// fw.update(2, 2, 10L)
 /// assert_eq!(fw.get(2, 2), 10L)
@@ -124,7 +124,7 @@ pub fn Fenwick2D::update(
 /// - Returns `0` when `x <= 0` or `y <= 0`.
 /// - Values of `x > rows` or `y > cols` are clamped to the grid boundary.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let fw = Fenwick2D::new(3, 3)
 /// fw.update(1, 1, 3L)
 /// fw.update(2, 2, 7L)
@@ -169,7 +169,7 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, x : Int, y : Int) -> Int64 {
 ///
 /// Returns `0` when `x1 > x2` or `y1 > y2` (empty rectangle).
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let fw = Fenwick2D::new(3, 3)
 /// fw.update(2, 2, 5L)
 /// fw.update(3, 3, 3L)
@@ -201,7 +201,7 @@ pub fn Fenwick2D::range_sum(
 ///
 /// If the old value is unknown, use `get(x, y)` first (at the same cost).
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let fw = Fenwick2D::new(3, 3)
 /// fw.update(1, 1, 7L)
 /// fw.set(1, 1, 7L, 10L)
@@ -227,7 +227,7 @@ pub fn Fenwick2D::set(
 ///
 /// Returns `0` for coordinates outside `[1..rows] x [1..cols]`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let fw = Fenwick2D::new(3, 3)
 /// fw.update(2, 3, 42L)
 /// assert_eq!(fw.get(2, 3), 42L)

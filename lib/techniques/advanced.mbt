@@ -304,7 +304,10 @@ fn kmp_search(text : ArrayView[Char], pattern : ArrayView[Char]) -> Int {
       continue i + 1, 0
     }
   } where {
-    proof_invariant: i >= 0 && i <= text.length() && j >= 0 && j < pattern.length(),
+    proof_invariant: i >= 0 &&
+    i <= text.length() &&
+    j >= 0 &&
+    j < pattern.length(),
     proof_reasoning: (
       #|INVARIANT 1 (Bounds and progress):
       #|i is the current text position, and j is the length of the matched

@@ -335,7 +335,10 @@ fn isqrt(n : Int) -> Int {
       }
     }
   } where {
-    proof_invariant: lo >= 0 && lo < hi && lo * lo <= n && (hi > n || hi * hi > n),
+    proof_invariant: lo >= 0 &&
+    lo < hi &&
+    lo * lo <= n &&
+    (hi > n || hi * hi > n),
     proof_reasoning: (
       #|The invariant maintains: lo² ≤ n < hi² (answer is in [lo, hi)).
       #|
@@ -703,7 +706,10 @@ fn merge(left : ArrayView[Int], right : ArrayView[Int]) -> Array[Int] {
       continue i, j + 1
     }
   } where {
-    proof_invariant: i >= 0 && i <= left.length() && j >= 0 && j <= right.length(),
+    proof_invariant: i >= 0 &&
+    i <= left.length() &&
+    j >= 0 &&
+    j <= right.length(),
     proof_reasoning: (
       #|INVARIANT 1 (Bounds): Indices stay within array bounds.
       #|

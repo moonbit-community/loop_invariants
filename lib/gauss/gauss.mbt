@@ -30,6 +30,7 @@
 /// Pivots smaller than this threshold are treated as zero and the column is
 /// skipped; RHS entries in zero rows larger than this are treated as a
 /// contradiction (no solution).
+
 ///|
 const GAUSS_EPS : Double = 0.000000001
 
@@ -40,6 +41,7 @@ const GAUSS_EPS : Double = 0.000000001
 /// - `has_solution` is false when the system is inconsistent (0 = c, c != 0).
 /// - `has_unique_solution` is true when `has_solution` is true and `rank`
 ///   equals the number of unknowns (no free variables).
+
 ///|
 pub struct GaussResult {
   solution : Array[Double]
@@ -60,6 +62,7 @@ pub struct GaussResult {
 ///
 /// Dimension mismatches (b.length() != a.length(), or inconsistent row
 /// lengths inside a) immediately return `has_solution = false`.
+
 ///|
 pub fn gauss_solve(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let n = a.length()
@@ -96,6 +99,7 @@ pub fn gauss_solve(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
 /// - rows [0..row) are in RREF for columns [0..col).
 /// - rank == row at all times during the outer loop.
 /// - every accepted pivot has absolute value >= GAUSS_EPS.
+
 ///|
 fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let n = a.length()
@@ -110,9 +114,13 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let m = a[0].length()
 
   // Create augmented matrix [A|b]
-  let aug = Array::makei(n, i => {
-    Array::makei(m + 1, j => if j < m { a[i][j] } else { b[i] })
-  })
+  let aug = [|
+    for i in 0..<n => {
+      [|
+        for j in 0..<(m + 1) => if j < m { a[i][j] } else { b[i] }
+      |]
+    }
+  |]
 
   // Forward elimination
   let rank = for col = 0, rank = 0, row = 0; col < m && row < n; {
@@ -351,6 +359,7 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
 /// Uses Fermat's little theorem: a^(m-2) mod m = a^(-1) mod m,
 /// which is valid when `m` is prime and gcd(a, m) = 1.
 /// Implemented as fast binary exponentiation in O(log m) multiplications.
+
 ///|
 fn mod_inverse(a : Int64, m : Int64) -> Int64 {
   for result = 1L, base = a % m, exp = m - 2L; exp > 0L; {
@@ -375,15 +384,19 @@ fn gauss_mod(
   let m = a[0].length()
 
   // Create augmented matrix
-  let aug = Array::makei(n, i => {
-    Array::makei(m + 1, j => {
-      if j < m {
-        (a[i][j] % p + p) % p
-      } else {
-        (b[i] % p + p) % p
-      }
-    })
-  })
+  let aug = [|
+    for i in 0..<n => {
+      [|
+        for j in 0..<(m + 1) => {
+          if j < m {
+            (a[i][j] % p + p) % p
+          } else {
+            (b[i] % p + p) % p
+          }
+        }
+      |]
+    }
+  |]
   // Forward elimination
   let row = for col = 0, row = 0; col < m && row < n; {
     // Find pivot
@@ -552,9 +565,13 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
   let m = a[0].length()
 
   // Create augmented matrix
-  let aug = Array::makei(n, i => {
-    Array::makei(m + 1, j => if j < m { a[i][j] % 2 } else { b[i] % 2 })
-  })
+  let aug = [|
+    for i in 0..<n => {
+      [|
+        for j in 0..<(m + 1) => if j < m { a[i][j] % 2 } else { b[i] % 2 }
+      |]
+    }
+  |]
   let row = for col = 0, row = 0; col < m && row < n; {
     // Find pivot
     let pivot_row = for i = row; i < n; {

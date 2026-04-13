@@ -46,10 +46,12 @@ pub fn mo_range_sum(
     return []
   }
   let block = sqrt_ceil(n)
-  let qs = Array::makei(q, i => {
-    let (l, r) = queries[i]
-    { l, r, idx: i }
-  })
+  let qs = [|
+    for i in 0..<q => {
+      let (l, r) = queries[i]
+      { l, r, idx: i }
+    }
+  |]
   qs.sort_by((a, b) => {
     if a.l / block != b.l / block {
       a.l / block - b.l / block

@@ -388,7 +388,10 @@ test "all algorithms same result" {
   let h3 = @convex_hull.convex_hull_jarvis(pts)
   // All three return the same number of hull vertices
   inspect(h1.length(), content="5")
-  inspect(h1.length() == h2.length() && h2.length() == h3.length(), content="true")
+  inspect(
+    h1.length() == h2.length() && h2.length() == h3.length(),
+    content="true",
+  )
 }
 ```
 

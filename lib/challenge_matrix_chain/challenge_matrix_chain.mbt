@@ -13,7 +13,7 @@ pub fn matrix_chain_min_cost(dims : ArrayView[Int]) -> Int {
   if n <= 0 {
     return 0
   }
-  let dp : Array[Array[Int]] = Array::makei(n, _ => Array::make(n, 0))
+  let dp : Array[Array[Int]] = [| for _ in 0..<n => Array::make(n, 0) |]
   for len in 2..<(n + 1) {
     for i in 0..<(n - len + 1) {
       let j = i + len - 1

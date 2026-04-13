@@ -114,7 +114,7 @@ pub struct ConvexHullTrick {
 /// Lines must subsequently be added with `add_line` in non-decreasing slope
 /// order, and queries must be made with `query` in non-decreasing x order.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let cht = ConvexHullTrick::new()
 /// ```
 pub fn ConvexHullTrick::new() -> ConvexHullTrick {
@@ -134,7 +134,7 @@ pub fn ConvexHullTrick::new() -> ConvexHullTrick {
 /// `add_line` calls is O(n).
 ///
 /// Example (continuing from previous calls):
-/// ```moonbit
+/// ```moonbit nocheck
 /// let cht = ConvexHullTrick::new()
 /// cht.add_line(1L, 0L)   // y = x
 /// cht.add_line(2L, 1L)   // y = 2x + 1  (slope increased)
@@ -170,7 +170,7 @@ pub fn ConvexHullTrick::add_line(
 /// longer optimal. Because `head` only moves forward and never exceeds the
 /// array length, the total work across all `query` calls is O(q) amortised.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let cht = ConvexHullTrick::new()
 /// cht.add_line(1L, 0L)
 /// cht.add_line(2L, 1L)

@@ -43,7 +43,7 @@ priv struct TopoSorter {
 /// All vertices start in the unvisited state (state 0).
 /// The finish list starts empty.
 fn TopoSorter::new(n : Int) -> TopoSorter {
-  let adj : Array[Array[Int]] = Array::makei(n, _ => [])
+  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
   { n, adj, state: Array::make(n, 0), order: [] }
 }
 

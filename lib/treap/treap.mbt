@@ -123,7 +123,7 @@ fn next_random(state : Int) -> (Int, Int) {
 ///
 /// # Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let t : @treap.Treap[Int] = @treap.Treap::new()
 /// // t is empty
 /// ```

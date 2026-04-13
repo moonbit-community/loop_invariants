@@ -166,18 +166,18 @@ struct Node {
 ///|
 fn update(node : Int, lo : Int, hi : Int, idx : Int, val : Int) -> Int {
   if lo == hi {
-    return new_node(left=-1, right=-1, sum=val)  // new leaf
+    return new_node(left=-1, right=-1, sum=val) // new leaf
   }
   let mid = (lo + hi) / 2
   let old = nodes[node]
   if idx <= mid {
     let new_left = update(old.left, lo, mid, idx, val)
     let new_sum = nodes[new_left].sum + nodes[old.right].sum
-    return new_node(left=new_left, right=old.right, sum=new_sum)  // share right
+    return new_node(left=new_left, right=old.right, sum=new_sum) // share right
   } else {
     let new_right = update(old.right, mid + 1, hi, idx, val)
     let new_sum = nodes[old.left].sum + nodes[new_right].sum
-    return new_node(left=old.left, right=new_right, sum=new_sum)  // share left
+    return new_node(left=old.left, right=new_right, sum=new_sum) // share left
   }
 }
 ```

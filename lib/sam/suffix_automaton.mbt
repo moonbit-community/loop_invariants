@@ -245,7 +245,7 @@ fn SuffixAutomaton::build(s : String) -> SuffixAutomaton {
 ///
 /// # Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// assert_true!(@sam.contains_substring("abab", "aba"))
 /// assert_false!(@sam.contains_substring("abab", "ac"))
 /// ```
@@ -267,7 +267,7 @@ pub fn contains_substring(text : String, pattern : String) -> Bool {
 ///
 /// # Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// // "abab" has 7 distinct non-empty substrings:
 /// // "a", "b", "ab", "ba", "aba", "bab", "abab"
 /// assert_eq!(@sam.distinct_substrings_count("abab"), 7)

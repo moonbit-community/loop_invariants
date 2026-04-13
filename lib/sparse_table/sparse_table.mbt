@@ -68,11 +68,13 @@ pub fn SparseTableMin::new(arr : Array[Int64]) -> SparseTableMin {
     log_table[i] = log_table[i / 2] + 1
   }
   let k = log_table[n] + 1
-  let table = Array::makei(n, i => {
-    let row = Array::make(k, 0L)
-    row[0] = arr[i]
-    row
-  })
+  let table = [|
+    for i in 0..<n => {
+      let row = Array::make(k, 0L)
+      row[0] = arr[i]
+      row
+    }
+  |]
 
   // Build sparse table
   for j in 1..<k {
@@ -158,11 +160,13 @@ fn SparseTableMax::new(arr : Array[Int64]) -> SparseTableMax {
     log_table[i] = log_table[i / 2] + 1
   }
   let k = log_table[n] + 1
-  let table = Array::makei(n, i => {
-    let row = Array::make(k, 0L)
-    row[0] = arr[i]
-    row
-  })
+  let table = [|
+    for i in 0..<n => {
+      let row = Array::make(k, 0L)
+      row[0] = arr[i]
+      row
+    }
+  |]
   for j in 1..<k {
     let len = 1 << j
     for i in 0..<(n - len + 1) {
@@ -263,11 +267,13 @@ fn SparseTableGCD::new(arr : Array[Int64]) -> SparseTableGCD {
     log_table[i] = log_table[i / 2] + 1
   }
   let k = log_table[n] + 1
-  let table = Array::makei(n, i => {
-    let row = Array::make(k, 0L)
-    row[0] = arr[i]
-    row
-  })
+  let table = [|
+    for i in 0..<n => {
+      let row = Array::make(k, 0L)
+      row[0] = arr[i]
+      row
+    }
+  |]
   for j in 1..<k {
     let len = 1 << j
     for i in 0..<(n - len + 1) {
