@@ -1,0 +1,58 @@
+name: Publish
+
+# Publishes the current module to mooncakes.io.
+#
+# Triggers:
+#   - A tag matching `v*` is pushed (e.g. `v0.3.6`). The tag must point at
+#     a commit whose `moon.mod.json` version matches the tag.
+#   - Manual dispatch via the Actions UI.
+#
+# Required repository secret:
+#   - MOONCAKES_TOKEN    : API token for your mooncakes.io account
+#                          (taken from `~/.moon/credentials.json` "token" field)
+#   - MOONCAKES_USERNAME : your mooncakes.io username (matches the module's
+#                          namespace, e.g. "bobzhang" for "bobzhang/loop_invariants")
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up MoonBit (nightly)
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s nightly
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Show MoonBit version
+        run: moon version --all
+
+      - name: Configure mooncakes credentials
+        env:
+          MOONCAKES_TOKEN: ${{ secrets.MOONCAKES_TOKEN }}
+          MOONCAKES_USERNAME: ${{ secrets.MOONCAKES_USERNAME }}
+        run: |
+          mkdir -p "$HOME/.moon"
+          printf '{"token":"%s","username":"%s"}\n' \
+            "$MOONCAKES_TOKEN" "$MOONCAKES_USERNAME" \
+            > "$HOME/.moon/credentials.json"
+          chmod 600 "$HOME/.moon/credentials.json"
+
+      - name: Update dependencies
+        run: moon update
+
+      - name: Check
+        run: moon check
+
+      - name: Test
+        run: moon test
+
+      - name: Publish
+        run: moon publish
