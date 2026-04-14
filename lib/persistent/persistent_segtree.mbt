@@ -361,12 +361,9 @@ fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
   sorted.sort()
 
   // Remove duplicates
-  let unique : Array[Int] = []
-  for i, val in sorted {
-    if i == 0 || val != sorted[i - 1] {
-      unique.push(val)
-    }
-  }
+  let unique : Array[Int] = [|
+    for i, val in sorted if i == 0 || val != sorted[i - 1] => val
+  |]
   let m = unique.length()
 
   // Create initial empty tree (version -1, stored as version 0)

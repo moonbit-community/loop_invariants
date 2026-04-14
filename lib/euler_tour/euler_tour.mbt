@@ -119,13 +119,11 @@ fn EulerTour::is_ancestor(self : EulerTour, u : Int, v : Int) -> Bool {
 ///|
 /// Return an array of all node IDs in the subtree of `v`, in tour order.
 fn EulerTour::get_subtree(self : EulerTour, v : Int) -> Array[Int] {
-  let result : Array[Int] = []
   let start = self.entry[v]
   let end = self.exit[v]
-  for i in start..<end {
-    result.push(self.tour[i])
-  }
-  result
+  [|
+    for i in start..<end => self.tour[i]
+  |]
 }
 
 ///|
@@ -287,13 +285,11 @@ pub fn EulerTourInfo::subtree_nodes(
   if v < 0 || v >= self.entry.length() {
     return []
   }
-  let result : Array[Int] = []
   let start = self.entry[v]
   let end = self.exit[v]
-  for i in start..<end {
-    result.push(self.tour[i])
-  }
-  result
+  [|
+    for i in start..<end => self.tour[i]
+  |]
 }
 
 // ============================================================================
