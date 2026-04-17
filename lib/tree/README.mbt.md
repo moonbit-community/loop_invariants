@@ -44,7 +44,7 @@ Edges:
 ```mbt check
 ///|
 fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
     if u < 0 || u >= n || v < 0 || v >= n {
@@ -217,7 +217,7 @@ test "euler tour subtree sums" {
   let values : Array[Int] = [5, 1, 4, 2, 3, 6]
   let adj = build_adj(n, edges[:])
   let (tin, tout, order) = euler_tour(n, adj, 0)
-  let euler_values : Array[Int] = [| for v in order => values[v] |]
+  let euler_values : Array[Int] = [ for v in order => values[v] ]
   let pref = prefix_sums(euler_values)
   let subtree_sum = (v : Int) => {
     let l = tin[v]

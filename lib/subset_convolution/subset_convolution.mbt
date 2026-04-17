@@ -118,8 +118,8 @@ pub fn subset_convolution(
   }
   // Phase 1: Stratify by popcount.
   // fpc[k][S] = f[S] if popcount(S) == k, else 0.
-  let fpc = [| for _ in 0..<(n + 1) => Array::make(size, 0L) |]
-  let gpc = [| for _ in 0..<(n + 1) => Array::make(size, 0L) |]
+  let fpc = [ for _ in 0..<(n + 1) => Array::make(size, 0L) ]
+  let gpc = [ for _ in 0..<(n + 1) => Array::make(size, 0L) ]
   for s in 0..<size {
     let k = popcount(s)
     fpc[k][s] = fpad[s]
@@ -163,7 +163,7 @@ pub fn subset_convolution(
   // Phase 3: Rank-dimension polynomial convolution.
   // hpc[k][S] = Σ_{i=0..k} fpc[i][S] * gpc[k-i][S].
   // Each position S is handled independently as a polynomial product over k.
-  let hpc = [| for _ in 0..<(n + 1) => Array::make(size, 0L) |]
+  let hpc = [ for _ in 0..<(n + 1) => Array::make(size, 0L) ]
   for k in 0..<=n {
     for i in 0..<=k {
       for s in 0..<size {

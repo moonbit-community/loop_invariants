@@ -103,7 +103,7 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
   if n < 3 {
     return None
   }
-  let dp : Array[Array[Int64]] = [| for _ in 0..<n => Array::make(n, 0L) |]
+  let dp : Array[Array[Int64]] = [ for _ in 0..<n => Array::make(n, 0L) ]
   for len in 2..<n {
     for i in 0..<(n - len) {
       let j = i + len

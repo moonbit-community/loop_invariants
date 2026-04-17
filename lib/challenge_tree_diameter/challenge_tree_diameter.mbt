@@ -4,7 +4,7 @@
 
 ///|
 fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj = [| for _ in 0..<n => [] |]
+  let adj = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
     adj[u].push(v)

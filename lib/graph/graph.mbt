@@ -31,7 +31,7 @@ fn topological_sort(graph : Array[Array[Int]]) -> Array[Int]? {
   let result : Array[Int] = []
 
   // Initialize queue with all vertices having in-degree 0
-  let queue : Array[Int] = [| for v in 0..<n if in_degree[v] == 0 => v |]
+  let queue : Array[Int] = [ for v in 0..<n if in_degree[v] == 0 => v ]
 
   // Process vertices in topological order
   for head = 0 {
@@ -305,7 +305,7 @@ priv struct UnionFind {
 
 ///|
 fn make_union_find(n : Int) -> UnionFind {
-  let parent : Array[Int] = [| for i in 0..<n => i |]
+  let parent : Array[Int] = [ for i in 0..<n => i ]
   { parent, rank: Array::make(n, 0) }
 }
 
@@ -483,13 +483,13 @@ fn floyd_warshall(
   edges : ArrayView[(Int, Int, Int)],
 ) -> Array[Array[Int]] {
   let inf = 0x7FFFFFFF
-  let dist : Array[Array[Int]] = [|
+  let dist : Array[Array[Int]] = [
     for i in 0..<n => {
       let row = Array::make(n, inf)
       row[i] = 0
       row
     }
-  |]
+  ]
 
   // Initialize with direct edges
   for edge in edges {

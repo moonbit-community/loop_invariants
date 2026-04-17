@@ -108,9 +108,9 @@ fn combine(
       }
     }
   }
-  [|
+  [
     for i in 0..<k => tmp[i]
-  |]
+  ]
 }
 
 ///|

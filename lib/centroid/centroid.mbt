@@ -51,7 +51,7 @@ priv struct CentroidTree {
 ///|
 /// Allocate a fresh `CentroidTree` for `n` nodes with no edges.
 fn CentroidTree::new(n : Int) -> CentroidTree {
-  let adj = [| for _ in 0..<n => [] |]
+  let adj = [ for _ in 0..<n => [] ]
   {
     n,
     adj,
@@ -303,9 +303,9 @@ test "centroid depth bound" {
   ct.build()
 
   // Check all depths are reasonable (<= log2(7) ~= 3)
-  let max_depth = [|
+  let max_depth = [
       for i in 0..<7 => ct.get_depth(i)
-    |]
+    ]
     .iter()
     .maximum()
     .unwrap_or(0)

@@ -142,7 +142,7 @@ pub(all) struct MinCostMaxFlow {
 ///
 /// Returns a solver with empty adjacency lists and zeroed auxiliary arrays.
 pub fn MinCostMaxFlow::new(n : Int) -> MinCostMaxFlow {
-  let adj : Array[Array[MCMFEdge]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[MCMFEdge]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,

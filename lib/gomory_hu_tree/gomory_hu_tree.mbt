@@ -105,7 +105,7 @@ pub fn gomory_hu_tree(
       value[p] = tmp
     }
   }
-  let adj : Array[Array[(Int, Int64)]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
   for i in 0..<n {
     let p = parent[i]
     if p >= 0 {

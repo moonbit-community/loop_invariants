@@ -138,7 +138,7 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
 
   // Build condensation graph (DAG of SCCs)
   let num_sccs = scc_count.val
-  let scc_adj : Array[Array[Int]] = [| for _ in 0..<num_sccs => [] |]
+  let scc_adj : Array[Array[Int]] = [ for _ in 0..<num_sccs => [] ]
 
   // Add edges between SCCs (avoiding duplicates)
   for u in 0..<n {

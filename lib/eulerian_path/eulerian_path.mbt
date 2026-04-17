@@ -29,9 +29,9 @@
 
 ///|
 fn build_adj_lists(n : Int) -> Array[Array[Int]] {
-  [|
+  [
     for _ in 0..<n => []
-  |]
+  ]
 }
 
 ///|
@@ -218,7 +218,7 @@ pub fn eulerian_path_undirected(
       has_degree[v] = true
     }
   }
-  let odd : Array[Int] = [| for v in 0..<n if deg[v] % 2 == 1 => v |]
+  let odd : Array[Int] = [ for v in 0..<n if deg[v] % 2 == 1 => v ]
   if odd.length() != 0 && odd.length() != 2 {
     return None
   }

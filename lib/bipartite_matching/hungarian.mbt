@@ -140,10 +140,10 @@ pub fn Hungarian::max_matching(self : Hungarian) -> Int {
 /// let pairs = matcher.get_matching() // [(0, 0), (1, 1)]
 /// ```
 pub fn Hungarian::get_matching(self : Hungarian) -> Array[(Int, Int)] {
-  let result : Array[(Int, Int)] = [|
+  let result : Array[(Int, Int)] = [
     for u in 0..<self.graph.n_left if self.match_left[u] >= 0 => {
       (u, self.match_left[u])
     }
-  |]
+  ]
   result
 }

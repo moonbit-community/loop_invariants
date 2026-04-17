@@ -214,9 +214,9 @@ pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int, Int) {
   }
 
   // Create Point array with indices
-  let pts : Array[Point] = [|
+  let pts : Array[Point] = [
     for i in 0..<n => { x: points[i].0, y: points[i].1, idx: i }
-  |]
+  ]
 
   // Sort by x for divide and conquer
   let pts_x = pts.copy()

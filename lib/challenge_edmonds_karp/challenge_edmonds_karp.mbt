@@ -21,7 +21,7 @@ pub struct FlowGraph {
 ///|
 /// Create a flow graph with n vertices.
 pub fn make(n : Int) -> FlowGraph {
-  { adj: [| for _ in 0..<n => [] |] }
+  { adj: [ for _ in 0..<n => [] ] }
 }
 
 ///|

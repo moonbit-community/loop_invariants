@@ -43,7 +43,7 @@ priv struct EulerTour {
 /// Allocate a fresh `EulerTour` for a tree with `n` nodes.
 /// All times are initialised to 0; the adjacency list is empty.
 fn EulerTour::new(n : Int) -> EulerTour {
-  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   {
     adj,
     entry: Array::make(n, 0),
@@ -121,9 +121,9 @@ fn EulerTour::is_ancestor(self : EulerTour, u : Int, v : Int) -> Bool {
 fn EulerTour::get_subtree(self : EulerTour, v : Int) -> Array[Int] {
   let start = self.entry[v]
   let end = self.exit[v]
-  [|
+  [
     for i in start..<end => self.tour[i]
-  |]
+  ]
 }
 
 ///|
@@ -287,9 +287,9 @@ pub fn EulerTourInfo::subtree_nodes(
   }
   let start = self.entry[v]
   let end = self.exit[v]
-  [|
+  [
     for i in start..<end => self.tour[i]
-  |]
+  ]
 }
 
 // ============================================================================
@@ -314,7 +314,7 @@ priv struct EulerTourLCA {
 ///|
 /// Allocate a fresh `EulerTourLCA` for a tree with `n` nodes.
 fn EulerTourLCA::new(n : Int) -> EulerTourLCA {
-  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   {
     adj,
     first: Array::make(n, -1),
@@ -377,7 +377,7 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
 
   // Build sparse table for minimum depth
   let k = self.log[m] + 1
-  self.sparse = [| for _ in 0..<k => Array::make(m, 0) |]
+  self.sparse = [ for _ in 0..<k => Array::make(m, 0) ]
 
   // Initialize with indices
   for i in 0..<m {

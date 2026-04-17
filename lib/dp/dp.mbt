@@ -628,9 +628,7 @@ fn word_break(s : String, word_dict : Array[String]) -> Bool {
   let n = chars.length()
 
   // Convert word dict to char arrays for comparison
-  let words : Array[Array[Char]] = [|
-    for word in word_dict => word.to_array()
-  |]
+  let words : Array[Array[Char]] = [ for word in word_dict => word.to_array() ]
   let dp = Array::make(n + 1, false)
   dp[0] = true // Empty string can be segmented
   for i in 1..<=n {
@@ -965,7 +963,7 @@ fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
   }
 
   // dp[i][j] = min cost to multiply matrices i..j (1-indexed)
-  let dp : Array[Array[Int]] = [| for _ in 0..<=n => Array::make(n + 1, 0) |]
+  let dp : Array[Array[Int]] = [ for _ in 0..<=n => Array::make(n + 1, 0) ]
 
   // Chain length from 2 to n
   for len in 2..<=n {

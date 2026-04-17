@@ -49,7 +49,7 @@ priv struct Matrix {
 
 ///|
 fn Matrix::new(rows : Int, cols : Int) -> Matrix {
-  let data = [| for _ in 0..<rows => Array::make(cols, 0L) |]
+  let data = [ for _ in 0..<rows => Array::make(cols, 0L) ]
   { data, rows, cols }
 }
 
@@ -97,7 +97,7 @@ fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
     return Matrix::new(0, 0)
   }
   let cols = arr[0].length()
-  let data = [| for i in 0..<rows => arr[i].copy() |]
+  let data = [ for i in 0..<rows => arr[i].copy() ]
   { data, rows, cols }
 }
 

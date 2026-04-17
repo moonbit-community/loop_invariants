@@ -104,7 +104,7 @@ pub fn build_block_cut_tree(
   let comps = result.components
   let c = comps.length()
   let total = n + c
-  let adj = [| for _ in 0..<total => [] |]
+  let adj = [ for _ in 0..<total => [] ]
   for ci in 0..<c {
     let comp_edges = comps[ci]
     let in_comp = Array::make(n, false)

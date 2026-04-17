@@ -181,7 +181,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
   }
 
   // Create initial index array
-  let indices = [| for i in 0..<n => i |]
+  let indices = [ for i in 0..<n => i ]
   let root = build_node(nodes, arr.copy(), indices, 0, sigma)
   { nodes, root, n, sigma }
 }
@@ -864,7 +864,7 @@ test "wavelet tree single element" {
 ///|
 test "wavelet tree stress" {
   // Build tree with pattern
-  let arr : Array[Int] = [| for i in 0..<100 => i % 10 |]
+  let arr : Array[Int] = [ for i in 0..<100 => i % 10 ]
   let wt = WaveletTree::build(arr, 10)
 
   // Each value 0-9 appears 10 times

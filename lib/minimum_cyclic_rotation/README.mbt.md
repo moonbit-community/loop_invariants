@@ -290,9 +290,9 @@ fn[T] rotate_array(xs : ArrayView[T], start : Int) -> Array[T] {
     Array::new()
   } else {
     let shift = start % n
-    [|
+    [
       for i in 0..<n => xs[(shift + i) % n]
-    |]
+    ]
   }
 }
 

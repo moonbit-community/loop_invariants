@@ -299,7 +299,7 @@ priv struct SPFA {
 
 ///|
 fn SPFA::new(n : Int) -> SPFA {
-  let adj : Array[Array[(Int, Int64)]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,

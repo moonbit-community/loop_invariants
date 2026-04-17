@@ -85,7 +85,7 @@ fn array_set(arr : PArray, idx : Int, value : Int) -> PArray {
 ///|
 /// Create a persistent DSU with n singleton elements.
 pub fn make(n : Int) -> DSU {
-  let parents = [| for i in 0..<n => i |]
+  let parents = [ for i in 0..<n => i ]
   let sizes = Array::make(n, 1)
   { parent: make_array(parents[:]), size: make_array(sizes[:]) }
 }

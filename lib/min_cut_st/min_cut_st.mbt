@@ -66,7 +66,7 @@ priv struct FlowGraph {
 ///|
 /// Create a new flow graph with `n` vertices and no edges.
 fn FlowGraph::new(n : Int) -> FlowGraph {
-  let adj = [| for _ in 0..<n => [] |]
+  let adj = [ for _ in 0..<n => [] ]
   { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0) }
 }
 

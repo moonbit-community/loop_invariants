@@ -103,9 +103,9 @@ fn MinHeap::pop(self : MinHeap) -> Int? {
 
 ///|
 fn build_adj(n : Int) -> Array[Array[Int]] {
-  [|
+  [
     for _ in 0..<n => []
-  |]
+  ]
 }
 
 ///|

@@ -26,7 +26,7 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
       #|When pow >= n, k is the number of levels needed.
     ),
   }
-  let up : Array[Array[Int]] = [| for _ in 0..<log => Array::make(n, -1) |]
+  let up : Array[Array[Int]] = [ for _ in 0..<log => Array::make(n, -1) ]
   for v in 0..<n {
     up[0][v] = parent[v]
   }

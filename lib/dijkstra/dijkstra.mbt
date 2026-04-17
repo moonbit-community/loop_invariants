@@ -146,7 +146,7 @@ pub(all) struct Graph {
 ///|
 /// Create a new graph with n vertices
 pub fn Graph::new(n : Int) -> Graph {
-  let adj : Array[Array[Edge]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, adj }
 }
 

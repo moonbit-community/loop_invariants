@@ -460,9 +460,9 @@ fn min_window_substring(s : String, t : String) -> String {
       ""
     } else {
       // Extract substring
-      let result : Array[Char] = [|
+      let result : Array[Char] = [
         for i in min_left..<(min_left + min_len) => s_chars[i]
-      |]
+      ]
       String::from_array(result)
     }
   } where {

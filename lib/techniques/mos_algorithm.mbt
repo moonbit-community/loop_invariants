@@ -53,7 +53,7 @@ fn mos_algorithm_range_sum(
   let block_size = mo_isqrt(n)
 
   // Create and sort query indices using bubble sort
-  let query_order = [| for i in 0..<q => i |]
+  let query_order = [ for i in 0..<q => i ]
   for i in 0..<(q - 1) {
     let last = q - 1 - i
     for j in 0..<last {
@@ -430,7 +430,7 @@ priv struct MoUnionFind {
 
 ///|
 fn MoUnionFind::new(n : Int) -> MoUnionFind {
-  let parent = [| for i in 0..<n => i |]
+  let parent = [ for i in 0..<n => i ]
   let rank : Array[Int] = Array::make(n, 0)
   { parent, rank }
 }
@@ -700,7 +700,7 @@ priv struct BinaryLifting {
 fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
   let n = adj.length()
   let log_n = 20
-  let up = [| for _ in 0..<n => Array::make(log_n, -1) |]
+  let up = [ for _ in 0..<n => Array::make(log_n, -1) ]
   let depth : Array[Int] = Array::make(n, 0)
   let queue : Array[Int] = []
   let visited : Array[Bool] = Array::make(n, false)

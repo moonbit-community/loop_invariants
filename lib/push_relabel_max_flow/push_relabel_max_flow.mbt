@@ -86,7 +86,7 @@ pub struct PushRelabel {
 /// let pr = PushRelabel::new(4)
 /// ```
 pub fn PushRelabel::new(n : Int) -> PushRelabel {
-  let adj : Array[Array[Edge]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,

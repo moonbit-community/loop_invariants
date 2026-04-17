@@ -131,7 +131,7 @@ fn build_adj(
   n : Int,
   edges : ArrayView[(Int, Int, Int64)],
 ) -> Array[Array[(Int, Int64)]]? {
-  let adj : Array[Array[(Int, Int64)]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v, w) = edge
     if w < 0L {
@@ -205,7 +205,7 @@ fn path_cost(adj : Array[Array[(Int, Int64)]], nodes : Array[Int]) -> Int64? {
 /// The resulting slice becomes the "root path" used when computing spur
 /// candidates.  It always contains at least the source node.
 fn prefix_nodes(nodes : Array[Int], end_idx : Int) -> Array[Int] {
-  let prefix : Array[Int] = [| for i in 0..<=end_idx => nodes[i] |]
+  let prefix : Array[Int] = [ for i in 0..<=end_idx => nodes[i] ]
   prefix
 }
 
@@ -378,11 +378,11 @@ pub fn yen_k_shortest_paths(
         None => continue
         Some(c) => c
       }
-      let blocked_edges : Array[(Int, Int)] = [|
+      let blocked_edges : Array[(Int, Int)] = [
         for p in a_paths if p.nodes.length() > i && has_prefix(p.nodes, root) => {
           (p.nodes[i], p.nodes[i + 1])
         }
-      |]
+      ]
       let blocked_nodes = Array::make(n, false)
       for j in 0..<(root.length() - 1) {
         blocked_nodes[root[j]] = true

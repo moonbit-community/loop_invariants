@@ -161,9 +161,9 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 ///
 /// Time complexity: O(n).
 fn build_adj(n : Int) -> Array[Array[(Int, Int64)]] {
-  [|
+  [
     for _ in 0..<n => []
-  |]
+  ]
 }
 
 ///|
@@ -318,7 +318,7 @@ pub fn johnson_all_pairs(
   }
 
   // Run Dijkstra from each vertex
-  let result : Array[Array[Int64]] = [| for _ in 0..<n => [] |]
+  let result : Array[Array[Int64]] = [ for _ in 0..<n => [] ]
   for s in 0..<n {
     let dist = dijkstra(n, adj, s)
     let row = Array::make(n, INF64)

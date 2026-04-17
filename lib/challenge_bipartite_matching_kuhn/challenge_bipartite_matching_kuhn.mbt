@@ -9,7 +9,7 @@ pub fn build_adj(
   right_n : Int,
   edges : ArrayView[(Int, Int)],
 ) -> Array[Array[Int]] {
-  let adj : Array[Array[Int]] = [| for _ in 0..<left_n => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<left_n => [] ]
   for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < left_n && v >= 0 && v < right_n {
