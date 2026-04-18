@@ -331,7 +331,7 @@ fn shortest_path_filtered(
 ///     (2, 3, 2L),
 ///     (1, 2, 1L),
 ///   ]
-///   let paths = @k_shortest_paths_yen.yen_k_shortest_paths(4, edges[:], 0, 3, 3)
+///   let paths = @k_shortest_paths_yen.yen_k_shortest_paths(4, edges, 0, 3, 3)
 ///   inspect(paths[0].cost, content="2")
 ///   inspect(paths[1].cost, content="4")
 ///   inspect(paths[2].cost, content="5")
@@ -426,7 +426,7 @@ test "yen k shortest paths" {
     (2, 3, 2L),
     (1, 2, 1L),
   ]
-  let paths = yen_k_shortest_paths(4, edges[:], 0, 3, 3)
+  let paths = yen_k_shortest_paths(4, edges, 0, 3, 3)
   inspect(paths.length(), content="3")
   inspect(paths[0].cost, content="2")
   inspect(paths[1].cost, content="4")
@@ -436,13 +436,13 @@ test "yen k shortest paths" {
 ///|
 test "yen no path" {
   let edges : Array[(Int, Int, Int64)] = []
-  let paths = yen_k_shortest_paths(3, edges[:], 0, 2, 2)
+  let paths = yen_k_shortest_paths(3, edges, 0, 2, 2)
   inspect(paths.length(), content="0")
 }
 
 ///|
 test "yen path cost uses lightest parallel edge" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L), (0, 1, 2L), (1, 2, 1L)]
-  let adj = build_adj(3, edges[:]).unwrap()
+  let adj = build_adj(3, edges).unwrap()
   inspect(path_cost(adj, [0, 1, 2]).unwrap(), content="3")
 }

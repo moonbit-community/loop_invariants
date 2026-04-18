@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_edmonds_karp"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn add_edge(FlowGraph, Int, Int, Int) -> Unit
 
@@ -11,11 +15,11 @@ pub fn max_flow(FlowGraph, Int, Int) -> Int
 // Errors
 
 // Types and methods
-type Edge derive(Show)
+type Edge derive(@debug.Debug)
 
 pub struct FlowGraph {
   adj : Array[Array[Edge]]
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

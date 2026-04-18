@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/dial_shortest_path"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn dial_shortest_paths(Graph, Int) -> Array[Int]
 
@@ -10,7 +14,7 @@ pub fn dial_shortest_paths(Graph, Int) -> Array[Int]
 pub struct Edge {
   to : Int
   weight : Int
-} derive(Show)
+} derive(@debug.Debug)
 
 pub struct Graph {
   n : Int

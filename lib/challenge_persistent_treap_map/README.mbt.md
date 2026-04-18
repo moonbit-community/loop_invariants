@@ -112,9 +112,11 @@ Here, `t1` and `t2` are still valid and unchanged even after `t3` is created.
 ```mbt check
 ///|
 test "treap map split merge" {
-  let t = @challenge_persistent_treap_map.from_array(
-    [(1, "a"), (3, "c"), (5, "e")][:],
-  )
+  let t = @challenge_persistent_treap_map.from_array([
+    (1, "a"),
+    (3, "c"),
+    (5, "e"),
+  ])
   let (left, right) = @challenge_persistent_treap_map.split(t, 4)
   inspect(@challenge_persistent_treap_map.contains(left, 1), content="true")
   inspect(@challenge_persistent_treap_map.contains(left, 5), content="false")
@@ -134,7 +136,7 @@ back to a single treap.
 ```mbt check
 ///|
 test "treap map from array" {
-  let t = @challenge_persistent_treap_map.from_array([(2, 20), (5, 50)][:])
+  let t = @challenge_persistent_treap_map.from_array([(2, 20), (5, 50)])
   inspect(@challenge_persistent_treap_map.get(t, 2), content="Some(20)")
   inspect(@challenge_persistent_treap_map.size(t), content="2")
 }

@@ -455,7 +455,7 @@ test "bellman_ford" {
   // Graph with negative edge (no cycle):
   // 0 --1--> 1 --(-2)--> 2
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2)]
-  match bellman_ford(3, edges[:], 0) {
+  match bellman_ford(3, edges, 0) {
     Some(dist) => {
       assert_eq(dist[0], 0)
       assert_eq(dist[1], 1)
@@ -466,7 +466,7 @@ test "bellman_ford" {
 
   // Graph with negative cycle: 0 → 1 → 2 → 0 with total weight -1
   let edges_cycle : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 1), (2, 0, -3)]
-  assert_eq(bellman_ford(3, edges_cycle[:], 0), None)
+  assert_eq(bellman_ford(3, edges_cycle, 0), None)
 }
 
 // ============================================================================
@@ -584,7 +584,7 @@ fn floyd_warshall(
 test "floyd_warshall" {
   // Triangle: 0 --1--> 1 --2--> 2, with shortcut 0 --4--> 2
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 2), (0, 2, 4)]
-  let dist = floyd_warshall(3, edges[:])
+  let dist = floyd_warshall(3, edges)
   assert_eq(dist[0][0], 0)
   assert_eq(dist[0][1], 1)
   assert_eq(dist[0][2], 3) // 0 → 1 → 2 is shorter than 0 → 2

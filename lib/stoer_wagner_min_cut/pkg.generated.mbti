@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/stoer_wagner_min_cut"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn stoer_wagner_min_cut(Int, ArrayView[(Int, Int, Int64)]) -> MinCutResult?
 
@@ -10,7 +14,7 @@ pub fn stoer_wagner_min_cut(Int, ArrayView[(Int, Int, Int64)]) -> MinCutResult?
 pub(all) struct MinCutResult {
   weight : Int64
   cut : Array[Int]
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

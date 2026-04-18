@@ -71,7 +71,7 @@ Answer for 6 is 2 (3+3 or 4+1+1).
 ///|
 test "coin change example" {
   let coins : Array[Int] = [1, 3, 4]
-  let ans = @challenge_coin_change_min.min_coins(coins[:], 6)
+  let ans = @challenge_coin_change_min.min_coins(coins, 6)
   inspect(ans, content="Some(2)")
 }
 ```
@@ -82,7 +82,7 @@ test "coin change example" {
 ///|
 test "coin change larger" {
   let coins : Array[Int] = [1, 5, 7]
-  let ans = @challenge_coin_change_min.min_coins(coins[:], 11)
+  let ans = @challenge_coin_change_min.min_coins(coins, 11)
   inspect(ans, content="Some(3)") // 5 + 5 + 1
 }
 ```
@@ -93,7 +93,7 @@ test "coin change larger" {
 ///|
 test "coin change unreachable" {
   let coins : Array[Int] = [2, 5]
-  let ans = @challenge_coin_change_min.min_coins(coins[:], 3)
+  let ans = @challenge_coin_change_min.min_coins(coins, 3)
   inspect(ans, content="None")
 }
 ```
@@ -104,7 +104,7 @@ test "coin change unreachable" {
 ///|
 test "coin change nontrivial" {
   let coins : Array[Int] = [2, 3, 6]
-  let ans = @challenge_coin_change_min.min_coins(coins[:], 13)
+  let ans = @challenge_coin_change_min.min_coins(coins, 13)
   inspect(ans, content="Some(4)") // 6 + 3 + 2 + 2
 }
 ```

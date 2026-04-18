@@ -63,6 +63,6 @@ pub fn max_matching(adj : Array[Array[Int]], right_n : Int) -> Int {
 
 ///|
 test "max_matching" {
-  let adj = build_adj(3, 3, [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2)][:])
+  let adj = build_adj(3, 3, [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2)])
   assert_eq(max_matching(adj, 3), 3)
 }

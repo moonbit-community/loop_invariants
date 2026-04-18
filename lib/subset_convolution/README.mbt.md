@@ -291,7 +291,7 @@ h[{0,1}] = f[∅]·g[{0,1}] + f[{0}]·g[{1}]
 test "subset convolution quick start" {
   let f : Array[Int64] = [1L, 2L, 3L, 4L]
   let g : Array[Int64] = [5L, 6L, 7L, 8L]
-  let h = @subset_convolution.subset_convolution(f[:], g[:])
+  let h = @subset_convolution.subset_convolution(f, g)
   inspect(h, content="[5, 16, 22, 60]")
 }
 ```
@@ -303,7 +303,7 @@ test "subset convolution identity" {
   // h[S] = Σ_{T⊆S} f[T]·delta[S\T] = f[S]·delta[∅] = f[S]
   let f : Array[Int64] = [3L, 7L, 5L, 11L]
   let delta : Array[Int64] = [1L, 0L, 0L, 0L]
-  let h = @subset_convolution.subset_convolution(f[:], delta[:])
+  let h = @subset_convolution.subset_convolution(f, delta)
   inspect(h, content="[3, 7, 5, 11]")
 }
 ```

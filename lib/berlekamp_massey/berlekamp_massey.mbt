@@ -136,7 +136,7 @@ fn inv_mod(x : Int64, m : Int64) -> Int64 {
 /// test "berlekamp_massey fibonacci" {
 ///   let m = 1000000007L
 ///   let seq : Array[Int64] = [0L, 1L, 1L, 2L, 3L, 5L, 8L]
-///   let coeffs = @berlekamp_massey.berlekamp_massey(seq[:], m)
+///   let coeffs = @berlekamp_massey.berlekamp_massey(seq, m)
 ///   // s[i] = 1*s[i-1] + 1*s[i-2]
 ///   inspect(coeffs, content="[1, 1]")
 /// }
@@ -148,7 +148,7 @@ fn inv_mod(x : Int64, m : Int64) -> Int64 {
 /// test "berlekamp_massey geometric" {
 ///   let m = 1000000007L
 ///   let seq : Array[Int64] = [1L, 2L, 4L, 8L, 16L]
-///   let coeffs = @berlekamp_massey.berlekamp_massey(seq[:], m)
+///   let coeffs = @berlekamp_massey.berlekamp_massey(seq, m)
 ///   // s[i] = 2*s[i-1]
 ///   inspect(coeffs, content="[2]")
 /// }

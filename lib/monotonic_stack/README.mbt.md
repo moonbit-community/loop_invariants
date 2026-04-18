@@ -126,7 +126,7 @@ fn next_greater_right(a : ArrayView[Int]) -> Array[Int] {
 ///|
 test "next greater to the right" {
   let a : Array[Int] = [4, 5, 2, 10, 8]
-  inspect(next_greater_right(a[:]), content="[5, 10, 10, -1, -1]")
+  inspect(next_greater_right(a), content="[5, 10, 10, -1, -1]")
 }
 ```
 
@@ -173,7 +173,7 @@ fn prev_smaller_left(a : ArrayView[Int]) -> Array[Int] {
 ///|
 test "previous smaller to the left" {
   let a : Array[Int] = [3, 5, 2, 7, 6]
-  inspect(prev_smaller_left(a[:]), content="[-1, 3, -1, 2, 2]")
+  inspect(prev_smaller_left(a), content="[-1, 3, -1, 2, 2]")
 }
 ```
 
@@ -230,7 +230,7 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
 ///|
 test "stock span" {
   let prices : Array[Int] = [100, 80, 60, 70, 60, 75, 85]
-  inspect(stock_span(prices[:]), content="[1, 1, 1, 2, 1, 4, 6]")
+  inspect(stock_span(prices), content="[1, 1, 1, 2, 1, 4, 6]")
 }
 ```
 

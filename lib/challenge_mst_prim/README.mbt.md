@@ -119,7 +119,7 @@ test "mst prim example" {
     (2, 3, 3),
     (0, 3, 10),
   ]
-  let adj = @challenge_mst_prim.build_adj(4, edges[:])
+  let adj = @challenge_mst_prim.build_adj(4, edges)
   let total = @challenge_mst_prim.mst_weight(adj)
   inspect(total, content="Some(6)")
 }
@@ -137,7 +137,7 @@ test "mst prim walkthrough" {
     (1, 3, 2),
     (2, 3, 5),
   ]
-  let adj = @challenge_mst_prim.build_adj(4, edges[:])
+  let adj = @challenge_mst_prim.build_adj(4, edges)
   let total = @challenge_mst_prim.mst_weight(adj)
   inspect(total, content="Some(6)")
 }
@@ -149,7 +149,7 @@ test "mst prim walkthrough" {
 ///|
 test "mst prim disconnected" {
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1)]
-  let adj = @challenge_mst_prim.build_adj(3, edges[:])
+  let adj = @challenge_mst_prim.build_adj(3, edges)
   let total = @challenge_mst_prim.mst_weight(adj)
   inspect(total, content="None")
 }
@@ -161,7 +161,7 @@ test "mst prim disconnected" {
 ///|
 test "mst prim negative" {
   let edges : Array[(Int, Int, Int)] = [(0, 1, -2), (1, 2, 3), (0, 2, 1)]
-  let adj = @challenge_mst_prim.build_adj(3, edges[:])
+  let adj = @challenge_mst_prim.build_adj(3, edges)
   let total = @challenge_mst_prim.mst_weight(adj)
   inspect(total, content="Some(-1)")
 }
@@ -178,7 +178,7 @@ test "mst prim ignores invalid" {
     (-1, 2, 5),
     (2, 3, 1),
   ]
-  let adj = @challenge_mst_prim.build_adj(3, edges[:])
+  let adj = @challenge_mst_prim.build_adj(3, edges)
   let total = @challenge_mst_prim.mst_weight(adj)
   inspect(total, content="Some(3)")
 }

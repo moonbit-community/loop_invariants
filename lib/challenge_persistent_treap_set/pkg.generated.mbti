@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_treap_set"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn[T : Compare] contains(Treap[T], T) -> Bool
 
@@ -22,7 +26,7 @@ pub fn[T : Compare] split(Treap[T], T) -> (Treap[T], Treap[T])
 pub enum Treap[T] {
   Empty
   Node(key~ : T, priority~ : Int, size~ : Int, left~ : Treap[T], right~ : Treap[T])
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

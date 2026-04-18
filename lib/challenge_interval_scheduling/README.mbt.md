@@ -67,7 +67,7 @@ test "interval scheduling basic" {
     (8, 9),
   ]
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
-    intervals[:],
+    intervals,
   )
   inspect(count, content="3")
 }
@@ -82,7 +82,7 @@ One optimal selection is `(1,3)`, `(3,5)`, `(8,9)`.
 test "interval scheduling disjoint" {
   let intervals : Array[(Int, Int)] = [(0, 1), (2, 3), (4, 5)]
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
-    intervals[:],
+    intervals,
   )
   inspect(count, content="3")
 }
@@ -99,7 +99,7 @@ test "interval scheduling disjoint" {
 test "interval scheduling nested" {
   let intervals : Array[(Int, Int)] = [(0, 10), (1, 2), (2, 3), (3, 4)]
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
-    intervals[:],
+    intervals,
   )
   inspect(count, content="3")
 }
@@ -114,7 +114,7 @@ Touching is allowed: end == next start.
 test "interval scheduling touching" {
   let intervals : Array[(Int, Int)] = [(0, 2), (2, 4), (4, 6)]
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
-    intervals[:],
+    intervals,
   )
   inspect(count, content="3")
 }
@@ -129,7 +129,7 @@ When multiple intervals end at the same time, any of them is safe to pick.
 test "interval scheduling tie" {
   let intervals : Array[(Int, Int)] = [(0, 3), (1, 3), (2, 3), (3, 5)]
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
-    intervals[:],
+    intervals,
   )
   inspect(count, content="2")
 }

@@ -395,21 +395,21 @@ fn normalize_edges(edges : Array[(Int, Int)]) -> Array[(Int, Int)] {
 ///|
 test "prufer encode path" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
-  let code = prufer_encode(4, edges[:]).unwrap()
+  let code = prufer_encode(4, edges).unwrap()
   inspect(code, content="[1, 2]")
 }
 
 ///|
 test "prufer encode star" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
-  let code = prufer_encode(5, edges[:]).unwrap()
+  let code = prufer_encode(5, edges).unwrap()
   inspect(code, content="[0, 0, 0]")
 }
 
 ///|
 test "prufer decode star" {
   let code : Array[Int] = [0, 0, 0]
-  let edges = prufer_decode(code[:]).unwrap()
+  let edges = prufer_decode(code).unwrap()
   let norm = normalize_edges(edges)
   inspect(norm, content="[(0, 1), (0, 2), (0, 3), (0, 4)]")
 }
@@ -417,16 +417,16 @@ test "prufer decode star" {
 ///|
 test "prufer roundtrip" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3), (3, 4)]
-  let code = prufer_encode(5, edges[:]).unwrap()
-  let edges2 = prufer_decode(code[:]).unwrap()
-  let code2 = prufer_encode(5, edges2[:]).unwrap()
+  let code = prufer_encode(5, edges).unwrap()
+  let edges2 = prufer_decode(code).unwrap()
+  let code2 = prufer_encode(5, edges2).unwrap()
   inspect(code2, content="[1, 1, 3]")
 }
 
 ///|
 test "prufer invalid" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2)]
-  inspect(prufer_encode(4, edges[:]), content="None")
+  inspect(prufer_encode(4, edges), content="None")
   let code : Array[Int] = [0, 4]
-  inspect(prufer_decode(code[:]), content="None")
+  inspect(prufer_decode(code), content="None")
 }

@@ -104,7 +104,7 @@ Each insert returns a new version, while older versions remain unchanged.
 ```mbt check
 ///|
 test "treap set split merge" {
-  let t = @challenge_persistent_treap_set.from_array([1, 3, 5, 7][:])
+  let t = @challenge_persistent_treap_set.from_array([1, 3, 5, 7])
   let (left, right) = @challenge_persistent_treap_set.split(t, 4)
   inspect(@challenge_persistent_treap_set.contains(left, 1), content="true")
   inspect(@challenge_persistent_treap_set.contains(left, 5), content="false")
@@ -121,7 +121,7 @@ test "treap set split merge" {
 ```mbt check
 ///|
 test "treap set from array" {
-  let t = @challenge_persistent_treap_set.from_array([2, 5, 2, 8][:])
+  let t = @challenge_persistent_treap_set.from_array([2, 5, 2, 8])
   inspect(@challenge_persistent_treap_set.contains(t, 2), content="true")
   inspect(@challenge_persistent_treap_set.contains(t, 8), content="true")
   inspect(@challenge_persistent_treap_set.size(t), content="3")

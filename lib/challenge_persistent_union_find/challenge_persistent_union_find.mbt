@@ -87,7 +87,7 @@ fn array_set(arr : PArray, idx : Int, value : Int) -> PArray {
 pub fn make(n : Int) -> DSU {
   let parents = [ for i in 0..<n => i ]
   let sizes = Array::make(n, 1)
-  { parent: make_array(parents[:]), size: make_array(sizes[:]) }
+  { parent: make_array(parents), size: make_array(sizes) }
 }
 
 ///|

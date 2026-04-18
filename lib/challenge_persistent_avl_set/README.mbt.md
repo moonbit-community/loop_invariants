@@ -189,7 +189,7 @@ test "persistent avl versions" {
 ```mbt check
 ///|
 test "avl inorder sorted" {
-  let t = @challenge_persistent_avl_set.from_array([7, 1, 5, 3][:])
+  let t = @challenge_persistent_avl_set.from_array([7, 1, 5, 3])
   inspect(@challenge_persistent_avl_set.inorder(t), content="[1, 3, 5, 7]")
 }
 ```
@@ -212,7 +212,7 @@ test "avl duplicates" {
 ```mbt check
 ///|
 test "avl negatives" {
-  let t = @challenge_persistent_avl_set.from_array([-3, 0, -1, 2][:])
+  let t = @challenge_persistent_avl_set.from_array([-3, 0, -1, 2])
   inspect(@challenge_persistent_avl_set.inorder(t), content="[-3, -1, 0, 2]")
 }
 ```

@@ -301,7 +301,7 @@ test "rotate parallel data by min rotation index" {
   let s = "baca"
   let idx = @minimum_cyclic_rotation.min_cyclic_rotation_index(s)
   let weights : Array[Int] = [10, 20, 30, 40]
-  let rotated = rotate_array(weights[:], idx)
+  let rotated = rotate_array(weights, idx)
   inspect(rotated, content="[40, 10, 20, 30]")
 }
 ```

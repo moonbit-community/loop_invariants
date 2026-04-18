@@ -63,9 +63,7 @@ Compressed output:
 ///|
 test "coordinate compress basic" {
   let values : Array[Int] = [100, 50, 100, -10]
-  let (comp, uniq) = @challenge_coordinate_compress.coordinate_compress(
-    values[:],
-  )
+  let (comp, uniq) = @challenge_coordinate_compress.coordinate_compress(values)
   inspect(uniq, content="[-10, 50, 100]")
   inspect(comp, content="[2, 1, 2, 0]")
 }
@@ -77,9 +75,7 @@ test "coordinate compress basic" {
 ///|
 test "coordinate compress duplicates" {
   let values : Array[Int] = [5, 5, 5]
-  let (comp, uniq) = @challenge_coordinate_compress.coordinate_compress(
-    values[:],
-  )
+  let (comp, uniq) = @challenge_coordinate_compress.coordinate_compress(values)
   inspect(uniq, content="[5]")
   inspect(comp, content="[0, 0, 0]")
 }
@@ -91,9 +87,7 @@ test "coordinate compress duplicates" {
 ///|
 test "coordinate compress large values" {
   let values : Array[Int] = [1_000_000_000, -500, 42, 42, 7]
-  let (comp, uniq) = @challenge_coordinate_compress.coordinate_compress(
-    values[:],
-  )
+  let (comp, uniq) = @challenge_coordinate_compress.coordinate_compress(values)
   inspect(uniq, content="[-500, 7, 42, 1000000000]")
   inspect(comp, content="[3, 0, 2, 2, 1]")
 }
@@ -105,9 +99,7 @@ test "coordinate compress large values" {
 ///|
 test "coordinate compress sorted" {
   let values : Array[Int] = [-3, -1, 2, 5]
-  let (comp, uniq) = @challenge_coordinate_compress.coordinate_compress(
-    values[:],
-  )
+  let (comp, uniq) = @challenge_coordinate_compress.coordinate_compress(values)
   inspect(uniq, content="[-3, -1, 2, 5]")
   inspect(comp, content="[0, 1, 2, 3]")
 }

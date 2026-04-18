@@ -173,7 +173,7 @@ test "xor apply updates" {
   let updated = @challenge_persistent_segment_tree_xor.apply_updates(
     root,
     arr.length(),
-    [(0, 7), (2, 5)][:],
+    [(0, 7), (2, 5)],
   )
   inspect(
     @challenge_persistent_segment_tree_xor.range_xor(

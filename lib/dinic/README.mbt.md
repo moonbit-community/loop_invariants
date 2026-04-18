@@ -195,7 +195,7 @@ test "dinic max flow example" {
     (1, 3, 2),
     (2, 3, 4),
   ]
-  let flow = @dinic.max_flow(4, edges[:], 0, 3)
+  let flow = @dinic.max_flow(4, edges, 0, 3)
   inspect(flow, content="5")
 }
 ```
@@ -204,7 +204,7 @@ test "dinic max flow example" {
 ///|
 test "dinic no path" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 5), (2, 3, 7)]
-  let flow = @dinic.max_flow(4, edges[:], 0, 3)
+  let flow = @dinic.max_flow(4, edges, 0, 3)
   inspect(flow, content="0")
 }
 ```

@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_avl_set"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn[T : Compare] contains(Avl[T], T) -> Bool
 
@@ -20,7 +24,7 @@ pub fn[T] size(Avl[T]) -> Int
 pub enum Avl[T] {
   Empty
   Node(key~ : T, height~ : Int, left~ : Avl[T], right~ : Avl[T])
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

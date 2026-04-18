@@ -63,7 +63,7 @@ Total = `arr[2] + sum(B1) + arr[6] + arr[7]`
 ///|
 test "sqrt decomposition example" {
   let arr : Array[Int] = [1, 2, 3, 4, 5, 6]
-  let sd = @challenge_sqrt_decomposition_sum.build_sqrt_decomp(arr[:])
+  let sd = @challenge_sqrt_decomposition_sum.build_sqrt_decomp(arr)
   inspect(@challenge_sqrt_decomposition_sum.range_sum(sd, 2, 6), content="18")
 }
 ```
@@ -78,7 +78,7 @@ test "sqrt decomposition example" {
 ///|
 test "sqrt decomposition update" {
   let arr : Array[Int] = [1, 2, 3, 4]
-  let sd = @challenge_sqrt_decomposition_sum.build_sqrt_decomp(arr[:])
+  let sd = @challenge_sqrt_decomposition_sum.build_sqrt_decomp(arr)
   @challenge_sqrt_decomposition_sum.update(sd, 1, 10)
   inspect(@challenge_sqrt_decomposition_sum.range_sum(sd, 0, 2), content="11")
 }
@@ -94,7 +94,7 @@ After updating index 1 to 10, the range `[0,2)` becomes `1 + 10 = 11`.
 ///|
 test "sqrt decomposition full range" {
   let arr : Array[Int] = [2, 2, 2, 2, 2]
-  let sd = @challenge_sqrt_decomposition_sum.build_sqrt_decomp(arr[:])
+  let sd = @challenge_sqrt_decomposition_sum.build_sqrt_decomp(arr)
   inspect(@challenge_sqrt_decomposition_sum.range_sum(sd, 0, 5), content="10")
 }
 ```

@@ -212,7 +212,7 @@ traversal. That traversal is always sorted, and duplicates are preserved.
 ```mbt check
 ///|
 test "avl_sorted keeps duplicates" {
-  let sorted = @avl_tree.avl_sorted([3L, 1L, 4L, 1L][:])
+  let sorted = @avl_tree.avl_sorted([3L, 1L, 4L, 1L])
   inspect(sorted, content="[1, 1, 3, 4]")
 }
 ```
@@ -255,7 +255,7 @@ Insert 3:     Insert 1:     Insert 2 -> Left-Right rotation:
 ```mbt check
 ///|
 test "zig-zag insertion input" {
-  let sorted = @avl_tree.avl_sorted([3L, 1L, 2L][:])
+  let sorted = @avl_tree.avl_sorted([3L, 1L, 2L])
   inspect(sorted, content="[1, 2, 3]")
 }
 ```
@@ -265,7 +265,7 @@ test "zig-zag insertion input" {
 ```mbt check
 ///|
 test "string keys" {
-  let sorted = @avl_tree.avl_sorted(["pear", "plum", "kiwi", "date"][:])
+  let sorted = @avl_tree.avl_sorted(["pear", "plum", "kiwi", "date"])
   inspect(sorted, content="[\"date\", \"kiwi\", \"pear\", \"plum\"]")
 }
 ```
@@ -278,7 +278,7 @@ Even for larger inputs, AVL keeps the height bounded and the output sorted.
 ///|
 test "larger input" {
   let data = [ for i in 0..<50 => ((i * 37 + 13) % 50).to_int64() ]
-  let sorted = @avl_tree.avl_sorted(data[:])
+  let sorted = @avl_tree.avl_sorted(data)
   inspect(sorted.length(), content="50")
   inspect(sorted[0], content="0")
   inspect(sorted[49], content="49")

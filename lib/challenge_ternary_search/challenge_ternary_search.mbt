@@ -62,7 +62,7 @@ pub fn find_min_unimodal(arr : ArrayView[Int]) -> Int {
 ///|
 test "find_min_unimodal" {
   let arr : Array[Int] = [9, 7, 5, 3, 4, 6, 8]
-  assert_eq(find_min_unimodal(arr[:]), 3)
+  assert_eq(find_min_unimodal(arr), 3)
   let arr2 : Array[Int] = [5, 4, 3, 2, 1]
-  assert_eq(find_min_unimodal(arr2[:]), 4)
+  assert_eq(find_min_unimodal(arr2), 4)
 }

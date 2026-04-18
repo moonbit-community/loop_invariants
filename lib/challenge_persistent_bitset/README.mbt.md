@@ -111,7 +111,7 @@ test "persistent bitset basic" {
 ```mbt check
 ///|
 test "persistent bitset count range" {
-  let bs = @challenge_persistent_bitset.from_indices(6, [1, 3, 4][:])
+  let bs = @challenge_persistent_bitset.from_indices(6, [1, 3, 4])
   inspect(@challenge_persistent_bitset.count_range(bs, 0, 6), content="3")
   inspect(@challenge_persistent_bitset.count_range(bs, 2, 5), content="2")
 }

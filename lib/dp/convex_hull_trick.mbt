@@ -587,7 +587,7 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
 ///|
 test "sliding window dp" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let dp = sliding_window_dp(arr[:], 2)
+  let dp = sliding_window_dp(arr, 2)
 
   // dp[0] = 1
   // dp[1] = dp[0] + 2 = 3

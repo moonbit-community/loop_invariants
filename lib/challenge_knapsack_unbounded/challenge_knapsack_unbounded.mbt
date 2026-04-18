@@ -32,6 +32,6 @@ pub fn knapsack_unbounded(
 test "knapsack_unbounded" {
   let weights : Array[Int] = [2, 3]
   let values : Array[Int] = [4, 5]
-  assert_eq(knapsack_unbounded(weights[:], values[:], 7), 13)
-  assert_eq(knapsack_unbounded(weights[:], values[:], 1), 0)
+  assert_eq(knapsack_unbounded(weights, values, 7), 13)
+  assert_eq(knapsack_unbounded(weights, values, 1), 0)
 }

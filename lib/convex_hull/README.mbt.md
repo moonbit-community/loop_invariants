@@ -252,7 +252,7 @@ test "convex hull example" {
     { x: 0L, y: 4L },
     { x: 2L, y: 2L }, // Interior point - will be excluded
   ]
-  let hull = @convex_hull.convex_hull(pts[:])
+  let hull = @convex_hull.convex_hull(pts)
   inspect(hull.length(), content="4") // Square has 4 corners
 }
 ```

@@ -235,7 +235,7 @@ fn build_lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
 test "lcp array" {
   let s = "banana"
   let sa = build_suffix_array_simple(s)
-  let lcp = build_lcp_array(s, sa[:])
+  let lcp = build_lcp_array(s, sa)
   // SA:  [5, 3, 1, 0, 4, 2]
   // Suffixes in order: a, ana, anana, banana, na, nana
   // LCP: [0, 1, 3, 0, 0, 2]
@@ -277,7 +277,7 @@ fn count_distinct_substrings(s : String) -> Int {
     return 0
   }
   let sa = build_suffix_array_simple(s)
-  let lcp = build_lcp_array(s, sa[:])
+  let lcp = build_lcp_array(s, sa)
 
   // Total substrings from each suffix, minus duplicates
   for i = 0, total = 0; i < n; i = i + 1 {
@@ -341,7 +341,7 @@ fn longest_repeated_substring(s : String) -> String {
     return ""
   }
   let sa = build_suffix_array_simple(s)
-  let lcp = build_lcp_array(s, sa[:])
+  let lcp = build_lcp_array(s, sa)
 
   // Find maximum LCP
   for i = 1, max_lcp = 0, max_idx = 0; i < n; i = i + 1 {
@@ -416,9 +416,9 @@ fn search_pattern(s : String, pattern : String) -> Array[Int] {
   let sa = build_suffix_array_simple(s)
 
   // Binary search for lower bound
-  let lo = search_lower_bound(s_chars, sa[:], p_chars)
+  let lo = search_lower_bound(s_chars, sa, p_chars)
   // Binary search for upper bound
-  let hi = search_upper_bound(s_chars, sa[:], p_chars)
+  let hi = search_upper_bound(s_chars, sa, p_chars)
 
   // Collect all matches
   sa[lo:hi].to_array()
@@ -578,13 +578,13 @@ fn longest_common_substring_sa(s1 : String, s2 : String) -> String {
 
   // Concatenate with separator (use '$' which is less than lowercase letters)
   let combined : Array[Char] = []
-  combined.append(c1[:])
+  combined.append(c1)
   combined.push('$')
-  combined.append(c2[:])
+  combined.append(c2)
   let combined_str = String::from_array(combined)
   let n = combined.length()
   let sa = build_suffix_array_simple(combined_str)
-  let lcp = build_lcp_array(combined_str, sa[:])
+  let lcp = build_lcp_array(combined_str, sa)
 
   // Find max LCP where adjacent suffixes are from different strings
   for i = 1, max_lcp = 0, max_idx = 0; i < n; i = i + 1 {
@@ -790,8 +790,8 @@ fn smallest_rotation(s : String) -> String {
 
   // Double the string
   let doubled : Array[Char] = []
-  doubled.append(chars[:])
-  doubled.append(chars[:])
+  doubled.append(chars)
+  doubled.append(chars)
   let doubled_str = String::from_array(doubled)
   let sa = build_suffix_array_simple(doubled_str)
 

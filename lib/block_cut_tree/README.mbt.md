@@ -215,7 +215,7 @@ Vertices 0, 2, 3 each appear in exactly one block.
 ///|
 test "triangle with tail" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
-  let tree = @block_cut_tree.build_block_cut_tree(4, edges[:])
+  let tree = @block_cut_tree.build_block_cut_tree(4, edges)
   let comp0 = 4
   let comp1 = 5
   let comp0_tri = tree.adj[comp0].length() == 3 &&
@@ -264,7 +264,7 @@ No vertex is an articulation point.
 ///|
 test "cycle becomes one block" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
-  let tree = @block_cut_tree.build_block_cut_tree(4, edges[:])
+  let tree = @block_cut_tree.build_block_cut_tree(4, edges)
   let block = 4
   inspect(tree.adj[block].length(), content="4")
   assert_true(tree.adj[block].contains(0))
@@ -314,7 +314,7 @@ Vertex 1 is an articulation point inside component A.
 ///|
 test "disconnected graph" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (3, 4)]
-  let tree = @block_cut_tree.build_block_cut_tree(6, edges[:])
+  let tree = @block_cut_tree.build_block_cut_tree(6, edges)
   // There are three blocks: (0,1), (1,2), (3,4)
   inspect(tree.component_count, content="3")
 }

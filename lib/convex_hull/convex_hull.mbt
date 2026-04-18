@@ -614,7 +614,7 @@ test "convex hull alias" {
     { x: 0L, y: 2L },
     { x: 1L, y: 1L },
   ]
-  let hull = convex_hull(points[:])
+  let hull = convex_hull(points)
   inspect(hull.length(), content="4")
 }
 

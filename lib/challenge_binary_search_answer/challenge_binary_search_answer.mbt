@@ -99,6 +99,6 @@ pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
 ///|
 test "min_capacity" {
   let weights : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-  assert_eq(min_capacity(weights[:], 5), 15)
-  assert_eq(min_capacity([3, 2, 2, 4, 1, 4][:], 3), 6)
+  assert_eq(min_capacity(weights, 5), 15)
+  assert_eq(min_capacity([3, 2, 2, 4, 1, 4], 3), 6)
 }

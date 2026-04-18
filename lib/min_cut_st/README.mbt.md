@@ -256,7 +256,7 @@ test "min cut st balanced branches" {
     (1, 3, 2L),
     (2, 3, 3L),
   ]
-  let result = @min_cut_st.min_cut_st(4, edges[:], 0, 3).unwrap()
+  let result = @min_cut_st.min_cut_st(4, edges, 0, 3).unwrap()
   inspect(result.value, content="4")
 }
 ```
@@ -314,7 +314,7 @@ test "min cut st bottleneck into sink" {
     (1, 3, 1L),
     (2, 3, 1L),
   ]
-  let result = @min_cut_st.min_cut_st(4, edges[:], 0, 3).unwrap()
+  let result = @min_cut_st.min_cut_st(4, edges, 0, 3).unwrap()
   inspect(result.value, content="2")
 }
 ```
@@ -387,8 +387,8 @@ test "cut edges sum to min cut value" {
     (1, 3, 2L),
     (2, 3, 3L),
   ]
-  let result = @min_cut_st.min_cut_st(4, edges[:], 0, 3).unwrap()
-  let cut = cut_edges_fast(4, edges[:], result.source_side)
+  let result = @min_cut_st.min_cut_st(4, edges, 0, 3).unwrap()
+  let cut = cut_edges_fast(4, edges, result.source_side)
   let sum = cut.fold(init=0L, sum_cap)
   inspect(sum, content="4")
 }
@@ -409,7 +409,7 @@ If `t` is unreachable, the max flow (and min cut) is `0`.
 ///|
 test "min cut st no path" {
   let edges : Array[(Int, Int, Int64)] = []
-  let result = @min_cut_st.min_cut_st(3, edges[:], 0, 2).unwrap()
+  let result = @min_cut_st.min_cut_st(3, edges, 0, 2).unwrap()
   inspect(result.value, content="0")
 }
 ```

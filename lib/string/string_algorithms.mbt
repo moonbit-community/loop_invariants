@@ -144,7 +144,7 @@ fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
 ///|
 test "z_algorithm" {
   let s : Array[Char] = ['a', 'a', 'b', 'a', 'a', 'b', 'a', 'a']
-  let z = z_algorithm(s[:])
+  let z = z_algorithm(s)
   // s = "aabaaaba"
   // Z = [8, 1, 0, 5, 1, 0, 2, 1]
   assert_eq(z[0], 8) // Entire string
@@ -377,19 +377,19 @@ pub fn longest_palindrome_range(s : ArrayView[Char]) -> (Int, Int) {
 test "manacher" {
   // "abacaba" - entire string is palindrome
   let s1 : Array[Char] = ['a', 'b', 'a', 'c', 'a', 'b', 'a']
-  let (start1, len1) = longest_palindrome_range(s1[:])
+  let (start1, len1) = longest_palindrome_range(s1)
   assert_eq(start1, 0)
   assert_eq(len1, 7)
 
   // "abba" - even length palindrome
   let s2 : Array[Char] = ['a', 'b', 'b', 'a']
-  let (start2, len2) = longest_palindrome_range(s2[:])
+  let (start2, len2) = longest_palindrome_range(s2)
   assert_eq(start2, 0)
   assert_eq(len2, 4)
 
   // "abcbd" - "bcb" is longest
   let s3 : Array[Char] = ['a', 'b', 'c', 'b', 'd']
-  let (start3, len3) = longest_palindrome_range(s3[:])
+  let (start3, len3) = longest_palindrome_range(s3)
   assert_eq(start3, 1)
   assert_eq(len3, 3)
 }
@@ -584,11 +584,11 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
 test "rabin_karp" {
   let text : Array[Char] = ['a', 'b', 'c', 'a', 'b', 'c', 'a', 'b', 'd']
   let pattern : Array[Char] = ['a', 'b', 'c']
-  let matches = rabin_karp(text[:], pattern[:])
+  let matches = rabin_karp(text, pattern)
   assert_eq(matches, [0, 3])
   let text2 : Array[Char] = ['a', 'a', 'a', 'a', 'a']
   let pattern2 : Array[Char] = ['a', 'a']
-  let matches2 = rabin_karp(text2[:], pattern2[:])
+  let matches2 = rabin_karp(text2, pattern2)
   assert_eq(matches2, [0, 1, 2, 3])
 }
 
@@ -729,13 +729,13 @@ pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
 test "lcs_length" {
   let s1 : Array[Char] = ['A', 'B', 'C', 'D', 'E', 'F']
   let s2 : Array[Char] = ['A', 'C', 'B', 'C', 'F']
-  assert_eq(lcs_length(s1[:], s2[:]), 4) // "ABCF" or "ACDF" etc.
+  assert_eq(lcs_length(s1, s2), 4) // "ABCF" or "ACDF" etc.
   let s3 : Array[Char] = ['A', 'B', 'C']
   let s4 : Array[Char] = ['D', 'E', 'F']
-  assert_eq(lcs_length(s3[:], s4[:]), 0) // No common subsequence
+  assert_eq(lcs_length(s3, s4), 0) // No common subsequence
   let s5 : Array[Char] = ['A', 'A', 'A']
   let s6 : Array[Char] = ['A', 'A']
-  assert_eq(lcs_length(s5[:], s6[:]), 2)
+  assert_eq(lcs_length(s5, s6), 2)
 }
 
 // ============================================================================
@@ -879,14 +879,14 @@ fn booth_smallest_rotation(s : ArrayView[Char]) -> Int {
 test "booth_smallest_rotation" {
   // "bca" rotations: "bca", "cab", "abc" -> smallest is "abc" starting at index 2
   let s1 : Array[Char] = ['b', 'c', 'a']
-  assert_eq(booth_smallest_rotation(s1[:]), 2)
+  assert_eq(booth_smallest_rotation(s1), 2)
 
   // "abab" rotations: "abab", "baba", "abab", "baba" -> smallest is "abab" at 0 or 2
   let s2 : Array[Char] = ['a', 'b', 'a', 'b']
-  let result = booth_smallest_rotation(s2[:])
+  let result = booth_smallest_rotation(s2)
   assert_true(result == 0 || result == 2)
 
   // Already smallest
   let s3 : Array[Char] = ['a', 'b', 'c']
-  assert_eq(booth_smallest_rotation(s3[:]), 0)
+  assert_eq(booth_smallest_rotation(s3), 0)
 }

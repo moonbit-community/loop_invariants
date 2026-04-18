@@ -136,7 +136,7 @@ pub fn apply_updates(
 test "persistent_segment_tree_assign" {
   let arr = [1, 2, 3, 4][:]
   let root = build(arr, 0, arr.length())
-  let updated = apply_updates(root, arr.length(), [(1, 3, 5), (0, 2, 0)][:])
+  let updated = apply_updates(root, arr.length(), [(1, 3, 5), (0, 2, 0)])
   assert_eq(range_sum(root, 0, arr.length(), 0, 4), 10)
   assert_eq(range_sum(updated, 0, arr.length(), 0, 4), 9)
   assert_eq(range_sum(updated, 0, arr.length(), 1, 3), 5)

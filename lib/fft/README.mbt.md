@@ -220,7 +220,7 @@ ntt_convolution(a, b)
 test "ntt convolution example" {
   let a : Array[Int64] = [1L, 2L]
   let b : Array[Int64] = [3L, 4L]
-  let c = @fft.ntt_convolution(a[:], b[:])
+  let c = @fft.ntt_convolution(a, b)
   inspect(c, content="[3, 10, 8]")
 }
 ```

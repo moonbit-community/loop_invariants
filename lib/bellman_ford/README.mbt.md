@@ -167,7 +167,7 @@ test "basic graph" {
     (1, 3, 3),
     (2, 3, 6),
   ]
-  let (dist, neg) = @bellman_ford.bellman_ford(4, edges[:], 0)
+  let (dist, neg) = @bellman_ford.bellman_ford(4, edges, 0)
   inspect(dist, content="[0, 3, 2, 6]")
   inspect(neg, content="false")
 }
@@ -189,7 +189,7 @@ test "negative edge without negative cycle" {
     (1, 2, -2),
     (2, 3, 3),
   ]
-  let (dist, neg) = @bellman_ford.bellman_ford(4, edges[:], 0)
+  let (dist, neg) = @bellman_ford.bellman_ford(4, edges, 0)
   inspect(dist, content="[0, 4, 2, 5]")
   inspect(neg, content="false")
 }
@@ -203,7 +203,7 @@ Here the path `0 -> 1 -> 2` (cost 2) beats the direct edge `0 -> 2` (cost 5).
 ///|
 test "negative cycle detection" {
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2), (2, 1, -2)]
-  let (_dist, neg) = @bellman_ford.bellman_ford(3, edges[:], 0)
+  let (_dist, neg) = @bellman_ford.bellman_ford(3, edges, 0)
   inspect(neg, content="true")
 }
 ```

@@ -210,7 +210,7 @@ pub fn min_arborescence(
 
   // Step 5: Recurse on contracted graph
   let new_root = comp[root]
-  let sub = min_arborescence(new_n, contracted_edges[:], new_root)
+  let sub = min_arborescence(new_n, contracted_edges, new_root)
   match sub {
     None => None
     Some(sub_tree) => {

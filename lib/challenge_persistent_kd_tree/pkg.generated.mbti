@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_kd_tree"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn contains(Kd, Point) -> Bool
 
@@ -20,12 +24,12 @@ pub fn size(Kd) -> Int
 pub enum Kd {
   Empty
   Node(point~ : Point, axis~ : Int, left~ : Kd, right~ : Kd)
-} derive(Show)
+} derive(@debug.Debug)
 
 pub(all) struct Point {
   x : Int
   y : Int
-} derive(Eq, Show)
+} derive(Eq, @debug.Debug)
 
 // Type aliases
 

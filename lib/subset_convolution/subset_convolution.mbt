@@ -237,7 +237,7 @@ pub fn subset_convolution(
 
 ///|
 test "subset_convolution" {
-  assert_eq(subset_convolution([1L, 1L, 1L, 1L][:], [1L, 1L, 1L, 1L][:]), [
+  assert_eq(subset_convolution([1L, 1L, 1L, 1L], [1L, 1L, 1L, 1L]), [
     1L, 2L, 2L, 4L,
   ])
 }

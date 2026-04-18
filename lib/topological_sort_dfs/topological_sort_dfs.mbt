@@ -183,7 +183,7 @@ pub fn topological_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
 ///|
 test "topological sort basic" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
-  let order = topological_sort(4, edges[:]).unwrap()
+  let order = topological_sort(4, edges).unwrap()
   // Validate order by checking edge directions
   let pos = Array::make(4, 0)
   for i, v in order {
@@ -199,5 +199,5 @@ test "topological sort basic" {
 ///|
 test "topological sort cycle" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
-  inspect(topological_sort(3, edges[:]), content="None")
+  inspect(topological_sort(3, edges), content="None")
 }

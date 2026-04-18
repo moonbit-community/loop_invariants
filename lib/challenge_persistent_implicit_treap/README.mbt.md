@@ -167,7 +167,7 @@ test "implicit treap basic" {
 ```mbt check
 ///|
 test "implicit treap split merge" {
-  let t = @challenge_persistent_implicit_treap.from_array([1, 2, 3, 4, 5][:])
+  let t = @challenge_persistent_implicit_treap.from_array([1, 2, 3, 4, 5])
   let (left, right) = @challenge_persistent_implicit_treap.split(t, 3)
   inspect(
     @challenge_persistent_implicit_treap.to_array(left),
@@ -190,7 +190,7 @@ test "implicit treap split merge" {
 ```mbt check
 ///|
 test "implicit treap persistence" {
-  let t0 = @challenge_persistent_implicit_treap.from_array([10, 20, 30][:])
+  let t0 = @challenge_persistent_implicit_treap.from_array([10, 20, 30])
   let t1 = @challenge_persistent_implicit_treap.insert_at(t0, 1, 15)
   inspect(
     @challenge_persistent_implicit_treap.to_array(t0),

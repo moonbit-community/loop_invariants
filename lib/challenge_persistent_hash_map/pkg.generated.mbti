@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_hash_map"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn[K, V] capacity(HashMap[K, V]) -> Int
 
@@ -15,12 +19,12 @@ pub fn[K, V] size(HashMap[K, V]) -> Int
 // Errors
 
 // Types and methods
-type Bucket[K, V] derive(Show)
+type Bucket[K, V] derive(@debug.Debug)
 
 pub struct HashMap[K, V] {
   buckets : Array[Bucket[K, V]]
   size : Int
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

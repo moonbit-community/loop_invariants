@@ -90,9 +90,9 @@ fn single_number(nums : ArrayView[Int]) -> Int {
 ///|
 test "single number" {
   let nums = [2, 2, 1]
-  assert_eq(single_number(nums[:]), 1)
+  assert_eq(single_number(nums), 1)
   let nums2 = [4, 1, 2, 1, 2]
-  assert_eq(single_number(nums2[:]), 4)
+  assert_eq(single_number(nums2), 4)
 }
 
 ///|
@@ -124,11 +124,11 @@ fn missing_number(nums : ArrayView[Int]) -> Int {
 ///|
 test "missing number" {
   let nums = [3, 0, 1]
-  assert_eq(missing_number(nums[:]), 2)
+  assert_eq(missing_number(nums), 2)
   let nums2 = [0, 1]
-  assert_eq(missing_number(nums2[:]), 2)
+  assert_eq(missing_number(nums2), 2)
   let nums3 = [9, 6, 4, 2, 3, 5, 7, 0, 1]
-  assert_eq(missing_number(nums3[:]), 8)
+  assert_eq(missing_number(nums3), 8)
 }
 
 ///|
@@ -200,7 +200,7 @@ fn generate_subsets(elements : ArrayView[Int]) -> Array[Array[Int]] {
 ///|
 test "generate subsets" {
   let elements = [1, 2, 3]
-  let subsets = generate_subsets(elements[:])
+  let subsets = generate_subsets(elements)
   assert_eq(subsets.length(), 8) // 2^3 = 8
 }
 
@@ -270,9 +270,9 @@ fn nim_xor(piles : ArrayView[Int]) -> Int {
 
 ///|
 test "nim winner" {
-  assert_eq(nim_winner([1, 2, 3][:]), "Second") // XOR = 0
-  assert_eq(nim_winner([1, 2, 4][:]), "First") // XOR = 7
-  assert_eq(nim_winner([3, 3][:]), "Second") // XOR = 0
+  assert_eq(nim_winner([1, 2, 3]), "Second") // XOR = 0
+  assert_eq(nim_winner([1, 2, 4]), "First") // XOR = 7
+  assert_eq(nim_winner([3, 3]), "Second") // XOR = 0
 }
 
 ///|
@@ -297,7 +297,7 @@ fn nim_winning_move(piles : ArrayView[Int]) -> (Int, Int)? {
 
 ///|
 test "nim winning move" {
-  let result = nim_winning_move([1, 2, 4][:])
+  let result = nim_winning_move([1, 2, 4])
   assert_true(result is Some(_))
 }
 
@@ -325,7 +325,7 @@ fn sprague_grundy_simple(n : Int) -> Int {
     if i >= 3 {
       reachable.push(sg[i - 3])
     }
-    sg[i] = mex(reachable[:])
+    sg[i] = mex(reachable)
   }
   sg[n]
 }
@@ -378,7 +378,7 @@ test "combined game" {
   // Game 1: 3 stones (sg=3), Game 2: 5 stones (sg=1), Game 3: 4 stones (sg=0)
   let sg_values = [3, 1, 0]
   // XOR = 3 ^ 1 ^ 0 = 2 != 0, so First wins
-  assert_eq(combined_game_winner(sg_values[:]), "First")
+  assert_eq(combined_game_winner(sg_values), "First")
 }
 
 ///|
@@ -434,7 +434,7 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
 ///|
 test "maximum xor pair" {
   let nums = [3, 10, 5, 25, 2, 8]
-  assert_eq(maximum_xor_pair(nums[:]), 28) // 25 ^ 5 = 28
+  assert_eq(maximum_xor_pair(nums), 28) // 25 ^ 5 = 28
 }
 
 ///|

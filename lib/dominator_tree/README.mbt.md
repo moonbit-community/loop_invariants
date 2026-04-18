@@ -201,7 +201,7 @@ test "dominator tree example" {
     (4, 5),
     (2, 5),
   ]
-  let dom = @dominator_tree.build_dominator_tree(6, edges[:], 0).unwrap()
+  let dom = @dominator_tree.build_dominator_tree(6, edges, 0).unwrap()
   inspect(dom.idom[3], content="1")
   inspect(dom.dominates(1, 5), content="true")
 }
@@ -212,7 +212,7 @@ test "dominator tree example" {
 test "dominator diamond" {
   // Diamond: 0 -> 1,2 -> 3
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
-  let dom = @dominator_tree.build_dominator_tree(4, edges[:], 0).unwrap()
+  let dom = @dominator_tree.build_dominator_tree(4, edges, 0).unwrap()
   inspect(dom.idom[3], content="0")
   // 3's idom is 0, not 1 or 2 (both paths converge)
 }
@@ -222,7 +222,7 @@ test "dominator diamond" {
 ///|
 test "dominator invalid root" {
   let edges : Array[(Int, Int)] = [(0, 1)]
-  inspect(@dominator_tree.build_dominator_tree(2, edges[:], -1), content="None")
+  inspect(@dominator_tree.build_dominator_tree(2, edges, -1), content="None")
 }
 ```
 

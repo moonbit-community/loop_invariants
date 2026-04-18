@@ -34,7 +34,7 @@ fn next_greater_element(arr : ArrayView[Int]) -> Array[Int] {
 ///|
 test "next_greater_element" {
   let arr : Array[Int] = [4, 5, 2, 10, 8]
-  let nge = next_greater_element(arr[:])
+  let nge = next_greater_element(arr)
   assert_eq(nge[0], 1) // 4 -> 5 at index 1
   assert_eq(nge[1], 3) // 5 -> 10 at index 3
   assert_eq(nge[2], 3) // 2 -> 10 at index 3
@@ -84,7 +84,7 @@ fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
 ///|
 test "sliding_window_maximum" {
   let arr : Array[Int] = [1, 3, -1, -3, 5, 3, 6, 7]
-  let result = sliding_window_maximum(arr[:], 3)
+  let result = sliding_window_maximum(arr, 3)
   // Windows: [1,3,-1]=3, [3,-1,-3]=3, [-1,-3,5]=5, [-3,5,3]=5, [5,3,6]=6, [3,6,7]=7
   assert_eq(result, [3, 3, 5, 5, 6, 7])
 }
@@ -196,11 +196,11 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
 ///|
 test "largest_rectangle_histogram" {
   let heights : Array[Int] = [2, 1, 5, 6, 2, 3]
-  assert_eq(largest_rectangle_histogram(heights[:]), 10) // 5*2 = 10 (bars 5,6)
+  assert_eq(largest_rectangle_histogram(heights), 10) // 5*2 = 10 (bars 5,6)
   let heights2 : Array[Int] = [2, 4]
-  assert_eq(largest_rectangle_histogram(heights2[:]), 4) // 2*2 or 4*1
+  assert_eq(largest_rectangle_histogram(heights2), 4) // 2*2 or 4*1
   let heights3 : Array[Int] = [6, 2, 5, 4, 5, 1, 6]
-  assert_eq(largest_rectangle_histogram(heights3[:]), 12) // 4*3 = 12
+  assert_eq(largest_rectangle_histogram(heights3), 12) // 4*3 = 12
 }
 
 // ============================================================================
@@ -297,9 +297,9 @@ fn trap_rain_water(heights : ArrayView[Int]) -> Int {
 ///|
 test "trap_rain_water" {
   let heights : Array[Int] = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
-  assert_eq(trap_rain_water(heights[:]), 6)
+  assert_eq(trap_rain_water(heights), 6)
   let heights2 : Array[Int] = [4, 2, 0, 3, 2, 5]
-  assert_eq(trap_rain_water(heights2[:]), 9)
+  assert_eq(trap_rain_water(heights2), 9)
 }
 
 // ============================================================================
@@ -403,7 +403,7 @@ test "sum_subarray_minimums" {
   let arr : Array[Int] = [3, 1, 2, 4]
   // Subarrays: [3]=3, [1]=1, [2]=2, [4]=4, [3,1]=1, [1,2]=1, [2,4]=2, [3,1,2]=1, [1,2,4]=1, [3,1,2,4]=1
   // Sum = 3+1+2+4+1+1+2+1+1+1 = 17
-  assert_eq(sum_subarray_minimums(arr[:]), 17)
+  assert_eq(sum_subarray_minimums(arr), 17)
 }
 
 // ============================================================================
@@ -443,7 +443,7 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
 ///|
 test "stock_span" {
   let prices : Array[Int] = [100, 80, 60, 70, 60, 75, 85]
-  let spans = stock_span(prices[:])
+  let spans = stock_span(prices)
   assert_eq(spans, [1, 1, 1, 2, 1, 4, 6])
   // Day 0 (100): span 1 (just today)
   // Day 1 (80): span 1

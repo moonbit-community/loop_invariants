@@ -45,13 +45,13 @@ fn insert(node : Node, s : StringView, idx : Int) -> Node {
 ///|
 /// Insert a word into the trie and return the new root.
 pub fn add(root : Node, s : String) -> Node {
-  insert(root, s[:], 0)
+  insert(root, s, 0)
 }
 
 ///|
 /// Check whether a word exists in the trie.
 pub fn contains(root : Node, s : String) -> Bool {
-  contains_view(root, s[:], 0)
+  contains_view(root, s, 0)
 }
 
 ///|

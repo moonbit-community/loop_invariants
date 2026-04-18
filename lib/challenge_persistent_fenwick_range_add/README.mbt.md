@@ -191,10 +191,7 @@ test "range add persistence" {
 test "range add apply updates" {
   let rf0 = @challenge_persistent_fenwick_range_add.make(5)
   let updates : Array[(Int, Int, Int)] = [(0, 2, 1), (1, 4, 2)]
-  let rf = @challenge_persistent_fenwick_range_add.apply_updates(
-    rf0,
-    updates[:],
-  )
+  let rf = @challenge_persistent_fenwick_range_add.apply_updates(rf0, updates)
   inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf, 0, 0),
     content="1",

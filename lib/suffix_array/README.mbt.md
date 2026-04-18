@@ -98,7 +98,7 @@ The maximum LCP value identifies the **longest repeated substring**.
 ///|
 test "suffix array helpers" {
   let sa = @suffix_array.suffix_array("banana")
-  let lcp = @suffix_array.lcp_array("banana", sa[:])
+  let lcp = @suffix_array.lcp_array("banana", sa)
   inspect(sa, content="[5, 3, 1, 0, 4, 2]")
   inspect(lcp, content="[0, 1, 3, 0, 0, 2]")
 }

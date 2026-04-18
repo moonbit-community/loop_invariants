@@ -598,11 +598,11 @@ test "matrix_chain_order" {
   // Option 2: A1·(A2·A3) = 30·5·60 + 10·30·60 = 9000 + 18000 = 27000
   // Optimal: Option 1 with cost 4500
   let dims : Array[Int] = [10, 30, 5, 60]
-  assert_eq(matrix_chain_order(dims[:]), 4500)
+  assert_eq(matrix_chain_order(dims), 4500)
   // Another example: [40, 20, 30, 10, 30]
   // Matrices: 40×20, 20×30, 30×10, 10×30
   let dims2 : Array[Int] = [40, 20, 30, 10, 30]
-  assert_eq(matrix_chain_order(dims2[:]), 26000)
+  assert_eq(matrix_chain_order(dims2), 26000)
 }
 
 // ============================================================================

@@ -90,7 +90,7 @@ test "persistent segment tree" {
   let updated = @challenge_persistent_segment_tree.apply_updates(
     root,
     arr.length(),
-    [(1, 3), (3, -1)][:],
+    [(1, 3), (3, -1)],
   )
   inspect(
     @challenge_persistent_segment_tree.query(root, 0, arr.length(), 0, 4),

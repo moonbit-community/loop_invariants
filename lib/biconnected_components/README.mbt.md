@@ -293,7 +293,7 @@ component, and the bridge `(1,3)` is another.
 ///|
 test "triangle with a tail" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
-  let res = @biconnected_components.biconnected_components(4, edges[:])
+  let res = @biconnected_components.biconnected_components(4, edges)
   let sizes = res.components.map(c => c.length())
   sizes.sort_by((a, b) => a - b)
   inspect(sizes, content="[1, 3]")
@@ -317,7 +317,7 @@ points.
 ///|
 test "cycle has one component" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
-  let res = @biconnected_components.biconnected_components(4, edges[:])
+  let res = @biconnected_components.biconnected_components(4, edges)
   let sizes = res.components.map(c => c.length())
   inspect(sizes, content="[4]")
   inspect(res.articulation_points, content="[]")
@@ -348,7 +348,7 @@ test "two triangles share a vertex" {
     (3, 4),
     (4, 1),
   ]
-  let res = @biconnected_components.biconnected_components(5, edges[:])
+  let res = @biconnected_components.biconnected_components(5, edges)
   let sizes = res.components.map(c => c.length())
   sizes.sort_by((a, b) => a - b)
   inspect(sizes, content="[3, 3]")
@@ -366,7 +366,7 @@ appear in any biconnected component.
 ///|
 test "disconnected graph" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (3, 4)]
-  let res = @biconnected_components.biconnected_components(6, edges[:])
+  let res = @biconnected_components.biconnected_components(6, edges)
   let sizes = res.components.map(c => c.length())
   sizes.sort_by((a, b) => a - b)
   inspect(sizes, content="[1, 1, 1]")

@@ -92,9 +92,9 @@ pub fn to_array(t : Tree) -> Array[(Int, Int)] {
 /// Insert an interval [start, end] and return the merged set.
 pub fn insert_interval(t : Tree, start : Int, end : Int) -> Tree {
   let list = inorder(t)
-  let with_new = insert_sorted(list[:], (start, end))
-  let merged = merge_sorted(with_new[:])
-  build(merged[:], 0, merged.length())
+  let with_new = insert_sorted(list, (start, end))
+  let merged = merge_sorted(with_new)
+  build(merged, 0, merged.length())
 }
 
 ///|

@@ -324,7 +324,7 @@ test "chinese_remainder" {
   // x ≡ 2 (mod 3), x ≡ 3 (mod 5), x ≡ 2 (mod 7)
   // Solution: x = 23 (mod 105)
   let congruences : Array[(Int64, Int64)] = [(2L, 3L), (3L, 5L), (2L, 7L)]
-  let (x, m) = chinese_remainder(congruences[:])
+  let (x, m) = chinese_remainder(congruences)
   assert_eq(m, 105L)
   assert_eq(x % 3L, 2L)
   assert_eq(x % 5L, 3L)
@@ -333,7 +333,7 @@ test "chinese_remainder" {
   // x ≡ 0 (mod 2), x ≡ 0 (mod 3), x ≡ 1 (mod 5)
   // Solution: x = 6 (mod 30)
   let congruences2 : Array[(Int64, Int64)] = [(0L, 2L), (0L, 3L), (1L, 5L)]
-  let (x2, m2) = chinese_remainder(congruences2[:])
+  let (x2, m2) = chinese_remainder(congruences2)
   assert_eq(m2, 30L)
   assert_eq(x2 % 2L, 0L)
   assert_eq(x2 % 3L, 0L)

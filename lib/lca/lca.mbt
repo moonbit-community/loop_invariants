@@ -392,7 +392,7 @@ fn LCA::get_path(self : LCA, u : Int, v : Int) -> Array[Int] {
   // Combine paths: path_u + reversed path_v (without duplicating LCA)
   // Use copy() to start with path_u, then append reversed path_v
   let result = path_u.copy()
-  result.append(path_v.rev()[:])
+  result.append(path_v.rev())
   result
 }
 
