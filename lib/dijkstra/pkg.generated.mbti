@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/dijkstra"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn bidirectional_dijkstra(Graph, Graph, Int, Int) -> Int64?
 
@@ -23,7 +27,7 @@ pub(all) struct DijkstraResult {
 pub(all) struct Edge {
   to : Int
   weight : Int64
-} derive(Show)
+} derive(@debug.Debug)
 
 pub(all) struct Graph {
   n : Int

@@ -31,7 +31,7 @@ fn topological_sort(graph : Array[Array[Int]]) -> Array[Int]? {
   let result : Array[Int] = []
 
   // Initialize queue with all vertices having in-degree 0
-  let queue : Array[Int] = [| for v in 0..<n if in_degree[v] == 0 => v |]
+  let queue : Array[Int] = [ for v in 0..<n if in_degree[v] == 0 => v ]
 
   // Process vertices in topological order
   for head = 0 {
@@ -305,7 +305,7 @@ priv struct UnionFind {
 
 ///|
 fn make_union_find(n : Int) -> UnionFind {
-  let parent : Array[Int] = [| for i in 0..<n => i |]
+  let parent : Array[Int] = [ for i in 0..<n => i ]
   { parent, rank: Array::make(n, 0) }
 }
 
@@ -455,7 +455,7 @@ test "bellman_ford" {
   // Graph with negative edge (no cycle):
   // 0 --1--> 1 --(-2)--> 2
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2)]
-  match bellman_ford(3, edges[:], 0) {
+  match bellman_ford(3, edges, 0) {
     Some(dist) => {
       assert_eq(dist[0], 0)
       assert_eq(dist[1], 1)
@@ -466,7 +466,7 @@ test "bellman_ford" {
 
   // Graph with negative cycle: 0 → 1 → 2 → 0 with total weight -1
   let edges_cycle : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 1), (2, 0, -3)]
-  assert_eq(bellman_ford(3, edges_cycle[:], 0), None)
+  assert_eq(bellman_ford(3, edges_cycle, 0), None)
 }
 
 // ============================================================================
@@ -483,13 +483,13 @@ fn floyd_warshall(
   edges : ArrayView[(Int, Int, Int)],
 ) -> Array[Array[Int]] {
   let inf = 0x7FFFFFFF
-  let dist : Array[Array[Int]] = [|
+  let dist : Array[Array[Int]] = [
     for i in 0..<n => {
       let row = Array::make(n, inf)
       row[i] = 0
       row
     }
-  |]
+  ]
 
   // Initialize with direct edges
   for edge in edges {
@@ -584,7 +584,7 @@ fn floyd_warshall(
 test "floyd_warshall" {
   // Triangle: 0 --1--> 1 --2--> 2, with shortcut 0 --4--> 2
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 2), (0, 2, 4)]
-  let dist = floyd_warshall(3, edges[:])
+  let dist = floyd_warshall(3, edges)
   assert_eq(dist[0][0], 0)
   assert_eq(dist[0][1], 1)
   assert_eq(dist[0][2], 3) // 0 → 1 → 2 is shorter than 0 → 2

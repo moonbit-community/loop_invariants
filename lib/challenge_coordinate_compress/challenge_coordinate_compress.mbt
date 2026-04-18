@@ -39,11 +39,11 @@ fn lower_bound_fixed(
 /// Compress values to 0..(unique-1) preserving order.
 pub fn coordinate_compress(values : ArrayView[Int]) -> (Array[Int], Array[Int]) {
   let n = values.length()
-  let sorted : Array[Int] = [| for val in values => val |]
+  let sorted : Array[Int] = [ for val in values => val ]
   sorted.sort_by_key(x => x)
-  let unique : Array[Int] = [|
+  let unique : Array[Int] = [
     for i, val in sorted if i == 0 || val != sorted[i - 1] => val
-  |]
+  ]
   let unique_fixed = FixedArray::make(unique.length(), 0)
   for i, val in unique {
     unique_fixed[i] = val
@@ -58,7 +58,7 @@ pub fn coordinate_compress(values : ArrayView[Int]) -> (Array[Int], Array[Int]) 
 ///|
 test "coordinate_compress" {
   let values : Array[Int] = [100, 50, 100, -10]
-  let (comp, uniq) = coordinate_compress(values[:])
+  let (comp, uniq) = coordinate_compress(values)
   assert_eq(uniq, [-10, 50, 100])
   assert_eq(comp, [2, 1, 2, 0])
 }

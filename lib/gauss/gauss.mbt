@@ -114,13 +114,13 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let m = a[0].length()
 
   // Create augmented matrix [A|b]
-  let aug = [|
+  let aug = [
     for i in 0..<n => {
-      [|
+      [
         for j in 0..<(m + 1) => if j < m { a[i][j] } else { b[i] }
-      |]
+      ]
     }
-  |]
+  ]
 
   // Forward elimination
   let rank = for col = 0, rank = 0, row = 0; col < m && row < n; {
@@ -384,9 +384,9 @@ fn gauss_mod(
   let m = a[0].length()
 
   // Create augmented matrix
-  let aug = [|
+  let aug = [
     for i in 0..<n => {
-      [|
+      [
         for j in 0..<(m + 1) => {
           if j < m {
             (a[i][j] % p + p) % p
@@ -394,9 +394,9 @@ fn gauss_mod(
             (b[i] % p + p) % p
           }
         }
-      |]
+      ]
     }
-  |]
+  ]
   // Forward elimination
   let row = for col = 0, row = 0; col < m && row < n; {
     // Find pivot
@@ -565,13 +565,13 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
   let m = a[0].length()
 
   // Create augmented matrix
-  let aug = [|
+  let aug = [
     for i in 0..<n => {
-      [|
+      [
         for j in 0..<(m + 1) => if j < m { a[i][j] % 2 } else { b[i] % 2 }
-      |]
+      ]
     }
-  |]
+  ]
   let row = for col = 0, row = 0; col < m && row < n; {
     // Find pivot
     let pivot_row = for i = row; i < n; {

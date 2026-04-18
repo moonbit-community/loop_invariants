@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_pairing_heap"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn[T : Compare] delete_min(Heap[T]) -> Heap[T]?
 
@@ -17,12 +21,12 @@ pub fn[T] size(Heap[T]) -> Int
 // Errors
 
 // Types and methods
-type ChildList[T] derive(Show)
+type ChildList[T] derive(@debug.Debug)
 
 pub enum Heap[T] {
   Empty
   Node(value~ : T, children~ : ChildList[T])
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

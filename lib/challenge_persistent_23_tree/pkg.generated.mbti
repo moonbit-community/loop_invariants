@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_23_tree"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn[T : Compare] contains(Tree[T], T) -> Bool
 
@@ -15,13 +19,13 @@ pub fn[T] size(Tree[T]) -> Int
 // Errors
 
 // Types and methods
-type InsertResult[T] derive(Show)
+type InsertResult[T] derive(@debug.Debug)
 
 pub enum Tree[T] {
   Empty
   Two(key~ : T, left~ : Tree[T], right~ : Tree[T])
   Three(key1~ : T, key2~ : T, left~ : Tree[T], middle~ : Tree[T], right~ : Tree[T])
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

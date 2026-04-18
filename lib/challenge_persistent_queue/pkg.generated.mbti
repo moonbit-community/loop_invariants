@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_queue"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn[T] dequeue(Queue[T]) -> (T, Queue[T])?
 
@@ -18,9 +22,9 @@ pub fn[T] size(Queue[T]) -> Int
 pub struct Queue[T] {
   front : Stack[T]
   back : Stack[T]
-} derive(Show)
+} derive(@debug.Debug)
 
-type Stack[T] derive(Show)
+type Stack[T] derive(@debug.Debug)
 
 // Type aliases
 

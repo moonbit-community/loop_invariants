@@ -61,9 +61,9 @@ pub fn range_sum(prefix : ArrayView[Int], l : Int, r : Int) -> Int {
 ///|
 test "prefix_sum" {
   let arr : Array[Int] = [3, -1, 4, 2]
-  let prefix = build_prefix_sum(arr[:])
+  let prefix = build_prefix_sum(arr)
   assert_eq(prefix, [0, 3, 2, 6, 8])
-  assert_eq(range_sum(prefix[:], 0, 0), 3)
-  assert_eq(range_sum(prefix[:], 1, 2), 3) // -1 + 4
-  assert_eq(range_sum(prefix[:], 0, 3), 8)
+  assert_eq(range_sum(prefix, 0, 0), 3)
+  assert_eq(range_sum(prefix, 1, 2), 3) // -1 + 4
+  assert_eq(range_sum(prefix, 0, 3), 8)
 }

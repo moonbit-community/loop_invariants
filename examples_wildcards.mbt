@@ -109,14 +109,14 @@ fn is_balanced_parens_star(chars : ArrayView[Char]) -> Bool {
 ///|
 test "is_balanced_parens_star" {
   let empty : Array[Char] = []
-  assert_true(is_balanced_parens_star(empty[:]))
-  assert_true(is_balanced_parens_star(['(', ')'][:]))
-  assert_true(is_balanced_parens_star(['(', '*', ')'][:]))
-  assert_true(is_balanced_parens_star(['(', '*', ')', ')'][:])) // * = '('
-  assert_true(is_balanced_parens_star(['(', '*', '(', ')'][:])) // * = ')'
-  assert_true(is_balanced_parens_star(['*'][:])) // * = empty
-  assert_true(!is_balanced_parens_star([')', '*', '('][:]))
-  assert_true(!is_balanced_parens_star(['(', ')', ')', '*'][:]))
-  assert_true(!is_balanced_parens_star(['(', '(', '*'][:]))
-  assert_eq(range_prefix(['(', '*', ')'][:], 3), (-1, 1))
+  assert_true(is_balanced_parens_star(empty))
+  assert_true(is_balanced_parens_star(['(', ')']))
+  assert_true(is_balanced_parens_star(['(', '*', ')']))
+  assert_true(is_balanced_parens_star(['(', '*', ')', ')'])) // * = '('
+  assert_true(is_balanced_parens_star(['(', '*', '(', ')'])) // * = ')'
+  assert_true(is_balanced_parens_star(['*'])) // * = empty
+  assert_true(!is_balanced_parens_star([')', '*', '(']))
+  assert_true(!is_balanced_parens_star(['(', ')', ')', '*']))
+  assert_true(!is_balanced_parens_star(['(', '(', '*']))
+  assert_eq(range_prefix(['(', '*', ')'], 3), (-1, 1))
 }

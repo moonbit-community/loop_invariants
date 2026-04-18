@@ -30,6 +30,6 @@ pub fn count_subarrays_leq(arr : ArrayView[Int], k : Int) -> Int {
 test "count_subarrays_leq" {
   let arr : Array[Int] = [1, 2, 1, 1]
   // Valid subarrays with sum <= 3: [1], [1,2], [2], [2,1], [1], [1,1], [1]
-  assert_eq(count_subarrays_leq(arr[:], 3), 7)
-  assert_eq(count_subarrays_leq([2, 2, 2][:], 3), 3) // each single element
+  assert_eq(count_subarrays_leq(arr, 3), 7)
+  assert_eq(count_subarrays_leq([2, 2, 2], 3), 3) // each single element
 }

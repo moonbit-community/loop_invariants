@@ -54,7 +54,7 @@ priv struct BridgeFinder {
 /// Create a new `BridgeFinder` for a graph with `n` vertices and no edges.
 /// All discovery timestamps are initialised to -1 (unvisited).
 fn BridgeFinder::new(n : Int) -> BridgeFinder {
-  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,
@@ -151,9 +151,9 @@ fn BridgeFinder::find(self : BridgeFinder) -> Unit {
 /// Return the indices of all articulation points found after `find()`.
 /// The vertices are listed in DFS discovery order.
 fn BridgeFinder::get_articulation_points(self : BridgeFinder) -> Array[Int] {
-  let result : Array[Int] = [|
+  let result : Array[Int] = [
     for i in 0..<self.n if self.articulation_points[i] => i
-  |]
+  ]
   result
 }
 

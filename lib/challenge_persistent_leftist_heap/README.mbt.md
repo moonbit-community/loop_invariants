@@ -116,8 +116,8 @@ test "leftist heap basic" {
 ```mbt check
 ///|
 test "leftist heap merge" {
-  let a = @challenge_persistent_leftist_heap.from_array([4, 8][:])
-  let b = @challenge_persistent_leftist_heap.from_array([1, 6][:])
+  let a = @challenge_persistent_leftist_heap.from_array([4, 8])
+  let b = @challenge_persistent_leftist_heap.from_array([1, 6])
   let merged = @challenge_persistent_leftist_heap.merge(a, b)
   inspect(
     @challenge_persistent_leftist_heap.find_min(merged),

@@ -308,12 +308,12 @@ Only one valid order exists: `[0, 1, 2, 3]`.
 ///|
 test "topological sort: chain" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
-  let result = @topological_sort_dfs.topological_sort(4, edges[:])
+  let result = @topological_sort_dfs.topological_sort(4, edges)
   match result {
     None => fail("expected a valid order")
     Some(order) => {
       inspect(order, content="[0, 1, 2, 3]")
-      inspect(is_topological_order(4, edges[:], order[:]), content="true")
+      inspect(is_topological_order(4, edges, order), content="true")
     }
   }
 }
@@ -342,11 +342,11 @@ Valid orders include:
 ///|
 test "topological sort: multiple valid orders" {
   let edges : Array[(Int, Int)] = [(0, 2), (1, 2)]
-  let result = @topological_sort_dfs.topological_sort(3, edges[:])
+  let result = @topological_sort_dfs.topological_sort(3, edges)
   match result {
     None => fail("expected a valid order")
     Some(order) =>
-      inspect(is_topological_order(3, edges[:], order[:]), content="true")
+      inspect(is_topological_order(3, edges, order), content="true")
   }
 }
 ```
@@ -372,11 +372,11 @@ Topological sort still works; isolated nodes appear somewhere in the list.
 ///|
 test "topological sort: disconnected graph" {
   let edges : Array[(Int, Int)] = [(0, 1), (2, 3)]
-  let result = @topological_sort_dfs.topological_sort(5, edges[:])
+  let result = @topological_sort_dfs.topological_sort(5, edges)
   match result {
     None => fail("expected a valid order")
     Some(order) =>
-      inspect(is_topological_order(5, edges[:], order[:]), content="true")
+      inspect(is_topological_order(5, edges, order), content="true")
   }
 }
 ```
@@ -402,7 +402,7 @@ No topological order exists.
 ///|
 test "topological sort: cycle" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
-  let result = @topological_sort_dfs.topological_sort(3, edges[:])
+  let result = @topological_sort_dfs.topological_sort(3, edges)
   inspect(result is None, content="true")
 }
 ```

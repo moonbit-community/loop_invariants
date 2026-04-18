@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_rope"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn concat(Rope, Rope) -> Rope
 
@@ -21,7 +25,7 @@ pub enum Rope {
   Empty
   Leaf(value~ : String)
   Node(len~ : Int, left~ : Rope, right~ : Rope)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/edmonds_arborescence"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn min_arborescence(Int, ArrayView[Edge], Int) -> Arborescence?
 
@@ -10,13 +14,13 @@ pub fn min_arborescence(Int, ArrayView[Edge], Int) -> Arborescence?
 pub(all) struct Arborescence {
   cost : Int64
   parent : Array[Int]
-} derive(Show)
+} derive(@debug.Debug)
 
 pub(all) struct Edge {
   from : Int
   to : Int
   weight : Int64
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

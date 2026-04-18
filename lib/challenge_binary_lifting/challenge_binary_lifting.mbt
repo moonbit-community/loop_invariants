@@ -26,7 +26,7 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
       #|When pow >= n, k is the number of levels needed.
     ),
   }
-  let up : Array[Array[Int]] = [| for _ in 0..<log => Array::make(n, -1) |]
+  let up : Array[Array[Int]] = [ for _ in 0..<log => Array::make(n, -1) ]
   for v in 0..<n {
     up[0][v] = parent[v]
   }
@@ -73,7 +73,7 @@ pub fn lift(up : Array[Array[Int]], v : Int, dist : Int) -> Int {
 ///|
 test "binary_lifting" {
   let parent : Array[Int] = [-1, 0, 0, 1, 1, 2]
-  let up = build_lift(parent[:])
+  let up = build_lift(parent)
   assert_eq(lift(up, 4, 1), 1)
   assert_eq(lift(up, 4, 2), 0)
   assert_eq(lift(up, 4, 3), -1)

@@ -10,7 +10,7 @@ struct DSU {
 
 ///|
 fn dsu_make(n : Int) -> DSU {
-  let parent = [| for i in 0..<n => i |]
+  let parent = [ for i in 0..<n => i ]
   let size = Array::make(n, 1)
   { parent, size }
 }
@@ -87,6 +87,6 @@ pub fn mst_weight(n : Int, edges : ArrayView[(Int, Int, Int)]) -> Int? {
 ///|
 test "mst_weight" {
   let edges = [(0, 1, 1), (1, 2, 2), (0, 2, 4), (2, 3, 3), (1, 3, 5)]
-  assert_eq(mst_weight(4, edges[:]), Some(6))
-  assert_eq(mst_weight(4, [(0, 1, 1), (2, 3, 2)][:]), None)
+  assert_eq(mst_weight(4, edges), Some(6))
+  assert_eq(mst_weight(4, [(0, 1, 1), (2, 3, 2)]), None)
 }

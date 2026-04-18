@@ -404,7 +404,7 @@ pub fn suurballe_disjoint_paths(
   let from = Array::make(m, 0)
   let to = Array::make(m, 0)
   let weight = Array::make(m, 0L)
-  let adj = [| for _ in 0..<n => [] |]
+  let adj = [ for _ in 0..<n => [] ]
   for i in 0..<m {
     let (u, v, w) = edges[i]
     if u < 0 || u >= n || v < 0 || v >= n || w < 0L {
@@ -482,7 +482,7 @@ pub fn suurballe_disjoint_paths(
       #|At i = m, all reduced costs are ready.
     ),
   }
-  let adj2 = [| for _ in 0..<n => [] |]
+  let adj2 = [ for _ in 0..<n => [] ]
   for i in 0..<m {
     let u = from[i]
     let v2 = to[i]
@@ -530,7 +530,7 @@ pub fn suurballe_disjoint_paths(
     ),
   }
   path2.rev_in_place()
-  let combined_adj = [| for _ in 0..<n => [] |]
+  let combined_adj = [ for _ in 0..<n => [] ]
   for idx in 0..<path_edges.length() {
     let e = path_edges[idx]
     combined_adj[from[e]].push(to[e])

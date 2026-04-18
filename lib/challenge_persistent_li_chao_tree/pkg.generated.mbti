@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_li_chao_tree"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn empty() -> Node
 
@@ -18,12 +22,12 @@ pub fn size(Node) -> Int
 pub(all) struct Line {
   m : Int
   b : Int
-} derive(Show)
+} derive(@debug.Debug)
 
 pub enum Node {
   Empty
   Node(line~ : Line, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

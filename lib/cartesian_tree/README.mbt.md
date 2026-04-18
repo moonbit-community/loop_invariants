@@ -174,8 +174,8 @@ range is invalid.
 ///|
 test "basic rmq" {
   let arr : Array[Int64] = [3L, 2L, 6L, 1L, 9L]
-  inspect(@cartesian_tree.range_min(arr[:], 1, 3), content="Some(1)")
-  inspect(@cartesian_tree.range_min(arr[:], 0, 2), content="Some(2)")
+  inspect(@cartesian_tree.range_min(arr, 1, 3), content="Some(1)")
+  inspect(@cartesian_tree.range_min(arr, 0, 2), content="Some(2)")
 }
 ```
 
@@ -189,8 +189,8 @@ higher in the tree.
 ///|
 test "duplicates" {
   let arr : Array[Int64] = [5L, 5L, 2L, 5L]
-  inspect(@cartesian_tree.range_min(arr[:], 0, 1), content="Some(5)")
-  inspect(@cartesian_tree.range_min(arr[:], 0, 2), content="Some(2)")
+  inspect(@cartesian_tree.range_min(arr, 0, 1), content="Some(5)")
+  inspect(@cartesian_tree.range_min(arr, 0, 2), content="Some(2)")
 }
 ```
 
@@ -204,8 +204,8 @@ rightmost child); a descending array produces a left-skewed tree.
 test "ascending and descending" {
   let asc : Array[Int64] = [1L, 2L, 3L, 4L]
   let desc : Array[Int64] = [4L, 3L, 2L, 1L]
-  inspect(@cartesian_tree.range_min(asc[:], 1, 3), content="Some(2)")
-  inspect(@cartesian_tree.range_min(desc[:], 1, 3), content="Some(1)")
+  inspect(@cartesian_tree.range_min(asc, 1, 3), content="Some(2)")
+  inspect(@cartesian_tree.range_min(desc, 1, 3), content="Some(1)")
 }
 ```
 
@@ -215,9 +215,9 @@ test "ascending and descending" {
 ///|
 test "invalid range" {
   let arr : Array[Int64] = [3L, 2L, 6L]
-  inspect(@cartesian_tree.range_min(arr[:], -1, 1), content="None")
-  inspect(@cartesian_tree.range_min(arr[:], 2, 1), content="None")
-  inspect(@cartesian_tree.range_min(arr[:], 0, 10), content="None")
+  inspect(@cartesian_tree.range_min(arr, -1, 1), content="None")
+  inspect(@cartesian_tree.range_min(arr, 2, 1), content="None")
+  inspect(@cartesian_tree.range_min(arr, 0, 10), content="None")
 }
 ```
 

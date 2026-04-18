@@ -289,7 +289,7 @@ priv struct KosarajuSCC {
 fn KosarajuSCC::new(graph : Array[Array[Int]]) -> KosarajuSCC {
   let n = graph.length()
   // Build reversed graph
-  let reversed : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let reversed : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   for v in 0..<n {
     for w in graph[v] {
       reversed[w].push(v)
@@ -609,7 +609,7 @@ fn find_articulation_points(graph : Array[Array[Int]]) -> Array[Int] {
       finder.dfs(v)
     }
   }
-  let aps : Array[Int] = [| for v in 0..<finder.n if finder.is_ap[v] => v |]
+  let aps : Array[Int] = [ for v in 0..<finder.n if finder.is_ap[v] => v ]
   aps
 }
 

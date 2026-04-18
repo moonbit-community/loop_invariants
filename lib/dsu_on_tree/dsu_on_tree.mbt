@@ -291,9 +291,9 @@ pub fn subtree_color_mode_sum(
 
 ///|
 fn make_adj(n : Int) -> Array[Array[Int]] {
-  [|
+  [
     for _ in 0..<n => []
-  |]
+  ]
 }
 
 ///|

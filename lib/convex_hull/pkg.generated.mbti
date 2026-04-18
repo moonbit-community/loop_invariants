@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/convex_hull"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn convex_hull(ArrayView[Point]) -> Array[Point]
 
@@ -22,7 +26,7 @@ pub fn polygon_area_2x(Array[Point]) -> Int64
 pub(all) struct Point {
   x : Int64
   y : Int64
-} derive(Eq, Show)
+} derive(Eq, @debug.Debug)
 
 // Type aliases
 

@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/polygon_triangulation"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn min_weight_triangulation(Array[Point]) -> Int64?
 
@@ -10,7 +14,7 @@ pub fn min_weight_triangulation(Array[Point]) -> Int64?
 pub(all) struct Point {
   x : Int64
   y : Int64
-} derive(Eq, Show)
+} derive(Eq, @debug.Debug)
 
 // Type aliases
 

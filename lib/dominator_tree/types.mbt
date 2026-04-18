@@ -21,9 +21,9 @@ priv struct Counter {
 ///|
 /// Build n separate empty lists for adjacency representation.
 fn build_adj_lists(n : Int) -> Array[Array[Int]] {
-  [|
+  [
     for _ in 0..<n => []
-  |]
+  ]
 }
 
 ///|

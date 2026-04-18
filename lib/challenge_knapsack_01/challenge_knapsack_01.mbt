@@ -32,6 +32,6 @@ pub fn knapsack_01(
 test "knapsack_01" {
   let weights : Array[Int] = [2, 3, 4]
   let values : Array[Int] = [4, 5, 6]
-  assert_eq(knapsack_01(weights[:], values[:], 5), 9)
-  assert_eq(knapsack_01(weights[:], values[:], 3), 5)
+  assert_eq(knapsack_01(weights, values, 5), 9)
+  assert_eq(knapsack_01(weights, values, 3), 5)
 }

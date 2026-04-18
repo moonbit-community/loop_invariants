@@ -291,7 +291,7 @@ test "stoer wagner cycle" {
     (2, 3, 1L),
     (3, 0, 1L),
   ]
-  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(4, edges[:]).unwrap()
+  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(4, edges).unwrap()
   inspect(result.weight, content="2")
 }
 ```
@@ -300,7 +300,7 @@ test "stoer wagner cycle" {
 ///|
 test "stoer wagner weighted" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L), (1, 2, 3L), (0, 2, 2L)]
-  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(3, edges[:]).unwrap()
+  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(3, edges).unwrap()
   inspect(result.weight, content="5")
 }
 ```
@@ -314,7 +314,7 @@ edges, so the global min cut is 0.
 ///|
 test "stoer wagner disconnected" {
   let edges : Array[(Int, Int, Int64)] = []
-  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(3, edges[:]).unwrap()
+  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(3, edges).unwrap()
   inspect(result.weight, content="0")
 }
 ```

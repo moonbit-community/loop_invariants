@@ -76,7 +76,7 @@ test "segment tree lazy basic" {
   let updated = @challenge_persistent_segment_tree_lazy.apply_updates(
     root,
     arr.length(),
-    [(1, 3, 2), (0, 2, -1)][:],
+    [(1, 3, 2), (0, 2, -1)],
   )
   inspect(
     @challenge_persistent_segment_tree_lazy.range_sum(

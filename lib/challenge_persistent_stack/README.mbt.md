@@ -104,7 +104,7 @@ test "stack versions" {
 ```mbt check
 ///|
 test "stack from array" {
-  let s = @challenge_persistent_stack.from_array([7, 1, 5][:])
+  let s = @challenge_persistent_stack.from_array([7, 1, 5])
   inspect(@challenge_persistent_stack.to_array(s), content="[7, 1, 5]")
   inspect(@challenge_persistent_stack.peek(s), content="Some(7)")
 }

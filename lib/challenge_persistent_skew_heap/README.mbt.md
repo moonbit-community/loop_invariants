@@ -137,8 +137,8 @@ that root and melds its children. The new min becomes `4`.
 ```mbt check
 ///|
 test "skew heap merge" {
-  let a = @challenge_persistent_skew_heap.from_array([7, 2, 5][:])
-  let b = @challenge_persistent_skew_heap.from_array([4, 1, 9][:])
+  let a = @challenge_persistent_skew_heap.from_array([7, 2, 5])
+  let b = @challenge_persistent_skew_heap.from_array([4, 1, 9])
   let merged = @challenge_persistent_skew_heap.merge(a, b)
   inspect(@challenge_persistent_skew_heap.find_min(a), content="Some(2)")
   inspect(@challenge_persistent_skew_heap.find_min(b), content="Some(1)")
@@ -156,7 +156,7 @@ Notice that `a` and `b` are unchanged, because `merge` is persistent.
 ```mbt check
 ///|
 test "skew heap from array" {
-  let h = @challenge_persistent_skew_heap.from_array([7, 1, 5][:])
+  let h = @challenge_persistent_skew_heap.from_array([7, 1, 5])
   inspect(@challenge_persistent_skew_heap.find_min(h), content="Some(1)")
   inspect(@challenge_persistent_skew_heap.size(h), content="3")
 }

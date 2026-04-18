@@ -66,8 +66,8 @@ priv struct TwoSat {
 /// After construction, use `add_clause`, `add_implication`, or `set_value`
 /// to add constraints, then call `solve` to obtain an assignment.
 fn TwoSat::new(n : Int) -> TwoSat {
-  let adj : Array[Array[Int]] = [| for _ in 0..<(2 * n) => [] |]
-  let radj : Array[Array[Int]] = [| for _ in 0..<(2 * n) => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
+  let radj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
   { n, adj, radj }
 }
 

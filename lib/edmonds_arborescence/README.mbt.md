@@ -196,7 +196,7 @@ test "arborescence example" {
     { from: 1, to: 3, weight: 2 },
     { from: 2, to: 3, weight: 1 },
   ]
-  let res = @edmonds_arborescence.min_arborescence(4, edges[:], 0).unwrap()
+  let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
   inspect(res.cost, content="3")
 }
 ```
@@ -210,7 +210,7 @@ test "arborescence with cycle resolution" {
     { from: 2, to: 1, weight: 1 },
     { from: 2, to: 3, weight: 5 },
   ]
-  let res = @edmonds_arborescence.min_arborescence(4, edges[:], 0).unwrap()
+  let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
   // Must break the 1↔2 cycle by using 0→1
   inspect(res.cost, content="16")
 }
@@ -225,7 +225,7 @@ test "arborescence unreachable" {
     { from: 0, to: 1, weight: 1 },
     { from: 2, to: 3, weight: 1 },
   ]
-  let res = @edmonds_arborescence.min_arborescence(4, edges[:], 0)
+  let res = @edmonds_arborescence.min_arborescence(4, edges, 0)
   inspect(res is None, content="true")
 }
 ```
@@ -238,7 +238,7 @@ test "arborescence direct vs indirect" {
     { from: 0, to: 2, weight: 2 },
     { from: 1, to: 2, weight: 3 },
   ]
-  let res = @edmonds_arborescence.min_arborescence(3, edges[:], 0).unwrap()
+  let res = @edmonds_arborescence.min_arborescence(3, edges, 0).unwrap()
   // Picks 0→1 and 0→2 instead of 0→1→2
   inspect(res.cost, content="3")
   inspect(res.parent[2], content="0")

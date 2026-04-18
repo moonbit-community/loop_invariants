@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/line_segment_intersection"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn segments_intersect(Point, Point, Point, Point) -> Bool
 
@@ -10,7 +14,7 @@ pub fn segments_intersect(Point, Point, Point, Point) -> Bool
 pub(all) struct Point {
   x : Int64
   y : Int64
-} derive(Eq, Show)
+} derive(Eq, @debug.Debug)
 
 // Type aliases
 

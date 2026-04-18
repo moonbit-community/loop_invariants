@@ -93,7 +93,7 @@ Both cost `O(log n)` time.
 ```mbt check
 ///|
 test "persistent array" {
-  let arr = @challenge_persistent_array.from_array([1, 2, 3, 4][:])
+  let arr = @challenge_persistent_array.from_array([1, 2, 3, 4])
   inspect(@challenge_persistent_array.get_at(arr, 2), content="Some(3)")
   let arr2 = @challenge_persistent_array.set_at(arr, 1, 10)
   inspect(@challenge_persistent_array.get_at(arr, 1), content="Some(2)")
@@ -108,7 +108,7 @@ test "persistent array" {
 ```mbt check
 ///|
 test "persistent array versions" {
-  let arr0 = @challenge_persistent_array.from_array([5, 6, 7][:])
+  let arr0 = @challenge_persistent_array.from_array([5, 6, 7])
   let arr1 = @challenge_persistent_array.set_at(arr0, 0, 9)
   let arr2 = @challenge_persistent_array.set_at(arr1, 2, 1)
   inspect(@challenge_persistent_array.to_array(arr0), content="[5, 6, 7]")
@@ -122,7 +122,7 @@ test "persistent array versions" {
 ```mbt check
 ///|
 test "persistent array bounds" {
-  let arr = @challenge_persistent_array.from_array([1, 2, 3][:])
+  let arr = @challenge_persistent_array.from_array([1, 2, 3])
   inspect(@challenge_persistent_array.get_at(arr, -1), content="None")
   inspect(@challenge_persistent_array.get_at(arr, 3), content="None")
   let arr2 = @challenge_persistent_array.set_at(arr, 99, 10)

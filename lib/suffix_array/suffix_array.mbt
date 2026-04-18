@@ -343,7 +343,7 @@ pub fn SuffixArray::find_all(
   match self.search(pattern) {
     None => []
     Some((first, last)) => {
-      let result : Array[Int] = [| for i in first..<(last + 1) => self.sa[i] |]
+      let result : Array[Int] = [ for i in first..<(last + 1) => self.sa[i] ]
       result.sort_by((a, b) => a - b)
       result
     }
@@ -483,7 +483,7 @@ test "suffix array lcp" {
 test "suffix array convenience" {
   let sa = suffix_array("banana")
   inspect(sa, content="[5, 3, 1, 0, 4, 2]")
-  let lcp = lcp_array("banana", sa[:])
+  let lcp = lcp_array("banana", sa)
   inspect(lcp, content="[0, 1, 3, 0, 0, 2]")
 }
 

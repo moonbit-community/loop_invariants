@@ -103,7 +103,7 @@ fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
 /// reachable from `root`.
 fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
   // Build adjacency list for forward edges
-  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   for e in edges {
     adj[e.from].push(e.to)
   }

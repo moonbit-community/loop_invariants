@@ -179,8 +179,6 @@ fn BiconnectedFinder::run(self : BiconnectedFinder) -> Unit {
 fn BiconnectedFinder::collect_articulation_points(
   self : BiconnectedFinder,
 ) -> Array[Int] {
-  let result : Array[Int] = [|
-    for i in 0..<self.n if self.articulation[i] => i
-  |]
+  let result : Array[Int] = [ for i in 0..<self.n if self.articulation[i] => i ]
   result
 }

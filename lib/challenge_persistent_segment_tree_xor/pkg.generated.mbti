@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_segment_tree_xor"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn apply_updates(Node, Int, ArrayView[(Int, Int)]) -> Node
 
@@ -18,7 +22,7 @@ pub fn xor_value(Node) -> Int
 pub enum Node {
   Leaf(xor~ : Int)
   Branch(xor~ : Int, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

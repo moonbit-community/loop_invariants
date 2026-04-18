@@ -131,11 +131,11 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   }
 
   // Create nodes
-  let nodes = [|
+  let nodes = [
     for i in 0..<n => {
       { value: arr[i], index: i, left: -1, right: -1, parent: -1 }
     }
-  |]
+  ]
 
   // Build tree using monotonic stack
   // INVARIANT: Stack contains nodes on rightmost path, in increasing depth order
@@ -188,7 +188,7 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   }
 
   // Create index to node mapping (node i corresponds to array position i)
-  let index_to_node = [| for i in 0..<n => nodes[i].index |]
+  let index_to_node = [ for i in 0..<n => nodes[i].index ]
 
   // Compute depths using BFS
   let depth = Array::make(n, 0)
@@ -225,9 +225,9 @@ fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
   // Binary lifting preprocessing
   // ancestors[k][v] = 2^k-th ancestor of v
   // INVARIANT: ancestors[k][v] = ancestors[k-1][ancestors[k-1][v]]
-  let ancestors : Array[Array[Int]] = [|
+  let ancestors : Array[Array[Int]] = [
     for _ in 0..<log_n => Array::make(n, -1)
-  |]
+  ]
 
   // Base case: 2^0 = 1st ancestor is parent
   for i in 0..<n {
@@ -934,7 +934,7 @@ test "cartesian tree lca" {
 ///|
 test "cartesian tree large" {
   // Test with larger array
-  let arr = [| for i in 0..<100 => (i * 7 % 100).to_int64() |]
+  let arr = [ for i in 0..<100 => (i * 7 % 100).to_int64() ]
   let tree = CartesianTree::new(arr)
   inspect(tree.verify_inorder(arr), content="true")
   inspect(tree.verify_heap(), content="true")

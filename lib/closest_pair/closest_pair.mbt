@@ -214,9 +214,9 @@ pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int, Int) {
   }
 
   // Create Point array with indices
-  let pts : Array[Point] = [|
+  let pts : Array[Point] = [
     for i in 0..<n => { x: points[i].0, y: points[i].1, idx: i }
-  |]
+  ]
 
   // Sort by x for divide and conquer
   let pts_x = pts.copy()
@@ -225,7 +225,7 @@ pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int, Int) {
   // Sort by y for strip processing
   let pts_y = pts.copy()
   pts_y.sort_by((a, b) => if a.y < b.y { -1 } else if a.y > b.y { 1 } else { 0 })
-  closest_pair_rec(pts_x[:], pts_y)
+  closest_pair_rec(pts_x, pts_y)
 }
 
 ///|

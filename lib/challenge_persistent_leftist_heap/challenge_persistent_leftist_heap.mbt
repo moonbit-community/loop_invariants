@@ -119,6 +119,6 @@ test "persistent_leftist_heap" {
   assert_eq(find_min(h3), Some(3))
   guard delete_min(h3) is Some(h4) else { fail("expected delete_min") }
   assert_eq(find_min(h4), Some(5))
-  let built = from_array([5, 3, 7, 1][:])
+  let built = from_array([5, 3, 7, 1])
   assert_eq(find_min(built), Some(1))
 }

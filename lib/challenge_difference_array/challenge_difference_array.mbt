@@ -37,7 +37,7 @@ pub fn apply_range_add(
 test "difference_array" {
   let base : Array[Int] = [1, 2, 3, 4, 5]
   let updates : Array[(Int, Int, Int)] = [(1, 3, 2), (0, 0, -1), (2, 4, 1)]
-  let updated = apply_range_add(base[:], updates[:])
+  let updated = apply_range_add(base, updates)
   // base + updates = [0, 4, 6, 7, 6]
   assert_eq(updated, [0, 4, 6, 7, 6])
 }

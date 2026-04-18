@@ -227,7 +227,7 @@ test "range add max apply updates" {
   let updated = @challenge_persistent_segment_tree_range_add_max.apply_updates(
     root,
     arr.length(),
-    [(0, 3, 4)][:],
+    [(0, 3, 4)],
   )
   inspect(
     @challenge_persistent_segment_tree_range_add_max.range_max(

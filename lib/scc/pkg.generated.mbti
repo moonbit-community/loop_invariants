@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/scc"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn find_sccs(Int, Array[Array[Int]]) -> SCCResult
 
@@ -14,7 +18,7 @@ pub(all) struct SCCResult {
   component : Array[Int]
   scc_sizes : Array[Int]
   scc_adj : Array[Array[Int]]
-} derive(Show)
+} derive(@debug.Debug)
 
 pub(all) struct TwoSAT {
   n : Int

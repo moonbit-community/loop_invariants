@@ -201,7 +201,7 @@ LCA(1, 3): look at steps first[1]..first[3] = 1..4
 ///|
 test "euler tour subtree basics" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3)]
-  let tour = @euler_tour.build_euler_tour(4, edges[:], 0)
+  let tour = @euler_tour.build_euler_tour(4, edges, 0)
   inspect(tour.subtree_size(1), content="3")
   inspect(tour.is_ancestor(1, 3), content="true")
 }
@@ -211,7 +211,7 @@ test "euler tour subtree basics" {
 ///|
 test "euler tour subtree nodes" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3)]
-  let tour = @euler_tour.build_euler_tour(4, edges[:], 0)
+  let tour = @euler_tour.build_euler_tour(4, edges, 0)
   let nodes = tour.subtree_nodes(1)
   nodes.sort_by((a, b) => a - b)
   inspect(nodes, content="[1, 2, 3]")
@@ -222,7 +222,7 @@ test "euler tour subtree nodes" {
 ///|
 test "euler tour arrays" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
-  let (tin, tout, order) = @euler_tour.euler_tour(5, edges[:], 0)
+  let (tin, tout, order) = @euler_tour.euler_tour(5, edges, 0)
   inspect(order.length(), content="5")
   inspect(tin[0] < tout[0], content="true")
 }
@@ -232,7 +232,7 @@ test "euler tour arrays" {
 ///|
 test "euler tour subtree sum" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
-  let info = @euler_tour.build_euler_tour(5, edges[:], 0)
+  let info = @euler_tour.build_euler_tour(5, edges, 0)
   let values : Array[Int] = [5, 1, 4, 2, 3]
   let flat = Array::make(5, 0)
   for i in 0..<5 {

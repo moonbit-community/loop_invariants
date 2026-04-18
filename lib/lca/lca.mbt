@@ -101,7 +101,7 @@ pub fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
   }
   let log_n = compute_log(n)
   // Use makei to create adjacency list - each element is an independent empty array
-  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
 
   // Build adjacency list
   for edge in edges {
@@ -114,7 +114,7 @@ pub fn LCA::new(n : Int, edges : Array[(Int, Int)]) -> LCA {
 
   // Initialize arrays using makei
   let depth = Array::make(n, 0)
-  let up : Array[Array[Int]] = [| for _ in 0..<n => Array::make(log_n, -1) |]
+  let up : Array[Array[Int]] = [ for _ in 0..<n => Array::make(log_n, -1) ]
 
   // DFS to compute depth and immediate parent
   let visited = Array::make(n, false)
@@ -392,7 +392,7 @@ fn LCA::get_path(self : LCA, u : Int, v : Int) -> Array[Int] {
   // Combine paths: path_u + reversed path_v (without duplicating LCA)
   // Use copy() to start with path_u, then append reversed path_v
   let result = path_u.copy()
-  result.append(path_v.rev()[:])
+  result.append(path_v.rev())
   result
 }
 
@@ -428,7 +428,7 @@ fn WeightedLCA::new(n : Int, edges : Array[(Int, Int, Int64)]) -> WeightedLCA {
   let lca = LCA::new(n, unweighted_edges)
 
   // Build weighted adjacency list
-  let wadj : Array[Array[(Int, Int64)]] = [| for _ in 0..<n => [] |]
+  let wadj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v, w) = edge
     if u >= 0 && u < n && v >= 0 && v < n {

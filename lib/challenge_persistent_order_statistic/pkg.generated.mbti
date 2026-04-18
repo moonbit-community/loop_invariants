@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_order_statistic"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn add(OrderStat, Int) -> OrderStat
 
@@ -13,13 +17,13 @@ pub fn size(OrderStat) -> Int
 // Errors
 
 // Types and methods
-type Node derive(Show)
+type Node derive(@debug.Debug)
 
 pub struct OrderStat {
   root : Node
   lo : Int
   hi : Int
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

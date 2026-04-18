@@ -75,7 +75,7 @@ pub struct Graph {
 /// let g = @dial_shortest_path.Graph::new(5, 3)  // 5 vertices, weights in [0, 3]
 /// ```
 pub fn Graph::new(n : Int, max_weight : Int) -> Graph {
-  let adj : Array[Array[Edge]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, max_weight, adj }
 }
 
@@ -186,7 +186,7 @@ pub fn dial_shortest_paths(graph : Graph, source : Int) -> Array[Int] {
   } else {
     graph.max_weight * (n - 1)
   }
-  let buckets : Array[Array[Int]] = [| for _ in 0..<(max_dist + 1) => [] |]
+  let buckets : Array[Array[Int]] = [ for _ in 0..<(max_dist + 1) => [] ]
   dist[source] = 0
   buckets[0].push(source)
   for d in 0..<(max_dist + 1) {

@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_bst"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn[T : Compare] contains(Tree[T], T) -> Bool
 
@@ -20,7 +24,7 @@ pub fn[T] size(Tree[T]) -> Int
 pub enum Tree[T] {
   Empty
   Node(value~ : T, left~ : Tree[T], right~ : Tree[T])
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

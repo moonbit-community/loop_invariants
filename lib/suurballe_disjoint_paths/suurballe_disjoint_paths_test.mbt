@@ -74,10 +74,7 @@ test "suurballe disjoint paths basic" {
     (3, 4, 0L),
   ]
   let result = @suurballe_disjoint_paths.suurballe_disjoint_paths(
-    5,
-    edges[:],
-    0,
-    4,
+    5, edges, 0, 4,
   )
   match result {
     None => fail("expected two paths")
@@ -122,10 +119,7 @@ test "suurballe disjoint paths basic" {
 test "suurballe no disjoint paths" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, 1L), (2, 3, 1L)]
   let result = @suurballe_disjoint_paths.suurballe_disjoint_paths(
-    4,
-    edges[:],
-    0,
-    3,
+    4, edges, 0, 3,
   )
   inspect(result is None, content="true")
 }

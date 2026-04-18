@@ -70,7 +70,7 @@ test "lca example" {
     (2, 5),
     (4, 6),
   ]
-  let tree = @challenge_lca_binary_lift.build_lca(7, edges[:], 0)
+  let tree = @challenge_lca_binary_lift.build_lca(7, edges, 0)
   inspect(@challenge_lca_binary_lift.lca(tree, 3, 4), content="1")
   inspect(@challenge_lca_binary_lift.lca(tree, 6, 5), content="0")
 }
@@ -82,7 +82,7 @@ test "lca example" {
 ///|
 test "lca same node" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
-  let tree = @challenge_lca_binary_lift.build_lca(4, edges[:], 0)
+  let tree = @challenge_lca_binary_lift.build_lca(4, edges, 0)
   inspect(@challenge_lca_binary_lift.lca(tree, 2, 2), content="2")
 }
 ```
@@ -93,7 +93,7 @@ test "lca same node" {
 ///|
 test "lca ancestor" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
-  let tree = @challenge_lca_binary_lift.build_lca(4, edges[:], 0)
+  let tree = @challenge_lca_binary_lift.build_lca(4, edges, 0)
   inspect(@challenge_lca_binary_lift.lca(tree, 1, 3), content="1")
 }
 ```
@@ -104,7 +104,7 @@ test "lca ancestor" {
 ///|
 test "lca across subtrees" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
-  let tree = @challenge_lca_binary_lift.build_lca(6, edges[:], 0)
+  let tree = @challenge_lca_binary_lift.build_lca(6, edges, 0)
   inspect(@challenge_lca_binary_lift.lca(tree, 4, 5), content="0")
 }
 ```

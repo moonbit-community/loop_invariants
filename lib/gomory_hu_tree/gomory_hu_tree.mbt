@@ -85,7 +85,7 @@ pub fn gomory_hu_tree(
   }
   for i in 1..<n {
     let p = parent[i]
-    let result = @min_cut_st.min_cut_st(n, directed[:], i, p).unwrap()
+    let result = @min_cut_st.min_cut_st(n, directed, i, p).unwrap()
     value[i] = result.value
     let in_side = Array::make(n, false)
     for v in result.source_side {
@@ -105,7 +105,7 @@ pub fn gomory_hu_tree(
       value[p] = tmp
     }
   }
-  let adj : Array[Array[(Int, Int64)]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
   for i in 0..<n {
     let p = parent[i]
     if p >= 0 {

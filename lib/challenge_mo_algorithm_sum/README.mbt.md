@@ -142,7 +142,7 @@ The implementation is in `challenge_mo_algorithm_sum.mbt`.
 test "mo example" {
   let arr : Array[Int] = [1, 2, 3, 4, 5]
   let qs : Array[(Int, Int)] = [(0, 3), (1, 4), (2, 5), (0, 5)]
-  let ans = @challenge_mo_algorithm_sum.mo_range_sum(arr[:], qs[:])
+  let ans = @challenge_mo_algorithm_sum.mo_range_sum(arr, qs)
   inspect(ans, content="[6, 9, 12, 15]")
 }
 ```
@@ -154,7 +154,7 @@ test "mo example" {
 test "mo example small" {
   let arr : Array[Int] = [2, 4, 6, 8]
   let qs : Array[(Int, Int)] = [(0, 2), (1, 3), (0, 4)]
-  let ans = @challenge_mo_algorithm_sum.mo_range_sum(arr[:], qs[:])
+  let ans = @challenge_mo_algorithm_sum.mo_range_sum(arr, qs)
   inspect(ans, content="[6, 10, 20]")
 }
 ```
@@ -166,7 +166,7 @@ test "mo example small" {
 test "mo example negatives" {
   let arr : Array[Int] = [3, -2, 5, -1, 4]
   let qs : Array[(Int, Int)] = [(0, 5), (1, 4), (2, 3)]
-  let ans = @challenge_mo_algorithm_sum.mo_range_sum(arr[:], qs[:])
+  let ans = @challenge_mo_algorithm_sum.mo_range_sum(arr, qs)
   inspect(ans, content="[9, 2, 5]")
 }
 ```
@@ -178,7 +178,7 @@ test "mo example negatives" {
 test "mo example single element" {
   let arr : Array[Int] = [7, 8, 9]
   let qs : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
-  let ans = @challenge_mo_algorithm_sum.mo_range_sum(arr[:], qs[:])
+  let ans = @challenge_mo_algorithm_sum.mo_range_sum(arr, qs)
   inspect(ans, content="[7, 8, 9]")
 }
 ```

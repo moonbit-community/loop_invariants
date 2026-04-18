@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_segment_tree_gcd"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn apply_updates(Node, Int, ArrayView[(Int, Int)]) -> Node
 
@@ -20,7 +24,7 @@ pub fn set_value(Node, Int, Int, Int, Int) -> Node
 pub enum Node {
   Leaf(g~ : Int)
   Branch(g~ : Int, left~ : Node, right~ : Node)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

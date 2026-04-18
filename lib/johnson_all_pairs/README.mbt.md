@@ -279,7 +279,7 @@ test "johnson basic" {
     (2, 3, 2L),
     (1, 3, 5L),
   ]
-  let dist = @johnson_all_pairs.johnson_all_pairs(4, edges[:]).unwrap()
+  let dist = @johnson_all_pairs.johnson_all_pairs(4, edges).unwrap()
   inspect(dist[0], content="[0, 1, -1, 1]")
 }
 ```
@@ -288,7 +288,7 @@ test "johnson basic" {
 ///|
 test "johnson unreachable" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 2L), (1, 2, 3L)]
-  let dist = @johnson_all_pairs.johnson_all_pairs(4, edges[:]).unwrap()
+  let dist = @johnson_all_pairs.johnson_all_pairs(4, edges).unwrap()
   // Node 3 is unreachable from 0
   inspect(dist[0][3], content="4611686018427387903")
 }
@@ -298,7 +298,7 @@ test "johnson unreachable" {
 ///|
 test "johnson negative cycle" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, -2L), (2, 1, -2L)]
-  inspect(@johnson_all_pairs.johnson_all_pairs(3, edges[:]), content="None")
+  inspect(@johnson_all_pairs.johnson_all_pairs(3, edges), content="None")
 }
 ```
 

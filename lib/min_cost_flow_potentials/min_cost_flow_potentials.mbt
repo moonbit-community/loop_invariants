@@ -177,7 +177,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 /// Parameters:
 /// - `n`: number of vertices (must be >= 1).
 pub fn MinCostFlowPotentials::new(n : Int) -> MinCostFlowPotentials {
-  let adj : Array[Array[Edge]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,

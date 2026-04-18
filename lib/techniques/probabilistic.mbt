@@ -37,7 +37,7 @@ fn reservoir_sample(stream : ArrayView[Int], k : Int, rng : RNG) -> Array[Int] {
   guard k > 0 && k <= stream.length() else { return [] }
 
   // Initialize reservoir with first k elements
-  let reservoir : Array[Int] = [| for i in 0..<k => stream[i] |]
+  let reservoir : Array[Int] = [ for i in 0..<k => stream[i] ]
 
   // Process remaining elements
   for i = k {
@@ -104,7 +104,7 @@ fn reservoir_sample(stream : ArrayView[Int], k : Int, rng : RNG) -> Array[Int] {
 test "reservoir_sample" {
   let stream : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   let rng = make_rng(42L)
-  let sample = reservoir_sample(stream[:], 3, rng)
+  let sample = reservoir_sample(stream, 3, rng)
   assert_eq(sample.length(), 3)
   // Can't test randomness easily, just verify structure
 }
@@ -276,7 +276,7 @@ test "weighted_select" {
   // Weights: [1, 3, 2] → probabilities [1/6, 3/6, 2/6]
   let weights : Array[Int] = [1, 3, 2]
   let rng = make_rng(99L)
-  let result = weighted_select(weights[:], rng)
+  let result = weighted_select(weights, rng)
   assert_true(result >= 0 && result < 3)
 }
 

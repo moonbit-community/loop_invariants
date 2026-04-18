@@ -332,9 +332,9 @@ priv struct FenwickTree2D {
 ///
 /// Time complexity: O(rows * cols).
 fn FenwickTree2D::new(rows : Int, cols : Int) -> FenwickTree2D {
-  let tree : Array[Array[Int64]] = [|
+  let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
-  |]
+  ]
   { rows, cols, tree }
 }
 

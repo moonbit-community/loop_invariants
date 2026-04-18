@@ -53,9 +53,9 @@ pub struct Fenwick2D {
 /// ```
 pub fn Fenwick2D::new(rows : Int, cols : Int) -> Fenwick2D {
   // Use 1-indexed arrays (index 0 unused)
-  let tree : Array[Array[Int64]] = [|
+  let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
-  |]
+  ]
   { tree, rows, cols }
 }
 
@@ -290,9 +290,9 @@ priv struct Fenwick2DRange {
 
 ///|
 fn Fenwick2DRange::new(rows : Int, cols : Int) -> Fenwick2DRange {
-  let tree : Array[Array[Int64]] = [|
+  let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
-  |]
+  ]
   { tree, rows, cols }
 }
 

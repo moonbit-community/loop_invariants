@@ -364,13 +364,13 @@ pub fn halfplane_intersection(halfplanes : Array[HalfPlane]) -> Array[Point]? {
   if m < 3 {
     return None
   }
-  let result : Array[Point] = [|
+  let result : Array[Point] = [
     for i in 0..<m => {
       let l1 = deque[head + i]
       let l2 = deque[head + (i + 1) % m]
       line_intersection(l1, l2)
     }
-  |]
+  ]
   Some(result)
 }
 

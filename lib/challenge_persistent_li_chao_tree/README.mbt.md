@@ -124,7 +124,7 @@ test "persistent li chao" {
     { m: -1, b: 10 },
     { m: 2, b: -5 },
   ]
-  let tree = @challenge_persistent_li_chao_tree.from_array(lines[:], 0, 10)
+  let tree = @challenge_persistent_li_chao_tree.from_array(lines, 0, 10)
   inspect(
     @challenge_persistent_li_chao_tree.query(tree, 0, 0, 10),
     content="-5",

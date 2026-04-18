@@ -220,7 +220,7 @@ test "range add min apply updates" {
   let updated = @challenge_persistent_segment_tree_range_add_min.apply_updates(
     root,
     arr.length(),
-    [(0, 2, 2), (2, 3, 3)][:],
+    [(0, 2, 2), (2, 3, 3)],
   )
   inspect(
     @challenge_persistent_segment_tree_range_add_min.range_min(

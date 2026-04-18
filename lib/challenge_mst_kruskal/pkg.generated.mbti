@@ -1,13 +1,17 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_mst_kruskal"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn mst_weight(Int, ArrayView[(Int, Int, Int)]) -> Int?
 
 // Errors
 
 // Types and methods
-type DSU derive(Show)
+type DSU derive(@debug.Debug)
 
 // Type aliases
 

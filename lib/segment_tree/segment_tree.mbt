@@ -553,7 +553,7 @@ test "segment tree boundary" {
 ///|
 test "segment tree large" {
   let n = 100
-  let arr : Array[Int64] = [| for i in 0..<n => i.to_int64() |]
+  let arr : Array[Int64] = [ for i in 0..<n => i.to_int64() ]
   let st = SegmentTree::new(arr)
   // Sum of 0..99 = 99*100/2 = 4950
   inspect(st.query(0, 99), content="4950")

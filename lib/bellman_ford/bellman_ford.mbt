@@ -299,7 +299,7 @@ priv struct SPFA {
 
 ///|
 fn SPFA::new(n : Int) -> SPFA {
-  let adj : Array[Array[(Int, Int64)]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,
@@ -384,7 +384,7 @@ test "bellman_ford wrapper" {
     (0, 2, 5),
     (2, 3, 1),
   ]
-  let (dist, neg) = bellman_ford(4, edges[:], 0)
+  let (dist, neg) = bellman_ford(4, edges, 0)
   inspect(dist, content="[0, 1, 3, 4]")
   inspect(neg, content="false")
 }
@@ -392,7 +392,7 @@ test "bellman_ford wrapper" {
 ///|
 test "bellman_ford wrapper negative cycle" {
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2), (2, 1, -2)]
-  let (_dist, neg) = bellman_ford(3, edges[:], 0)
+  let (_dist, neg) = bellman_ford(3, edges, 0)
   inspect(neg, content="true")
 }
 

@@ -209,10 +209,10 @@ pub fn xor_convolution(
   for i in 0..<b.length() {
     fb[i] = b[i]
   }
-  let ta = fwht_xor(fa[:], false)
-  let tb = fwht_xor(fb[:], false)
+  let ta = fwht_xor(fa, false)
+  let tb = fwht_xor(fb, false)
   for i in 0..<n {
     ta[i] = ta[i] * tb[i]
   }
-  fwht_xor(ta[:], true)
+  fwht_xor(ta, true)
 }

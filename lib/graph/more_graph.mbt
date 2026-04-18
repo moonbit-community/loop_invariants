@@ -76,7 +76,7 @@ fn bellman_ford_with_neg_cycle(
 test "bellman ford" {
   // Graph: 0 -> 1 (4), 0 -> 2 (5), 1 -> 2 (-3), 2 -> 3 (4)
   let edges = [(0, 1, 4), (0, 2, 5), (1, 2, -3), (2, 3, 4)]
-  let (dist, has_neg) = bellman_ford_with_neg_cycle(4, edges[:], 0)
+  let (dist, has_neg) = bellman_ford_with_neg_cycle(4, edges, 0)
   assert_eq(has_neg, false)
   assert_eq(dist[0], 0)
   assert_eq(dist[1], 4)
@@ -88,7 +88,7 @@ test "bellman ford" {
 test "bellman ford negative cycle" {
   // Graph with negative cycle: 0 -> 1 (1), 1 -> 2 (1), 2 -> 0 (-3)
   let edges = [(0, 1, 1), (1, 2, 1), (2, 0, -3)]
-  let (_, has_neg) = bellman_ford_with_neg_cycle(3, edges[:], 0)
+  let (_, has_neg) = bellman_ford_with_neg_cycle(3, edges, 0)
   assert_eq(has_neg, true)
 }
 
@@ -107,9 +107,9 @@ fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
   let inf = 2147483647 / 2 // Avoid overflow
 
   // Initialize distance matrix using makei
-  let dist : Array[Array[Int]] = [|
+  let dist : Array[Array[Int]] = [
     for i in 0..<n => {
-      [|
+      [
         for j in 0..<n => {
           if i == j {
             0
@@ -119,9 +119,9 @@ fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
             inf
           }
         }
-      |]
+      ]
     }
-  |]
+  ]
 
   // Main algorithm: consider each vertex as intermediate
   for k in 0..<n {
@@ -204,7 +204,7 @@ test "floyd warshall" {
 fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   // Calculate in-degrees
   let in_degree = Array::make(n, 0)
-  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
     adj[u].push(v)
@@ -212,7 +212,7 @@ fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? 
   }
 
   // Queue of vertices with in-degree 0
-  let queue : Array[Int] = [| for i in 0..<n if in_degree[i] == 0 => i |]
+  let queue : Array[Int] = [ for i in 0..<n if in_degree[i] == 0 => i ]
   let result : Array[Int] = []
   let _ = for front = 0 {
     match queue.get(front) {
@@ -242,7 +242,7 @@ fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? 
 test "topological sort kahn" {
   // DAG: 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3
   let edges = [(0, 1), (0, 2), (1, 3), (2, 3)]
-  let result = topological_sort_kahn(4, edges[:])
+  let result = topological_sort_kahn(4, edges)
   assert_true(result is Some(_))
 }
 
@@ -398,7 +398,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
   }
 
   // Build reverse graph using makei
-  let rev_adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let rev_adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   for u in 0..<n {
     for v in adj[u] {
       rev_adj[v].push(u)
@@ -604,7 +604,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
   }
 
   // Union-Find
-  let parent = [| for i in 0..<n => i |]
+  let parent = [ for i in 0..<n => i ]
   let rank = Array::make(n, 0)
   let total_weight = for i = 0, total_weight = 0, edges_added = 0; i <
                         sorted_edges.length() &&

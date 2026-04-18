@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_trie_string"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn add(Node, String) -> Node
 
@@ -14,7 +18,7 @@ pub fn empty() -> Node
 pub struct Node {
   end : Bool
   children : Array[Node?]
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

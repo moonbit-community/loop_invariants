@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_implicit_treap"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn[T] empty() -> Treap[T]
 
@@ -24,7 +28,7 @@ pub fn[T] to_array(Treap[T]) -> Array[T]
 pub enum Treap[T] {
   Empty
   Node(value~ : T, priority~ : Int, size~ : Int, left~ : Treap[T], right~ : Treap[T])
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

@@ -53,7 +53,7 @@ fn mos_algorithm_range_sum(
   let block_size = mo_isqrt(n)
 
   // Create and sort query indices using bubble sort
-  let query_order = [| for i in 0..<q => i |]
+  let query_order = [ for i in 0..<q => i ]
   for i in 0..<(q - 1) {
     let last = q - 1 - i
     for j in 0..<last {
@@ -165,7 +165,7 @@ fn mos_algorithm_range_sum(
 test "mos algorithm range sum" {
   let arr = [1, 2, 3, 4, 5]
   let queries = [(0, 3), (1, 4), (0, 5)]
-  let results = mos_algorithm_range_sum(arr[:], queries)
+  let results = mos_algorithm_range_sum(arr, queries)
   assert_eq(results[0], 6) // 1+2+3 = 6
   assert_eq(results[1], 9) // 2+3+4 = 9
   assert_eq(results[2], 15) // 1+2+3+4+5 = 15
@@ -332,7 +332,7 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
 test "range mode query" {
   let arr = [1, 2, 1, 1, 2, 3, 2, 2]
   let queries = [(0, 4), (4, 8), (0, 8)]
-  let results = range_mode(arr[:], queries)
+  let results = range_mode(arr, queries)
   assert_eq(results[0], 1) // [1,2,1,1] -> mode is 1
   assert_eq(results[1], 2) // [2,3,2,2] -> mode is 2
   assert_eq(results[2], 2) // full array -> mode is 2
@@ -430,7 +430,7 @@ priv struct MoUnionFind {
 
 ///|
 fn MoUnionFind::new(n : Int) -> MoUnionFind {
-  let parent = [| for i in 0..<n => i |]
+  let parent = [ for i in 0..<n => i ]
   let rank : Array[Int] = Array::make(n, 0)
   { parent, rank }
 }
@@ -700,7 +700,7 @@ priv struct BinaryLifting {
 fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
   let n = adj.length()
   let log_n = 20
-  let up = [| for _ in 0..<n => Array::make(log_n, -1) |]
+  let up = [ for _ in 0..<n => Array::make(log_n, -1) ]
   let depth : Array[Int] = Array::make(n, 0)
   let queue : Array[Int] = []
   let visited : Array[Bool] = Array::make(n, false)

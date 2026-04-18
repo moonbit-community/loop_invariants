@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_binary_trie"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn count(Node) -> Int
 
@@ -16,7 +20,7 @@ pub fn max_xor(Node, Int, Int) -> Int
 pub enum Node {
   Empty
   Node(count~ : Int, zero~ : Node, one~ : Node)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Type aliases
 

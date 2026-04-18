@@ -110,7 +110,7 @@ pub fn SuffixAutomaton::new(max_len : Int) -> SuffixAutomaton {
   states.push(init)
 
   // Reserve space for states
-  states.append([| for _ in 0..<(2 * max_len) => SAMState::new() |])
+  states.append([ for _ in 0..<(2 * max_len) => SAMState::new() ])
   { states, last: 0, size: 1 }
 }
 
@@ -368,7 +368,7 @@ pub fn SuffixAutomaton::count_occurrences(
     .map(s => s.len)
     .maximum()
     .unwrap_or(0)
-  let by_len : Array[Array[Int]] = [| for _ in 0..<(max_len + 1) => [] |]
+  let by_len : Array[Array[Int]] = [ for _ in 0..<(max_len + 1) => [] ]
   for i in 0..<self.size {
     by_len[self.states[i].len].push(i)
   }

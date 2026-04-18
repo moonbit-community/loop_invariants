@@ -42,6 +42,6 @@ pub fn lcs_length(a : ArrayView[Char], b : ArrayView[Char]) -> Int {
 test "lcs_length" {
   let a : Array[Char] = ['A', 'B', 'C', 'B', 'D', 'A', 'B']
   let b : Array[Char] = ['B', 'D', 'C', 'A', 'B', 'A']
-  assert_eq(lcs_length(a[:], b[:]), 4)
-  assert_eq(lcs_length(['A', 'B', 'C'][:], ['A', 'B', 'C'][:]), 3)
+  assert_eq(lcs_length(a, b), 4)
+  assert_eq(lcs_length(['A', 'B', 'C'], ['A', 'B', 'C']), 3)
 }

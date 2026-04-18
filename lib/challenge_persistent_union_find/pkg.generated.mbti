@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_union_find"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn find(DSU, Int) -> Int
 
@@ -16,11 +20,11 @@ pub fn union(DSU, Int, Int) -> DSU
 pub struct DSU {
   parent : PArray
   size : PArray
-} derive(Show)
+} derive(@debug.Debug)
 
-type Node derive(Show)
+type Node derive(@debug.Debug)
 
-type PArray derive(Show)
+type PArray derive(@debug.Debug)
 
 // Type aliases
 

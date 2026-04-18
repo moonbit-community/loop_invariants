@@ -1,7 +1,7 @@
 ///|
 test "block-cut tree structure" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
-  let tree = @block_cut_tree.build_block_cut_tree(4, edges[:])
+  let tree = @block_cut_tree.build_block_cut_tree(4, edges)
   assert_eq(tree.component_count, 2)
   let comp0 = 4
   let comp1 = 5

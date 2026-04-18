@@ -269,7 +269,7 @@ gives the LCA directly.  The actual LCA of 3 and 5 is **0**.
 ```mbt check
 ///|
 test "virtual tree basic example" {
-  let adj : Array[Array[Int]] = [| for _ in 0..<6 => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<6 => [] ]
   adj[0].push(1)
   adj[1].push(0)
   adj[0].push(2)
@@ -298,7 +298,7 @@ no edges.
 ```mbt check
 ///|
 test "virtual tree single node" {
-  let adj : Array[Array[Int]] = [| for _ in 0..<3 => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<3 => [] ]
   adj[0].push(1)
   adj[1].push(0)
   adj[1].push(2)

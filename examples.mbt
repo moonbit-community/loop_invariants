@@ -144,11 +144,11 @@ fn binary_search(arr : ArrayView[Int], target : Int) -> Int? {
 ///|
 test "binary_search" {
   let arr : Array[Int] = [1, 3, 5, 7, 9, 11, 13]
-  assert_eq(binary_search(arr[:], 7), Some(3))
-  assert_eq(binary_search(arr[:], 1), Some(0))
-  assert_eq(binary_search(arr[:], 13), Some(6))
-  assert_eq(binary_search(arr[:], 6), None)
-  assert_eq(binary_search(arr[:], 0), None)
+  assert_eq(binary_search(arr, 7), Some(3))
+  assert_eq(binary_search(arr, 1), Some(0))
+  assert_eq(binary_search(arr, 13), Some(6))
+  assert_eq(binary_search(arr, 6), None)
+  assert_eq(binary_search(arr, 0), None)
 }
 
 // ============================================================================
@@ -582,10 +582,10 @@ fn kadane(arr : ArrayView[Int]) -> Int {
 
 ///|
 test "kadane" {
-  assert_eq(kadane([-2, 1, -3, 4, -1, 2, 1, -5, 4][:]), 6) // [4,-1,2,1]
-  assert_eq(kadane([1][:]), 1)
-  assert_eq(kadane([5, 4, -1, 7, 8][:]), 23) // entire array
-  assert_eq(kadane([-1, -2, -3][:]), -1) // least negative
+  assert_eq(kadane([-2, 1, -3, 4, -1, 2, 1, -5, 4]), 6) // [4,-1,2,1]
+  assert_eq(kadane([1]), 1)
+  assert_eq(kadane([5, 4, -1, 7, 8]), 23) // entire array
+  assert_eq(kadane([-1, -2, -3]), -1) // least negative
 }
 
 // ============================================================================
@@ -674,10 +674,10 @@ fn two_sum_sorted(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
 
 ///|
 test "two_sum_sorted" {
-  assert_eq(two_sum_sorted([1, 2, 3, 4, 5][:], 9), Some((3, 4))) // 4+5
-  assert_eq(two_sum_sorted([1, 2, 3, 4, 5][:], 3), Some((0, 1))) // 1+2
-  assert_eq(two_sum_sorted([1, 2, 3, 4, 5][:], 100), None)
-  assert_eq(two_sum_sorted([2, 7, 11, 15][:], 9), Some((0, 1))) // 2+7
+  assert_eq(two_sum_sorted([1, 2, 3, 4, 5], 9), Some((3, 4))) // 4+5
+  assert_eq(two_sum_sorted([1, 2, 3, 4, 5], 3), Some((0, 1))) // 1+2
+  assert_eq(two_sum_sorted([1, 2, 3, 4, 5], 100), None)
+  assert_eq(two_sum_sorted([2, 7, 11, 15], 9), Some((0, 1))) // 2+7
 }
 
 // ============================================================================
@@ -741,11 +741,11 @@ fn merge(left : ArrayView[Int], right : ArrayView[Int]) -> Array[Int] {
 
 ///|
 test "merge" {
-  assert_eq(merge([1, 3, 5][:], [2, 4, 6][:]), [1, 2, 3, 4, 5, 6])
-  assert_eq(merge([1, 2, 3][:], [4, 5, 6][:]), [1, 2, 3, 4, 5, 6])
-  assert_eq(merge([4, 5, 6][:], [1, 2, 3][:]), [1, 2, 3, 4, 5, 6])
-  assert_eq(merge([][:], [1, 2][:]), [1, 2])
-  assert_eq(merge([1, 2][:], [][:]), [1, 2])
+  assert_eq(merge([1, 3, 5], [2, 4, 6]), [1, 2, 3, 4, 5, 6])
+  assert_eq(merge([1, 2, 3], [4, 5, 6]), [1, 2, 3, 4, 5, 6])
+  assert_eq(merge([4, 5, 6], [1, 2, 3]), [1, 2, 3, 4, 5, 6])
+  assert_eq(merge([], [1, 2]), [1, 2])
+  assert_eq(merge([1, 2], []), [1, 2])
 }
 
 // ============================================================================
@@ -904,10 +904,10 @@ fn majority_element(arr : ArrayView[Int]) -> Int? {
 
 ///|
 test "majority_element" {
-  assert_eq(majority_element([3, 2, 3][:]), Some(3))
-  assert_eq(majority_element([2, 2, 1, 1, 1, 2, 2][:]), Some(2))
-  assert_eq(majority_element([1, 2, 3][:]), None) // no majority
-  assert_eq(majority_element([1][:]), Some(1))
+  assert_eq(majority_element([3, 2, 3]), Some(3))
+  assert_eq(majority_element([2, 2, 1, 1, 1, 2, 2]), Some(2))
+  assert_eq(majority_element([1, 2, 3]), None) // no majority
+  assert_eq(majority_element([1]), Some(1))
 }
 
 // ============================================================================
@@ -1453,9 +1453,9 @@ fn lis_length(arr : ArrayView[Int]) -> Int {
 
 ///|
 test "lis_length" {
-  assert_eq(lis_length([10, 9, 2, 5, 3, 7, 101, 18][:]), 4) // [2,3,7,18] or [2,5,7,101]
-  assert_eq(lis_length([0, 1, 0, 3, 2, 3][:]), 4) // [0,1,2,3]
-  assert_eq(lis_length([7, 7, 7, 7][:]), 1) // all same, LIS = 1
-  assert_eq(lis_length([1, 2, 3, 4, 5][:]), 5) // already sorted
-  assert_eq(lis_length([5, 4, 3, 2, 1][:]), 1) // decreasing
+  assert_eq(lis_length([10, 9, 2, 5, 3, 7, 101, 18]), 4) // [2,3,7,18] or [2,5,7,101]
+  assert_eq(lis_length([0, 1, 0, 3, 2, 3]), 4) // [0,1,2,3]
+  assert_eq(lis_length([7, 7, 7, 7]), 1) // all same, LIS = 1
+  assert_eq(lis_length([1, 2, 3, 4, 5]), 5) // already sorted
+  assert_eq(lis_length([5, 4, 3, 2, 1]), 1) // decreasing
 }

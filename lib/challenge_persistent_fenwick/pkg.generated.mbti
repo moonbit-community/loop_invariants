@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "bobzhang/loop_invariants/lib/challenge_persistent_fenwick"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn add(Fenwick, Int, Int) -> Fenwick
 
@@ -18,9 +22,9 @@ pub fn range_sum(Fenwick, Int, Int) -> Int
 pub struct Fenwick {
   root : Node
   n : Int
-} derive(Show)
+} derive(@debug.Debug)
 
-type Node derive(Show)
+type Node derive(@debug.Debug)
 
 // Type aliases
 

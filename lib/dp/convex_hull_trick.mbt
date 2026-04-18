@@ -365,7 +365,7 @@ fn divide_conquer_dp(
   cost : (Int, Int) -> Int64,
   initial : Array[Int64],
 ) -> Array[Int64] {
-  let dp = [| for i in 0..<n => initial[i] |]
+  let dp = [ for i in 0..<n => initial[i] ]
 
   // Divide and conquer helper
   // Computes dp[lo..hi] given that opt is in [opt_lo, opt_hi]
@@ -448,14 +448,14 @@ fn knuth_optimization(
   n : Int,
   cost : (Int, Int) -> Int64,
 ) -> Array[Array[Int64]] {
-  let dp = [| for _ in 0..<n => Array::make(n, 0L) |]
-  let opt = [|
+  let dp = [ for _ in 0..<n => Array::make(n, 0L) ]
+  let opt = [
     for i in 0..<n => {
       let row = Array::make(n, 0)
       row[i] = i
       row
     }
-  |]
+  ]
 
   // Process by increasing length
   for len in 2..<=n {
@@ -587,7 +587,7 @@ fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
 ///|
 test "sliding window dp" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let dp = sliding_window_dp(arr[:], 2)
+  let dp = sliding_window_dp(arr, 2)
 
   // dp[0] = 1
   // dp[1] = dp[0] + 2 = 3

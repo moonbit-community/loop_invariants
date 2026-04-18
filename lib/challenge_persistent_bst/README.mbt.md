@@ -125,7 +125,7 @@ test "persistent bst" {
 ```mbt check
 ///|
 test "persistent bst from array" {
-  let t = @challenge_persistent_bst.from_array([3, 1, 4, 2][:])
+  let t = @challenge_persistent_bst.from_array([3, 1, 4, 2])
   inspect(@challenge_persistent_bst.contains(t, 4), content="true")
   inspect(@challenge_persistent_bst.inorder(t), content="[1, 2, 3, 4]")
 }

@@ -131,7 +131,7 @@ fn build_adj(
   n : Int,
   edges : ArrayView[(Int, Int, Int64)],
 ) -> Array[Array[(Int, Int64)]]? {
-  let adj : Array[Array[(Int, Int64)]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v, w) = edge
     if w < 0L {
@@ -205,7 +205,7 @@ fn path_cost(adj : Array[Array[(Int, Int64)]], nodes : Array[Int]) -> Int64? {
 /// The resulting slice becomes the "root path" used when computing spur
 /// candidates.  It always contains at least the source node.
 fn prefix_nodes(nodes : Array[Int], end_idx : Int) -> Array[Int] {
-  let prefix : Array[Int] = [| for i in 0..<=end_idx => nodes[i] |]
+  let prefix : Array[Int] = [ for i in 0..<=end_idx => nodes[i] ]
   prefix
 }
 
@@ -331,7 +331,7 @@ fn shortest_path_filtered(
 ///     (2, 3, 2L),
 ///     (1, 2, 1L),
 ///   ]
-///   let paths = @k_shortest_paths_yen.yen_k_shortest_paths(4, edges[:], 0, 3, 3)
+///   let paths = @k_shortest_paths_yen.yen_k_shortest_paths(4, edges, 0, 3, 3)
 ///   inspect(paths[0].cost, content="2")
 ///   inspect(paths[1].cost, content="4")
 ///   inspect(paths[2].cost, content="5")
@@ -378,11 +378,11 @@ pub fn yen_k_shortest_paths(
         None => continue
         Some(c) => c
       }
-      let blocked_edges : Array[(Int, Int)] = [|
+      let blocked_edges : Array[(Int, Int)] = [
         for p in a_paths if p.nodes.length() > i && has_prefix(p.nodes, root) => {
           (p.nodes[i], p.nodes[i + 1])
         }
-      |]
+      ]
       let blocked_nodes = Array::make(n, false)
       for j in 0..<(root.length() - 1) {
         blocked_nodes[root[j]] = true
@@ -426,7 +426,7 @@ test "yen k shortest paths" {
     (2, 3, 2L),
     (1, 2, 1L),
   ]
-  let paths = yen_k_shortest_paths(4, edges[:], 0, 3, 3)
+  let paths = yen_k_shortest_paths(4, edges, 0, 3, 3)
   inspect(paths.length(), content="3")
   inspect(paths[0].cost, content="2")
   inspect(paths[1].cost, content="4")
@@ -436,13 +436,13 @@ test "yen k shortest paths" {
 ///|
 test "yen no path" {
   let edges : Array[(Int, Int, Int64)] = []
-  let paths = yen_k_shortest_paths(3, edges[:], 0, 2, 2)
+  let paths = yen_k_shortest_paths(3, edges, 0, 2, 2)
   inspect(paths.length(), content="0")
 }
 
 ///|
 test "yen path cost uses lightest parallel edge" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L), (0, 1, 2L), (1, 2, 1L)]
-  let adj = build_adj(3, edges[:]).unwrap()
+  let adj = build_adj(3, edges).unwrap()
   inspect(path_cost(adj, [0, 1, 2]).unwrap(), content="3")
 }

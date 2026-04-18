@@ -161,9 +161,9 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 ///
 /// Time complexity: O(n).
 fn build_adj(n : Int) -> Array[Array[(Int, Int64)]] {
-  [|
+  [
     for _ in 0..<n => []
-  |]
+  ]
 }
 
 ///|
@@ -318,7 +318,7 @@ pub fn johnson_all_pairs(
   }
 
   // Run Dijkstra from each vertex
-  let result : Array[Array[Int64]] = [| for _ in 0..<n => [] |]
+  let result : Array[Array[Int64]] = [ for _ in 0..<n => [] ]
   for s in 0..<n {
     let dist = dijkstra(n, adj, s)
     let row = Array::make(n, INF64)
@@ -345,7 +345,7 @@ test "johnson basic" {
     (2, 3, 2L),
     (1, 3, 5L),
   ]
-  let dist = johnson_all_pairs(4, edges[:]).unwrap()
+  let dist = johnson_all_pairs(4, edges).unwrap()
   inspect(dist[0], content="[0, 1, -1, 1]")
   inspect(dist[1], content="[4611686018427387903, 0, -2, 0]")
 }
@@ -353,12 +353,12 @@ test "johnson basic" {
 ///|
 test "johnson negative cycle" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, -2L), (2, 1, -2L)]
-  inspect(johnson_all_pairs(3, edges[:]), content="None")
+  inspect(johnson_all_pairs(3, edges), content="None")
 }
 
 ///|
 test "johnson unreachable" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 2L), (1, 2, 3L)]
-  let dist = johnson_all_pairs(4, edges[:]).unwrap()
+  let dist = johnson_all_pairs(4, edges).unwrap()
   inspect(dist[0][3], content="4611686018427387903")
 }

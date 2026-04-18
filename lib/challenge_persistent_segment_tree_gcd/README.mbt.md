@@ -96,7 +96,7 @@ test "segment tree gcd basic" {
   let updated = @challenge_persistent_segment_tree_gcd.apply_updates(
     root,
     arr.length(),
-    [(2, 5), (0, 9)][:],
+    [(2, 5), (0, 9)],
   )
   inspect(
     @challenge_persistent_segment_tree_gcd.range_gcd(

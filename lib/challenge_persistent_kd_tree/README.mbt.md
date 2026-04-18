@@ -129,7 +129,7 @@ test "kd tree from array" {
     { x: 3, y: 4 },
     { x: 1, y: 5 },
   ]
-  let t = @challenge_persistent_kd_tree.from_array(pts[:])
+  let t = @challenge_persistent_kd_tree.from_array(pts)
   inspect(
     @challenge_persistent_kd_tree.contains(t, { x: 3, y: 4 }),
     content="true",

@@ -87,7 +87,7 @@ priv struct MaxFlow {
 /// All adjacency lists are initialised empty.  `level` and `iter` arrays are
 /// pre-allocated but their initial values are overwritten before each use.
 fn MaxFlow::new(n : Int) -> MaxFlow {
-  let adj : Array[Array[Edge]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0) }
 }
 

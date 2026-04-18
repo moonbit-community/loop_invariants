@@ -74,7 +74,7 @@ test "segment tree max basic" {
   let updated = @challenge_persistent_segment_tree_max.apply_updates(
     root,
     arr.length(),
-    [(2, 1), (0, 6)][:],
+    [(2, 1), (0, 6)],
   )
   inspect(
     @challenge_persistent_segment_tree_max.range_max(

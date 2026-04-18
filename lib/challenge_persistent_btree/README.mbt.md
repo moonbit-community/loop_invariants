@@ -126,7 +126,7 @@ test "btree basic" {
 ```mbt check
 ///|
 test "btree from array" {
-  let t = @challenge_persistent_btree.from_array([8, 3, 1, 6, 4, 7, 10, 14][:])
+  let t = @challenge_persistent_btree.from_array([8, 3, 1, 6, 4, 7, 10, 14])
   inspect(@challenge_persistent_btree.contains(t, 6), content="true")
   inspect(@challenge_persistent_btree.contains(t, 2), content="false")
   inspect(@challenge_persistent_btree.size(t), content="8")

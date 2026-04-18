@@ -164,7 +164,7 @@ test "persistent versions" {
 ```mbt check
 ///|
 test "persistent 2-3 tree from array" {
-  let t = @challenge_persistent_23_tree.from_array([7, 1, 5][:])
+  let t = @challenge_persistent_23_tree.from_array([7, 1, 5])
   inspect(@challenge_persistent_23_tree.contains(t, 1), content="true")
   inspect(@challenge_persistent_23_tree.contains(t, 9), content="false")
   inspect(@challenge_persistent_23_tree.size(t), content="3")

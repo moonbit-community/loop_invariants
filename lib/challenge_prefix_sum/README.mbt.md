@@ -70,9 +70,9 @@ Which matches `-1 + 4 = 3`.
 ///|
 test "prefix sum basic" {
   let arr : Array[Int] = [2, -1, 3, 0]
-  let prefix = @challenge_prefix_sum.build_prefix_sum(arr[:])
+  let prefix = @challenge_prefix_sum.build_prefix_sum(arr)
   inspect(prefix, content="[0, 2, 1, 4, 4]")
-  inspect(@challenge_prefix_sum.range_sum(prefix[:], 1, 2), content="2")
+  inspect(@challenge_prefix_sum.range_sum(prefix, 1, 2), content="2")
 }
 ```
 
@@ -84,9 +84,9 @@ test "prefix sum basic" {
 ///|
 test "prefix sum full range" {
   let arr : Array[Int] = [5, 5, 5]
-  let prefix = @challenge_prefix_sum.build_prefix_sum(arr[:])
-  inspect(@challenge_prefix_sum.range_sum(prefix[:], 0, 0), content="5")
-  inspect(@challenge_prefix_sum.range_sum(prefix[:], 0, 2), content="15")
+  let prefix = @challenge_prefix_sum.build_prefix_sum(arr)
+  inspect(@challenge_prefix_sum.range_sum(prefix, 0, 0), content="5")
+  inspect(@challenge_prefix_sum.range_sum(prefix, 0, 2), content="15")
 }
 ```
 
@@ -98,9 +98,9 @@ test "prefix sum full range" {
 ///|
 test "prefix sum negatives" {
   let arr : Array[Int] = [4, -6, 1, -2, 7]
-  let prefix = @challenge_prefix_sum.build_prefix_sum(arr[:])
+  let prefix = @challenge_prefix_sum.build_prefix_sum(arr)
   inspect(prefix, content="[0, 4, -2, -1, -3, 4]")
-  inspect(@challenge_prefix_sum.range_sum(prefix[:], 1, 3), content="-7")
+  inspect(@challenge_prefix_sum.range_sum(prefix, 1, 3), content="-7")
 }
 ```
 
@@ -112,9 +112,9 @@ test "prefix sum negatives" {
 ///|
 test "prefix sum single" {
   let arr : Array[Int] = [9]
-  let prefix = @challenge_prefix_sum.build_prefix_sum(arr[:])
+  let prefix = @challenge_prefix_sum.build_prefix_sum(arr)
   inspect(prefix, content="[0, 9]")
-  inspect(@challenge_prefix_sum.range_sum(prefix[:], 0, 0), content="9")
+  inspect(@challenge_prefix_sum.range_sum(prefix, 0, 0), content="9")
 }
 ```
 

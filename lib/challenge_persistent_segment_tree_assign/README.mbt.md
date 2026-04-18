@@ -93,7 +93,7 @@ test "segment tree assign basic" {
   let updated = @challenge_persistent_segment_tree_assign.apply_updates(
     root,
     arr.length(),
-    [(1, 3, 5), (0, 2, 0)][:],
+    [(1, 3, 5), (0, 2, 0)],
   )
   inspect(
     @challenge_persistent_segment_tree_assign.range_sum(

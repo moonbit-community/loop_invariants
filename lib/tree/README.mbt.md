@@ -44,7 +44,7 @@ Edges:
 ```mbt check
 ///|
 fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj : Array[Array[Int]] = [| for _ in 0..<n => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
     if u < 0 || u >= n || v < 0 || v >= n {
@@ -215,9 +215,9 @@ test "euler tour subtree sums" {
   let n = 6
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
   let values : Array[Int] = [5, 1, 4, 2, 3, 6]
-  let adj = build_adj(n, edges[:])
+  let adj = build_adj(n, edges)
   let (tin, tout, order) = euler_tour(n, adj, 0)
-  let euler_values : Array[Int] = [| for v in order => values[v] |]
+  let euler_values : Array[Int] = [ for v in order => values[v] ]
   let pref = prefix_sums(euler_values)
   let subtree_sum = (v : Int) => {
     let l = tin[v]
@@ -372,7 +372,7 @@ fn lca_naive(u : Int, v : Int, parent : Array[Int], depth : Array[Int]) -> Int {
 test "lca by parent climbing" {
   let n = 6
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
-  let adj = build_adj(n, edges[:])
+  let adj = build_adj(n, edges)
   let (parent, depth) = parent_and_depth(n, adj, 0)
   inspect(lca_naive(3, 4, parent, depth), content="1")
   inspect(lca_naive(3, 5, parent, depth), content="0")

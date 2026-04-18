@@ -225,7 +225,7 @@ Total insertions: n * O(log n) = O(n log n).
 ```mbt check
 ///|
 test "dsu on tree example" {
-  let adj : Array[Array[Int]] = [| for _ in 0..<5 => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<5 => [] ]
   adj[0].push(1)
   adj[1].push(0)
   adj[0].push(2)
@@ -243,7 +243,7 @@ test "dsu on tree example" {
 ```mbt check
 ///|
 test "dsu on tree tie" {
-  let adj : Array[Array[Int]] = [| for _ in 0..<3 => [] |]
+  let adj : Array[Array[Int]] = [ for _ in 0..<3 => [] ]
   adj[0].push(1)
   adj[1].push(0)
   adj[1].push(2)

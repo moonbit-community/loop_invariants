@@ -74,7 +74,7 @@ from O(m*n) to O(n).
 test "lcs length basic" {
   let a : Array[Char] = ['A', 'B', 'C', 'B', 'D', 'A', 'B']
   let b : Array[Char] = ['B', 'D', 'C', 'A', 'B', 'A']
-  let len = @challenge_lcs.lcs_length(a[:], b[:])
+  let len = @challenge_lcs.lcs_length(a, b)
   inspect(len, content="4")
 }
 ```
@@ -86,7 +86,7 @@ test "lcs length basic" {
 test "lcs length short" {
   let a : Array[Char] = ['a', 'b', 'c']
   let b : Array[Char] = ['a', 'c']
-  let len = @challenge_lcs.lcs_length(a[:], b[:])
+  let len = @challenge_lcs.lcs_length(a, b)
   inspect(len, content="2")
 }
 ```
@@ -98,7 +98,7 @@ test "lcs length short" {
 test "lcs identical" {
   let a : Array[Char] = ['A', 'B', 'C']
   let b : Array[Char] = ['A', 'B', 'C']
-  let len = @challenge_lcs.lcs_length(a[:], b[:])
+  let len = @challenge_lcs.lcs_length(a, b)
   inspect(len, content="3")
 }
 ```
@@ -110,7 +110,7 @@ test "lcs identical" {
 test "lcs none" {
   let a : Array[Char] = ['x', 'y']
   let b : Array[Char] = ['a', 'b']
-  let len = @challenge_lcs.lcs_length(a[:], b[:])
+  let len = @challenge_lcs.lcs_length(a, b)
   inspect(len, content="0")
 }
 ```
@@ -122,7 +122,7 @@ test "lcs none" {
 test "lcs longer words" {
   let a : Array[Char] = ['A', 'G', 'G', 'T', 'A', 'B']
   let b : Array[Char] = ['G', 'X', 'T', 'X', 'A', 'Y', 'B']
-  let len = @challenge_lcs.lcs_length(a[:], b[:])
+  let len = @challenge_lcs.lcs_length(a, b)
   inspect(len, content="4")
 }
 ```
