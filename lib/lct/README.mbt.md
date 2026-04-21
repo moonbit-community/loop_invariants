@@ -280,7 +280,7 @@ tree, because w is on the left (shallower) side.
 ```mbt check
 ///|
 test "dynamic forest" {
-  let forest = @lct.DynamicForest::new(4)
+  let forest = @lct.DynamicForest(4)
 
   // 0-1-2   and 3 alone
   inspect(forest.link(0, 1), content="true")
@@ -316,7 +316,7 @@ test "lct path sum" {
 Track connected components as edges are inserted and deleted:
 
 ```
-  forest = DynamicForest::new(n)
+  forest = DynamicForest(n)
   forest.link(u, v)          // add edge
   forest.cut(u, v)           // remove edge
   forest.connected(u, v)     // query connectivity

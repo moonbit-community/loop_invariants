@@ -281,7 +281,7 @@ Query:  x = 0, 1, 2, 3  (non-decreasing)
 ```mbt check
 ///|
 test "convex hull trick quick start" {
-  let cht = @convex_hull_trick.ConvexHullTrick::new()
+  let cht = @convex_hull_trick.ConvexHullTrick()
   cht.add_line(1L, 0L) // y = x
   cht.add_line(2L, 1L) // y = 2x + 1
   cht.add_line(3L, -1L) // y = 3x - 1

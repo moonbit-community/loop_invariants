@@ -216,7 +216,7 @@ path to vertices that can reach it.
 ```mbt check
 ///|
 test "path reconstruction" {
-  let bf = @bellman_ford.BellmanFord::new(4)
+  let bf = @bellman_ford.BellmanFord(4)
   bf.add_edge(0, 1, 2L)
   bf.add_edge(1, 2, 2L)
   bf.add_edge(0, 2, 10L)
@@ -232,7 +232,7 @@ test "path reconstruction" {
 ```mbt check
 ///|
 test "unreachable vertices" {
-  let bf = @bellman_ford.BellmanFord::new(4)
+  let bf = @bellman_ford.BellmanFord(4)
   bf.add_edge(0, 1, 3L)
   bf.add_edge(2, 3, 1L)
   let result = bf.compute(0)

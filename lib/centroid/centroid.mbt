@@ -50,7 +50,7 @@ priv struct CentroidTree {
 
 ///|
 /// Allocate a fresh `CentroidTree` for `n` nodes with no edges.
-fn CentroidTree::new(n : Int) -> CentroidTree {
+fn CentroidTree::CentroidTree(n : Int) -> CentroidTree {
   let adj = [ for _ in 0..<n => [] ]
   {
     n,
@@ -202,7 +202,7 @@ pub struct CentroidDecomp {
 /// Time complexity: O(n log n).
 /// Space complexity: O(n).
 pub fn build_centroid(n : Int, edges : ArrayView[(Int, Int)]) -> CentroidDecomp {
-  let tree = CentroidTree::new(n)
+  let tree = CentroidTree(n)
   for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
@@ -256,7 +256,7 @@ pub fn CentroidDecomp::depth(self : CentroidDecomp, v : Int) -> Int {
 ///|
 test "centroid basic" {
   // Linear tree: 0 - 1 - 2 - 3 - 4
-  let ct = CentroidTree::new(5)
+  let ct = CentroidTree(5)
   ct.add_edge(0, 1)
   ct.add_edge(1, 2)
   ct.add_edge(2, 3)
@@ -270,7 +270,7 @@ test "centroid basic" {
 ///|
 test "centroid star" {
   // Star: 0 connected to 1,2,3,4
-  let ct = CentroidTree::new(5)
+  let ct = CentroidTree(5)
   ct.add_edge(0, 1)
   ct.add_edge(0, 2)
   ct.add_edge(0, 3)
@@ -284,7 +284,7 @@ test "centroid star" {
 
 ///|
 test "centroid single" {
-  let ct = CentroidTree::new(1)
+  let ct = CentroidTree(1)
   ct.build()
   inspect(ct.get_depth(0), content="0")
   inspect(ct.get_parent(0), content="-1")
@@ -293,7 +293,7 @@ test "centroid single" {
 ///|
 test "centroid depth bound" {
   // Binary tree structure - depth should be O(log n)
-  let ct = CentroidTree::new(7)
+  let ct = CentroidTree(7)
   ct.add_edge(0, 1)
   ct.add_edge(0, 2)
   ct.add_edge(1, 3)

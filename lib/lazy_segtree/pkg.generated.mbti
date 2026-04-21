@@ -11,8 +11,8 @@ pub struct LazySegTreeSum {
   tree : Array[Int64]
   pending : Array[Int64]
 }
+pub fn LazySegTreeSum::LazySegTreeSum(Array[Int64]) -> Self
 pub fn LazySegTreeSum::length(Self) -> Int
-pub fn LazySegTreeSum::new(Array[Int64]) -> Self
 pub fn LazySegTreeSum::point_query(Self, Int) -> Int64?
 pub fn LazySegTreeSum::point_set(Self, Int, Int64) -> Unit
 pub fn LazySegTreeSum::range_add(Self, Int, Int, Int64) -> Unit

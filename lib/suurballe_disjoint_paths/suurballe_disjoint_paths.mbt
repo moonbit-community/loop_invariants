@@ -47,7 +47,7 @@ priv struct MinHeap {
 /// Creates a new, empty `MinHeap`.
 
 ///|
-fn MinHeap::new() -> MinHeap {
+fn MinHeap::MinHeap() -> MinHeap {
   { data: [] }
 }
 
@@ -154,7 +154,7 @@ fn dijkstra_original(
   let dist = Array::make(n, SD_INF)
   let prev_edge = Array::make(n, -1)
   dist[source] = 0L
-  let heap = MinHeap::new()
+  let heap = MinHeap()
   heap.push({ dist: 0L, vertex: source })
   let _ = for popped = heap.pop() {
     match popped {
@@ -246,7 +246,7 @@ fn dijkstra_modified(
   let prev_v = Array::make(n, -1)
   let prev_e = Array::make(n, -1)
   dist[source] = 0L
-  let heap = MinHeap::new()
+  let heap = MinHeap()
   heap.push({ dist: 0L, vertex: source })
   let _ = for popped = heap.pop() {
     match popped {

@@ -36,7 +36,7 @@ priv struct SplayNode[T] {
 }
 
 ///|
-fn[T] SplayNode::new(key : T) -> SplayNode[T] {
+fn[T] SplayNode::SplayNode(key : T) -> SplayNode[T] {
   { key, left: -1, right: -1, parent: -1, size: 1 }
 }
 
@@ -50,7 +50,7 @@ priv struct SplayTree[T] {
 }
 
 ///|
-fn[T] SplayTree::new() -> SplayTree[T] {
+fn[T] SplayTree::SplayTree() -> SplayTree[T] {
   { nodes: [], root: -1, free_list: [] }
 }
 
@@ -91,7 +91,7 @@ fn[T] SplayTree::alloc_node(self : SplayTree[T], key : T) -> Int {
     idx
   } else {
     let idx = self.nodes.length()
-    self.nodes.push(SplayNode::new(key))
+    self.nodes.push(SplayNode(key))
     idx
   }
 }
@@ -636,7 +636,7 @@ fn[T] SplayTree::inorder(self : SplayTree[T]) -> Array[T] {
 
 ///|
 test "splay tree basic operations" {
-  let st : SplayTree[Int] = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree()
 
   // Initially empty
   inspect(st.is_empty(), content="true")
@@ -665,7 +665,7 @@ test "splay tree basic operations" {
 
 ///|
 test "splay tree delete" {
-  let st : SplayTree[Int] = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree()
   for i in 1..<=5 {
     let _ = st.insert(i)
   }
@@ -688,7 +688,7 @@ test "splay tree delete" {
 
 ///|
 test "splay tree min max" {
-  let st : SplayTree[Int] = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree()
   inspect(st.min(), content="None")
   inspect(st.max(), content="None")
   let _ = st.insert(50)
@@ -702,7 +702,7 @@ test "splay tree min max" {
 
 ///|
 test "splay tree order statistics" {
-  let st : SplayTree[Int] = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree()
 
   // Insert 1, 3, 5, 7, 9
   for i in 0..<5 {
@@ -723,7 +723,7 @@ test "splay tree order statistics" {
 
 ///|
 test "splay tree inorder" {
-  let st : SplayTree[Int] = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree()
   let _ = st.insert(5)
   let _ = st.insert(3)
   let _ = st.insert(7)
@@ -735,7 +735,7 @@ test "splay tree inorder" {
 
 ///|
 test "splay tree stress" {
-  let st : SplayTree[Int] = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree()
 
   // Insert 100 elements
   for i in 0..<100 {
@@ -759,7 +759,7 @@ test "splay tree stress" {
 
 ///|
 test "splay tree split join" {
-  let st : SplayTree[Int] = SplayTree::new()
+  let st : SplayTree[Int] = SplayTree()
   for i in 1..<=10 {
     let _ = st.insert(i)
   }

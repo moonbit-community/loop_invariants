@@ -10,7 +10,7 @@ weight is either **0 or 1**. It replaces Dijkstra's priority queue with a
 ## API
 
 ```
-@zero_one_bfs.Graph::new(n)               -> Graph
+@zero_one_bfs.Graph(n)               -> Graph
 @zero_one_bfs.Graph::add_edge(u, v, w)   -> Unit
 @zero_one_bfs.Graph::add_undirected_edge(u, v, w) -> Unit
 @zero_one_bfs.zero_one_bfs(graph, source) -> Array[Int]
@@ -155,7 +155,7 @@ deque  = []   (empty, done)
 ```mbt check
 ///|
 test "0-1 bfs example" {
-  let g = @zero_one_bfs.Graph::new(5)
+  let g = @zero_one_bfs.Graph(5)
   g.add_edge(0, 1, 0)
   g.add_edge(1, 2, 1)
   g.add_edge(0, 2, 1)
@@ -174,7 +174,7 @@ test "0-1 bfs example" {
 ```mbt check
 ///|
 test "0-1 bfs undirected" {
-  let g = @zero_one_bfs.Graph::new(4)
+  let g = @zero_one_bfs.Graph(4)
   g.add_undirected_edge(0, 1, 0)
   g.add_undirected_edge(1, 2, 1)
   g.add_undirected_edge(2, 3, 0)
@@ -193,7 +193,7 @@ Vertices that cannot be reached from the source keep their initial distance of
 ```mbt check
 ///|
 test "0-1 bfs unreachable" {
-  let g = @zero_one_bfs.Graph::new(3)
+  let g = @zero_one_bfs.Graph(3)
   g.add_edge(0, 1, 1)
   let dist = @zero_one_bfs.zero_one_bfs(g, 0)
   inspect(dist[0], content="0")

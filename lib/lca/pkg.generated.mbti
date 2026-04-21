@@ -12,7 +12,7 @@ pub struct LCA {
   up : Array[Array[Int]]
   depth : Array[Int]
 }
-pub fn LCA::new(Int, Array[(Int, Int)]) -> Self
+pub fn LCA::LCA(Int, Array[(Int, Int)]) -> Self
 pub fn LCA::query(Self, Int, Int) -> Int
 
 // Type aliases

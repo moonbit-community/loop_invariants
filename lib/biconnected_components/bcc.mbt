@@ -58,7 +58,7 @@ pub fn biconnected_components(
   if n <= 0 {
     return { components: [], articulation_points: [] }
   }
-  let finder = BiconnectedFinder::new(n)
+  let finder = BiconnectedFinder(n)
 
   // Build graph from edges - each edge gets its index as unique ID
   for i, edge in edges {

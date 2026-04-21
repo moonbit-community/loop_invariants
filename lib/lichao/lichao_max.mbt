@@ -46,7 +46,7 @@
 ///
 /// Usage pattern:
 /// ```
-/// let tree = LiChaoTree::new(lo, hi)
+/// let tree = LiChaoTree(lo, hi)
 /// tree.insert(slope, intercept)   // add a line y = slope * x + intercept
 /// let max_y = tree.query(x)       // maximum y over all inserted lines at x
 /// ```
@@ -74,7 +74,7 @@ pub(all) struct LiChaoTree {
 /// - `hi`: largest x value that will ever be queried.
 ///
 /// Panics (index out of bounds) if `lo > hi`.
-pub fn LiChaoTree::new(lo : Int64, hi : Int64) -> LiChaoTree {
+pub fn LiChaoTree::LiChaoTree(lo : Int64, hi : Int64) -> LiChaoTree {
   let nodes : Array[LCNode] = []
   // Create root node with undefined line
   nodes.push({ line: undefined_line(), left: -1, right: -1 })

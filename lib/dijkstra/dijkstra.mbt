@@ -49,7 +49,7 @@ priv struct MinHeap {
 }
 
 ///|
-fn MinHeap::new() -> MinHeap {
+fn MinHeap::MinHeap() -> MinHeap {
   { data: [] }
 }
 
@@ -145,7 +145,7 @@ pub(all) struct Graph {
 
 ///|
 /// Create a new graph with n vertices
-pub fn Graph::new(n : Int) -> Graph {
+pub fn Graph::Graph(n : Int) -> Graph {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, adj }
 }
@@ -208,7 +208,7 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
     return { dist, parent }
   }
   dist[source] = 0L
-  let pq = MinHeap::new()
+  let pq = MinHeap()
   pq.push({ dist: 0L, vertex: source })
 
   // Main Dijkstra loop - process vertices in order of increasing distance
@@ -405,8 +405,8 @@ pub fn bidirectional_dijkstra(
   let visited_backward = Array::make(n, false)
   dist_forward[source] = 0L
   dist_backward[target] = 0L
-  let pq_forward = MinHeap::new()
-  let pq_backward = MinHeap::new()
+  let pq_forward = MinHeap()
+  let pq_backward = MinHeap()
   pq_forward.push({ dist: 0L, vertex: source })
   pq_backward.push({ dist: 0L, vertex: target })
 
@@ -556,7 +556,7 @@ pub fn bidirectional_dijkstra(
 
 ///|
 test "dijkstra basic" {
-  let g = Graph::new(5)
+  let g = Graph(5)
   // Simple graph: 0 -> 1 -> 2 -> 3 -> 4
   g.add_edge(0, 1, 1L)
   g.add_edge(1, 2, 2L)
@@ -587,7 +587,7 @@ test "dijkstra dense basic" {
 
 ///|
 test "dijkstra with shortcuts" {
-  let g = Graph::new(4)
+  let g = Graph(4)
   g.add_edge(0, 1, 1L)
   g.add_edge(1, 2, 1L)
   g.add_edge(2, 3, 1L)
@@ -599,7 +599,7 @@ test "dijkstra with shortcuts" {
 
 ///|
 test "dijkstra unreachable" {
-  let g = Graph::new(3)
+  let g = Graph(3)
   g.add_edge(0, 1, 1L)
   // Vertex 2 is unreachable
 
@@ -611,7 +611,7 @@ test "dijkstra unreachable" {
 
 ///|
 test "dijkstra undirected" {
-  let g = Graph::new(4)
+  let g = Graph(4)
   g.add_undirected_edge(0, 1, 1L)
   g.add_undirected_edge(1, 2, 2L)
   g.add_undirected_edge(2, 3, 3L)
@@ -622,7 +622,7 @@ test "dijkstra undirected" {
 
 ///|
 test "path reconstruction" {
-  let g = Graph::new(5)
+  let g = Graph(5)
   g.add_edge(0, 1, 1L)
   g.add_edge(1, 2, 1L)
   g.add_edge(2, 3, 1L)
@@ -639,7 +639,7 @@ test "path reconstruction" {
 
 ///|
 test "shortest distance helper" {
-  let g = Graph::new(3)
+  let g = Graph(3)
   g.add_edge(0, 1, 5L)
   g.add_edge(1, 2, 3L)
   inspect(shortest_distance(g, 0, 2), content="Some(8)")
@@ -648,7 +648,7 @@ test "shortest distance helper" {
 
 ///|
 test "dijkstra single vertex" {
-  let g = Graph::new(1)
+  let g = Graph(1)
   let result = dijkstra(g, 0)
   inspect(result.dist[0], content="0")
 }
@@ -656,7 +656,7 @@ test "dijkstra single vertex" {
 ///|
 test "dijkstra complex graph" {
   // Create a more complex graph
-  let g = Graph::new(6)
+  let g = Graph(6)
   g.add_edge(0, 1, 7L)
   g.add_edge(0, 2, 9L)
   g.add_edge(0, 5, 14L)
@@ -677,7 +677,7 @@ test "dijkstra complex graph" {
 
 ///|
 test "min heap basic" {
-  let heap = MinHeap::new()
+  let heap = MinHeap()
   heap.push({ dist: 5L, vertex: 0 })
   heap.push({ dist: 2L, vertex: 1 })
   heap.push({ dist: 8L, vertex: 2 })
@@ -705,7 +705,7 @@ test "min heap basic" {
 
 ///|
 test "dijkstra invalid source" {
-  let g = Graph::new(3)
+  let g = Graph(3)
   let result = dijkstra(g, -1)
   inspect(result.dist[0] == INF, content="true")
   let result2 = dijkstra(g, 10)
@@ -714,8 +714,8 @@ test "dijkstra invalid source" {
 
 ///|
 test "bidirectional dijkstra basic" {
-  let g = Graph::new(4)
-  let rev_g = Graph::new(4)
+  let g = Graph(4)
+  let rev_g = Graph(4)
 
   // Forward graph
   g.add_edge(0, 1, 1L)
@@ -732,15 +732,15 @@ test "bidirectional dijkstra basic" {
 
 ///|
 test "bidirectional dijkstra same vertex" {
-  let g = Graph::new(3)
-  let rev_g = Graph::new(3)
+  let g = Graph(3)
+  let rev_g = Graph(3)
   let dist = bidirectional_dijkstra(g, rev_g, 1, 1)
   inspect(dist, content="Some(0)")
 }
 
 ///|
 test "path reconstruction unreachable" {
-  let g = Graph::new(3)
+  let g = Graph(3)
   let result = dijkstra(g, 0)
   let path = reconstruct_path(result, 2)
   inspect(path.length(), content="0")
@@ -748,7 +748,7 @@ test "path reconstruction unreachable" {
 
 ///|
 test "dijkstra zero weight edge" {
-  let g = Graph::new(3)
+  let g = Graph(3)
   g.add_edge(0, 1, 0L)
   g.add_edge(1, 2, 0L)
   let result = dijkstra(g, 0)
@@ -757,7 +757,7 @@ test "dijkstra zero weight edge" {
 
 ///|
 test "dijkstra multiple paths same length" {
-  let g = Graph::new(4)
+  let g = Graph(4)
   g.add_edge(0, 1, 1L)
   g.add_edge(0, 2, 1L)
   g.add_edge(1, 3, 1L)
@@ -768,7 +768,7 @@ test "dijkstra multiple paths same length" {
 
 ///|
 test "graph creation" {
-  let g = Graph::new(5)
+  let g = Graph(5)
   inspect(g.n, content="5")
   inspect(g.adj.length(), content="5")
   g.add_edge(0, 1, 10L)

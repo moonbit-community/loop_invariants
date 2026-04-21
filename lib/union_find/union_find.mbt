@@ -60,7 +60,7 @@ pub struct UnionFind {
 /// Returns a new `UnionFind` value ready for use.
 ///
 /// Time complexity: O(n).
-pub fn UnionFind::new(n : Int) -> UnionFind {
+pub fn UnionFind::UnionFind(n : Int) -> UnionFind {
   // Each element is its own parent (self-loop = root)
   let parent = [ for i in 0..<n => i ]
   let rank = Array::make(n, 0)
@@ -241,7 +241,7 @@ priv struct WeightedUnionFind {
 /// `0`.
 ///
 /// Time complexity: O(n).
-fn WeightedUnionFind::new(n : Int) -> WeightedUnionFind {
+fn WeightedUnionFind::WeightedUnionFind(n : Int) -> WeightedUnionFind {
   let parent = [ for i in 0..<n => i ]
   let rank = Array::make(n, 0)
   let weight = Array::make(n, 0L)
@@ -378,7 +378,7 @@ fn WeightedUnionFind::union_with_weight(
 
 ///|
 test "union find basic" {
-  let uf = UnionFind::new(5)
+  let uf = UnionFind(5)
   inspect(uf.count_sets(), content="5")
   let _ = uf.union(0, 1)
   inspect(uf.count_sets(), content="4")
@@ -388,7 +388,7 @@ test "union find basic" {
 
 ///|
 test "union find transitivity" {
-  let uf = UnionFind::new(5)
+  let uf = UnionFind(5)
   let _ = uf.union(0, 1)
   let _ = uf.union(1, 2)
   let _ = uf.union(3, 4)
@@ -401,7 +401,7 @@ test "union find transitivity" {
 
 ///|
 test "union find same set" {
-  let uf = UnionFind::new(3)
+  let uf = UnionFind(3)
   let _ = uf.union(0, 1)
   inspect(uf.union(0, 1), content="false") // Already same set
   inspect(uf.count_sets(), content="2")
@@ -409,7 +409,7 @@ test "union find same set" {
 
 ///|
 test "union find find" {
-  let uf = UnionFind::new(4)
+  let uf = UnionFind(4)
   let _ = uf.union(0, 1)
   let _ = uf.union(2, 3)
   let _ = uf.union(0, 2)
@@ -423,7 +423,7 @@ test "union find find" {
 
 ///|
 test "union find set size" {
-  let uf = UnionFind::new(5)
+  let uf = UnionFind(5)
   let _ = uf.union(0, 1)
   let _ = uf.union(0, 2)
   inspect(uf.set_size(0), content="3")
@@ -432,7 +432,7 @@ test "union find set size" {
 
 ///|
 test "union find invalid" {
-  let uf = UnionFind::new(3)
+  let uf = UnionFind(3)
   inspect(uf.find(-1), content="-1")
   inspect(uf.find(10), content="-1")
   inspect(uf.union(-1, 0), content="false")
@@ -440,7 +440,7 @@ test "union find invalid" {
 
 ///|
 test "weighted union find basic" {
-  let wuf = WeightedUnionFind::new(3)
+  let wuf = WeightedUnionFind(3)
 
   // a - b = 5, b - c = 3
   let _ = wuf.union_with_weight(0, 1, 5L)
@@ -453,7 +453,7 @@ test "weighted union find basic" {
 
 ///|
 test "weighted union find consistency" {
-  let wuf = WeightedUnionFind::new(3)
+  let wuf = WeightedUnionFind(3)
   let _ = wuf.union_with_weight(0, 1, 5L)
   let _ = wuf.union_with_weight(1, 2, 3L)
 
@@ -466,7 +466,7 @@ test "weighted union find consistency" {
 
 ///|
 test "weighted union find diff" {
-  let wuf = WeightedUnionFind::new(4)
+  let wuf = WeightedUnionFind(4)
   let _ = wuf.union_with_weight(0, 1, 10L)
   inspect(wuf.diff(0, 1), content="Some(10)")
   inspect(wuf.diff(1, 0), content="Some(-10)")
@@ -475,20 +475,20 @@ test "weighted union find diff" {
 
 ///|
 test "union find empty" {
-  let uf = UnionFind::new(0)
+  let uf = UnionFind(0)
   inspect(uf.count_sets(), content="0")
 }
 
 ///|
 test "union find single" {
-  let uf = UnionFind::new(1)
+  let uf = UnionFind(1)
   inspect(uf.count_sets(), content="1")
   inspect(uf.find(0), content="0")
 }
 
 ///|
 test "union find path compression" {
-  let uf = UnionFind::new(10)
+  let uf = UnionFind(10)
 
   // Create a chain: 0 <- 1 <- 2 <- ... <- 9
   for i in 1..<10 {

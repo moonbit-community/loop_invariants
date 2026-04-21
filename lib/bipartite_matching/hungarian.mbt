@@ -43,7 +43,7 @@ struct Hungarian {
 }
 
 ///|
-fn Hungarian::new(graph : BipartiteGraph) -> Hungarian {
+fn Hungarian::Hungarian(graph : BipartiteGraph) -> Hungarian {
   {
     graph,
     match_left: Array::make(graph.n_left, -1),
@@ -92,7 +92,7 @@ fn Hungarian::dfs(self : Hungarian, u : Int) -> Bool {
 ///
 /// Example:
 /// ```
-/// let graph = BipartiteGraph::new(3, 3)
+/// let graph = BipartiteGraph(3, 3)
 /// graph.add_edge(0, 0)
 /// graph.add_edge(1, 1)
 /// graph.add_edge(2, 2)
@@ -132,7 +132,7 @@ pub fn Hungarian::max_matching(self : Hungarian) -> Int {
 ///
 /// Example:
 /// ```
-/// let graph = BipartiteGraph::new(2, 2)
+/// let graph = BipartiteGraph(2, 2)
 /// graph.add_edge(0, 0)
 /// graph.add_edge(1, 1)
 /// let matcher = graph.hungarian()

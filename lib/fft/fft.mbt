@@ -125,7 +125,7 @@ priv struct NTT {
 /// The actual transform size `n` is rounded up to the next power of two.
 /// The primitive n-th root of unity and its inverse are precomputed so that
 /// `transform` can be called cheaply on multiple arrays of this size.
-fn NTT::new(size : Int) -> NTT {
+fn NTT::NTT(size : Int) -> NTT {
   // Find smallest power of 2 >= size
   let (n, log_n) = for n = 1, log_n = 0; n < size; {
     continue n * 2, log_n + 1
@@ -370,7 +370,7 @@ pub fn ntt_convolution(
     return []
   }
   let size = a.length() + b.length() - 1
-  let ntt = NTT::new(size)
+  let ntt = NTT(size)
   let result = ntt.multiply(a.to_array(), b.to_array())
   result[:size].to_array()
 }
@@ -615,7 +615,7 @@ test "ntt basic multiplication" {
   // (1 + 2x) * (3 + 4x) = 3 + 10x + 8x²
   let a : Array[Int64] = [1L, 2L]
   let b : Array[Int64] = [3L, 4L]
-  let ntt = NTT::new(4)
+  let ntt = NTT(4)
   let result = ntt.multiply(a, b)
   inspect(result[0], content="3")
   inspect(result[1], content="10")
@@ -627,7 +627,7 @@ test "ntt larger multiplication" {
   // (1 + x + x²) * (1 + x + x²) = 1 + 2x + 3x² + 2x³ + x⁴
   let a : Array[Int64] = [1L, 1L, 1L]
   let b : Array[Int64] = [1L, 1L, 1L]
-  let ntt = NTT::new(8)
+  let ntt = NTT(8)
   let result = ntt.multiply(a, b)
   inspect(result[0], content="1")
   inspect(result[1], content="2")
@@ -640,7 +640,7 @@ test "ntt larger multiplication" {
 test "ntt vs naive" {
   let a : Array[Int64] = [1L, 2L, 3L, 4L]
   let b : Array[Int64] = [5L, 6L, 7L, 8L]
-  let ntt = NTT::new(8)
+  let ntt = NTT(8)
   let ntt_result = ntt.multiply(a, b)
   let naive_result = poly_multiply_naive(a, b)
   for i in 0..<naive_result.length() {

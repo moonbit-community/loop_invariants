@@ -57,7 +57,7 @@ priv struct SAMState {
 let alphabet_size : Int = 128 // ASCII alphabet
 
 ///|
-fn SAMState::new() -> SAMState {
+fn SAMState::SAMState() -> SAMState {
   {
     trans: Array::make(alphabet_size, -1),
     link: -1,
@@ -111,8 +111,8 @@ priv struct SuffixAutomaton {
 }
 
 ///|
-fn SuffixAutomaton::new() -> SuffixAutomaton {
-  let initial = SAMState::new()
+fn SuffixAutomaton::SuffixAutomaton() -> SuffixAutomaton {
+  let initial = SAMState()
   initial.len = 0
   initial.link = -1
   { states: [initial], last: 0 }
@@ -143,7 +143,7 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
 
   // Create new state
   let cur = self.states.length()
-  let new_state = SAMState::new()
+  let new_state = SAMState()
   new_state.len = self.states[self.last].len + 1
   new_state.cnt = 1
   new_state.first_pos = pos
@@ -225,7 +225,7 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
 ///
 /// Time: O(n).  Space: O(n).
 fn SuffixAutomaton::build(s : String) -> SuffixAutomaton {
-  let sam = SuffixAutomaton::new()
+  let sam = SuffixAutomaton()
   for c in s {
     sam.extend(c.to_int())
   }

@@ -213,7 +213,7 @@ rank = 3 -> ...                     (8 values)
 ## API Reference
 
 ```
-XorBasis::new()              -> XorBasis
+XorBasis()              -> XorBasis
 XorBasis::insert(x)          -> Bool      (true if rank increased)
 XorBasis::can_represent(x)   -> Bool
 XorBasis::max_xor(x)         -> Int64
@@ -229,7 +229,7 @@ All values are `Int64`.
 ```mbt check
 ///|
 test "xor basis membership" {
-  let b = @xor_basis.XorBasis::new()
+  let b = @xor_basis.XorBasis()
   let _ = b.insert(5L) // 101
   let _ = b.insert(3L) // 011
 
@@ -249,7 +249,7 @@ test "xor basis membership" {
 ```mbt check
 ///|
 test "xor basis rank" {
-  let b = @xor_basis.XorBasis::new()
+  let b = @xor_basis.XorBasis()
   inspect(b.rank(), content="0")
   inspect(b.insert(5L), content="true")
   inspect(b.rank(), content="1")
@@ -268,7 +268,7 @@ test "xor basis rank" {
 ```mbt check
 ///|
 test "xor basis max xor" {
-  let b = @xor_basis.XorBasis::new()
+  let b = @xor_basis.XorBasis()
   let _ = b.insert(8L)
   let _ = b.insert(5L)
   let _ = b.insert(10L)

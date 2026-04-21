@@ -99,7 +99,7 @@ Duplicates are supported by reference counts in each node.
 ```mbt check
 ///|
 test "basic xor queries" {
-  let trie = @binary_trie_xor.BinaryTrie::new(3) // bits 3..0
+  let trie = @binary_trie_xor.BinaryTrie(3) // bits 3..0
   trie.insert(5L) // 0101
   trie.insert(1L) // 0001
   trie.insert(7L) // 0111
@@ -116,7 +116,7 @@ Note: `max_xor` and `min_xor` return the **XOR value**, not the actual key.
 ```mbt check
 ///|
 test "duplicates and remove" {
-  let trie = @binary_trie_xor.BinaryTrie::new(2)
+  let trie = @binary_trie_xor.BinaryTrie(2)
   trie.insert(3L) // 11
   trie.insert(3L) // duplicate
   trie.insert(1L) // 01
@@ -136,7 +136,7 @@ test "duplicates and remove" {
 ```mbt check
 ///|
 test "empty trie" {
-  let trie = @binary_trie_xor.BinaryTrie::new(4)
+  let trie = @binary_trie_xor.BinaryTrie(4)
   inspect(trie.size(), content="0")
   inspect(trie.max_xor(10L), content="0")
   inspect(trie.min_xor(10L), content="0")

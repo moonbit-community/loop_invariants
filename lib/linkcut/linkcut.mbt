@@ -107,7 +107,7 @@ priv struct LinkCutTree {
 /// - `n` — the number of nodes; must be >= 0
 ///
 /// Returns a `LinkCutTree` with `n` nodes all disconnected from each other.
-fn LinkCutTree::new(n : Int) -> LinkCutTree {
+fn LinkCutTree::LinkCutTree(n : Int) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
   for _ in 0..<n {
     nodes.push({
@@ -656,7 +656,7 @@ fn LinkCutTree::size(self : LinkCutTree) -> Int {
 
 ///|
 test "linkcut basic" {
-  let lct = LinkCutTree::new(5)
+  let lct = LinkCutTree(5)
 
   // Initially all nodes are separate trees
   inspect(lct.find_root(0), content="0")
@@ -665,7 +665,7 @@ test "linkcut basic" {
 
 ///|
 test "linkcut link and find_root" {
-  let lct = LinkCutTree::new(5)
+  let lct = LinkCutTree(5)
 
   // Build tree: 0 - 1 - 2, 3 - 4
   inspect(lct.link(1, 0), content="true")
@@ -685,7 +685,7 @@ test "linkcut link and find_root" {
 
 ///|
 test "linkcut connected" {
-  let lct = LinkCutTree::new(5)
+  let lct = LinkCutTree(5)
 
   // Build tree: 0 - 1 - 2
   let _ = lct.link(1, 0)
@@ -697,7 +697,7 @@ test "linkcut connected" {
 
 ///|
 test "linkcut cut" {
-  let lct = LinkCutTree::new(5)
+  let lct = LinkCutTree(5)
 
   // Build tree: 0 - 1 - 2 - 3
   let _ = lct.link(1, 0)
@@ -716,7 +716,7 @@ test "linkcut cut" {
 
 ///|
 test "linkcut lca" {
-  let lct = LinkCutTree::new(7)
+  let lct = LinkCutTree(7)
 
   // Build tree:
   //       0
@@ -748,7 +748,7 @@ test "linkcut lca" {
 
 ///|
 test "linkcut path sum" {
-  let lct = LinkCutTree::new(5)
+  let lct = LinkCutTree(5)
 
   // Set values
   for i in 0..<5 {
@@ -770,7 +770,7 @@ test "linkcut path sum" {
 
 ///|
 test "linkcut double link fails" {
-  let lct = LinkCutTree::new(3)
+  let lct = LinkCutTree(3)
 
   // First link succeeds
   inspect(lct.link(1, 0), content="true")
@@ -781,20 +781,20 @@ test "linkcut double link fails" {
 
 ///|
 test "linkcut size" {
-  let lct = LinkCutTree::new(10)
+  let lct = LinkCutTree(10)
   inspect(lct.size(), content="10")
 }
 
 ///|
 test "linkcut get value" {
-  let lct = LinkCutTree::new(3)
+  let lct = LinkCutTree(3)
   lct.set_value(1, 42L)
   inspect(lct.get_value(1), content="42")
 }
 
 ///|
 test "linkcut make root" {
-  let lct = LinkCutTree::new(5)
+  let lct = LinkCutTree(5)
 
   // Build path: 0 - 1 - 2 - 3 - 4
   let _ = lct.link(1, 0)
@@ -814,7 +814,7 @@ test "linkcut make root" {
 
 ///|
 test "linkcut star topology" {
-  let lct = LinkCutTree::new(6)
+  let lct = LinkCutTree(6)
 
   // Build star: 0 is center, 1-5 are leaves
   for i in 1..<6 {
@@ -833,7 +833,7 @@ test "linkcut star topology" {
 
 ///|
 test "linkcut cut_parent" {
-  let lct = LinkCutTree::new(4)
+  let lct = LinkCutTree(4)
 
   // Build path: 0 - 1 - 2 - 3
   let _ = lct.link(1, 0)

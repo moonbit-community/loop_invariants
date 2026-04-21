@@ -48,7 +48,7 @@ priv struct Matrix {
 /// Creates a zero-filled `rows x cols` matrix.
 
 ///|
-fn Matrix::new(rows : Int, cols : Int) -> Matrix {
+fn Matrix::Matrix(rows : Int, cols : Int) -> Matrix {
   let data = [ for _ in 0..<rows => Array::make(cols, 0L) ]
   { data, rows, cols }
 }
@@ -70,7 +70,7 @@ fn Matrix::new(rows : Int, cols : Int) -> Matrix {
 
 ///|
 fn Matrix::identity(n : Int) -> Matrix {
-  let m = Matrix::new(n, n)
+  let m = Matrix(n, n)
   for i in 0..<n {
     m.data[i][i] = 1L
   }
@@ -94,7 +94,7 @@ fn Matrix::identity(n : Int) -> Matrix {
 fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
   let rows = arr.length()
   if rows == 0 {
-    return Matrix::new(0, 0)
+    return Matrix(0, 0)
   }
   let cols = arr[0].length()
   let data = [ for i in 0..<rows => arr[i].copy() ]
@@ -134,7 +134,7 @@ fn Matrix::set(self : Matrix, i : Int, j : Int, v : Int64) -> Unit {
 
 ///|
 fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
-  let result = Matrix::new(self.rows, other.cols)
+  let result = Matrix(self.rows, other.cols)
   for i in 0..<self.rows {
     for j in 0..<other.cols {
       let sum = for k = 0, sum = 0L; k < self.cols; {
@@ -179,7 +179,7 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
 
 ///|
 fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
-  let result = Matrix::new(self.rows, other.cols)
+  let result = Matrix(self.rows, other.cols)
   for i in 0..<self.rows {
     for j in 0..<other.cols {
       let sum = for k = 0, sum = 0L; k < self.cols; {
@@ -267,7 +267,7 @@ fn Matrix::power(self : Matrix, exp : Int64) -> Matrix {
 
 ///|
 fn Matrix::copy(self : Matrix) -> Matrix {
-  let m = Matrix::new(self.rows, self.cols)
+  let m = Matrix(self.rows, self.cols)
   for i in 0..<self.rows {
     for j in 0..<self.cols {
       m.data[i][j] = self.data[i][j]
@@ -413,7 +413,7 @@ fn solve_recurrence(
   //  [0,    1,    ..., 0     ],
   //  ...
   //  [0,    0,    ..., 0     ]]
-  let m = Matrix::new(k, k)
+  let m = Matrix(k, k)
   for j in 0..<k {
     m.data[0][j] = coefficients[j]
   }
@@ -504,7 +504,7 @@ test "matrix identity" {
 
 ///|
 test "matrix set" {
-  let m = Matrix::new(1, 1)
+  let m = Matrix(1, 1)
   m.set(0, 0, 7L)
   inspect(m.get(0, 0), content="7")
 }

@@ -42,7 +42,7 @@ priv struct EulerTour {
 ///|
 /// Allocate a fresh `EulerTour` for a tree with `n` nodes.
 /// All times are initialised to 0; the adjacency list is empty.
-fn EulerTour::new(n : Int) -> EulerTour {
+fn EulerTour::EulerTour(n : Int) -> EulerTour {
   let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   {
     adj,
@@ -168,7 +168,7 @@ pub fn build_euler_tour(
   if n <= 0 {
     return { entry: [], exit: [], tour: [], depth: [], parent: [] }
   }
-  let tree = EulerTour::new(n)
+  let tree = EulerTour(n)
   for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
@@ -313,7 +313,7 @@ priv struct EulerTourLCA {
 
 ///|
 /// Allocate a fresh `EulerTourLCA` for a tree with `n` nodes.
-fn EulerTourLCA::new(n : Int) -> EulerTourLCA {
+fn EulerTourLCA::EulerTourLCA(n : Int) -> EulerTourLCA {
   let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   {
     adj,
@@ -440,7 +440,7 @@ fn EulerTourLCA::distance(self : EulerTourLCA, u : Int, v : Int) -> Int {
 
 ///|
 test "euler_tour basic" {
-  let et = EulerTour::new(5)
+  let et = EulerTour(5)
   // Tree: 0 - 1 - 2
   //           |
   //           3 - 4
@@ -458,7 +458,7 @@ test "euler_tour basic" {
 
 ///|
 test "euler_tour subtree" {
-  let et = EulerTour::new(5)
+  let et = EulerTour(5)
   et.add_edge(0, 1)
   et.add_edge(0, 2)
   et.add_edge(1, 3)
@@ -477,7 +477,7 @@ test "euler_tour subtree" {
 
 ///|
 test "euler_tour ancestor" {
-  let et = EulerTour::new(4)
+  let et = EulerTour(4)
   // 0 -> 1 -> 2 -> 3
   et.add_edge(0, 1)
   et.add_edge(1, 2)
@@ -491,7 +491,7 @@ test "euler_tour ancestor" {
 
 ///|
 test "euler_tour_lca basic" {
-  let et = EulerTourLCA::new(5)
+  let et = EulerTourLCA(5)
   //       0
   //      / \
   //     1   2
@@ -510,7 +510,7 @@ test "euler_tour_lca basic" {
 
 ///|
 test "euler_tour_lca distance" {
-  let et = EulerTourLCA::new(5)
+  let et = EulerTourLCA(5)
   et.add_edge(0, 1)
   et.add_edge(0, 2)
   et.add_edge(1, 3)
@@ -523,7 +523,7 @@ test "euler_tour_lca distance" {
 
 ///|
 test "euler_tour single node" {
-  let et = EulerTour::new(1)
+  let et = EulerTour(1)
   et.build(0)
   inspect(et.subtree_size(0), content="1")
   inspect(et.is_ancestor(0, 0), content="true")
@@ -531,7 +531,7 @@ test "euler_tour single node" {
 
 ///|
 test "euler_tour_lca chain" {
-  let et = EulerTourLCA::new(4)
+  let et = EulerTourLCA(4)
   // 0 - 1 - 2 - 3
   et.add_edge(0, 1)
   et.add_edge(1, 2)
@@ -545,7 +545,7 @@ test "euler_tour_lca chain" {
 
 ///|
 test "euler_tour depth" {
-  let et = EulerTour::new(4)
+  let et = EulerTour(4)
   et.add_edge(0, 1)
   et.add_edge(1, 2)
   et.add_edge(2, 3)

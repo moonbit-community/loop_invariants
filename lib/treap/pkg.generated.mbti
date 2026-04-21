@@ -10,6 +10,7 @@ pub struct Treap[T] {
   mut root : TreapNode[T]?
   mut rng_state : Int
 }
+pub fn[T] Treap::Treap() -> Self[T]
 pub fn[T : Compare] Treap::contains(Self[T], T) -> Bool
 pub fn[T : Compare] Treap::count_less_than(Self[T], T) -> Int
 pub fn[T : Compare] Treap::delete(Self[T], T) -> Bool
@@ -17,7 +18,6 @@ pub fn[T : Compare] Treap::insert(Self[T], T) -> Unit
 pub fn[T] Treap::kth_element(Self[T], Int) -> T?
 pub fn[T] Treap::max(Self[T]) -> T?
 pub fn[T] Treap::min(Self[T]) -> T?
-pub fn[T] Treap::new() -> Self[T]
 pub fn[T] Treap::size(Self[T]) -> Int
 pub fn[T] Treap::to_array(Self[T]) -> Array[T]
 

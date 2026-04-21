@@ -72,9 +72,9 @@ pub struct Graph {
 /// # Example
 ///
 /// ```
-/// let g = @dial_shortest_path.Graph::new(5, 3)  // 5 vertices, weights in [0, 3]
+/// let g = @dial_shortest_path.Graph(5, 3)  // 5 vertices, weights in [0, 3]
 /// ```
-pub fn Graph::new(n : Int, max_weight : Int) -> Graph {
+pub fn Graph::Graph(n : Int, max_weight : Int) -> Graph {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, max_weight, adj }
 }
@@ -94,7 +94,7 @@ pub fn Graph::new(n : Int, max_weight : Int) -> Graph {
 /// # Example
 ///
 /// ```
-/// let g = @dial_shortest_path.Graph::new(3, 2)
+/// let g = @dial_shortest_path.Graph(3, 2)
 /// g.add_edge(0, 1, 1)
 /// g.add_edge(1, 2, 2)
 /// ```
@@ -116,7 +116,7 @@ pub fn Graph::add_edge(self : Graph, u : Int, v : Int, weight : Int) -> Unit {
 /// # Example
 ///
 /// ```
-/// let g = @dial_shortest_path.Graph::new(4, 2)
+/// let g = @dial_shortest_path.Graph(4, 2)
 /// g.add_undirected_edge(0, 1, 1)
 /// g.add_undirected_edge(1, 2, 2)
 /// ```
@@ -169,7 +169,7 @@ pub fn Graph::add_undirected_edge(
 /// # Example
 ///
 /// ```
-/// let g = @dial_shortest_path.Graph::new(3, 2)
+/// let g = @dial_shortest_path.Graph(3, 2)
 /// g.add_edge(0, 1, 1)
 /// g.add_edge(1, 2, 2)
 /// let dist = @dial_shortest_path.dial_shortest_paths(g, 0)

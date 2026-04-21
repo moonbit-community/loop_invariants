@@ -78,10 +78,10 @@ pub struct XorBasis {
 ///
 /// Example:
 /// ```
-/// let b = XorBasis::new()
+/// let b = XorBasis()
 /// assert_eq!(b.rank(), 0)
 /// ```
-pub fn XorBasis::new() -> XorBasis {
+pub fn XorBasis::XorBasis() -> XorBasis {
   { basis: Array::make(MAX_BITS + 1, 0L), size: 0 }
 }
 
@@ -232,7 +232,7 @@ pub fn XorBasis::rank(self : XorBasis) -> Int {
 
 ///|
 test "xor basis insert and rank" {
-  let b = XorBasis::new()
+  let b = XorBasis()
   inspect(b.insert(1L), content="true")
   inspect(b.insert(2L), content="true")
   inspect(b.insert(3L), content="false")
@@ -241,7 +241,7 @@ test "xor basis insert and rank" {
 
 ///|
 test "xor basis represent" {
-  let b = XorBasis::new()
+  let b = XorBasis()
   let _ = b.insert(5L) // 101
   let _ = b.insert(6L) // 110
   inspect(b.max_xor(0L), content="6")
@@ -254,7 +254,7 @@ test "xor basis represent" {
 
 ///|
 test "xor basis dependent insert" {
-  let b = XorBasis::new()
+  let b = XorBasis()
   let _ = b.insert(5L)
   let _ = b.insert(6L)
   inspect(b.insert(3L), content="false")
@@ -262,7 +262,7 @@ test "xor basis dependent insert" {
 
 ///|
 test "xor basis copy insert" {
-  let b = XorBasis::new()
+  let b = XorBasis()
   let _ = b.insert(5L)
   let _ = b.insert(6L)
   let copy = { basis: b.basis.copy(), size: b.size }
@@ -272,7 +272,7 @@ test "xor basis copy insert" {
 
 ///|
 test "xor basis max" {
-  let b = XorBasis::new()
+  let b = XorBasis()
   let _ = b.insert(8L)
   let _ = b.insert(5L)
   let _ = b.insert(10L)

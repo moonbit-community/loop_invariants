@@ -282,7 +282,7 @@ The algorithm correctly selects paths in order of increasing cost.
 
 From `pkg.generated.mbti`:
 
-- `MinCostFlowPotentials::new(n)` — create a flow network with `n` vertices
+- `MinCostFlowPotentials(n)` — create a flow network with `n` vertices
 - `add_edge(u, v, cap, cost)` — add a directed edge with capacity and cost
 - `compute(source, sink)` — compute min-cost max-flow, returns `(flow, cost)`
 - `compute_with_limit(source, sink, max_flow)` — same, but cap total flow
@@ -292,7 +292,7 @@ From `pkg.generated.mbti`:
 ```mbt check
 ///|
 test "min-cost flow basics" {
-  let mcf = @min_cost_flow_potentials.MinCostFlowPotentials::new(4)
+  let mcf = @min_cost_flow_potentials.MinCostFlowPotentials(4)
   mcf.add_edge(0, 1, 2L, 1L)
   mcf.add_edge(0, 2, 1L, 2L)
   mcf.add_edge(1, 2, 1L, 1L)
@@ -307,7 +307,7 @@ test "min-cost flow basics" {
 ```mbt check
 ///|
 test "min-cost flow picks cheaper path" {
-  let mcf = @min_cost_flow_potentials.MinCostFlowPotentials::new(4)
+  let mcf = @min_cost_flow_potentials.MinCostFlowPotentials(4)
   // Cheap path
   mcf.add_edge(0, 1, 1L, 1L)
   mcf.add_edge(1, 3, 1L, 1L)
@@ -323,7 +323,7 @@ test "min-cost flow picks cheaper path" {
 ```mbt check
 ///|
 test "min-cost flow limited" {
-  let mcf = @min_cost_flow_potentials.MinCostFlowPotentials::new(3)
+  let mcf = @min_cost_flow_potentials.MinCostFlowPotentials(3)
   mcf.add_edge(0, 1, 1L, 1L)
   mcf.add_edge(1, 2, 1L, 1L)
   let (flow, cost) = mcf.compute_with_limit(0, 2, 1L)
@@ -335,7 +335,7 @@ test "min-cost flow limited" {
 ```mbt check
 ///|
 test "min-cost flow no path" {
-  let mcf = @min_cost_flow_potentials.MinCostFlowPotentials::new(2)
+  let mcf = @min_cost_flow_potentials.MinCostFlowPotentials(2)
   let (flow, cost) = mcf.compute(0, 1)
   inspect(flow, content="0")
   inspect(cost, content="0")

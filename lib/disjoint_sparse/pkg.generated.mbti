@@ -11,7 +11,7 @@ pub struct DisjointSparseSum {
   arr : Array[Int64]
   n : Int
 }
-pub fn DisjointSparseSum::new(Array[Int64]) -> Self
+pub fn DisjointSparseSum::DisjointSparseSum(Array[Int64]) -> Self
 pub fn DisjointSparseSum::query(Self, Int, Int) -> Int64?
 
 // Type aliases

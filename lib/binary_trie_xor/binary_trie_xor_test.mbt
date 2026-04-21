@@ -1,6 +1,6 @@
 ///|
 test "binary trie remove" {
-  let trie = @binary_trie_xor.BinaryTrie::new(5)
+  let trie = @binary_trie_xor.BinaryTrie(5)
   trie.insert(5L)
   trie.insert(1L)
   trie.insert(7L)
@@ -12,7 +12,7 @@ test "binary trie remove" {
 
 ///|
 test "binary trie duplicates" {
-  let trie = @binary_trie_xor.BinaryTrie::new(5)
+  let trie = @binary_trie_xor.BinaryTrie(5)
   trie.insert(5L)
   trie.insert(5L)
   assert_eq(trie.size(), 2)

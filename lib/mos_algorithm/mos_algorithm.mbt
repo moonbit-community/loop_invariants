@@ -100,7 +100,7 @@ priv struct MoDistinct {
 }
 
 ///|
-fn MoDistinct::new(arr : Array[Int]) -> MoDistinct {
+fn MoDistinct::MoDistinct(arr : Array[Int]) -> MoDistinct {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) + 1 } else { 1 }
   { arr, n, block_size }
@@ -275,7 +275,7 @@ priv struct MoSum {
 }
 
 ///|
-fn MoSum::new(arr : Array[Int64]) -> MoSum {
+fn MoSum::MoSum(arr : Array[Int64]) -> MoSum {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) + 1 } else { 1 }
   { arr, n, block_size }
@@ -424,7 +424,7 @@ priv struct MoRangeCount {
 }
 
 ///|
-fn MoRangeCount::new(arr : Array[Int]) -> MoRangeCount {
+fn MoRangeCount::MoRangeCount(arr : Array[Int]) -> MoRangeCount {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) + 1 } else { 1 }
   { arr, n, block_size }
@@ -579,7 +579,7 @@ priv struct MoMode {
 }
 
 ///|
-fn MoMode::new(arr : Array[Int]) -> MoMode {
+fn MoMode::MoMode(arr : Array[Int]) -> MoMode {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) + 1 } else { 1 }
   { arr, n, block_size }
@@ -754,7 +754,7 @@ fn MoMode::length(self : MoMode) -> Int {
 ///|
 test "mo distinct basic" {
   let arr : Array[Int] = [1, 2, 1, 3, 2, 1, 4]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = [(0, 2), (1, 4), (0, 6)]
   let answers = mo.answer_queries(queries)
 
@@ -769,7 +769,7 @@ test "mo distinct basic" {
 ///|
 test "mo distinct single element" {
   let arr : Array[Int] = [5, 5, 5, 5]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = [(0, 0), (0, 3), (1, 2)]
   let answers = mo.answer_queries(queries)
   inspect(answers[0], content="1")
@@ -780,7 +780,7 @@ test "mo distinct single element" {
 ///|
 test "mo distinct all different" {
   let arr : Array[Int] = [1, 2, 3, 4, 5]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = [(0, 4), (1, 3), (2, 2)]
   let answers = mo.answer_queries(queries)
   inspect(answers[0], content="5")
@@ -791,7 +791,7 @@ test "mo distinct all different" {
 ///|
 test "mo sum basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let mo = MoSum::new(arr)
+  let mo = MoSum(arr)
   let queries : Array[(Int, Int)] = [(0, 2), (1, 3), (0, 4)]
   let answers = mo.answer_queries(queries)
 
@@ -806,7 +806,7 @@ test "mo sum basic" {
 ///|
 test "mo sum single" {
   let arr : Array[Int64] = [42L]
-  let mo = MoSum::new(arr)
+  let mo = MoSum(arr)
   let queries : Array[(Int, Int)] = [(0, 0)]
   let answers = mo.answer_queries(queries)
   inspect(answers[0], content="42")
@@ -815,7 +815,7 @@ test "mo sum single" {
 ///|
 test "mo range count" {
   let arr : Array[Int] = [1, 5, 3, 2, 4, 3, 5]
-  let mo = MoRangeCount::new(arr)
+  let mo = MoRangeCount(arr)
 
   // Count elements with value in [2, 4]
   let queries : Array[(Int, Int, Int, Int)] = [(0, 3, 2, 4), (0, 6, 3, 5)]
@@ -830,7 +830,7 @@ test "mo range count" {
 ///|
 test "mo mode basic" {
   let arr : Array[Int] = [1, 2, 2, 3, 2, 1, 1, 1]
-  let mo = MoMode::new(arr)
+  let mo = MoMode(arr)
   let queries : Array[(Int, Int)] = [(0, 4), (4, 7)]
   let answers = mo.answer_queries(queries)
 
@@ -847,7 +847,7 @@ test "mo mode basic" {
 ///|
 test "mo empty queries" {
   let arr : Array[Int] = [1, 2, 3]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = []
   let answers = mo.answer_queries(queries)
   inspect(answers.length(), content="0")
@@ -856,7 +856,7 @@ test "mo empty queries" {
 ///|
 test "mo empty array" {
   let arr : Array[Int] = []
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = [(0, 0)]
   let answers = mo.answer_queries(queries)
   inspect(answers.length(), content="0")
@@ -865,7 +865,7 @@ test "mo empty array" {
 ///|
 test "mo distinct many queries" {
   let arr : Array[Int] = [1, 2, 3, 4, 5, 1, 2, 3, 4, 5]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = [(0, 4), (5, 9), (0, 9), (2, 7), (3, 6)]
   let answers = mo.answer_queries(queries)
 
@@ -896,7 +896,7 @@ test "isqrt" {
 ///|
 test "mo sum negative" {
   let arr : Array[Int64] = [-1L, -2L, 3L, -4L, 5L]
-  let mo = MoSum::new(arr)
+  let mo = MoSum(arr)
   let queries : Array[(Int, Int)] = [(0, 4), (0, 1), (2, 4)]
   let answers = mo.answer_queries(queries)
 
@@ -911,12 +911,12 @@ test "mo sum negative" {
 ///|
 test "mo length" {
   let arr : Array[Int] = [1, 2, 3, 4, 5]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   inspect(mo.length(), content="5")
-  let mo_sum = MoSum::new([1L, 2L, 3L])
+  let mo_sum = MoSum([1L, 2L, 3L])
   inspect(mo_sum.length(), content="3")
-  let mo_range = MoRangeCount::new([1, 2, 3])
+  let mo_range = MoRangeCount([1, 2, 3])
   inspect(mo_range.length(), content="3")
-  let mo_mode = MoMode::new([1, 2, 2])
+  let mo_mode = MoMode([1, 2, 2])
   inspect(mo_mode.length(), content="3")
 }

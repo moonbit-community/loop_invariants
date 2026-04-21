@@ -72,7 +72,7 @@ priv struct Edge {
 ///              that have already been found to lead nowhere (dead-end
 ///              pruning), reducing the DFS work to O(VE) per phase
 ///
-/// Create with `MaxFlow::new(n)` and populate with `add_edge` or
+/// Create with `MaxFlow(n)` and populate with `add_edge` or
 /// `add_undirected_edge` before calling `max_flow`.
 priv struct MaxFlow {
   n : Int
@@ -86,7 +86,7 @@ priv struct MaxFlow {
 ///
 /// All adjacency lists are initialised empty.  `level` and `iter` arrays are
 /// pre-allocated but their initial values are overwritten before each use.
-fn MaxFlow::new(n : Int) -> MaxFlow {
+fn MaxFlow::MaxFlow(n : Int) -> MaxFlow {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0) }
 }
@@ -404,7 +404,7 @@ test "max flow basic" {
   //  \|    |/
   //   3 -- 4
   // All edges have capacity 1
-  let mf = MaxFlow::new(6)
+  let mf = MaxFlow(6)
   let s = 0
   let t = 5
   mf.add_edge(s, 1, 10L)
@@ -423,7 +423,7 @@ test "max flow basic" {
 ///|
 test "max flow simple path" {
   // s -> a -> b -> t, all capacity 5
-  let mf = MaxFlow::new(4)
+  let mf = MaxFlow(4)
   mf.add_edge(0, 1, 5L)
   mf.add_edge(1, 2, 5L)
   mf.add_edge(2, 3, 5L)
@@ -433,7 +433,7 @@ test "max flow simple path" {
 ///|
 test "max flow parallel edges" {
   // s -> t with multiple edges
-  let mf = MaxFlow::new(2)
+  let mf = MaxFlow(2)
   mf.add_edge(0, 1, 5L)
   mf.add_edge(0, 1, 3L)
   mf.add_edge(0, 1, 2L)
@@ -443,7 +443,7 @@ test "max flow parallel edges" {
 ///|
 test "max flow bottleneck" {
   // s -> a (100) -> b (1) -> t (100)
-  let mf = MaxFlow::new(4)
+  let mf = MaxFlow(4)
   mf.add_edge(0, 1, 100L)
   mf.add_edge(1, 2, 1L)
   mf.add_edge(2, 3, 100L)
@@ -453,7 +453,7 @@ test "max flow bottleneck" {
 ///|
 test "max flow no path" {
   // Disconnected graph
-  let mf = MaxFlow::new(4)
+  let mf = MaxFlow(4)
   mf.add_edge(0, 1, 10L)
   mf.add_edge(2, 3, 10L)
   inspect(mf.max_flow(0, 3), content="0")
@@ -463,7 +463,7 @@ test "max flow no path" {
 test "max flow bipartite matching" {
   // Bipartite graph: left {1,2,3}, right {4,5,6}
   // Source 0, sink 7
-  let mf = MaxFlow::new(8)
+  let mf = MaxFlow(8)
 
   // Source to left
   mf.add_edge(0, 1, 1L)
@@ -488,7 +488,7 @@ test "max flow bipartite matching" {
 
 ///|
 test "max flow min cut" {
-  let mf = MaxFlow::new(4)
+  let mf = MaxFlow(4)
   mf.add_edge(0, 1, 3L)
   mf.add_edge(0, 2, 2L)
   mf.add_edge(1, 3, 2L)
@@ -519,20 +519,20 @@ test "max flow min cut" {
 
 ///|
 test "max flow undirected edge" {
-  let mf = MaxFlow::new(2)
+  let mf = MaxFlow(2)
   mf.add_undirected_edge(0, 1, 7L)
   inspect(mf.max_flow(0, 1), content="7")
 }
 
 ///|
 test "max flow empty" {
-  let mf = MaxFlow::new(2)
+  let mf = MaxFlow(2)
   inspect(mf.max_flow(0, 1), content="0")
 }
 
 ///|
 test "max flow self loop ignored" {
-  let mf = MaxFlow::new(3)
+  let mf = MaxFlow(3)
   mf.add_edge(0, 1, 10L)
   mf.add_edge(1, 2, 10L)
   // Self loop doesn't affect flow

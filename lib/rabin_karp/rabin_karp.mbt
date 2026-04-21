@@ -360,7 +360,7 @@ priv struct HashArray {
 ///
 /// Time complexity: O(n)
 /// Space complexity: O(n)
-fn HashArray::new(s : String) -> HashArray {
+fn HashArray::HashArray(s : String) -> HashArray {
   let n = s.length()
   let prefix_hash = Array::make(n + 1, 0L)
   let powers = Array::make(n + 1, 1L)
@@ -473,7 +473,7 @@ test "rabin_karp multi" {
 
 ///|
 test "hash_array basic" {
-  let ha = HashArray::new("abcabc")
+  let ha = HashArray("abcabc")
   // Hash of "abc" at positions 0-3 and 3-6 should be same
   inspect(ha.compare(0, 3, 3, 6), content="true")
   // Different substrings should differ
@@ -482,7 +482,7 @@ test "hash_array basic" {
 
 ///|
 test "hash_array get_hash" {
-  let ha = HashArray::new("abcd")
+  let ha = HashArray("abcd")
   let h1 = ha.get_hash(0, 2) // "ab"
   let h2 = ha.get_hash(2, 4) // "cd"
   inspect(h1 != h2, content="true")

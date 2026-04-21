@@ -10,11 +10,11 @@ pub struct FenwickTree {
   n : Int
   tree : Array[Int64]
 }
+pub fn FenwickTree::FenwickTree(Int) -> Self
 pub fn FenwickTree::add(Self, Int, Int64) -> Unit
 pub fn FenwickTree::from_array(Array[Int64]) -> Self
 pub fn FenwickTree::get(Self, Int) -> Int64
 pub fn FenwickTree::length(Self) -> Int
-pub fn FenwickTree::new(Int) -> Self
 pub fn FenwickTree::prefix_sum(Self, Int) -> Int64
 pub fn FenwickTree::range_sum(Self, Int, Int) -> Int64
 pub fn FenwickTree::set(Self, Int, Int64) -> Unit
