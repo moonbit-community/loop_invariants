@@ -50,9 +50,9 @@ pub struct Graph {
 /// # Example
 ///
 /// ```
-/// let g = Graph::new(5)   // vertices 0..4
+/// let g = Graph(5)   // vertices 0..4
 /// ```
-pub fn Graph::new(n : Int) -> Graph {
+pub fn Graph::Graph(n : Int) -> Graph {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, adj }
 }
@@ -72,7 +72,7 @@ pub fn Graph::new(n : Int) -> Graph {
 /// # Example
 ///
 /// ```
-/// let g = Graph::new(3)
+/// let g = Graph(3)
 /// g.add_edge(0, 1, 0)   // free edge
 /// g.add_edge(1, 2, 1)   // unit-cost edge
 /// ```
@@ -94,7 +94,7 @@ pub fn Graph::add_edge(self : Graph, u : Int, v : Int, weight : Int) -> Unit {
 /// # Example
 ///
 /// ```
-/// let g = Graph::new(4)
+/// let g = Graph(4)
 /// g.add_undirected_edge(0, 1, 0)   // bidirectional free edge
 /// g.add_undirected_edge(1, 2, 1)   // bidirectional unit-cost edge
 /// ```
@@ -144,7 +144,7 @@ pub fn Graph::add_undirected_edge(
 /// # Example
 ///
 /// ```
-/// let g = Graph::new(3)
+/// let g = Graph(3)
 /// g.add_edge(0, 1, 0)
 /// g.add_edge(1, 2, 1)
 /// let dist = zero_one_bfs(g, 0)

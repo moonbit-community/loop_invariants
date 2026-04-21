@@ -50,13 +50,13 @@ pub struct LinearSieve {
 ///
 /// Example:
 /// ```
-/// let s = LinearSieve::new(10)
+/// let s = LinearSieve(10)
 /// // s.primes  => [2, 3, 5, 7]
 /// // s.spf[6]  => 2   (smallest prime factor of 6)
 /// // s.phi[6]  => 2   (phi(6) = |{1,5}|)
 /// // s.mu[6]   => 1   (6 = 2*3, squarefree, even number of factors)
 /// ```
-pub fn LinearSieve::new(n : Int) -> LinearSieve {
+pub fn LinearSieve::LinearSieve(n : Int) -> LinearSieve {
   if n < 0 {
     return { n: 0, primes: [], spf: [], phi: [], mu: [] }
   }
@@ -128,7 +128,7 @@ pub fn LinearSieve::new(n : Int) -> LinearSieve {
 ///
 /// Example:
 /// ```
-/// let s = LinearSieve::new(20)
+/// let s = LinearSieve(20)
 /// s.is_prime(2)   // true
 /// s.is_prime(17)  // true
 /// s.is_prime(1)   // false  (1 is not prime by convention)
@@ -157,7 +157,7 @@ pub fn LinearSieve::is_prime(self : LinearSieve, x : Int) -> Bool {
 ///
 /// Example:
 /// ```
-/// let s = LinearSieve::new(100)
+/// let s = LinearSieve(100)
 /// s.factorize(1)   // []
 /// s.factorize(12)  // [(2, 2), (3, 1)]
 /// s.factorize(60)  // [(2, 2), (3, 1), (5, 1)]

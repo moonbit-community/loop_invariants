@@ -307,7 +307,7 @@ struct Edge {
 ///|
 fn kruskal(n : Int, edges : Array[Edge]) -> (Array[Edge], Int) {
   edges.sort_by((a, b) => a.w - b.w)
-  let uf = UF::new(n)
+  let uf = UF(n)
   let mst : Array[Edge] = []
   let total = for e in edges; total = 0 {
     if uf.union(e.u, e.v) {
@@ -332,7 +332,7 @@ fn kruskal(n : Int, edges : Array[Edge]) -> (Array[Edge], Int) {
 ///|
 fn prim(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
   let in_tree = Array::make(n, false)
-  let pq = MinHeap::new() // (weight, vertex)
+  let pq = MinHeap() // (weight, vertex)
   pq.push((0, 0))
   let total = for _ in 0..<n; total = 0 {
     let (w, v) = pq.pop_min()

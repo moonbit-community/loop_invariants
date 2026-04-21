@@ -293,7 +293,7 @@ inside `lib/max_flow/max_flow.mbt`, so they are `mbt nocheck`.
 ```mbt nocheck
 ///|
 test "basic max flow" {
-  let mf = MaxFlow::new(4)
+  let mf = MaxFlow(4)
   mf.add_edge(0, 1, 3L)
   mf.add_edge(0, 2, 2L)
   mf.add_edge(1, 3, 2L)
@@ -316,7 +316,7 @@ Max flow = 5
 ///|
 test "bipartite matching" {
   // Left: 1,2,3  Right: 4,5,6
-  let mf = MaxFlow::new(8)
+  let mf = MaxFlow(8)
   mf.add_edge(0, 1, 1L)
   mf.add_edge(0, 2, 1L)
   mf.add_edge(0, 3, 1L)

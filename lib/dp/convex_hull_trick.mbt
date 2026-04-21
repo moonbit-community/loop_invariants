@@ -19,7 +19,7 @@ priv struct ConvexHullTrick {
 
 ///|
 /// Create an empty `ConvexHullTrick` instance with no lines.
-fn ConvexHullTrick::new() -> ConvexHullTrick {
+fn ConvexHullTrick::ConvexHullTrick() -> ConvexHullTrick {
   { lines: [] }
 }
 
@@ -104,7 +104,7 @@ fn ConvexHullTrick::query_min(self : ConvexHullTrick, x : Int64) -> Int64 {
 
 ///|
 test "convex hull trick basic" {
-  let cht = ConvexHullTrick::new()
+  let cht = ConvexHullTrick()
 
   // Add lines with decreasing slopes
   cht.add_line(3L, 0L) // y = 3x
@@ -132,7 +132,7 @@ priv struct MonotonicCHT {
 
 ///|
 /// Create an empty `MonotonicCHT` instance with no lines and a fresh pointer.
-fn MonotonicCHT::new() -> MonotonicCHT {
+fn MonotonicCHT::MonotonicCHT() -> MonotonicCHT {
   { lines: [], ptr: [0] }
 }
 
@@ -192,7 +192,7 @@ fn MonotonicCHT::query_mono_inc(self : MonotonicCHT, x : Int64) -> Int64 {
 
 ///|
 test "monotonic cht" {
-  let cht = MonotonicCHT::new()
+  let cht = MonotonicCHT()
   cht.add_line_mono(3L, 0L)
   cht.add_line_mono(2L, 1L)
   cht.add_line_mono(1L, 3L)
@@ -231,7 +231,7 @@ priv struct LiChaoTree {
 /// Parameters:
 /// - `lo` : Inclusive lower bound of the query domain.
 /// - `hi` : Inclusive upper bound of the query domain.
-fn LiChaoTree::new(lo : Int64, hi : Int64) -> LiChaoTree {
+fn LiChaoTree::LiChaoTree(lo : Int64, hi : Int64) -> LiChaoTree {
   { root: None, lo, hi }
 }
 
@@ -341,7 +341,7 @@ fn LiChaoTree::query_li_chao(self : LiChaoTree, x : Int64) -> Int64 {
 
 ///|
 test "li chao tree" {
-  let lct = LiChaoTree::new(0L, 100L)
+  let lct = LiChaoTree(0L, 100L)
   lct.add_line_li_chao(3L, 0L)
   lct.add_line_li_chao(2L, 1L)
   lct.add_line_li_chao(1L, 3L)
@@ -674,7 +674,7 @@ priv struct SlopeTrick {
 }
 
 ///|
-fn SlopeTrick::new() -> SlopeTrick {
+fn SlopeTrick::SlopeTrick() -> SlopeTrick {
   { left_slopes: [], right_slopes: [], base_cost: 0L }
 }
 
@@ -831,7 +831,7 @@ fn SlopeTrick::add_abs(self : SlopeTrick, a : Int64) -> Unit {
 
 ///|
 test "slope trick abs sum" {
-  let st = SlopeTrick::new()
+  let st = SlopeTrick()
 
   // Add |x - 1| + |x - 3| + |x - 5|
   // Minimum is at x = 3 with value |3-1| + |3-3| + |3-5| = 2 + 0 + 2 = 4

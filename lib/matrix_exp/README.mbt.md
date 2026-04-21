@@ -371,7 +371,7 @@ The main building blocks inside the package:
 
 | Function / method               | Description                                        |
 |---------------------------------|----------------------------------------------------|
-| `Matrix::new(rows, cols)`       | Create a zero matrix                               |
+| `Matrix(rows, cols)`       | Create a zero matrix                               |
 | `Matrix::identity(n)`           | Create the n x n identity matrix                   |
 | `Matrix::from_array(arr)`       | Construct a matrix from a 2-D array literal        |
 | `Matrix::get(i, j)`             | Read element at row i, column j                    |

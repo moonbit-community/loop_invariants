@@ -186,7 +186,7 @@ priv struct SqrtDecomposition {
 }
 
 ///|
-fn SqrtDecomposition::new(arr : Array[Int]) -> SqrtDecomposition {
+fn SqrtDecomposition::SqrtDecomposition(arr : Array[Int]) -> SqrtDecomposition {
   let n = arr.length()
   if n == 0 {
     return { arr, block_mins: [], block_size: 1 }
@@ -265,7 +265,7 @@ fn SqrtDecomposition::update_sqrt(
 ///|
 test "sqrt decomposition rmq" {
   let arr = [3, 1, 4, 1, 5, 9, 2, 6]
-  let sd = SqrtDecomposition::new(arr)
+  let sd = SqrtDecomposition(arr)
   assert_eq(sd.query_min(0, 4), 1)
   assert_eq(sd.query_min(4, 8), 2)
   assert_eq(sd.query_min(2, 6), 1)
@@ -349,7 +349,7 @@ priv struct BlockSum {
 }
 
 ///|
-fn BlockSum::new(arr : Array[Int]) -> BlockSum {
+fn BlockSum::BlockSum(arr : Array[Int]) -> BlockSum {
   let n = arr.length()
   if n == 0 {
     return { arr, block_sums: [], block_size: 1 }
@@ -411,7 +411,7 @@ fn BlockSum::update_block_sum(self : BlockSum, idx : Int, val : Int) -> Unit {
 ///|
 test "block sum" {
   let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  let bs = BlockSum::new(arr)
+  let bs = BlockSum(arr)
   assert_eq(bs.query_sum(0, 5), 15) // 1+2+3+4+5
   assert_eq(bs.query_sum(3, 7), 22) // 4+5+6+7
   bs.update_block_sum(4, 10) // Change 5 to 10
@@ -429,7 +429,7 @@ priv struct MoUnionFind {
 }
 
 ///|
-fn MoUnionFind::new(n : Int) -> MoUnionFind {
+fn MoUnionFind::MoUnionFind(n : Int) -> MoUnionFind {
   let parent = [ for i in 0..<n => i ]
   let rank : Array[Int] = Array::make(n, 0)
   { parent, rank }
@@ -476,7 +476,7 @@ fn MoUnionFind::union_mo(self : MoUnionFind, x : Int, y : Int) -> Bool {
 
 ///|
 test "mo union find" {
-  let uf = MoUnionFind::new(5)
+  let uf = MoUnionFind(5)
   assert_true(uf.union_mo(0, 1))
   assert_true(uf.union_mo(2, 3))
   assert_eq(uf.find_mo(0), uf.find_mo(1))

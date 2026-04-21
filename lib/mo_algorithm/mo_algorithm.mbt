@@ -94,7 +94,7 @@ fn max_element(arr : Array[Int]) -> Int {
 
 ///|
 /// Create Mo's algorithm solver for distinct element queries
-fn MoDistinct::new(arr : Array[Int]) -> MoDistinct {
+fn MoDistinct::MoDistinct(arr : Array[Int]) -> MoDistinct {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) } else { 1 }
   let max_val = max_element(arr) + 1
@@ -230,7 +230,7 @@ priv struct MoSum {
 }
 
 ///|
-fn MoSum::new(arr : Array[Int64]) -> MoSum {
+fn MoSum::MoSum(arr : Array[Int64]) -> MoSum {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) } else { 1 }
   { arr, block_size, curr_l: 0, curr_r: -1, sum: 0L }
@@ -328,7 +328,7 @@ fn MoSum::process_queries(
 ///|
 test "mo distinct basic" {
   let arr = [1, 2, 1, 3, 1, 2, 4]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries = [(0, 2), (1, 4), (2, 6), (0, 6)]
   let results = mo.process_queries(queries)
   inspect(results[0], content="2") // [1,2,1] -> {1,2}
@@ -340,7 +340,7 @@ test "mo distinct basic" {
 ///|
 test "mo distinct single element" {
   let arr = [5]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries = [(0, 0)]
   let results = mo.process_queries(queries)
   inspect(results[0], content="1")
@@ -349,7 +349,7 @@ test "mo distinct single element" {
 ///|
 test "mo distinct all same" {
   let arr = [1, 1, 1, 1, 1]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries = [(0, 4), (1, 3), (2, 2)]
   let results = mo.process_queries(queries)
   inspect(results[0], content="1")
@@ -360,7 +360,7 @@ test "mo distinct all same" {
 ///|
 test "mo distinct all different" {
   let arr = [1, 2, 3, 4, 5]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries = [(0, 4), (0, 2), (3, 4)]
   let results = mo.process_queries(queries)
   inspect(results[0], content="5")
@@ -371,7 +371,7 @@ test "mo distinct all different" {
 ///|
 test "mo sum basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let mo = MoSum::new(arr)
+  let mo = MoSum(arr)
   let queries = [(0, 4), (1, 3), (2, 2)]
   let results = mo.process_queries(queries)
   inspect(results[0], content="15") // 1+2+3+4+5
@@ -382,7 +382,7 @@ test "mo sum basic" {
 ///|
 test "mo empty queries" {
   let arr = [1, 2, 3]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let results = mo.process_queries([])
   inspect(results.length(), content="0")
 }
@@ -391,7 +391,7 @@ test "mo empty queries" {
 test "mo large block" {
   // Test with more elements to verify sqrt blocking
   let arr : Array[Int] = [ for i in 0..<100 => i % 10 ]
-  let mo = MoDistinct::new(arr)
+  let mo = MoDistinct(arr)
   let queries = [(0, 99), (0, 9), (50, 59), (25, 75)]
   let results = mo.process_queries(queries)
   inspect(results[0], content="10") // All 0-9

@@ -12,7 +12,7 @@ priv struct Complex {
 }
 
 ///|
-fn Complex::new(re : Double, im : Double) -> Complex {
+fn Complex::Complex(re : Double, im : Double) -> Complex {
   { re, im }
 }
 
@@ -243,7 +243,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
       fft_pi /
       len.to_double() *
       (if inverse { 1.0 } else { -1.0 })
-    let wlen = Complex::new(fft_cos(angle), fft_sin(angle))
+    let wlen = Complex(fft_cos(angle), fft_sin(angle))
     // Process all sub-DFTs of current size
     for i = 0; i < n; i = i + len {
       // Butterfly operations within one sub-DFT
@@ -316,7 +316,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
   if inverse {
     let scale = 1.0 / n.to_double()
     for i in 0..<n {
-      arr[i] = Complex::new(arr[i].re * scale, arr[i].im * scale)
+      arr[i] = Complex(arr[i].re * scale, arr[i].im * scale)
     } where {
       proof_invariant: i >= 0 && i <= n,
       proof_reasoning: (

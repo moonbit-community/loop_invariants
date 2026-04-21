@@ -88,6 +88,6 @@ pub struct SuffixTree {
 ///
 /// Used internally during tree construction whenever a new node (either a
 /// split node or a new leaf) must be allocated.
-pub fn Node::new() -> Node {
+pub fn Node::Node() -> Node {
   { edges: [], leaf_count: 0 }
 }

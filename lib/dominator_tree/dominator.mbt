@@ -173,7 +173,7 @@ pub fn build_dominator_tree(
   }
 
   // Step 1: Build graph
-  let work = DominatorWork::new(n)
+  let work = DominatorWork(n)
   for edge in edges {
     let (u, v) = edge
     guard u >= 0 && u < n && v >= 0 && v < n else { continue }

@@ -96,7 +96,7 @@ priv struct AhoCorasick {
 /// Create a new, empty automaton containing only the root state.
 ///
 /// Call `add_pattern` one or more times, then call `build` before searching.
-fn AhoCorasick::new() -> AhoCorasick {
+fn AhoCorasick::AhoCorasick() -> AhoCorasick {
   // Initialize with root state
   let states : Array[ACState] = [ACState()]
   { states, patterns: [] }
@@ -337,7 +337,7 @@ fn AhoCorasick::state_count(self : AhoCorasick) -> Int {
 /// Equivalent to calling `new`, then `add_pattern` for each element, then
 /// `build`.
 fn AhoCorasick::from_patterns(patterns : Array[String]) -> AhoCorasick {
-  let ac = AhoCorasick::new()
+  let ac = AhoCorasick()
   patterns.each(pattern => ac.add_pattern(pattern))
   ac.build()
   ac

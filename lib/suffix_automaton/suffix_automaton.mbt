@@ -55,7 +55,7 @@ pub struct SAMState {
 }
 
 ///|
-fn SAMState::new() -> SAMState {
+fn SAMState::SAMState() -> SAMState {
   { len: 0, link: -1, next: Array::make(SAM_ALPHABET, -1), first_pos: -1 }
 }
 
@@ -69,7 +69,7 @@ fn SAMState::new() -> SAMState {
 /// Typical usage:
 ///
 /// ```
-/// let sam = SuffixAutomaton::new(max_len)
+/// let sam = SuffixAutomaton(max_len)
 /// sam.build(s)          // or call extend() character by character
 /// sam.contains(pattern) // O(|pattern|) substring test
 /// sam.count_distinct_substrings()  // O(n)
@@ -100,17 +100,17 @@ pub struct SuffixAutomaton {
 ///
 /// Returns a fresh `SuffixAutomaton` with only the initial state (index 0,
 /// representing the empty string).
-pub fn SuffixAutomaton::new(max_len : Int) -> SuffixAutomaton {
+pub fn SuffixAutomaton::SuffixAutomaton(max_len : Int) -> SuffixAutomaton {
   let states : Array[SAMState] = []
   // Create initial state (empty string)
-  let init = SAMState::new()
+  let init = SAMState()
   init.len = 0
   init.link = -1
   init.first_pos = 0
   states.push(init)
 
   // Reserve space for states
-  states.append([ for _ in 0..<(2 * max_len) => SAMState::new() ])
+  states.append([ for _ in 0..<(2 * max_len) => SAMState() ])
   { states, last: 0, size: 1 }
 }
 
@@ -262,7 +262,7 @@ pub fn longest_common_substring(s1 : String, s2 : String) -> Int {
   }
 
   // Build SAM for s1
-  let sam = SuffixAutomaton::new(s1.length())
+  let sam = SuffixAutomaton(s1.length())
   sam.build(s1)
 
   // Traverse s2 through SAM
@@ -404,7 +404,7 @@ pub fn SuffixAutomaton::count_occurrences(
 
 ///|
 test "sam basic" {
-  let sam = SuffixAutomaton::new(10)
+  let sam = SuffixAutomaton(10)
   sam.build("abab")
   inspect(sam.contains("ab"), content="true")
   inspect(sam.contains("ba"), content="true")
@@ -415,7 +415,7 @@ test "sam basic" {
 
 ///|
 test "sam distinct substrings" {
-  let sam = SuffixAutomaton::new(10)
+  let sam = SuffixAutomaton(10)
   sam.build("abab")
   // Distinct: a, b, ab, ba, aba, bab, abab = 7
   inspect(sam.count_distinct_substrings(), content="7")
@@ -423,7 +423,7 @@ test "sam distinct substrings" {
 
 ///|
 test "sam distinct aaa" {
-  let sam = SuffixAutomaton::new(10)
+  let sam = SuffixAutomaton(10)
   sam.build("aaa")
   // Distinct: a, aa, aaa = 3
   inspect(sam.count_distinct_substrings(), content="3")
@@ -431,7 +431,7 @@ test "sam distinct aaa" {
 
 ///|
 test "sam state count" {
-  let sam = SuffixAutomaton::new(10)
+  let sam = SuffixAutomaton(10)
   sam.build("abcbc")
   // State count should be ≤ 2n - 1 = 9
   inspect(sam.state_count() <= 9, content="true")
@@ -446,7 +446,7 @@ test "lcs basic" {
 
 ///|
 test "sam empty" {
-  let sam = SuffixAutomaton::new(5)
+  let sam = SuffixAutomaton(5)
   sam.build("")
   inspect(sam.count_distinct_substrings(), content="0")
   inspect(sam.state_count(), content="1") // Only initial state
@@ -454,7 +454,7 @@ test "sam empty" {
 
 ///|
 test "sam single char" {
-  let sam = SuffixAutomaton::new(5)
+  let sam = SuffixAutomaton(5)
   sam.build("a")
   inspect(sam.count_distinct_substrings(), content="1")
   inspect(sam.contains("a"), content="true")
@@ -463,7 +463,7 @@ test "sam single char" {
 
 ///|
 test "sam occurrences" {
-  let sam = SuffixAutomaton::new(20)
+  let sam = SuffixAutomaton(20)
   sam.build("abababab")
   // "ab" appears 4 times
   // Note: counting through suffix links may give different results

@@ -116,7 +116,7 @@ priv struct CartesianTree {
 /// Every index is pushed and popped at most once, so the total work is O(n).
 /// After tree construction, depths and binary-lifting tables are computed in
 /// O(n log n) for LCA preprocessing.
-fn CartesianTree::new(arr : Array[Int64]) -> CartesianTree {
+fn CartesianTree::CartesianTree(arr : Array[Int64]) -> CartesianTree {
   let n = arr.length()
   if n == 0 {
     return {
@@ -397,7 +397,7 @@ fn CartesianTree::query_min(self : CartesianTree, l : Int, r : Int) -> Int64? {
 /// assert_eq!(@cartesian_tree.range_min(arr[:], 1, 3), Some(1L))
 /// ```
 pub fn range_min(arr : ArrayView[Int64], l : Int, r : Int) -> Int64? {
-  let tree = CartesianTree::new(arr.to_array())
+  let tree = CartesianTree(arr.to_array())
   tree.query_min(l, r)
 }
 
@@ -710,7 +710,7 @@ fn encode_tree(
 ///|
 test "cartesian tree construction" {
   let arr : Array[Int64] = [3L, 2L, 6L, 1L, 9L]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
 
   // Root should be minimum (1 at index 3)
   inspect(tree.root_value(), content="Some(1)")
@@ -725,7 +725,7 @@ test "cartesian tree construction" {
 ///|
 test "cartesian tree rmq basic" {
   let arr : Array[Int64] = [3L, 2L, 6L, 1L, 9L]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
 
   // Query [0, 4]: min is 1
   inspect(tree.query_min(0, 4), content="Some(1)")
@@ -743,7 +743,7 @@ test "cartesian tree rmq basic" {
 ///|
 test "cartesian tree rmq index" {
   let arr : Array[Int64] = [3L, 2L, 6L, 1L, 9L]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
 
   // Position of min in [0, 4] is 3
   inspect(tree.query_min_index(0, 4), content="Some(3)")
@@ -755,7 +755,7 @@ test "cartesian tree rmq index" {
 ///|
 test "cartesian tree empty" {
   let arr : Array[Int64] = []
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
   inspect(tree.length(), content="0")
   inspect(tree.root_value(), content="None")
   inspect(tree.query_min(0, 0), content="None")
@@ -764,7 +764,7 @@ test "cartesian tree empty" {
 ///|
 test "cartesian tree single" {
   let arr : Array[Int64] = [42L]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
   inspect(tree.root_value(), content="Some(42)")
   inspect(tree.query_min(0, 0), content="Some(42)")
   inspect(tree.verify_inorder(arr), content="true")
@@ -775,7 +775,7 @@ test "cartesian tree single" {
 test "cartesian tree sorted ascending" {
   // Ascending array creates right-skewed tree
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
   inspect(tree.root_value(), content="Some(1)")
   inspect(tree.verify_inorder(arr), content="true")
   inspect(tree.verify_heap(), content="true")
@@ -789,7 +789,7 @@ test "cartesian tree sorted ascending" {
 test "cartesian tree sorted descending" {
   // Descending array creates left-skewed tree
   let arr : Array[Int64] = [5L, 4L, 3L, 2L, 1L]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
   inspect(tree.root_value(), content="Some(1)")
   inspect(tree.verify_inorder(arr), content="true")
   inspect(tree.verify_heap(), content="true")
@@ -800,7 +800,7 @@ test "cartesian tree sorted descending" {
 ///|
 test "cartesian tree all same" {
   let arr : Array[Int64] = [5L, 5L, 5L, 5L]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
   inspect(tree.root_value(), content="Some(5)")
   inspect(tree.query_min(0, 3), content="Some(5)")
   inspect(tree.query_min(1, 2), content="Some(5)")
@@ -887,9 +887,9 @@ test "cartesian tree number different shapes" {
   let arr1 : Array[Int64] = [1L, 2L, 3L] // Right-skewed
   let arr2 : Array[Int64] = [3L, 2L, 1L] // Left-skewed
   let arr3 : Array[Int64] = [2L, 1L, 3L] // Balanced
-  let tree1 = CartesianTree::new(arr1)
-  let tree2 = CartesianTree::new(arr2)
-  let tree3 = CartesianTree::new(arr3)
+  let tree1 = CartesianTree(arr1)
+  let tree2 = CartesianTree(arr2)
+  let tree3 = CartesianTree(arr3)
   let num1 = tree1.tree_number()
   let num2 = tree2.tree_number()
   let num3 = tree3.tree_number()
@@ -905,8 +905,8 @@ test "cartesian tree number same shape" {
   // Arrays with same relative ordering produce same shape
   let arr1 : Array[Int64] = [10L, 20L, 30L]
   let arr2 : Array[Int64] = [1L, 2L, 3L]
-  let tree1 = CartesianTree::new(arr1)
-  let tree2 = CartesianTree::new(arr2)
+  let tree1 = CartesianTree(arr1)
+  let tree2 = CartesianTree(arr2)
 
   // Same shape, same tree number
   inspect(tree1.tree_number() == tree2.tree_number(), content="true")
@@ -915,7 +915,7 @@ test "cartesian tree number same shape" {
 ///|
 test "cartesian tree rmq invalid range" {
   let arr : Array[Int64] = [3L, 2L, 6L, 1L, 9L]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
   inspect(tree.query_min(-1, 0), content="None")
   inspect(tree.query_min(0, 10), content="None")
   inspect(tree.query_min(3, 1), content="None")
@@ -924,7 +924,7 @@ test "cartesian tree rmq invalid range" {
 ///|
 test "cartesian tree lca" {
   let arr : Array[Int64] = [3L, 2L, 6L, 1L, 9L]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
 
   // LCA of same node is itself
   let node0 = tree.index_to_node[0]
@@ -935,7 +935,7 @@ test "cartesian tree lca" {
 test "cartesian tree large" {
   // Test with larger array
   let arr = [ for i in 0..<100 => (i * 7 % 100).to_int64() ]
-  let tree = CartesianTree::new(arr)
+  let tree = CartesianTree(arr)
   inspect(tree.verify_inorder(arr), content="true")
   inspect(tree.verify_heap(), content="true")
 

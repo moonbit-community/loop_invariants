@@ -72,7 +72,9 @@ pub struct SegmentTreeBeats {
 /// Parameters:
 /// - `values` — the initial array; may be empty, in which case all queries
 ///              return identity values (0 for sum, `NEG_INF` for max).
-pub fn SegmentTreeBeats::new(values : ArrayView[Int64]) -> SegmentTreeBeats {
+pub fn SegmentTreeBeats::SegmentTreeBeats(
+  values : ArrayView[Int64],
+) -> SegmentTreeBeats {
   let n = values.length()
   let size = if n == 0 { 0 } else { 4 * n }
   let max = Array::make(size, NEG_INF)
@@ -353,7 +355,7 @@ fn SegmentTreeBeats::sum_impl(
 ///|
 test "segment tree beats range chmin" {
   let values : Array[Int64] = [5L, 1L, 7L, 3L, 9L]
-  let st = SegmentTreeBeats::new(values)
+  let st = SegmentTreeBeats(values)
   inspect(st.range_sum(0, 5), content="25")
   inspect(st.range_max(0, 5), content="9")
   st.range_chmin(1, 4, 4L)
@@ -369,7 +371,7 @@ test "segment tree beats range chmin" {
 
 ///|
 test "segment tree beats single element" {
-  let st = SegmentTreeBeats::new([10L])
+  let st = SegmentTreeBeats([10L])
   inspect(st.range_sum(0, 1), content="10")
   inspect(st.range_max(0, 1), content="10")
   st.range_chmin(0, 1, 6L)

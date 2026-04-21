@@ -21,9 +21,9 @@ pub struct Graph {
   max_weight : Int
   adj : Array[Array[Edge]]
 }
+pub fn Graph::Graph(Int, Int) -> Self
 pub fn Graph::add_edge(Self, Int, Int, Int) -> Unit
 pub fn Graph::add_undirected_edge(Self, Int, Int, Int) -> Unit
-pub fn Graph::new(Int, Int) -> Self
 
 // Type aliases
 

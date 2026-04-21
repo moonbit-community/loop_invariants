@@ -189,7 +189,7 @@ matches at sa[lo], sa[lo+1], ..., sa[hi]
 ```mbt check
 ///|
 test "suffix array search" {
-  let sa = @suffix_array.SuffixArray::new("mississippi")
+  let sa = @suffix_array.SuffixArray("mississippi")
   inspect(sa.find_all("issi"), content="[1, 4]")
   inspect(sa.count("ss"), content="2")
 }
@@ -210,7 +210,7 @@ array. The substring is `text[sa[max_lcp_idx] : sa[max_lcp_idx] + max_lcp]`.
 ```mbt check
 ///|
 test "longest repeated substring" {
-  let sa = @suffix_array.SuffixArray::new("banana")
+  let sa = @suffix_array.SuffixArray("banana")
   inspect(sa.longest_repeated_substring(), content="ana")
 }
 ```
@@ -218,7 +218,7 @@ test "longest repeated substring" {
 ```mbt check
 ///|
 test "longest repeated substring overlap" {
-  let sa = @suffix_array.SuffixArray::new("aaaaa")
+  let sa = @suffix_array.SuffixArray("aaaaa")
   inspect(sa.longest_repeated_substring(), content="aaaa")
 }
 ```
@@ -245,7 +245,7 @@ Distinct = 21 - 6 = 15
 ```mbt check
 ///|
 test "distinct substrings" {
-  let sa = @suffix_array.SuffixArray::new("banana")
+  let sa = @suffix_array.SuffixArray("banana")
   inspect(sa.count_distinct_substrings(), content="15")
 }
 ```

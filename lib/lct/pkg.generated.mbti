@@ -9,10 +9,10 @@ package "bobzhang/loop_invariants/lib/lct"
 pub(all) struct DynamicForest {
   lct : LinkCutTree
 }
+pub fn DynamicForest::DynamicForest(Int) -> Self
 pub fn DynamicForest::connected(Self, Int, Int) -> Bool
 pub fn DynamicForest::cut(Self, Int, Int) -> Bool
 pub fn DynamicForest::link(Self, Int, Int) -> Bool
-pub fn DynamicForest::new(Int) -> Self
 
 pub(all) struct LCTNode {
   mut parent : Int
@@ -23,18 +23,18 @@ pub(all) struct LCTNode {
   mut value : Int
   mut subtree_sum : Int
 }
-pub fn LCTNode::new(Int) -> Self
+pub fn LCTNode::LCTNode(Int) -> Self
 
 pub(all) struct LinkCutTree {
   nodes : Array[LCTNode]
 }
+pub fn LinkCutTree::LinkCutTree(Int) -> Self
 pub fn LinkCutTree::connected(Self, Int, Int) -> Bool
 pub fn LinkCutTree::cut(Self, Int) -> Unit
 pub fn LinkCutTree::find_root(Self, Int) -> Int
 pub fn LinkCutTree::lca(Self, Int, Int) -> Int
 pub fn LinkCutTree::link(Self, Int, Int) -> Unit
 pub fn LinkCutTree::make_root(Self, Int) -> Unit
-pub fn LinkCutTree::new(Int) -> Self
 pub fn LinkCutTree::path_sum(Self, Int) -> Int
 pub fn LinkCutTree::update_value(Self, Int, Int) -> Unit
 pub fn LinkCutTree::with_values(Array[Int]) -> Self

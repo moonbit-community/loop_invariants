@@ -248,7 +248,7 @@ Compose:    (m1,b1) then (m2,b2)  ->  (m1*m2,  b1*m2 + b2)
 ///|
 test "lazy segtree example" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L]
-  let st = @lazy_segtree.LazySegTreeSum::new(arr)
+  let st = @lazy_segtree.LazySegTreeSum(arr)
 
   // add 2 to indices 1..3
   st.range_add(1, 3, 2L)
@@ -260,7 +260,7 @@ test "lazy segtree example" {
 ```mbt check
 ///|
 test "lazy segtree multiple updates" {
-  let st = @lazy_segtree.LazySegTreeSum::new([5L, 1L, 4L, 2L, 3L])
+  let st = @lazy_segtree.LazySegTreeSum([5L, 1L, 4L, 2L, 3L])
 
   // add +3 to [0..2]
   st.range_add(0, 2, 3L)

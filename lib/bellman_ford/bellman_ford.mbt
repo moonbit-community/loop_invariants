@@ -60,7 +60,7 @@ pub struct BellmanFord {
 /// the graph, then call `compute` to run the algorithm.
 ///
 /// Time complexity: O(n).
-pub fn BellmanFord::new(n : Int) -> BellmanFord {
+pub fn BellmanFord::BellmanFord(n : Int) -> BellmanFord {
   {
     n,
     edges: [],
@@ -191,7 +191,7 @@ pub fn bellman_ford(
   if src < 0 || src >= n {
     return (dist, false)
   }
-  let solver = BellmanFord::new(n)
+  let solver = BellmanFord(n)
   for edge in edges {
     let (u, v, w) = edge
     solver.add_edge(u, v, w.to_int64())
@@ -298,7 +298,7 @@ priv struct SPFA {
 }
 
 ///|
-fn SPFA::new(n : Int) -> SPFA {
+fn SPFA::SPFA(n : Int) -> SPFA {
   let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
   {
     n,
@@ -357,7 +357,7 @@ fn SPFA::compute(self : SPFA, source : Int) -> Array[Int64]? {
 
 ///|
 test "bellman_ford basic" {
-  let bf = BellmanFord::new(5)
+  let bf = BellmanFord(5)
   bf.add_edge(0, 1, 6L)
   bf.add_edge(0, 2, 7L)
   bf.add_edge(1, 2, 8L)
@@ -398,7 +398,7 @@ test "bellman_ford wrapper negative cycle" {
 
 ///|
 test "bellman_ford negative cycle" {
-  let bf = BellmanFord::new(3)
+  let bf = BellmanFord(3)
   bf.add_edge(0, 1, 1L)
   bf.add_edge(1, 2, -1L)
   bf.add_edge(2, 0, -1L) // Creates negative cycle: 0->1->2->0 = -1
@@ -408,7 +408,7 @@ test "bellman_ford negative cycle" {
 
 ///|
 test "bellman_ford disconnected" {
-  let bf = BellmanFord::new(4)
+  let bf = BellmanFord(4)
   bf.add_edge(0, 1, 1L)
   bf.add_edge(2, 3, 1L)
   let result = bf.compute(0)
@@ -419,7 +419,7 @@ test "bellman_ford disconnected" {
 
 ///|
 test "bellman_ford path reconstruction" {
-  let bf = BellmanFord::new(4)
+  let bf = BellmanFord(4)
   bf.add_edge(0, 1, 1L)
   bf.add_edge(1, 2, 2L)
   bf.add_edge(2, 3, 3L)
@@ -429,7 +429,7 @@ test "bellman_ford path reconstruction" {
 
 ///|
 test "spfa basic" {
-  let spfa = SPFA::new(5)
+  let spfa = SPFA(5)
   spfa.add_edge(0, 1, 6L)
   spfa.add_edge(0, 2, 7L)
   spfa.add_edge(1, 2, 8L)
@@ -448,7 +448,7 @@ test "spfa basic" {
 
 ///|
 test "spfa negative cycle" {
-  let spfa = SPFA::new(3)
+  let spfa = SPFA(3)
   spfa.add_edge(0, 1, 1L)
   spfa.add_edge(1, 2, -1L)
   spfa.add_edge(2, 0, -1L)

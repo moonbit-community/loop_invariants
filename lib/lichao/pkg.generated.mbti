@@ -20,8 +20,8 @@ pub(all) struct LiChaoTree {
   lo : Int64
   hi : Int64
 }
+pub fn LiChaoTree::LiChaoTree(Int64, Int64) -> Self
 pub fn LiChaoTree::insert(Self, Int64, Int64) -> Unit
-pub fn LiChaoTree::new(Int64, Int64) -> Self
 pub fn LiChaoTree::node_count(Self) -> Int
 pub fn LiChaoTree::query(Self, Int64) -> Int64
 
@@ -30,8 +30,8 @@ pub(all) struct LiChaoTreeMin {
   lo : Int64
   hi : Int64
 }
+pub fn LiChaoTreeMin::LiChaoTreeMin(Int64, Int64) -> Self
 pub fn LiChaoTreeMin::insert(Self, Int64, Int64) -> Unit
-pub fn LiChaoTreeMin::new(Int64, Int64) -> Self
 pub fn LiChaoTreeMin::node_count(Self) -> Int
 pub fn LiChaoTreeMin::query(Self, Int64) -> Int64
 

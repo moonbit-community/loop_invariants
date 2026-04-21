@@ -16,7 +16,7 @@ This package provides a generic `Treap[T]` where `T : Compare`.
 ## API summary (what you can call)
 
 ```
-@treap.Treap::new() -> Treap[T]
+@treap.Treap() -> Treap[T]
 Treap::insert(key)
 Treap::delete(key) -> Bool
 Treap::contains(key) -> Bool
@@ -168,7 +168,7 @@ The actual code uses a recursive delete, but the behavior matches this idea.
 ```mbt check
 ///|
 test "treap empty" {
-  let t : @treap.Treap[Int] = @treap.Treap::new()
+  let t : @treap.Treap[Int] = Treap()
   inspect(t.size(), content="0")
   inspect(t.min(), content="None")
   inspect(t.max(), content="None")
@@ -183,7 +183,7 @@ test "treap empty" {
 ```mbt check
 ///|
 test "treap basic insert and contains" {
-  let t = @treap.Treap::new()
+  let t = @treap.Treap()
   t.insert(5)
   t.insert(3)
   t.insert(7)
@@ -205,7 +205,7 @@ The inorder traversal of a treap is always sorted by key.
 ```mbt check
 ///|
 test "treap min max and to_array" {
-  let t = @treap.Treap::new()
+  let t = @treap.Treap()
   for x in [5, 3, 7, 1, 9] {
     t.insert(x)
   }
@@ -222,7 +222,7 @@ test "treap min max and to_array" {
 ```mbt check
 ///|
 test "treap delete one key" {
-  let t = @treap.Treap::new()
+  let t = @treap.Treap()
   t.insert(5)
   t.insert(3)
   t.insert(7)
@@ -242,7 +242,7 @@ Duplicates are allowed. `delete` removes **one** copy.
 ```mbt check
 ///|
 test "treap duplicates" {
-  let t = @treap.Treap::new()
+  let t = @treap.Treap()
   t.insert(5)
   t.insert(5)
   t.insert(5)
@@ -264,7 +264,7 @@ test "treap duplicates" {
 ```mbt check
 ///|
 test "treap order statistics" {
-  let t = @treap.Treap::new()
+  let t = @treap.Treap()
   for x in [5, 3, 7, 1, 9] {
     t.insert(x)
   }

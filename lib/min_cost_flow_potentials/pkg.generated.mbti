@@ -21,10 +21,10 @@ pub struct MinCostFlowPotentials {
   prev_v : Array[Int]
   prev_e : Array[Int]
 }
+pub fn MinCostFlowPotentials::MinCostFlowPotentials(Int) -> Self
 pub fn MinCostFlowPotentials::add_edge(Self, Int, Int, Int64, Int64) -> Unit
 pub fn MinCostFlowPotentials::compute(Self, Int, Int) -> (Int64, Int64)
 pub fn MinCostFlowPotentials::compute_with_limit(Self, Int, Int, Int64) -> (Int64, Int64)
-pub fn MinCostFlowPotentials::new(Int) -> Self
 
 // Type aliases
 

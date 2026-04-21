@@ -230,7 +230,7 @@ Both use `max_level = 16` and promotion probability 1/4.
 
 ```mbt nocheck
 ///|
-let sl : SkipList[Int, String] = SkipList::new()
+let sl : SkipList[Int, String] = SkipList()
 
 sl.insert(3, "three")
 sl.insert(1, "one")

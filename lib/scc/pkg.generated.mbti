@@ -24,8 +24,8 @@ pub(all) struct TwoSAT {
   n : Int
   adj : Array[Array[Int]]
 }
+pub fn TwoSAT::TwoSAT(Int) -> Self
 pub fn TwoSAT::add_clause(Self, Int, Bool, Int, Bool) -> Unit
-pub fn TwoSAT::new(Int) -> Self
 pub fn TwoSAT::solve(Self) -> Array[Bool]?
 
 // Type aliases

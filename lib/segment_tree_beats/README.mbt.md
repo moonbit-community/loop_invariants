@@ -6,7 +6,7 @@ Segment Tree Beats is an advanced segment tree that supports **range chmin**
 
 This package provides:
 
-- `SegmentTreeBeats::new(values)` — build from a slice in O(n)
+- `SegmentTreeBeats(values)` — build from a slice in O(n)
 - `range_chmin(l, r, x)` — set each `a[i] = min(a[i], x)` for `i in [l, r)`
 - `range_sum(l, r)` — sum of `a[l..r)`
 - `range_max(l, r)` — maximum of `a[l..r)`
@@ -305,7 +305,7 @@ Per operation amortized = O(log^2 n)  [tight bound]
 ```mbt check
 ///|
 test "segment tree beats example" {
-  let st = @segment_tree_beats.SegmentTreeBeats::new([5L, 1L, 7L, 3L, 9L])
+  let st = @segment_tree_beats.SegmentTreeBeats([5L, 1L, 7L, 3L, 9L])
   inspect(st.range_sum(0, 5), content="25")
   inspect(st.range_max(0, 5), content="9")
   st.range_chmin(1, 4, 4L)
@@ -324,7 +324,7 @@ test "segment tree beats example" {
 ```mbt check
 ///|
 test "segment tree beats clamp" {
-  let st = @segment_tree_beats.SegmentTreeBeats::new([10L, 20L, 30L, 40L, 50L])
+  let st = @segment_tree_beats.SegmentTreeBeats([10L, 20L, 30L, 40L, 50L])
   st.range_chmin(0, 5, 25L)
   inspect(st.range_sum(0, 5), content="105")
   inspect(st.range_max(0, 5), content="25")

@@ -75,7 +75,7 @@ priv struct HLD {
 /// # Example
 /// ```mbt nocheck
 /// test {
-///   let hld = HLD::new(5)
+///   let hld = HLD(5)
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(1, 2)
 ///   hld.add_edge(2, 3)
@@ -84,7 +84,7 @@ priv struct HLD {
 ///   inspect(hld.path_length(0, 4), content="4")
 /// }
 /// ```
-fn HLD::new(n : Int) -> HLD {
+fn HLD::HLD(n : Int) -> HLD {
   let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   {
     n,
@@ -109,7 +109,7 @@ fn HLD::new(n : Int) -> HLD {
 /// # Example
 /// ```mbt nocheck
 /// test {
-///   let hld = HLD::new(3)
+///   let hld = HLD(3)
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(1, 2)
 ///   hld.build(0)
@@ -211,7 +211,7 @@ fn HLD::dfs_hld(self : HLD, u : Int, head : Int) -> Unit {
 /// # Example
 /// ```mbt nocheck
 /// test {
-///   let hld = HLD::new(4)
+///   let hld = HLD(4)
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(0, 2)
 ///   hld.add_edge(0, 3)
@@ -244,7 +244,7 @@ fn HLD::build(self : HLD, root : Int) -> Unit {
 ///   //     1   2
 ///   //    / \
 ///   //   3   4
-///   let hld = HLD::new(5)
+///   let hld = HLD(5)
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(0, 2)
 ///   hld.add_edge(1, 3)
@@ -283,7 +283,7 @@ fn HLD::lca(self : HLD, u : Int, v : Int) -> Int {
 /// ```mbt nocheck
 /// test {
 ///   // Linear chain: 0 - 1 - 2 - 3 - 4
-///   let hld = HLD::new(5)
+///   let hld = HLD(5)
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(1, 2)
 ///   hld.add_edge(2, 3)
@@ -316,7 +316,7 @@ fn HLD::path_length(self : HLD, u : Int, v : Int) -> Int {
 /// ```mbt nocheck
 /// test {
 ///   // Linear chain 0-1-2-3-4-5-6-7 forms a single heavy chain.
-///   let hld = HLD::new(8)
+///   let hld = HLD(8)
 ///   for i in 0..<7 {
 ///     hld.add_edge(i, i + 1)
 ///   }
@@ -350,7 +350,7 @@ fn HLD::count_chains(self : HLD, u : Int, v : Int) -> Int {
 /// ```mbt nocheck
 /// test {
 ///   // Linear chain 0-1-2: positions are 0, 1, 2 in order.
-///   let hld = HLD::new(3)
+///   let hld = HLD(3)
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(1, 2)
 ///   hld.build(0)
@@ -376,7 +376,7 @@ fn HLD::get_position(self : HLD, u : Int) -> Int {
 /// ```mbt nocheck
 /// test {
 ///   // Linear chain 0-1-2: all nodes share chain head 0.
-///   let hld = HLD::new(3)
+///   let hld = HLD(3)
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(1, 2)
 ///   hld.build(0)
@@ -395,7 +395,7 @@ fn HLD::get_chain_head(self : HLD, u : Int) -> Int {
 
 ///|
 test "hld basic" {
-  let hld = HLD::new(7)
+  let hld = HLD(7)
   //       0
   //      / \
   //     1   2
@@ -419,7 +419,7 @@ test "hld basic" {
 
 ///|
 test "hld path length" {
-  let hld = HLD::new(5)
+  let hld = HLD(5)
   // 0 - 1 - 2 - 3 - 4
   hld.add_edge(0, 1)
   hld.add_edge(1, 2)
@@ -433,7 +433,7 @@ test "hld path length" {
 
 ///|
 test "hld chain count" {
-  let hld = HLD::new(7)
+  let hld = HLD(7)
   hld.add_edge(0, 1)
   hld.add_edge(0, 2)
   hld.add_edge(1, 3)
@@ -449,7 +449,7 @@ test "hld chain count" {
 
 ///|
 test "hld single node" {
-  let hld = HLD::new(1)
+  let hld = HLD(1)
   hld.build(0)
   inspect(hld.lca(0, 0), content="0")
   inspect(hld.path_length(0, 0), content="0")
@@ -457,7 +457,7 @@ test "hld single node" {
 
 ///|
 test "hld linear" {
-  let hld = HLD::new(8)
+  let hld = HLD(8)
   for i in 0..<7 {
     hld.add_edge(i, i + 1)
   }

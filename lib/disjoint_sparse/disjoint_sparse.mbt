@@ -105,7 +105,9 @@ fn highest_bit(x : Int) -> Int {
 /// - indices `[m+1 .. block_end]` receive the prefix sum from `m+1` to that index.
 ///
 /// Returns an empty table for an empty input array.
-pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
+pub fn DisjointSparseSum::DisjointSparseSum(
+  arr : Array[Int64],
+) -> DisjointSparseSum {
   let n = arr.length()
   if n == 0 {
     return { table: [], arr: [], n: 0 }
@@ -248,7 +250,9 @@ priv struct DisjointSparseXor {
 ///
 /// The construction mirrors `DisjointSparseSum::new` with `^` replacing `+`.
 /// Returns an empty table for an empty input array.
-fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
+fn DisjointSparseXor::DisjointSparseXor(
+  arr : Array[Int64],
+) -> DisjointSparseXor {
   let n = arr.length()
   if n == 0 {
     return { table: [], arr: [], n: 0 }
@@ -374,7 +378,7 @@ priv struct DisjointSparseProd {
 ///
 /// All intermediate products are reduced modulo `modulo` at each step to
 /// prevent integer overflow.  Returns an empty table for an empty input array.
-fn DisjointSparseProd::new(
+fn DisjointSparseProd::DisjointSparseProd(
   arr : Array[Int64],
   modulo : Int64,
 ) -> DisjointSparseProd {
@@ -480,7 +484,7 @@ fn DisjointSparseProd::length(self : DisjointSparseProd) -> Int {
 ///|
 test "disjoint sparse sum basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
-  let dst = DisjointSparseSum::new(arr)
+  let dst = DisjointSparseSum(arr)
 
   // Single elements
   inspect(dst.query(0, 0), content="Some(1)")
@@ -496,7 +500,7 @@ test "disjoint sparse sum basic" {
 ///|
 test "disjoint sparse sum edge cases" {
   let arr : Array[Int64] = [42L]
-  let dst = DisjointSparseSum::new(arr)
+  let dst = DisjointSparseSum(arr)
   inspect(dst.query(0, 0), content="Some(42)")
   inspect(dst.length(), content="1")
 }
@@ -504,7 +508,7 @@ test "disjoint sparse sum edge cases" {
 ///|
 test "disjoint sparse sum empty" {
   let arr : Array[Int64] = []
-  let dst = DisjointSparseSum::new(arr)
+  let dst = DisjointSparseSum(arr)
   inspect(dst.query(0, 0), content="None")
   inspect(dst.length(), content="0")
 }
@@ -512,7 +516,7 @@ test "disjoint sparse sum empty" {
 ///|
 test "disjoint sparse sum invalid range" {
   let arr : Array[Int64] = [1L, 2L, 3L]
-  let dst = DisjointSparseSum::new(arr)
+  let dst = DisjointSparseSum(arr)
   inspect(dst.query(-1, 0), content="None")
   inspect(dst.query(0, 10), content="None")
   inspect(dst.query(2, 1), content="None")
@@ -521,7 +525,7 @@ test "disjoint sparse sum invalid range" {
 ///|
 test "disjoint sparse xor basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
-  let dst = DisjointSparseXor::new(arr)
+  let dst = DisjointSparseXor(arr)
 
   // Single elements
   inspect(dst.query(0, 0), content="Some(1)")
@@ -536,7 +540,7 @@ test "disjoint sparse xor basic" {
 ///|
 test "disjoint sparse xor all same" {
   let arr : Array[Int64] = [5L, 5L, 5L, 5L]
-  let dst = DisjointSparseXor::new(arr)
+  let dst = DisjointSparseXor(arr)
 
   // XOR of same values: even count = 0
   inspect(dst.query(0, 3), content="Some(0)")
@@ -548,7 +552,7 @@ test "disjoint sparse xor all same" {
 ///|
 test "disjoint sparse prod basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let dst = DisjointSparseProd::new(arr, 1000000007L)
+  let dst = DisjointSparseProd(arr, 1000000007L)
 
   // Single elements
   inspect(dst.query(0, 0), content="Some(1)")
@@ -564,7 +568,7 @@ test "disjoint sparse prod basic" {
 test "disjoint sparse prod modular" {
   let arr : Array[Int64] = [1000000L, 1000000L, 1000000L]
   let modulo = 1000000007L
-  let dst = DisjointSparseProd::new(arr, modulo)
+  let dst = DisjointSparseProd(arr, modulo)
 
   // Product modulo should be handled correctly
   let result = dst.query(0, 2)
@@ -575,7 +579,7 @@ test "disjoint sparse prod modular" {
 test "disjoint sparse sum power of 2" {
   // Test with power of 2 size
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
-  let dst = DisjointSparseSum::new(arr)
+  let dst = DisjointSparseSum(arr)
   inspect(dst.query(0, 7), content="Some(36)")
   inspect(dst.query(0, 1), content="Some(3)")
   inspect(dst.query(6, 7), content="Some(15)")
@@ -585,7 +589,7 @@ test "disjoint sparse sum power of 2" {
 test "disjoint sparse sum non power of 2" {
   // Test with non-power of 2 size
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L]
-  let dst = DisjointSparseSum::new(arr)
+  let dst = DisjointSparseSum(arr)
   inspect(dst.query(0, 5), content="Some(21)")
   inspect(dst.query(1, 4), content="Some(14)")
 }
@@ -593,14 +597,14 @@ test "disjoint sparse sum non power of 2" {
 ///|
 test "disjoint sparse xor length" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let dst = DisjointSparseXor::new(arr)
+  let dst = DisjointSparseXor(arr)
   inspect(dst.length(), content="5")
 }
 
 ///|
 test "disjoint sparse prod length" {
   let arr : Array[Int64] = [1L, 2L, 3L]
-  let dst = DisjointSparseProd::new(arr, 1000000007L)
+  let dst = DisjointSparseProd(arr, 1000000007L)
   inspect(dst.length(), content="3")
 }
 

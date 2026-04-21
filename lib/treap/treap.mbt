@@ -59,7 +59,7 @@ pub struct TreapNode[T] {
 ///|
 /// Allocates a new leaf node with the given key and priority.
 /// Both children are absent and the subtree size is 1.
-fn[T] TreapNode::new(key : T, priority : Int) -> TreapNode[T] {
+fn[T] TreapNode::TreapNode(key : T, priority : Int) -> TreapNode[T] {
   { key, priority, left: None, right: None, size: 1 }
 }
 
@@ -124,10 +124,10 @@ fn next_random(state : Int) -> (Int, Int) {
 /// # Example
 ///
 /// ```moonbit nocheck
-/// let t : @treap.Treap[Int] = @treap.Treap::new()
+/// let t : @treap.Treap[Int] = @treap.Treap()
 /// // t is empty
 /// ```
-pub fn[T] Treap::new() -> Treap[T] {
+pub fn[T] Treap::Treap() -> Treap[T] {
   { root: None, rng_state: 42 }
 }
 
@@ -207,7 +207,7 @@ fn[T] merge(l : TreapNode[T]?, r : TreapNode[T]?) -> TreapNode[T]? {
 pub fn[T : Compare] Treap::insert(self : Treap[T], key : T) -> Unit {
   let (next_state, priority) = next_random(self.rng_state)
   self.rng_state = next_state
-  let new_node = TreapNode::new(key, priority)
+  let new_node = TreapNode(key, priority)
   let (l, r) = split(self.root, key)
   self.root = merge(merge(l, Some(new_node)), r)
 }

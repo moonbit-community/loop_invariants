@@ -1,6 +1,6 @@
 ///|
 test "push-relabel max flow classic" {
-  let pr = @push_relabel_max_flow.PushRelabel::new(6)
+  let pr = @push_relabel_max_flow.PushRelabel(6)
   pr.add_edge(0, 1, 16L)
   pr.add_edge(0, 2, 13L)
   pr.add_edge(1, 2, 10L)
@@ -17,7 +17,7 @@ test "push-relabel max flow classic" {
 
 ///|
 test "push-relabel small network" {
-  let pr = @push_relabel_max_flow.PushRelabel::new(4)
+  let pr = @push_relabel_max_flow.PushRelabel(4)
   pr.add_edge(0, 1, 5L)
   pr.add_edge(0, 2, 3L)
   pr.add_edge(1, 2, 1L)

@@ -708,7 +708,7 @@ priv struct MoSolver {
 /// Returns: a new MoSolver referencing `arr` (does not copy the array).
 ///
 /// Time complexity: O(1).
-fn MoSolver::new(arr : Array[Int]) -> MoSolver {
+fn MoSolver::MoSolver(arr : Array[Int]) -> MoSolver {
   let n = arr.length()
   let block_size = if n > 0 { isqrt_ceil(n) } else { 1 }
   { arr, block_size }
@@ -942,7 +942,7 @@ priv struct IntervalTree {
 /// Returns: a new IntervalTree covering [0, n-1].
 ///
 /// Time complexity: O(n).
-fn IntervalTree::new(arr : Array[Int]) -> IntervalTree {
+fn IntervalTree::IntervalTree(arr : Array[Int]) -> IntervalTree {
   let intervals : Array[Interval] = []
   if arr.length() == 0 {
     return { intervals, }
@@ -1341,7 +1341,7 @@ test "sqrt min range add" {
 ///|
 test "mo algorithm distinct" {
   let arr = [1, 2, 1, 3, 2, 1, 4, 1, 2]
-  let solver = MoSolver::new(arr)
+  let solver = MoSolver(arr)
   let queries = [(0, 2), (0, 4), (0, 8), (3, 6), (5, 8)]
   let results = solver.solve_distinct(queries)
 
@@ -1356,11 +1356,11 @@ test "mo algorithm distinct" {
 ///|
 test "mo algorithm empty" {
   let arr : Array[Int] = []
-  let solver = MoSolver::new(arr)
+  let solver = MoSolver(arr)
   let results = solver.solve_distinct([])
   inspect(results, content="[]")
   let arr2 = [1, 2, 3]
-  let solver2 = MoSolver::new(arr2)
+  let solver2 = MoSolver(arr2)
   let results2 = solver2.solve_distinct([])
   inspect(results2, content="[]")
 }
@@ -1368,7 +1368,7 @@ test "mo algorithm empty" {
 ///|
 test "mo algorithm left expansion path" {
   let arr = [1, 2, 1, 3, 2, 4, 4, 5, 1]
-  let solver = MoSolver::new(arr)
+  let solver = MoSolver(arr)
   let queries = [(4, 5), (3, 8), (6, 6)]
   inspect(solver.solve_distinct(queries), content="[2, 5, 1]")
 }
@@ -1376,7 +1376,7 @@ test "mo algorithm left expansion path" {
 ///|
 test "interval tree assign" {
   let arr = [1, 1, 1, 1, 1, 1, 1, 1]
-  let tree = IntervalTree::new(arr)
+  let tree = IntervalTree(arr)
 
   // Query initial sum
   inspect(tree.query_sum(0, 7), content="8")
@@ -1396,7 +1396,7 @@ test "interval tree assign" {
 ///|
 test "interval tree range add" {
   let arr = [1, 2, 3, 4, 5]
-  let tree = IntervalTree::new(arr)
+  let tree = IntervalTree(arr)
   inspect(tree.query_sum(0, 4), content="15")
 
   // Add 10 to [1, 3]
@@ -1409,7 +1409,7 @@ test "interval tree range add" {
 ///|
 test "interval tree get" {
   let arr = [1, 2, 3, 4, 5]
-  let tree = IntervalTree::new(arr)
+  let tree = IntervalTree(arr)
   inspect(tree.get(0), content="Some(1)")
   inspect(tree.get(2), content="Some(3)")
   inspect(tree.get(4), content="Some(5)")

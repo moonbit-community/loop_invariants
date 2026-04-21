@@ -174,7 +174,7 @@ dial_shortest_paths(graph, source):
 ```mbt check
 ///|
 test "dial shortest path example" {
-  let g = @dial_shortest_path.Graph::new(5, 3)
+  let g = @dial_shortest_path.Graph(5, 3)
   g.add_edge(0, 1, 1)
   g.add_edge(0, 2, 2)
   g.add_edge(1, 2, 1)
@@ -189,7 +189,7 @@ test "dial shortest path example" {
 ```mbt check
 ///|
 test "dial shortest path undirected" {
-  let g = @dial_shortest_path.Graph::new(4, 2)
+  let g = @dial_shortest_path.Graph(4, 2)
   g.add_undirected_edge(0, 1, 1)
   g.add_undirected_edge(1, 2, 1)
   g.add_undirected_edge(2, 3, 2)

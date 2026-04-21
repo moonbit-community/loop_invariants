@@ -96,7 +96,9 @@ fn push_node(nodes : Array[PNode], sum : Int64, left : Int, right : Int) -> Int 
 /// version (index 0). All subsequent versions are created by `update`.
 ///
 /// Returns an empty tree with no versions if `arr` is empty.
-fn PersistentSegTree::new(arr : Array[Int64]) -> PersistentSegTree {
+fn PersistentSegTree::PersistentSegTree(
+  arr : Array[Int64],
+) -> PersistentSegTree {
   let n = arr.length()
   if n == 0 {
     return { nodes: [], roots: [], n: 0 }
@@ -378,7 +380,7 @@ priv struct KthSmallest {
 ///
 /// Time: O(n log n) for sorting + O(n log m) for building versions.
 /// Space: O(n log m) nodes in the shared pool.
-fn KthSmallest::new(arr : Array[Int64]) -> KthSmallest {
+fn KthSmallest::KthSmallest(arr : Array[Int64]) -> KthSmallest {
   let n = arr.length()
   if n == 0 {
     return { nodes: [], roots: [], sorted_vals: [] }
@@ -597,7 +599,7 @@ fn KthSmallest::size(self : KthSmallest) -> Int {
 ///|
 test "persistent segtree basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let tree = PersistentSegTree::new(arr)
+  let tree = PersistentSegTree(arr)
 
   // Version 0: original array
   inspect(tree.query(0, 0, 4), content="15") // 1+2+3+4+5
@@ -607,7 +609,7 @@ test "persistent segtree basic" {
 ///|
 test "persistent segtree update" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let tree = PersistentSegTree::new(arr)
+  let tree = PersistentSegTree(arr)
 
   // Update position 2 to 10
   let v1 = tree.update(0, 2, 10L)
@@ -624,7 +626,7 @@ test "persistent segtree update" {
 ///|
 test "persistent segtree multiple versions" {
   let arr : Array[Int64] = [1L, 1L, 1L, 1L]
-  let tree = PersistentSegTree::new(arr)
+  let tree = PersistentSegTree(arr)
 
   // Create chain of updates
   let v1 = tree.update(0, 0, 2L)
@@ -643,7 +645,7 @@ test "persistent segtree multiple versions" {
 ///|
 test "persistent segtree branching versions" {
   let arr : Array[Int64] = [1L, 2L, 3L]
-  let tree = PersistentSegTree::new(arr)
+  let tree = PersistentSegTree(arr)
 
   // Branch from version 0
   let _ = tree.update(0, 0, 10L) // [10, 2, 3]
@@ -655,7 +657,7 @@ test "persistent segtree branching versions" {
 ///|
 test "persistent segtree space efficiency" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
-  let tree = PersistentSegTree::new(arr)
+  let tree = PersistentSegTree(arr)
   let initial_nodes = tree.node_count()
 
   // Each update should create O(log n) new nodes
@@ -670,7 +672,7 @@ test "persistent segtree space efficiency" {
 ///|
 test "persistent segtree get and add" {
   let arr : Array[Int64] = [5L, 10L, 15L]
-  let tree = PersistentSegTree::new(arr)
+  let tree = PersistentSegTree(arr)
   inspect(tree.get(0, 1), content="10")
   let v1 = tree.add(0, 1, 5L) // Add 5 to position 1
   inspect(tree.get(v1, 1), content="15")
@@ -680,7 +682,7 @@ test "persistent segtree get and add" {
 ///|
 test "persistent segtree empty" {
   let arr : Array[Int64] = []
-  let tree = PersistentSegTree::new(arr)
+  let tree = PersistentSegTree(arr)
   inspect(tree.version_count(), content="0")
   inspect(tree.query(0, 0, 0), content="0")
 }
@@ -688,7 +690,7 @@ test "persistent segtree empty" {
 ///|
 test "persistent segtree single element" {
   let arr : Array[Int64] = [42L]
-  let tree = PersistentSegTree::new(arr)
+  let tree = PersistentSegTree(arr)
   inspect(tree.query(0, 0, 0), content="42")
   let v1 = tree.update(0, 0, 100L)
   inspect(tree.query(v1, 0, 0), content="100")
@@ -698,7 +700,7 @@ test "persistent segtree single element" {
 ///|
 test "kth smallest basic" {
   let arr : Array[Int64] = [3L, 1L, 4L, 1L, 5L, 9L, 2L, 6L]
-  let kth = KthSmallest::new(arr)
+  let kth = KthSmallest(arr)
 
   // Query [0, 7] (whole array): sorted = [1,1,2,3,4,5,6,9]
   inspect(kth.query(0, 7, 1), content="Some(1)")
@@ -710,7 +712,7 @@ test "kth smallest basic" {
 ///|
 test "kth smallest range" {
   let arr : Array[Int64] = [5L, 1L, 3L, 2L, 4L]
-  let kth = KthSmallest::new(arr)
+  let kth = KthSmallest(arr)
 
   // Range [1, 3]: values [1, 3, 2] -> sorted [1, 2, 3]
   inspect(kth.query(1, 3, 1), content="Some(1)")
@@ -726,7 +728,7 @@ test "kth smallest range" {
 ///|
 test "kth smallest out of range" {
   let arr : Array[Int64] = [1L, 2L, 3L]
-  let kth = KthSmallest::new(arr)
+  let kth = KthSmallest(arr)
   inspect(kth.query(0, 2, 4), content="None") // k > range size
   inspect(kth.query(0, 2, 0), content="None") // k <= 0
 }
@@ -734,7 +736,7 @@ test "kth smallest out of range" {
 ///|
 test "kth smallest single element" {
   let arr : Array[Int64] = [42L]
-  let kth = KthSmallest::new(arr)
+  let kth = KthSmallest(arr)
   inspect(kth.query(0, 0, 1), content="Some(42)")
   inspect(kth.query(0, 0, 2), content="None")
 }
@@ -742,7 +744,7 @@ test "kth smallest single element" {
 ///|
 test "kth smallest duplicates" {
   let arr : Array[Int64] = [5L, 5L, 5L, 5L]
-  let kth = KthSmallest::new(arr)
+  let kth = KthSmallest(arr)
 
   // All elements are 5
   inspect(kth.query(0, 3, 1), content="Some(5)")
@@ -752,6 +754,6 @@ test "kth smallest duplicates" {
 ///|
 test "kth smallest size" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let kth = KthSmallest::new(arr)
+  let kth = KthSmallest(arr)
   inspect(kth.size(), content="5")
 }

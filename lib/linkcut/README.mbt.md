@@ -283,7 +283,7 @@ The Link-Cut Tree in this package is internal (`priv`). The following is
 
 ```mbt nocheck
 ///|
-let lct = LinkCutTree::new(5)
+let lct = LinkCutTree(5)
 
 lct.link(1, 0)
 lct.link(2, 1)

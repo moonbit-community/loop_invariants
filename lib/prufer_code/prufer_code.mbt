@@ -29,7 +29,7 @@ priv struct MinHeap {
 }
 
 ///|
-fn MinHeap::new() -> MinHeap {
+fn MinHeap::MinHeap() -> MinHeap {
   { data: [] }
 }
 
@@ -225,7 +225,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
     None => return None
     Some(pair) => pair
   }
-  let heap = MinHeap::new()
+  let heap = MinHeap()
   for v in 0..<n {
     if deg[v] == 1 {
       heap.push(v)
@@ -328,7 +328,7 @@ pub fn prufer_decode(code : ArrayView[Int]) -> Array[(Int, Int)]? {
     }
     deg[v] = deg[v] + 1
   }
-  let heap = MinHeap::new()
+  let heap = MinHeap()
   for v in 0..<n {
     if deg[v] == 1 {
       heap.push(v)

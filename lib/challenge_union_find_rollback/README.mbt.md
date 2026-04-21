@@ -6,7 +6,7 @@ where you need to explore multiple timelines.
 
 This package provides:
 
-- `RollbackDSU::new(n)`
+- `RollbackDSU(n)`
 - `union(a, b)`
 - `find(x)`
 - `same(a, b)`
@@ -76,7 +76,7 @@ size[0] = old_size
 ```mbt check
 ///|
 test "rollback dsu basic" {
-  let dsu = @challenge_union_find_rollback.RollbackDSU::new(4)
+  let dsu = @challenge_union_find_rollback.RollbackDSU(4)
   let _ = dsu.union(0, 1)
   let _ = dsu.union(2, 3)
   let snap = dsu.snapshot()
@@ -96,7 +96,7 @@ test "rollback dsu basic" {
 ```mbt check
 ///|
 test "rollback dsu nested snapshot" {
-  let dsu = @challenge_union_find_rollback.RollbackDSU::new(3)
+  let dsu = @challenge_union_find_rollback.RollbackDSU(3)
   let snap0 = dsu.snapshot()
   let _ = dsu.union(0, 1)
   let snap1 = dsu.snapshot()
@@ -116,7 +116,7 @@ test "rollback dsu nested snapshot" {
 ```mbt check
 ///|
 test "rollback dsu redundant" {
-  let dsu = @challenge_union_find_rollback.RollbackDSU::new(2)
+  let dsu = @challenge_union_find_rollback.RollbackDSU(2)
   let snap = dsu.snapshot()
   let _ = dsu.union(0, 1)
   let _ = dsu.union(0, 1) // no-op, but logged
@@ -142,7 +142,7 @@ If you do not need rollback, a normal DSU with path compression is faster.
 ## Reference implementation
 
 ```mbt nocheck
-///| pub fn RollbackDSU::new(n : Int) -> RollbackDSU
+///| pub fn RollbackDSU::RollbackDSU(n : Int) -> RollbackDSU
 
 ///| pub fn RollbackDSU::find(self : RollbackDSU, x : Int) -> Int
 

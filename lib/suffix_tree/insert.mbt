@@ -94,7 +94,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
     // Case A: No matching edge - create new leaf
     guard find_edge(nodes, text, current, text[pos]) is Some(edge_idx) else {
       let leaf = nodes.length()
-      nodes.push(Node::new())
+      nodes.push(Node())
       nodes[current].edges.push({ start: pos, end: n, child: leaf })
       break
     }
@@ -120,9 +120,9 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
         //                                   └──[j..n)──────────► leaf
         //
         let split = nodes.length()
-        nodes.push(Node::new())
+        nodes.push(Node())
         let leaf = nodes.length()
-        nodes.push(Node::new())
+        nodes.push(Node())
 
         // Wire up the split: original subtree becomes child of split
         nodes[split].edges.push({ start: k, end: edge.end, child: edge.child })
@@ -229,10 +229,10 @@ fn compute_leaf_counts(nodes : Array[Node], node_idx : Int) -> Int {
 /// queries on the original text.
 ///
 /// Time: O(n²)  Space: O(n²)
-pub fn SuffixTree::new(s : String) -> SuffixTree {
+pub fn SuffixTree::SuffixTree(s : String) -> SuffixTree {
   let text = s.to_array()
   text.push(SENTINEL)
-  let nodes : Array[Node] = [Node::new()]
+  let nodes : Array[Node] = [Node()]
 
   // Insert all suffixes
   for start in 0..<text.length() {

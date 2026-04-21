@@ -170,7 +170,7 @@ pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
 ///
 /// This is equivalent to:
 /// ```
-///   let d = Dinic::new(n)
+///   let d = Dinic(n)
 ///   for (u, v, cap) in edges { d.add_edge(u, v, cap) }
 ///   d.max_flow(source, sink)
 /// ```
@@ -183,7 +183,7 @@ pub fn max_flow(
   source : Int,
   sink : Int,
 ) -> Int64 {
-  let flow = Dinic::new(n)
+  let flow = Dinic(n)
   for edge in edges {
     let (u, v, cap) = edge
     flow.add_edge(u, v, cap)

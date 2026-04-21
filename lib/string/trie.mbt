@@ -21,7 +21,7 @@ priv struct TrieNode {
 
 ///|
 /// Create a fresh `TrieNode` with no children and zero counts.
-fn TrieNode::new() -> TrieNode {
+fn TrieNode::TrieNode() -> TrieNode {
   { children: Array::make(26, None), is_end: false, count: 0, prefix_count: 0 }
 }
 
@@ -37,8 +37,8 @@ priv struct Trie {
 
 ///|
 /// Create an empty `Trie`.
-fn Trie::new() -> Trie {
-  { root: TrieNode::new() }
+fn Trie::Trie() -> Trie {
+  { root: TrieNode() }
 }
 
 ///|
@@ -63,7 +63,7 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
     let next_node = match node.children[idx] {
       Some(child) => child
       None => {
-        let new_node = TrieNode::new()
+        let new_node = TrieNode()
         node.children[idx] = Some(new_node)
         new_node
       }
@@ -216,7 +216,7 @@ priv struct ACNode {
 ///|
 /// Create a fresh `ACNode` with no children, failure link pointing to root,
 /// no output, and no suffix-output link.
-fn ACNode::new() -> ACNode {
+fn ACNode::ACNode() -> ACNode {
   { children: Array::make(26, -1), fail: 0, output: [], suffix_output: -1 }
 }
 
@@ -229,7 +229,7 @@ fn ACNode::new() -> ACNode {
 /// patterns in a text of length `n` are found in O(n + total_output) time
 /// after O(total_pattern_length) construction.
 ///
-/// Construct with `AhoCorasick::new(patterns)` and search with
+/// Construct with `AhoCorasick(patterns)` and search with
 /// `ac.search(text)`.
 priv struct AhoCorasick {
   nodes : Array[ACNode]
@@ -251,13 +251,13 @@ priv struct AhoCorasick {
 ///
 /// # Example
 /// ```
-/// let ac = AhoCorasick::new(["he", "she", "his", "hers"])
+/// let ac = AhoCorasick(["he", "she", "his", "hers"])
 /// let matches = ac.search("ushers")
 /// // matches contain: "she" at 4, "he" at 4, "hers" at 6
 /// ```
-fn AhoCorasick::new(patterns : Array[String]) -> AhoCorasick {
+fn AhoCorasick::AhoCorasick(patterns : Array[String]) -> AhoCorasick {
   let max_nodes = 1 + patterns.fold(init=0, (acc, p) => acc + p.length())
-  let nodes : Array[ACNode] = [ for _ in 0..<max_nodes => ACNode::new() ]
+  let nodes : Array[ACNode] = [ for _ in 0..<max_nodes => ACNode() ]
   let ac : AhoCorasick = { nodes, node_count: 1 }
   // Build trie
   for pattern_idx, pattern in patterns {
@@ -591,7 +591,7 @@ priv struct XORTrieNode {
 
 ///|
 /// Create a fresh `XORTrieNode` with no children and count 0.
-fn XORTrieNode::new() -> XORTrieNode {
+fn XORTrieNode::XORTrieNode() -> XORTrieNode {
   { children: (None, None), count: 0 }
 }
 
@@ -602,7 +602,7 @@ fn XORTrieNode::new() -> XORTrieNode {
 /// Useful for problems such as "find the element in the set that maximises
 /// XOR with a query value" (e.g. maximum XOR subarray).
 ///
-/// Construct with `XORTrie::new(max_bits)`, insert with `insert`, and query
+/// Construct with `XORTrie(max_bits)`, insert with `insert`, and query
 /// with `max_xor`.
 priv struct XORTrie {
   root : XORTrieNode
@@ -612,8 +612,8 @@ priv struct XORTrie {
 ///|
 /// Create an empty `XORTrie` that considers the `max_bits` most-significant
 /// bits of each inserted integer (bit `max_bits - 1` down to bit `0`).
-fn XORTrie::new(max_bits : Int) -> XORTrie {
-  { root: XORTrieNode::new(), bits: max_bits }
+fn XORTrie::XORTrie(max_bits : Int) -> XORTrie {
+  { root: XORTrieNode(), bits: max_bits }
 }
 
 ///|
@@ -633,7 +633,7 @@ fn XORTrie::insert(self : XORTrie, num : Int) -> Unit {
       match child0 {
         Some(n) => n
         None => {
-          let new_node = XORTrieNode::new()
+          let new_node = XORTrieNode()
           node.children = (Some(new_node), child1)
           new_node
         }
@@ -642,7 +642,7 @@ fn XORTrie::insert(self : XORTrie, num : Int) -> Unit {
       match child1 {
         Some(n) => n
         None => {
-          let new_node = XORTrieNode::new()
+          let new_node = XORTrieNode()
           node.children = (child0, Some(new_node))
           new_node
         }
@@ -750,7 +750,7 @@ priv struct PersistentTrieNode {
 ///|
 /// Create a fresh `PersistentTrieNode` for `version` with no children and
 /// `is_end = false`.
-fn PersistentTrieNode::new(version : Int) -> PersistentTrieNode {
+fn PersistentTrieNode::PersistentTrieNode(version : Int) -> PersistentTrieNode {
   { children: Array::make(26, None), is_end: false, version }
 }
 
@@ -762,7 +762,7 @@ fn PersistentTrieNode::new(version : Int) -> PersistentTrieNode {
 /// path are cloned; all other nodes are shared with the previous version.
 /// Older versions remain fully queryable via `search_version`.
 ///
-/// Construct with `PersistentTrie::new(max_versions)`, insert with `insert`
+/// Construct with `PersistentTrie(max_versions)`, insert with `insert`
 /// (returns the new version number), and query with `search_version`.
 priv struct PersistentTrie {
   roots : Array[PersistentTrieNode?]
@@ -776,9 +776,9 @@ priv struct PersistentTrie {
 /// # Parameters
 /// - `max_versions` — upper bound on the number of insert operations that
 ///   will be performed (must be at least 1)
-fn PersistentTrie::new(max_versions : Int) -> PersistentTrie {
+fn PersistentTrie::PersistentTrie(max_versions : Int) -> PersistentTrie {
   let roots : Array[PersistentTrieNode?] = Array::make(max_versions, None)
-  roots[0] = Some(PersistentTrieNode::new(0))
+  roots[0] = Some(PersistentTrieNode(0))
   { roots, version: 0 }
 }
 
@@ -800,7 +800,7 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
   let new_version = self.version + 1
   // Create new root for this version
   let old_root = self.roots[self.version]
-  let new_root = PersistentTrieNode::new(new_version)
+  let new_root = PersistentTrieNode(new_version)
   // Copy children from old root
   match old_root {
     Some(r) => r.children.blit_to(new_root.children)
@@ -815,7 +815,7 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
       Some(child) =>
         // Create copy if from older version
         if child.version < new_version {
-          let new_child = PersistentTrieNode::new(new_version)
+          let new_child = PersistentTrieNode(new_version)
           child.children.blit_to(new_child.children)
           node.children[idx] = Some(new_child)
           new_child
@@ -823,7 +823,7 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
           child
         }
       None => {
-        let new_child = PersistentTrieNode::new(new_version)
+        let new_child = PersistentTrieNode(new_version)
         node.children[idx] = Some(new_child)
         new_child
       }
@@ -923,7 +923,7 @@ priv struct RadixNode {
 ///|
 /// Create a fresh `RadixNode` with edge label `label`, no children, and
 /// `is_end = false`.
-fn RadixNode::new(label : String) -> RadixNode {
+fn RadixNode::RadixNode(label : String) -> RadixNode {
   { edge_label: label, children: [], is_end: false }
 }
 
@@ -943,8 +943,8 @@ priv struct RadixTree {
 
 ///|
 /// Create an empty `RadixTree` with a root node carrying the empty label.
-fn RadixTree::new() -> RadixTree {
-  { root: RadixNode::new("") }
+fn RadixTree::RadixTree() -> RadixTree {
+  { root: RadixNode("") }
 }
 
 ///|
@@ -1047,7 +1047,7 @@ fn RadixTree::insert_helper(
     None => {
       // No matching child, create new one
       let remaining = String::from_array(chars[pos:])
-      let new_child = RadixNode::new(remaining)
+      let new_child = RadixNode(remaining)
       new_child.is_end = true
       node.children.push((c, new_child))
     }
@@ -1065,7 +1065,7 @@ fn RadixTree::insert_helper(
         let child_remaining = String::from_array(edge_chars[common_len:])
         let word_remaining = String::from_array(chars[pos + common_len:])
         // Create intermediate node
-        let intermediate = RadixNode::new(common_part)
+        let intermediate = RadixNode(common_part)
         // Update child's edge label
         child.edge_label = child_remaining
         // Add child to intermediate
@@ -1073,7 +1073,7 @@ fn RadixTree::insert_helper(
         intermediate.children.push((child_first_char, child))
         // If there's remaining word part, add new node
         if word_remaining.length() > 0 {
-          let new_child = RadixNode::new(word_remaining)
+          let new_child = RadixNode(word_remaining)
           new_child.is_end = true
           let new_first_char = word_remaining.to_array()[0]
           intermediate.children.push((new_first_char, new_child))
@@ -1177,7 +1177,7 @@ fn RadixTree::search(self : RadixTree, word : String) -> Bool {
 
 ///|
 test "trie_basic" {
-  let trie = Trie::new()
+  let trie = Trie()
   trie.insert("apple")
   trie.insert("app")
   trie.insert("application")
@@ -1190,7 +1190,7 @@ test "trie_basic" {
 
 ///|
 test "trie_prefix_count" {
-  let trie = Trie::new()
+  let trie = Trie()
   trie.insert("apple")
   trie.insert("app")
   trie.insert("application")
@@ -1203,7 +1203,7 @@ test "trie_prefix_count" {
 ///|
 test "aho_corasick_basic" {
   let patterns = ["he", "she", "his", "hers"]
-  let ac = AhoCorasick::new(patterns)
+  let ac = AhoCorasick(patterns)
   let matches = ac.search("ushers")
   // "she" at position 4 (ends at 4)
   // "he" at position 4 (ends at 4) - overlaps with she
@@ -1219,7 +1219,7 @@ test "aho_corasick_basic" {
 ///|
 test "aho_corasick_overlapping" {
   let patterns = ["a", "ab", "abc"]
-  let ac = AhoCorasick::new(patterns)
+  let ac = AhoCorasick(patterns)
   let matches = ac.search("abc")
   // Should find: "a" at 1, "ab" at 2, "abc" at 3
   inspect(matches.length(), content="3")
@@ -1227,7 +1227,7 @@ test "aho_corasick_overlapping" {
 
 ///|
 test "xor_trie_basic" {
-  let trie = XORTrie::new(8) // 8 bits
+  let trie = XORTrie(8) // 8 bits
   trie.insert(3) // 00000011
   trie.insert(10) // 00001010
   trie.insert(5) // 00000101
@@ -1239,7 +1239,7 @@ test "xor_trie_basic" {
 
 ///|
 test "xor_trie_single" {
-  let trie = XORTrie::new(4)
+  let trie = XORTrie(4)
   trie.insert(7) // 0111
   inspect(trie.max_xor(0), content="7") // 0 ^ 7 = 7
   inspect(trie.max_xor(7), content="0") // 7 ^ 7 = 0
@@ -1248,7 +1248,7 @@ test "xor_trie_single" {
 
 ///|
 test "persistent_trie_basic" {
-  let trie = PersistentTrie::new(10)
+  let trie = PersistentTrie(10)
   let v1 = trie.insert("hello")
   let v2 = trie.insert("help")
   // Version 1 should have "hello"
@@ -1263,7 +1263,7 @@ test "persistent_trie_basic" {
 
 ///|
 test "radix_tree_basic" {
-  let tree = RadixTree::new()
+  let tree = RadixTree()
   tree.insert("test")
   tree.insert("testing")
   tree.insert("team")
@@ -1276,7 +1276,7 @@ test "radix_tree_basic" {
 
 ///|
 test "radix_tree_prefix_sharing" {
-  let tree = RadixTree::new()
+  let tree = RadixTree()
   tree.insert("romane")
   tree.insert("romanus")
   tree.insert("romulus")
@@ -1292,7 +1292,7 @@ test "radix_tree_prefix_sharing" {
 
 ///|
 test "empty_trie" {
-  let trie = Trie::new()
+  let trie = Trie()
   inspect(trie.search("any"), content="false")
   inspect(trie.starts_with("a"), content="false")
   inspect(trie.count_prefix("xyz"), content="0")
@@ -1300,7 +1300,7 @@ test "empty_trie" {
 
 ///|
 test "single_character_words" {
-  let trie = Trie::new()
+  let trie = Trie()
   trie.insert("a")
   trie.insert("b")
   trie.insert("c")

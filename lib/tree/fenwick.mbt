@@ -46,7 +46,7 @@ priv struct FenwickTree {
 
 ///|
 /// Create a new Fenwick tree of size n+1 (1-indexed).
-fn FenwickTree::new(n : Int) -> FenwickTree {
+fn FenwickTree::FenwickTree(n : Int) -> FenwickTree {
   { tree: Array::make(n + 1, 0), n }
 }
 
@@ -144,7 +144,7 @@ fn FenwickTree::range_sum(self : FenwickTree, l : Int, r : Int) -> Int {
 
 ///|
 test "fenwick_basic" {
-  let ft = FenwickTree::new(8)
+  let ft = FenwickTree(8)
   // Add values: [3, 1, 4, 1, 5, 9, 2, 6] at positions 1-8
   ft.update(1, 3)
   ft.update(2, 1)
@@ -327,7 +327,7 @@ fn FenwickTree::find_kth(self : FenwickTree, k : Int) -> Int {
 test "fenwick_find_kth" {
   // Use as frequency array: 2 ones, 3 twos, 1 three, 4 fours
   // Positions represent values, counts represent frequencies
-  let ft = FenwickTree::new(4)
+  let ft = FenwickTree(4)
   ft.update(1, 2) // 2 copies of value 1
   ft.update(2, 3) // 3 copies of value 2
   ft.update(3, 1) // 1 copy of value 3
@@ -365,7 +365,7 @@ priv struct FenwickTree2D {
 }
 
 ///|
-fn FenwickTree2D::new(n : Int, m : Int) -> FenwickTree2D {
+fn FenwickTree2D::FenwickTree2D(n : Int, m : Int) -> FenwickTree2D {
   { tree: Array::make((n + 1) * (m + 1), 0), n, m }
 }
 
@@ -489,7 +489,7 @@ fn FenwickTree2D::range_sum(
 
 ///|
 test "fenwick_2d" {
-  let ft = FenwickTree2D::new(3, 4)
+  let ft = FenwickTree2D(3, 4)
   // Create a 3x4 grid:
   // 1 2 3 4
   // 5 6 7 8
@@ -537,8 +537,10 @@ priv struct FenwickTreeRangeUpdate {
 }
 
 ///|
-fn FenwickTreeRangeUpdate::new(n : Int) -> FenwickTreeRangeUpdate {
-  { diff: FenwickTree::new(n) }
+fn FenwickTreeRangeUpdate::FenwickTreeRangeUpdate(
+  n : Int,
+) -> FenwickTreeRangeUpdate {
+  { diff: FenwickTree(n) }
 }
 
 ///|
@@ -566,7 +568,7 @@ fn FenwickTreeRangeUpdate::point_query(
 
 ///|
 test "fenwick_range_update" {
-  let ft = FenwickTreeRangeUpdate::new(8)
+  let ft = FenwickTreeRangeUpdate(8)
   // Add 5 to positions 2-5
   ft.range_add(2, 5, 5)
   assert_eq(ft.point_query(1), 0)
@@ -616,8 +618,10 @@ priv struct FenwickTreeRangeRange {
 }
 
 ///|
-fn FenwickTreeRangeRange::new(n : Int) -> FenwickTreeRangeRange {
-  { tree1: FenwickTree::new(n), tree2: FenwickTree::new(n), n }
+fn FenwickTreeRangeRange::FenwickTreeRangeRange(
+  n : Int,
+) -> FenwickTreeRangeRange {
+  { tree1: FenwickTree(n), tree2: FenwickTree(n), n }
 }
 
 ///|
@@ -660,7 +664,7 @@ fn FenwickTreeRangeRange::range_sum(
 
 ///|
 test "fenwick_range_range" {
-  let ft = FenwickTreeRangeRange::new(8)
+  let ft = FenwickTreeRangeRange(8)
   // Add 2 to positions 1-4
   ft.range_add(1, 4, 2)
   // Array: [2, 2, 2, 2, 0, 0, 0, 0]
@@ -693,7 +697,7 @@ test "fenwick_range_range" {
 /// Values should be in range [1, max_val].
 #warnings("+missing_invariant+missing_reasoning")
 fn count_inversions(arr : ArrayView[Int], max_val : Int) -> Int {
-  let ft = FenwickTree::new(max_val)
+  let ft = FenwickTree(max_val)
   let n = arr.length()
   for i = n - 1, count = 0 {
     if i < 0 {
