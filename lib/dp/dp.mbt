@@ -517,6 +517,7 @@ fn unique_paths(m : Int, n : Int) -> Int {
   // Space optimization: only need one row
   let dp = Array::make(n, 1)
   for i in 1..<m {
+    let _ = i
     for j in 1..<n {
       dp[j] = dp[j] + dp[j - 1]
     } where {

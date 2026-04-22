@@ -283,6 +283,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
   }
   dist[src] = 0
   for iter in 0..<n {
+    let _ = iter
     let u = for i in 0..<n; u = -1, best = DIJK_INF_INT {
       if !used[i] && dist[i] < best {
         continue i, dist[i]

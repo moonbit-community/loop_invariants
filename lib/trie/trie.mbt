@@ -329,6 +329,7 @@ fn collect_words(
       ),
     }
     for j in 0..<node.count {
+      let _ = j
       result.push(s)
     } where {
       proof_invariant: j >= 0 && j <= node.count,

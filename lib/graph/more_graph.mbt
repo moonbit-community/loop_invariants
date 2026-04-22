@@ -24,6 +24,7 @@ fn bellman_ford_with_neg_cycle(
 
   // Relax all edges n-1 times
   for i in 0..<(n - 1) {
+    let _ = i
     let changed = for edge in edges; changed = false {
       let (u, v, w) = edge
       if dist[u] != inf && dist[u] + w < dist[v] {

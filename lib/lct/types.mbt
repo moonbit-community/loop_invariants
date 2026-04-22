@@ -174,6 +174,7 @@ pub(all) struct LinkCutTree {
 pub fn LinkCutTree::new(n : Int) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
   for i in 0..<n {
+    let _ = i
     nodes.push(LCTNode::new(0))
   } where {
     proof_invariant: i >= 0 && i <= n,

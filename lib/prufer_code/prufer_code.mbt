@@ -244,6 +244,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   let next_idx = Array::make(n, 0)
   let code : Array[Int] = []
   for step in 0..<(n - 2) {
+    let _ = step
     let leaf = match heap.pop() {
       Some(v) => v
       None => return None
