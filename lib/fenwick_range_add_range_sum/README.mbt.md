@@ -196,7 +196,7 @@ test "fenwick range add range sum example" {
 ```mbt check
 ///|
 test "fenwick range add point query" {
-  let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum(4)
+  let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum::new(4)
   st.range_add(0, 3, 5L)
   inspect(st.range_sum(2, 2), content="5")
 }
@@ -205,7 +205,7 @@ test "fenwick range add point query" {
 ```mbt check
 ///|
 test "fenwick multiple range adds" {
-  let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum(5)
+  let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum::new(5)
   st.range_add(0, 2, 10L) // [10, 10, 10, 0, 0]
   st.range_add(2, 4, 5L) // [10, 10, 15, 5, 5]
   inspect(st.range_sum(0, 4), content="45")

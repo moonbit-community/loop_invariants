@@ -117,7 +117,7 @@ priv struct BiconnectedFinder {
 /// All discovery times are initialised to `-1` (unvisited). The adjacency
 /// list, edge stack, and component array are empty. The timer starts at `0`.
 /// Call `add_edge` to populate the graph before calling `run`.
-fn BiconnectedFinder::BiconnectedFinder(n : Int) -> BiconnectedFinder {
+fn BiconnectedFinder::new(n : Int) -> BiconnectedFinder {
   let adj : Array[Array[(Int, Int)]] = [ for _ in 0..<n => [] ]
   {
     n,

@@ -248,7 +248,7 @@ Compose:    (m1,b1) then (m2,b2)  ->  (m1*m2,  b1*m2 + b2)
 ///|
 test "lazy segtree example" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L]
-  let st = @lazy_segtree.LazySegTreeSum(arr)
+  let st = @lazy_segtree.LazySegTreeSum::new(arr)
 
   // add 2 to indices 1..3
   st.range_add(1, 3, 2L)
@@ -260,7 +260,7 @@ test "lazy segtree example" {
 ```mbt check
 ///|
 test "lazy segtree multiple updates" {
-  let st = @lazy_segtree.LazySegTreeSum([5L, 1L, 4L, 2L, 3L])
+  let st = @lazy_segtree.LazySegTreeSum::new([5L, 1L, 4L, 2L, 3L])
 
   // add +3 to [0..2]
   st.range_add(0, 2, 3L)
@@ -277,7 +277,7 @@ test "lazy segtree multiple updates" {
 
 ## 10. Variants included in this package
 
-### LazySegTreeSum (public)
+### LazySegTreeSum::new(public)
 
 Range add + range sum.  `pending[k]` is the accumulated addend not yet pushed
 to children.  Composing two adds: `pending' = pending + new_add`.
@@ -287,7 +287,7 @@ tree[k]    = sum of range [L..R]  (already reflects pending[k] itself)
 pending[k] = value still owed to each child
 ```
 
-### LazySegTreeSetSum (private)
+### LazySegTreeSetSum::new(private)
 
 Range assign + range sum.  `pending[k]` is the value to assign; `has_pending[k]`
 distinguishes "no pending assignment" from "assign zero".  A new assignment
@@ -299,7 +299,7 @@ pending[k]    = the assignment value
 has_pending[k]= whether an unresolved assignment exists
 ```
 
-### LazySegTreeMin (private)
+### LazySegTreeMin::new(private)
 
 Range add + range min.  Identical lazy-tag logic to `LazySegTreeSum`, but the
 aggregation function is `min` instead of `+`.  Because min is idempotent, the

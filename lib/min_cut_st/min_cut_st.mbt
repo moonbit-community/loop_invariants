@@ -65,7 +65,7 @@ priv struct FlowGraph {
 
 ///|
 /// Create a new flow graph with `n` vertices and no edges.
-fn FlowGraph::FlowGraph(n : Int) -> FlowGraph {
+fn FlowGraph::new(n : Int) -> FlowGraph {
   let adj = [ for _ in 0..<n => [] ]
   { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0) }
 }
@@ -318,7 +318,7 @@ pub fn min_cut_st(
     source == sink {
     return None
   }
-  let flow = FlowGraph(n)
+  let flow = FlowGraph::new(n)
   for i in 0..<edges.length() {
     let (u, v, cap) = edges[i]
     if u >= 0 && u < n && v >= 0 && v < n && u != v && cap > 0L {

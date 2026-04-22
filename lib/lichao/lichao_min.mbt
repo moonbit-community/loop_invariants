@@ -40,7 +40,7 @@
 ///
 /// Usage pattern:
 /// ```
-/// let tree = LiChaoTreeMin(lo, hi)
+/// let tree = LiChaoTreeMin::new(lo, hi)
 /// tree.insert(slope, intercept)   // add a line y = slope * x + intercept
 /// let min_y = tree.query(x)       // minimum y over all inserted lines at x
 /// ```
@@ -66,7 +66,7 @@ pub(all) struct LiChaoTreeMin {
 /// Parameters:
 /// - `lo`: smallest x value that will ever be queried.
 /// - `hi`: largest x value that will ever be queried.
-pub fn LiChaoTreeMin::LiChaoTreeMin(lo : Int64, hi : Int64) -> LiChaoTreeMin {
+pub fn LiChaoTreeMin::new(lo : Int64, hi : Int64) -> LiChaoTreeMin {
   let nodes : Array[LCNode] = []
   nodes.push({ line: undefined_line_min(), left: -1, right: -1 })
   { nodes, lo, hi }

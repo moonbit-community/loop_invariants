@@ -73,7 +73,7 @@ priv struct ACState {
 /// All child transitions are initialised to -1 (absent), the failure link is
 /// set to -1 (used as a sentinel meaning "not yet computed"), and the output
 /// list is empty.
-fn ACState::ACState() -> ACState {
+fn ACState::new() -> ACState {
   { children: Array::make(AC_ALPHABET, -1), failure: -1, output: [] }
 }
 
@@ -96,9 +96,9 @@ priv struct AhoCorasick {
 /// Create a new, empty automaton containing only the root state.
 ///
 /// Call `add_pattern` one or more times, then call `build` before searching.
-fn AhoCorasick::AhoCorasick() -> AhoCorasick {
+fn AhoCorasick::new() -> AhoCorasick {
   // Initialize with root state
-  let states : Array[ACState] = [ACState()]
+  let states : Array[ACState] = [ACState::new()]
   { states, patterns: [] }
 }
 
@@ -126,7 +126,7 @@ fn AhoCorasick::add_pattern(self : AhoCorasick, pattern : String) -> Unit {
     if self.states[state].children[c] < 0 {
       // Create new state for this character
       let new_state = self.states.length()
-      self.states.push(ACState())
+      self.states.push(ACState::new())
       self.states[state].children[c] = new_state
     }
     continue self.states[state].children[c]
@@ -337,7 +337,7 @@ fn AhoCorasick::state_count(self : AhoCorasick) -> Int {
 /// Equivalent to calling `new`, then `add_pattern` for each element, then
 /// `build`.
 fn AhoCorasick::from_patterns(patterns : Array[String]) -> AhoCorasick {
-  let ac = AhoCorasick()
+  let ac = AhoCorasick::new()
   patterns.each(pattern => ac.add_pattern(pattern))
   ac.build()
   ac

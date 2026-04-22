@@ -11,7 +11,7 @@ pub struct RollbackDSU {
 
 ///|
 /// Create a rollback-capable DSU with n singleton sets.
-pub fn RollbackDSU::RollbackDSU(n : Int) -> RollbackDSU {
+pub fn RollbackDSU::new(n : Int) -> RollbackDSU {
   let parent : Array[Int] = Array::make(n, 0)
   let size : Array[Int] = Array::make(n, 1)
   for i in 0..<n {
@@ -87,7 +87,7 @@ pub fn RollbackDSU::same(self : RollbackDSU, a : Int, b : Int) -> Bool {
 
 ///|
 test "rollback_dsu" {
-  let dsu = RollbackDSU(4)
+  let dsu = RollbackDSU::new(4)
   let _ = dsu.union(0, 1)
   let _ = dsu.union(2, 3)
   let snap = dsu.snapshot()

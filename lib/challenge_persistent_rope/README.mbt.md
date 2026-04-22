@@ -28,7 +28,7 @@ chunks.
 ## Structure
 
 ```
-        Node(len)
+        Node::new(len)
         /       \
      Rope       Rope
 ```

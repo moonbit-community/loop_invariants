@@ -58,7 +58,7 @@ priv struct TrieNode {
 
 ///|
 /// Create a new trie node with empty children and zero counts.
-fn TrieNode::TrieNode() -> TrieNode {
+fn TrieNode::new() -> TrieNode {
   { children: Array::make(26, None), is_end: false, count: 0, prefix_count: 0 }
 }
 
@@ -79,8 +79,8 @@ priv struct Trie {
 
 ///|
 /// Create a new, empty trie.
-fn Trie::Trie() -> Trie {
-  { root: TrieNode() }
+fn Trie::new() -> Trie {
+  { root: TrieNode::new() }
 }
 
 ///|
@@ -104,7 +104,7 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
     }
     let next = match current.children[c] {
       None => {
-        let new_node = TrieNode()
+        let new_node = TrieNode::new()
         current.children[c] = Some(new_node)
         new_node
       }
@@ -474,7 +474,7 @@ priv struct CompressedTrieNode {
 
 ///|
 /// Create a new compressed trie node with no children and `is_end = false`.
-fn CompressedTrieNode::CompressedTrieNode() -> CompressedTrieNode {
+fn CompressedTrieNode::new() -> CompressedTrieNode {
   { children: Array::make(26, None), is_end: false }
 }
 
@@ -494,8 +494,8 @@ priv struct CompressedTrie {
 
 ///|
 /// Create a new, empty compressed trie.
-fn CompressedTrie::CompressedTrie() -> CompressedTrie {
-  { root: CompressedTrieNode() }
+fn CompressedTrie::new() -> CompressedTrie {
+  { root: CompressedTrieNode::new() }
 }
 
 ///|
@@ -526,7 +526,7 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
   match self.root.children[first_char] {
     None => {
       // Create new edge with entire word
-      let new_node = CompressedTrieNode()
+      let new_node = CompressedTrieNode::new()
       new_node.is_end = true
       self.root.children[first_char] = Some((word, new_node))
     }
@@ -541,7 +541,7 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
         insert_into_node(child, word[common_len:].to_string())
       } else {
         // Need to split
-        let new_internal = CompressedTrieNode()
+        let new_internal = CompressedTrieNode::new()
         let suffix_label = label[common_len:].to_string()
         let suffix_word = word[common_len:].to_string()
 
@@ -559,7 +559,7 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
         if suffix_word.length() == 0 {
           new_internal.is_end = true
         } else {
-          let new_word_node = CompressedTrieNode()
+          let new_word_node = CompressedTrieNode::new()
           new_word_node.is_end = true
           let first_word_char = suffix_word[0].to_int() - 'a'.to_int()
           if first_word_char >= 0 && first_word_char < 26 {
@@ -595,7 +595,7 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
   }
   match node.children[first_char] {
     None => {
-      let new_node = CompressedTrieNode()
+      let new_node = CompressedTrieNode::new()
       new_node.is_end = true
       node.children[first_char] = Some((word, new_node))
     }
@@ -607,7 +607,7 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
         insert_into_node(child, word[common_len:].to_string())
       } else {
         // Split node (similar logic as above)
-        let new_internal = CompressedTrieNode()
+        let new_internal = CompressedTrieNode::new()
         let suffix_label = label[common_len:].to_string()
         let suffix_word = word[common_len:].to_string()
         let first_suffix_char = if suffix_label.length() > 0 {
@@ -621,7 +621,7 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
         if suffix_word.length() == 0 {
           new_internal.is_end = true
         } else {
-          let new_word_node = CompressedTrieNode()
+          let new_word_node = CompressedTrieNode::new()
           new_word_node.is_end = true
           let first_word_char = suffix_word[0].to_int() - 'a'.to_int()
           if first_word_char >= 0 && first_word_char < 26 {
@@ -750,7 +750,7 @@ fn search_in_node(
 
 ///|
 test "trie basic insert and search" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("hello")
   trie.insert("world")
   trie.insert("help")
@@ -763,7 +763,7 @@ test "trie basic insert and search" {
 
 ///|
 test "trie starts_with" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("hello")
   trie.insert("help")
   trie.insert("world")
@@ -775,7 +775,7 @@ test "trie starts_with" {
 
 ///|
 test "trie delete" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("hello")
   trie.insert("hello")
   trie.insert("help")
@@ -790,7 +790,7 @@ test "trie delete" {
 
 ///|
 test "trie prefix count" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("car")
   trie.insert("card")
   trie.insert("care")
@@ -803,7 +803,7 @@ test "trie prefix count" {
 
 ///|
 test "trie autocomplete" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("car")
   trie.insert("card")
   trie.insert("care")
@@ -814,7 +814,7 @@ test "trie autocomplete" {
 
 ///|
 test "trie autocomplete contents and skipped characters" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("car")
   trie.insert("card")
   trie.insert("care")
@@ -836,7 +836,7 @@ test "trie autocomplete contents and skipped characters" {
 
 ///|
 test "trie all_words" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("a")
   trie.insert("ab")
   trie.insert("abc")
@@ -846,14 +846,14 @@ test "trie all_words" {
 
 ///|
 test "trie empty" {
-  let trie = Trie()
+  let trie = Trie::new()
   inspect(trie.search("anything"), content="false")
   inspect(trie.starts_with("any"), content="false")
 }
 
 ///|
 test "trie single char" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("a")
   inspect(trie.search("a"), content="true")
   inspect(trie.search("b"), content="false")
@@ -861,7 +861,7 @@ test "trie single char" {
 
 ///|
 test "trie longest prefix" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("a")
   trie.insert("app")
   trie.insert("apple")
@@ -872,7 +872,7 @@ test "trie longest prefix" {
 
 ///|
 test "compressed trie basic" {
-  let trie = CompressedTrie()
+  let trie = CompressedTrie::new()
   trie.insert("hello")
   trie.insert("help")
   trie.insert("world")
@@ -884,7 +884,7 @@ test "compressed trie basic" {
 
 ///|
 test "compressed trie shared prefix" {
-  let trie = CompressedTrie()
+  let trie = CompressedTrie::new()
   trie.insert("test")
   trie.insert("testing")
   trie.insert("tested")
@@ -896,7 +896,7 @@ test "compressed trie shared prefix" {
 
 ///|
 test "trie duplicate insert" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("hello")
   trie.insert("hello")
   trie.insert("hello")

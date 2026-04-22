@@ -382,7 +382,7 @@ For sparse graphs:
 
 ## Arborescence vs MST
 
-| Aspect | Arborescence | MST (Undirected) |
+| Aspect | Arborescence | MST::new(Undirected) |
 |--------|--------------|------------------|
 | Graph type | Directed | Undirected |
 | Root | Required | Not required |

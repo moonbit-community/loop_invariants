@@ -398,7 +398,7 @@ Send 10, total = 20.
 ```
 Edmonds-Karp uses BFS to find shortest augmenting paths.
 
-### 7.2 Dinic (Faster Max Flow)
+### 7.2 Dinic::new(Faster Max Flow)
 
 - Build level graph with BFS
 - Send blocking flows with DFS

@@ -83,9 +83,9 @@ pub struct PushRelabel {
 /// Example:
 ///
 /// ```mbt nocheck
-/// let pr = PushRelabel(4)
+/// let pr = PushRelabel::new(4)
 /// ```
-pub fn PushRelabel::PushRelabel(n : Int) -> PushRelabel {
+pub fn PushRelabel::new(n : Int) -> PushRelabel {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   {
     n,
@@ -116,7 +116,7 @@ pub fn PushRelabel::PushRelabel(n : Int) -> PushRelabel {
 /// Example:
 ///
 /// ```mbt nocheck
-/// let pr = PushRelabel(3)
+/// let pr = PushRelabel::new(3)
 /// pr.add_edge(0, 1, 10L)
 /// pr.add_edge(1, 2, 5L)
 /// ```
@@ -153,7 +153,7 @@ pub fn PushRelabel::add_edge(
 /// Example:
 ///
 /// ```mbt nocheck
-/// let pr = PushRelabel(4)
+/// let pr = PushRelabel::new(4)
 /// pr.add_undirected_edge(0, 1, 7L)
 /// pr.add_undirected_edge(1, 3, 3L)
 /// ```
@@ -350,7 +350,7 @@ fn PushRelabel::discharge(
 /// Example:
 ///
 /// ```mbt nocheck
-/// let pr = PushRelabel(4)
+/// let pr = PushRelabel::new(4)
 /// pr.add_edge(0, 1, 5L)
 /// pr.add_edge(0, 2, 3L)
 /// pr.add_edge(1, 3, 4L)

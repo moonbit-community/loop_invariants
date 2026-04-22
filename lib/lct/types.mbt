@@ -117,7 +117,7 @@ pub(all) struct LCTNode {
 /// and no pending reversal (`reversed` = false).
 /// `subtree_sum` is initialised to `value` because a lone node's path
 /// aggregate is just its own value.
-pub fn LCTNode::LCTNode(value : Int) -> LCTNode {
+pub fn LCTNode::new(value : Int) -> LCTNode {
   {
     parent: -1,
     left: -1,
@@ -153,7 +153,7 @@ pub fn LCTNode::LCTNode(value : Int) -> LCTNode {
 ///
 /// INITIAL STATE:
 /// ```
-///   LinkCutTree(n) creates n isolated nodes.  Each node is its own
+///   LinkCutTree::new(n) creates n isolated nodes.  Each node is its own
 ///   splay tree (trivially a single-node tree) and its own original tree
 ///   root.  No edges exist.
 /// ```
@@ -171,10 +171,10 @@ pub(all) struct LinkCutTree {
 /// own splay-tree root and its own original-tree root.
 ///
 /// Time: O(n).
-pub fn LinkCutTree::LinkCutTree(n : Int) -> LinkCutTree {
+pub fn LinkCutTree::new(n : Int) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
   for i in 0..<n {
-    nodes.push(LCTNode(0))
+    nodes.push(LCTNode::new(0))
   } where {
     proof_invariant: i >= 0 && i <= n,
     proof_reasoning: (
@@ -198,12 +198,12 @@ pub fn LinkCutTree::LinkCutTree(n : Int) -> LinkCutTree {
 ///|
 /// Create a Link-Cut Tree with given initial node values.
 ///
-/// Equivalent to `LinkCutTree(values.length())` followed by setting
+/// Equivalent to `LinkCutTree::new(values.length())` followed by setting
 /// each node's value from the array. Useful when path-sum queries are
 /// planned from the start.
 ///
 /// Time: O(n).
 pub fn LinkCutTree::with_values(values : Array[Int]) -> LinkCutTree {
-  let nodes : Array[LCTNode] = [ for value in values => LCTNode(value) ]
+  let nodes : Array[LCTNode] = [ for value in values => LCTNode::new(value) ]
   { nodes, }
 }

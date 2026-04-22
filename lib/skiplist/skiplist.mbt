@@ -68,7 +68,7 @@ priv struct SkipNode[K, V] {
 /// `level` is the number of forward-pointer slots to allocate; a node at
 /// height h requires `level = h + 1` so that slots 0..h are all present.
 /// All forward pointers are initialised to `None`.
-fn[K, V] SkipNode::SkipNode(
+fn[K, V] SkipNode::new(
   key : K?,
   value : V?,
   level : Int,
@@ -109,9 +109,9 @@ priv struct SkipList[K, V] {
 ///
 /// Allocates the header sentinel node with `max_level` forward-pointer
 /// slots (all `None`) and seeds the LCG random state to 42.
-fn[K, V] SkipList::SkipList() -> SkipList[K, V] {
+fn[K, V] SkipList::new() -> SkipList[K, V] {
   {
-    header: SkipNode(None, None, max_level), // sentinel node
+    header: SkipNode::new(None, None, max_level), // sentinel node
     level: 0,
     rand_state: 42,
     size: 0,
@@ -307,7 +307,7 @@ fn[K : Compare, V] SkipList::insert(
         }
 
         // Create new node
-        let new_node = SkipNode(Some(key), Some(value), new_level + 1)
+        let new_node = SkipNode::new(Some(key), Some(value), new_level + 1)
 
         // Link new node at each level
         // This loop links the new node into the skip list at all levels
@@ -807,7 +807,7 @@ fn[K, V] SkipList::kth_element(self : SkipList[K, V], k : Int) -> (K, V)? {
 
 ///|
 test "skip list basic operations" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int, Int] = SkipList::new()
 
   // Empty list check
   inspect(sl.is_empty(), content="true")
@@ -829,7 +829,7 @@ test "skip list basic operations" {
 
 ///|
 test "skip list delete" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int, Int] = SkipList::new()
   sl.insert(1, 10)
   sl.insert(2, 20)
   sl.insert(3, 30)
@@ -855,7 +855,7 @@ test "skip list delete" {
 
 ///|
 test "skip list range query" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int, Int] = SkipList::new()
   for i in 0..<10 {
     sl.insert(i * 2, i * 20) // Insert 0, 2, 4, ..., 18
   }
@@ -871,7 +871,7 @@ test "skip list range query" {
 
 ///|
 test "skip list min max" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int, Int] = SkipList::new()
   inspect(sl.min(), content="None")
   inspect(sl.max(), content="None")
   sl.insert(50, 500)
@@ -885,7 +885,7 @@ test "skip list min max" {
 
 ///|
 test "skip list ceil floor" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int, Int] = SkipList::new()
 
   // Insert 10, 20, 30, 40, 50
   for i in 1..<=5 {
@@ -907,7 +907,7 @@ test "skip list ceil floor" {
 
 ///|
 test "skip list ordered statistics" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int, Int] = SkipList::new()
 
   // Insert 1, 3, 5, 7, 9
   for i in 0..<5 {
@@ -928,7 +928,7 @@ test "skip list ordered statistics" {
 
 ///|
 test "skip list stress test" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int, Int] = SkipList::new()
 
   // Insert 100 elements
   for i in 0..<100 {
@@ -983,7 +983,7 @@ priv struct MultiSkipNode[K, V] {
 ///|
 /// Create a new `MultiSkipNode` with the given key, initial value array,
 /// and level count.  All forward pointers are initialised to `None`.
-fn[K, V] MultiSkipNode::MultiSkipNode(
+fn[K, V] MultiSkipNode::new(
   key : K?,
   values : Array[V],
   level : Int,
@@ -1013,9 +1013,9 @@ priv struct MultiSkipList[K, V] {
 ///
 /// The header sentinel is allocated with `max_level` forward slots and
 /// an empty `values` array.  The LCG seed is initialised to 12345.
-fn[K, V] MultiSkipList::MultiSkipList() -> MultiSkipList[K, V] {
+fn[K, V] MultiSkipList::new() -> MultiSkipList[K, V] {
   {
-    header: MultiSkipNode(None, [], max_level),
+    header: MultiSkipNode::new(None, [], max_level),
     level: 0,
     rand_state: 12345,
     size: 0,
@@ -1093,7 +1093,7 @@ fn[K : Compare, V] MultiSkipList::insert(
         if new_level > self.level {
           self.level = new_level
         }
-        let new_node = MultiSkipNode(Some(key), [value], new_level + 1)
+        let new_node = MultiSkipNode::new(Some(key), [value], new_level + 1)
         for i in 0..<=new_level {
           match update[i] {
             Some(prev) => {
@@ -1167,7 +1167,7 @@ fn[K : Compare, V] MultiSkipList::search(
 
 ///|
 test "multi skip list duplicates" {
-  let msl : MultiSkipList[Int, Int] = MultiSkipList()
+  let msl : MultiSkipList[Int, Int] = MultiSkipList::new()
 
   // Insert duplicate keys
   msl.insert(5, 50)

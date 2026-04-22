@@ -42,7 +42,7 @@ priv struct TopoSorter {
 ///
 /// All vertices start in the unvisited state (state 0).
 /// The finish list starts empty.
-fn TopoSorter::TopoSorter(n : Int) -> TopoSorter {
+fn TopoSorter::new(n : Int) -> TopoSorter {
   let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   { n, adj, state: Array::make(n, 0), order: [] }
 }
@@ -166,7 +166,7 @@ pub fn topological_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   if n <= 0 {
     return Some([])
   }
-  let sorter = TopoSorter(n)
+  let sorter = TopoSorter::new(n)
   for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {

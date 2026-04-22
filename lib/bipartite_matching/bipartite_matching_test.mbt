@@ -5,7 +5,7 @@
 ///|
 test "hungarian basic perfect matching" {
   // Perfect matching possible: 3x3 bipartite graph
-  let graph = BipartiteGraph::BipartiteGraph(3, 3)
+  let graph = BipartiteGraph::new(3, 3)
   graph.add_edge(0, 0)
   graph.add_edge(0, 1)
   graph.add_edge(1, 0)
@@ -20,7 +20,7 @@ test "hungarian basic perfect matching" {
 ///|
 test "hungarian imperfect" {
   // 3 left vertices, 2 right vertices - can only match 2
-  let graph = BipartiteGraph::BipartiteGraph(3, 2)
+  let graph = BipartiteGraph::new(3, 2)
   graph.add_edge(0, 0)
   graph.add_edge(1, 0)
   graph.add_edge(2, 1)
@@ -30,7 +30,7 @@ test "hungarian imperfect" {
 
 ///|
 test "hopcroft_karp basic" {
-  let graph = BipartiteGraph::BipartiteGraph(3, 3)
+  let graph = BipartiteGraph::new(3, 3)
   graph.add_edge(0, 0)
   graph.add_edge(0, 1)
   graph.add_edge(1, 0)
@@ -44,7 +44,7 @@ test "hopcroft_karp basic" {
 
 ///|
 test "hopcroft_karp larger" {
-  let graph = BipartiteGraph::BipartiteGraph(4, 4)
+  let graph = BipartiteGraph::new(4, 4)
   graph
   ..add_edge(0, 0)
   ..add_edge(0, 1)
@@ -61,23 +61,23 @@ test "hopcroft_karp larger" {
 
 ///|
 test "empty graph" {
-  let graph = BipartiteGraph::BipartiteGraph(2, 2)
+  let graph = BipartiteGraph::new(2, 2)
   inspect(graph.hungarian().max_matching(), content="0")
-  let graph2 = BipartiteGraph::BipartiteGraph(2, 2)
+  let graph2 = BipartiteGraph::new(2, 2)
   inspect(graph2.hopcroft_karp().max_matching(), content="0")
 }
 
 ///|
 test "single edge" {
-  let graph = BipartiteGraph::BipartiteGraph(1, 1)
+  let graph = BipartiteGraph::new(1, 1)
   graph.add_edge(0, 0)
   inspect(graph.hungarian().max_matching(), content="1")
 }
 
 ///|
 test "algorithms agree" {
-  let graph1 = BipartiteGraph::BipartiteGraph(4, 4)
-  let graph2 = BipartiteGraph::BipartiteGraph(4, 4)
+  let graph1 = BipartiteGraph::new(4, 4)
+  let graph2 = BipartiteGraph::new(4, 4)
   let edges = [(0, 0), (0, 1), (1, 0), (1, 2), (2, 1), (2, 2), (3, 3)]
   for edge in edges {
     graph1.add_edge(edge.0, edge.1)
@@ -91,7 +91,7 @@ test "algorithms agree" {
 
 ///|
 test "min_vertex_cover" {
-  let graph = BipartiteGraph::BipartiteGraph(3, 3)
+  let graph = BipartiteGraph::new(3, 3)
   graph.add_edge(0, 0)
   graph.add_edge(0, 1)
   graph.add_edge(1, 1)
@@ -106,7 +106,7 @@ test "min_vertex_cover" {
 
 ///|
 test "min_vertex_cover covers all edges" {
-  let graph = BipartiteGraph::BipartiteGraph(3, 3)
+  let graph = BipartiteGraph::new(3, 3)
   let edges : Array[(Int, Int)] = [(0, 0), (0, 1), (1, 1), (2, 2)]
   for edge in edges {
     graph.add_edge(edge.0, edge.1)

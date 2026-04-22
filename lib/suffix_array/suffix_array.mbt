@@ -51,7 +51,7 @@ pub struct SuffixArray {
 ///
 /// Time: O(n log^2 n) where n = `text.length()`.
 /// Space: O(n).
-pub fn SuffixArray::SuffixArray(text : String) -> SuffixArray {
+pub fn SuffixArray::new(text : String) -> SuffixArray {
   let n = text.length()
   if n == 0 {
     return { sa: [], lcp: [], text }
@@ -166,7 +166,7 @@ pub fn SuffixArray::SuffixArray(text : String) -> SuffixArray {
 ///
 /// Time: O(n log^2 n). Space: O(n).
 pub fn suffix_array(s : String) -> Array[Int] {
-  SuffixArray(s).sa
+  SuffixArray::new(s).sa
 }
 
 ///|
@@ -460,7 +460,7 @@ pub fn SuffixArray::get_suffix(self : SuffixArray, i : Int) -> String {
 
 ///|
 test "suffix array construction" {
-  let sa = SuffixArray("banana")
+  let sa = SuffixArray::new("banana")
   inspect(sa.sa[0], content="5")
   inspect(sa.sa[1], content="3")
   inspect(sa.sa[2], content="1")
@@ -471,7 +471,7 @@ test "suffix array construction" {
 
 ///|
 test "suffix array lcp" {
-  let sa = SuffixArray("banana")
+  let sa = SuffixArray::new("banana")
   inspect(sa.lcp[1], content="1")
   inspect(sa.lcp[2], content="3")
   inspect(sa.lcp[3], content="0")
@@ -489,7 +489,7 @@ test "suffix array convenience" {
 
 ///|
 test "suffix array search" {
-  let sa = SuffixArray("banana")
+  let sa = SuffixArray::new("banana")
   let matches = sa.find_all("ana")
   inspect(matches.length(), content="2")
   inspect(matches[0], content="1")
@@ -500,27 +500,27 @@ test "suffix array search" {
 
 ///|
 test "suffix array longest repeated" {
-  let sa = SuffixArray("banana")
+  let sa = SuffixArray::new("banana")
   inspect(sa.longest_repeated_substring(), content="ana")
-  let sa2 = SuffixArray("abcabc")
+  let sa2 = SuffixArray::new("abcabc")
   inspect(sa2.longest_repeated_substring(), content="abc")
 }
 
 ///|
 test "suffix array distinct substrings" {
-  let sa = SuffixArray("banana")
+  let sa = SuffixArray::new("banana")
   inspect(sa.count_distinct_substrings(), content="15")
 }
 
 ///|
 test "suffix array empty" {
-  let sa = SuffixArray("")
+  let sa = SuffixArray::new("")
   inspect(sa.sa.length(), content="0")
 }
 
 ///|
 test "suffix array single char" {
-  let sa = SuffixArray("a")
+  let sa = SuffixArray::new("a")
   inspect(sa.sa.length(), content="1")
   inspect(sa.sa[0], content="0")
   inspect(sa.count_distinct_substrings(), content="1")
@@ -528,7 +528,7 @@ test "suffix array single char" {
 
 ///|
 test "suffix array all same" {
-  let sa = SuffixArray("aaaa")
+  let sa = SuffixArray::new("aaaa")
   inspect(sa.sa[0], content="3")
   inspect(sa.sa[1], content="2")
   inspect(sa.sa[2], content="1")
@@ -538,14 +538,14 @@ test "suffix array all same" {
 
 ///|
 test "suffix array pattern not found" {
-  let sa = SuffixArray("banana")
+  let sa = SuffixArray::new("banana")
   let matches = sa.find_all("xyz")
   inspect(matches.length(), content="0")
 }
 
 ///|
 test "suffix array get suffix" {
-  let sa = SuffixArray("banana")
+  let sa = SuffixArray::new("banana")
   inspect(sa.get_suffix(0), content="a")
   inspect(sa.get_suffix(1), content="ana")
   inspect(sa.get_suffix(3), content="banana")

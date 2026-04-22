@@ -254,12 +254,12 @@ tree, because w is on the left (shallower) side.
   access(u)   ->  root-to-u path is preferred
   access(v)   ->  root-to-v path is preferred; shared prefix is now joined
   splay(u)    ->  u moves to position where it diverges from v's path
-  if u.path_parent >= 0: that node is the LCA (paths diverged above u)
-  else: u itself is the LCA (u is ancestor of v)
+  if u.path_parent >= 0: that node is the LCA::new(paths diverged above u)
+  else: u itself is the LCA::new(u is ancestor of v)
 ```
 
 ```
-  Tree:                 LCA(3, 5):
+  Tree:                 LCA::new(3, 5):
 
       0                   access(3): preferred path 0-1-3
      / \                  access(5): preferred path 0-2-5
@@ -280,7 +280,7 @@ tree, because w is on the left (shallower) side.
 ```mbt check
 ///|
 test "dynamic forest" {
-  let forest = @lct.DynamicForest(4)
+  let forest = @lct.DynamicForest::new(4)
 
   // 0-1-2   and 3 alone
   inspect(forest.link(0, 1), content="true")
@@ -316,7 +316,7 @@ test "lct path sum" {
 Track connected components as edges are inserted and deleted:
 
 ```
-  forest = DynamicForest(n)
+  forest = DynamicForest::new(n)
   forest.link(u, v)          // add edge
   forest.cut(u, v)           // remove edge
   forest.connected(u, v)     // query connectivity

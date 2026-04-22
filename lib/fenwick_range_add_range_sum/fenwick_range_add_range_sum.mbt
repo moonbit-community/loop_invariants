@@ -65,11 +65,11 @@ pub struct FenwickRangeAddRangeSum {
 /// Example:
 /// ```mbt check
 /// test {
-///   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum(5)
+///   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum::new(5)
 ///   inspect(st.range_sum(0, 4), content="0")
 /// }
 /// ```
-pub fn FenwickRangeAddRangeSum::FenwickRangeAddRangeSum(
+pub fn FenwickRangeAddRangeSum::new(
   n : Int,
 ) -> FenwickRangeAddRangeSum {
   let n0 = if n < 0 { 0 } else { n }
@@ -103,7 +103,7 @@ pub fn FenwickRangeAddRangeSum::FenwickRangeAddRangeSum(
 pub fn FenwickRangeAddRangeSum::from_array(
   arr : ArrayView[Int64],
 ) -> FenwickRangeAddRangeSum {
-  let st = FenwickRangeAddRangeSum(arr.length())
+  let st = FenwickRangeAddRangeSum::new(arr.length())
   for i in 0..<arr.length() {
     st.range_add(i, i, arr[i])
   }
@@ -196,7 +196,7 @@ fn sum_bit(bit : Array[Int64], idx : Int) -> Int64 {
 /// Example:
 /// ```mbt check
 /// test {
-///   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum(5)
+///   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum::new(5)
 ///   st.range_add(1, 3, 10L)
 ///   inspect(st.range_sum(0, 0), content="0")
 ///   inspect(st.range_sum(1, 1), content="10")

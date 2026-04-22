@@ -320,7 +320,7 @@ Negating a node flips its last bit: `node XOR 1`.
 ```mbt nocheck
 ///|
 test "two sat basic" {
-  let sat = TwoSat(2)
+  let sat = TwoSat::new(2)
   // (x0 ∨ x1) ∧ (¬x0 ∨ x1)
   sat.add_clause(0, false, 1, false)
   sat.add_clause(0, true, 1, false)
@@ -342,7 +342,7 @@ test "two sat basic" {
 ```mbt nocheck
 ///|
 test "two sat unsatisfiable" {
-  let sat = TwoSat(1)
+  let sat = TwoSat::new(1)
   // x0 and ¬x0
   sat.add_clause(0, false, 0, false) // x0
   sat.add_clause(0, true, 0, true) // ¬x0
@@ -357,7 +357,7 @@ test "two sat unsatisfiable" {
 ```mbt nocheck
 ///|
 test "two sat implication" {
-  let sat = TwoSat(2)
+  let sat = TwoSat::new(2)
   // x0 -> x1
   sat.add_implication(0, false, 1, false)
   // force x0 = true

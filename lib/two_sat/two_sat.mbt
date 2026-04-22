@@ -65,7 +65,7 @@ priv struct TwoSat {
 ///
 /// After construction, use `add_clause`, `add_implication`, or `set_value`
 /// to add constraints, then call `solve` to obtain an assignment.
-fn TwoSat::TwoSat(n : Int) -> TwoSat {
+fn TwoSat::new(n : Int) -> TwoSat {
   let adj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
   let radj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
   { n, adj, radj }
@@ -340,7 +340,7 @@ fn TwoSat::verify(self : TwoSat, assignment : Array[Bool]) -> Bool {
 
 ///|
 test "two sat basic satisfiable" {
-  let sat = TwoSat(2)
+  let sat = TwoSat::new(2)
   // (x0 ∨ x1) ∧ (¬x0 ∨ x1)
   // Solution: x1 = true
   sat.add_clause(0, false, 1, false) // x0 ∨ x1
@@ -356,7 +356,7 @@ test "two sat basic satisfiable" {
 
 ///|
 test "two sat unsatisfiable" {
-  let sat = TwoSat(1)
+  let sat = TwoSat::new(1)
   // (x0) ∧ (¬x0)
   sat.add_clause(0, false, 0, false) // x0 ∨ x0 = x0
   sat.add_clause(0, true, 0, true) // ¬x0 ∨ ¬x0 = ¬x0
@@ -368,7 +368,7 @@ test "two sat unsatisfiable" {
 
 ///|
 test "two sat three variables" {
-  let sat = TwoSat(3)
+  let sat = TwoSat::new(3)
   // (x0 ∨ x1) ∧ (¬x1 ∨ x2) ∧ (¬x0 ∨ ¬x2)
   sat.add_clause(0, false, 1, false) // x0 ∨ x1
   sat.add_clause(1, true, 2, false) // ¬x1 ∨ x2
@@ -381,7 +381,7 @@ test "two sat three variables" {
 
 ///|
 test "two sat set value" {
-  let sat = TwoSat(2)
+  let sat = TwoSat::new(2)
   sat.set_value(0, true) // Force x0 = true
   sat.add_clause(0, false, 1, false) // x0 ∨ x1
   match sat.solve() {
@@ -395,7 +395,7 @@ test "two sat set value" {
 
 ///|
 test "two sat implication" {
-  let sat = TwoSat(2)
+  let sat = TwoSat::new(2)
   sat.add_implication(0, false, 1, false) // x0 → x1
   sat.set_value(0, true) // x0 = true
   match sat.solve() {
@@ -410,7 +410,7 @@ test "two sat implication" {
 
 ///|
 test "two sat empty" {
-  let sat = TwoSat(0)
+  let sat = TwoSat::new(0)
   match sat.solve() {
     Some(assignment) => inspect(assignment.length(), content="0")
     None => inspect(false, content="true")
@@ -419,7 +419,7 @@ test "two sat empty" {
 
 ///|
 test "two sat complex" {
-  let sat = TwoSat(4)
+  let sat = TwoSat::new(4)
   // (x0 ∨ x1) ∧ (x1 ∨ x2) ∧ (x2 ∨ x3) ∧ (¬x0 ∨ ¬x3)
   sat.add_clause(0, false, 1, false)
   sat.add_clause(1, false, 2, false)
@@ -433,7 +433,7 @@ test "two sat complex" {
 
 ///|
 test "two sat chain contradiction" {
-  let sat = TwoSat(3)
+  let sat = TwoSat::new(3)
   // x0 → x1 → x2 → ¬x0
   sat.add_implication(0, false, 1, false) // x0 → x1
   sat.add_implication(1, false, 2, false) // x1 → x2

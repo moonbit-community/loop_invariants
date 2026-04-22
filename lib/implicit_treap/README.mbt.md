@@ -1,4 +1,4 @@
-# Implicit Treap (Sequence Treap)
+# Implicit Treap::new(Sequence Treap)
 
 ## What This Data Structure Solves
 
@@ -378,7 +378,7 @@ Start with `[10, 20, 30, 40]`
 ```mbt check
 ///|
 test "implicit treap demo" {
-  let treap = @implicit_treap.ImplicitTreap()
+  let treap = @implicit_treap.ImplicitTreap::new()
   treap.push_back(10L)
   treap.push_back(20L)
   treap.push_back(30L)

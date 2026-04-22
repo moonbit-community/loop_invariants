@@ -18,7 +18,7 @@ priv struct FlowNetwork {
 }
 
 ///|
-fn FlowNetwork::FlowNetwork(n : Int) -> FlowNetwork {
+fn FlowNetwork::new(n : Int) -> FlowNetwork {
   // Use makei to create adjacency list with independent empty arrays
   let adj : Array[Array[FlowEdge]] = [ for _ in 0..<n => [] ]
   { adj, n }
@@ -165,7 +165,7 @@ fn FlowNetwork::edmonds_karp(
 
 ///|
 test "edmonds karp basic" {
-  let network = FlowNetwork(6)
+  let network = FlowNetwork::new(6)
 
   // Classic max flow example
   network.add_edge(0, 1, 10)
@@ -192,7 +192,7 @@ priv struct DinicNetwork {
 }
 
 ///|
-fn DinicNetwork::DinicNetwork(n : Int) -> DinicNetwork {
+fn DinicNetwork::new(n : Int) -> DinicNetwork {
   // Use makei to create adjacency list with independent empty arrays
   let adj : Array[Array[FlowEdge]] = [ for _ in 0..<n => [] ]
   { adj, level: Array::make(n, -1), iter: Array::make(n, 0), n }
@@ -333,7 +333,7 @@ fn DinicNetwork::dinic_max_flow(
 
 ///|
 test "dinic basic" {
-  let network = DinicNetwork(6)
+  let network = DinicNetwork::new(6)
   network.add_edge_dinic(0, 1, 10)
   network.add_edge_dinic(0, 2, 10)
   network.add_edge_dinic(1, 3, 10)
@@ -362,7 +362,7 @@ priv struct MCMFNetwork {
 }
 
 ///|
-fn MCMFNetwork::MCMFNetwork(n : Int) -> MCMFNetwork {
+fn MCMFNetwork::new(n : Int) -> MCMFNetwork {
   // Use makei to create adjacency list with independent empty arrays
   let adj : Array[Array[MCMFEdge]] = [ for _ in 0..<n => [] ]
   { adj, n }
@@ -505,7 +505,7 @@ fn MCMFNetwork::min_cost_max_flow(
 
 ///|
 test "min cost max flow" {
-  let network = MCMFNetwork(4)
+  let network = MCMFNetwork::new(4)
   network.add_edge_mcmf(0, 1, 10, 1)
   network.add_edge_mcmf(0, 2, 10, 2)
   network.add_edge_mcmf(1, 3, 10, 1)
@@ -525,7 +525,7 @@ fn bipartite_matching(
   let n = left_size + right_size + 2
   let source = 0
   let sink = n - 1
-  let network = FlowNetwork(n)
+  let network = FlowNetwork::new(n)
   for i in 0..<left_size {
     network.add_edge(source, i + 1, 1)
   }

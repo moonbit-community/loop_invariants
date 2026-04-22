@@ -53,7 +53,7 @@ priv struct BridgeFinder {
 ///|
 /// Create a new `BridgeFinder` for a graph with `n` vertices and no edges.
 /// All discovery timestamps are initialised to -1 (unvisited).
-fn BridgeFinder::BridgeFinder(n : Int) -> BridgeFinder {
+fn BridgeFinder::new(n : Int) -> BridgeFinder {
   let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
   {
     n,
@@ -194,7 +194,7 @@ pub fn find_bridges(
   n : Int,
   edges : ArrayView[(Int, Int)],
 ) -> Array[(Int, Int)] {
-  let finder = BridgeFinder(n)
+  let finder = BridgeFinder::new(n)
   for edge in edges {
     let (u, v) = edge
     finder.add_edge(u, v)
@@ -228,7 +228,7 @@ pub fn articulation_points(
   n : Int,
   edges : ArrayView[(Int, Int)],
 ) -> Array[Int] {
-  let finder = BridgeFinder(n)
+  let finder = BridgeFinder::new(n)
   for edge in edges {
     let (u, v) = edge
     finder.add_edge(u, v)
@@ -248,7 +248,7 @@ test "bridges basic" {
   //   1-2-3
   //       |
   //       4
-  let bf = BridgeFinder(5)
+  let bf = BridgeFinder::new(5)
   bf.add_edge(0, 1)
   bf.add_edge(0, 2)
   bf.add_edge(1, 2)
@@ -267,7 +267,7 @@ test "bridges basic" {
 ///|
 test "bridges cycle" {
   // Complete cycle: no bridges, no articulation points
-  let bf = BridgeFinder(4)
+  let bf = BridgeFinder::new(4)
   bf.add_edge(0, 1)
   bf.add_edge(1, 2)
   bf.add_edge(2, 3)
@@ -281,7 +281,7 @@ test "bridges cycle" {
 test "bridges linear" {
   // Linear: 0 - 1 - 2 - 3
   // All edges are bridges, 1 and 2 are articulation points
-  let bf = BridgeFinder(4)
+  let bf = BridgeFinder::new(4)
   bf.add_edge(0, 1)
   bf.add_edge(1, 2)
   bf.add_edge(2, 3)
@@ -293,7 +293,7 @@ test "bridges linear" {
 ///|
 test "bridges star" {
   // Star: center is articulation point
-  let bf = BridgeFinder(5)
+  let bf = BridgeFinder::new(5)
   bf.add_edge(0, 1)
   bf.add_edge(0, 2)
   bf.add_edge(0, 3)
@@ -305,7 +305,7 @@ test "bridges star" {
 
 ///|
 test "bridges single" {
-  let bf = BridgeFinder(1)
+  let bf = BridgeFinder::new(1)
   bf.find()
   inspect(bf.get_bridges().length(), content="0")
   inspect(bf.get_articulation_points().length(), content="0")
@@ -313,7 +313,7 @@ test "bridges single" {
 
 ///|
 test "bridges two components" {
-  let bf = BridgeFinder(4)
+  let bf = BridgeFinder::new(4)
   bf.add_edge(0, 1)
   bf.add_edge(2, 3)
   bf.find()

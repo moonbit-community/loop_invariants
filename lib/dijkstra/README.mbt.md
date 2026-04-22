@@ -84,7 +84,7 @@ This only works with **non-negative weights**!
 ```mbt check
 ///|
 test "basic shortest paths" {
-  let g = @dijkstra.Graph(4)
+  let g = @dijkstra.Graph::new(4)
   g.add_edge(0, 1, 1)
   g.add_edge(1, 2, 2)
   g.add_edge(0, 2, 4)
@@ -121,7 +121,7 @@ test "dense dijkstra" {
 ```mbt check
 ///|
 test "zero weight edges and unreachable" {
-  let g = @dijkstra.Graph(4)
+  let g = @dijkstra.Graph::new(4)
   g.add_edge(0, 1, 0)
   g.add_edge(1, 2, 0)
   // Node 3 is unreachable from 0.
@@ -138,7 +138,7 @@ test "zero weight edges and unreachable" {
 ```mbt check
 ///|
 test "path reconstruction" {
-  let g = @dijkstra.Graph(4)
+  let g = @dijkstra.Graph::new(4)
   g.add_edge(0, 1, 1)
   g.add_edge(1, 2, 2)
   g.add_edge(0, 2, 4)
@@ -167,7 +167,7 @@ Reverse:   0 -> 1 -> 2 -> 3
 ```mbt check
 ///|
 test "single pair distance" {
-  let g = @dijkstra.Graph(4)
+  let g = @dijkstra.Graph::new(4)
   g.add_edge(0, 1, 1)
   g.add_edge(1, 2, 2)
   g.add_edge(0, 2, 4)

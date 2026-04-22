@@ -32,7 +32,7 @@ priv struct SplayNode[T] {
 }
 
 ///|
-fn[T] SplayNode::SplayNode(key : T) -> SplayNode[T] {
+fn[T] SplayNode::new(key : T) -> SplayNode[T] {
   { key, left: -1, right: -1, parent: -1, size: 1 }
 }
 
@@ -44,7 +44,7 @@ priv struct SplayTree[T] {
 }
 
 ///|
-fn[T] SplayTree::SplayTree() -> SplayTree[T] {
+fn[T] SplayTree::new() -> SplayTree[T] {
   { nodes: [], root: -1, free_list: -1 }
 }
 
@@ -61,7 +61,7 @@ fn[T] SplayTree::alloc_node(self : SplayTree[T], key : T) -> Int {
     return idx
   }
   let idx = self.nodes.length()
-  self.nodes.push(SplayNode(key))
+  self.nodes.push(SplayNode::new(key))
   idx
 }
 
@@ -385,7 +385,7 @@ fn[T] SplayTree::max(self : SplayTree[T]) -> T? {
 
 ///|
 test "splay insert and contains" {
-  let tree = SplayTree()
+  let tree = SplayTree::new()
   tree.insert(5L)
   tree.insert(3L)
   tree.insert(7L)
@@ -399,7 +399,7 @@ test "splay insert and contains" {
 
 ///|
 test "splay delete" {
-  let tree = SplayTree()
+  let tree = SplayTree::new()
   tree.insert(5L)
   tree.insert(3L)
   tree.insert(7L)
@@ -411,7 +411,7 @@ test "splay delete" {
 
 ///|
 test "splay size" {
-  let tree : SplayTree[Int64] = SplayTree()
+  let tree : SplayTree[Int64] = SplayTree::new()
   inspect(tree.size(), content="0")
   tree.insert(1L)
   tree.insert(2L)
@@ -423,7 +423,7 @@ test "splay size" {
 
 ///|
 test "splay min max" {
-  let tree = SplayTree()
+  let tree = SplayTree::new()
   tree.insert(5L)
   tree.insert(2L)
   tree.insert(8L)
@@ -435,7 +435,7 @@ test "splay min max" {
 
 ///|
 test "splay kth element" {
-  let tree = SplayTree()
+  let tree = SplayTree::new()
   tree.insert(3L)
   tree.insert(1L)
   tree.insert(4L)
@@ -451,7 +451,7 @@ test "splay kth element" {
 
 ///|
 test "splay count less" {
-  let tree = SplayTree()
+  let tree = SplayTree::new()
   tree.insert(1L)
   tree.insert(3L)
   tree.insert(5L)
@@ -464,7 +464,7 @@ test "splay count less" {
 
 ///|
 test "splay empty" {
-  let tree = SplayTree()
+  let tree = SplayTree::new()
   inspect(tree.contains(1L), content="false")
   inspect(tree.min(), content="None")
   inspect(tree.max(), content="None")
@@ -473,7 +473,7 @@ test "splay empty" {
 
 ///|
 test "splay delete nonexistent" {
-  let tree = SplayTree()
+  let tree = SplayTree::new()
   tree.insert(5L)
   inspect(tree.delete(10L), content="false")
   inspect(tree.size(), content="1")
@@ -481,7 +481,7 @@ test "splay delete nonexistent" {
 
 ///|
 test "splay sequential insert" {
-  let tree = SplayTree()
+  let tree = SplayTree::new()
   for i in 0..<100 {
     tree.insert(i.to_int64())
   }

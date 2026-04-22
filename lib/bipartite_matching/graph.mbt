@@ -39,12 +39,12 @@ struct BipartiteGraph {
 ///
 /// Example:
 /// ```
-/// let graph = BipartiteGraph(3, 3)
+/// let graph = BipartiteGraph::new(3, 3)
 /// graph.add_edge(0, 0)
 /// graph.add_edge(1, 1)
 /// let size = graph.hungarian().max_matching()
 /// ```
-pub fn BipartiteGraph::BipartiteGraph(
+pub fn BipartiteGraph::new(
   n_left : Int,
   n_right : Int,
 ) -> BipartiteGraph {
@@ -82,7 +82,7 @@ pub fn BipartiteGraph::add_edge(
 /// Suitable for small to medium graphs. For large graphs prefer
 /// `hopcroft_karp()`.
 pub fn BipartiteGraph::hungarian(self : BipartiteGraph) -> Hungarian {
-  Hungarian(self)
+  Hungarian::new(self)
 }
 
 ///|
@@ -96,5 +96,5 @@ pub fn BipartiteGraph::hungarian(self : BipartiteGraph) -> Hungarian {
 /// Time complexity: O(E * sqrt(V)) where V = n_left + n_right and E = edge
 /// count. Faster than Hungarian for large sparse graphs.
 pub fn BipartiteGraph::hopcroft_karp(self : BipartiteGraph) -> HopcroftKarp {
-  HopcroftKarp(self)
+  HopcroftKarp::new(self)
 }

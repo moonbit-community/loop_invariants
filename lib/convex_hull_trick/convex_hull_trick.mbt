@@ -115,9 +115,9 @@ pub struct ConvexHullTrick {
 /// order, and queries must be made with `query` in non-decreasing x order.
 ///
 /// ```moonbit nocheck
-/// let cht = ConvexHullTrick()
+/// let cht = ConvexHullTrick::new()
 /// ```
-pub fn ConvexHullTrick::ConvexHullTrick() -> ConvexHullTrick {
+pub fn ConvexHullTrick::new() -> ConvexHullTrick {
   { lines: [], head: 0 }
 }
 
@@ -135,7 +135,7 @@ pub fn ConvexHullTrick::ConvexHullTrick() -> ConvexHullTrick {
 ///
 /// Example (continuing from previous calls):
 /// ```moonbit nocheck
-/// let cht = ConvexHullTrick()
+/// let cht = ConvexHullTrick::new()
 /// cht.add_line(1L, 0L)   // y = x
 /// cht.add_line(2L, 1L)   // y = 2x + 1  (slope increased)
 /// cht.add_line(3L, -1L)  // y = 3x - 1  (slope increased again)
@@ -171,7 +171,7 @@ pub fn ConvexHullTrick::add_line(
 /// array length, the total work across all `query` calls is O(q) amortised.
 ///
 /// ```moonbit nocheck
-/// let cht = ConvexHullTrick()
+/// let cht = ConvexHullTrick::new()
 /// cht.add_line(1L, 0L)
 /// cht.add_line(2L, 1L)
 /// cht.add_line(3L, -1L)

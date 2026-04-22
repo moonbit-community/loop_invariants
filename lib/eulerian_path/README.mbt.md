@@ -102,7 +102,7 @@ Vertex 1: out = 1, in = 1 (balanced). Path: 0 -> 1 -> 2 -> 0 -> 2.
 
 ### Undirected Example Trace
 
-Graph (two triangles sharing vertex 0):
+Graph::new(two triangles sharing vertex 0):
 
 ```mermaid
 graph LR

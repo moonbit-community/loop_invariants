@@ -244,7 +244,7 @@ This package is tutorial-only; it does not export a concrete API.
 
 ```mbt nocheck
 ///|
-let tree = SplayTree()
+let tree = SplayTree::new()
 
 tree.insert(5)
 tree.insert(3)

@@ -188,10 +188,10 @@ First occurrence:
   first[0] = 0,  first[1] = 1,  first[2] = 3
   first[3] = 4,  first[4] = 6
 
-LCA(3, 4): look at steps first[3]..first[4] = 4..6
+LCA::new(3, 4): look at steps first[3]..first[4] = 4..6
   depths:  2, 1, 2   ->   minimum depth = 1 at step 5  ->  node 2
 
-LCA(1, 3): look at steps first[1]..first[3] = 1..4
+LCA::new(1, 3): look at steps first[1]..first[3] = 1..4
   depths:  1, 0, 1, 2  ->  minimum depth = 0 at step 2  ->  node 0
 ```
 
@@ -274,7 +274,7 @@ Steps:
 ```
 Record depths in the full Euler tour (Type 2).
 
-LCA(u, v) = node with minimum depth between
+LCA::new(u, v) = node with minimum depth between
             first[u] and first[v] in the walk.
 
 Pair with a sparse table for O(1) LCA queries after O(n log n) build.
@@ -354,7 +354,7 @@ Example (original six-node tree, 1-indexed):
 | **Euler Tour**  | O(n)         | O(log n)   | Subtree queries       |
 | Heavy-Light     | O(n)         | O(log^2 n) | Path queries/updates  |
 | Centroid        | O(n log n)   | O(log n)   | Distance queries      |
-| LCA (sparse)    | O(n log n)   | O(1)       | Ancestor queries      |
+| LCA::new(sparse)    | O(n log n)   | O(1)       | Ancestor queries      |
 
 **Choose Euler Tour when**: you need efficient subtree operations.
 

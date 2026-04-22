@@ -454,7 +454,7 @@ Distinct            = Total - Duplicates
 
 ## 7. Trie Data Structures
 
-### Standard Trie (Prefix Tree)
+### Standard Trie::new(Prefix Tree)
 
 Each path from root to a marked node spells a word. Each node has up to 26
 children (one per lowercase letter) and a `prefix_count` field counting how
@@ -518,7 +518,7 @@ matches at each state:
   state 9 (end of "hers"): -> "hers" ends at pos 6
 ```
 
-### XOR Trie (Binary Trie)
+### XOR Trie::new(Binary Trie)
 
 A binary trie over the bits of integers, used to find the maximum XOR of a
 query number against any number in the set.

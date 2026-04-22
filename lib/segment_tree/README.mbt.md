@@ -162,7 +162,7 @@ Query [1,3] on [1,2,3,4,5],  n=5:
 ///|
 test "segment tree range sum" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let st = @segment_tree.SegmentTree(arr)
+  let st = @segment_tree.SegmentTree::new(arr)
   inspect(st.query(0, 4), content="15")
   inspect(st.query(1, 3), content="9")
   inspect(st.query(2, 2), content="3")
@@ -173,7 +173,7 @@ test "segment tree range sum" {
 ///|
 test "segment tree update" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L]
-  let st = @segment_tree.SegmentTree(arr)
+  let st = @segment_tree.SegmentTree::new(arr)
   inspect(st.query(0, 3), content="10")
   st.update(2, 10L)
   inspect(st.query(0, 3), content="17")

@@ -280,7 +280,7 @@ This finds the LCA in O(log n) chain jumps.
 ### Example
 
 ```
-LCA(7, 6):
+LCA::new(7, 6):
   head[7]=0, head[6]=3 -> climb 6 to parent(head 3) = 0
   now same head, LCA = 0
 ```
@@ -301,7 +301,7 @@ flowchart TD
 ```mbt nocheck
 ///|
 // Build a tree
-let hld = HLD(n)
+let hld = HLD::new(n)
 for (u, v) in edges {
   hld.add_edge(u, v)
 }
@@ -386,7 +386,7 @@ position when querying edge-paths.
 
 ## Implementation Notes (This Package)
 
-- `HLD(n)` allocates arrays for `n` nodes
+- `HLD::new(n)` allocates arrays for `n` nodes
 - `HLD::add_edge(u, v)` adds an undirected edge (call before `build`)
 - `HLD::build(root)` runs both DFS passes
 - `HLD::lca(u, v)` uses chain heads to find the LCA in O(log n)
@@ -408,7 +408,7 @@ test "lca on a small tree" {
   //     1   2
   //    / \
   //   3   4
-  let hld = HLD(5)
+  let hld = HLD::new(5)
   hld.add_edge(0, 1)
   hld.add_edge(0, 2)
   hld.add_edge(1, 3)
@@ -424,7 +424,7 @@ test "lca on a small tree" {
 ///|
 test "path length on a linear chain" {
   // 0 - 1 - 2 - 3 - 4
-  let hld = HLD(5)
+  let hld = HLD::new(5)
   hld.add_edge(0, 1)
   hld.add_edge(1, 2)
   hld.add_edge(2, 3)
@@ -439,7 +439,7 @@ test "path length on a linear chain" {
 ```mbt nocheck
 ///|
 test "linear tree is one chain" {
-  let hld = HLD(8)
+  let hld = HLD::new(8)
   for i in 0..<7 {
     hld.add_edge(i, i + 1)
   }
@@ -454,7 +454,7 @@ test "linear tree is one chain" {
 ///|
 test "positions and chain heads on a star" {
   // Star: 0 is center, 1-4 are leaves
-  let hld = HLD(5)
+  let hld = HLD::new(5)
   hld.add_edge(0, 1)
   hld.add_edge(0, 2)
   hld.add_edge(0, 3)

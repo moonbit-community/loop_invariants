@@ -117,7 +117,7 @@ pub(all) struct MCMFEdge {
 ///
 /// Example (single edge):
 /// ```
-///   let g = MinCostMaxFlow(2)
+///   let g = MinCostMaxFlow::new(2)
 ///   g.add_edge(0, 1, 10L, 3L)   // cap 10, cost 3 per unit
 ///   let (flow, cost) = g.compute(0, 1)
 ///   // flow = 10, cost = 30
@@ -141,7 +141,7 @@ pub(all) struct MinCostMaxFlow {
 /// - `n` - number of vertices (must be >= 1)
 ///
 /// Returns a solver with empty adjacency lists and zeroed auxiliary arrays.
-pub fn MinCostMaxFlow::MinCostMaxFlow(n : Int) -> MinCostMaxFlow {
+pub fn MinCostMaxFlow::new(n : Int) -> MinCostMaxFlow {
   let adj : Array[Array[MCMFEdge]] = [ for _ in 0..<n => [] ]
   {
     n,

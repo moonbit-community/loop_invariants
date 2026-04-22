@@ -39,7 +39,7 @@
 /// Example:
 /// ```mbt check
 /// test {
-///   let tree = @suffix_tree.SuffixTree("banana")
+///   let tree = @suffix_tree.SuffixTree::new("banana")
 ///   assert_true(tree.contains("ana")) // occurs at positions 1 and 3
 ///   assert_true(tree.contains("ban")) // prefix of text
 ///   assert_false(tree.contains("xyz")) // not in text

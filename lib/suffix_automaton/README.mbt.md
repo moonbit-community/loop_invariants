@@ -196,7 +196,7 @@ If the existing transition target `q` must be split (its length is wrong), a
 ```mbt check
 ///|
 test "suffix automaton example" {
-  let sam = @suffix_automaton.SuffixAutomaton(10)
+  let sam = @suffix_automaton.SuffixAutomaton::new(10)
   sam.build("abab")
   inspect(sam.contains("aba"), content="true")
   inspect(sam.contains("ac"), content="false")
@@ -215,7 +215,7 @@ test "suffix automaton example" {
 ```mbt check
 ///|
 test "suffix automaton occurrences" {
-  let sam = @suffix_automaton.SuffixAutomaton(10)
+  let sam = @suffix_automaton.SuffixAutomaton::new(10)
   sam.build("aaaa")
   inspect(sam.count_occurrences("a"), content="4")
   inspect(sam.count_occurrences("aa"), content="3")

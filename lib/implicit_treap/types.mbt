@@ -155,11 +155,11 @@ pub(all) struct ImplicitTreap {
 ///
 /// Example:
 /// ```
-/// let treap = ImplicitTreap()
+/// let treap = ImplicitTreap::new()
 /// treap.push_back(42L)
 /// inspect(treap.size(), content="1")
 /// ```
-pub fn ImplicitTreap::ImplicitTreap() -> ImplicitTreap {
+pub fn ImplicitTreap::new() -> ImplicitTreap {
   { nodes: [], root: -1, rand_state: 12345, free_list: [] }
 }
 

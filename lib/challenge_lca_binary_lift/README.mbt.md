@@ -1,4 +1,4 @@
-# Challenge: LCA (Binary Lifting)
+# Challenge: LCA::new(Binary Lifting)
 
 The **lowest common ancestor (LCA)** of two nodes in a tree is the deepest
 node that is an ancestor of both. Binary lifting answers LCA queries in O(log n)
@@ -20,7 +20,7 @@ Precompute a jump table:
 up[k][v] = the 2^k-th ancestor of v
 ```
 
-Then to answer LCA(u, v):
+Then to answer LCA::new(u, v):
 
 1. If depths differ, lift the deeper node upward to match depths.
 2. Lift both nodes together from highest power to lowest, keeping them just
@@ -39,9 +39,9 @@ Then to answer LCA(u, v):
      6
 ```
 
-- LCA(3, 4) = 1
-- LCA(6, 5) = 0
-- LCA(4, 6) = 4 (ancestor of itself)
+- LCA::new(3, 4) = 1
+- LCA::new(6, 5) = 0
+- LCA::new(4, 6) = 4 (ancestor of itself)
 
 ## Example jump table (partial)
 

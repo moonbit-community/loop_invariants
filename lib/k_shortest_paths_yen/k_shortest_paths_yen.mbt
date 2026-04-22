@@ -255,7 +255,7 @@ fn shortest_path_filtered(
   if source == target {
     return Some({ nodes: [source], cost: 0L })
   }
-  let graph = @dijkstra.Graph(n)
+  let graph = @dijkstra.Graph::new(n)
   for edge in edges {
     let (u, v, w) = edge
     if w < 0L {

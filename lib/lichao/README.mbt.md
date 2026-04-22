@@ -308,7 +308,7 @@ contribution as negative infinity (or positive infinity for min queries).
 ```mbt check
 ///|
 test "lichao max" {
-  let lc = @lichao.LiChaoTree(0, 10)
+  let lc = @lichao.LiChaoTree::new(0, 10)
   lc.insert(2, 1) // y = 2x + 1
   lc.insert(-1, 5) // y = -x + 5
   inspect(lc.query(3), content="7") // max(7, 2)
@@ -320,7 +320,7 @@ test "lichao max" {
 ```mbt check
 ///|
 test "lichao min" {
-  let lc = @lichao.LiChaoTreeMin(0, 10)
+  let lc = @lichao.LiChaoTreeMin::new(0, 10)
   lc.insert(2, 1) // y = 2x + 1
   lc.insert(-1, 5) // y = -x + 5
   inspect(lc.query(3), content="2") // min(7, 2)

@@ -72,7 +72,7 @@ pub fn solve_assignment(cost : Array[Array[Int64]]) -> Int64 {
 
   // Create bipartite flow network:
   // Vertices: 0=source, 1..n=workers, n+1..2n=tasks, 2n+1=sink
-  let mcmf = MinCostMaxFlow(2 * n + 2)
+  let mcmf = MinCostMaxFlow::new(2 * n + 2)
   let source = 0
   let sink = 2 * n + 1
 

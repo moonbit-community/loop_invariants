@@ -48,7 +48,7 @@ pub struct Edge {
 /// **Usage pattern**
 ///
 /// ```
-/// let mcf = MinCostFlowPotentials(n)   // n vertices, 0-indexed
+/// let mcf = MinCostFlowPotentials::new(n)   // n vertices, 0-indexed
 /// mcf.add_edge(u, v, cap, cost)             // add directed edges
 /// let (flow, cost) = mcf.compute(src, sink) // solve
 /// ```
@@ -96,7 +96,7 @@ priv struct MinHeap {
 }
 
 ///|
-fn MinHeap::MinHeap() -> MinHeap {
+fn MinHeap::new() -> MinHeap {
   { data: [] }
 }
 
@@ -176,7 +176,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 ///
 /// Parameters:
 /// - `n`: number of vertices (must be >= 1).
-pub fn MinCostFlowPotentials::MinCostFlowPotentials(
+pub fn MinCostFlowPotentials::new(
   n : Int,
 ) -> MinCostFlowPotentials {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
@@ -227,7 +227,7 @@ fn MinCostFlowPotentials::dijkstra(
     self.prev_v[i] = -1
     self.prev_e[i] = -1
   }
-  let heap = MinHeap()
+  let heap = MinHeap::new()
   self.dist[source] = 0L
   heap.push({ dist: 0L, vertex: source })
   let _ = for popped = heap.pop() {

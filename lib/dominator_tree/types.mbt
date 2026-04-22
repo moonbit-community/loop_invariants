@@ -59,7 +59,7 @@ priv struct DominatorWork {
 
 ///|
 /// Create working structures for dominator tree computation.
-fn DominatorWork::DominatorWork(n : Int) -> DominatorWork {
+fn DominatorWork::new(n : Int) -> DominatorWork {
   let adj = build_adj_lists(n)
   let pred = build_adj_lists(n + 1)
   {

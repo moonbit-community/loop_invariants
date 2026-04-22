@@ -356,7 +356,7 @@ test "lucas_matrix examples" {
 }
 ```
 
-## 6. FFT and NTT (polynomial multiplication)
+## 6. FFT and NTT::new(polynomial multiplication)
 
 ### 6.1 Convolution idea
 

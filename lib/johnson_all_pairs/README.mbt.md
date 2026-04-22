@@ -117,7 +117,7 @@ h[0] = 0   h[1] = 0   h[2] = -2   h[3] = 0
 
 ---
 
-## Mermaid: Reweighted Graph (All Non-Negative)
+## Mermaid: Reweighted Graph::new(All Non-Negative)
 
 After applying `w'(u,v) = w(u,v) + h[u] - h[v]`, every edge weight is >= 0.
 Dijkstra can now run correctly from any source.

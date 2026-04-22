@@ -128,7 +128,7 @@ After building the tree, a range minimum query on `[l, r]` reduces to finding
 the lowest common ancestor (LCA) of the nodes at positions `l` and `r`:
 
 ```
-RMQ(l, r) = value at LCA(node[l], node[r])
+RMQ(l, r) = value at LCA::new(node[l], node[r])
 ```
 
 Why this works:
@@ -151,7 +151,7 @@ ancestors[k][v] = ancestors[k-1][ ancestors[k-1][v] ]
                 = 2^k-th ancestor of v
 ```
 
-To answer LCA(u, v):
+To answer LCA::new(u, v):
 1. Lift the deeper node until both are at the same depth.
 2. Lift both simultaneously in decreasing powers of 2 until they would
    diverge; stop just below the LCA.
@@ -225,7 +225,7 @@ test "invalid range" {
 
 | Application | How the Cartesian tree helps |
 |---|---|
-| Range minimum query | RMQ(l,r) = value at LCA(node[l], node[r]) |
+| Range minimum query | RMQ(l,r) = value at LCA::new(node[l], node[r]) |
 | All nearest smaller values | Left/right parent pointers give nearest smaller |
 | Largest rectangle in histogram | Width bounded by nearest smaller bars on each side |
 | Treap | BST by key, heap by random priority -- same structure |

@@ -66,10 +66,10 @@ pub struct SegmentTree {
 /// # Example
 ///
 /// ```
-/// let st = SegmentTree([1L, 2L, 3L, 4L, 5L])
+/// let st = SegmentTree::new([1L, 2L, 3L, 4L, 5L])
 /// // st.query(0, 4) == 15L
 /// ```
-pub fn SegmentTree::SegmentTree(arr : Array[Int64]) -> SegmentTree {
+pub fn SegmentTree::new(arr : Array[Int64]) -> SegmentTree {
   let n = arr.length()
   if n == 0 {
     return { n: 0, tree: [] }
@@ -112,7 +112,7 @@ fn build_tree(
 /// # Example
 ///
 /// ```
-/// let st = SegmentTree([1L, 2L, 3L])
+/// let st = SegmentTree::new([1L, 2L, 3L])
 /// st.update(1, 10L)
 /// // st.query(0, 2) == 14L
 /// ```
@@ -159,7 +159,7 @@ fn update_helper(
 /// # Example
 ///
 /// ```
-/// let st = SegmentTree([1L, 2L, 3L, 4L, 5L])
+/// let st = SegmentTree::new([1L, 2L, 3L, 4L, 5L])
 /// // st.query(1, 3) == 9L   (2 + 3 + 4)
 /// // st.query(0, 4) == 15L
 /// ```
@@ -230,7 +230,7 @@ const ST_INF : Int64 = 9223372036854775807L
 ///
 /// Each internal node stores the minimum of its children; leaves store
 /// the corresponding array element.  Empty arrays produce an empty tree.
-fn SegmentTreeMin::SegmentTreeMin(arr : Array[Int64]) -> SegmentTreeMin {
+fn SegmentTreeMin::new(arr : Array[Int64]) -> SegmentTreeMin {
   let n = arr.length()
   if n == 0 {
     return { n: 0, tree: [] }
@@ -367,7 +367,7 @@ priv struct IterativeSegTree {
 ///
 /// Copies leaves into `tree[n..2n)`, then fills internal nodes bottom-up
 /// so that `tree[i] = tree[2i] + tree[2i+1]`.
-fn IterativeSegTree::IterativeSegTree(arr : Array[Int64]) -> IterativeSegTree {
+fn IterativeSegTree::new(arr : Array[Int64]) -> IterativeSegTree {
   let n = arr.length()
   if n == 0 {
     return { n: 0, tree: [] }
@@ -464,7 +464,7 @@ fn IterativeSegTree::query(self : IterativeSegTree, l : Int, r : Int) -> Int64 {
 ///|
 test "segment tree basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let st = SegmentTree(arr)
+  let st = SegmentTree::new(arr)
   inspect(st.query(0, 4), content="15")
   inspect(st.query(0, 2), content="6")
   inspect(st.query(2, 4), content="12")
@@ -474,7 +474,7 @@ test "segment tree basic" {
 ///|
 test "segment tree update" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let st = SegmentTree(arr)
+  let st = SegmentTree::new(arr)
   st.update(2, 10L)
   inspect(st.query(0, 4), content="22") // 1+2+10+4+5
   inspect(st.query(2, 2), content="10")
@@ -483,7 +483,7 @@ test "segment tree update" {
 ///|
 test "segment tree single element" {
   let arr : Array[Int64] = [42L]
-  let st = SegmentTree(arr)
+  let st = SegmentTree::new(arr)
   inspect(st.query(0, 0), content="42")
   st.update(0, 100L)
   inspect(st.query(0, 0), content="100")
@@ -492,7 +492,7 @@ test "segment tree single element" {
 ///|
 test "segment tree min basic" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L, 9L]
-  let st = SegmentTreeMin(arr)
+  let st = SegmentTreeMin::new(arr)
   inspect(st.query(0, 4), content="1")
   inspect(st.query(0, 2), content="2")
   inspect(st.query(2, 4), content="1")
@@ -501,7 +501,7 @@ test "segment tree min basic" {
 ///|
 test "segment tree min update" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L, 9L]
-  let st = SegmentTreeMin(arr)
+  let st = SegmentTreeMin::new(arr)
   st.update(3, 100L) // Change 1 to 100
   inspect(st.query(0, 4), content="2")
   inspect(st.query(2, 4), content="8")
@@ -510,7 +510,7 @@ test "segment tree min update" {
 ///|
 test "iterative segment tree basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let st = IterativeSegTree(arr)
+  let st = IterativeSegTree::new(arr)
   inspect(st.query(0, 4), content="15")
   inspect(st.query(0, 2), content="6")
   inspect(st.query(2, 4), content="12")
@@ -519,7 +519,7 @@ test "iterative segment tree basic" {
 ///|
 test "iterative segment tree update" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let st = IterativeSegTree(arr)
+  let st = IterativeSegTree::new(arr)
   st.update(2, 10L)
   inspect(st.query(0, 4), content="22")
 }
@@ -527,7 +527,7 @@ test "iterative segment tree update" {
 ///|
 test "iterative segment tree update power of two" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
-  let st = IterativeSegTree(arr)
+  let st = IterativeSegTree::new(arr)
   st.update(3, 100L)
   inspect(st.query(0, 7), content="132")
   inspect(st.query(0, 3), content="106")
@@ -537,14 +537,14 @@ test "iterative segment tree update power of two" {
 ///|
 test "segment tree empty" {
   let arr : Array[Int64] = []
-  let st = SegmentTree(arr)
+  let st = SegmentTree::new(arr)
   inspect(st.length(), content="0")
 }
 
 ///|
 test "segment tree boundary" {
   let arr : Array[Int64] = [1L, 2L, 3L]
-  let st = SegmentTree(arr)
+  let st = SegmentTree::new(arr)
   inspect(st.query(-1, 0), content="0") // Invalid
   inspect(st.query(0, 10), content="0") // Invalid
   inspect(st.query(2, 1), content="0") // Invalid
@@ -554,7 +554,7 @@ test "segment tree boundary" {
 test "segment tree large" {
   let n = 100
   let arr : Array[Int64] = [ for i in 0..<n => i.to_int64() ]
-  let st = SegmentTree(arr)
+  let st = SegmentTree::new(arr)
   // Sum of 0..99 = 99*100/2 = 4950
   inspect(st.query(0, 99), content="4950")
 }
@@ -562,8 +562,8 @@ test "segment tree large" {
 ///|
 test "iterative vs recursive" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
-  let st1 = SegmentTree(arr)
-  let st2 = IterativeSegTree(arr)
+  let st1 = SegmentTree::new(arr)
+  let st2 = IterativeSegTree::new(arr)
 
   // Both should give same results
   inspect(st1.query(0, 7) == st2.query(0, 7), content="true")

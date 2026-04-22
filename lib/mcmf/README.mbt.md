@@ -212,7 +212,7 @@ graph LR
 
 ```mermaid
 graph TD
-    A["MinCostMaxFlow(n)"] --> B["add_edge(u, v, cap, cost)"]
+    A["MinCostMaxFlow::new(n)"] --> B["add_edge(u, v, cap, cost)"]
     B --> C["compute(source, sink)"]
     B --> D["compute_with_limit(source, sink, max_flow)"]
     A --> E["solve_assignment(cost_matrix)"]
@@ -223,7 +223,7 @@ graph TD
 
 | Function | Description |
 |---|---|
-| `MinCostMaxFlow(n)` | Create graph with `n` vertices |
+| `MinCostMaxFlow::new(n)` | Create graph with `n` vertices |
 | `add_edge(u, v, cap, cost)` | Add directed edge with capacity and cost |
 | `compute(source, sink)` | Min-cost max-flow; returns `(flow, cost)` |
 | `compute_with_limit(source, sink, max_flow)` | Stop after `max_flow` units |
@@ -234,7 +234,7 @@ graph TD
 ```mbt check
 ///|
 test "mcmf simple edge" {
-  let mcmf = @mcmf.MinCostMaxFlow(2)
+  let mcmf = @mcmf.MinCostMaxFlow::new(2)
   mcmf.add_edge(0, 1, 5L, 2L)
   let (flow, cost) = mcmf.compute(0, 1)
   inspect(flow, content="5")
@@ -271,7 +271,7 @@ All 6 units can pass, but the top path is cheaper:
 ```mbt check
 ///|
 test "mcmf diamond" {
-  let mcmf = @mcmf.MinCostMaxFlow(4)
+  let mcmf = @mcmf.MinCostMaxFlow::new(4)
   mcmf.add_edge(0, 1, 3L, 1L)
   mcmf.add_edge(0, 2, 3L, 2L)
   mcmf.add_edge(1, 3, 3L, 1L)
@@ -289,7 +289,7 @@ If you only need `k` units of flow, use `compute_with_limit`:
 ```mbt check
 ///|
 test "mcmf limited flow" {
-  let mcmf = @mcmf.MinCostMaxFlow(2)
+  let mcmf = @mcmf.MinCostMaxFlow::new(2)
   mcmf.add_edge(0, 1, 10L, 1L)
   let (flow, cost) = mcmf.compute_with_limit(0, 1, 5L)
   inspect(flow, content="5")

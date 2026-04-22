@@ -473,7 +473,7 @@ This package is tutorial-only and does not export a concrete public API.
 
 ```mbt nocheck
 ///|
-let tree = SplayTree()
+let tree = SplayTree::new()
 
 tree.insert(5)
 tree.insert(3)

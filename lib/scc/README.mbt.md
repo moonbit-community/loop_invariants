@@ -310,7 +310,7 @@ Mini example — clause `(x OR y)`:
 ```mbt check
 ///|
 test "two sat example" {
-  let ts = @scc.TwoSAT(2)
+  let ts = @scc.TwoSAT::new(2)
 
   // (x0 OR x1)
   ts.add_clause(0, true, 1, true)

@@ -26,10 +26,10 @@ Tree rooted at 0:
       / \
      4   5            depth 2
 
-LCA(4, 5) = 1   (both are children of 1)
-LCA(4, 2) = 0   (paths to root diverge at 0)
-LCA(4, 3) = 0   (paths to root diverge at 0)
-LCA(1, 5) = 1   (1 is already an ancestor of 5)
+LCA::new(4, 5) = 1   (both are children of 1)
+LCA::new(4, 2) = 0   (paths to root diverge at 0)
+LCA::new(4, 3) = 0   (paths to root diverge at 0)
+LCA::new(1, 5) = 1   (1 is already an ancestor of 5)
 ```
 
 The LCA is the last shared node on the two root-to-node paths:
@@ -38,12 +38,12 @@ The LCA is the last shared node on the two root-to-node paths:
 path(root -> 4) = [0, 1, 4]
 path(root -> 2) = [0, 2]
                         ^
-                   last shared = 0    =>  LCA(4, 2) = 0
+                   last shared = 0    =>  LCA::new(4, 2) = 0
 
 path(root -> 4) = [0, 1, 4]
 path(root -> 5) = [0, 1, 5]
                         ^
-                   last shared = 1    =>  LCA(4, 5) = 1
+                   last shared = 1    =>  LCA::new(4, 5) = 1
 ```
 
 ## Binary Lifting Table
@@ -93,7 +93,7 @@ node  | depth | up[][0]  | up[][1]  | up[][2]
 Any ancestor reachable in `k` steps is found by decomposing `k` into bits.
 For example, to jump 5 = (101)_2 levels: jump 2^2, then jump 2^0.
 
-## Step-by-Step LCA Query: LCA(5, 4)
+## Step-by-Step LCA Query: LCA::new(5, 4)
 
 ### Step 1: Equalize Depths
 
@@ -131,10 +131,10 @@ No jumps were made, so curr_u = 3, curr_v = 4 remain.
 ### Step 4: Return Parent
 
 ```
-LCA(5, 4) = up[curr_u][0] = up[3][0] = 1
+LCA::new(5, 4) = up[curr_u][0] = up[3][0] = 1
 ```
 
-### Another Example: LCA(5, 2)
+### Another Example: LCA::new(5, 2)
 
 ```
 depth[5] = 3,  depth[2] = 1
@@ -150,7 +150,7 @@ k=2: up[1][2] = -1,  up[2][2] = -1   (equal -> no jump)
 k=1: up[1][1] = -1,  up[2][1] = -1   (equal -> no jump)
 k=0: up[1][0] =  0,  up[2][0] =  0   (equal -> no jump)
 
-LCA(5, 2) = up[curr_u][0] = up[1][0] = 0
+LCA::new(5, 2) = up[curr_u][0] = up[1][0] = 0
 ```
 
 ## Common Operations Using LCA
@@ -158,13 +158,13 @@ LCA(5, 2) = up[curr_u][0] = up[1][0] = 0
 ### Distance Between Nodes
 
 ```
-dist(u, v) = depth[u] + depth[v] - 2 * depth[LCA(u, v)]
+dist(u, v) = depth[u] + depth[v] - 2 * depth[LCA::new(u, v)]
 ```
 
 ### Ancestor Check
 
 ```
-Is u ancestor of v?   LCA(u, v) == u
+Is u ancestor of v?   LCA::new(u, v) == u
 ```
 
 ### k-th Ancestor
@@ -191,7 +191,7 @@ Store `dist_to_root[v]` during DFS:
 
 ```
 dist(u, v) = dist_to_root[u] + dist_to_root[v]
-           - 2 * dist_to_root[LCA(u, v)]
+           - 2 * dist_to_root[LCA::new(u, v)]
 ```
 
 ## Example Usage
@@ -200,7 +200,7 @@ dist(u, v) = dist_to_root[u] + dist_to_root[v]
 ///|
 test "lca basic" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5)]
-  let lca = @lca.LCA(6, edges)
+  let lca = @lca.LCA::new(6, edges)
   inspect(lca.query(4, 5), content="1")
   inspect(lca.query(4, 2), content="0")
 }
@@ -210,7 +210,7 @@ test "lca basic" {
 ///|
 test "lca distance via depths" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3)]
-  let lca = @lca.LCA(4, edges)
+  let lca = @lca.LCA::new(4, edges)
   let l = lca.query(2, 3)
   let dist = lca.depth[2] + lca.depth[3] - 2 * lca.depth[l]
   inspect(dist, content="2")

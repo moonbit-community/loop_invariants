@@ -85,7 +85,7 @@ Original tree:
   1   2
 
 Important nodes: {1, 2}
-LCA(1, 2) = 0
+LCA::new(1, 2) = 0
 
 Virtual tree nodes: {0, 1, 2}
 
@@ -109,7 +109,7 @@ Step 1  DFS the original tree once to record:
 Step 2  Sort the important nodes by tin.
 
 Step 3  For each consecutive pair (u, v) in that order,
-        compute LCA(u, v) and add it to the node list.
+        compute LCA::new(u, v) and add it to the node list.
 
 Step 4  Deduplicate and re-sort the combined list by tin.
 
@@ -151,8 +151,8 @@ important sorted by tin: [3, 4, 5]
 ### Step 3 -- Insert LCAs of consecutive pairs
 
 ```
-LCA(3, 4) = 1          (both are children of 1)
-LCA(4, 5) = 0          (paths to root diverge at 0)
+LCA::new(3, 4) = 1          (both are children of 1)
+LCA::new(4, 5) = 0          (paths to root diverge at 0)
 
 node list after inserting LCAs: [3, 4, 5, 1, 0]
 ```
@@ -167,13 +167,13 @@ sorted by tin: [0, 1, 3, 4, 5]   (no duplicates here)
 
 ```
 Process 0: stack = [0]
-Process 1: LCA(1, top=0) = 0  -- 0 stays on stack
+Process 1: LCA::new(1, top=0) = 0  -- 0 stays on stack
            stack = [0, 1]
-Process 3: LCA(3, top=1) = 1  -- 1 stays on stack
+Process 3: LCA::new(3, top=1) = 1  -- 1 stays on stack
            stack = [0, 1, 3]
-Process 4: LCA(4, top=3) = 1  -- 3 pops, edge 1->3 emitted
+Process 4: LCA::new(4, top=3) = 1  -- 3 pops, edge 1->3 emitted
            stack = [0, 1, 4]
-Process 5: LCA(5, top=4) = 0  -- 4 pops, edge 1->4 emitted
+Process 5: LCA::new(5, top=4) = 0  -- 4 pops, edge 1->4 emitted
                               -- 1 pops, edge 0->1 emitted
            stack = [0, 5]
 Flush:     5 pops, edge 0->5 emitted
@@ -241,7 +241,7 @@ node  | depth | up[0]  | up[1]  | up[2]
 
 (The root maps to itself for ancestor sentinel purposes.)
 
-LCA query example: LCA(3, 5)
+LCA query example: LCA::new(3, 5)
 
 ```
 depth[3] = 2,  depth[5] = 2   -- already equal depth
@@ -251,11 +251,11 @@ k=2: up[2][3]=0, up[2][5]=0   equal -- no jump
 k=1: up[1][3]=0, up[1][5]=0   equal -- no jump
 k=0: up[0][3]=1, up[0][5]=2   differ -- no jump (we keep current nodes)
 
-LCA(3, 5) = up[0][3] = 1? No -- up[0][3]=1, up[0][5]=2 differ,
+LCA::new(3, 5) = up[0][3] = 1? No -- up[0][3]=1, up[0][5]=2 differ,
 so after k=0 we return up[0][curr] = up[0][3] = 1... wait:
 
 After the loop, curr_3=3, curr_5=5. up[0][3]=1.
-LCA(3, 5) = 0 (the parent of 1 and 2).
+LCA::new(3, 5) = 0 (the parent of 1 and 2).
 ```
 
 More precisely, after equalising depths and failing the equality check,
@@ -335,8 +335,8 @@ DFS order (tin):  0, 1, 4, 7, 5, 2, 3, 6, 8, 9
 Sorted important: [7, 5, 9]
   (tin[7]=3, tin[5]=4, tin[9]=9)
 
-LCA(7, 5) = 1
-LCA(5, 9) = 0
+LCA::new(7, 5) = 1
+LCA::new(5, 9) = 0
 
 Virtual tree nodes (sorted): [0, 1, 5, 7, 9]
 

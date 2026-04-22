@@ -68,7 +68,7 @@ priv struct StringHash {
 /// - `s` : the source string (lowercase ASCII assumed).
 ///
 /// Returns a `StringHash` ready for O(1) hash queries.
-fn StringHash::StringHash(s : String) -> StringHash {
+fn StringHash::new(s : String) -> StringHash {
   let n = s.length()
   let prefix = Array::make(n + 1, 0L)
   let powers = Array::make(n + 1, 1L)
@@ -194,7 +194,7 @@ priv struct DoubleHash {
 /// - `s` : the source string (lowercase ASCII assumed).
 ///
 /// Returns a `DoubleHash` ready for O(1) paired hash queries.
-fn DoubleHash::DoubleHash(s : String) -> DoubleHash {
+fn DoubleHash::new(s : String) -> DoubleHash {
   let n = s.length()
   let prefix1 = Array::make(n + 1, 0L)
   let prefix2 = Array::make(n + 1, 0L)
@@ -343,8 +343,8 @@ pub fn hash_pattern_match(text : String, pattern : String) -> Array[Int] {
   if m == 0 || m > n {
     return result
   }
-  let text_hash = StringHash(text)
-  let pattern_hash = StringHash(pattern)
+  let text_hash = StringHash::new(text)
+  let pattern_hash = StringHash::new(pattern)
   let target = pattern_hash.get_hash(0, m)
   let last = n - m
   for i in 0..<=last {
@@ -379,7 +379,7 @@ fn count_distinct_substrings(s : String, k : Int) -> Int {
   if k <= 0 || k > n {
     return 0
   }
-  let hash = StringHash(s)
+  let hash = StringHash::new(s)
   let seen : Map[Int64, Bool] = {}
   let last = n - k
   for i in 0..<=last {
@@ -395,7 +395,7 @@ fn count_distinct_substrings(s : String, k : Int) -> Int {
 
 ///|
 test "string_hash basic" {
-  let sh = StringHash("abcabc")
+  let sh = StringHash::new("abcabc")
   // Hash of "abc" at positions 0-3 and 3-6 should be same
   inspect(sh.compare(0, 3, 3, 6), content="true")
   // Different substrings should differ
@@ -404,7 +404,7 @@ test "string_hash basic" {
 
 ///|
 test "string_hash get_hash" {
-  let sh = StringHash("abcd")
+  let sh = StringHash::new("abcd")
   let h1 = sh.get_hash(0, 2) // "ab"
   let h2 = sh.get_hash(2, 4) // "cd"
   inspect(h1 != h2, content="true")
@@ -412,21 +412,21 @@ test "string_hash get_hash" {
 
 ///|
 test "string_hash lcp" {
-  let sh = StringHash("abcabcabc")
+  let sh = StringHash::new("abcabcabc")
   inspect(sh.lcp(0, 3), content="6") // "abcabc" matches
   inspect(sh.lcp(0, 1), content="0") // "abc..." vs "bca..." no common prefix
 }
 
 ///|
 test "double_hash basic" {
-  let dh = DoubleHash("abcabc")
+  let dh = DoubleHash::new("abcabc")
   inspect(dh.compare(0, 3, 3, 6), content="true")
   inspect(dh.compare(0, 2, 1, 3), content="false")
 }
 
 ///|
 test "double_hash collision resistance" {
-  let dh = DoubleHash("abababab")
+  let dh = DoubleHash::new("abababab")
   let (h1a, h1b) = dh.get_hash(0, 2)
   let (h2a, h2b) = dh.get_hash(2, 4)
   // Same substring "ab" should have same hash
@@ -460,23 +460,23 @@ test "count_distinct_substrings" {
 
 ///|
 test "string_hash empty" {
-  let sh = StringHash("")
+  let sh = StringHash::new("")
   inspect(sh.length(), content="0")
   inspect(sh.get_hash(0, 0), content="0")
 }
 
 ///|
 test "string_hash full string" {
-  let sh = StringHash("abc")
+  let sh = StringHash::new("abc")
   let h1 = sh.get_hash(0, 3)
-  let sh2 = StringHash("abc")
+  let sh2 = StringHash::new("abc")
   let h2 = sh2.get_hash(0, 3)
   inspect(h1 == h2, content="true")
 }
 
 ///|
 test "string_hash single char" {
-  let sh = StringHash("aaaa")
+  let sh = StringHash::new("aaaa")
   inspect(sh.compare(0, 1, 1, 2), content="true")
   inspect(sh.compare(0, 1, 2, 3), content="true")
 }

@@ -60,7 +60,7 @@ struct HopcroftKarp {
 }
 
 ///|
-fn HopcroftKarp::HopcroftKarp(graph : BipartiteGraph) -> HopcroftKarp {
+fn HopcroftKarp::new(graph : BipartiteGraph) -> HopcroftKarp {
   {
     graph,
     match_left: Array::make(graph.n_left, -1),
@@ -165,7 +165,7 @@ fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int) -> Bool {
 ///
 /// Example:
 /// ```
-/// let graph = BipartiteGraph(4, 4)
+/// let graph = BipartiteGraph::new(4, 4)
 /// graph.add_edge(0, 0)
 /// graph.add_edge(1, 1)
 /// graph.add_edge(2, 2)
@@ -223,7 +223,7 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
 ///
 /// Example:
 /// ```
-/// let graph = BipartiteGraph(2, 2)
+/// let graph = BipartiteGraph::new(2, 2)
 /// graph.add_edge(0, 0)
 /// graph.add_edge(1, 1)
 /// let matcher = graph.hopcroft_karp()
@@ -260,7 +260,7 @@ pub fn HopcroftKarp::get_matching(self : HopcroftKarp) -> Array[(Int, Int)] {
 ///
 /// Example:
 /// ```
-/// let graph = BipartiteGraph(3, 3)
+/// let graph = BipartiteGraph::new(3, 3)
 /// graph.add_edge(0, 0)
 /// graph.add_edge(0, 1)
 /// graph.add_edge(1, 1)

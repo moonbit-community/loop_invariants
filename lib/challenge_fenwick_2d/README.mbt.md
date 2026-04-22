@@ -52,7 +52,7 @@ sum(A) - sum(B) cancels the inner rectangle.
 ```mbt check
 ///|
 test "fenwick2d example" {
-  let fw = @challenge_fenwick_2d.Fenwick2D(3, 3)
+  let fw = @challenge_fenwick_2d.Fenwick2D::new(3, 3)
   fw.add(0, 0, 5)
   fw.add(1, 2, 3)
   inspect(fw.range_sum(0, 0, 3, 3), content="8")
@@ -64,7 +64,7 @@ test "fenwick2d example" {
 ```mbt check
 ///|
 test "fenwick2d partial sum" {
-  let fw = @challenge_fenwick_2d.Fenwick2D(4, 4)
+  let fw = @challenge_fenwick_2d.Fenwick2D::new(4, 4)
   fw.add(1, 1, 2)
   fw.add(2, 3, 4)
   inspect(fw.range_sum(0, 0, 2, 2), content="2")
@@ -77,7 +77,7 @@ test "fenwick2d partial sum" {
 ```mbt check
 ///|
 test "fenwick2d multiple points" {
-  let fw = @challenge_fenwick_2d.Fenwick2D(4, 4)
+  let fw = @challenge_fenwick_2d.Fenwick2D::new(4, 4)
   fw.add(0, 0, 1)
   fw.add(1, 1, 2)
   fw.add(2, 3, 4)

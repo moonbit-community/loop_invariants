@@ -58,7 +58,7 @@ priv struct EertreeNode {
 }
 
 ///|
-fn EertreeNode::EertreeNode(len : Int) -> EertreeNode {
+fn EertreeNode::new(len : Int) -> EertreeNode {
   {
     len,
     suffix_link: 0,
@@ -87,16 +87,16 @@ priv struct Eertree {
 }
 
 ///|
-fn Eertree::Eertree() -> Eertree {
+fn Eertree::new() -> Eertree {
   // Create two roots
   let nodes : Array[EertreeNode] = []
 
   // Node 0: root for odd-length palindromes (imaginary, length -1)
-  let odd_root = EertreeNode(-1)
+  let odd_root = EertreeNode::new(-1)
   nodes.push(odd_root)
 
   // Node 1: root for even-length palindromes (empty string, length 0)
-  let even_root = EertreeNode(0)
+  let even_root = EertreeNode::new(0)
   nodes.push(even_root)
 
   // Suffix links: both roots point to odd root
@@ -147,7 +147,7 @@ fn Eertree::add_char(self : Eertree, c : Char) -> Unit {
 
   // Create new node for palindrome cPc
   let new_len = self.nodes[cur].len + 2
-  let new_node = EertreeNode(new_len)
+  let new_node = EertreeNode::new(new_len)
   let new_idx = self.nodes.length()
   self.nodes.push(new_node)
   self.nodes[cur].edges[char_val] = new_idx
@@ -173,7 +173,7 @@ fn Eertree::add_char(self : Eertree, c : Char) -> Unit {
 ///|
 /// Build from string
 fn Eertree::from_string(s : String) -> Eertree {
-  let tree = Eertree()
+  let tree = Eertree::new()
   for c in s {
     tree.add_char(c)
   }
@@ -524,7 +524,7 @@ test "eertree mississippi" {
 
 ///|
 test "eertree incremental" {
-  let tree = Eertree()
+  let tree = Eertree::new()
   tree.add_char('a')
   inspect(tree.count_distinct(), content="1")
   tree.add_char('b')

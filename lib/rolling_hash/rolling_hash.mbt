@@ -84,7 +84,7 @@ priv struct RollingHash {
 ///
 /// After this call, `prefix_hash` and `pow_base` are fully populated so
 /// that `get_hash` and `substrings_equal` work in O(1).
-fn RollingHash::RollingHash(s : String) -> RollingHash {
+fn RollingHash::new(s : String) -> RollingHash {
   let n = s.length()
 
   // Compute powers of base
@@ -224,7 +224,7 @@ priv struct DoubleRollingHash {
 ///
 /// Both power tables and both prefix-hash arrays are populated in a single
 /// pass, giving O(1) `get_hash` queries thereafter.
-fn DoubleRollingHash::DoubleRollingHash(s : String) -> DoubleRollingHash {
+fn DoubleRollingHash::new(s : String) -> DoubleRollingHash {
   let n = s.length()
   let pow_base1 = Array::make(n + 1, 1L)
   let pow_base2 = Array::make(n + 1, 1L)
@@ -351,8 +351,8 @@ pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int] {
   if m == 0 || m > n {
     return result
   }
-  let text_hash = RollingHash(text)
-  let pattern_hash = RollingHash(pattern)
+  let text_hash = RollingHash::new(text)
+  let pattern_hash = RollingHash::new(pattern)
 
   // Get pattern hash
   let target = match pattern_hash.get_hash(0, m - 1) {
@@ -444,8 +444,8 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
   if n1 == 0 || n2 == 0 {
     return 0
   }
-  let hash1 = DoubleRollingHash(s1)
-  let hash2 = DoubleRollingHash(s2)
+  let hash1 = DoubleRollingHash::new(s1)
+  let hash2 = DoubleRollingHash::new(s2)
 
   // Binary search on length
   // INVARIANT: if length L works, so does any length < L
@@ -586,7 +586,7 @@ fn count_distinct_substrings(s : String) -> Int {
   if n == 0 {
     return 0
   }
-  let hash = DoubleRollingHash(s)
+  let hash = DoubleRollingHash::new(s)
   let seen : Array[(Int64, Int64)] = []
 
   // Collect all substring hashes
@@ -675,7 +675,7 @@ fn count_distinct_substrings(s : String) -> Int {
 
 ///|
 test "rolling hash basic" {
-  let rh = RollingHash("abcabc")
+  let rh = RollingHash::new("abcabc")
 
   // Same substrings should have same hash
   let h1 = rh.get_hash(0, 2) // "abc"
@@ -686,7 +686,7 @@ test "rolling hash basic" {
 
 ///|
 test "rolling hash different" {
-  let rh = RollingHash("abcdef")
+  let rh = RollingHash::new("abcdef")
   let h1 = rh.get_hash(0, 2) // "abc"
   let h2 = rh.get_hash(3, 5) // "def"
   inspect(h1 != h2, content="true")
@@ -694,7 +694,7 @@ test "rolling hash different" {
 
 ///|
 test "rolling hash substrings equal" {
-  let rh = RollingHash("abcabcabc")
+  let rh = RollingHash::new("abcabcabc")
   inspect(rh.substrings_equal(0, 2, 3, 5), content="true") // "abc" == "abc"
   inspect(rh.substrings_equal(0, 2, 6, 8), content="true") // "abc" == "abc"
   inspect(rh.substrings_equal(0, 2, 1, 3), content="false") // "abc" != "bca"
@@ -702,7 +702,7 @@ test "rolling hash substrings equal" {
 
 ///|
 test "rolling hash invalid range" {
-  let rh = RollingHash("abc")
+  let rh = RollingHash::new("abc")
   inspect(rh.get_hash(-1, 0), content="None")
   inspect(rh.get_hash(0, 10), content="None")
   inspect(rh.get_hash(2, 1), content="None")
@@ -710,7 +710,7 @@ test "rolling hash invalid range" {
 
 ///|
 test "double rolling hash" {
-  let drh = DoubleRollingHash("abcabc")
+  let drh = DoubleRollingHash::new("abcabc")
   let h1 = drh.get_hash(0, 2)
   let h2 = drh.get_hash(3, 5)
   inspect(h1 == h2, content="true")
@@ -785,21 +785,21 @@ test "count distinct substrings abab" {
 
 ///|
 test "rolling hash empty" {
-  let rh = RollingHash("")
+  let rh = RollingHash::new("")
   inspect(rh.length(), content="0")
   inspect(rh.get_hash(0, 0), content="None")
 }
 
 ///|
 test "rolling hash single" {
-  let rh = RollingHash("a")
+  let rh = RollingHash::new("a")
   inspect(rh.length(), content="1")
   inspect(rh.get_hash(0, 0) is Some(_), content="true")
 }
 
 ///|
 test "double hash length" {
-  let drh = DoubleRollingHash("hello")
+  let drh = DoubleRollingHash::new("hello")
   inspect(drh.length(), content="5")
 }
 

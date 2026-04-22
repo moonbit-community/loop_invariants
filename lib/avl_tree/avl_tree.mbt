@@ -43,7 +43,7 @@ priv struct AVLNode[T] {
 ///|
 /// Creates a fresh leaf node with the given key.
 /// The new node has height 1 and no children.
-fn[T] AVLNode::AVLNode(key : T) -> AVLNode[T] {
+fn[T] AVLNode::new(key : T) -> AVLNode[T] {
   { key, height: 1, left: -1, right: -1 }
 }
 
@@ -69,7 +69,7 @@ priv struct AVLTree[T] {
 
 ///|
 /// Creates an empty AVL tree with no nodes allocated.
-fn[T] AVLTree::AVLTree() -> AVLTree[T] {
+fn[T] AVLTree::new() -> AVLTree[T] {
   { nodes: [], root: -1, free_list: -1 }
 }
 
@@ -221,7 +221,7 @@ fn[T] AVLTree::alloc_node(self : AVLTree[T], key : T) -> Int {
     return idx
   }
   let idx = self.nodes.length()
-  self.nodes.push(AVLNode(key))
+  self.nodes.push(AVLNode::new(key))
   idx
 }
 
@@ -297,7 +297,7 @@ fn[T] AVLTree::to_sorted_array(self : AVLTree[T]) -> Array[T] {
 /// // sorted == [1, 1, 3, 4, 5]
 /// ```
 pub fn[T : Compare] avl_sorted(keys : ArrayView[T]) -> Array[T] {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   for key in keys {
     tree.insert(key)
   }
@@ -501,7 +501,7 @@ fn[T] AVLTree::size(self : AVLTree[T]) -> Int {
 
 ///|
 test "avl insert and search" {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   tree.insert(5L)
   tree.insert(3L)
   tree.insert(7L)
@@ -516,7 +516,7 @@ test "avl insert and search" {
 
 ///|
 test "avl left rotation" {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   // Inserting in ascending order triggers left rotations
   tree.insert(1L)
   tree.insert(2L)
@@ -529,7 +529,7 @@ test "avl left rotation" {
 
 ///|
 test "avl right rotation" {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   // Inserting in descending order triggers right rotations
   tree.insert(3L)
   tree.insert(2L)
@@ -539,7 +539,7 @@ test "avl right rotation" {
 
 ///|
 test "avl left-right rotation" {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   tree.insert(3L)
   tree.insert(1L)
   tree.insert(2L) // Triggers left-right rotation
@@ -548,7 +548,7 @@ test "avl left-right rotation" {
 
 ///|
 test "avl right-left rotation" {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   tree.insert(1L)
   tree.insert(3L)
   tree.insert(2L) // Triggers right-left rotation
@@ -557,7 +557,7 @@ test "avl right-left rotation" {
 
 ///|
 test "avl delete" {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   tree.insert(5L)
   tree.insert(3L)
   tree.insert(7L)
@@ -572,7 +572,7 @@ test "avl delete" {
 
 ///|
 test "avl min max" {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   tree.insert(5L)
   tree.insert(2L)
   tree.insert(8L)
@@ -584,7 +584,7 @@ test "avl min max" {
 
 ///|
 test "avl size" {
-  let tree : AVLTree[Int64] = AVLTree()
+  let tree : AVLTree[Int64] = AVLTree::new()
   inspect(tree.size(), content="0")
   tree.insert(1L)
   tree.insert(2L)
@@ -594,7 +594,7 @@ test "avl size" {
 
 ///|
 test "avl many insertions" {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   for i in 0..<100 {
     tree.insert(i.to_int64())
   }
@@ -606,7 +606,7 @@ test "avl many insertions" {
 
 ///|
 test "avl empty" {
-  let tree = AVLTree()
+  let tree = AVLTree::new()
   inspect(tree.search(1L), content="false")
   inspect(tree.min(), content="None")
   inspect(tree.is_balanced(), content="true")

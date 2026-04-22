@@ -27,7 +27,7 @@ priv struct LazySegmentTree {
 }
 
 ///|
-fn LazySegmentTree::LazySegmentTree(arr : ArrayView[Int]) -> LazySegmentTree {
+fn LazySegmentTree::new(arr : ArrayView[Int]) -> LazySegmentTree {
   let n = arr.length()
   let tree = Array::make(4 * n, 0L)
   let lazy_add = Array::make(4 * n, 0L)
@@ -173,7 +173,7 @@ fn LazySegmentTree::query_helper(
 ///|
 test "lazy segment tree basic" {
   let arr = [1, 2, 3, 4, 5]
-  let st = LazySegmentTree(arr)
+  let st = LazySegmentTree::new(arr)
 
   // Initial sums
   assert_eq(st.range_sum(0, 5), 15L) // 1+2+3+4+5
@@ -208,7 +208,7 @@ priv struct SetSegmentTree {
 let set_sentinel : Int64 = -9223372036854775808L // Int64::min_value()
 
 ///|
-fn SetSegmentTree::SetSegmentTree(arr : ArrayView[Int]) -> SetSegmentTree {
+fn SetSegmentTree::new(arr : ArrayView[Int]) -> SetSegmentTree {
   let n = arr.length()
   let tree = Array::make(4 * n, 0L)
   let lazy_set = Array::make(4 * n, set_sentinel)
@@ -326,7 +326,7 @@ fn SetSegmentTree::query_helper(
 ///|
 test "set segment tree" {
   let arr = [1, 2, 3, 4, 5]
-  let st = SetSegmentTree(arr)
+  let st = SetSegmentTree::new(arr)
   assert_eq(st.range_sum(0, 5), 15L)
 
   // Set [1, 4) to 10
@@ -358,7 +358,7 @@ priv struct RMQSegmentTree {
 }
 
 ///|
-fn RMQSegmentTree::RMQSegmentTree(arr : ArrayView[Int]) -> RMQSegmentTree {
+fn RMQSegmentTree::new(arr : ArrayView[Int]) -> RMQSegmentTree {
   let n = arr.length()
   let tree = Array::make(4 * n, 0L)
   let lazy_add = Array::make(4 * n, 0L)
@@ -483,7 +483,7 @@ fn RMQSegmentTree::min_helper(
 ///|
 test "RMQ segment tree" {
   let arr = [3, 1, 4, 1, 5, 9, 2, 6]
-  let st = RMQSegmentTree(arr)
+  let st = RMQSegmentTree::new(arr)
   assert_eq(st.range_min(0, 8), 1L) // min of all
   assert_eq(st.range_min(0, 4), 1L) // min of [3,1,4,1]
   assert_eq(st.range_min(4, 8), 2L) // min of [5,9,2,6]
@@ -521,7 +521,7 @@ priv struct PersistentSegmentTree {
 }
 
 ///|
-fn PersistentSegmentTree::PersistentSegmentTree(
+fn PersistentSegmentTree::new(
   n : Int,
 ) -> PersistentSegmentTree {
   // Pre-allocate space for nodes (initial tree + updates)
@@ -643,7 +643,7 @@ fn PersistentSegmentTree::query_helper(
 
 ///|
 test "persistent segment tree" {
-  let pst = PersistentSegmentTree(5)
+  let pst = PersistentSegmentTree::new(5)
 
   // Version 0: all zeros
   assert_eq(pst.range_sum(0, 0, 5), 0L)
@@ -923,7 +923,7 @@ priv struct SegmentTree2D {
 }
 
 ///|
-fn SegmentTree2D::SegmentTree2D(matrix : Array[Array[Int]]) -> SegmentTree2D {
+fn SegmentTree2D::new(matrix : Array[Array[Int]]) -> SegmentTree2D {
   let rows = matrix.length()
   if rows == 0 {
     return { rows: 0, cols: 0, tree: [] }
@@ -1097,7 +1097,7 @@ fn SegmentTree2D::col_sum(
 ///|
 test "2D segment tree" {
   let matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-  let st = SegmentTree2D(matrix)
+  let st = SegmentTree2D::new(matrix)
 
   // Sum of entire matrix
   assert_eq(st.range_sum(0, 3, 0, 3), 45L)

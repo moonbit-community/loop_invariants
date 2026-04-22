@@ -1,4 +1,4 @@
-# Challenge: Persistent Binary Trie (Max XOR)
+# Challenge: Persistent Binary Trie::new(Max XOR)
 
 A **binary trie** stores integers by their bits. This persistent version
 supports path-copying inserts and fast maximum-xor queries.

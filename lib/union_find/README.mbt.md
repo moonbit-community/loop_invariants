@@ -195,7 +195,7 @@ connected      O(log n)              O(alpha(n))
 ```mbt check
 ///|
 test "union find connectivity" {
-  let uf = @union_find.UnionFind(5)
+  let uf = @union_find.UnionFind::new(5)
   inspect(uf.connected(0, 4), content="false")
   let _ = uf.union(0, 1)
   let _ = uf.union(1, 2)
@@ -214,7 +214,7 @@ test "union find connectivity" {
 ```mbt check
 ///|
 test "union find count sets" {
-  let uf = @union_find.UnionFind(6)
+  let uf = @union_find.UnionFind::new(6)
   inspect(uf.count_sets(), content="6")
   let _ = uf.union(0, 1)
   let _ = uf.union(2, 3)
@@ -231,7 +231,7 @@ test "union find count sets" {
 ```mbt check
 ///|
 test "union find set size" {
-  let uf = @union_find.UnionFind(5)
+  let uf = @union_find.UnionFind::new(5)
   let _ = uf.union(0, 1)
   let _ = uf.union(1, 2)
   inspect(uf.set_size(0), content="3")
@@ -255,7 +255,7 @@ Equivalence classes (A = B, B = C)
 
 ---
 
-## 10) Kruskal's MST (how DSU fits)
+## 10) Kruskal's MST::new(how DSU fits)
 
 Kruskal's algorithm:
 

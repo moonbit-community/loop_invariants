@@ -253,7 +253,7 @@ excess:   [-, 0, 0, 5]     all excess drained to sink
 ```mbt check
 ///|
 test "push-relabel example" {
-  let pr = @push_relabel_max_flow.PushRelabel(6)
+  let pr = @push_relabel_max_flow.PushRelabel::new(6)
   pr.add_edge(0, 1, 16L)
   pr.add_edge(0, 2, 13L)
   pr.add_edge(1, 2, 10L)
@@ -274,7 +274,7 @@ For undirected networks, use `add_undirected_edge`:
 ```mbt check
 ///|
 test "push-relabel undirected" {
-  let pr = @push_relabel_max_flow.PushRelabel(4)
+  let pr = @push_relabel_max_flow.PushRelabel::new(4)
   pr.add_undirected_edge(0, 1, 5L)
   pr.add_undirected_edge(1, 3, 3L)
   pr.add_undirected_edge(0, 2, 4L)

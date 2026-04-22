@@ -56,9 +56,9 @@ priv struct MST {
 ///
 /// # Example
 /// ```moonbit nocheck
-/// let g = MST(5)
+/// let g = MST::new(5)
 /// ```
-fn MST::MST(n : Int) -> MST {
+fn MST::new(n : Int) -> MST {
   { n, edges: [] }
 }
 
@@ -92,7 +92,7 @@ priv struct UF {
 ///
 /// # Parameters
 /// - `n`: Number of elements (vertices). Each starts in its own set.
-fn UF::UF(n : Int) -> UF {
+fn UF::new(n : Int) -> UF {
   let parent = Array::make(n, 0)
   let rank = Array::make(n, 0)
   for i in 0..<n {
@@ -194,7 +194,7 @@ fn MST::kruskal(self : MST) -> (Array[Edge], Int64) {
       0
     }
   })
-  let uf = UF(self.n)
+  let uf = UF::new(self.n)
   let mst_edges : Array[Edge] = []
   let total_weight = for edge in sorted_edges; total_weight = 0L {
     if mst_edges.length() < self.n - 1 && uf.union(edge.u, edge.v) {
@@ -261,7 +261,7 @@ priv struct PrimMST {
 ///
 /// # Parameters
 /// - `n`: Number of vertices. Vertices are labelled `0` to `n-1`.
-fn PrimMST::PrimMST(n : Int) -> PrimMST {
+fn PrimMST::new(n : Int) -> PrimMST {
   let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
   { n, adj }
 }
@@ -381,7 +381,7 @@ fn PrimMST::compute(self : PrimMST) -> Int64? {
 
 ///|
 test "mst kruskal basic" {
-  let mst = MST(4)
+  let mst = MST::new(4)
   mst.add_edge(0, 1, 1L)
   mst.add_edge(1, 2, 2L)
   mst.add_edge(2, 3, 3L)
@@ -394,7 +394,7 @@ test "mst kruskal basic" {
 
 ///|
 test "mst kruskal triangle" {
-  let mst = MST(3)
+  let mst = MST::new(3)
   mst.add_edge(0, 1, 1L)
   mst.add_edge(1, 2, 2L)
   mst.add_edge(0, 2, 3L)
@@ -403,7 +403,7 @@ test "mst kruskal triangle" {
 
 ///|
 test "mst disconnected" {
-  let mst = MST(4)
+  let mst = MST::new(4)
   mst.add_edge(0, 1, 1L)
   mst.add_edge(2, 3, 2L)
   inspect(mst.is_connected(), content="false")
@@ -412,13 +412,13 @@ test "mst disconnected" {
 
 ///|
 test "mst single vertex" {
-  let mst = MST(1)
+  let mst = MST::new(1)
   inspect(mst.get_mst_weight(), content="Some(0)")
 }
 
 ///|
 test "prim basic" {
-  let prim = PrimMST(4)
+  let prim = PrimMST::new(4)
   prim.add_edge(0, 1, 1L)
   prim.add_edge(1, 2, 2L)
   prim.add_edge(2, 3, 3L)
@@ -428,7 +428,7 @@ test "prim basic" {
 
 ///|
 test "mst same weights" {
-  let mst = MST(3)
+  let mst = MST::new(3)
   mst.add_edge(0, 1, 1L)
   mst.add_edge(1, 2, 1L)
   mst.add_edge(0, 2, 1L)

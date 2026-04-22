@@ -67,7 +67,7 @@ priv struct MinHeap {
 /// remove the entry with the smallest `dist`.
 ///
 /// Time complexity: O(1).
-fn MinHeap::MinHeap() -> MinHeap {
+fn MinHeap::new() -> MinHeap {
   { data: [] }
 }
 
@@ -195,7 +195,7 @@ fn dijkstra(
 ) -> Array[Int64] {
   let dist = Array::make(n, INF64)
   dist[src] = 0L
-  let heap = MinHeap()
+  let heap = MinHeap::new()
   heap.push({ dist: 0L, node: src })
   for ;; {
     match heap.pop() {
@@ -291,7 +291,7 @@ pub fn johnson_all_pairs(
 
   // Build Bellman-Ford graph with super-source
   let super_source = n
-  let bf = @bellman_ford.BellmanFord(n + 1)
+  let bf = @bellman_ford.BellmanFord::new(n + 1)
   for edge in edges {
     let (u, v, w) = edge
     if u >= 0 && u < n && v >= 0 && v < n {

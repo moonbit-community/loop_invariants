@@ -112,7 +112,7 @@ test "scc self loop" {
 ///   Solution: x₀ = true, x₁ = true
 /// ```
 test "two sat satisfiable" {
-  let sat = TwoSAT::TwoSAT(2)
+  let sat = TwoSAT::new(2)
   sat.add_clause(0, false, 1, false) // x₀ OR x₁
   sat.add_clause(0, true, 1, false) // NOT x₀ OR x₁
   sat.add_clause(0, false, 1, true) // x₀ OR NOT x₁
@@ -131,7 +131,7 @@ test "two sat satisfiable" {
 ///   Contradiction!
 /// ```
 test "two sat unsatisfiable" {
-  let sat = TwoSAT::TwoSAT(1)
+  let sat = TwoSAT::new(1)
   sat.add_clause(0, false, 0, false) // x₀ OR x₀ = x₀
   sat.add_clause(0, true, 0, true) // NOT x₀ OR NOT x₀ = NOT x₀
   match sat.solve() {

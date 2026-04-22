@@ -56,7 +56,7 @@ pub struct BinaryTrie {
 /// - values in [0, 255]    -> `max_bits = 7`
 /// - values up to ~1e9     -> `max_bits = 29`
 /// - full non-negative Int64 -> `max_bits = 62`
-pub fn BinaryTrie::BinaryTrie(max_bits : Int) -> BinaryTrie {
+pub fn BinaryTrie::new(max_bits : Int) -> BinaryTrie {
   let root : Node = { next0: -1, next1: -1, count: 0 }
   { max_bits, nodes: [root] }
 }

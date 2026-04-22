@@ -1,4 +1,4 @@
-# Trie (Prefix Tree)
+# Trie::new(Prefix Tree)
 
 A trie stores strings so that **common prefixes share the same path**.
 This makes prefix queries and autocomplete fast.
@@ -131,7 +131,7 @@ longest_prefix         O(m)
 ```mbt nocheck
 ///|
 test "trie insert and search" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("hello")
   trie.insert("world")
   trie.insert("help")
@@ -148,7 +148,7 @@ test "trie insert and search" {
 ```mbt nocheck
 ///|
 test "trie prefix queries" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("car")
   trie.insert("card")
   trie.insert("care")
@@ -172,7 +172,7 @@ Duplicate insertions are tracked with `count` on the terminal node.
 ```mbt nocheck
 ///|
 test "trie duplicates" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("hello")
   trie.insert("hello")
   trie.insert("hello")
@@ -191,7 +191,7 @@ copy is removed.
 ```mbt nocheck
 ///|
 test "trie delete one copy" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("hello")
   trie.insert("hello")
   inspect(trie.count_word("hello"), content="2")
@@ -212,7 +212,7 @@ test "trie delete one copy" {
 ```mbt nocheck
 ///|
 test "trie autocomplete" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("car")
   trie.insert("card")
   trie.insert("care")
@@ -235,7 +235,7 @@ word-end node reached. It returns the corresponding prefix of the query string.
 ```mbt nocheck
 ///|
 test "trie longest prefix" {
-  let trie = Trie()
+  let trie = Trie::new()
   trie.insert("a")
   trie.insert("app")
   trie.insert("apple")
@@ -281,7 +281,7 @@ The implementation here supports insert and search.
 ```mbt nocheck
 ///|
 test "compressed trie basic" {
-  let trie = CompressedTrie()
+  let trie = CompressedTrie::new()
   trie.insert("test")
   trie.insert("testing")
   trie.insert("tested")

@@ -16,7 +16,7 @@ pub struct Fenwick2D {
 
 ///|
 /// Create a 2D Fenwick tree with given rows and cols.
-pub fn Fenwick2D::Fenwick2D(rows : Int, cols : Int) -> Fenwick2D {
+pub fn Fenwick2D::new(rows : Int, cols : Int) -> Fenwick2D {
   let tree = [ for _ in 0..<(rows + 1) => Array::make(cols + 1, 0) ]
   { rows, cols, tree }
 }

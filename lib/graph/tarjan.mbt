@@ -35,7 +35,7 @@ priv struct TarjanSCC {
 }
 
 ///|
-fn TarjanSCC::TarjanSCC(graph : Array[Array[Int]]) -> TarjanSCC {
+fn TarjanSCC::new(graph : Array[Array[Int]]) -> TarjanSCC {
   let n = graph.length()
   {
     graph,
@@ -214,7 +214,7 @@ fn TarjanSCC::find_sccs(self : TarjanSCC) -> Unit {
 fn find_strongly_connected_components(
   graph : Array[Array[Int]],
 ) -> Array[Array[Int]] {
-  let tarjan = TarjanSCC(graph)
+  let tarjan = TarjanSCC::new(graph)
   tarjan.find_sccs()
   tarjan.sccs
 }
@@ -286,7 +286,7 @@ priv struct KosarajuSCC {
 
 ///|
 #warnings("-missing_invariant-missing_reasoning")
-fn KosarajuSCC::KosarajuSCC(graph : Array[Array[Int]]) -> KosarajuSCC {
+fn KosarajuSCC::new(graph : Array[Array[Int]]) -> KosarajuSCC {
   let n = graph.length()
   // Build reversed graph
   let reversed : Array[Array[Int]] = [ for _ in 0..<n => [] ]
@@ -476,7 +476,7 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
 
 ///|
 fn find_sccs_kosaraju(graph : Array[Array[Int]]) -> Array[Array[Int]] {
-  let kosaraju = KosarajuSCC(graph)
+  let kosaraju = KosarajuSCC::new(graph)
   kosaraju.find_sccs()
   kosaraju.sccs
 }
@@ -513,7 +513,7 @@ priv struct ArticulationFinder {
 }
 
 ///|
-fn ArticulationFinder::ArticulationFinder(
+fn ArticulationFinder::new(
   graph : Array[Array[Int]],
 ) -> ArticulationFinder {
   let n = graph.length()
@@ -605,7 +605,7 @@ fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
 ///|
 #warnings("-missing_invariant-missing_reasoning")
 fn find_articulation_points(graph : Array[Array[Int]]) -> Array[Int] {
-  let finder = ArticulationFinder(graph)
+  let finder = ArticulationFinder::new(graph)
   for v in 0..<finder.n {
     if finder.disc[v] == -1 {
       finder.dfs(v)
@@ -655,7 +655,7 @@ priv struct BridgeFinder {
 }
 
 ///|
-fn BridgeFinder::BridgeFinder(graph : Array[Array[Int]]) -> BridgeFinder {
+fn BridgeFinder::new(graph : Array[Array[Int]]) -> BridgeFinder {
   let n = graph.length()
   {
     graph,
@@ -732,7 +732,7 @@ fn BridgeFinder::dfs(self : BridgeFinder, v : Int) -> Unit {
 ///|
 #warnings("-missing_invariant-missing_reasoning")
 fn find_bridges(graph : Array[Array[Int]]) -> Array[(Int, Int)] {
-  let finder = BridgeFinder(graph)
+  let finder = BridgeFinder::new(graph)
   for v in 0..<finder.n {
     if finder.disc[v] == -1 {
       finder.dfs(v)
@@ -777,7 +777,7 @@ priv struct TopologicalSort {
 }
 
 ///|
-fn TopologicalSort::TopologicalSort(
+fn TopologicalSort::new(
   graph : Array[Array[Int]],
 ) -> TopologicalSort {
   let n = graph.length()
@@ -844,7 +844,7 @@ fn TopologicalSort::dfs(self : TopologicalSort, v : Int) -> Unit {
 ///|
 #warnings("-missing_invariant-missing_reasoning")
 fn topological_sort_dfs(graph : Array[Array[Int]]) -> Array[Int]? {
-  let ts = TopologicalSort(graph)
+  let ts = TopologicalSort::new(graph)
   for v in 0..<ts.n {
     if ts.state[v] == 0 {
       ts.dfs(v)

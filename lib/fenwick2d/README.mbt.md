@@ -259,7 +259,7 @@ graph TD
 ```mermaid
 sequenceDiagram
     participant User
-    participant FW as Fenwick2D (3x3)
+    participant FW as Fenwick2D::new(3x3)
     participant Tree as tree[i][j]
 
     User->>FW: update(1, 1, 4)
@@ -285,7 +285,7 @@ sequenceDiagram
 ```mbt check
 ///|
 test "fenwick2d example" {
-  let fw = @fenwick2d.Fenwick2D(3, 3)
+  let fw = @fenwick2d.Fenwick2D::new(3, 3)
   fw.update(1, 1, 5)
   fw.update(2, 3, 2)
   inspect(fw.range_sum(1, 1, 3, 3), content="7")
@@ -295,7 +295,7 @@ test "fenwick2d example" {
 ```mbt check
 ///|
 test "fenwick2d prefix and single cell" {
-  let fw = @fenwick2d.Fenwick2D(3, 3)
+  let fw = @fenwick2d.Fenwick2D::new(3, 3)
   fw.update(1, 1, 4)
   fw.update(1, 2, 1)
   fw.update(2, 1, 2)
@@ -308,7 +308,7 @@ test "fenwick2d prefix and single cell" {
 
 | Method | Description | Complexity |
 |---|---|---|
-| `Fenwick2D(rows, cols)` | Create an `rows x cols` tree, all zeros | O(n*m) |
+| `Fenwick2D::new(rows, cols)` | Create an `rows x cols` tree, all zeros | O(n*m) |
 | `update(r, c, delta)` | Add `delta` to cell `(r, c)` | O(log n * log m) |
 | `prefix_sum(r, c)` | Sum of `[1..r][1..c]` | O(log n * log m) |
 | `range_sum(r1,c1,r2,c2)` | Sum of `[r1..r2][c1..c2]` | O(log n * log m) |

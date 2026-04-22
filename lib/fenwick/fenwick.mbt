@@ -65,11 +65,11 @@ pub struct FenwickTree {
 ///
 /// Example:
 /// ```
-/// let ft = FenwickTree(5)
+/// let ft = FenwickTree::new(5)
 /// ft.add(2, 7L)
 /// assert_eq!(ft.prefix_sum(2), 7L)
 /// ```
-pub fn FenwickTree::FenwickTree(n : Int) -> FenwickTree {
+pub fn FenwickTree::new(n : Int) -> FenwickTree {
   // 1-indexed, so we need n+1 elements
   { n, tree: Array::make(n + 1, 0L) }
 }
@@ -151,7 +151,7 @@ fn lowbit(x : Int) -> Int {
 ///
 /// Example:
 /// ```
-/// let ft = FenwickTree(4)
+/// let ft = FenwickTree::new(4)
 /// ft.add(0, 5L)
 /// ft.add(0, -2L) // net value at index 0 is now 3
 /// assert_eq!(ft.get(0), 3L)
@@ -296,7 +296,7 @@ pub fn FenwickTree::set(self : FenwickTree, i : Int, value : Int64) -> Unit {
 ///
 /// Example:
 /// ```
-/// let ft = FenwickTree(10)
+/// let ft = FenwickTree::new(10)
 /// assert_eq!(ft.length(), 10)
 /// ```
 pub fn FenwickTree::length(self : FenwickTree) -> Int {
@@ -331,7 +331,7 @@ priv struct FenwickTree2D {
 /// - `cols`: number of columns (valid column indices: `0..cols-1`).
 ///
 /// Time complexity: O(rows * cols).
-fn FenwickTree2D::FenwickTree2D(rows : Int, cols : Int) -> FenwickTree2D {
+fn FenwickTree2D::new(rows : Int, cols : Int) -> FenwickTree2D {
   let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
   ]
@@ -471,7 +471,7 @@ priv struct FenwickTreeRangeUpdate {
 /// - `n`: number of elements (valid indices: `0..n-1`).
 ///
 /// Time complexity: O(n).
-fn FenwickTreeRangeUpdate::FenwickTreeRangeUpdate(
+fn FenwickTreeRangeUpdate::new(
   n : Int,
 ) -> FenwickTreeRangeUpdate {
   { n, tree: Array::make(n + 1, 0L) }
@@ -595,7 +595,7 @@ priv struct FenwickTreeRangeRange {
 /// - `n`: number of elements (valid indices: `0..n-1`).
 ///
 /// Time complexity: O(n).
-fn FenwickTreeRangeRange::FenwickTreeRangeRange(
+fn FenwickTreeRangeRange::new(
   n : Int,
 ) -> FenwickTreeRangeRange {
   { n, bit1: Array::make(n + 1, 0L), bit2: Array::make(n + 1, 0L) }
@@ -731,7 +731,7 @@ fn FenwickTreeRangeRange::range_sum(
 
 ///|
 test "fenwick tree basic" {
-  let ft = FenwickTree(5)
+  let ft = FenwickTree::new(5)
   ft.add(0, 1L)
   ft.add(1, 2L)
   ft.add(2, 3L)
@@ -773,7 +773,7 @@ test "fenwick tree get and set" {
 
 ///|
 test "fenwick tree 2d" {
-  let ft = FenwickTree2D(3, 3)
+  let ft = FenwickTree2D::new(3, 3)
 
   // Set up a 3x3 grid:
   // 1 2 3
@@ -795,7 +795,7 @@ test "fenwick tree 2d" {
 
 ///|
 test "fenwick tree 2d range" {
-  let ft = FenwickTree2D(3, 3)
+  let ft = FenwickTree2D::new(3, 3)
 
   // 1 2 3
   // 4 5 6
@@ -819,7 +819,7 @@ test "fenwick tree 2d range" {
 
 ///|
 test "fenwick tree range update point query" {
-  let ft = FenwickTreeRangeUpdate(5)
+  let ft = FenwickTreeRangeUpdate::new(5)
 
   // Add 10 to range [1, 3]
   ft.range_add(1, 3, 10L)
@@ -832,7 +832,7 @@ test "fenwick tree range update point query" {
 
 ///|
 test "fenwick tree range range" {
-  let ft = FenwickTreeRangeRange(5)
+  let ft = FenwickTreeRangeRange::new(5)
 
   // Add 1 to each element [0, 4]
   ft.range_add(0, 4, 1L)
@@ -847,14 +847,14 @@ test "fenwick tree range range" {
 
 ///|
 test "fenwick tree empty" {
-  let ft = FenwickTree(0)
+  let ft = FenwickTree::new(0)
   inspect(ft.length(), content="0")
   inspect(ft.prefix_sum(0), content="0")
 }
 
 ///|
 test "fenwick tree single element" {
-  let ft = FenwickTree(1)
+  let ft = FenwickTree::new(1)
   ft.add(0, 42L)
   inspect(ft.prefix_sum(0), content="42")
   inspect(ft.get(0), content="42")
@@ -862,7 +862,7 @@ test "fenwick tree single element" {
 
 ///|
 test "fenwick tree negative values" {
-  let ft = FenwickTree(3)
+  let ft = FenwickTree::new(3)
   ft.add(0, -5L)
   ft.add(1, 10L)
   ft.add(2, -3L)
@@ -883,7 +883,7 @@ test "lowbit function" {
 
 ///|
 test "fenwick tree large updates" {
-  let ft = FenwickTree(10)
+  let ft = FenwickTree::new(10)
 
   // Add large values
   for i in 0..<10 {
@@ -894,7 +894,7 @@ test "fenwick tree large updates" {
 
 ///|
 test "fenwick tree boundary" {
-  let ft = FenwickTree(5)
+  let ft = FenwickTree::new(5)
   ft.add(0, 1L)
   ft.add(4, 5L)
   inspect(ft.prefix_sum(-1), content="0")

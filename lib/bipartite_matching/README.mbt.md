@@ -113,7 +113,7 @@ RESULT: matching size = 3 (perfect matching)
 
 Two algorithms are provided:
 
-- **Hungarian (Kuhn's)**: O(V * E) - Simple DFS-based augmentation, suitable for small graphs.
+- **Hungarian::new(Kuhn's)**: O(V * E) - Simple DFS-based augmentation, suitable for small graphs.
 - **Hopcroft-Karp**: O(E * sqrt(V)) - Faster for large graphs; uses BFS to discover shortest augmenting paths, then DFS to apply them all in one phase.
 
 ## Hopcroft-Karp BFS + DFS phases
@@ -156,7 +156,7 @@ maximum matching.
 
 ```
 // Build a bipartite graph
-let graph = BipartiteGraph(n_left, n_right)
+let graph = BipartiteGraph::new(n_left, n_right)
 graph.add_edge(u, v)
 
 // Choose algorithm and compute
@@ -175,7 +175,7 @@ let (left_cover, right_cover) = matcher.min_vertex_cover()
 ```mbt check
 ///|
 test "small matching" {
-  let graph = @bipartite_matching.BipartiteGraph(2, 2)
+  let graph = @bipartite_matching.BipartiteGraph::new(2, 2)
   graph.add_edge(0, 0)
   graph.add_edge(0, 1)
   graph.add_edge(1, 1)
@@ -189,7 +189,7 @@ test "small matching" {
 ```mbt check
 ///|
 test "unbalanced sets" {
-  let graph = @bipartite_matching.BipartiteGraph(4, 2)
+  let graph = @bipartite_matching.BipartiteGraph::new(4, 2)
   graph.add_edge(0, 0)
   graph.add_edge(1, 0)
   graph.add_edge(2, 1)
@@ -208,7 +208,7 @@ Workers on the left, jobs on the right. An edge means a worker can do a job.
 ```mbt check
 ///|
 test "assignment example" {
-  let graph = @bipartite_matching.BipartiteGraph(3, 3)
+  let graph = @bipartite_matching.BipartiteGraph::new(3, 3)
   graph.add_edge(0, 0)
   graph.add_edge(0, 2)
   graph.add_edge(1, 0)
@@ -224,7 +224,7 @@ test "assignment example" {
 ```mbt check
 ///|
 test "min vertex cover" {
-  let graph = @bipartite_matching.BipartiteGraph(3, 3)
+  let graph = @bipartite_matching.BipartiteGraph::new(3, 3)
   graph.add_edge(0, 0)
   graph.add_edge(0, 1)
   graph.add_edge(1, 1)

@@ -7,7 +7,7 @@ public API. Instead, it explains how to:
 - run DFS/BFS iteratively (no recursion),
 - compute Euler tour ranges,
 - answer subtree queries with a Fenwick tree or segment tree,
-- compute LCA (lowest common ancestor).
+- compute LCA::new(lowest common ancestor).
 
 All code snippets are small, runnable, and use only basic arrays and loops.
 
@@ -337,7 +337,7 @@ Lazy segment tree node at index i covering interval [l, r):
 
 ---
 
-## 8) LCA (lowest common ancestor) by parent climbing
+## 8) LCA::new(lowest common ancestor) by parent climbing
 
 The LCA of two nodes is their deepest shared ancestor.
 This simple version is O(height), good for small trees.
@@ -391,14 +391,14 @@ precompute `up[v][k] = 2^k-th ancestor`. Then LCA is O(log n).
    / \   \
   3   4   5   depth=2
 
-LCA(3, 5):
+LCA::new(3, 5):
   Step 1 - equalize depths:
     a=3 (depth 2) vs b=5 (depth 2)  -- already equal
   Step 2 - climb together:
     a=3, b=5  -> parent: a=1, b=2
     a=1, b=2  -> parent: a=0, b=0  -> LCA = 0
 
-LCA(3, 4):
+LCA::new(3, 4):
   Depths equal at 2.
   a=3, b=4  -> parent: a=1, b=1  -> LCA = 1
 ```
@@ -436,8 +436,8 @@ Subtree sum query (prefix sums)     O(1)
 Subtree point update (Fenwick)      O(log n)
 Subtree range query (Fenwick)       O(log n)
 Subtree range update (lazy seg)     O(log n)
-LCA (parent climbing)               O(height)
-LCA (binary lifting)                O(log n) per query
+LCA::new(parent climbing)               O(height)
+LCA::new(binary lifting)                O(log n) per query
 Fenwick find-kth                    O(log n)
 Inversion count                     O(n log n)
 2D Fenwick update/query             O(log n * log m)

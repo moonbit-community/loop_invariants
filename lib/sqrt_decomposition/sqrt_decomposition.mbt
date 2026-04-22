@@ -84,7 +84,7 @@ pub struct SqrtSum {
 /// Returns a new `SqrtSum` ready for queries and updates.
 ///
 /// Time: O(n).  Space: O(n).
-pub fn SqrtSum::SqrtSum(arr : Array[Int64]) -> SqrtSum {
+pub fn SqrtSum::new(arr : Array[Int64]) -> SqrtSum {
   let n = arr.length()
   if n == 0 {
     return { arr: [], blocks: [], block_size: 1, n: 0 }
@@ -249,7 +249,7 @@ priv struct SqrtMin {
 /// Build a `SqrtMin` from an existing array in O(n).
 ///
 /// Each block minimum is computed in a single forward pass.
-fn SqrtMin::SqrtMin(arr : Array[Int64]) -> SqrtMin {
+fn SqrtMin::new(arr : Array[Int64]) -> SqrtMin {
   let n = arr.length()
   if n == 0 {
     return { arr: [], blocks: [], block_size: 1, n: 0 }
@@ -427,7 +427,7 @@ priv struct SqrtLazy {
 ///
 /// Block sums are initialised from the source array; all lazy addends start
 /// at zero.
-fn SqrtLazy::SqrtLazy(arr : Array[Int64]) -> SqrtLazy {
+fn SqrtLazy::new(arr : Array[Int64]) -> SqrtLazy {
   let n = arr.length()
   if n == 0 {
     return { arr: [], blocks: [], lazy_add: [], block_size: 1, n: 0 }
@@ -659,7 +659,7 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
 ///|
 test "sqrt sum basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L]
-  let sqrt = SqrtSum(arr)
+  let sqrt = SqrtSum::new(arr)
   inspect(sqrt.query(0, 8), content="45") // Sum 1..9
   inspect(sqrt.query(0, 2), content="6") // 1+2+3
   inspect(sqrt.query(3, 5), content="15") // 4+5+6
@@ -668,7 +668,7 @@ test "sqrt sum basic" {
 ///|
 test "sqrt sum update" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  let sqrt = SqrtSum(arr)
+  let sqrt = SqrtSum::new(arr)
   inspect(sqrt.query(0, 4), content="15")
   sqrt.update(2, 10L)
   inspect(sqrt.query(0, 4), content="22") // 1+2+10+4+5
@@ -677,7 +677,7 @@ test "sqrt sum update" {
 ///|
 test "sqrt min basic" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L, 9L, 3L, 7L, 4L, 6L]
-  let sqrt = SqrtMin(arr)
+  let sqrt = SqrtMin::new(arr)
   inspect(sqrt.query(0, 8), content="1")
   inspect(sqrt.query(0, 2), content="2")
   inspect(sqrt.query(4, 8), content="3")
@@ -686,7 +686,7 @@ test "sqrt min basic" {
 ///|
 test "sqrt min update" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L, 9L]
-  let sqrt = SqrtMin(arr)
+  let sqrt = SqrtMin::new(arr)
   inspect(sqrt.query(0, 4), content="1")
   sqrt.update(3, 10L)
   inspect(sqrt.query(0, 4), content="2")
@@ -695,7 +695,7 @@ test "sqrt min update" {
 ///|
 test "sqrt lazy range add" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L]
-  let sqrt = SqrtLazy(arr)
+  let sqrt = SqrtLazy::new(arr)
   inspect(sqrt.query(0, 8), content="45")
   sqrt.range_add(2, 6, 10L) // Add 10 to indices 2-6
   inspect(sqrt.query(0, 8), content="95") // 45 + 5*10 = 95
@@ -705,21 +705,21 @@ test "sqrt lazy range add" {
 ///|
 test "sqrt single element" {
   let arr : Array[Int64] = [42L]
-  let sqrt = SqrtSum(arr)
+  let sqrt = SqrtSum::new(arr)
   inspect(sqrt.query(0, 0), content="42")
 }
 
 ///|
 test "sqrt empty" {
   let arr : Array[Int64] = []
-  let sqrt = SqrtSum(arr)
+  let sqrt = SqrtSum::new(arr)
   inspect(sqrt.query(0, 0), content="0")
 }
 
 ///|
 test "sqrt large" {
   let arr : Array[Int64] = [ for i in 0..<1000 => i.to_int64() ]
-  let sqrt = SqrtSum(arr)
+  let sqrt = SqrtSum::new(arr)
   // Sum 0..999 = 999*1000/2 = 499500
   inspect(sqrt.query(0, 999), content="499500")
 }

@@ -93,7 +93,7 @@ fn PersistentSegTree::build(arr : Array[Int64]) -> PersistentSegTree {
 
 ///|
 /// Create empty persistent segment tree of given size
-fn PersistentSegTree::PersistentSegTree(n : Int) -> PersistentSegTree {
+fn PersistentSegTree::new(n : Int) -> PersistentSegTree {
   if n == 0 {
     return { nodes: [], roots: [], n: 0 }
   }
@@ -278,7 +278,7 @@ test "persistent segment tree update creates version" {
 
 ///|
 test "persistent segment tree multiple versions" {
-  let pst = PersistentSegTree(5)
+  let pst = PersistentSegTree::new(5)
 
   // v0: [0, 0, 0, 0, 0], sum = 0
   inspect(pst.query(0, 0, 4), content="0")
@@ -309,7 +309,7 @@ test "persistent segment tree multiple versions" {
 
 ///|
 test "persistent segment tree version count" {
-  let pst = PersistentSegTree(3)
+  let pst = PersistentSegTree::new(3)
   inspect(pst.version_count(), content="1") // v0
   let _ = pst.update(0, 0, 1L)
   inspect(pst.version_count(), content="2") // v0, v1
@@ -353,7 +353,7 @@ priv struct KthSmallestTree {
 /// Each position i creates version i with values [0..i] inserted
 fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
   if arr.length() == 0 {
-    return { pst: PersistentSegTree(0), sorted_values: [], n: 0 }
+    return { pst: PersistentSegTree::new(0), sorted_values: [], n: 0 }
   }
 
   // Coordinate compression
@@ -367,7 +367,7 @@ fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
   let m = unique.length()
 
   // Create initial empty tree (version -1, stored as version 0)
-  let pst = PersistentSegTree(m)
+  let pst = PersistentSegTree::new(m)
 
   // Build versions - version i has count of values in arr[0..i-1]
   // We need version 0 to be empty, then version i = prefix [0..i-1]
@@ -515,7 +515,7 @@ priv struct PersistentArray {
 }
 
 ///|
-fn PersistentArray::PersistentArray(
+fn PersistentArray::new(
   n : Int,
   default_value : Int64,
 ) -> PersistentArray {
@@ -554,7 +554,7 @@ fn PersistentArray::version_count(self : PersistentArray) -> Int {
 
 ///|
 test "persistent array" {
-  let empty = PersistentArray(2, 7L)
+  let empty = PersistentArray::new(2, 7L)
   inspect(empty.get(0, 1), content="7")
   let parr = PersistentArray::from_array([10L, 20L, 30L])
 

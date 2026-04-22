@@ -163,7 +163,7 @@ pub fn ImplicitTreap::set(self : ImplicitTreap, pos : Int, val : Int64) -> Unit 
 /// Creates a treap with elements in array order.
 /// Each element is inserted at the end in sequence.
 pub fn ImplicitTreap::from_array(arr : Array[Int64]) -> ImplicitTreap {
-  let treap = ImplicitTreap()
+  let treap = ImplicitTreap::new()
   for i, value in arr {
     treap.insert(i, value)
   }

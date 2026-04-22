@@ -214,7 +214,7 @@ Using the `Dinic` struct directly for more control:
 ```mbt check
 ///|
 test "dinic struct usage" {
-  let d = @dinic.Dinic(4)
+  let d = @dinic.Dinic::new(4)
   d.add_edge(0, 1, 10)
   d.add_edge(0, 2, 10)
   d.add_edge(1, 3, 10)
@@ -238,7 +238,7 @@ test "dinic min cut example" {
   //         2       3
   //          \     /
   //           --> 2
-  let d = @dinic.Dinic(4)
+  let d = @dinic.Dinic::new(4)
   d.add_edge(0, 1, 3)
   d.add_edge(0, 2, 2)
   d.add_edge(1, 3, 2)
