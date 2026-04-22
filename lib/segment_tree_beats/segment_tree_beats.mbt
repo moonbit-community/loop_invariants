@@ -72,9 +72,7 @@ pub struct SegmentTreeBeats {
 /// Parameters:
 /// - `values` — the initial array; may be empty, in which case all queries
 ///              return identity values (0 for sum, `NEG_INF` for max).
-pub fn SegmentTreeBeats::new(
-  values : ArrayView[Int64],
-) -> SegmentTreeBeats {
+pub fn SegmentTreeBeats::new(values : ArrayView[Int64]) -> SegmentTreeBeats {
   let n = values.length()
   let size = if n == 0 { 0 } else { 4 * n }
   let max = Array::make(size, NEG_INF)

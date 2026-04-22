@@ -471,9 +471,7 @@ priv struct FenwickTreeRangeUpdate {
 /// - `n`: number of elements (valid indices: `0..n-1`).
 ///
 /// Time complexity: O(n).
-fn FenwickTreeRangeUpdate::new(
-  n : Int,
-) -> FenwickTreeRangeUpdate {
+fn FenwickTreeRangeUpdate::new(n : Int) -> FenwickTreeRangeUpdate {
   { n, tree: Array::make(n + 1, 0L) }
 }
 
@@ -595,9 +593,7 @@ priv struct FenwickTreeRangeRange {
 /// - `n`: number of elements (valid indices: `0..n-1`).
 ///
 /// Time complexity: O(n).
-fn FenwickTreeRangeRange::new(
-  n : Int,
-) -> FenwickTreeRangeRange {
+fn FenwickTreeRangeRange::new(n : Int) -> FenwickTreeRangeRange {
   { n, bit1: Array::make(n + 1, 0L), bit2: Array::make(n + 1, 0L) }
 }
 

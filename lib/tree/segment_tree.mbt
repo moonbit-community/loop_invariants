@@ -521,9 +521,7 @@ priv struct PersistentSegmentTree {
 }
 
 ///|
-fn PersistentSegmentTree::new(
-  n : Int,
-) -> PersistentSegmentTree {
+fn PersistentSegmentTree::new(n : Int) -> PersistentSegmentTree {
   // Pre-allocate space for nodes (initial tree + updates)
   let max_nodes = 4 * n + 1
   let nodes = Array::make(max_nodes, { sum: 0L, left: 0, right: 0 })

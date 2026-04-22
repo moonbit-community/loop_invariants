@@ -418,10 +418,7 @@ priv struct WeightedLCA {
 /// `edges` is a list of triples `(u, v, weight)`. Edges outside `[0, n-1]`
 /// are ignored. The topology is handed to `LCA::new`; a separate DFS
 /// accumulates weighted distances from the root.
-fn WeightedLCA::new(
-  n : Int,
-  edges : Array[(Int, Int, Int64)],
-) -> WeightedLCA {
+fn WeightedLCA::new(n : Int, edges : Array[(Int, Int, Int64)]) -> WeightedLCA {
   if n == 0 {
     return { lca: LCA::new(0, []), dist_to_root: [] }
   }

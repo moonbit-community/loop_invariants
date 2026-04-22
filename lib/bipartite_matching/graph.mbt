@@ -44,10 +44,7 @@ struct BipartiteGraph {
 /// graph.add_edge(1, 1)
 /// let size = graph.hungarian().max_matching()
 /// ```
-pub fn BipartiteGraph::new(
-  n_left : Int,
-  n_right : Int,
-) -> BipartiteGraph {
+pub fn BipartiteGraph::new(n_left : Int, n_right : Int) -> BipartiteGraph {
   let adj : Array[Array[Int]] = [ for _ in 0..<n_left => [] ]
   { n_left, n_right, adj }
 }

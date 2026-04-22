@@ -68,11 +68,7 @@ priv struct SkipNode[K, V] {
 /// `level` is the number of forward-pointer slots to allocate; a node at
 /// height h requires `level = h + 1` so that slots 0..h are all present.
 /// All forward pointers are initialised to `None`.
-fn[K, V] SkipNode::new(
-  key : K?,
-  value : V?,
-  level : Int,
-) -> SkipNode[K, V] {
+fn[K, V] SkipNode::new(key : K?, value : V?, level : Int) -> SkipNode[K, V] {
   { key, value, forward: Array::make(level, None) }
 }
 

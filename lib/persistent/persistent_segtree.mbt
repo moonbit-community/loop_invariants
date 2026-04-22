@@ -515,10 +515,7 @@ priv struct PersistentArray {
 }
 
 ///|
-fn PersistentArray::new(
-  n : Int,
-  default_value : Int64,
-) -> PersistentArray {
+fn PersistentArray::new(n : Int, default_value : Int64) -> PersistentArray {
   let arr : Array[Int64] = Array::make(n, default_value)
   { pst: PersistentSegTree::build(arr) }
 }

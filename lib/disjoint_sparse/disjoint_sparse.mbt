@@ -105,9 +105,7 @@ fn highest_bit(x : Int) -> Int {
 /// - indices `[m+1 .. block_end]` receive the prefix sum from `m+1` to that index.
 ///
 /// Returns an empty table for an empty input array.
-pub fn DisjointSparseSum::new(
-  arr : Array[Int64],
-) -> DisjointSparseSum {
+pub fn DisjointSparseSum::new(arr : Array[Int64]) -> DisjointSparseSum {
   let n = arr.length()
   if n == 0 {
     return { table: [], arr: [], n: 0 }
@@ -250,9 +248,7 @@ priv struct DisjointSparseXor {
 ///
 /// The construction mirrors `DisjointSparseSum::new` with `^` replacing `+`.
 /// Returns an empty table for an empty input array.
-fn DisjointSparseXor::new(
-  arr : Array[Int64],
-) -> DisjointSparseXor {
+fn DisjointSparseXor::new(arr : Array[Int64]) -> DisjointSparseXor {
   let n = arr.length()
   if n == 0 {
     return { table: [], arr: [], n: 0 }

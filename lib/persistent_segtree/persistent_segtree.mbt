@@ -96,9 +96,7 @@ fn push_node(nodes : Array[PNode], sum : Int64, left : Int, right : Int) -> Int 
 /// version (index 0). All subsequent versions are created by `update`.
 ///
 /// Returns an empty tree with no versions if `arr` is empty.
-fn PersistentSegTree::new(
-  arr : Array[Int64],
-) -> PersistentSegTree {
+fn PersistentSegTree::new(arr : Array[Int64]) -> PersistentSegTree {
   let n = arr.length()
   if n == 0 {
     return { nodes: [], roots: [], n: 0 }

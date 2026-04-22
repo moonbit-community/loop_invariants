@@ -513,9 +513,7 @@ priv struct ArticulationFinder {
 }
 
 ///|
-fn ArticulationFinder::new(
-  graph : Array[Array[Int]],
-) -> ArticulationFinder {
+fn ArticulationFinder::new(graph : Array[Array[Int]]) -> ArticulationFinder {
   let n = graph.length()
   {
     graph,
@@ -777,9 +775,7 @@ priv struct TopologicalSort {
 }
 
 ///|
-fn TopologicalSort::new(
-  graph : Array[Array[Int]],
-) -> TopologicalSort {
+fn TopologicalSort::new(graph : Array[Array[Int]]) -> TopologicalSort {
   let n = graph.length()
   { graph, n, state: Array::make(n, 0), result: [], has_cycle: false }
 }

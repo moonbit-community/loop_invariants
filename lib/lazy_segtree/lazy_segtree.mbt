@@ -368,9 +368,7 @@ priv struct LazySegTreeSetSum {
 ///|
 /// Build a `LazySegTreeSetSum` from `arr`.  All `has_pending` slots start as
 /// `false` (no pending assignments).
-fn LazySegTreeSetSum::new(
-  arr : Array[Int64],
-) -> LazySegTreeSetSum {
+fn LazySegTreeSetSum::new(arr : Array[Int64]) -> LazySegTreeSetSum {
   let n = arr.length()
   if n == 0 {
     return { n: 0, tree: [], pending: [], has_pending: [] }

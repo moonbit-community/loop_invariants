@@ -537,9 +537,7 @@ priv struct FenwickTreeRangeUpdate {
 }
 
 ///|
-fn FenwickTreeRangeUpdate::new(
-  n : Int,
-) -> FenwickTreeRangeUpdate {
+fn FenwickTreeRangeUpdate::new(n : Int) -> FenwickTreeRangeUpdate {
   { diff: FenwickTree::new(n) }
 }
 
@@ -618,9 +616,7 @@ priv struct FenwickTreeRangeRange {
 }
 
 ///|
-fn FenwickTreeRangeRange::new(
-  n : Int,
-) -> FenwickTreeRangeRange {
+fn FenwickTreeRangeRange::new(n : Int) -> FenwickTreeRangeRange {
   { tree1: FenwickTree::new(n), tree2: FenwickTree::new(n), n }
 }
 
