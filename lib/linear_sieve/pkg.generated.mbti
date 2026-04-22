@@ -13,9 +13,9 @@ pub struct LinearSieve {
   phi : Array[Int]
   mu : Array[Int]
 }
-pub fn LinearSieve::LinearSieve(Int) -> Self
 pub fn LinearSieve::factorize(Self, Int) -> Array[(Int, Int)]
 pub fn LinearSieve::is_prime(Self, Int) -> Bool
+pub fn LinearSieve::new(Int) -> Self
 
 // Type aliases
 

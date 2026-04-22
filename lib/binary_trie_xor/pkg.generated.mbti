@@ -10,10 +10,10 @@ pub struct BinaryTrie {
   max_bits : Int
   nodes : Array[Node]
 }
-pub fn BinaryTrie::BinaryTrie(Int) -> Self
 pub fn BinaryTrie::insert(Self, Int64) -> Unit
 pub fn BinaryTrie::max_xor(Self, Int64) -> Int64
 pub fn BinaryTrie::min_xor(Self, Int64) -> Int64
+pub fn BinaryTrie::new(Int) -> Self
 pub fn BinaryTrie::remove(Self, Int64) -> Bool
 pub fn BinaryTrie::size(Self) -> Int
 

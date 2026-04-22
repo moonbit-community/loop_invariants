@@ -33,9 +33,9 @@ pub(all) struct Graph {
   n : Int
   adj : Array[Array[Edge]]
 }
-pub fn Graph::Graph(Int) -> Self
 pub fn Graph::add_edge(Self, Int, Int, Int64) -> Unit
 pub fn Graph::add_undirected_edge(Self, Int, Int, Int64) -> Unit
+pub fn Graph::new(Int) -> Self
 
 // Type aliases
 

@@ -25,10 +25,10 @@ pub(all) struct MinCostMaxFlow {
   prev_e : Array[Int]
   in_queue : Array[Bool]
 }
-pub fn MinCostMaxFlow::MinCostMaxFlow(Int) -> Self
 pub fn MinCostMaxFlow::add_edge(Self, Int, Int, Int64, Int64) -> Unit
 pub fn MinCostMaxFlow::compute(Self, Int, Int) -> (Int64, Int64)
 pub fn MinCostMaxFlow::compute_with_limit(Self, Int, Int, Int64) -> (Int64, Int64)
+pub fn MinCostMaxFlow::new(Int) -> Self
 pub fn MinCostMaxFlow::spfa(Self, Int, Int) -> Bool
 
 // Type aliases

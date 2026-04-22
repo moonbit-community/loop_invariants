@@ -11,8 +11,8 @@ pub struct Fenwick2D {
   cols : Int
   tree : Array[Array[Int]]
 }
-pub fn Fenwick2D::Fenwick2D(Int, Int) -> Self
 pub fn Fenwick2D::add(Self, Int, Int, Int) -> Unit
+pub fn Fenwick2D::new(Int, Int) -> Self
 pub fn Fenwick2D::prefix_sum(Self, Int, Int) -> Int
 pub fn Fenwick2D::range_sum(Self, Int, Int, Int, Int) -> Int
 

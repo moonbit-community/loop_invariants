@@ -14,12 +14,12 @@ pub struct SuffixArray {
   lcp : Array[Int]
   text : String
 }
-pub fn SuffixArray::SuffixArray(String) -> Self
 pub fn SuffixArray::count(Self, String) -> Int
 pub fn SuffixArray::count_distinct_substrings(Self) -> Int64
 pub fn SuffixArray::find_all(Self, String) -> Array[Int]
 pub fn SuffixArray::get_suffix(Self, Int) -> String
 pub fn SuffixArray::longest_repeated_substring(Self) -> String
+pub fn SuffixArray::new(String) -> Self
 pub fn SuffixArray::search(Self, String) -> (Int, Int)?
 
 // Type aliases

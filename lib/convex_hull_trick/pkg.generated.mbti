@@ -10,8 +10,8 @@ pub struct ConvexHullTrick {
   lines : Array[Line]
   mut head : Int
 }
-pub fn ConvexHullTrick::ConvexHullTrick() -> Self
 pub fn ConvexHullTrick::add_line(Self, Int64, Int64) -> Unit
+pub fn ConvexHullTrick::new() -> Self
 pub fn ConvexHullTrick::query(Self, Int64) -> Int64
 
 pub struct Line {

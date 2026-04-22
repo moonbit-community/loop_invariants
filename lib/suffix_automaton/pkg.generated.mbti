@@ -19,12 +19,12 @@ pub struct SuffixAutomaton {
   mut last : Int
   mut size : Int
 }
-pub fn SuffixAutomaton::SuffixAutomaton(Int) -> Self
 pub fn SuffixAutomaton::build(Self, String) -> Unit
 pub fn SuffixAutomaton::contains(Self, String) -> Bool
 pub fn SuffixAutomaton::count_distinct_substrings(Self) -> Int64
 pub fn SuffixAutomaton::count_occurrences(Self, String) -> Int
 pub fn SuffixAutomaton::extend(Self, Int) -> Unit
+pub fn SuffixAutomaton::new(Int) -> Self
 pub fn SuffixAutomaton::state_count(Self) -> Int
 
 // Type aliases

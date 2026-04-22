@@ -24,12 +24,12 @@ pub(all) struct ImplicitTreap {
   mut rand_state : Int
   free_list : Array[Int]
 }
-pub fn ImplicitTreap::ImplicitTreap() -> Self
 pub fn ImplicitTreap::delete(Self, Int) -> Int64?
 pub fn ImplicitTreap::from_array(Array[Int64]) -> Self
 pub fn ImplicitTreap::get(Self, Int) -> Int64?
 pub fn ImplicitTreap::insert(Self, Int, Int64) -> Unit
 pub fn ImplicitTreap::merge(Self, Int, Int) -> Int
+pub fn ImplicitTreap::new() -> Self
 pub fn ImplicitTreap::pop_back(Self) -> Int64?
 pub fn ImplicitTreap::pop_front(Self) -> Int64?
 pub fn ImplicitTreap::push_back(Self, Int64) -> Unit

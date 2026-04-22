@@ -11,10 +11,10 @@ pub struct Fenwick2D {
   rows : Int
   cols : Int
 }
-pub fn Fenwick2D::Fenwick2D(Int, Int) -> Self
 pub fn Fenwick2D::get(Self, Int, Int) -> Int64
 pub fn Fenwick2D::get_cols(Self) -> Int
 pub fn Fenwick2D::get_rows(Self) -> Int
+pub fn Fenwick2D::new(Int, Int) -> Self
 pub fn Fenwick2D::prefix_sum(Self, Int, Int) -> Int64
 pub fn Fenwick2D::range_sum(Self, Int, Int, Int, Int) -> Int64
 pub fn Fenwick2D::set(Self, Int, Int, Int64, Int64) -> Unit

@@ -13,7 +13,7 @@ pub struct SegmentTreeBeats {
   count_max : Array[Int]
   sum : Array[Int64]
 }
-pub fn SegmentTreeBeats::SegmentTreeBeats(ArrayView[Int64]) -> Self
+pub fn SegmentTreeBeats::new(ArrayView[Int64]) -> Self
 pub fn SegmentTreeBeats::range_chmin(Self, Int, Int, Int64) -> Unit
 pub fn SegmentTreeBeats::range_max(Self, Int, Int) -> Int64
 pub fn SegmentTreeBeats::range_sum(Self, Int, Int) -> Int64

@@ -11,8 +11,8 @@ pub struct RollbackDSU {
   size : Array[Int]
   history : Array[(Int, Int)]
 }
-pub fn RollbackDSU::RollbackDSU(Int) -> Self
 pub fn RollbackDSU::find(Self, Int) -> Int
+pub fn RollbackDSU::new(Int) -> Self
 pub fn RollbackDSU::rollback(Self, Int) -> Unit
 pub fn RollbackDSU::same(Self, Int, Int) -> Bool
 pub fn RollbackDSU::snapshot(Self) -> Int

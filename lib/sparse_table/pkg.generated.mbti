@@ -11,7 +11,7 @@ pub struct SparseTableMin {
   log_table : Array[Int]
   n : Int
 }
-pub fn SparseTableMin::SparseTableMin(Array[Int64]) -> Self
+pub fn SparseTableMin::new(Array[Int64]) -> Self
 pub fn SparseTableMin::query(Self, Int, Int) -> Int64
 
 // Type aliases
