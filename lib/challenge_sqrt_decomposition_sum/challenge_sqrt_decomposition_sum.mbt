@@ -34,7 +34,7 @@ pub fn build_sqrt_decomp(arr : ArrayView[Int]) -> SqrtDecomp {
   let n = arr.length()
   let block_size = sqrt_ceil(n)
   let block_count = (n + block_size - 1) / block_size
-  let data = arr.to_array()
+  let data = arr.to_owned()
   let block_sum = Array::make(block_count, 0)
   for i in 0..<n {
     block_sum[i / block_size] = block_sum[i / block_size] + data[i]

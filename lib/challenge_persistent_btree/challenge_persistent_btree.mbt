@@ -116,17 +116,17 @@ fn[T] split_node(
   children : Array[BNode[T]],
 ) -> (T, BNode[T], BNode[T]) {
   let promote = keys[2]
-  let left_keys = keys[0:2].to_array()
-  let right_keys = keys[3:4].to_array()
+  let left_keys = keys[0:2].to_owned()
+  let right_keys = keys[3:4].to_owned()
   let left_children = if children.length() == 0 {
     []
   } else {
-    children[0:3].to_array()
+    children[0:3].to_owned()
   }
   let right_children = if children.length() == 0 {
     []
   } else {
-    children[3:5].to_array()
+    children[3:5].to_owned()
   }
   let left = { keys: left_keys, children: left_children }
   let right = { keys: right_keys, children: right_children }

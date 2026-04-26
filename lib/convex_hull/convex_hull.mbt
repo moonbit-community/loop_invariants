@@ -177,7 +177,7 @@ pub fn convex_hull_monotone(points : Array[Point]) -> Array[Point] {
 /// // hull.length() == 4
 /// ```
 pub fn convex_hull(points : ArrayView[Point]) -> Array[Point] {
-  convex_hull_monotone(points.to_array())
+  convex_hull_monotone(points.to_owned())
 }
 
 // ============================================================================
@@ -229,7 +229,7 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
 
   // Sort by polar angle with pivot
   // For points with same angle, keep the farthest one
-  let rest = pts[1:].to_array()
+  let rest = pts[1:].to_owned()
   rest.sort_by((a, b) => {
     let cp = cross(pivot, a, b)
     if cp > 0L {

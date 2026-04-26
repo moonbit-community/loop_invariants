@@ -130,7 +130,7 @@ pub fn min_arborescence(
   if n <= 0 || root < 0 || root >= n {
     return None
   }
-  let edge_list = edges.to_array()
+  let edge_list = edges.to_owned()
 
   // Step 0: Check reachability
   let reachable = build_reachable(n, edge_list, root)

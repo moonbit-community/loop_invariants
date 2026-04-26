@@ -93,7 +93,7 @@ pub fn fwht_xor(values : ArrayView[Int64], inverse : Bool) -> Array[Int64] {
   if !is_power_of_two(n) {
     return []
   }
-  let a = values.to_array()
+  let a = values.to_owned()
   for len = 1; len < n; len = len * 2 {
     for i = 0; i < n; i = i + 2 * len {
       for j in 0..<len {

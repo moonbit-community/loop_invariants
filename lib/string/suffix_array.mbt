@@ -421,7 +421,7 @@ fn search_pattern(s : String, pattern : String) -> Array[Int] {
   let hi = search_upper_bound(s_chars, sa, p_chars)
 
   // Collect all matches
-  sa[lo:hi].to_array()
+  sa[lo:hi].to_owned()
 }
 
 ///|
