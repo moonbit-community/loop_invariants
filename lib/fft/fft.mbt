@@ -371,8 +371,8 @@ pub fn ntt_convolution(
   }
   let size = a.length() + b.length() - 1
   let ntt = NTT(size)
-  let result = ntt.multiply(a.to_array(), b.to_array())
-  result[:size].to_array()
+  let result = ntt.multiply(a.to_owned(), b.to_owned())
+  result[:size].to_owned()
 }
 
 // ============================================================================

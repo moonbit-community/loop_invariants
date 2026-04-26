@@ -397,7 +397,7 @@ fn CartesianTree::query_min(self : CartesianTree, l : Int, r : Int) -> Int64? {
 /// assert_eq!(@cartesian_tree.range_min(arr[:], 1, 3), Some(1L))
 /// ```
 pub fn range_min(arr : ArrayView[Int64], l : Int, r : Int) -> Int64? {
-  let tree = CartesianTree(arr.to_array())
+  let tree = CartesianTree(arr.to_owned())
   tree.query_min(l, r)
 }
 

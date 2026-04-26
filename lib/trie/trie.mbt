@@ -449,7 +449,7 @@ fn Trie::longest_prefix(self : Trie, word : String) -> String {
       #|maximum prefix length present in the trie.
     ),
   }
-  word[0:last_end].to_string()
+  word[0:last_end].to_owned()
 }
 
 // ============================================================================
@@ -538,12 +538,12 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
         child.is_end = true
       } else if common_len == label.length() {
         // Word extends beyond label
-        insert_into_node(child, word[common_len:].to_string())
+        insert_into_node(child, word[common_len:].to_owned())
       } else {
         // Need to split
         let new_internal = CompressedTrieNode()
-        let suffix_label = label[common_len:].to_string()
-        let suffix_word = word[common_len:].to_string()
+        let suffix_label = label[common_len:].to_owned()
+        let suffix_word = word[common_len:].to_owned()
 
         // Move original child under new internal node
         let first_suffix_char = if suffix_label.length() > 0 {
@@ -570,7 +570,7 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
         }
 
         // Update root's child
-        let common_prefix = word[0:common_len].to_string()
+        let common_prefix = word[0:common_len].to_owned()
         self.root.children[first_char] = Some((common_prefix, new_internal))
       }
     }
@@ -604,12 +604,12 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
       if common_len == label.length() && common_len == word.length() {
         child.is_end = true
       } else if common_len == label.length() {
-        insert_into_node(child, word[common_len:].to_string())
+        insert_into_node(child, word[common_len:].to_owned())
       } else {
         // Split node (similar logic as above)
         let new_internal = CompressedTrieNode()
-        let suffix_label = label[common_len:].to_string()
-        let suffix_word = word[common_len:].to_string()
+        let suffix_label = label[common_len:].to_owned()
+        let suffix_word = word[common_len:].to_owned()
         let first_suffix_char = if suffix_label.length() > 0 {
           suffix_label[0].to_int() - 'a'.to_int()
         } else {
@@ -630,7 +630,7 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
             )
           }
         }
-        let common_prefix = word[0:common_len].to_string()
+        let common_prefix = word[0:common_len].to_owned()
         node.children[first_char] = Some((common_prefix, new_internal))
       }
     }
@@ -729,7 +729,7 @@ fn search_in_node(
   }
 
   // Continue searching
-  let remaining = word[label_len:].to_string()
+  let remaining = word[label_len:].to_owned()
   if remaining.length() == 0 {
     return node.is_end
   }

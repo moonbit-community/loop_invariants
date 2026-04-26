@@ -442,7 +442,7 @@ pub fn find_all_matches(
   patterns : ArrayView[String],
   text : String,
 ) -> Array[(Int, Int, String)] {
-  let ac = AhoCorasick::from_patterns(patterns.to_array())
+  let ac = AhoCorasick::from_patterns(patterns.to_owned())
   ac.find_all(text)
 }
 
@@ -458,7 +458,7 @@ pub fn find_all_matches(
 /// // => 3
 /// ```
 pub fn count_all_matches(patterns : ArrayView[String], text : String) -> Int {
-  let ac = AhoCorasick::from_patterns(patterns.to_array())
+  let ac = AhoCorasick::from_patterns(patterns.to_owned())
   ac.count_matches(text)
 }
 
