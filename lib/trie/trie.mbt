@@ -538,12 +538,12 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
         child.is_end = true
       } else if common_len == label.length() {
         // Word extends beyond label
-        insert_into_node(child, word[common_len:].to_owned())
+        insert_into_node(child, word[common_len:])
       } else {
         // Need to split
         let new_internal = CompressedTrieNode()
         let suffix_label = label[common_len:].to_owned()
-        let suffix_word = word[common_len:].to_owned()
+        let suffix_word = word[common_len:]
 
         // Move original child under new internal node
         let first_suffix_char = if suffix_label.length() > 0 {
@@ -564,7 +564,7 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
           let first_word_char = suffix_word[0].to_int() - 'a'.to_int()
           if first_word_char >= 0 && first_word_char < 26 {
             new_internal.children[first_word_char] = Some(
-              (suffix_word, new_word_node),
+              (suffix_word.to_owned(), new_word_node),
             )
           }
         }
@@ -584,7 +584,7 @@ fn CompressedTrie::insert(self : CompressedTrie, word : String) -> Unit {
 /// first character dispatch. It applies the same three-case logic (no edge,
 /// edge is a prefix of the remaining word, split needed) at each level of
 /// the tree.
-fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
+fn insert_into_node(node : CompressedTrieNode, word : StringView) -> Unit {
   if word.length() == 0 {
     node.is_end = true
     return
@@ -597,19 +597,19 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
     None => {
       let new_node = CompressedTrieNode()
       new_node.is_end = true
-      node.children[first_char] = Some((word, new_node))
+      node.children[first_char] = Some((word.to_owned(), new_node))
     }
     Some((label, child)) => {
       let common_len = common_prefix_len(label, word)
       if common_len == label.length() && common_len == word.length() {
         child.is_end = true
       } else if common_len == label.length() {
-        insert_into_node(child, word[common_len:].to_owned())
+        insert_into_node(child, word[common_len:])
       } else {
         // Split node (similar logic as above)
         let new_internal = CompressedTrieNode()
         let suffix_label = label[common_len:].to_owned()
-        let suffix_word = word[common_len:].to_owned()
+        let suffix_word = word[common_len:]
         let first_suffix_char = if suffix_label.length() > 0 {
           suffix_label[0].to_int() - 'a'.to_int()
         } else {
@@ -626,7 +626,7 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
           let first_word_char = suffix_word[0].to_int() - 'a'.to_int()
           if first_word_char >= 0 && first_word_char < 26 {
             new_internal.children[first_word_char] = Some(
-              (suffix_word, new_word_node),
+              (suffix_word.to_owned(), new_word_node),
             )
           }
         }
@@ -638,14 +638,14 @@ fn insert_into_node(node : CompressedTrieNode, word : String) -> Unit {
 }
 
 ///|
-/// Return the length of the longest common prefix of strings `a` and `b`.
+/// Return the length of the longest common prefix of string views `a` and `b`.
 ///
 /// Compares characters pairwise from index 0 until a mismatch or the end of
 /// the shorter string. Returns 0 if the strings share no common prefix, and
 /// `min(a.length(), b.length())` if one is a prefix of the other.
 ///
 /// Time complexity: O(min(|a|, |b|)).
-fn common_prefix_len(a : String, b : String) -> Int {
+fn common_prefix_len(a : StringView, b : StringView) -> Int {
   let min_len = if a.length() < b.length() { a.length() } else { b.length() }
   for i in 0..<min_len {
     if a[i] != b[i] {
@@ -700,7 +700,7 @@ fn CompressedTrie::search(self : CompressedTrie, word : String) -> Bool {
 fn search_in_node(
   label : String,
   node : CompressedTrieNode,
-  word : String,
+  word : StringView,
 ) -> Bool {
   let label_len = label.length()
   let word_len = word.length()
@@ -729,7 +729,7 @@ fn search_in_node(
   }
 
   // Continue searching
-  let remaining = word[label_len:].to_owned()
+  let remaining = word[label_len:]
   if remaining.length() == 0 {
     return node.is_end
   }
