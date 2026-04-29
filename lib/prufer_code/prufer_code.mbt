@@ -426,7 +426,7 @@ test "prufer roundtrip" {
 ///|
 test "prufer invalid" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2)]
-  inspect(prufer_encode(4, edges), content="None")
+  debug_inspect(prufer_encode(4, edges), content="None")
   let code : Array[Int] = [0, 4]
-  inspect(prufer_decode(code), content="None")
+  debug_inspect(prufer_decode(code), content="None")
 }

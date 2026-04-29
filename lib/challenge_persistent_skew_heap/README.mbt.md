@@ -116,11 +116,11 @@ test "skew heap basic" {
   let h1 = @challenge_persistent_skew_heap.insert(h0, 4)
   let h2 = @challenge_persistent_skew_heap.insert(h1, 1)
   let h3 = @challenge_persistent_skew_heap.insert(h2, 6)
-  inspect(@challenge_persistent_skew_heap.find_min(h3), content="Some(1)")
+  debug_inspect(@challenge_persistent_skew_heap.find_min(h3), content="Some(1)")
   guard @challenge_persistent_skew_heap.delete_min(h3) is Some(h4) else {
     fail("expected delete_min")
   }
-  inspect(@challenge_persistent_skew_heap.find_min(h4), content="Some(4)")
+  debug_inspect(@challenge_persistent_skew_heap.find_min(h4), content="Some(4)")
   inspect(@challenge_persistent_skew_heap.size(h4), content="2")
 }
 ```
@@ -140,9 +140,12 @@ test "skew heap merge" {
   let a = @challenge_persistent_skew_heap.from_array([7, 2, 5])
   let b = @challenge_persistent_skew_heap.from_array([4, 1, 9])
   let merged = @challenge_persistent_skew_heap.merge(a, b)
-  inspect(@challenge_persistent_skew_heap.find_min(a), content="Some(2)")
-  inspect(@challenge_persistent_skew_heap.find_min(b), content="Some(1)")
-  inspect(@challenge_persistent_skew_heap.find_min(merged), content="Some(1)")
+  debug_inspect(@challenge_persistent_skew_heap.find_min(a), content="Some(2)")
+  debug_inspect(@challenge_persistent_skew_heap.find_min(b), content="Some(1)")
+  debug_inspect(
+    @challenge_persistent_skew_heap.find_min(merged),
+    content="Some(1)",
+  )
   inspect(@challenge_persistent_skew_heap.size(merged), content="6")
 }
 ```
@@ -157,7 +160,7 @@ Notice that `a` and `b` are unchanged, because `merge` is persistent.
 ///|
 test "skew heap from array" {
   let h = @challenge_persistent_skew_heap.from_array([7, 1, 5])
-  inspect(@challenge_persistent_skew_heap.find_min(h), content="Some(1)")
+  debug_inspect(@challenge_persistent_skew_heap.find_min(h), content="Some(1)")
   inspect(@challenge_persistent_skew_heap.size(h), content="3")
 }
 ```

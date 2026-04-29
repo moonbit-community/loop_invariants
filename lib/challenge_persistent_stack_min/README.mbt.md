@@ -67,7 +67,10 @@ test "min-stack basic" {
   let s1 = @challenge_persistent_stack_min.push(s0, 5)
   let s2 = @challenge_persistent_stack_min.push(s1, 2)
   let s3 = @challenge_persistent_stack_min.push(s2, 7)
-  inspect(@challenge_persistent_stack_min.min_value(s3), content="Some(2)")
+  debug_inspect(
+    @challenge_persistent_stack_min.min_value(s3),
+    content="Some(2)",
+  )
 }
 ```
 
@@ -87,11 +90,17 @@ test "min-stack pop" {
   guard @challenge_persistent_stack_min.pop(s3) is Some((7, s4)) else {
     fail("expected pop")
   }
-  inspect(@challenge_persistent_stack_min.min_value(s4), content="Some(2)")
+  debug_inspect(
+    @challenge_persistent_stack_min.min_value(s4),
+    content="Some(2)",
+  )
   guard @challenge_persistent_stack_min.pop(s4) is Some((2, s5)) else {
     fail("expected pop")
   }
-  inspect(@challenge_persistent_stack_min.min_value(s5), content="Some(5)")
+  debug_inspect(
+    @challenge_persistent_stack_min.min_value(s5),
+    content="Some(5)",
+  )
 }
 ```
 
@@ -107,7 +116,7 @@ After popping `7` and then `2`, the minimum becomes `5`.
 ///|
 test "min-stack from array" {
   let s = @challenge_persistent_stack_min.from_array([4, 1, 6])
-  inspect(@challenge_persistent_stack_min.min_value(s), content="Some(1)")
+  debug_inspect(@challenge_persistent_stack_min.min_value(s), content="Some(1)")
   inspect(@challenge_persistent_stack_min.size(s), content="3")
 }
 ```
@@ -123,9 +132,18 @@ test "min-stack versions" {
   let s1 = @challenge_persistent_stack_min.push(s0, 10)
   let s2 = @challenge_persistent_stack_min.push(s1, 3)
   let s3 = @challenge_persistent_stack_min.push(s2, 8)
-  inspect(@challenge_persistent_stack_min.min_value(s1), content="Some(10)")
-  inspect(@challenge_persistent_stack_min.min_value(s2), content="Some(3)")
-  inspect(@challenge_persistent_stack_min.min_value(s3), content="Some(3)")
+  debug_inspect(
+    @challenge_persistent_stack_min.min_value(s1),
+    content="Some(10)",
+  )
+  debug_inspect(
+    @challenge_persistent_stack_min.min_value(s2),
+    content="Some(3)",
+  )
+  debug_inspect(
+    @challenge_persistent_stack_min.min_value(s3),
+    content="Some(3)",
+  )
 }
 ```
 

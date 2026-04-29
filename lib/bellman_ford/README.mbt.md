@@ -222,8 +222,8 @@ test "path reconstruction" {
   bf.add_edge(0, 2, 10L)
   bf.add_edge(2, 3, 1L)
   let result = bf.compute(0)
-  inspect(result.get_path(3), content="Some([0, 1, 2, 3])")
-  inspect(result.get_distance(3), content="Some(5)")
+  debug_inspect(result.get_path(3), content="Some([0, 1, 2, 3])")
+  debug_inspect(result.get_distance(3), content="Some(5)")
 }
 ```
 
@@ -236,10 +236,10 @@ test "unreachable vertices" {
   bf.add_edge(0, 1, 3L)
   bf.add_edge(2, 3, 1L)
   let result = bf.compute(0)
-  inspect(result.get_distance(0), content="Some(0)")
-  inspect(result.get_distance(1), content="Some(3)")
-  inspect(result.get_distance(2), content="None")
-  inspect(result.get_distance(3), content="None")
+  debug_inspect(result.get_distance(0), content="Some(0)")
+  debug_inspect(result.get_distance(1), content="Some(3)")
+  debug_inspect(result.get_distance(2), content="None")
+  debug_inspect(result.get_distance(3), content="None")
 }
 ```
 

@@ -408,7 +408,7 @@ test "eulerian directed chain" {
 ///|
 test "eulerian directed none" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2)]
-  inspect(eulerian_path_directed(3, edges), content="None")
+  debug_inspect(eulerian_path_directed(3, edges), content="None")
 }
 
 ///|
@@ -428,5 +428,5 @@ test "eulerian undirected path" {
 ///|
 test "eulerian undirected none" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3)]
-  inspect(eulerian_path_undirected(4, edges), content="None")
+  debug_inspect(eulerian_path_undirected(4, edges), content="None")
 }

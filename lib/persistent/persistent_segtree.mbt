@@ -482,9 +482,9 @@ test "kth smallest basic" {
   let kst = KthSmallestTree::build(arr)
 
   // Full range [0, 4]: sorted is [1, 2, 3, 4, 5]
-  inspect(kst.kth_smallest(0, 4, 1), content="Some(1)") // 1st smallest
-  inspect(kst.kth_smallest(0, 4, 3), content="Some(3)") // 3rd smallest
-  inspect(kst.kth_smallest(0, 4, 5), content="Some(5)") // 5th smallest
+  debug_inspect(kst.kth_smallest(0, 4, 1), content="Some(1)") // 1st smallest
+  debug_inspect(kst.kth_smallest(0, 4, 3), content="Some(3)") // 3rd smallest
+  debug_inspect(kst.kth_smallest(0, 4, 5), content="Some(5)") // 5th smallest
 }
 
 ///|
@@ -493,13 +493,13 @@ test "kth smallest range queries" {
   let kst = KthSmallestTree::build(arr)
 
   // Range [0, 2]: values are [3, 1, 4], sorted: [1, 3, 4]
-  inspect(kst.kth_smallest(0, 2, 1), content="Some(1)")
-  inspect(kst.kth_smallest(0, 2, 2), content="Some(3)")
-  inspect(kst.kth_smallest(0, 2, 3), content="Some(4)")
+  debug_inspect(kst.kth_smallest(0, 2, 1), content="Some(1)")
+  debug_inspect(kst.kth_smallest(0, 2, 2), content="Some(3)")
+  debug_inspect(kst.kth_smallest(0, 2, 3), content="Some(4)")
 
   // Range [2, 5]: values are [4, 1, 5, 9], sorted: [1, 4, 5, 9]
-  inspect(kst.kth_smallest(2, 5, 1), content="Some(1)")
-  inspect(kst.kth_smallest(2, 5, 2), content="Some(4)")
+  debug_inspect(kst.kth_smallest(2, 5, 1), content="Some(1)")
+  debug_inspect(kst.kth_smallest(2, 5, 2), content="Some(4)")
 }
 
 // ============================================================================

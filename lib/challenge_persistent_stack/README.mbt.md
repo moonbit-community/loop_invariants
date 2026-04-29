@@ -67,7 +67,7 @@ test "stack basic" {
   let s0 : @challenge_persistent_stack.Stack[Int] = @challenge_persistent_stack.empty()
   let s1 = @challenge_persistent_stack.push(s0, 1)
   let s2 = @challenge_persistent_stack.push(s1, 2)
-  inspect(@challenge_persistent_stack.peek(s2), content="Some(2)")
+  debug_inspect(@challenge_persistent_stack.peek(s2), content="Some(2)")
   guard @challenge_persistent_stack.pop(s2) is Some((2, s3)) else {
     fail("expected pop")
   }
@@ -106,7 +106,7 @@ test "stack versions" {
 test "stack from array" {
   let s = @challenge_persistent_stack.from_array([7, 1, 5])
   inspect(@challenge_persistent_stack.to_array(s), content="[7, 1, 5]")
-  inspect(@challenge_persistent_stack.peek(s), content="Some(7)")
+  debug_inspect(@challenge_persistent_stack.peek(s), content="Some(7)")
 }
 ```
 

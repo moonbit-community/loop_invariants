@@ -228,8 +228,8 @@ So table[2][2] is a suffix and table[2][5] is a prefix, and they are disjoint.
 test "disjoint sparse sum example" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
   let dst = @disjoint_sparse.DisjointSparseSum(arr)
-  inspect(dst.query(0, 3), content="Some(10)")
-  inspect(dst.query(2, 5), content="Some(18)")
+  debug_inspect(dst.query(0, 3), content="Some(10)")
+  debug_inspect(dst.query(2, 5), content="Some(18)")
 }
 ```
 

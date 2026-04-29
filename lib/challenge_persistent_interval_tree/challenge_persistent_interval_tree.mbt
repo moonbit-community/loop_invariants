@@ -104,7 +104,7 @@ pub fn from_array(arr : ArrayView[(Int, Int)]) -> Tree {
 ///|
 test "persistent_interval_tree" {
   let tree = from_array([(1, 3), (5, 8), (4, 6), (10, 12)])
-  assert_eq(find_overlap(tree, 2, 2), Some((1, 3)))
-  assert_eq(find_overlap(tree, 7, 9), Some((5, 8)))
-  assert_eq(find_overlap(tree, 9, 9), None)
+  debug_inspect(find_overlap(tree, 2, 2), content="Some((1, 3))")
+  debug_inspect(find_overlap(tree, 7, 9), content="Some((5, 8))")
+  debug_inspect(find_overlap(tree, 9, 9), content="None")
 }

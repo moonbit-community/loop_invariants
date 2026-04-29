@@ -447,8 +447,8 @@ test "weighted union find basic" {
   let _ = wuf.union_with_weight(1, 2, 3L)
 
   // a - c should be 8
-  inspect(wuf.diff(0, 2), content="Some(8)")
-  inspect(wuf.diff(2, 0), content="Some(-8)")
+  debug_inspect(wuf.diff(0, 2), content="Some(8)")
+  debug_inspect(wuf.diff(2, 0), content="Some(-8)")
 }
 
 ///|
@@ -468,9 +468,9 @@ test "weighted union find consistency" {
 test "weighted union find diff" {
   let wuf = WeightedUnionFind(4)
   let _ = wuf.union_with_weight(0, 1, 10L)
-  inspect(wuf.diff(0, 1), content="Some(10)")
-  inspect(wuf.diff(1, 0), content="Some(-10)")
-  inspect(wuf.diff(0, 2), content="None") // Different sets
+  debug_inspect(wuf.diff(0, 1), content="Some(10)")
+  debug_inspect(wuf.diff(1, 0), content="Some(-10)")
+  debug_inspect(wuf.diff(0, 2), content="None") // Different sets
 }
 
 ///|

@@ -137,7 +137,7 @@ test "persistent_implicit_treap" {
   let t2 = insert_at(t1, 1, 20)
   let t3 = insert_at(t2, 1, 15)
   assert_eq(to_array(t3), [10, 15, 20])
-  assert_eq(get(t3, 2), Some(20))
+  debug_inspect(get(t3, 2), content="Some(20)")
   let built = from_array([1, 2, 3])
   assert_eq(to_array(built), [1, 2, 3])
 }

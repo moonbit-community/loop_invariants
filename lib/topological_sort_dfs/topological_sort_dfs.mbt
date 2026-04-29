@@ -199,5 +199,5 @@ test "topological sort basic" {
 ///|
 test "topological sort cycle" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
-  inspect(topological_sort(3, edges), content="None")
+  debug_inspect(topological_sort(3, edges), content="None")
 }

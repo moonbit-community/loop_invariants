@@ -94,10 +94,10 @@ Both cost `O(log n)` time.
 ///|
 test "persistent array" {
   let arr = @challenge_persistent_array.from_array([1, 2, 3, 4])
-  inspect(@challenge_persistent_array.get_at(arr, 2), content="Some(3)")
+  debug_inspect(@challenge_persistent_array.get_at(arr, 2), content="Some(3)")
   let arr2 = @challenge_persistent_array.set_at(arr, 1, 10)
-  inspect(@challenge_persistent_array.get_at(arr, 1), content="Some(2)")
-  inspect(@challenge_persistent_array.get_at(arr2, 1), content="Some(10)")
+  debug_inspect(@challenge_persistent_array.get_at(arr, 1), content="Some(2)")
+  debug_inspect(@challenge_persistent_array.get_at(arr2, 1), content="Some(10)")
   inspect(@challenge_persistent_array.to_array(arr2), content="[1, 10, 3, 4]")
   inspect(@challenge_persistent_array.length(arr2), content="4")
 }
@@ -123,8 +123,8 @@ test "persistent array versions" {
 ///|
 test "persistent array bounds" {
   let arr = @challenge_persistent_array.from_array([1, 2, 3])
-  inspect(@challenge_persistent_array.get_at(arr, -1), content="None")
-  inspect(@challenge_persistent_array.get_at(arr, 3), content="None")
+  debug_inspect(@challenge_persistent_array.get_at(arr, -1), content="None")
+  debug_inspect(@challenge_persistent_array.get_at(arr, 3), content="None")
   let arr2 = @challenge_persistent_array.set_at(arr, 99, 10)
   inspect(@challenge_persistent_array.to_array(arr2), content="[1, 2, 3]")
 }

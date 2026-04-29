@@ -185,14 +185,14 @@ test "persistent stack versions" {
   let v1 = v0.push(5)
   let v2 = v1.push(3)
   let v3 = v1.push(7) // branch from v1
-  inspect(v0.top(), content="None")
-  inspect(v1.top(), content="Some(5)")
-  inspect(v2.top(), content="Some(3)")
-  inspect(v3.top(), content="Some(7)")
+  debug_inspect(v0.top(), content="None")
+  debug_inspect(v1.top(), content="Some(5)")
+  debug_inspect(v2.top(), content="Some(3)")
+  debug_inspect(v3.top(), content="Some(7)")
 
   // Old versions are still intact:
-  inspect(v1.top(), content="Some(5)")
-  inspect(v2.pop().top(), content="Some(5)")
+  debug_inspect(v1.top(), content="Some(5)")
+  debug_inspect(v2.pop().top(), content="Some(5)")
 }
 ```
 

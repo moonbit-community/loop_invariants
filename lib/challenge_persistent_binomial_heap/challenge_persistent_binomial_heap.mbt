@@ -206,7 +206,7 @@ test "persistent binomial heap keeps earlier minimum" {
   let h1 = insert(empty(), 1)
   let h2 = insert(insert(empty(), 10), 20)
   let merged = merge(h1, h2)
-  assert_eq(find_min(merged), Some(1))
+  debug_inspect(find_min(merged), content="Some(1)")
   guard delete_min(merged) is Some(rest) else { fail("expected delete_min") }
-  assert_eq(find_min(rest), Some(10))
+  debug_inspect(find_min(rest), content="Some(10)")
 }

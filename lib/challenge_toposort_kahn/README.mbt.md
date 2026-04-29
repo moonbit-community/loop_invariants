@@ -88,7 +88,7 @@ test "toposort kahn cycle" {
   let n = 3
   let edges = [(0, 1), (1, 2), (2, 0)]
   let order_opt = @challenge_toposort_kahn.topo_sort(n, edges)
-  inspect(order_opt, content="None")
+  debug_inspect(order_opt, content="None")
 }
 ```
 

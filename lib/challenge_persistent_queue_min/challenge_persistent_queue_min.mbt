@@ -122,11 +122,11 @@ test "persistent_queue_min" {
   let q1 = enqueue(q0, 5)
   let q2 = enqueue(q1, 2)
   let q3 = enqueue(q2, 7)
-  assert_eq(peek(q3), Some(5))
-  assert_eq(min_queue(q3), Some(2))
+  debug_inspect(peek(q3), content="Some(5)")
+  debug_inspect(min_queue(q3), content="Some(2)")
   guard dequeue(q3) is Some((5, q4)) else { fail("expected dequeue") }
-  assert_eq(min_queue(q4), Some(2))
+  debug_inspect(min_queue(q4), content="Some(2)")
   guard dequeue(q4) is Some((2, q5)) else { fail("expected dequeue") }
-  assert_eq(min_queue(q5), Some(7))
+  debug_inspect(min_queue(q5), content="Some(7)")
   assert_eq(size(q5), 1)
 }

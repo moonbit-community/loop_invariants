@@ -703,10 +703,10 @@ test "kth smallest basic" {
   let kth = KthSmallest(arr)
 
   // Query [0, 7] (whole array): sorted = [1,1,2,3,4,5,6,9]
-  inspect(kth.query(0, 7, 1), content="Some(1)")
-  inspect(kth.query(0, 7, 2), content="Some(1)")
-  inspect(kth.query(0, 7, 3), content="Some(2)")
-  inspect(kth.query(0, 7, 8), content="Some(9)")
+  debug_inspect(kth.query(0, 7, 1), content="Some(1)")
+  debug_inspect(kth.query(0, 7, 2), content="Some(1)")
+  debug_inspect(kth.query(0, 7, 3), content="Some(2)")
+  debug_inspect(kth.query(0, 7, 8), content="Some(9)")
 }
 
 ///|
@@ -715,30 +715,30 @@ test "kth smallest range" {
   let kth = KthSmallest(arr)
 
   // Range [1, 3]: values [1, 3, 2] -> sorted [1, 2, 3]
-  inspect(kth.query(1, 3, 1), content="Some(1)")
-  inspect(kth.query(1, 3, 2), content="Some(2)")
-  inspect(kth.query(1, 3, 3), content="Some(3)")
+  debug_inspect(kth.query(1, 3, 1), content="Some(1)")
+  debug_inspect(kth.query(1, 3, 2), content="Some(2)")
+  debug_inspect(kth.query(1, 3, 3), content="Some(3)")
 
   // Range [0, 2]: values [5, 1, 3] -> sorted [1, 3, 5]
-  inspect(kth.query(0, 2, 1), content="Some(1)")
-  inspect(kth.query(0, 2, 2), content="Some(3)")
-  inspect(kth.query(0, 2, 3), content="Some(5)")
+  debug_inspect(kth.query(0, 2, 1), content="Some(1)")
+  debug_inspect(kth.query(0, 2, 2), content="Some(3)")
+  debug_inspect(kth.query(0, 2, 3), content="Some(5)")
 }
 
 ///|
 test "kth smallest out of range" {
   let arr : Array[Int64] = [1L, 2L, 3L]
   let kth = KthSmallest(arr)
-  inspect(kth.query(0, 2, 4), content="None") // k > range size
-  inspect(kth.query(0, 2, 0), content="None") // k <= 0
+  debug_inspect(kth.query(0, 2, 4), content="None") // k > range size
+  debug_inspect(kth.query(0, 2, 0), content="None") // k <= 0
 }
 
 ///|
 test "kth smallest single element" {
   let arr : Array[Int64] = [42L]
   let kth = KthSmallest(arr)
-  inspect(kth.query(0, 0, 1), content="Some(42)")
-  inspect(kth.query(0, 0, 2), content="None")
+  debug_inspect(kth.query(0, 0, 1), content="Some(42)")
+  debug_inspect(kth.query(0, 0, 2), content="None")
 }
 
 ///|
@@ -747,8 +747,8 @@ test "kth smallest duplicates" {
   let kth = KthSmallest(arr)
 
   // All elements are 5
-  inspect(kth.query(0, 3, 1), content="Some(5)")
-  inspect(kth.query(0, 3, 4), content="Some(5)")
+  debug_inspect(kth.query(0, 3, 1), content="Some(5)")
+  debug_inspect(kth.query(0, 3, 4), content="Some(5)")
 }
 
 ///|

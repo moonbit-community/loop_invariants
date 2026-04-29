@@ -94,12 +94,12 @@ test "persistent queue basic" {
   let q1 = @challenge_persistent_queue.enqueue(q0, 1)
   let q2 = @challenge_persistent_queue.enqueue(q1, 2)
   let q3 = @challenge_persistent_queue.enqueue(q2, 3)
-  inspect(@challenge_persistent_queue.peek(q3), content="Some(1)")
+  debug_inspect(@challenge_persistent_queue.peek(q3), content="Some(1)")
   guard @challenge_persistent_queue.dequeue(q3) is Some((v, q4)) else {
     fail("expected dequeue")
   }
   inspect(v, content="1")
-  inspect(@challenge_persistent_queue.peek(q4), content="Some(2)")
+  debug_inspect(@challenge_persistent_queue.peek(q4), content="Some(2)")
 }
 ```
 
@@ -111,9 +111,9 @@ test "persistent queue versions" {
   let q0 = @challenge_persistent_queue.empty()
   let q1 = @challenge_persistent_queue.enqueue(q0, 10)
   let q2 = @challenge_persistent_queue.enqueue(q1, 20)
-  inspect(@challenge_persistent_queue.peek(q0), content="None")
-  inspect(@challenge_persistent_queue.peek(q1), content="Some(10)")
-  inspect(@challenge_persistent_queue.peek(q2), content="Some(10)")
+  debug_inspect(@challenge_persistent_queue.peek(q0), content="None")
+  debug_inspect(@challenge_persistent_queue.peek(q1), content="Some(10)")
+  debug_inspect(@challenge_persistent_queue.peek(q2), content="Some(10)")
 }
 ```
 
@@ -129,7 +129,7 @@ test "persistent queue empty" {
     None => fail("expected non-empty")
     Some((v, rest)) => {
       inspect(v, content="5")
-      inspect(@challenge_persistent_queue.peek(rest), content="None")
+      debug_inspect(@challenge_persistent_queue.peek(rest), content="None")
     }
   }
 }

@@ -76,9 +76,9 @@ fn two_sum_two_pointer(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
 ///|
 test "two sum sorted" {
   let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-  assert_eq(two_sum_two_pointer(arr, 10), Some((0, 8))) // 1 + 9
-  assert_eq(two_sum_two_pointer(arr, 7), Some((0, 5))) // 1 + 6
-  assert_eq(two_sum_two_pointer(arr, 100), None)
+  debug_inspect(two_sum_two_pointer(arr, 10), content="Some((0, 8))") // 1 + 9
+  debug_inspect(two_sum_two_pointer(arr, 7), content="Some((0, 5))") // 1 + 6
+  debug_inspect(two_sum_two_pointer(arr, 100), content="None")
 }
 
 ///|

@@ -792,11 +792,11 @@ test "suffix automaton longest common substring" {
 test "suffix automaton kth substring" {
   // "ab" substrings: "", "a", "ab", "b" (lex order)
   let sam = SuffixAutomaton::build("ab")
-  inspect(sam.kth_substring(1L), content="Some(\"\")") // empty
-  inspect(sam.kth_substring(2L), content="Some(\"a\")")
-  inspect(sam.kth_substring(3L), content="Some(\"ab\")")
-  inspect(sam.kth_substring(4L), content="Some(\"b\")")
-  inspect(sam.kth_substring(5L), content="None")
+  debug_inspect(sam.kth_substring(1L), content="Some(\"\")") // empty
+  debug_inspect(sam.kth_substring(2L), content="Some(\"a\")")
+  debug_inspect(sam.kth_substring(3L), content="Some(\"ab\")")
+  debug_inspect(sam.kth_substring(4L), content="Some(\"b\")")
+  debug_inspect(sam.kth_substring(5L), content="None")
 }
 
 ///|

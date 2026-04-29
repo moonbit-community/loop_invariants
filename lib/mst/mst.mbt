@@ -398,7 +398,7 @@ test "mst kruskal triangle" {
   mst.add_edge(0, 1, 1L)
   mst.add_edge(1, 2, 2L)
   mst.add_edge(0, 2, 3L)
-  inspect(mst.get_mst_weight(), content="Some(3)") // 1 + 2
+  debug_inspect(mst.get_mst_weight(), content="Some(3)") // 1 + 2
 }
 
 ///|
@@ -407,13 +407,13 @@ test "mst disconnected" {
   mst.add_edge(0, 1, 1L)
   mst.add_edge(2, 3, 2L)
   inspect(mst.is_connected(), content="false")
-  inspect(mst.get_mst_weight(), content="None")
+  debug_inspect(mst.get_mst_weight(), content="None")
 }
 
 ///|
 test "mst single vertex" {
   let mst = MST(1)
-  inspect(mst.get_mst_weight(), content="Some(0)")
+  debug_inspect(mst.get_mst_weight(), content="Some(0)")
 }
 
 ///|
@@ -423,7 +423,7 @@ test "prim basic" {
   prim.add_edge(1, 2, 2L)
   prim.add_edge(2, 3, 3L)
   prim.add_edge(0, 3, 4L)
-  inspect(prim.compute(), content="Some(6)")
+  debug_inspect(prim.compute(), content="Some(6)")
 }
 
 ///|
@@ -432,5 +432,5 @@ test "mst same weights" {
   mst.add_edge(0, 1, 1L)
   mst.add_edge(1, 2, 1L)
   mst.add_edge(0, 2, 1L)
-  inspect(mst.get_mst_weight(), content="Some(2)")
+  debug_inspect(mst.get_mst_weight(), content="Some(2)")
 }

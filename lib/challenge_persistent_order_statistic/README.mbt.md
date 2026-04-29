@@ -99,9 +99,18 @@ test "order statistic basic" {
   let os1 = @challenge_persistent_order_statistic.add(os0, 5)
   let os2 = @challenge_persistent_order_statistic.add(os1, 2)
   let os3 = @challenge_persistent_order_statistic.add(os2, 7)
-  inspect(@challenge_persistent_order_statistic.kth(os3, 0), content="Some(2)")
-  inspect(@challenge_persistent_order_statistic.kth(os3, 1), content="Some(5)")
-  inspect(@challenge_persistent_order_statistic.kth(os3, 2), content="Some(7)")
+  debug_inspect(
+    @challenge_persistent_order_statistic.kth(os3, 0),
+    content="Some(2)",
+  )
+  debug_inspect(
+    @challenge_persistent_order_statistic.kth(os3, 1),
+    content="Some(5)",
+  )
+  debug_inspect(
+    @challenge_persistent_order_statistic.kth(os3, 2),
+    content="Some(7)",
+  )
 }
 ```
 
@@ -114,9 +123,18 @@ test "order statistic duplicates" {
   let os1 = @challenge_persistent_order_statistic.add(os0, 4)
   let os2 = @challenge_persistent_order_statistic.add(os1, 4)
   let os3 = @challenge_persistent_order_statistic.add(os2, 1)
-  inspect(@challenge_persistent_order_statistic.kth(os3, 0), content="Some(1)")
-  inspect(@challenge_persistent_order_statistic.kth(os3, 1), content="Some(4)")
-  inspect(@challenge_persistent_order_statistic.kth(os3, 2), content="Some(4)")
+  debug_inspect(
+    @challenge_persistent_order_statistic.kth(os3, 0),
+    content="Some(1)",
+  )
+  debug_inspect(
+    @challenge_persistent_order_statistic.kth(os3, 1),
+    content="Some(4)",
+  )
+  debug_inspect(
+    @challenge_persistent_order_statistic.kth(os3, 2),
+    content="Some(4)",
+  )
 }
 ```
 
@@ -129,7 +147,10 @@ test "order statistic bounds" {
   let os1 = @challenge_persistent_order_statistic.add(os0, 2)
   let os2 = @challenge_persistent_order_statistic.add(os1, 9)
   inspect(@challenge_persistent_order_statistic.size(os2), content="1")
-  inspect(@challenge_persistent_order_statistic.kth(os2, 0), content="Some(2)")
+  debug_inspect(
+    @challenge_persistent_order_statistic.kth(os2, 0),
+    content="Some(2)",
+  )
 }
 ```
 
