@@ -23,7 +23,7 @@ fn bellman_ford_with_neg_cycle(
   dist[source] = 0
 
   // Relax all edges n-1 times
-  for i in 0..<(n - 1) {
+  for _i in 0..<(n - 1) {
     let changed = for edge in edges; changed = false {
       let (u, v, w) = edge
       if dist[u] != inf && dist[u] + w < dist[v] {
@@ -39,7 +39,7 @@ fn bellman_ford_with_neg_cycle(
       break
     }
   } where {
-    proof_invariant: i >= 0 && i <= n - 1,
+    proof_invariant: _i >= 0 && _i <= n - 1,
     proof_reasoning: (
       #|LOOP INVARIANT: dist[v] <= shortest path to v using at most i+1 edges
       #|

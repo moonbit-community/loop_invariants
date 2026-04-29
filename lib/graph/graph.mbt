@@ -144,7 +144,7 @@ test "topological_sort" {
 
   // Graph with cycle: 0 → 1 → 2 → 0
   let cyclic : Array[Array[Int]] = [[1], [2], [0]]
-  assert_eq(topological_sort(cyclic), None)
+  debug_inspect(topological_sort(cyclic), content="None")
 }
 
 // ============================================================================
@@ -388,7 +388,7 @@ fn bellman_ford(
   dist[source] = 0
 
   // Relax all edges n-1 times
-  for i in 0..<(n - 1) {
+  for _i in 0..<(n - 1) {
     let changed = for edge in edges; changed = false {
       let (u, v, w) = edge
       if dist[u] != inf && dist[u] + w < dist[v] {
@@ -403,7 +403,7 @@ fn bellman_ford(
       break // Early termination if no changes
     }
   } where {
-    proof_invariant: i >= 0 && i <= n - 1,
+    proof_invariant: _i >= 0 && _i <= n - 1,
     proof_reasoning: (
       #|INVARIANT (Bellman-Ford correctness):
       #|After i iterations, dist[v] ≤ shortest path using ≤ i edges.
@@ -466,7 +466,7 @@ test "bellman_ford" {
 
   // Graph with negative cycle: 0 → 1 → 2 → 0 with total weight -1
   let edges_cycle : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 1), (2, 0, -3)]
-  assert_eq(bellman_ford(3, edges_cycle, 0), None)
+  debug_inspect(bellman_ford(3, edges_cycle, 0), content="None")
 }
 
 // ============================================================================

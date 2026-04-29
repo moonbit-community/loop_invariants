@@ -111,15 +111,15 @@ test "interval tree basic" {
   let t1 = @challenge_persistent_interval_tree.insert(t0, 1, 3)
   let t2 = @challenge_persistent_interval_tree.insert(t1, 5, 8)
   let t3 = @challenge_persistent_interval_tree.insert(t2, 4, 6)
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_tree.find_overlap(t3, 2, 2),
     content="Some((1, 3))",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_tree.find_overlap(t3, 7, 9),
     content="Some((5, 8))",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_tree.find_overlap(t3, 9, 9),
     content="None",
   )
@@ -134,11 +134,11 @@ test "interval tree disjoint" {
   let t0 = @challenge_persistent_interval_tree.empty()
   let t1 = @challenge_persistent_interval_tree.insert(t0, 10, 12)
   let t2 = @challenge_persistent_interval_tree.insert(t1, 14, 15)
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_tree.find_overlap(t2, 11, 11),
     content="Some((10, 12))",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_tree.find_overlap(t2, 13, 13),
     content="None",
   )
@@ -153,7 +153,7 @@ test "interval tree same start" {
   let t0 = @challenge_persistent_interval_tree.empty()
   let t1 = @challenge_persistent_interval_tree.insert(t0, 2, 4)
   let t2 = @challenge_persistent_interval_tree.insert(t1, 2, 7)
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_tree.find_overlap(t2, 6, 6),
     content="Some((2, 7))",
   )
@@ -169,15 +169,15 @@ test "interval tree persistence" {
   let t0 = @challenge_persistent_interval_tree.empty()
   let t1 = @challenge_persistent_interval_tree.insert(t0, 0, 2)
   let t2 = @challenge_persistent_interval_tree.insert(t1, 5, 6)
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_tree.find_overlap(t0, 1, 1),
     content="None",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_tree.find_overlap(t1, 1, 1),
     content="Some((0, 2))",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_tree.find_overlap(t2, 5, 5),
     content="Some((5, 6))",
   )

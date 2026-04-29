@@ -368,11 +368,11 @@ test "bellman_ford basic" {
   bf.add_edge(3, 1, -2L)
   bf.add_edge(4, 3, 7L)
   let result = bf.compute(0)
-  inspect(result.get_distance(0), content="Some(0)")
-  inspect(result.get_distance(1), content="Some(2)")
-  inspect(result.get_distance(2), content="Some(7)")
-  inspect(result.get_distance(3), content="Some(4)")
-  inspect(result.get_distance(4), content="Some(-2)")
+  debug_inspect(result.get_distance(0), content="Some(0)")
+  debug_inspect(result.get_distance(1), content="Some(2)")
+  debug_inspect(result.get_distance(2), content="Some(7)")
+  debug_inspect(result.get_distance(3), content="Some(4)")
+  debug_inspect(result.get_distance(4), content="Some(-2)")
   inspect(result.has_negative_cycle(), content="false")
 }
 
@@ -412,9 +412,9 @@ test "bellman_ford disconnected" {
   bf.add_edge(0, 1, 1L)
   bf.add_edge(2, 3, 1L)
   let result = bf.compute(0)
-  inspect(result.get_distance(1), content="Some(1)")
-  inspect(result.get_distance(2), content="None")
-  inspect(result.get_distance(3), content="None")
+  debug_inspect(result.get_distance(1), content="Some(1)")
+  debug_inspect(result.get_distance(2), content="None")
+  debug_inspect(result.get_distance(3), content="None")
 }
 
 ///|
@@ -424,7 +424,7 @@ test "bellman_ford path reconstruction" {
   bf.add_edge(1, 2, 2L)
   bf.add_edge(2, 3, 3L)
   let result = bf.compute(0)
-  inspect(result.get_path(3), content="Some([0, 1, 2, 3])")
+  debug_inspect(result.get_path(3), content="Some([0, 1, 2, 3])")
 }
 
 ///|
@@ -452,5 +452,5 @@ test "spfa negative cycle" {
   spfa.add_edge(0, 1, 1L)
   spfa.add_edge(1, 2, -1L)
   spfa.add_edge(2, 0, -1L)
-  inspect(spfa.compute(0), content="None")
+  debug_inspect(spfa.compute(0), content="None")
 }

@@ -170,9 +170,9 @@ The actual code uses a recursive delete, but the behavior matches this idea.
 test "treap empty" {
   let t : @treap.Treap[Int] = Treap()
   inspect(t.size(), content="0")
-  inspect(t.min(), content="None")
-  inspect(t.max(), content="None")
-  inspect(t.kth_element(0), content="None")
+  debug_inspect(t.min(), content="None")
+  debug_inspect(t.max(), content="None")
+  debug_inspect(t.kth_element(0), content="None")
 }
 ```
 
@@ -209,8 +209,8 @@ test "treap min max and to_array" {
   for x in [5, 3, 7, 1, 9] {
     t.insert(x)
   }
-  inspect(t.min(), content="Some(1)")
-  inspect(t.max(), content="Some(9)")
+  debug_inspect(t.min(), content="Some(1)")
+  debug_inspect(t.max(), content="Some(9)")
   inspect(t.to_array(), content="[1, 3, 5, 7, 9]")
 }
 ```
@@ -268,10 +268,10 @@ test "treap order statistics" {
   for x in [5, 3, 7, 1, 9] {
     t.insert(x)
   }
-  inspect(t.kth_element(0), content="Some(1)")
-  inspect(t.kth_element(2), content="Some(5)")
-  inspect(t.kth_element(4), content="Some(9)")
-  inspect(t.kth_element(5), content="None")
+  debug_inspect(t.kth_element(0), content="Some(1)")
+  debug_inspect(t.kth_element(2), content="Some(5)")
+  debug_inspect(t.kth_element(4), content="Some(9)")
+  debug_inspect(t.kth_element(5), content="None")
   inspect(t.count_less_than(5), content="2")
   inspect(t.count_less_than(10), content="5")
 }

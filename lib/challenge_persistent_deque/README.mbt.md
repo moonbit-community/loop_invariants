@@ -102,8 +102,8 @@ test "persistent deque push/peek" {
   let d0 = @challenge_persistent_deque.empty()
   let d1 = @challenge_persistent_deque.push_front(d0, 2)
   let d2 = @challenge_persistent_deque.push_back(d1, 5)
-  inspect(@challenge_persistent_deque.peek_front(d2), content="Some(2)")
-  inspect(@challenge_persistent_deque.peek_back(d2), content="Some(5)")
+  debug_inspect(@challenge_persistent_deque.peek_front(d2), content="Some(2)")
+  debug_inspect(@challenge_persistent_deque.peek_back(d2), content="Some(5)")
 }
 ```
 
@@ -121,7 +121,10 @@ test "persistent deque pop" {
     None => fail("expected non-empty deque")
     Some((v, rest)) => {
       inspect(v, content="1")
-      inspect(@challenge_persistent_deque.peek_front(rest), content="Some(2)")
+      debug_inspect(
+        @challenge_persistent_deque.peek_front(rest),
+        content="Some(2)",
+      )
     }
   }
   let back = @challenge_persistent_deque.pop_back(d3)
@@ -129,7 +132,10 @@ test "persistent deque pop" {
     None => fail("expected non-empty deque")
     Some((v, rest)) => {
       inspect(v, content="3")
-      inspect(@challenge_persistent_deque.peek_back(rest), content="Some(2)")
+      debug_inspect(
+        @challenge_persistent_deque.peek_back(rest),
+        content="Some(2)",
+      )
     }
   }
 }
@@ -143,9 +149,9 @@ test "persistent deque versions" {
   let d0 = @challenge_persistent_deque.empty()
   let d1 = @challenge_persistent_deque.push_front(d0, 9)
   let d2 = @challenge_persistent_deque.push_back(d1, 4)
-  inspect(@challenge_persistent_deque.peek_front(d0), content="None")
-  inspect(@challenge_persistent_deque.peek_front(d1), content="Some(9)")
-  inspect(@challenge_persistent_deque.peek_back(d2), content="Some(4)")
+  debug_inspect(@challenge_persistent_deque.peek_front(d0), content="None")
+  debug_inspect(@challenge_persistent_deque.peek_front(d1), content="Some(9)")
+  debug_inspect(@challenge_persistent_deque.peek_back(d2), content="Some(4)")
 }
 ```
 

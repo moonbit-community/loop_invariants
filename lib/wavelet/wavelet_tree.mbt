@@ -700,18 +700,18 @@ test "wavelet tree build and access" {
   inspect(wt.alphabet_size(), content="4")
 
   // Access each element
-  inspect(wt.access(0), content="Some(3)")
-  inspect(wt.access(1), content="Some(0)")
-  inspect(wt.access(2), content="Some(1)")
-  inspect(wt.access(3), content="Some(2)")
-  inspect(wt.access(4), content="Some(3)")
-  inspect(wt.access(5), content="Some(1)")
-  inspect(wt.access(6), content="Some(2)")
-  inspect(wt.access(7), content="Some(0)")
+  debug_inspect(wt.access(0), content="Some(3)")
+  debug_inspect(wt.access(1), content="Some(0)")
+  debug_inspect(wt.access(2), content="Some(1)")
+  debug_inspect(wt.access(3), content="Some(2)")
+  debug_inspect(wt.access(4), content="Some(3)")
+  debug_inspect(wt.access(5), content="Some(1)")
+  debug_inspect(wt.access(6), content="Some(2)")
+  debug_inspect(wt.access(7), content="Some(0)")
 
   // Out of bounds
-  inspect(wt.access(-1), content="None")
-  inspect(wt.access(8), content="None")
+  debug_inspect(wt.access(-1), content="None")
+  debug_inspect(wt.access(8), content="None")
 }
 
 ///|
@@ -774,24 +774,24 @@ test "wavelet tree quantile" {
   let wt = WaveletTree::build(arr, 4)
 
   // k-th smallest in full range (sorted: [0,0,1,1,2,2,3,3])
-  inspect(wt.quantile(0, 8, 1), content="Some(0)") // 1st smallest
-  inspect(wt.quantile(0, 8, 2), content="Some(0)") // 2nd smallest
-  inspect(wt.quantile(0, 8, 3), content="Some(1)") // 3rd smallest
-  inspect(wt.quantile(0, 8, 4), content="Some(1)") // 4th smallest
-  inspect(wt.quantile(0, 8, 5), content="Some(2)") // 5th smallest
-  inspect(wt.quantile(0, 8, 6), content="Some(2)") // 6th smallest
-  inspect(wt.quantile(0, 8, 7), content="Some(3)") // 7th smallest
-  inspect(wt.quantile(0, 8, 8), content="Some(3)") // 8th smallest
+  debug_inspect(wt.quantile(0, 8, 1), content="Some(0)") // 1st smallest
+  debug_inspect(wt.quantile(0, 8, 2), content="Some(0)") // 2nd smallest
+  debug_inspect(wt.quantile(0, 8, 3), content="Some(1)") // 3rd smallest
+  debug_inspect(wt.quantile(0, 8, 4), content="Some(1)") // 4th smallest
+  debug_inspect(wt.quantile(0, 8, 5), content="Some(2)") // 5th smallest
+  debug_inspect(wt.quantile(0, 8, 6), content="Some(2)") // 6th smallest
+  debug_inspect(wt.quantile(0, 8, 7), content="Some(3)") // 7th smallest
+  debug_inspect(wt.quantile(0, 8, 8), content="Some(3)") // 8th smallest
 
   // Out of range k
-  inspect(wt.quantile(0, 8, 0), content="None")
-  inspect(wt.quantile(0, 8, 9), content="None")
+  debug_inspect(wt.quantile(0, 8, 0), content="None")
+  debug_inspect(wt.quantile(0, 8, 9), content="None")
 
   // Subrange [0, 4) = [3, 0, 1, 2] -> sorted [0, 1, 2, 3]
-  inspect(wt.quantile(0, 4, 1), content="Some(0)")
-  inspect(wt.quantile(0, 4, 2), content="Some(1)")
-  inspect(wt.quantile(0, 4, 3), content="Some(2)")
-  inspect(wt.quantile(0, 4, 4), content="Some(3)")
+  debug_inspect(wt.quantile(0, 4, 1), content="Some(0)")
+  debug_inspect(wt.quantile(0, 4, 2), content="Some(1)")
+  debug_inspect(wt.quantile(0, 4, 3), content="Some(2)")
+  debug_inspect(wt.quantile(0, 4, 4), content="Some(3)")
 }
 
 ///|
@@ -800,16 +800,16 @@ test "wavelet tree select" {
   let wt = WaveletTree::build(arr, 4)
 
   // Find k-th occurrence of value
-  inspect(wt.select(0, 8, 0, 1), content="Some(1)") // 1st 0 at index 1
-  inspect(wt.select(0, 8, 0, 2), content="Some(7)") // 2nd 0 at index 7
-  inspect(wt.select(0, 8, 1, 1), content="Some(2)") // 1st 1 at index 2
-  inspect(wt.select(0, 8, 1, 2), content="Some(5)") // 2nd 1 at index 5
-  inspect(wt.select(0, 8, 3, 1), content="Some(0)") // 1st 3 at index 0
-  inspect(wt.select(0, 8, 3, 2), content="Some(4)") // 2nd 3 at index 4
+  debug_inspect(wt.select(0, 8, 0, 1), content="Some(1)") // 1st 0 at index 1
+  debug_inspect(wt.select(0, 8, 0, 2), content="Some(7)") // 2nd 0 at index 7
+  debug_inspect(wt.select(0, 8, 1, 1), content="Some(2)") // 1st 1 at index 2
+  debug_inspect(wt.select(0, 8, 1, 2), content="Some(5)") // 2nd 1 at index 5
+  debug_inspect(wt.select(0, 8, 3, 1), content="Some(0)") // 1st 3 at index 0
+  debug_inspect(wt.select(0, 8, 3, 2), content="Some(4)") // 2nd 3 at index 4
 
   // Non-existent
-  inspect(wt.select(0, 8, 0, 3), content="None") // Only 2 zeros
-  inspect(wt.select(0, 8, 5, 1), content="None") // No 5s
+  debug_inspect(wt.select(0, 8, 0, 3), content="None") // Only 2 zeros
+  debug_inspect(wt.select(0, 8, 5, 1), content="None") // No 5s
 }
 
 ///|
@@ -819,12 +819,12 @@ test "wavelet tree mode" {
   let wt = WaveletTree::build(arr, 5)
 
   // Mode of full array is 3 (appears 3 times)
-  inspect(wt.mode(0, 8), content="Some((3, 3))")
+  debug_inspect(wt.mode(0, 8), content="Some((3, 3))")
 
   // Mode of subranges
-  inspect(wt.mode(0, 3), content="Some((2, 2))") // [1,2,2] -> 2 is mode
-  inspect(wt.mode(6, 8), content="Some((4, 2))") // [4,4] -> 4 is mode
-  inspect(wt.mode(0, 1), content="Some((1, 1))") // Single element
+  debug_inspect(wt.mode(0, 3), content="Some((2, 2))") // [1,2,2] -> 2 is mode
+  debug_inspect(wt.mode(6, 8), content="Some((4, 2))") // [4,4] -> 4 is mode
+  debug_inspect(wt.mode(0, 1), content="Some((1, 1))") // Single element
 }
 
 ///|
@@ -846,19 +846,19 @@ test "wavelet tree distinct values" {
 test "wavelet tree empty" {
   let wt = WaveletTree::build([], 4)
   inspect(wt.size(), content="0")
-  inspect(wt.access(0), content="None")
+  debug_inspect(wt.access(0), content="None")
   inspect(wt.count(0, 0, 1), content="0")
-  inspect(wt.quantile(0, 0, 1), content="None")
+  debug_inspect(wt.quantile(0, 0, 1), content="None")
 }
 
 ///|
 test "wavelet tree single element" {
   let wt = WaveletTree::build([5], 10)
   inspect(wt.size(), content="1")
-  inspect(wt.access(0), content="Some(5)")
+  debug_inspect(wt.access(0), content="Some(5)")
   inspect(wt.count(0, 1, 5), content="1")
   inspect(wt.count(0, 1, 3), content="0")
-  inspect(wt.quantile(0, 1, 1), content="Some(5)")
+  debug_inspect(wt.quantile(0, 1, 1), content="Some(5)")
 }
 
 ///|
@@ -874,9 +874,9 @@ test "wavelet tree stress" {
   }
 
   // Quantile checks
-  inspect(wt.quantile(0, 100, 1), content="Some(0)") // 1st smallest is 0
-  inspect(wt.quantile(0, 100, 11), content="Some(1)") // 11th smallest is 1
-  inspect(wt.quantile(0, 100, 100), content="Some(9)") // 100th smallest is 9
+  debug_inspect(wt.quantile(0, 100, 1), content="Some(0)") // 1st smallest is 0
+  debug_inspect(wt.quantile(0, 100, 11), content="Some(1)") // 11th smallest is 1
+  debug_inspect(wt.quantile(0, 100, 100), content="Some(9)") // 100th smallest is 9
 
   // Count less
   inspect(wt.count_less(0, 100, 5), content="50") // 50 elements < 5
@@ -892,8 +892,8 @@ test "wavelet tree median query" {
   // Sorted: [1, 2, 3, 4, 5, 6, 7, 8, 9]
   let n = arr.length()
   let median = wt.quantile(0, n, (n + 1) / 2)
-  inspect(median, content="Some(5)")
+  debug_inspect(median, content="Some(5)")
 
   // Median of first 5 elements [5,2,8,1,9] -> sorted [1,2,5,8,9] -> median is 5
-  inspect(wt.quantile(0, 5, 3), content="Some(5)")
+  debug_inspect(wt.quantile(0, 5, 3), content="Some(5)")
 }

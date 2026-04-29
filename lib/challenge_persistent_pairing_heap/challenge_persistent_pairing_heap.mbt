@@ -122,7 +122,7 @@ test "persistent_pairing_heap" {
   let h1 = insert(h0, 8)
   let h2 = insert(h1, 3)
   let h3 = insert(h2, 6)
-  assert_eq(find_min(h3), Some(3))
+  debug_inspect(find_min(h3), content="Some(3)")
   guard delete_min(h3) is Some(h4) else { fail("expected delete_min") }
-  assert_eq(find_min(h4), Some(6))
+  debug_inspect(find_min(h4), content="Some(6)")
 }

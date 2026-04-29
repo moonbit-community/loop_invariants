@@ -353,7 +353,7 @@ test "johnson basic" {
 ///|
 test "johnson negative cycle" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, -2L), (2, 1, -2L)]
-  inspect(johnson_all_pairs(3, edges), content="None")
+  debug_inspect(johnson_all_pairs(3, edges), content="None")
 }
 
 ///|

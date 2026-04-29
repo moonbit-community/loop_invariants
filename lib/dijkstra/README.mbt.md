@@ -173,9 +173,9 @@ test "single pair distance" {
   g.add_edge(0, 2, 4)
   g.add_edge(2, 3, 1)
   let dist = @dijkstra.shortest_distance(g, 0, 3)
-  inspect(dist, content="Some(4)")
+  debug_inspect(dist, content="Some(4)")
   let no_path = @dijkstra.shortest_distance(g, 3, 0) // No path back
-  inspect(no_path, content="None")
+  debug_inspect(no_path, content="None")
 }
 ```
 

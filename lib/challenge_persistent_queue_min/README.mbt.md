@@ -93,8 +93,11 @@ test "min queue basic" {
   let q1 = @challenge_persistent_queue_min.enqueue(q0, 5)
   let q2 = @challenge_persistent_queue_min.enqueue(q1, 2)
   let q3 = @challenge_persistent_queue_min.enqueue(q2, 7)
-  inspect(@challenge_persistent_queue_min.peek(q3), content="Some(5)")
-  inspect(@challenge_persistent_queue_min.min_queue(q3), content="Some(2)")
+  debug_inspect(@challenge_persistent_queue_min.peek(q3), content="Some(5)")
+  debug_inspect(
+    @challenge_persistent_queue_min.min_queue(q3),
+    content="Some(2)",
+  )
 }
 ```
 
@@ -110,11 +113,17 @@ test "min queue dequeue" {
   guard @challenge_persistent_queue_min.dequeue(q3) is Some((5, q4)) else {
     fail("expected dequeue")
   }
-  inspect(@challenge_persistent_queue_min.min_queue(q4), content="Some(2)")
+  debug_inspect(
+    @challenge_persistent_queue_min.min_queue(q4),
+    content="Some(2)",
+  )
   guard @challenge_persistent_queue_min.dequeue(q4) is Some((2, q5)) else {
     fail("expected dequeue")
   }
-  inspect(@challenge_persistent_queue_min.min_queue(q5), content="Some(7)")
+  debug_inspect(
+    @challenge_persistent_queue_min.min_queue(q5),
+    content="Some(7)",
+  )
 }
 ```
 
@@ -126,9 +135,15 @@ test "min queue persistence" {
   let q0 = @challenge_persistent_queue_min.empty()
   let q1 = @challenge_persistent_queue_min.enqueue(q0, 4)
   let q2 = @challenge_persistent_queue_min.enqueue(q1, 1)
-  inspect(@challenge_persistent_queue_min.min_queue(q0), content="None")
-  inspect(@challenge_persistent_queue_min.min_queue(q1), content="Some(4)")
-  inspect(@challenge_persistent_queue_min.min_queue(q2), content="Some(1)")
+  debug_inspect(@challenge_persistent_queue_min.min_queue(q0), content="None")
+  debug_inspect(
+    @challenge_persistent_queue_min.min_queue(q1),
+    content="Some(4)",
+  )
+  debug_inspect(
+    @challenge_persistent_queue_min.min_queue(q2),
+    content="Some(1)",
+  )
 }
 ```
 

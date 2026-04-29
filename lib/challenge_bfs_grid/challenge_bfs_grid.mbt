@@ -65,6 +65,6 @@ pub fn shortest_path_grid(
 ///|
 test "shortest_path_grid" {
   let grid : Array[Array[Int]] = [[0, 0, 0], [1, 1, 0], [0, 0, 0]]
-  assert_eq(shortest_path_grid(grid, 0, 0, 2, 2), Some(4))
-  assert_eq(shortest_path_grid(grid, 0, 0, 1, 0), None)
+  debug_inspect(shortest_path_grid(grid, 0, 0, 2, 2), content="Some(4)")
+  debug_inspect(shortest_path_grid(grid, 0, 0, 1, 0), content="None")
 }

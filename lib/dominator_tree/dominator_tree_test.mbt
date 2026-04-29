@@ -142,12 +142,12 @@ test "dominator tree invalid" {
   let edges : Array[(Int, Int)] = [(0, 1)]
 
   // Invalid root
-  inspect(build_dominator_tree(2, edges, -1), content="None")
-  inspect(build_dominator_tree(2, edges, 5), content="None")
+  debug_inspect(build_dominator_tree(2, edges, -1), content="None")
+  debug_inspect(build_dominator_tree(2, edges, 5), content="None")
 
   // Invalid n
-  inspect(build_dominator_tree(0, edges, 0), content="None")
-  inspect(build_dominator_tree(-1, edges, 0), content="None")
+  debug_inspect(build_dominator_tree(0, edges, 0), content="None")
+  debug_inspect(build_dominator_tree(-1, edges, 0), content="None")
 }
 
 ///|

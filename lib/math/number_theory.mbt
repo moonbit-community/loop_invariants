@@ -621,10 +621,10 @@ fn mod_inverse(a : Int64, m : Int64) -> Int64? {
 ///|
 test "mod_inverse" {
   // 3 × 7 = 21 ≡ 1 (mod 10)
-  assert_eq(mod_inverse(3L, 10L), Some(7L))
+  debug_inspect(mod_inverse(3L, 10L), content="Some(7)")
 
   // 2 has no inverse mod 4 (gcd = 2)
-  assert_eq(mod_inverse(2L, 4L), None)
+  debug_inspect(mod_inverse(2L, 4L), content="None")
 
   // 17 × 8 = 136 ≡ 1 (mod 27)
   match mod_inverse(17L, 27L) {

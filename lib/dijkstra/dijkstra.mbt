@@ -282,7 +282,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
     return dist
   }
   dist[src] = 0
-  for iter in 0..<n {
+  for _iter in 0..<n {
     let u = for i in 0..<n; u = -1, best = DIJK_INF_INT {
       if !used[i] && dist[i] < best {
         continue i, dist[i]
@@ -324,7 +324,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
       ),
     }
   } where {
-    proof_invariant: iter >= 0 && iter <= n,
+    proof_invariant: _iter >= 0 && _iter <= n,
     proof_invariant: dist.length() == n && used.length() == n,
     proof_reasoning: (
       #|INVARIANT (dense Dijkstra frontier):
@@ -642,8 +642,8 @@ test "shortest distance helper" {
   let g = Graph(3)
   g.add_edge(0, 1, 5L)
   g.add_edge(1, 2, 3L)
-  inspect(shortest_distance(g, 0, 2), content="Some(8)")
-  inspect(shortest_distance(g, 0, 0), content="Some(0)")
+  debug_inspect(shortest_distance(g, 0, 2), content="Some(8)")
+  debug_inspect(shortest_distance(g, 0, 0), content="Some(0)")
 }
 
 ///|
@@ -727,7 +727,7 @@ test "bidirectional dijkstra basic" {
   rev_g.add_edge(2, 1, 2L)
   rev_g.add_edge(3, 2, 3L)
   let dist = bidirectional_dijkstra(g, rev_g, 0, 3)
-  inspect(dist, content="Some(6)")
+  debug_inspect(dist, content="Some(6)")
 }
 
 ///|
@@ -735,7 +735,7 @@ test "bidirectional dijkstra same vertex" {
   let g = Graph(3)
   let rev_g = Graph(3)
   let dist = bidirectional_dijkstra(g, rev_g, 1, 1)
-  inspect(dist, content="Some(0)")
+  debug_inspect(dist, content="Some(0)")
 }
 
 ///|

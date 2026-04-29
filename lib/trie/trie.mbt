@@ -328,10 +328,10 @@ fn collect_words(
         #|path; s is ready to be pushed node.count times.
       ),
     }
-    for j in 0..<node.count {
+    for _j in 0..<node.count {
       result.push(s)
     } where {
-      proof_invariant: j >= 0 && j <= node.count,
+      proof_invariant: _j >= 0 && _j <= node.count,
       proof_reasoning: (
         #|INVARIANT (collect_words copies):
         #|result already includes the original entries plus exactly j copies

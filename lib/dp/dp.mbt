@@ -516,7 +516,7 @@ fn unique_paths(m : Int, n : Int) -> Int {
 
   // Space optimization: only need one row
   let dp = Array::make(n, 1)
-  for i in 1..<m {
+  for _i in 1..<m {
     for j in 1..<n {
       dp[j] = dp[j] + dp[j - 1]
     } where {
@@ -531,7 +531,7 @@ fn unique_paths(m : Int, n : Int) -> Int {
       ),
     }
   } where {
-    proof_invariant: i >= 1 && i <= m,
+    proof_invariant: _i >= 1 && _i <= m,
     proof_reasoning: (
       #|LOOP INVARIANT: After row i, dp[j] = number of paths to cell (i, j)
       #|
