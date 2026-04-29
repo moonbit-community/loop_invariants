@@ -578,8 +578,8 @@ test "avl min max" {
   tree.insert(8L)
   tree.insert(1L)
   tree.insert(9L)
-  inspect(tree.min(), content="Some(1)")
-  inspect(tree.max(), content="Some(9)")
+  debug_inspect(tree.min(), content="Some(1)")
+  debug_inspect(tree.max(), content="Some(9)")
 }
 
 ///|
@@ -608,6 +608,6 @@ test "avl many insertions" {
 test "avl empty" {
   let tree = AVLTree()
   inspect(tree.search(1L), content="false")
-  inspect(tree.min(), content="None")
+  debug_inspect(tree.min(), content="None")
   inspect(tree.is_balanced(), content="true")
 }

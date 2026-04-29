@@ -788,9 +788,9 @@ test "lazy segtree sum basic" {
   let st = LazySegTreeSum(arr)
 
   // Initial sums
-  inspect(st.range_sum(0, 4), content="Some(15)")
-  inspect(st.range_sum(0, 2), content="Some(6)")
-  inspect(st.range_sum(2, 4), content="Some(12)")
+  debug_inspect(st.range_sum(0, 4), content="Some(15)")
+  debug_inspect(st.range_sum(0, 2), content="Some(6)")
+  debug_inspect(st.range_sum(2, 4), content="Some(12)")
 }
 
 ///|
@@ -802,10 +802,10 @@ test "lazy segtree sum range add" {
   st.range_add(1, 3, 10L)
 
   // arr is now [1, 12, 13, 14, 5]
-  inspect(st.range_sum(0, 4), content="Some(45)") // 1+12+13+14+5
-  inspect(st.range_sum(1, 3), content="Some(39)") // 12+13+14
-  inspect(st.point_query(0), content="Some(1)")
-  inspect(st.point_query(2), content="Some(13)")
+  debug_inspect(st.range_sum(0, 4), content="Some(45)") // 1+12+13+14+5
+  debug_inspect(st.range_sum(1, 3), content="Some(39)") // 12+13+14
+  debug_inspect(st.point_query(0), content="Some(1)")
+  debug_inspect(st.point_query(2), content="Some(13)")
 }
 
 ///|
@@ -815,8 +815,8 @@ test "lazy segtree sum multiple updates" {
   st.range_add(0, 4, 1L) // [1,1,1,1,1]
   st.range_add(1, 3, 2L) // [1,3,3,3,1]
   st.range_add(2, 2, 5L) // [1,3,8,3,1]
-  inspect(st.range_sum(0, 4), content="Some(16)")
-  inspect(st.point_query(2), content="Some(8)")
+  debug_inspect(st.range_sum(0, 4), content="Some(16)")
+  debug_inspect(st.point_query(2), content="Some(8)")
 }
 
 ///|
@@ -824,22 +824,22 @@ test "lazy segtree sum point set" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let st = LazySegTreeSum(arr)
   st.point_set(2, 10L)
-  inspect(st.range_sum(0, 4), content="Some(22)") // 1+2+10+4+5
-  inspect(st.point_query(2), content="Some(10)")
+  debug_inspect(st.range_sum(0, 4), content="Some(22)") // 1+2+10+4+5
+  debug_inspect(st.point_query(2), content="Some(10)")
 }
 
 ///|
 test "lazy segtree set sum basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let st = LazySegTreeSetSum(arr)
-  inspect(st.range_sum(0, 4), content="Some(15)")
+  debug_inspect(st.range_sum(0, 4), content="Some(15)")
 
   // Set [1, 3] to 10
   st.range_set(1, 3, 10L)
 
   // arr is now [1, 10, 10, 10, 5]
-  inspect(st.range_sum(0, 4), content="Some(36)") // 1+10+10+10+5
-  inspect(st.range_sum(1, 3), content="Some(30)") // 10+10+10
+  debug_inspect(st.range_sum(0, 4), content="Some(36)") // 1+10+10+10+5
+  debug_inspect(st.range_sum(1, 3), content="Some(30)") // 10+10+10
 }
 
 ///|
@@ -847,18 +847,18 @@ test "lazy segtree set sum overwrite" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let st = LazySegTreeSetSum(arr)
   st.range_set(0, 4, 1L) // All 1s
-  inspect(st.range_sum(0, 4), content="Some(5)")
+  debug_inspect(st.range_sum(0, 4), content="Some(5)")
   st.range_set(2, 3, 100L) // [1, 1, 100, 100, 1]
-  inspect(st.range_sum(0, 4), content="Some(203)")
+  debug_inspect(st.range_sum(0, 4), content="Some(203)")
 }
 
 ///|
 test "lazy segtree min basic" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L, 9L]
   let st = LazySegTreeMin(arr)
-  inspect(st.range_min(0, 4), content="Some(1)")
-  inspect(st.range_min(0, 2), content="Some(2)")
-  inspect(st.range_min(2, 4), content="Some(1)")
+  debug_inspect(st.range_min(0, 4), content="Some(1)")
+  debug_inspect(st.range_min(0, 2), content="Some(2)")
+  debug_inspect(st.range_min(2, 4), content="Some(1)")
 }
 
 ///|
@@ -870,8 +870,8 @@ test "lazy segtree min range add" {
   st.range_add(0, 2, 10L)
 
   // arr is now [15, 12, 18, 1, 9]
-  inspect(st.range_min(0, 4), content="Some(1)")
-  inspect(st.range_min(0, 2), content="Some(12)")
+  debug_inspect(st.range_min(0, 4), content="Some(1)")
+  debug_inspect(st.range_min(0, 2), content="Some(12)")
 }
 
 ///|
@@ -879,35 +879,35 @@ test "lazy segtree sum empty" {
   let arr : Array[Int64] = []
   let st = LazySegTreeSum(arr)
   inspect(st.length(), content="0")
-  inspect(st.range_sum(0, 0), content="None")
+  debug_inspect(st.range_sum(0, 0), content="None")
 }
 
 ///|
 test "lazy segtree sum single" {
   let arr : Array[Int64] = [42L]
   let st = LazySegTreeSum(arr)
-  inspect(st.range_sum(0, 0), content="Some(42)")
+  debug_inspect(st.range_sum(0, 0), content="Some(42)")
   st.range_add(0, 0, 8L)
-  inspect(st.range_sum(0, 0), content="Some(50)")
+  debug_inspect(st.range_sum(0, 0), content="Some(50)")
 }
 
 ///|
 test "lazy segtree invalid range" {
   let arr : Array[Int64] = [1L, 2L, 3L]
   let st = LazySegTreeSum(arr)
-  inspect(st.range_sum(-1, 0), content="None")
-  inspect(st.range_sum(0, 10), content="None")
-  inspect(st.range_sum(2, 1), content="None")
+  debug_inspect(st.range_sum(-1, 0), content="None")
+  debug_inspect(st.range_sum(0, 10), content="None")
+  debug_inspect(st.range_sum(2, 1), content="None")
 }
 
 ///|
 test "lazy segtree min negative values" {
   let arr : Array[Int64] = [-5L, -2L, -8L, -1L, -9L]
   let st = LazySegTreeMin(arr)
-  inspect(st.range_min(0, 4), content="Some(-9)")
-  inspect(st.range_min(0, 2), content="Some(-8)")
+  debug_inspect(st.range_min(0, 4), content="Some(-9)")
+  debug_inspect(st.range_min(0, 2), content="Some(-8)")
   st.range_add(4, 4, 20L) // -9 + 20 = 11
-  inspect(st.range_min(0, 4), content="Some(-8)")
+  debug_inspect(st.range_min(0, 4), content="Some(-8)")
 }
 
 ///|
@@ -932,5 +932,5 @@ test "lazy segtree large updates" {
   st.range_add(2, 5, 1L)
 
   // [2, 2, 3, 3, 3, 3, 2, 2]
-  inspect(st.range_sum(0, 7), content="Some(20)")
+  debug_inspect(st.range_sum(0, 7), content="Some(20)")
 }

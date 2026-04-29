@@ -1410,15 +1410,15 @@ test "interval tree range add" {
 test "interval tree get" {
   let arr = [1, 2, 3, 4, 5]
   let tree = IntervalTree(arr)
-  inspect(tree.get(0), content="Some(1)")
-  inspect(tree.get(2), content="Some(3)")
-  inspect(tree.get(4), content="Some(5)")
+  debug_inspect(tree.get(0), content="Some(1)")
+  debug_inspect(tree.get(2), content="Some(3)")
+  debug_inspect(tree.get(4), content="Some(5)")
   tree.assign(1, 3, 100)
-  inspect(tree.get(0), content="Some(1)")
-  inspect(tree.get(1), content="Some(100)")
-  inspect(tree.get(2), content="Some(100)")
-  inspect(tree.get(3), content="Some(100)")
-  inspect(tree.get(4), content="Some(5)")
+  debug_inspect(tree.get(0), content="Some(1)")
+  debug_inspect(tree.get(1), content="Some(100)")
+  debug_inspect(tree.get(2), content="Some(100)")
+  debug_inspect(tree.get(3), content="Some(100)")
+  debug_inspect(tree.get(4), content="Some(5)")
 }
 
 ///|

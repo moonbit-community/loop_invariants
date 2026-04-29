@@ -118,8 +118,14 @@ test "binomial heap basic" {
   let h1 = @challenge_persistent_binomial_heap.insert(h0, 5)
   let h2 = @challenge_persistent_binomial_heap.insert(h1, 2)
   let h3 = @challenge_persistent_binomial_heap.insert(h2, 8)
-  inspect(@challenge_persistent_binomial_heap.find_min(h3), content="Some(2)")
-  inspect(@challenge_persistent_binomial_heap.find_min(h0), content="None")
+  debug_inspect(
+    @challenge_persistent_binomial_heap.find_min(h3),
+    content="Some(2)",
+  )
+  debug_inspect(
+    @challenge_persistent_binomial_heap.find_min(h0),
+    content="None",
+  )
 }
 ```
 
@@ -137,7 +143,7 @@ test "binomial heap merge" {
     1,
   )
   let merged = @challenge_persistent_binomial_heap.merge(a, b)
-  inspect(
+  debug_inspect(
     @challenge_persistent_binomial_heap.find_min(merged),
     content="Some(1)",
   )
@@ -160,7 +166,7 @@ test "binomial heap delete min" {
   match h2 {
     None => fail("expected non-empty heap")
     Some(next) =>
-      inspect(
+      debug_inspect(
         @challenge_persistent_binomial_heap.find_min(next),
         content="Some(3)",
       )
@@ -176,8 +182,14 @@ test "binomial heap persistence" {
   let h0 = @challenge_persistent_binomial_heap.empty()
   let h1 = @challenge_persistent_binomial_heap.insert(h0, 10)
   let h2 = @challenge_persistent_binomial_heap.insert(h1, 4)
-  inspect(@challenge_persistent_binomial_heap.find_min(h1), content="Some(10)")
-  inspect(@challenge_persistent_binomial_heap.find_min(h2), content="Some(4)")
+  debug_inspect(
+    @challenge_persistent_binomial_heap.find_min(h1),
+    content="Some(10)",
+  )
+  debug_inspect(
+    @challenge_persistent_binomial_heap.find_min(h2),
+    content="Some(4)",
+  )
 }
 ```
 

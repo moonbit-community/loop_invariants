@@ -429,8 +429,8 @@ test "splay min max" {
   tree.insert(8L)
   tree.insert(1L)
   tree.insert(9L)
-  inspect(tree.min(), content="Some(1)")
-  inspect(tree.max(), content="Some(9)")
+  debug_inspect(tree.min(), content="Some(1)")
+  debug_inspect(tree.max(), content="Some(9)")
 }
 
 ///|
@@ -443,10 +443,10 @@ test "splay kth element" {
   tree.insert(5L)
 
   // Sorted: 1, 1, 3, 4, 5
-  inspect(tree.kth_element(1), content="Some(1)")
-  inspect(tree.kth_element(3), content="Some(3)")
-  inspect(tree.kth_element(5), content="Some(5)")
-  inspect(tree.kth_element(6), content="None")
+  debug_inspect(tree.kth_element(1), content="Some(1)")
+  debug_inspect(tree.kth_element(3), content="Some(3)")
+  debug_inspect(tree.kth_element(5), content="Some(5)")
+  debug_inspect(tree.kth_element(6), content="None")
 }
 
 ///|
@@ -466,8 +466,8 @@ test "splay count less" {
 test "splay empty" {
   let tree = SplayTree()
   inspect(tree.contains(1L), content="false")
-  inspect(tree.min(), content="None")
-  inspect(tree.max(), content="None")
+  debug_inspect(tree.min(), content="None")
+  debug_inspect(tree.max(), content="None")
   inspect(tree.size(), content="0")
 }
 
@@ -486,6 +486,6 @@ test "splay sequential insert" {
     tree.insert(i.to_int64())
   }
   inspect(tree.size(), content="100")
-  inspect(tree.min(), content="Some(0)")
-  inspect(tree.max(), content="Some(99)")
+  debug_inspect(tree.min(), content="Some(0)")
+  debug_inspect(tree.max(), content="Some(99)")
 }

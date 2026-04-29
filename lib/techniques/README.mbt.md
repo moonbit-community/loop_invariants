@@ -92,7 +92,7 @@ fn two_sum_sorted(xs : ArrayView[Int], target : Int) -> (Int, Int)? {
 ///|
 test "two pointers: sorted two sum" {
   let xs = [1, 2, 4, 7, 11, 15]
-  inspect(two_sum_sorted(xs, 9), content="Some((1, 3))")
+  debug_inspect(two_sum_sorted(xs, 9), content="Some((1, 3))")
 }
 ```
 
@@ -171,7 +171,7 @@ fn max_sum_k(xs : ArrayView[Int], k : Int) -> Int? {
 ///|
 test "sliding window: max sum of size k" {
   let xs = [2, 1, 5, 1, 3, 2]
-  inspect(max_sum_k(xs, 3), content="Some(9)")
+  debug_inspect(max_sum_k(xs, 3), content="Some(9)")
 }
 ```
 
@@ -382,7 +382,7 @@ fn min_capacity(weights : ArrayView[Int], days : Int) -> Int? {
 ///|
 test "binary search on answer: shipping" {
   let weights = [3, 2, 2, 4, 1, 4]
-  inspect(min_capacity(weights, 3), content="Some(6)")
+  debug_inspect(min_capacity(weights, 3), content="Some(6)")
 }
 ```
 

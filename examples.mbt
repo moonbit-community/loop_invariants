@@ -144,11 +144,11 @@ fn binary_search(arr : ArrayView[Int], target : Int) -> Int? {
 ///|
 test "binary_search" {
   let arr : Array[Int] = [1, 3, 5, 7, 9, 11, 13]
-  assert_eq(binary_search(arr, 7), Some(3))
-  assert_eq(binary_search(arr, 1), Some(0))
-  assert_eq(binary_search(arr, 13), Some(6))
-  assert_eq(binary_search(arr, 6), None)
-  assert_eq(binary_search(arr, 0), None)
+  debug_inspect(binary_search(arr, 7), content="Some(3)")
+  debug_inspect(binary_search(arr, 1), content="Some(0)")
+  debug_inspect(binary_search(arr, 13), content="Some(6)")
+  debug_inspect(binary_search(arr, 6), content="None")
+  debug_inspect(binary_search(arr, 0), content="None")
 }
 
 // ============================================================================
@@ -674,10 +674,10 @@ fn two_sum_sorted(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
 
 ///|
 test "two_sum_sorted" {
-  assert_eq(two_sum_sorted([1, 2, 3, 4, 5], 9), Some((3, 4))) // 4+5
-  assert_eq(two_sum_sorted([1, 2, 3, 4, 5], 3), Some((0, 1))) // 1+2
-  assert_eq(two_sum_sorted([1, 2, 3, 4, 5], 100), None)
-  assert_eq(two_sum_sorted([2, 7, 11, 15], 9), Some((0, 1))) // 2+7
+  debug_inspect(two_sum_sorted([1, 2, 3, 4, 5], 9), content="Some((3, 4))") // 4+5
+  debug_inspect(two_sum_sorted([1, 2, 3, 4, 5], 3), content="Some((0, 1))") // 1+2
+  debug_inspect(two_sum_sorted([1, 2, 3, 4, 5], 100), content="None")
+  debug_inspect(two_sum_sorted([2, 7, 11, 15], 9), content="Some((0, 1))") // 2+7
 }
 
 // ============================================================================
@@ -904,10 +904,10 @@ fn majority_element(arr : ArrayView[Int]) -> Int? {
 
 ///|
 test "majority_element" {
-  assert_eq(majority_element([3, 2, 3]), Some(3))
-  assert_eq(majority_element([2, 2, 1, 1, 1, 2, 2]), Some(2))
-  assert_eq(majority_element([1, 2, 3]), None) // no majority
-  assert_eq(majority_element([1]), Some(1))
+  debug_inspect(majority_element([3, 2, 3]), content="Some(3)")
+  debug_inspect(majority_element([2, 2, 1, 1, 1, 2, 2]), content="Some(2)")
+  debug_inspect(majority_element([1, 2, 3]), content="None") // no majority
+  debug_inspect(majority_element([1]), content="Some(1)")
 }
 
 // ============================================================================

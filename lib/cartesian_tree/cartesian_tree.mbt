@@ -713,7 +713,7 @@ test "cartesian tree construction" {
   let tree = CartesianTree(arr)
 
   // Root should be minimum (1 at index 3)
-  inspect(tree.root_value(), content="Some(1)")
+  debug_inspect(tree.root_value(), content="Some(1)")
 
   // Verify in-order property
   inspect(tree.verify_inorder(arr), content="true")
@@ -728,16 +728,16 @@ test "cartesian tree rmq basic" {
   let tree = CartesianTree(arr)
 
   // Query [0, 4]: min is 1
-  inspect(tree.query_min(0, 4), content="Some(1)")
+  debug_inspect(tree.query_min(0, 4), content="Some(1)")
 
   // Query [0, 2]: min is 2
-  inspect(tree.query_min(0, 2), content="Some(2)")
+  debug_inspect(tree.query_min(0, 2), content="Some(2)")
 
   // Query [2, 4]: min is 1
-  inspect(tree.query_min(2, 4), content="Some(1)")
+  debug_inspect(tree.query_min(2, 4), content="Some(1)")
 
   // Query [0, 0]: single element
-  inspect(tree.query_min(0, 0), content="Some(3)")
+  debug_inspect(tree.query_min(0, 0), content="Some(3)")
 }
 
 ///|
@@ -746,10 +746,10 @@ test "cartesian tree rmq index" {
   let tree = CartesianTree(arr)
 
   // Position of min in [0, 4] is 3
-  inspect(tree.query_min_index(0, 4), content="Some(3)")
+  debug_inspect(tree.query_min_index(0, 4), content="Some(3)")
 
   // Position of min in [0, 2] is 1
-  inspect(tree.query_min_index(0, 2), content="Some(1)")
+  debug_inspect(tree.query_min_index(0, 2), content="Some(1)")
 }
 
 ///|
@@ -757,16 +757,16 @@ test "cartesian tree empty" {
   let arr : Array[Int64] = []
   let tree = CartesianTree(arr)
   inspect(tree.length(), content="0")
-  inspect(tree.root_value(), content="None")
-  inspect(tree.query_min(0, 0), content="None")
+  debug_inspect(tree.root_value(), content="None")
+  debug_inspect(tree.query_min(0, 0), content="None")
 }
 
 ///|
 test "cartesian tree single" {
   let arr : Array[Int64] = [42L]
   let tree = CartesianTree(arr)
-  inspect(tree.root_value(), content="Some(42)")
-  inspect(tree.query_min(0, 0), content="Some(42)")
+  debug_inspect(tree.root_value(), content="Some(42)")
+  debug_inspect(tree.query_min(0, 0), content="Some(42)")
   inspect(tree.verify_inorder(arr), content="true")
   inspect(tree.verify_heap(), content="true")
 }
@@ -776,13 +776,13 @@ test "cartesian tree sorted ascending" {
   // Ascending array creates right-skewed tree
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let tree = CartesianTree(arr)
-  inspect(tree.root_value(), content="Some(1)")
+  debug_inspect(tree.root_value(), content="Some(1)")
   inspect(tree.verify_inorder(arr), content="true")
   inspect(tree.verify_heap(), content="true")
 
   // RMQ should work correctly
-  inspect(tree.query_min(0, 4), content="Some(1)")
-  inspect(tree.query_min(2, 4), content="Some(3)")
+  debug_inspect(tree.query_min(0, 4), content="Some(1)")
+  debug_inspect(tree.query_min(2, 4), content="Some(3)")
 }
 
 ///|
@@ -790,20 +790,20 @@ test "cartesian tree sorted descending" {
   // Descending array creates left-skewed tree
   let arr : Array[Int64] = [5L, 4L, 3L, 2L, 1L]
   let tree = CartesianTree(arr)
-  inspect(tree.root_value(), content="Some(1)")
+  debug_inspect(tree.root_value(), content="Some(1)")
   inspect(tree.verify_inorder(arr), content="true")
   inspect(tree.verify_heap(), content="true")
-  inspect(tree.query_min(0, 4), content="Some(1)")
-  inspect(tree.query_min(0, 2), content="Some(3)")
+  debug_inspect(tree.query_min(0, 4), content="Some(1)")
+  debug_inspect(tree.query_min(0, 2), content="Some(3)")
 }
 
 ///|
 test "cartesian tree all same" {
   let arr : Array[Int64] = [5L, 5L, 5L, 5L]
   let tree = CartesianTree(arr)
-  inspect(tree.root_value(), content="Some(5)")
-  inspect(tree.query_min(0, 3), content="Some(5)")
-  inspect(tree.query_min(1, 2), content="Some(5)")
+  debug_inspect(tree.root_value(), content="Some(5)")
+  debug_inspect(tree.query_min(0, 3), content="Some(5)")
+  debug_inspect(tree.query_min(1, 2), content="Some(5)")
 }
 
 ///|
@@ -916,9 +916,9 @@ test "cartesian tree number same shape" {
 test "cartesian tree rmq invalid range" {
   let arr : Array[Int64] = [3L, 2L, 6L, 1L, 9L]
   let tree = CartesianTree(arr)
-  inspect(tree.query_min(-1, 0), content="None")
-  inspect(tree.query_min(0, 10), content="None")
-  inspect(tree.query_min(3, 1), content="None")
+  debug_inspect(tree.query_min(-1, 0), content="None")
+  debug_inspect(tree.query_min(0, 10), content="None")
+  debug_inspect(tree.query_min(3, 1), content="None")
 }
 
 ///|

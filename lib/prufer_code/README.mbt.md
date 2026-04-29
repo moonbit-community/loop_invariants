@@ -403,10 +403,10 @@ Both functions return `None` for invalid input rather than panicking.
 test "prufer invalid" {
   // Too few edges for n=4 (need 3, have 2)
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2)]
-  inspect(@prufer_code.prufer_encode(4, edges), content="None")
+  debug_inspect(@prufer_code.prufer_encode(4, edges), content="None")
   // Code value 4 is out of range for n=4 (valid range 0..3)
   let code : Array[Int] = [0, 4]
-  inspect(@prufer_code.prufer_decode(code), content="None")
+  debug_inspect(@prufer_code.prufer_decode(code), content="None")
 }
 ```
 

@@ -158,7 +158,10 @@ test "implicit treap basic" {
     @challenge_persistent_implicit_treap.to_array(t3),
     content="[10, 15, 20]",
   )
-  inspect(@challenge_persistent_implicit_treap.get(t3, 2), content="Some(20)")
+  debug_inspect(
+    @challenge_persistent_implicit_treap.get(t3, 2),
+    content="Some(20)",
+  )
 }
 ```
 

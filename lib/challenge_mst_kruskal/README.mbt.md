@@ -123,7 +123,7 @@ test "kruskal basic" {
     (2, 3, 5),
   ]
   let ans = @challenge_mst_kruskal.mst_weight(n, edges)
-  inspect(ans, content="Some(6)")
+  debug_inspect(ans, content="Some(6)")
 }
 ```
 
@@ -135,7 +135,7 @@ test "kruskal disconnected" {
   let n = 4
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (2, 3, 1)]
   let ans = @challenge_mst_kruskal.mst_weight(n, edges)
-  inspect(ans, content="None")
+  debug_inspect(ans, content="None")
 }
 ```
 
@@ -147,7 +147,7 @@ test "kruskal equal weights" {
   let n = 3
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 1), (0, 2, 1)]
   let ans = @challenge_mst_kruskal.mst_weight(n, edges)
-  inspect(ans, content="Some(2)")
+  debug_inspect(ans, content="Some(2)")
 }
 ```
 
@@ -159,7 +159,7 @@ test "kruskal single" {
   let n = 1
   let edges : Array[(Int, Int, Int)] = []
   let ans = @challenge_mst_kruskal.mst_weight(n, edges)
-  inspect(ans, content="Some(0)")
+  debug_inspect(ans, content="Some(0)")
 }
 ```
 
@@ -176,7 +176,7 @@ test "kruskal ignores invalid" {
     (-1, 2, 5),
   ]
   let ans = @challenge_mst_kruskal.mst_weight(n, edges)
-  inspect(ans, content="Some(3)")
+  debug_inspect(ans, content="Some(3)")
 }
 ```
 

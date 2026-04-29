@@ -56,9 +56,9 @@ test "verified_binary_search_examples" {
   xs[4] = 9
   xs[5] = 11
   xs[6] = 13
-  assert_eq(binary_search(xs, 7), Some(3))
-  assert_eq(binary_search(xs, 1), Some(0))
-  assert_eq(binary_search(xs, 13), Some(6))
-  assert_eq(binary_search(xs, 6), None)
-  assert_eq(binary_search(xs, 0), None)
+  debug_inspect(binary_search(xs, 7), content="Some(3)")
+  debug_inspect(binary_search(xs, 1), content="Some(0)")
+  debug_inspect(binary_search(xs, 13), content="Some(6)")
+  debug_inspect(binary_search(xs, 6), content="None")
+  debug_inspect(binary_search(xs, 0), content="None")
 }

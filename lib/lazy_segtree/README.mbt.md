@@ -252,8 +252,8 @@ test "lazy segtree example" {
 
   // add 2 to indices 1..3
   st.range_add(1, 3, 2L)
-  inspect(st.range_sum(0, 3), content="Some(16)")
-  inspect(st.point_query(2), content="Some(5)")
+  debug_inspect(st.range_sum(0, 3), content="Some(16)")
+  debug_inspect(st.point_query(2), content="Some(5)")
 }
 ```
 
@@ -268,8 +268,8 @@ test "lazy segtree multiple updates" {
   st.range_add(2, 4, 1L)
 
   // array becomes [8, 4, 8, 3, 4]
-  inspect(st.range_sum(0, 4), content="Some(27)")
-  inspect(st.point_query(3), content="Some(3)")
+  debug_inspect(st.range_sum(0, 4), content="Some(27)")
+  debug_inspect(st.point_query(3), content="Some(3)")
 }
 ```
 

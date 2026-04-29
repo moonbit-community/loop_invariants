@@ -818,13 +818,13 @@ test "skip list basic operations" {
   sl.insert(7, 70)
   sl.insert(1, 10)
   sl.insert(9, 90)
-  inspect(sl.search(5), content="Some(50)")
-  inspect(sl.search(3), content="Some(30)")
-  inspect(sl.search(7), content="Some(70)")
-  inspect(sl.search(1), content="Some(10)")
-  inspect(sl.search(9), content="Some(90)")
-  inspect(sl.search(4), content="None")
-  inspect(sl.search(100), content="None")
+  debug_inspect(sl.search(5), content="Some(50)")
+  debug_inspect(sl.search(3), content="Some(30)")
+  debug_inspect(sl.search(7), content="Some(70)")
+  debug_inspect(sl.search(1), content="Some(10)")
+  debug_inspect(sl.search(9), content="Some(90)")
+  debug_inspect(sl.search(4), content="None")
+  debug_inspect(sl.search(100), content="None")
 }
 
 ///|
@@ -839,7 +839,7 @@ test "skip list delete" {
 
   // Delete existing key
   inspect(sl.delete(3), content="true")
-  inspect(sl.search(3), content="None")
+  debug_inspect(sl.search(3), content="None")
   inspect(sl.length(), content="4")
 
   // Delete non-existing key
@@ -847,10 +847,10 @@ test "skip list delete" {
   inspect(sl.length(), content="4")
 
   // Remaining elements still accessible
-  inspect(sl.search(1), content="Some(10)")
-  inspect(sl.search(2), content="Some(20)")
-  inspect(sl.search(4), content="Some(40)")
-  inspect(sl.search(5), content="Some(50)")
+  debug_inspect(sl.search(1), content="Some(10)")
+  debug_inspect(sl.search(2), content="Some(20)")
+  debug_inspect(sl.search(4), content="Some(40)")
+  debug_inspect(sl.search(5), content="Some(50)")
 }
 
 ///|
@@ -872,15 +872,15 @@ test "skip list range query" {
 ///|
 test "skip list min max" {
   let sl : SkipList[Int, Int] = SkipList()
-  inspect(sl.min(), content="None")
-  inspect(sl.max(), content="None")
+  debug_inspect(sl.min(), content="None")
+  debug_inspect(sl.max(), content="None")
   sl.insert(50, 500)
   sl.insert(30, 300)
   sl.insert(70, 700)
   sl.insert(10, 100)
   sl.insert(90, 900)
-  inspect(sl.min(), content="Some((10, 100))")
-  inspect(sl.max(), content="Some((90, 900))")
+  debug_inspect(sl.min(), content="Some((10, 100))")
+  debug_inspect(sl.max(), content="Some((90, 900))")
 }
 
 ///|
@@ -893,16 +893,16 @@ test "skip list ceil floor" {
   }
 
   // Ceil: smallest key >= given
-  inspect(sl.ceil(25), content="Some((30, 300))") // 30 is smallest >= 25
-  inspect(sl.ceil(30), content="Some((30, 300))") // Exact match
-  inspect(sl.ceil(5), content="Some((10, 100))") // 10 is smallest >= 5
-  inspect(sl.ceil(55), content="None") // No key >= 55
+  debug_inspect(sl.ceil(25), content="Some((30, 300))") // 30 is smallest >= 25
+  debug_inspect(sl.ceil(30), content="Some((30, 300))") // Exact match
+  debug_inspect(sl.ceil(5), content="Some((10, 100))") // 10 is smallest >= 5
+  debug_inspect(sl.ceil(55), content="None") // No key >= 55
 
   // Floor: largest key <= given
-  inspect(sl.floor(25), content="Some((20, 200))") // 20 is largest <= 25
-  inspect(sl.floor(30), content="Some((30, 300))") // Exact match
-  inspect(sl.floor(5), content="None") // No key <= 5
-  inspect(sl.floor(55), content="Some((50, 500))") // 50 is largest <= 55
+  debug_inspect(sl.floor(25), content="Some((20, 200))") // 20 is largest <= 25
+  debug_inspect(sl.floor(30), content="Some((30, 300))") // Exact match
+  debug_inspect(sl.floor(5), content="None") // No key <= 5
+  debug_inspect(sl.floor(55), content="Some((50, 500))") // 50 is largest <= 55
 }
 
 ///|
@@ -920,10 +920,10 @@ test "skip list ordered statistics" {
   inspect(sl.count_less_than(10), content="5") // All elements < 10
 
   // K-th element (0-indexed)
-  inspect(sl.kth_element(0), content="Some((1, 10))") // 1st element is 1
-  inspect(sl.kth_element(2), content="Some((5, 30))") // 3rd element is 5
-  inspect(sl.kth_element(4), content="Some((9, 50))") // 5th element is 9
-  inspect(sl.kth_element(5), content="None") // Out of bounds
+  debug_inspect(sl.kth_element(0), content="Some((1, 10))") // 1st element is 1
+  debug_inspect(sl.kth_element(2), content="Some((5, 30))") // 3rd element is 5
+  debug_inspect(sl.kth_element(4), content="Some((9, 50))") // 5th element is 9
+  debug_inspect(sl.kth_element(5), content="None") // Out of bounds
 }
 
 ///|
@@ -1178,7 +1178,7 @@ test "multi skip list duplicates" {
   inspect(msl.size, content="5")
 
   // Search returns all values for key
-  inspect(msl.search(5), content="Some([50, 51, 52])")
-  inspect(msl.search(3), content="Some([30, 31])")
-  inspect(msl.search(4), content="None")
+  debug_inspect(msl.search(5), content="Some([50, 51, 52])")
+  debug_inspect(msl.search(3), content="Some([30, 31])")
+  debug_inspect(msl.search(4), content="None")
 }

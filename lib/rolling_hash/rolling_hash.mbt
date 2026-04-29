@@ -703,9 +703,9 @@ test "rolling hash substrings equal" {
 ///|
 test "rolling hash invalid range" {
   let rh = RollingHash("abc")
-  inspect(rh.get_hash(-1, 0), content="None")
-  inspect(rh.get_hash(0, 10), content="None")
-  inspect(rh.get_hash(2, 1), content="None")
+  debug_inspect(rh.get_hash(-1, 0), content="None")
+  debug_inspect(rh.get_hash(0, 10), content="None")
+  debug_inspect(rh.get_hash(2, 1), content="None")
 }
 
 ///|
@@ -787,7 +787,7 @@ test "count distinct substrings abab" {
 test "rolling hash empty" {
   let rh = RollingHash("")
   inspect(rh.length(), content="0")
-  inspect(rh.get_hash(0, 0), content="None")
+  debug_inspect(rh.get_hash(0, 0), content="None")
 }
 
 ///|

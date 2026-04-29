@@ -144,7 +144,7 @@ test "topological_sort" {
 
   // Graph with cycle: 0 → 1 → 2 → 0
   let cyclic : Array[Array[Int]] = [[1], [2], [0]]
-  assert_eq(topological_sort(cyclic), None)
+  debug_inspect(topological_sort(cyclic), content="None")
 }
 
 // ============================================================================
@@ -466,7 +466,7 @@ test "bellman_ford" {
 
   // Graph with negative cycle: 0 → 1 → 2 → 0 with total weight -1
   let edges_cycle : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 1), (2, 0, -3)]
-  assert_eq(bellman_ford(3, edges_cycle, 0), None)
+  debug_inspect(bellman_ford(3, edges_cycle, 0), content="None")
 }
 
 // ============================================================================

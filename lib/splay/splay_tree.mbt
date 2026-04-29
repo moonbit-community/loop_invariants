@@ -689,15 +689,15 @@ test "splay tree delete" {
 ///|
 test "splay tree min max" {
   let st : SplayTree[Int] = SplayTree()
-  inspect(st.min(), content="None")
-  inspect(st.max(), content="None")
+  debug_inspect(st.min(), content="None")
+  debug_inspect(st.max(), content="None")
   let _ = st.insert(50)
   let _ = st.insert(30)
   let _ = st.insert(70)
   let _ = st.insert(10)
   let _ = st.insert(90)
-  inspect(st.min(), content="Some(10)")
-  inspect(st.max(), content="Some(90)")
+  debug_inspect(st.min(), content="Some(10)")
+  debug_inspect(st.max(), content="Some(90)")
 }
 
 ///|
@@ -710,10 +710,10 @@ test "splay tree order statistics" {
   }
 
   // k-th element (1-indexed)
-  inspect(st.kth_element(1), content="Some(1)")
-  inspect(st.kth_element(3), content="Some(5)")
-  inspect(st.kth_element(5), content="Some(9)")
-  inspect(st.kth_element(6), content="None")
+  debug_inspect(st.kth_element(1), content="Some(1)")
+  debug_inspect(st.kth_element(3), content="Some(5)")
+  debug_inspect(st.kth_element(5), content="Some(9)")
+  debug_inspect(st.kth_element(6), content="None")
 
   // Count less than
   inspect(st.count_less(5), content="2") // 1, 3

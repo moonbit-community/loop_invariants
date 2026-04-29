@@ -642,8 +642,8 @@ test "shortest distance helper" {
   let g = Graph(3)
   g.add_edge(0, 1, 5L)
   g.add_edge(1, 2, 3L)
-  inspect(shortest_distance(g, 0, 2), content="Some(8)")
-  inspect(shortest_distance(g, 0, 0), content="Some(0)")
+  debug_inspect(shortest_distance(g, 0, 2), content="Some(8)")
+  debug_inspect(shortest_distance(g, 0, 0), content="Some(0)")
 }
 
 ///|
@@ -727,7 +727,7 @@ test "bidirectional dijkstra basic" {
   rev_g.add_edge(2, 1, 2L)
   rev_g.add_edge(3, 2, 3L)
   let dist = bidirectional_dijkstra(g, rev_g, 0, 3)
-  inspect(dist, content="Some(6)")
+  debug_inspect(dist, content="Some(6)")
 }
 
 ///|
@@ -735,7 +735,7 @@ test "bidirectional dijkstra same vertex" {
   let g = Graph(3)
   let rev_g = Graph(3)
   let dist = bidirectional_dijkstra(g, rev_g, 1, 1)
-  inspect(dist, content="Some(0)")
+  debug_inspect(dist, content="Some(0)")
 }
 
 ///|

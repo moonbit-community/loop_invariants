@@ -487,21 +487,21 @@ test "disjoint sparse sum basic" {
   let dst = DisjointSparseSum(arr)
 
   // Single elements
-  inspect(dst.query(0, 0), content="Some(1)")
-  inspect(dst.query(3, 3), content="Some(4)")
+  debug_inspect(dst.query(0, 0), content="Some(1)")
+  debug_inspect(dst.query(3, 3), content="Some(4)")
 
   // Ranges
-  inspect(dst.query(0, 3), content="Some(10)") // 1+2+3+4
-  inspect(dst.query(4, 7), content="Some(26)") // 5+6+7+8
-  inspect(dst.query(0, 7), content="Some(36)") // 1+...+8
-  inspect(dst.query(2, 5), content="Some(18)") // 3+4+5+6
+  debug_inspect(dst.query(0, 3), content="Some(10)") // 1+2+3+4
+  debug_inspect(dst.query(4, 7), content="Some(26)") // 5+6+7+8
+  debug_inspect(dst.query(0, 7), content="Some(36)") // 1+...+8
+  debug_inspect(dst.query(2, 5), content="Some(18)") // 3+4+5+6
 }
 
 ///|
 test "disjoint sparse sum edge cases" {
   let arr : Array[Int64] = [42L]
   let dst = DisjointSparseSum(arr)
-  inspect(dst.query(0, 0), content="Some(42)")
+  debug_inspect(dst.query(0, 0), content="Some(42)")
   inspect(dst.length(), content="1")
 }
 
@@ -509,7 +509,7 @@ test "disjoint sparse sum edge cases" {
 test "disjoint sparse sum empty" {
   let arr : Array[Int64] = []
   let dst = DisjointSparseSum(arr)
-  inspect(dst.query(0, 0), content="None")
+  debug_inspect(dst.query(0, 0), content="None")
   inspect(dst.length(), content="0")
 }
 
@@ -517,9 +517,9 @@ test "disjoint sparse sum empty" {
 test "disjoint sparse sum invalid range" {
   let arr : Array[Int64] = [1L, 2L, 3L]
   let dst = DisjointSparseSum(arr)
-  inspect(dst.query(-1, 0), content="None")
-  inspect(dst.query(0, 10), content="None")
-  inspect(dst.query(2, 1), content="None")
+  debug_inspect(dst.query(-1, 0), content="None")
+  debug_inspect(dst.query(0, 10), content="None")
+  debug_inspect(dst.query(2, 1), content="None")
 }
 
 ///|
@@ -528,13 +528,13 @@ test "disjoint sparse xor basic" {
   let dst = DisjointSparseXor(arr)
 
   // Single elements
-  inspect(dst.query(0, 0), content="Some(1)")
+  debug_inspect(dst.query(0, 0), content="Some(1)")
 
   // XOR of 1,2,3,4 = 4
-  inspect(dst.query(0, 3), content="Some(4)")
+  debug_inspect(dst.query(0, 3), content="Some(4)")
 
   // XOR of 5,6,7,8 = 5^6^7^8 = 12
-  inspect(dst.query(4, 7), content="Some(12)")
+  debug_inspect(dst.query(4, 7), content="Some(12)")
 }
 
 ///|
@@ -543,10 +543,10 @@ test "disjoint sparse xor all same" {
   let dst = DisjointSparseXor(arr)
 
   // XOR of same values: even count = 0
-  inspect(dst.query(0, 3), content="Some(0)")
+  debug_inspect(dst.query(0, 3), content="Some(0)")
 
   // Odd count = value
-  inspect(dst.query(0, 2), content="Some(5)")
+  debug_inspect(dst.query(0, 2), content="Some(5)")
 }
 
 ///|
@@ -555,13 +555,13 @@ test "disjoint sparse prod basic" {
   let dst = DisjointSparseProd(arr, 1000000007L)
 
   // Single elements
-  inspect(dst.query(0, 0), content="Some(1)")
+  debug_inspect(dst.query(0, 0), content="Some(1)")
 
   // Product of 1,2,3,4 = 24
-  inspect(dst.query(0, 3), content="Some(24)")
+  debug_inspect(dst.query(0, 3), content="Some(24)")
 
   // Product of 2,3,4,5 = 120
-  inspect(dst.query(1, 4), content="Some(120)")
+  debug_inspect(dst.query(1, 4), content="Some(120)")
 }
 
 ///|
@@ -580,9 +580,9 @@ test "disjoint sparse sum power of 2" {
   // Test with power of 2 size
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
   let dst = DisjointSparseSum(arr)
-  inspect(dst.query(0, 7), content="Some(36)")
-  inspect(dst.query(0, 1), content="Some(3)")
-  inspect(dst.query(6, 7), content="Some(15)")
+  debug_inspect(dst.query(0, 7), content="Some(36)")
+  debug_inspect(dst.query(0, 1), content="Some(3)")
+  debug_inspect(dst.query(6, 7), content="Some(15)")
 }
 
 ///|
@@ -590,8 +590,8 @@ test "disjoint sparse sum non power of 2" {
   // Test with non-power of 2 size
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L]
   let dst = DisjointSparseSum(arr)
-  inspect(dst.query(0, 5), content="Some(21)")
-  inspect(dst.query(1, 4), content="Some(14)")
+  debug_inspect(dst.query(0, 5), content="Some(21)")
+  debug_inspect(dst.query(1, 4), content="Some(14)")
 }
 
 ///|

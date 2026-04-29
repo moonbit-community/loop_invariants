@@ -222,7 +222,10 @@ test "dominator diamond" {
 ///|
 test "dominator invalid root" {
   let edges : Array[(Int, Int)] = [(0, 1)]
-  inspect(@dominator_tree.build_dominator_tree(2, edges, -1), content="None")
+  debug_inspect(
+    @dominator_tree.build_dominator_tree(2, edges, -1),
+    content="None",
+  )
 }
 ```
 
