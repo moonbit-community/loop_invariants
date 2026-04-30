@@ -1,0 +1,34 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_bitset"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn count_range(Bitset, Int, Int) -> Int
+
+pub fn from_indices(Int, ArrayView[Int]) -> Bitset
+
+pub fn get(Bitset, Int) -> Int
+
+pub fn length(Bitset) -> Int
+
+pub fn make(Int) -> Bitset
+
+pub fn set(Bitset, Int, Int) -> Bitset
+
+// Errors
+
+// Types and methods
+pub struct Bitset {
+  root : Node
+  n : Int
+} derive(@debug.Debug)
+
+type Node derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

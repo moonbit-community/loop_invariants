@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/johnson_all_pairs"
+
+// Values
+pub fn johnson_all_pairs(Int, ArrayView[(Int, Int, Int64)]) -> Array[Array[Int64]]?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

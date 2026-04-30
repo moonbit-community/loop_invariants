@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_fenwick"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn add(Fenwick, Int, Int) -> Fenwick
+
+pub fn length(Fenwick) -> Int
+
+pub fn make(Int) -> Fenwick
+
+pub fn prefix_sum(Fenwick, Int) -> Int
+
+pub fn range_sum(Fenwick, Int, Int) -> Int
+
+// Errors
+
+// Types and methods
+pub struct Fenwick {
+  root : Node
+  n : Int
+} derive(@debug.Debug)
+
+type Node derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

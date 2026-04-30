@@ -39,12 +39,12 @@ refinement:
 
 This worked well for:
 
-- [`lib/challenge_coordinate_compress`](./lib/challenge_coordinate_compress)
-- [`lib/challenge_meet_in_middle`](./lib/challenge_meet_in_middle)
-- [`lib/challenge_lis_nlogn`](./lib/challenge_lis_nlogn)
-- [`lib/challenge_ternary_search`](./lib/challenge_ternary_search)
-- [`lib/challenge_prefix_sum`](./lib/challenge_prefix_sum)
-- [`lib/challenge_binary_search_answer`](./lib/challenge_binary_search_answer)
+- [`modules/data_structures/challenge_coordinate_compress`](./modules/data_structures/challenge_coordinate_compress)
+- [`modules/techniques/challenge_meet_in_middle`](./modules/techniques/challenge_meet_in_middle)
+- [`modules/dp/challenge_lis_nlogn`](./modules/dp/challenge_lis_nlogn)
+- [`modules/techniques/challenge_ternary_search`](./modules/techniques/challenge_ternary_search)
+- [`modules/data_structures/challenge_prefix_sum`](./modules/data_structures/challenge_prefix_sum)
+- [`modules/techniques/challenge_binary_search_answer`](./modules/techniques/challenge_binary_search_answer)
 
 In both cases, the package stayed structurally the same, but the binary-search
 helper was rewritten as a proof-carrying `FixedArray` function and the runtime

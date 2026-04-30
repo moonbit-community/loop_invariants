@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/segment_tree_beats"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct SegmentTreeBeats {
+  n : Int
+  max : Array[Int64]
+  second_max : Array[Int64]
+  count_max : Array[Int]
+  sum : Array[Int64]
+}
+pub fn SegmentTreeBeats::SegmentTreeBeats(ArrayView[Int64]) -> Self
+pub fn SegmentTreeBeats::range_chmin(Self, Int, Int, Int64) -> Unit
+pub fn SegmentTreeBeats::range_max(Self, Int, Int) -> Int64
+pub fn SegmentTreeBeats::range_sum(Self, Int, Int) -> Int64
+
+// Type aliases
+
+// Traits
+

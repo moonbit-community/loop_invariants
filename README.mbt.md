@@ -4,8 +4,24 @@ This repository is a **learning library** for algorithms. Each package explains
 one topic in clear, beginner-friendly language and shows *why it works* using
 loop invariants.
 
+The repository is organized as a MoonBit workspace. The root module keeps the
+introductory examples and command-line sandbox, while algorithm packages live in
+domain modules under `modules/`.
+
 If you are new to algorithms, you can read these packages like a book. Each
 README is designed to be understandable without heavy math.
+
+## Workspace Modules
+
+- `modules/graph`: graph, tree, shortest path, flow, matching, and connectivity algorithms
+- `modules/data_structures`: Fenwick trees, segment trees, sparse tables, treaps, tries, and related structures
+- `modules/string`: string matching, hashing, suffix structures, and automata
+- `modules/math`: number theory, algebra, transforms, recurrence, and linear algebra routines
+- `modules/geometry`: computational geometry algorithms
+- `modules/dp`: dynamic programming examples and optimizations
+- `modules/techniques`: general competitive-programming techniques and search/window patterns
+- `modules/persistent`: persistent data structure examples
+- `modules/verified`: small verified examples with proof-oriented loop invariants
 
 ## What You Will Learn
 
@@ -117,11 +133,13 @@ test "simple loop example" {
 
 ## How to Read a Package
 
-Each package lives in `lib/<name>/` and has:
+Each algorithm package lives in `modules/<domain>/<name>/` and has:
 
 - `README.mbt.md` (the tutorial)
 - `.mbt` source files (the implementation)
 - tests (often inside the README itself)
+
+Each domain module also has a `README.md` that explains the package family.
 
 If a README feels too advanced, pick an easier package first and return later.
 
@@ -129,17 +147,20 @@ If a README feels too advanced, pick an easier package first and return later.
 
 Start small and build up:
 
-- **Basics**: `lib/union_find`, `lib/fenwick`, `lib/segment_tree`
-- **Dynamic Programming**: `lib/dp`, `lib/linear_recurrence`
-- **Strings**: `lib/kmp`, `lib/aho_corasick`, `lib/suffix_array`
-- **Graphs**: `lib/dijkstra`, `lib/bellman_ford`, `lib/mst`
-- **Advanced**: `lib/centroid`, `lib/linkcut`, `lib/segment_tree_beats`
+- **Basics**: `modules/data_structures/union_find`, `modules/data_structures/fenwick`, `modules/data_structures/segment_tree`
+- **Dynamic Programming**: `modules/dp/dp`, `modules/math/linear_recurrence`
+- **Strings**: `modules/string/kmp`, `modules/string/aho_corasick`, `modules/string/suffix_array`
+- **Graphs**: `modules/graph/dijkstra`, `modules/graph/bellman_ford`, `modules/graph/mst`
+- **Advanced**: `modules/graph/centroid`, `modules/data_structures/linkcut`, `modules/data_structures/segment_tree_beats`
 
 ## Running the Code
 
+Run these from the workspace root:
+
 ```bash
-moon test
 moon check
+moon test
+moon info
 moon fmt
 moon run cmd/main
 ```

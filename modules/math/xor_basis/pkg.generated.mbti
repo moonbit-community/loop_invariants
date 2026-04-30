@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/xor_basis"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct XorBasis {
+  basis : Array[Int64]
+  mut size : Int
+}
+pub fn XorBasis::XorBasis() -> Self
+pub fn XorBasis::can_represent(Self, Int64) -> Bool
+pub fn XorBasis::insert(Self, Int64) -> Bool
+pub fn XorBasis::max_xor(Self, Int64) -> Int64
+pub fn XorBasis::rank(Self) -> Int
+
+// Type aliases
+
+// Traits
+

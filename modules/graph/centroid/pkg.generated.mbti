@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/centroid"
+
+// Values
+pub fn build_centroid(Int, ArrayView[(Int, Int)]) -> CentroidDecomp
+
+// Errors
+
+// Types and methods
+pub struct CentroidDecomp {
+  parent : Array[Int]
+  depth : Array[Int]
+}
+pub fn CentroidDecomp::depth(Self, Int) -> Int
+pub fn CentroidDecomp::parent(Self, Int) -> Int
+
+// Type aliases
+
+// Traits
+

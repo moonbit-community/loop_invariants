@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/disjoint_sparse"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct DisjointSparseSum {
+  table : Array[Array[Int64]]
+  arr : Array[Int64]
+  n : Int
+}
+pub fn DisjointSparseSum::DisjointSparseSum(Array[Int64]) -> Self
+pub fn DisjointSparseSum::query(Self, Int, Int) -> Int64?
+
+// Type aliases
+
+// Traits
+

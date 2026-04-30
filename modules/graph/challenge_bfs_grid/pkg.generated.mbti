@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/challenge_bfs_grid"
+
+// Values
+pub fn shortest_path_grid(Array[Array[Int]], Int, Int, Int, Int) -> Int?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

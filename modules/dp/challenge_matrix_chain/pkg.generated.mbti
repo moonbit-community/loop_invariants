@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_dp/challenge_matrix_chain"
+
+// Values
+pub fn matrix_chain_min_cost(ArrayView[Int]) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

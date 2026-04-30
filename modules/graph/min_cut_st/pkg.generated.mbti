@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/min_cut_st"
+
+// Values
+pub fn min_cut_st(Int, ArrayView[(Int, Int, Int64)], Int, Int) -> MinCutSTResult?
+
+// Errors
+
+// Types and methods
+pub(all) struct MinCutSTResult {
+  value : Int64
+  source_side : Array[Int]
+}
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_binomial_heap"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn[T : Compare] delete_min(Heap[T]) -> Heap[T]?
+
+pub fn[T] empty() -> Heap[T]
+
+pub fn[T : Compare] find_min(Heap[T]) -> T?
+
+pub fn[T : Compare] insert(Heap[T], T) -> Heap[T]
+
+pub fn[T : Compare] merge(Heap[T], Heap[T]) -> Heap[T]
+
+// Errors
+
+// Types and methods
+pub struct Heap[T] {
+  trees : Array[Tree[T]?]
+} derive(@debug.Debug)
+
+type Tree[T] derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,35 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_li_chao_tree"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn empty() -> Node
+
+pub fn from_array(ArrayView[Line], Int, Int) -> Node
+
+pub fn insert(Node, Line, Int, Int) -> Node
+
+pub fn query(Node, Int, Int, Int) -> Int
+
+pub fn size(Node) -> Int
+
+// Errors
+
+// Types and methods
+pub(all) struct Line {
+  m : Int
+  b : Int
+} derive(@debug.Debug)
+
+pub enum Node {
+  Empty
+  Node(line~ : Line, left~ : Node, right~ : Node)
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

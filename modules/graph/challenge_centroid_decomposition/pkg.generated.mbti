@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/challenge_centroid_decomposition"
+
+// Values
+pub fn build_centroid(Int, ArrayView[(Int, Int)]) -> CentroidDecomp
+
+// Errors
+
+// Types and methods
+pub struct CentroidDecomp {
+  parent : Array[Int]
+  level : Array[Int]
+}
+
+// Type aliases
+
+// Traits
+

@@ -26,18 +26,18 @@ You should see the message from `cmd/main/main.mbt`.
 ## What to edit
 
 - `cmd/main/main.mbt` contains `fn main`.
-- Keep it **small**. Real algorithms and documentation live in `lib/`.
+- Keep it **small**. Real algorithms and documentation live in `modules/`.
 
 ## Example: call a library function
 
 Suppose you want to try `@avl_tree.avl_sorted` quickly.
 
-1. Add the package to `cmd/main/moon.pkg.json`:
+1. Add the package to `cmd/main/moon.pkg`:
 
 ```mbt nocheck
 {
   "import": [
-    "bobzhang/loop_invariants/lib/avl_tree"
+    "bobzhang/loop_invariants_data_structures/avl_tree"
   ]
 }
 ```

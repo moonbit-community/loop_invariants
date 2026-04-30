@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/fft"
+
+// Values
+pub const NTT_MOD : Int64 = 998244353
+
+pub fn ntt_convolution(ArrayView[Int64], ArrayView[Int64]) -> Array[Int64]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

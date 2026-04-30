@@ -1,0 +1,37 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_fenwick_range_add"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn apply_updates(RangeFenwick, ArrayView[(Int, Int, Int)]) -> RangeFenwick
+
+pub fn length(RangeFenwick) -> Int
+
+pub fn make(Int) -> RangeFenwick
+
+pub fn prefix_sum_range(RangeFenwick, Int) -> Int
+
+pub fn range_add(RangeFenwick, Int, Int, Int) -> RangeFenwick
+
+pub fn range_sum(RangeFenwick, Int, Int) -> Int
+
+// Errors
+
+// Types and methods
+type Fenwick derive(@debug.Debug)
+
+type Node derive(@debug.Debug)
+
+pub struct RangeFenwick {
+  bit1 : Fenwick
+  bit2 : Fenwick
+  n : Int
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,30 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_segment_tree_range_add_max"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn apply_updates(Node, Int, ArrayView[(Int, Int, Int)]) -> Node
+
+pub fn build(ArrayView[Int], Int, Int) -> Node
+
+pub fn max_value(Node) -> Int
+
+pub fn range_add(Node, Int, Int, Int, Int, Int) -> Node
+
+pub fn range_max(Node, Int, Int, Int, Int) -> Int
+
+// Errors
+
+// Types and methods
+pub enum Node {
+  Leaf(max~ : Int, tag~ : Int)
+  Branch(max~ : Int, tag~ : Int, left~ : Node, right~ : Node)
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

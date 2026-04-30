@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/challenge_binary_search_answer"
+
+// Values
+pub fn can_ship(ArrayView[Int], Int, Int) -> Bool
+
+pub fn min_capacity(ArrayView[Int], Int) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

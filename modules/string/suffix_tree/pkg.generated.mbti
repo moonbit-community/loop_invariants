@@ -1,0 +1,33 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_string/suffix_tree"
+
+// Values
+pub const SENTINEL : Char = '\x00'
+
+// Errors
+
+// Types and methods
+pub(all) struct Edge {
+  start : Int
+  end : Int
+  child : Int
+}
+
+pub(all) struct Node {
+  edges : Array[Edge]
+  mut leaf_count : Int
+}
+pub fn Node::Node() -> Self
+
+pub struct SuffixTree {
+  text : Array[Char]
+  nodes : Array[Node]
+}
+pub fn SuffixTree::SuffixTree(String) -> Self
+pub fn SuffixTree::contains(Self, String) -> Bool
+pub fn SuffixTree::count_occurrences(Self, String) -> Int
+
+// Type aliases
+
+// Traits
+

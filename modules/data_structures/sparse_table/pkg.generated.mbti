@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/sparse_table"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct SparseTableMin {
+  table : Array[Array[Int64]]
+  log_table : Array[Int]
+  n : Int
+}
+pub fn SparseTableMin::SparseTableMin(Array[Int64]) -> Self
+pub fn SparseTableMin::query(Self, Int, Int) -> Int64
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_geometry/polygon_triangulation"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn min_weight_triangulation(Array[Point]) -> Int64?
+
+// Errors
+
+// Types and methods
+pub(all) struct Point {
+  x : Int64
+  y : Int64
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
+

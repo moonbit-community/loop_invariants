@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/block_cut_tree"
+
+// Values
+pub fn build_block_cut_tree(Int, ArrayView[(Int, Int)]) -> BlockCutTree
+
+// Errors
+
+// Types and methods
+pub struct BlockCutTree {
+  original_vertices : Int
+  component_count : Int
+  adj : Array[Array[Int]]
+}
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/challenge_bipartite_matching_kuhn"
+
+// Values
+pub fn build_adj(Int, Int, ArrayView[(Int, Int)]) -> Array[Array[Int]]
+
+pub fn max_matching(Array[Array[Int]], Int) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

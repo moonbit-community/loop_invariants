@@ -1,0 +1,28 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_geometry/halfplane_intersection"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn halfplane_intersection(Array[HalfPlane]) -> Array[Point]?
+
+// Errors
+
+// Types and methods
+pub(all) struct HalfPlane {
+  p : Point
+  v : Point
+} derive(@debug.Debug)
+pub fn HalfPlane::from_points(Point, Point) -> Self
+
+pub(all) struct Point {
+  x : Double
+  y : Double
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

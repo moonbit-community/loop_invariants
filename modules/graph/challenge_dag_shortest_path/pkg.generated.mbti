@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/challenge_dag_shortest_path"
+
+// Values
+pub fn dag_shortest_paths(Int, ArrayView[(Int, Int, Int)], Int) -> Array[Int]?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,36 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_implicit_treap"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn[T] empty() -> Treap[T]
+
+pub fn[T : Hash] from_array(ArrayView[T]) -> Treap[T]
+
+pub fn[T] get(Treap[T], Int) -> T?
+
+pub fn[T : Hash] insert_at(Treap[T], Int, T) -> Treap[T]
+
+pub fn[T] merge(Treap[T], Treap[T]) -> Treap[T]
+
+pub fn[T] size(Treap[T]) -> Int
+
+pub fn[T] split(Treap[T], Int) -> (Treap[T], Treap[T])
+
+pub fn[T] to_array(Treap[T]) -> Array[T]
+
+// Errors
+
+// Types and methods
+pub enum Treap[T] {
+  Empty
+  Node(value~ : T, priority~ : Int, size~ : Int, left~ : Treap[T], right~ : Treap[T])
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

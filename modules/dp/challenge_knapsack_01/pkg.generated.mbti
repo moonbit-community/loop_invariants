@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_dp/challenge_knapsack_01"
+
+// Values
+pub fn knapsack_01(ArrayView[Int], ArrayView[Int], Int) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

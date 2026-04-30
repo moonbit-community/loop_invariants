@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_avl_set"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn[T : Compare] contains(Avl[T], T) -> Bool
+
+pub fn[T] empty() -> Avl[T]
+
+pub fn[T : Compare] from_array(ArrayView[T]) -> Avl[T]
+
+pub fn[T] inorder(Avl[T]) -> Array[T]
+
+pub fn[T : Compare] insert(Avl[T], T) -> Avl[T]
+
+pub fn[T] size(Avl[T]) -> Int
+
+// Errors
+
+// Types and methods
+pub enum Avl[T] {
+  Empty
+  Node(key~ : T, height~ : Int, left~ : Avl[T], right~ : Avl[T])
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/bipartite_matching"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct BipartiteGraph {
+  // private fields
+}
+pub fn BipartiteGraph::BipartiteGraph(Int, Int) -> Self
+pub fn BipartiteGraph::add_edge(Self, Int, Int) -> Unit
+pub fn BipartiteGraph::hopcroft_karp(Self) -> HopcroftKarp
+pub fn BipartiteGraph::hungarian(Self) -> Hungarian
+
+type HopcroftKarp
+pub fn HopcroftKarp::get_matching(Self) -> Array[(Int, Int)]
+pub fn HopcroftKarp::max_matching(Self) -> Int
+pub fn HopcroftKarp::min_vertex_cover(Self) -> (Array[Int], Array[Int])
+
+type Hungarian
+pub fn Hungarian::get_matching(Self) -> Array[(Int, Int)]
+pub fn Hungarian::max_matching(Self) -> Int
+
+// Type aliases
+
+// Traits
+

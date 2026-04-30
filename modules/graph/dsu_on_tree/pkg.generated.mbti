@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/dsu_on_tree"
+
+// Values
+pub fn subtree_color_mode_sum(Array[Array[Int]], Array[Int], root? : Int) -> Array[Int64]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/challenge_union_find_rollback"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct RollbackDSU {
+  parent : Array[Int]
+  size : Array[Int]
+  history : Array[(Int, Int)]
+}
+pub fn RollbackDSU::RollbackDSU(Int) -> Self
+pub fn RollbackDSU::find(Self, Int) -> Int
+pub fn RollbackDSU::rollback(Self, Int) -> Unit
+pub fn RollbackDSU::same(Self, Int, Int) -> Bool
+pub fn RollbackDSU::snapshot(Self) -> Int
+pub fn RollbackDSU::union(Self, Int, Int) -> Bool
+
+// Type aliases
+
+// Traits
+

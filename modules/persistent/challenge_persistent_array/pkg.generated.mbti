@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_array"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn[T] from_array(ArrayView[T]) -> PArray[T]
+
+pub fn[T] get_at(PArray[T], Int) -> T?
+
+pub fn[T] length(PArray[T]) -> Int
+
+pub fn[T] set_at(PArray[T], Int, T) -> PArray[T]
+
+pub fn[T] to_array(PArray[T]) -> Array[T]
+
+// Errors
+
+// Types and methods
+type Node[T] derive(@debug.Debug)
+
+pub struct PArray[T] {
+  root : Node[T]
+  n : Int
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

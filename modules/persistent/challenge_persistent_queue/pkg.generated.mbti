@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_queue"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn[T] dequeue(Queue[T]) -> (T, Queue[T])?
+
+pub fn[T] empty() -> Queue[T]
+
+pub fn[T] enqueue(Queue[T], T) -> Queue[T]
+
+pub fn[T] peek(Queue[T]) -> T?
+
+pub fn[T] size(Queue[T]) -> Int
+
+// Errors
+
+// Types and methods
+pub struct Queue[T] {
+  front : Stack[T]
+  back : Stack[T]
+} derive(@debug.Debug)
+
+type Stack[T] derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

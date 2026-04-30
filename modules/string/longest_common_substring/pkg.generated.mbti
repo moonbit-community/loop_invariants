@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_string/longest_common_substring"
+
+// Values
+pub fn longest_common_substring(String, String) -> LCSResult
+
+// Errors
+
+// Types and methods
+pub(all) struct LCSResult {
+  substring : String
+  length : Int
+}
+
+// Type aliases
+
+// Traits
+

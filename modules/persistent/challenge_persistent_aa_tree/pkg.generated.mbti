@@ -1,0 +1,32 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_aa_tree"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn[T : Compare] contains(Aa[T], T) -> Bool
+
+pub fn[T] empty() -> Aa[T]
+
+pub fn[T : Compare] from_array(ArrayView[T]) -> Aa[T]
+
+pub fn[T] inorder(Aa[T]) -> Array[T]
+
+pub fn[T : Compare] insert(Aa[T], T) -> Aa[T]
+
+pub fn[T] size(Aa[T]) -> Int
+
+// Errors
+
+// Types and methods
+pub enum Aa[T] {
+  Empty
+  Node(key~ : T, level~ : Int, left~ : Aa[T], right~ : Aa[T])
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

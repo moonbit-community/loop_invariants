@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/eulerian_path"
+
+// Values
+pub fn eulerian_path_directed(Int, ArrayView[(Int, Int)]) -> Array[Int]?
+
+pub fn eulerian_path_undirected(Int, ArrayView[(Int, Int)]) -> Array[Int]?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

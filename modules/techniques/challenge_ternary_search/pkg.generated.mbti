@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/challenge_ternary_search"
+
+// Values
+pub fn find_min_unimodal(ArrayView[Int]) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

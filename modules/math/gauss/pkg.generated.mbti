@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/gauss"
+
+// Values
+pub fn gauss_solve(Array[Array[Double]], Array[Double]) -> GaussResult
+
+// Errors
+
+// Types and methods
+pub struct GaussResult {
+  solution : Array[Double]
+  rank : Int
+  has_solution : Bool
+  has_unique_solution : Bool
+}
+
+// Type aliases
+
+// Traits
+

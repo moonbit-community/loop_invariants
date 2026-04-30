@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_geometry/point_in_polygon"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn point_in_polygon(Array[Point], Point) -> Location
+
+// Errors
+
+// Types and methods
+pub enum Location {
+  Inside
+  Outside
+  Boundary
+} derive(Eq, @debug.Debug)
+pub impl Show for Location
+
+pub(all) struct Point {
+  x : Int64
+  y : Int64
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
+

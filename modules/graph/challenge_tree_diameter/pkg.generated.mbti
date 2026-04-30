@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/challenge_tree_diameter"
+
+// Values
+pub fn tree_diameter(Int, ArrayView[(Int, Int)]) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/biconnected_components"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn biconnected_components(Int, ArrayView[(Int, Int)]) -> BiconnectedResult
+
+// Errors
+
+// Types and methods
+pub(all) struct BiconnectedResult {
+  components : Array[Array[(Int, Int)]]
+  articulation_points : Array[Int]
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

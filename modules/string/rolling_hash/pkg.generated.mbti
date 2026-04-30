@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_string/rolling_hash"
+
+// Values
+pub fn count_pattern_rabin_karp(String, String) -> Int
+
+pub fn find_pattern_rabin_karp(String, String) -> Array[Int]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+

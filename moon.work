@@ -1,0 +1,12 @@
+members = [
+  ".",
+  "./modules/data_structures",
+  "./modules/dp",
+  "./modules/geometry",
+  "./modules/graph",
+  "./modules/math",
+  "./modules/persistent",
+  "./modules/string",
+  "./modules/techniques",
+  "./modules/verified",
+]
