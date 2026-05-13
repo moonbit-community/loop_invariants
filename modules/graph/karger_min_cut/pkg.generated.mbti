@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/karger_min_cut"
+
+// Values
+pub fn karger_min_cut(Int, ArrayView[(Int, Int)], Int, seed~ : Int64) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
