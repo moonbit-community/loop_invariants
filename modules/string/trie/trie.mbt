@@ -824,24 +824,39 @@ test "trie autocomplete contents and skipped characters" {
   trie.insert("apple")
   let results = trie.autocomplete("car")
   debug_inspect(results.length(), content="4")
-  debug_inspect(results[0], content=(
-    #|"car"
-  ))
-  debug_inspect(results[1], content=(
-    #|"card"
-  ))
-  debug_inspect(results[2], content=(
-    #|"care"
-  ))
-  debug_inspect(results[3], content=(
-    #|"care"
-  ))
+  debug_inspect(
+    results[0],
+    content=(
+      #|"car"
+    ),
+  )
+  debug_inspect(
+    results[1],
+    content=(
+      #|"card"
+    ),
+  )
+  debug_inspect(
+    results[2],
+    content=(
+      #|"care"
+    ),
+  )
+  debug_inspect(
+    results[3],
+    content=(
+      #|"care"
+    ),
+  )
   debug_inspect(trie.search("ab"), content="true")
   debug_inspect(trie.delete("a-b"), content="true")
   debug_inspect(trie.search("ab"), content="false")
-  debug_inspect(trie.longest_prefix("app!zz"), content=(
-    #|"app"
-  ))
+  debug_inspect(
+    trie.longest_prefix("app!zz"),
+    content=(
+      #|"app"
+    ),
+  )
 }
 
 ///|
@@ -875,15 +890,24 @@ test "trie longest prefix" {
   trie.insert("a")
   trie.insert("app")
   trie.insert("apple")
-  debug_inspect(trie.longest_prefix("application"), content=(
-    #|"app"
-  ))
-  debug_inspect(trie.longest_prefix("apple"), content=(
-    #|"apple"
-  ))
-  debug_inspect(trie.longest_prefix("appetizer"), content=(
-    #|"app"
-  ))
+  debug_inspect(
+    trie.longest_prefix("application"),
+    content=(
+      #|"app"
+    ),
+  )
+  debug_inspect(
+    trie.longest_prefix("apple"),
+    content=(
+      #|"apple"
+    ),
+  )
+  debug_inspect(
+    trie.longest_prefix("appetizer"),
+    content=(
+      #|"app"
+    ),
+  )
 }
 
 ///|

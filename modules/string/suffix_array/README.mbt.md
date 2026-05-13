@@ -211,9 +211,12 @@ array. The substring is `text[sa[max_lcp_idx] : sa[max_lcp_idx] + max_lcp]`.
 ///|
 test "longest repeated substring" {
   let sa = @suffix_array.SuffixArray("banana")
-  debug_inspect(sa.longest_repeated_substring(), content=(
-    #|"ana"
-  ))
+  debug_inspect(
+    sa.longest_repeated_substring(),
+    content=(
+      #|"ana"
+    ),
+  )
 }
 ```
 
@@ -221,9 +224,12 @@ test "longest repeated substring" {
 ///|
 test "longest repeated substring overlap" {
   let sa = @suffix_array.SuffixArray("aaaaa")
-  debug_inspect(sa.longest_repeated_substring(), content=(
-    #|"aaaa"
-  ))
+  debug_inspect(
+    sa.longest_repeated_substring(),
+    content=(
+      #|"aaaa"
+    ),
+  )
 }
 ```
 

@@ -370,9 +370,12 @@ test "lcs banana ananas" {
   let result = @longest_common_substring.longest_common_substring(
     "banana", "ananas",
   )
-  debug_inspect(result.substring, content=(
-    #|"anana"
-  ))
+  debug_inspect(
+    result.substring,
+    content=(
+      #|"anana"
+    ),
+  )
   debug_inspect(result.length, content="5")
 }
 ```
@@ -381,9 +384,12 @@ test "lcs banana ananas" {
 ///|
 test "lcs no common substring" {
   let result = @longest_common_substring.longest_common_substring("abc", "xyz")
-  debug_inspect(result.substring, content=(
-    #|""
-  ))
+  debug_inspect(
+    result.substring,
+    content=(
+      #|""
+    ),
+  )
   debug_inspect(result.length, content="0")
 }
 ```
@@ -394,9 +400,12 @@ test "lcs identical strings" {
   let result = @longest_common_substring.longest_common_substring(
     "hello", "hello",
   )
-  debug_inspect(result.substring, content=(
-    #|"hello"
-  ))
+  debug_inspect(
+    result.substring,
+    content=(
+      #|"hello"
+    ),
+  )
   debug_inspect(result.length, content="5")
 }
 ```
@@ -407,9 +416,12 @@ test "lcs inside a longer word" {
   let result = @longest_common_substring.longest_common_substring(
     "mississippi", "sipp",
   )
-  debug_inspect(result.substring, content=(
-    #|"sipp"
-  ))
+  debug_inspect(
+    result.substring,
+    content=(
+      #|"sipp"
+    ),
+  )
   debug_inspect(result.length, content="4")
 }
 ```
@@ -420,9 +432,12 @@ test "lcs short overlap" {
   let result = @longest_common_substring.longest_common_substring(
     "xyzab", "tabc",
   )
-  debug_inspect(result.substring, content=(
-    #|"ab"
-  ))
+  debug_inspect(
+    result.substring,
+    content=(
+      #|"ab"
+    ),
+  )
   debug_inspect(result.length, content="2")
 }
 ```

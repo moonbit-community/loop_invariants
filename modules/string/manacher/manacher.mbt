@@ -497,33 +497,45 @@ test "manacher basic" {
 ///|
 test "manacher even palindrome" {
   let result = manacher("cbbd")
-  debug_inspect(result.longest_palindrome(), content=(
-    #|"bb"
-  ))
+  debug_inspect(
+    result.longest_palindrome(),
+    content=(
+      #|"bb"
+    ),
+  )
 }
 
 ///|
 test "manacher single char" {
   let result = manacher("a")
-  debug_inspect(result.longest_palindrome(), content=(
-    #|"a"
-  ))
+  debug_inspect(
+    result.longest_palindrome(),
+    content=(
+      #|"a"
+    ),
+  )
 }
 
 ///|
 test "manacher empty" {
   let result = manacher("")
-  debug_inspect(result.longest_palindrome(), content=(
-    #|""
-  ))
+  debug_inspect(
+    result.longest_palindrome(),
+    content=(
+      #|""
+    ),
+  )
 }
 
 ///|
 test "manacher all same" {
   let result = manacher("aaaa")
-  debug_inspect(result.longest_palindrome(), content=(
-    #|"aaaa"
-  ))
+  debug_inspect(
+    result.longest_palindrome(),
+    content=(
+      #|"aaaa"
+    ),
+  )
 }
 
 ///|
@@ -542,9 +554,12 @@ test "manacher count palindromes" {
 ///|
 test "manacher complex" {
   let result = manacher("abacaba")
-  debug_inspect(result.longest_palindrome(), content=(
-    #|"abacaba"
-  ))
+  debug_inspect(
+    result.longest_palindrome(),
+    content=(
+      #|"abacaba"
+    ),
+  )
 }
 
 ///|
@@ -558,9 +573,12 @@ test "manacher is palindrome" {
 ///|
 test "manacher racecar" {
   let result = manacher("racecar")
-  debug_inspect(result.longest_palindrome(), content=(
-    #|"racecar"
-  ))
+  debug_inspect(
+    result.longest_palindrome(),
+    content=(
+      #|"racecar"
+    ),
+  )
 }
 
 ///|

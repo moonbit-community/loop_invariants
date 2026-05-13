@@ -289,15 +289,24 @@ fn canon(s : String) -> String {
 
 ///|
 test "canonicalization by minimum rotation" {
-  debug_inspect(canon("abc"), content=(
-    #|"abc"
-  ))
-  debug_inspect(canon("bca"), content=(
-    #|"abc"
-  ))
-  debug_inspect(canon("acb"), content=(
-    #|"acb"
-  ))
+  debug_inspect(
+    canon("abc"),
+    content=(
+      #|"abc"
+    ),
+  )
+  debug_inspect(
+    canon("bca"),
+    content=(
+      #|"abc"
+    ),
+  )
+  debug_inspect(
+    canon("acb"),
+    content=(
+      #|"acb"
+    ),
+  )
 }
 ```
 

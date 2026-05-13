@@ -780,18 +780,27 @@ test "suffix automaton occurrence count" {
 test "suffix automaton longest common substring" {
   let sam = SuffixAutomaton::build("abracadabra")
   let lcs1 = sam.longest_common_substring("cadaver")
-  debug_inspect(lcs1, content=(
-    #|"cada"
-  ))
+  debug_inspect(
+    lcs1,
+    content=(
+      #|"cada"
+    ),
+  )
   debug_inspect(sam.longest_common_substring_length("cadaver"), content="4")
   let lcs2 = sam.longest_common_substring("abra")
-  debug_inspect(lcs2, content=(
-    #|"abra"
-  ))
+  debug_inspect(
+    lcs2,
+    content=(
+      #|"abra"
+    ),
+  )
   let lcs3 = sam.longest_common_substring("xyz")
-  debug_inspect(lcs3, content=(
-    #|""
-  ))
+  debug_inspect(
+    lcs3,
+    content=(
+      #|""
+    ),
+  )
 }
 
 ///|
