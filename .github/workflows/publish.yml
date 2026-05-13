@@ -19,11 +19,6 @@ on:
       - 'v*'
   workflow_dispatch:
 
-# Keep in sync with `.github/workflows/ci.yml`. The publish job should use
-# the same toolchain snapshot that gated the release.
-env:
-  MOONBIT_CACHE_KEY: "moonbit-2026-05-13"
-
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -31,19 +26,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Cache MoonBit toolchain
-        id: cache-moon
-        uses: actions/cache@v4
-        with:
-          path: ~/.moon
-          key: ${{ env.MOONBIT_CACHE_KEY }}-${{ runner.os }}-${{ runner.arch }}
-
-      - name: Install MoonBit (on cache miss)
-        if: steps.cache-moon.outputs.cache-hit != 'true'
-        run: curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s nightly
-
-      - name: Add MoonBit to PATH
-        run: echo "$HOME/.moon/bin" >> $GITHUB_PATH
+      # Use `latest` to match `.github/workflows/ci.yml`. See that file for
+      # the reasoning behind avoiding `nightly`.
+      - name: Set up MoonBit (latest)
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s latest
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - name: Show MoonBit version
         run: moon version --all

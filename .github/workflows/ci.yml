@@ -6,20 +6,6 @@ on:
   pull_request:
     branches: [main]
 
-# Pin the MoonBit toolchain by caching the installed `~/.moon` directory.
-#
-# `cli.moonbitlang.com` only serves the `nightly` and `latest` channels —
-# specific historical versions are not hosted, so an exact version-string
-# pin is not available at the installer level. Instead, this workflow keys
-# its cache off a manual label below: the first runner to populate the
-# cache "wins" and freezes the toolchain for everyone else until the label
-# changes. Bumping the toolchain = bump this label.
-env:
-  # Bump to roll the toolchain forward. Format: free-form; date suffix is
-  # only a convention. Both CI and Publish workflows must use matching
-  # values.
-  MOONBIT_CACHE_KEY: "moonbit-2026-05-13"
-
 jobs:
   check-and-test:
     strategy:
@@ -31,42 +17,24 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Cache MoonBit toolchain (Unix)
+      # Use the `latest` stable channel rather than `nightly`. Nightly has been
+      # bumping under us and breaking unrelated PRs (deque/queue constructor
+      # deprecations, then a Show -> Debug deprecation that broke 11 expect
+      # tests and produced ~200 warning sites). `latest` lags nightly but is
+      # stable enough to keep regular PRs green.
+      - name: Set up MoonBit (latest) — Unix
         if: runner.os != 'Windows'
-        id: cache-moon-unix
-        uses: actions/cache@v4
-        with:
-          path: ~/.moon
-          key: ${{ env.MOONBIT_CACHE_KEY }}-${{ runner.os }}-${{ runner.arch }}
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s latest
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
-      - name: Cache MoonBit toolchain (Windows)
+      - name: Set up MoonBit (latest) — Windows
         if: runner.os == 'Windows'
-        id: cache-moon-win
-        uses: actions/cache@v4
-        with:
-          path: ~\.moon
-          key: ${{ env.MOONBIT_CACHE_KEY }}-${{ runner.os }}-${{ runner.arch }}
-
-      - name: Install MoonBit (Unix, on cache miss)
-        if: runner.os != 'Windows' && steps.cache-moon-unix.outputs.cache-hit != 'true'
-        run: curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s nightly
-
-      - name: Install MoonBit (Windows, on cache miss)
-        if: runner.os == 'Windows' && steps.cache-moon-win.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
-          $env:MOONBIT_INSTALL_VERSION = "nightly"
+          $env:MOONBIT_INSTALL_VERSION = "latest"
           Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
           iwr -useb https://cli.moonbitlang.com/install/powershell.ps1 | iex
-
-      - name: Add MoonBit to PATH (Unix)
-        if: runner.os != 'Windows'
-        run: echo "$HOME/.moon/bin" >> $GITHUB_PATH
-
-      - name: Add MoonBit to PATH (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
           "$env:USERPROFILE\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
 
       - name: Show MoonBit version
