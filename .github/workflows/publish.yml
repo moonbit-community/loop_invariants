@@ -19,6 +19,11 @@ on:
       - 'v*'
   workflow_dispatch:
 
+# Keep in sync with `.github/workflows/ci.yml` — publishing should use the
+# same toolchain that gated the release.
+env:
+  MOONBIT_VERSION: "0.1.20260512"
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -26,9 +31,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Set up MoonBit (nightly)
+      - name: Set up MoonBit
         run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s nightly
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s "${MOONBIT_VERSION}"
           echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - name: Show MoonBit version
