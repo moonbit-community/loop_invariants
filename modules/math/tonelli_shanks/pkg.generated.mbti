@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/tonelli_shanks"
+
+// Values
+pub fn tonelli_shanks(Int64, Int64) -> Int64?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
