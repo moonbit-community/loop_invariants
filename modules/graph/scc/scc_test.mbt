@@ -11,7 +11,7 @@
 /// ```
 test "scc single cycle" {
   let adj : Array[Array[Int]] = [[1], [2], [0]]
-  let result = find_sccs(3, adj)
+  let result = @scc.find_sccs(3, adj)
   inspect(result.num_sccs, content="1")
   inspect(result.component[0] == result.component[1], content="true")
   inspect(result.component[1] == result.component[2], content="true")
@@ -27,7 +27,7 @@ test "scc single cycle" {
 /// ```
 test "scc two components" {
   let adj : Array[Array[Int]] = [[1], [], [3], []]
-  let result = find_sccs(4, adj)
+  let result = @scc.find_sccs(4, adj)
   inspect(result.num_sccs, content="4")
 }
 
@@ -41,7 +41,7 @@ test "scc two components" {
 /// ```
 test "scc with dag" {
   let adj : Array[Array[Int]] = [[1], [2], [0, 3], []]
-  let result = find_sccs(4, adj)
+  let result = @scc.find_sccs(4, adj)
   inspect(result.num_sccs, content="2")
   // {0,1,2} same SCC
   inspect(result.component[0] == result.component[1], content="true")
@@ -54,8 +54,8 @@ test "scc with dag" {
 /// Test that Kosaraju produces same result as Tarjan.
 test "scc kosaraju same result" {
   let adj : Array[Array[Int]] = [[1], [2], [0, 3], []]
-  let tarjan = find_sccs(4, adj)
-  let kosaraju = find_sccs_kosaraju(4, adj)
+  let tarjan = @scc.find_sccs(4, adj)
+  let kosaraju = @scc.find_sccs_kosaraju(4, adj)
   inspect(tarjan.num_sccs == kosaraju.num_sccs, content="true")
 }
 
@@ -63,7 +63,7 @@ test "scc kosaraju same result" {
 /// Test condensation graph has correct edges.
 test "scc condensation graph" {
   let adj : Array[Array[Int]] = [[1], [2], [0, 3], []]
-  let result = find_sccs(4, adj)
+  let result = @scc.find_sccs(4, adj)
 
   // Should have edge from {0,1,2}'s SCC to {3}'s SCC
   let scc_012 = result.component[0]
@@ -81,7 +81,7 @@ test "scc condensation graph" {
 /// Test empty graph.
 test "scc empty" {
   let adj : Array[Array[Int]] = []
-  let result = find_sccs(0, adj)
+  let result = @scc.find_sccs(0, adj)
   inspect(result.num_sccs, content="0")
 }
 
@@ -89,7 +89,7 @@ test "scc empty" {
 /// Test single vertex.
 test "scc single vertex" {
   let adj : Array[Array[Int]] = [[]]
-  let result = find_sccs(1, adj)
+  let result = @scc.find_sccs(1, adj)
   inspect(result.num_sccs, content="1")
   inspect(result.component[0], content="0")
 }
@@ -98,7 +98,7 @@ test "scc single vertex" {
 /// Test self-loop (still single SCC).
 test "scc self loop" {
   let adj : Array[Array[Int]] = [[0]]
-  let result = find_sccs(1, adj)
+  let result = @scc.find_sccs(1, adj)
   inspect(result.num_sccs, content="1")
 }
 
@@ -112,7 +112,7 @@ test "scc self loop" {
 ///   Solution: x₀ = true, x₁ = true
 /// ```
 test "two sat satisfiable" {
-  let sat = TwoSAT::TwoSAT(2)
+  let sat = @scc.TwoSAT::@scc.TwoSAT(2)
   sat.add_clause(0, false, 1, false) // x₀ OR x₁
   sat.add_clause(0, true, 1, false) // NOT x₀ OR x₁
   sat.add_clause(0, false, 1, true) // x₀ OR NOT x₁
@@ -131,7 +131,7 @@ test "two sat satisfiable" {
 ///   Contradiction!
 /// ```
 test "two sat unsatisfiable" {
-  let sat = TwoSAT::TwoSAT(1)
+  let sat = @scc.TwoSAT::@scc.TwoSAT(1)
   sat.add_clause(0, false, 0, false) // x₀ OR x₀ = x₀
   sat.add_clause(0, true, 0, true) // NOT x₀ OR NOT x₀ = NOT x₀
   match sat.solve() {
@@ -144,7 +144,7 @@ test "two sat unsatisfiable" {
 /// Test SCC sizes sum to n.
 test "scc sizes" {
   let adj : Array[Array[Int]] = [[1], [2], [0, 3], []]
-  let result = find_sccs(4, adj)
+  let result = @scc.find_sccs(4, adj)
   let total = for i = 0, total = 0; i < result.scc_sizes.length(); {
     continue i + 1, total + result.scc_sizes[i]
   } nobreak {
@@ -175,7 +175,7 @@ test "scc sizes" {
 /// ```
 test "scc complex" {
   let adj : Array[Array[Int]] = [[1], [0, 2], [3], [2]]
-  let result = find_sccs(4, adj)
+  let result = @scc.find_sccs(4, adj)
   inspect(result.num_sccs, content="2")
   // {0,1} same SCC
   inspect(result.component[0] == result.component[1], content="true")

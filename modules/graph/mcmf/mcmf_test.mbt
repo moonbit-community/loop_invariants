@@ -16,7 +16,7 @@
 ///   Max flow = 3, paths found by cost order
 /// ```
 test "mcmf basic" {
-  let mcmf = MinCostMaxFlow::MinCostMaxFlow(4)
+  let mcmf = @mcmf.MinCostMaxFlow::@mcmf.MinCostMaxFlow(4)
   mcmf.add_edge(0, 1, 2L, 1L)
   mcmf.add_edge(0, 2, 1L, 2L)
   mcmf.add_edge(1, 2, 1L, 1L)
@@ -31,7 +31,7 @@ test "mcmf basic" {
 ///|
 /// Test simple single edge.
 test "mcmf simple" {
-  let mcmf = MinCostMaxFlow::MinCostMaxFlow(2)
+  let mcmf = @mcmf.MinCostMaxFlow::@mcmf.MinCostMaxFlow(2)
   mcmf.add_edge(0, 1, 5L, 2L)
   let (flow, cost) = mcmf.compute(0, 1)
   inspect(flow, content="5")
@@ -41,7 +41,7 @@ test "mcmf simple" {
 ///|
 /// Test disconnected network.
 test "mcmf no path" {
-  let mcmf = MinCostMaxFlow::MinCostMaxFlow(3)
+  let mcmf = @mcmf.MinCostMaxFlow::@mcmf.MinCostMaxFlow(3)
   mcmf.add_edge(0, 1, 1L, 1L)
   // No edge to vertex 2
   let (flow, cost) = mcmf.compute(0, 2)
@@ -61,7 +61,7 @@ test "mcmf no path" {
 ///   Total: 2*1 + 2*3 = 8
 /// ```
 test "mcmf parallel edges" {
-  let mcmf = MinCostMaxFlow::MinCostMaxFlow(2)
+  let mcmf = @mcmf.MinCostMaxFlow::@mcmf.MinCostMaxFlow(2)
   mcmf.add_edge(0, 1, 2L, 1L) // Cheap
   mcmf.add_edge(0, 1, 2L, 3L) // Expensive
   let (flow, cost) = mcmf.compute(0, 1)
@@ -72,7 +72,7 @@ test "mcmf parallel edges" {
 ///|
 /// Test flow limit functionality.
 test "mcmf flow limit" {
-  let mcmf = MinCostMaxFlow::MinCostMaxFlow(2)
+  let mcmf = @mcmf.MinCostMaxFlow::@mcmf.MinCostMaxFlow(2)
   mcmf.add_edge(0, 1, 10L, 1L)
   let (flow, cost) = mcmf.compute_with_limit(0, 1, 5L)
   inspect(flow, content="5")
@@ -92,7 +92,7 @@ test "mcmf flow limit" {
 /// ```
 test "assignment basic" {
   let cost : Array[Array[Int64]] = [[1L, 3L], [2L, 2L]]
-  inspect(solve_assignment(cost), content="3")
+  inspect(@mcmf.solve_assignment(cost), content="3")
 }
 
 ///|
@@ -108,7 +108,7 @@ test "assignment basic" {
 /// ```
 test "assignment larger" {
   let cost : Array[Array[Int64]] = [[9L, 2L, 7L], [6L, 4L, 3L], [5L, 8L, 1L]]
-  let result = solve_assignment(cost)
+  let result = @mcmf.solve_assignment(cost)
   inspect(result, content="9")
 }
 
@@ -127,7 +127,7 @@ test "assignment larger" {
 ///           = 3*2 + 3*3 = 15
 /// ```
 test "mcmf diamond" {
-  let mcmf = MinCostMaxFlow::MinCostMaxFlow(4)
+  let mcmf = @mcmf.MinCostMaxFlow::@mcmf.MinCostMaxFlow(4)
   mcmf.add_edge(0, 1, 3L, 1L)
   mcmf.add_edge(0, 2, 3L, 2L)
   mcmf.add_edge(1, 3, 3L, 1L)

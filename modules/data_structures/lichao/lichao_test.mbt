@@ -12,7 +12,7 @@
 ///   x=-3: 2(-3)+1 = -5
 /// ```
 test "lichao basic max" {
-  let tree = LiChaoTree::LiChaoTree(-100L, 100L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(-100L, 100L)
 
   // Insert y = 2x + 1
   tree.insert(2L, 1L)
@@ -36,7 +36,7 @@ test "lichao basic max" {
 ///   At x=-2: max(-3, 7, 0) = 7 (y = -x + 5 wins)
 /// ```
 test "lichao multiple lines max" {
-  let tree = LiChaoTree::LiChaoTree(-10L, 10L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(-10L, 10L)
   tree.insert(2L, 1L)
   tree.insert(-1L, 5L)
   tree.insert(1L, 2L)
@@ -49,7 +49,7 @@ test "lichao multiple lines max" {
 ///|
 /// Test single line on positive range.
 test "lichao single line" {
-  let tree = LiChaoTree::LiChaoTree(0L, 100L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(0L, 100L)
   tree.insert(3L, 5L) // y = 3x + 5
   inspect(tree.query(0L), content="5")
   inspect(tree.query(10L), content="35")
@@ -61,7 +61,7 @@ test "lichao single line" {
 ///
 /// When all lines are horizontal, the one with highest intercept wins.
 test "lichao horizontal lines" {
-  let tree = LiChaoTree::LiChaoTree(0L, 100L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(0L, 100L)
   tree.insert(0L, 10L) // y = 10
   tree.insert(0L, 20L) // y = 20
   tree.insert(0L, 5L) // y = 5
@@ -93,7 +93,7 @@ test "lichao horizontal lines" {
 ///        0   5   10
 /// ```
 test "lichao crossing lines" {
-  let tree = LiChaoTree::LiChaoTree(-100L, 100L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(-100L, 100L)
   tree.insert(1L, 0L) // y = x
   tree.insert(-1L, 10L) // y = -x + 10
   inspect(tree.query(0L), content="10") // max(0, 10) = 10
@@ -112,7 +112,7 @@ test "lichao crossing lines" {
 ///   At x=-2: min(-3, 7) = -3
 /// ```
 test "lichao min basic" {
-  let tree = LiChaoTreeMin::LiChaoTreeMin(-100L, 100L)
+  let tree = @lichao.LiChaoTreeMin::@lichao.LiChaoTreeMin(-100L, 100L)
   tree.insert(2L, 1L)
   tree.insert(-1L, 5L)
   inspect(tree.query(0L), content="1")
@@ -123,7 +123,7 @@ test "lichao min basic" {
 ///|
 /// Test minimum with multiple lines.
 test "lichao min multiple" {
-  let tree = LiChaoTreeMin::LiChaoTreeMin(0L, 100L)
+  let tree = @lichao.LiChaoTreeMin::@lichao.LiChaoTreeMin(0L, 100L)
   tree.insert(1L, 100L) // y = x + 100
   tree.insert(2L, 0L) // y = 2x
   tree.insert(-1L, 200L) // y = -x + 200
@@ -141,7 +141,7 @@ test "lichao min multiple" {
 ///|
 /// Test with large coordinate range.
 test "lichao large range" {
-  let tree = LiChaoTree::LiChaoTree(-1000000000L, 1000000000L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(-1000000000L, 1000000000L)
   tree.insert(1L, 0L)
   tree.insert(-1L, 0L)
   inspect(tree.query(0L), content="0")
@@ -152,7 +152,7 @@ test "lichao large range" {
 ///|
 /// Test node efficiency (lazy allocation).
 test "lichao node efficiency" {
-  let tree = LiChaoTree::LiChaoTree(0L, 1000000L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(0L, 1000000L)
 
   // Insert several lines
   for i in 0..<10 {
@@ -167,7 +167,7 @@ test "lichao node efficiency" {
 ///|
 /// Test query on empty tree (no lines inserted).
 test "lichao empty query" {
-  let tree = LiChaoTree::LiChaoTree(0L, 100L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(0L, 100L)
 
   // Query on empty tree returns minimum value
   let result = tree.query(50L)
@@ -180,7 +180,7 @@ test "lichao empty query" {
 /// For parallel lines with same slope, the one with highest intercept
 /// dominates everywhere (for max queries).
 test "lichao parallel lines" {
-  let tree = LiChaoTree::LiChaoTree(0L, 100L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(0L, 100L)
   tree.insert(2L, 1L) // y = 2x + 1
   tree.insert(2L, 5L) // y = 2x + 5
   tree.insert(2L, 3L) // y = 2x + 3
@@ -193,7 +193,7 @@ test "lichao parallel lines" {
 ///|
 /// Test steep slopes (large magnitude).
 test "lichao steep slopes" {
-  let tree = LiChaoTree::LiChaoTree(-10L, 10L)
+  let tree = @lichao.LiChaoTree::@lichao.LiChaoTree(-10L, 10L)
   tree.insert(100L, 0L) // Very steep positive
   tree.insert(-100L, 0L) // Very steep negative
 
@@ -210,7 +210,7 @@ test "lichao steep slopes" {
 ///|
 /// Test node count for minimum tree.
 test "lichao min node count" {
-  let tree = LiChaoTreeMin::LiChaoTreeMin(0L, 1000L)
+  let tree = @lichao.LiChaoTreeMin::@lichao.LiChaoTreeMin(0L, 1000L)
   tree.insert(1L, 0L)
   tree.insert(-1L, 100L)
   tree.insert(0L, 50L)

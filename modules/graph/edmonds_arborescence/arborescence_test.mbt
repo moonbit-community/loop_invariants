@@ -25,14 +25,14 @@
 ///   Cost: 1 + 1 + 1 = 3
 /// ```
 test "arborescence basic" {
-  let edges : Array[Edge] = [
+  let edges : Array[@edmonds_arborescence.Edge] = [
     { from: 0, to: 1, weight: 1L },
     { from: 0, to: 2, weight: 5L },
     { from: 1, to: 2, weight: 1L },
     { from: 1, to: 3, weight: 2L },
     { from: 2, to: 3, weight: 1L },
   ]
-  let res = min_arborescence(4, edges, 0).unwrap()
+  let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
   inspect(res.cost, content="3")
   inspect(res.parent[0], content="-1") // root
   inspect(res.parent[1], content="0") // 0→1
@@ -70,14 +70,14 @@ test "arborescence basic" {
 ///   Algorithm contracts this cycle and recurses.
 /// ```
 test "arborescence cycle" {
-  let edges : Array[Edge] = [
+  let edges : Array[@edmonds_arborescence.Edge] = [
     { from: 0, to: 1, weight: 1L },
     { from: 1, to: 2, weight: 1L },
     { from: 2, to: 1, weight: 1L },
     { from: 2, to: 3, weight: 1L },
     { from: 0, to: 3, weight: 5L },
   ]
-  let res = min_arborescence(4, edges, 0).unwrap()
+  let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
 
   // Optimal: 0→1→2→3 with cost 3
   inspect(res.cost, content="3")
@@ -94,19 +94,19 @@ test "arborescence cycle" {
 ///   Root = 0, but vertices 2 and 3 are unreachable.
 /// ```
 test "arborescence unreachable" {
-  let edges : Array[Edge] = [
+  let edges : Array[@edmonds_arborescence.Edge] = [
     { from: 0, to: 1, weight: 1L },
     { from: 2, to: 3, weight: 1L },
   ]
-  let res = min_arborescence(4, edges, 0)
+  let res = @edmonds_arborescence.min_arborescence(4, edges, 0)
   inspect(res is None, content="true")
 }
 
 ///|
 /// Test with single vertex (trivial case).
 test "arborescence single vertex" {
-  let edges : Array[Edge] = []
-  let res = min_arborescence(1, edges, 0).unwrap()
+  let edges : Array[@edmonds_arborescence.Edge] = []
+  let res = @edmonds_arborescence.min_arborescence(1, edges, 0).unwrap()
   inspect(res.cost, content="0")
   inspect(res.parent[0], content="-1")
 }
@@ -114,15 +114,29 @@ test "arborescence single vertex" {
 ///|
 /// Test with invalid inputs.
 test "arborescence invalid" {
-  let edges : Array[Edge] = [{ from: 0, to: 1, weight: 1L }]
+  let edges : Array[@edmonds_arborescence.Edge] = [
+    { from: 0, to: 1, weight: 1L },
+  ]
 
   // Invalid root
-  inspect(min_arborescence(2, edges, -1) is None, content="true")
-  inspect(min_arborescence(2, edges, 5) is None, content="true")
+  inspect(
+    @edmonds_arborescence.min_arborescence(2, edges, -1) is None,
+    content="true",
+  )
+  inspect(
+    @edmonds_arborescence.min_arborescence(2, edges, 5) is None,
+    content="true",
+  )
 
   // Invalid n
-  inspect(min_arborescence(0, edges, 0) is None, content="true")
-  inspect(min_arborescence(-1, edges, 0) is None, content="true")
+  inspect(
+    @edmonds_arborescence.min_arborescence(0, edges, 0) is None,
+    content="true",
+  )
+  inspect(
+    @edmonds_arborescence.min_arborescence(-1, edges, 0) is None,
+    content="true",
+  )
 }
 
 ///|
@@ -144,12 +158,12 @@ test "arborescence invalid" {
 ///
 /// Should pick direct path 0→2 (cost 2) over 0→1→2 (cost 1+3=4)
 test "arborescence path choice" {
-  let edges : Array[Edge] = [
+  let edges : Array[@edmonds_arborescence.Edge] = [
     { from: 0, to: 1, weight: 1L },
     { from: 0, to: 2, weight: 2L },
     { from: 1, to: 2, weight: 3L },
   ]
-  let res = min_arborescence(3, edges, 0).unwrap()
+  let res = @edmonds_arborescence.min_arborescence(3, edges, 0).unwrap()
   inspect(res.cost, content="3") // 1 + 2 = 3
   inspect(res.parent[1], content="0")
   inspect(res.parent[2], content="0") // Direct edge, not via 1

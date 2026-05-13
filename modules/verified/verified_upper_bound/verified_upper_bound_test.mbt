@@ -7,8 +7,8 @@ test "verified_upper_bound_examples" {
   xs[3] = 7
   xs[4] = 9
   xs[5] = 9
-  assert_eq(upper_bound(xs, 0), 0)
-  assert_eq(upper_bound(xs, 3), 3)
-  assert_eq(upper_bound(xs, 8), 4)
-  assert_eq(upper_bound(xs, 9), 6)
+  assert_eq(@verified_upper_bound.upper_bound(xs, 0), 0)
+  assert_eq(@verified_upper_bound.upper_bound(xs, 3), 3)
+  assert_eq(@verified_upper_bound.upper_bound(xs, 8), 4)
+  assert_eq(@verified_upper_bound.upper_bound(xs, 9), 6)
 }
