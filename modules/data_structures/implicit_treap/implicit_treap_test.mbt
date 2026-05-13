@@ -5,7 +5,7 @@
 ///|
 /// Test basic insert and get operations.
 test "implicit treap basic" {
-  let treap = @implicit_treap.ImplicitTreap::@implicit_treap.ImplicitTreap()
+  let treap = @implicit_treap.ImplicitTreap()
 
   // Insert elements: [10, 20, 30]
   treap.insert(0, 10L)
@@ -28,7 +28,7 @@ test "implicit treap basic" {
 ///   Result: [10, 20, 30]
 /// ```
 test "implicit treap insert at position" {
-  let treap = @implicit_treap.ImplicitTreap::@implicit_treap.ImplicitTreap()
+  let treap = @implicit_treap.ImplicitTreap()
 
   // Build [10, 30]
   treap.insert(0, 10L)
@@ -146,7 +146,7 @@ test "implicit treap set" {
 ///|
 /// Test push/pop operations (deque behavior).
 test "implicit treap push pop" {
-  let treap = @implicit_treap.ImplicitTreap::@implicit_treap.ImplicitTreap()
+  let treap = @implicit_treap.ImplicitTreap()
   treap.push_back(1L)
   treap.push_back(2L)
   treap.push_front(0L)
@@ -160,7 +160,7 @@ test "implicit treap push pop" {
 ///|
 /// Stress test with larger sequence.
 test "implicit treap stress" {
-  let treap = @implicit_treap.ImplicitTreap::@implicit_treap.ImplicitTreap()
+  let treap = @implicit_treap.ImplicitTreap()
 
   // Build sequence 0..99
   for i in 0..<100 {

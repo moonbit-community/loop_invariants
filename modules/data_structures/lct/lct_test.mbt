@@ -12,7 +12,7 @@
 /// ```
 test "lct basic operations" {
   // Create a forest of 5 isolated nodes
-  let lct = @lct.LinkCutTree::@lct.LinkCutTree(5)
+  let lct = @lct.LinkCutTree(5)
 
   // Initially, each node is its own root
   inspect(lct.find_root(0), content="0")
@@ -39,7 +39,7 @@ test "lct basic operations" {
 ///   After cut(2): {0 <- 1} and {2 <- 3}
 /// ```
 test "lct cut operation" {
-  let lct = @lct.LinkCutTree::@lct.LinkCutTree(4)
+  let lct = @lct.LinkCutTree(4)
 
   // Build tree: 0 <- 1 <- 2 <- 3
   lct.link(1, 0)
@@ -108,7 +108,7 @@ test "lct path sum" {
 ///   LCA::LCA(6, 3) = 1
 /// ```
 test "lct lca" {
-  let lct = @lct.LinkCutTree::@lct.LinkCutTree(7)
+  let lct = @lct.LinkCutTree(7)
 
   // Build tree structure
   lct.link(1, 0)
@@ -137,7 +137,7 @@ test "lct lca" {
 ///   After make_root(2): 2 becomes root
 /// ```
 test "lct make root" {
-  let lct = @lct.LinkCutTree::@lct.LinkCutTree(4)
+  let lct = @lct.LinkCutTree(4)
 
   // Build tree: 0 <- 1 <- 2 <- 3
   lct.link(1, 0)
@@ -155,7 +155,7 @@ test "lct make root" {
 /// Stress test with larger tree.
 test "lct stress test" {
   let n = 50
-  let lct = @lct.LinkCutTree::@lct.LinkCutTree(n)
+  let lct = @lct.LinkCutTree(n)
 
   // Build a path: 0 <- 1 <- 2 <- ... <- 49
   for i in 1..<n {
@@ -204,7 +204,7 @@ test "lct stress test" {
 ///|
 /// Test @lct.DynamicForest wrapper.
 test "dynamic forest" {
-  let forest = @lct.DynamicForest::@lct.DynamicForest(5)
+  let forest = @lct.DynamicForest(5)
 
   // Initially disconnected
   inspect(forest.connected(0, 1), content="false")
