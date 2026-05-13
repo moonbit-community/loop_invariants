@@ -172,7 +172,7 @@ fn LazySegmentTree::query_helper(
 
 ///|
 test "lazy segment tree basic" {
-  let arr = [1, 2, 3, 4, 5]
+  let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
   let st = LazySegmentTree(arr)
 
   // Initial sums
@@ -325,7 +325,7 @@ fn SetSegmentTree::query_helper(
 
 ///|
 test "set segment tree" {
-  let arr = [1, 2, 3, 4, 5]
+  let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
   let st = SetSegmentTree(arr)
   assert_eq(st.range_sum(0, 5), 15L)
 
@@ -482,7 +482,7 @@ fn RMQSegmentTree::min_helper(
 
 ///|
 test "RMQ segment tree" {
-  let arr = [3, 1, 4, 1, 5, 9, 2, 6]
+  let arr : ReadOnlyArray[Int] = [3, 1, 4, 1, 5, 9, 2, 6]
   let st = RMQSegmentTree(arr)
   assert_eq(st.range_min(0, 8), 1L) // min of all
   assert_eq(st.range_min(0, 4), 1L) // min of [3,1,4,1]
@@ -786,7 +786,7 @@ fn IterativeSegmentTree::range_sum(
 
 ///|
 test "iterative segment tree" {
-  let arr = [1, 2, 3, 4, 5]
+  let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
   let st = iterative_segment_tree_build(arr)
   assert_eq(st.range_sum(0, 5), 15L)
   assert_eq(st.range_sum(0, 3), 6L)
@@ -889,7 +889,7 @@ fn MaxCountSegmentTree::range_query(
 
 ///|
 test "max count segment tree" {
-  let arr = [3, 1, 4, 1, 5, 9, 2, 6]
+  let arr : ReadOnlyArray[Int] = [3, 1, 4, 1, 5, 9, 2, 6]
   let st = max_count_segment_tree_build(arr)
   let result = st.range_query(0, 8)
   assert_eq(result.max_val, 9L)
@@ -901,7 +901,7 @@ test "max count segment tree" {
   assert_eq(result2.count, 1)
 
   // Test with duplicates
-  let arr2 = [3, 5, 5, 2, 5, 1]
+  let arr2 : ReadOnlyArray[Int] = [3, 5, 5, 2, 5, 1]
   let st2 = max_count_segment_tree_build(arr2)
   let result3 = st2.range_query(0, 6)
   assert_eq(result3.max_val, 5L)

@@ -89,9 +89,9 @@ fn single_number(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "single number" {
-  let nums = [2, 2, 1]
+  let nums : ReadOnlyArray[Int] = [2, 2, 1]
   assert_eq(single_number(nums), 1)
-  let nums2 = [4, 1, 2, 1, 2]
+  let nums2 : ReadOnlyArray[Int] = [4, 1, 2, 1, 2]
   assert_eq(single_number(nums2), 4)
 }
 
@@ -123,11 +123,11 @@ fn missing_number(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "missing number" {
-  let nums = [3, 0, 1]
+  let nums : ReadOnlyArray[Int] = [3, 0, 1]
   assert_eq(missing_number(nums), 2)
-  let nums2 = [0, 1]
+  let nums2 : ReadOnlyArray[Int] = [0, 1]
   assert_eq(missing_number(nums2), 2)
-  let nums3 = [9, 6, 4, 2, 3, 5, 7, 0, 1]
+  let nums3 : ReadOnlyArray[Int] = [9, 6, 4, 2, 3, 5, 7, 0, 1]
   assert_eq(missing_number(nums3), 8)
 }
 
@@ -199,7 +199,7 @@ fn generate_subsets(elements : ArrayView[Int]) -> Array[Array[Int]] {
 
 ///|
 test "generate subsets" {
-  let elements = [1, 2, 3]
+  let elements : ReadOnlyArray[Int] = [1, 2, 3]
   let subsets = generate_subsets(elements)
   assert_eq(subsets.length(), 8) // 2^3 = 8
 }
@@ -376,7 +376,7 @@ fn combined_game_winner(sg_values : ArrayView[Int]) -> String {
 ///|
 test "combined game" {
   // Game 1: 3 stones (sg=3), Game 2: 5 stones (sg=1), Game 3: 4 stones (sg=0)
-  let sg_values = [3, 1, 0]
+  let sg_values : ReadOnlyArray[Int] = [3, 1, 0]
   // XOR = 3 ^ 1 ^ 0 = 2 != 0, so First wins
   assert_eq(combined_game_winner(sg_values), "First")
 }
@@ -433,7 +433,7 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "maximum xor pair" {
-  let nums = [3, 10, 5, 25, 2, 8]
+  let nums : ReadOnlyArray[Int] = [3, 10, 5, 25, 2, 8]
   assert_eq(maximum_xor_pair(nums), 28) // 25 ^ 5 = 28
 }
 

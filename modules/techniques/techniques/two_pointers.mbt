@@ -75,7 +75,7 @@ fn two_sum_two_pointer(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
 
 ///|
 test "two sum sorted" {
-  let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   debug_inspect(two_sum_two_pointer(arr, 10), content="Some((0, 8))") // 1 + 9
   debug_inspect(two_sum_two_pointer(arr, 7), content="Some((0, 5))") // 1 + 6
   debug_inspect(two_sum_two_pointer(arr, 100), content="None")
@@ -249,7 +249,7 @@ fn max_water_container(heights : ArrayView[Int]) -> Int {
 
 ///|
 test "max water container" {
-  let heights = [1, 8, 6, 2, 5, 4, 8, 3, 7]
+  let heights : ReadOnlyArray[Int] = [1, 8, 6, 2, 5, 4, 8, 3, 7]
   assert_eq(max_water_container(heights), 49) // indices 1 and 8: min(8,7) * 7
 }
 
@@ -313,7 +313,7 @@ fn trap_water_two_pointer(height : ArrayView[Int]) -> Int {
 
 ///|
 test "trap rain water" {
-  let height = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
+  let height : ReadOnlyArray[Int] = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
   assert_eq(trap_water_two_pointer(height), 6)
 }
 
@@ -385,7 +385,7 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
 
 ///|
 test "sliding window maximum" {
-  let nums = [1, 3, -1, -3, 5, 3, 6, 7]
+  let nums : ReadOnlyArray[Int] = [1, 3, -1, -3, 5, 3, 6, 7]
   let result = sliding_window_max_deque(nums, 3)
   assert_eq(result.length(), 6)
   assert_eq(result[0], 3)
@@ -642,9 +642,9 @@ fn subarray_sum_equals_k(nums : ArrayView[Int], k : Int) -> Int {
 
 ///|
 test "subarray sum equals k" {
-  let nums = [1, 1, 1]
+  let nums : ReadOnlyArray[Int] = [1, 1, 1]
   assert_eq(subarray_sum_equals_k(nums, 2), 2)
-  let nums2 = [1, 2, 3]
+  let nums2 : ReadOnlyArray[Int] = [1, 2, 3]
   assert_eq(subarray_sum_equals_k(nums2, 3), 2)
 }
 
@@ -981,6 +981,6 @@ test "partition" {
 
 ///|
 test "fruit into baskets" {
-  let fruits = [1, 2, 1, 2]
+  let fruits : ReadOnlyArray[Int] = [1, 2, 1, 2]
   inspect(fruit_into_baskets(fruits), content="4")
 }

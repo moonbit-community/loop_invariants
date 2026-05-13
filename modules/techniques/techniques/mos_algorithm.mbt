@@ -163,7 +163,7 @@ fn mos_algorithm_range_sum(
 
 ///|
 test "mos algorithm range sum" {
-  let arr = [1, 2, 3, 4, 5]
+  let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
   let queries = [(0, 3), (1, 4), (0, 5)]
   let results = mos_algorithm_range_sum(arr, queries)
   assert_eq(results[0], 6) // 1+2+3 = 6
@@ -330,7 +330,7 @@ fn range_mode(arr : ArrayView[Int], queries : Array[(Int, Int)]) -> Array[Int] {
 
 ///|
 test "range mode query" {
-  let arr = [1, 2, 1, 1, 2, 3, 2, 2]
+  let arr : ReadOnlyArray[Int] = [1, 2, 1, 1, 2, 3, 2, 2]
   let queries = [(0, 4), (4, 8), (0, 8)]
   let results = range_mode(arr, queries)
   assert_eq(results[0], 1) // [1,2,1,1] -> mode is 1
