@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/misra_gries_heavy_hitters"
+
+// Values
+pub fn[K : Hash + Eq] new(capacity~ : Int) -> MisraGries[K]
+
+// Errors
+
+// Types and methods
+pub struct MisraGries[K] {
+  capacity : Int
+  counts : Map[K, Int]
+}
+pub fn[K : Hash + Eq] MisraGries::add(Self[K], K) -> Unit
+pub fn[K] MisraGries::candidates(Self[K]) -> Array[K]
+pub fn[K : Hash + Eq] MisraGries::estimate(Self[K], K) -> Int
+pub fn[K : Hash + Eq] MisraGries::merge(Self[K], Self[K]) -> Unit
+pub fn[K] MisraGries::size(Self[K]) -> Int
+
+// Type aliases
+
+// Traits
+
