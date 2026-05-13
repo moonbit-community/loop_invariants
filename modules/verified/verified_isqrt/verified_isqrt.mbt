@@ -1,4 +1,24 @@
 ///|
+/// Compute the integer square root of a non-negative integer.
+///
+/// Uses binary search over a bracketing interval `[lo, hi)` maintained so that
+/// `lo * lo <= n < hi * hi`. The loop runs in `O(log n)` iterations and the
+/// verified version carries the precondition `nonneg(n)` and postcondition
+/// `isqrt_ok(n, result)` (i.e. `result * result <= n < (result + 1)^2`).
+///
+/// Parameters:
+/// - `n`: a non-negative integer (precondition `n >= 0`).
+///
+/// Returns: the largest integer `r >= 0` such that `r * r <= n`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   assert_eq(isqrt(0), 0)
+///   assert_eq(isqrt(15), 3)
+///   assert_eq(isqrt(16), 4)
+/// }
+/// ```
 pub fn isqrt(
   n : Int,
 ) -> Int where {

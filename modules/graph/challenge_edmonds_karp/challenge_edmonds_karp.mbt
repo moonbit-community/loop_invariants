@@ -14,6 +14,29 @@ struct Edge {
 } derive(Debug)
 
 ///|
+/// A directed flow network represented as adjacency lists with paired
+/// forward/reverse edges for residual graph traversal.
+///
+/// Each forward edge `u -> v` with capacity `c` is stored together with a
+/// reverse edge `v -> u` of initial capacity `0`; the indices into the
+/// neighbour lists are cross-linked so that augmenting along an edge can
+/// adjust both its remaining and reverse capacities in `O(1)`. This is the
+/// shape consumed by the Edmonds-Karp routine `max_flow`, which repeatedly
+/// runs BFS on the residual graph in `O(V * E^2)` total.
+///
+/// Construct with `make(n)`, add edges with `add_edge`, then call `max_flow`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let g = make(4)
+///   add_edge(g, 0, 1, 3)
+///   add_edge(g, 0, 2, 2)
+///   add_edge(g, 1, 3, 2)
+///   add_edge(g, 2, 3, 4)
+///   assert_eq(max_flow(g, 0, 3), 5)
+/// }
+/// ```
 pub struct FlowGraph {
   adj : Array[Array[Edge]]
 } derive(Debug)

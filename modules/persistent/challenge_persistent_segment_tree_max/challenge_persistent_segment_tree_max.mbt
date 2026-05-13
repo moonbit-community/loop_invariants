@@ -4,6 +4,27 @@
 // ============================================================================
 
 ///|
+/// Persistent segment tree over the `max` monoid, supporting point
+/// assignments and range-maximum queries.
+///
+/// Each node caches the maximum of its index range. `set_value`
+/// overwrites a single position in `O(log n)` and `range_max` answers
+/// a half-open `[ql, qr)` query in `O(log n)`; `build` is `O(n)`.
+/// Out-of-range queries return the sentinel `-0x3fffffff` so that the
+/// recursive combiner treats them as `-infinity`. Persistence is
+/// achieved by path copying so each version shares all untouched
+/// subtrees with its predecessor.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr = [5, 2, 7, 4][:]
+///   let root = build(arr, 0, arr.length())
+///   let updated = apply_updates(root, arr.length(), [(2, 1), (0, 6)])
+///   assert_eq(range_max(root, 0, arr.length(), 0, 4), 7)
+///   assert_eq(range_max(updated, 0, arr.length(), 0, 4), 6)
+/// }
+/// ```
 pub enum Node {
   Leaf(max~ : Int)
   Branch(max~ : Int, left~ : Node, right~ : Node)

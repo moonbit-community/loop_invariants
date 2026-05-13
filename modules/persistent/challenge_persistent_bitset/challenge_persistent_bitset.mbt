@@ -10,6 +10,25 @@ enum Node {
 } derive(Debug)
 
 ///|
+/// A persistent bitset of fixed length `n` backed by a count-aggregating
+/// segment tree.
+///
+/// Each leaf holds a single bit (`0` or `1`) and each internal node caches
+/// the number of set bits in its range, so `set`, `get`, and
+/// `count_range` all run in `O(log n)`. Updates copy only the
+/// `O(log n)` nodes along the modified path, leaving previous versions
+/// untouched. Construct values with `make` or `from_indices` and use
+/// `set`, `get`, `count_range`, and `length`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let b = @challenge_persistent_bitset.from_indices(8, [1, 3, 5])
+///   assert_eq(@challenge_persistent_bitset.get(b, 3), 1)
+///   assert_eq(@challenge_persistent_bitset.get(b, 4), 0)
+///   assert_eq(@challenge_persistent_bitset.count_range(b, 0, 8), 3)
+/// }
+/// ```
 pub struct Bitset {
   root : Node
   n : Int

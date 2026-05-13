@@ -10,6 +10,26 @@ enum Node {
 } derive(Debug)
 
 ///|
+/// A persistent Fenwick (binary indexed) tree of `n` integers supporting
+/// point add and prefix/range sum queries.
+///
+/// The underlying BIT array is stored as a balanced binary tree so that
+/// `add` and `prefix_sum` run in `O(log^2 n)` (an `O(log n)` BIT walk
+/// composed with `O(log n)` path-copying updates). Each `add` returns a
+/// new `Fenwick` that shares all unchanged subtrees with the source.
+/// Construct with `make`, then call `add`, `prefix_sum`, `range_sum`, or
+/// `length`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let fw = @challenge_persistent_fenwick.make(5)
+///   let fw = @challenge_persistent_fenwick.add(fw, 1, 3)
+///   let fw = @challenge_persistent_fenwick.add(fw, 3, 4)
+///   assert_eq(@challenge_persistent_fenwick.prefix_sum(fw, 3), 7)
+///   assert_eq(@challenge_persistent_fenwick.range_sum(fw, 2, 4), 4)
+/// }
+/// ```
 pub struct Fenwick {
   root : Node
   n : Int

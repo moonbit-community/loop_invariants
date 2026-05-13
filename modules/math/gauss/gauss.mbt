@@ -34,15 +34,30 @@
 ///|
 const GAUSS_EPS : Double = 0.000000001
 
+///|
 /// The result of a Gaussian elimination call.
 ///
-/// - `solution` holds one particular solution vector (free variables are 0).
-/// - `rank` is the number of independent pivot rows (matrix rank).
-/// - `has_solution` is false when the system is inconsistent (0 = c, c != 0).
-/// - `has_unique_solution` is true when `has_solution` is true and `rank`
-///   equals the number of unknowns (no free variables).
-
-///|
+/// Returned by `gauss_solve`. Carries enough information to distinguish the
+/// three possible outcomes of a linear system `Ax = b`:
+///
+/// - `solution`: one particular solution vector. Free variables (when the
+///   system is under-determined) are set to `0`.
+/// - `rank`: the number of independent pivot rows after row reduction.
+/// - `has_solution`: `false` when the system is inconsistent (a zero
+///   coefficient row paired with a non-zero right-hand side).
+/// - `has_unique_solution`: `true` when `has_solution` holds and `rank` equals
+///   the number of unknowns (no free variables remain).
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let a = [[2.0, 1.0], [1.0, -1.0]]
+///   let b = [5.0, 1.0]
+///   let res = gauss_solve(a, b)
+///   assert_true(res.has_unique_solution)
+///   assert_eq(res.rank, 2)
+/// }
+/// ```
 pub struct GaussResult {
   solution : Array[Double]
   rank : Int
@@ -50,20 +65,35 @@ pub struct GaussResult {
   has_unique_solution : Bool
 }
 
-/// Solve the linear system Ax = b using Gauss-Jordan elimination with partial
-/// pivoting.
+///|
+/// Solve the linear system `Ax = b` using Gauss-Jordan elimination with
+/// partial pivoting.
+///
+/// Validates that `b.length() == a.length()` and that every row of `a` has the
+/// same length, then delegates to the internal `gauss_eliminate` routine
+/// which builds the augmented matrix, performs forward elimination with
+/// partial pivoting, and reads the solution out of the reduced row echelon
+/// form. Runs in `O(n^3)` time and `O(n^2)` space.
 ///
 /// Parameters:
-/// - `a`: coefficient matrix, n rows of length m each.
-/// - `b`: right-hand side vector, length n.
+/// - `a`: coefficient matrix, `n` rows of length `m` each.
+/// - `b`: right-hand side vector, length `n`.
 ///
-/// Returns a `GaussResult` describing whether a solution exists, how many
-/// degrees of freedom it has, and one particular solution vector.
+/// Returns: a `GaussResult` describing whether a solution exists, the matrix
+/// rank, and one particular solution vector. Dimension mismatches immediately
+/// return a result with `has_solution = false`.
 ///
-/// Dimension mismatches (b.length() != a.length(), or inconsistent row
-/// lengths inside a) immediately return `has_solution = false`.
-
-///|
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let a = [[2.0, 1.0], [1.0, -1.0]]
+///   let b = [5.0, 1.0]
+///   let res = gauss_solve(a, b)
+///   assert_true(res.has_unique_solution)
+///   assert_true((res.solution[0] - 2.0).abs() < 1.0e-6)
+///   assert_true((res.solution[1] - 1.0).abs() < 1.0e-6)
+/// }
+/// ```
 pub fn gauss_solve(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   let n = a.length()
   if b.length() != n {

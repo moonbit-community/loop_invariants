@@ -4,6 +4,27 @@
 // ============================================================================
 
 ///|
+/// Persistent skew heap: a self-adjusting meldable min-heap.
+///
+/// A skew heap is a binary tree obeying the heap order property but
+/// without any explicit balance condition. Every operation is built on
+/// `merge`, which walks the right spines of both heaps and
+/// unconditionally swaps the left and right children at every step.
+/// This rebalancing gives `O(log n)` amortized cost for `merge`,
+/// `insert`, `find_min`, and `delete_min`. Updates are persistent:
+/// they allocate fresh spine nodes and share the untouched subtrees
+/// with the previous version. Build with `empty` or `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let h = @challenge_persistent_skew_heap.empty()
+///   let h = @challenge_persistent_skew_heap.insert(h, 3)
+///   let h = @challenge_persistent_skew_heap.insert(h, 1)
+///   let h = @challenge_persistent_skew_heap.insert(h, 2)
+///   assert_eq(@challenge_persistent_skew_heap.find_min(h), Some(1))
+/// }
+/// ```
 pub enum Heap[T] {
   Empty
   Node(value~ : T, left~ : Heap[T], right~ : Heap[T])

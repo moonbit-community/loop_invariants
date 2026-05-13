@@ -4,6 +4,25 @@
 // ============================================================================
 
 ///|
+/// A persistent, unbalanced binary search tree storing values of type `T`.
+///
+/// `insert` returns a new tree whose path from the root to the modified
+/// leaf is freshly allocated and whose other subtrees are shared with the
+/// input version, leaving older versions intact. Operations cost
+/// `O(h)` where `h` is the current height; with random or sorted inputs
+/// the height is `O(log n)` or `O(n)` respectively, since the tree is not
+/// self-balancing. See `empty`, `insert`, `contains`, `size`, `inorder`,
+/// and `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let t = @challenge_persistent_bst.from_array([5, 2, 8, 1, 3])
+///   assert_eq(@challenge_persistent_bst.contains(t, 3), true)
+///   assert_eq(@challenge_persistent_bst.contains(t, 4), false)
+///   assert_eq(@challenge_persistent_bst.inorder(t), [1, 2, 3, 5, 8])
+/// }
+/// ```
 pub enum Tree[T] {
   Empty
   Node(value~ : T, left~ : Tree[T], right~ : Tree[T])

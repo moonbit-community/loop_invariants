@@ -33,6 +33,26 @@ fn highest_bit(x : Int) -> Int {
 }
 
 ///|
+/// A disjoint sparse table for O(1) range minimum queries.
+///
+/// Stores, at each level `k`, left/right prefix minima around the midpoints of
+/// blocks of size `2^(k+1)`. Any half-open query `[l, r)` crosses a unique
+/// midpoint at level `k = highest_bit(l XOR (r-1))`, so the answer is the
+/// minimum of two precomputed values. Unlike a classic sparse table, this
+/// works for any associative operation (no idempotence required).
+///
+/// Build it with `build_disjoint_sparse_table` and query with `range_min`.
+/// Build cost is `O(n log n)`, query cost is `O(1)`, space is `O(n log n)`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
+///   let dst = build_disjoint_sparse_table(arr[:])
+///   assert_eq(range_min(dst, 1, 5), 1)
+///   assert_eq(range_min(dst, 5, 8), 0)
+/// }
+/// ```
 pub struct DisjointSparseTable {
   n : Int
   table : Array[Array[Int]]

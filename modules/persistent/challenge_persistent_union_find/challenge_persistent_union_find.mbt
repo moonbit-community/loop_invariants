@@ -16,6 +16,28 @@ struct PArray {
 } derive(Debug)
 
 ///|
+/// Persistent disjoint-set union (union-find) over `[0, n)`.
+///
+/// `parent` and `size` are stored in persistent arrays implemented as
+/// path-copying segment trees, so reading a slot is `O(log n)` and
+/// writing produces a new array that shares its untouched leaves with
+/// the previous version. `find` walks parent pointers without doing
+/// path compression -- compression would mutate older snapshots --
+/// so every `find` is `O(d log n)` for tree depth `d`, and `union`
+/// uses union-by-size to keep `d` to `O(log n)`. `same` answers
+/// equivalence queries by comparing roots. Build with `make`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let d = @challenge_persistent_union_find.make(4)
+///   let d1 = @challenge_persistent_union_find.union(d, 0, 1)
+///   let d2 = @challenge_persistent_union_find.union(d1, 2, 3)
+///   assert_eq(@challenge_persistent_union_find.same(d2, 0, 1), true)
+///   assert_eq(@challenge_persistent_union_find.same(d2, 0, 2), false)
+///   assert_eq(@challenge_persistent_union_find.same(d, 0, 1), false)
+/// }
+/// ```
 pub struct DSU {
   parent : PArray
   size : PArray

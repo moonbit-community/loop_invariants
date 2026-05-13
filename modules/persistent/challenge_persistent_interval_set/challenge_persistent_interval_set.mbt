@@ -4,6 +4,26 @@
 // ============================================================================
 
 ///|
+/// Persistent set of disjoint integer intervals.
+///
+/// Each node stores one closed interval `[start, end]`; the tree is
+/// ordered by `start` and the invariant is that all stored intervals are
+/// pairwise disjoint and non-adjacent. `insert_interval` flattens the
+/// tree to a sorted list, splices in the new range, merges overlapping
+/// or touching intervals, and rebuilds a balanced tree in `O(n)`.
+/// `contains_point` uses BST lookup in `O(log n)`. Operations return
+/// fresh trees; previous versions stay valid. See `empty`, `to_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let t = @challenge_persistent_interval_set.empty()
+///   let t = @challenge_persistent_interval_set.insert_interval(t, 2, 5)
+///   let t = @challenge_persistent_interval_set.insert_interval(t, 4, 7)
+///   assert_eq(@challenge_persistent_interval_set.contains_point(t, 6), true)
+///   assert_eq(@challenge_persistent_interval_set.to_array(t), [(2, 7)])
+/// }
+/// ```
 pub enum Tree {
   Empty
   Node(start~ : Int, end~ : Int, left~ : Tree, right~ : Tree)

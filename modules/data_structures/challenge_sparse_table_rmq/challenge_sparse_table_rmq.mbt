@@ -12,6 +12,26 @@ fn min(a : Int, b : Int) -> Int {
 }
 
 ///|
+/// A classic sparse table for O(1) range minimum queries on a static array.
+///
+/// At each level `k`, `table[k][i]` stores the minimum over the window
+/// `arr[i ..< i + 2^k]`. A query on `[l, r)` of length `len` picks
+/// `k = log[len]` and returns `min(table[k][l], table[k][r - 2^k])`, exploiting
+/// the idempotence of `min` to overlap the two windows. `log[len]` provides
+/// `floor(log2(len))` in O(1).
+///
+/// Build it with `build_sparse_table` and query with `range_min`. Build cost
+/// is `O(n log n)`, query cost is `O(1)`, space is `O(n log n)`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
+///   let st = build_sparse_table(arr[:])
+///   assert_eq(range_min(st, 1, 5), 1)
+///   assert_eq(range_min(st, 0, 8), 0)
+/// }
+/// ```
 pub struct SparseTable {
   log : Array[Int]
   table : Array[Array[Int]]

@@ -10,6 +10,29 @@ enum Stack[T] {
 } derive(Debug)
 
 ///|
+/// Persistent FIFO queue built from two singly-linked stacks.
+///
+/// `front` holds elements in dequeue order (head first); `back` holds
+/// recently enqueued elements in reverse order. `enqueue` conses onto
+/// `back` in `O(1)`; `peek` and `dequeue` consult `front`, reversing
+/// `back` into a new `front` when `front` is empty. The reversal makes
+/// the worst-case dequeue `O(n)`, but the amortized cost per element
+/// is `O(1)`. Because both stacks are immutable, every operation
+/// returns a fresh `Queue` while older versions remain valid. See
+/// `empty` and `size`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let q : @challenge_persistent_queue.Queue[Int] = @challenge_persistent_queue.empty()
+///   let q = @challenge_persistent_queue.enqueue(q, 1)
+///   let q = @challenge_persistent_queue.enqueue(q, 2)
+///   guard @challenge_persistent_queue.dequeue(q) is Some((x, _)) else {
+///     fail("expected dequeue")
+///   }
+///   assert_eq(x, 1)
+/// }
+/// ```
 pub struct Queue[T] {
   front : Stack[T]
   back : Stack[T]

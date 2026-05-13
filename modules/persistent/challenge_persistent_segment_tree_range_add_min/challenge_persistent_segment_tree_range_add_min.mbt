@@ -4,6 +4,28 @@
 // ============================================================================
 
 ///|
+/// Persistent segment tree supporting range-add updates and
+/// range-minimum queries with lazy propagation.
+///
+/// Each node caches the minimum of its index range together with an
+/// `Int` lazy tag that records a pending `+delta` to be pushed to its
+/// children on the next visit. `range_add` bumps every element of a
+/// half-open `[ql, qr)` and `range_min` reads the min over `[ql, qr)`,
+/// both in `O(log n)`; `build` is `O(n)`. Out-of-range query results
+/// fall back to the sentinel `0x3fffffff`. Persistence is achieved
+/// by path copying, so each version shares all untouched subtrees
+/// with its predecessor.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr = [5, 2, 7, 4][:]
+///   let root = build(arr, 0, arr.length())
+///   let updated = apply_updates(root, arr.length(), [(1, 3, -1), (0, 2, 2)])
+///   assert_eq(range_min(root, 0, arr.length(), 0, 4), 2)
+///   assert_eq(range_min(updated, 0, arr.length(), 0, 4), 3)
+/// }
+/// ```
 pub enum Node {
   Leaf(min~ : Int, tag~ : Int)
   Branch(min~ : Int, tag~ : Int, left~ : Node, right~ : Node)

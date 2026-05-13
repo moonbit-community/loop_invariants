@@ -4,6 +4,28 @@
 // ============================================================================
 
 ///|
+/// Persistent segment tree supporting range-add updates and
+/// range-sum queries with lazy propagation.
+///
+/// Each node stores the sum of its index range together with an `Int`
+/// lazy tag that records a pending `+delta` to be pushed down to its
+/// children on the next visit. `range_add` adds a value to every
+/// element of a half-open `[ql, qr)` in `O(log n)` and `range_sum`
+/// answers in `O(log n)`; `build` is `O(n)`. Persistence is achieved
+/// by path copying: only the `O(log n)` nodes touched by the update
+/// or query-with-pushdown are reallocated, while all other subtrees
+/// are shared with the previous version.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr = [1, 2, 3, 4][:]
+///   let root = build(arr, 0, arr.length())
+///   let updated = apply_updates(root, arr.length(), [(1, 3, 2), (0, 2, -1)])
+///   assert_eq(range_sum(root, 0, arr.length(), 0, 4), 10)
+///   assert_eq(range_sum(updated, 0, arr.length(), 1, 3), 8)
+/// }
+/// ```
 pub enum Node {
   Leaf(sum~ : Int, tag~ : Int)
   Branch(sum~ : Int, tag~ : Int, left~ : Node, right~ : Node)

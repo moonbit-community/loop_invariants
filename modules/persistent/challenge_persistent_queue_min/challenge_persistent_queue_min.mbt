@@ -10,6 +10,28 @@ enum MinStack[T] {
 } derive(Debug)
 
 ///|
+/// Persistent FIFO queue that also supports `O(1)` minimum query.
+///
+/// Built from two `MinStack`s where each node caches the minimum of
+/// the suffix starting at that node. `enqueue` pushes onto `back`
+/// while updating its cached minimum in `O(1)`. `peek`/`dequeue`
+/// consume from `front`, reversing `back` into a fresh `front` when
+/// `front` is empty (amortized `O(1)`, worst case `O(n)` per call).
+/// `min_queue` reads the cached minimum at the top of each stack and
+/// returns the smaller in `O(1)`. Every operation returns a new
+/// `MinQueue`, sharing nodes with the previous version. See `empty`,
+/// `size`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let q : @challenge_persistent_queue_min.MinQueue[Int] = @challenge_persistent_queue_min.empty()
+///   let q = @challenge_persistent_queue_min.enqueue(q, 5)
+///   let q = @challenge_persistent_queue_min.enqueue(q, 2)
+///   let q = @challenge_persistent_queue_min.enqueue(q, 7)
+///   inspect(@challenge_persistent_queue_min.min_queue(q), content="Some(2)")
+/// }
+/// ```
 pub struct MinQueue[T] {
   front : MinStack[T]
   back : MinStack[T]

@@ -4,6 +4,25 @@
 // ============================================================================
 
 ///|
+/// Persistent leftist min-heap.
+///
+/// Each node stores a `value`, its left/right children, and a `rank`
+/// (null-path length to the nearest empty descendant). The leftist
+/// invariant — left rank greater than or equal to right rank —
+/// guarantees that the right spine has length `O(log n)`, so `merge`
+/// runs in `O(log n)` time by recursing down the smaller right
+/// spines. `insert` and `delete_min` are defined in terms of `merge`,
+/// each also `O(log n)`. `find_min` is `O(1)`. Updates are persistent:
+/// merging copies only spine nodes and reuses the rest. See `empty`,
+/// `size`, `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let h = @challenge_persistent_leftist_heap.from_array([5, 3, 7, 1])
+///   inspect(@challenge_persistent_leftist_heap.find_min(h), content="Some(1)")
+/// }
+/// ```
 pub enum Heap[T] {
   Empty
   Node(value~ : T, rank~ : Int, left~ : Heap[T], right~ : Heap[T])

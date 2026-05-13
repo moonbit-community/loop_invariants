@@ -73,6 +73,28 @@ fn decompose(
 }
 
 ///|
+/// The centroid decomposition of a tree.
+///
+/// The centroid decomposition repeatedly removes a centroid (a node whose
+/// removal leaves every remaining component of size at most `n/2`) and
+/// recurses on the resulting subtrees. The removed centroids form a new tree
+/// of height `O(log n)`. The struct stores two parallel arrays:
+///
+/// - `parent[v]`: centroid-tree parent of `v` (or `-1` for the root).
+/// - `level[v]`: depth of `v` in the centroid tree (root is `0`).
+///
+/// Construct it with `build_centroid(n, edges)`; the build cost is
+/// `O(n log n)`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+///   let cd = build_centroid(5, edges[:])
+///   assert_eq(cd.parent[2], -1)
+///   assert_eq(cd.level[2], 0)
+/// }
+/// ```
 pub struct CentroidDecomp {
   parent : Array[Int]
   level : Array[Int]

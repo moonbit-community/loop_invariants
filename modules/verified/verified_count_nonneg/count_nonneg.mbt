@@ -1,4 +1,26 @@
 ///|
+/// Count the number of non-negative entries in `xs`.
+///
+/// Linearly scans the array, incrementing a counter whenever `xs[i] >= 0`.
+/// The verified version carries the postcondition
+/// `count_bounded(xs, result)` which states `0 <= result <= xs.length()`,
+/// proved via loop invariants on the running accumulator.
+///
+/// Parameters:
+/// - `xs`: the array to scan.
+///
+/// Returns: the number of indices `i` where `xs[i] >= 0`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let xs = FixedArray::make(3, 0)
+///   xs[0] = 1
+///   xs[1] = -2
+///   xs[2] = 5
+///   assert_eq(count_nonneg(xs), 2)
+/// }
+/// ```
 pub fn count_nonneg(
   xs : FixedArray[Int],
 ) -> Int where {

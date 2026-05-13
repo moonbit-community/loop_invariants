@@ -8,6 +8,27 @@ fn lowbit(x : Int) -> Int {
 }
 
 ///|
+/// A 2D Fenwick (binary indexed) tree supporting point updates and
+/// rectangular prefix-sum queries.
+///
+/// Stores a `(rows+1) x (cols+1)` table of partial sums indexed via the
+/// `lowbit` trick on both axes. Each update walks `O(log rows)` row indices,
+/// each visiting `O(log cols)` column indices, for an overall
+/// `O(log rows * log cols)` cost per operation. Build via the
+/// `Fenwick2D::Fenwick2D` constructor, then use `add`, `prefix_sum`, and
+/// `range_sum`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let g = Fenwick2D::Fenwick2D(3, 3)
+///   g.add(0, 0, 1)
+///   g.add(1, 1, 2)
+///   g.add(2, 2, 4)
+///   assert_eq(g.range_sum(0, 0, 3, 3), 7)
+///   assert_eq(g.range_sum(1, 1, 3, 3), 6)
+/// }
+/// ```
 pub struct Fenwick2D {
   rows : Int
   cols : Int

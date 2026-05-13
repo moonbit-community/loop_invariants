@@ -4,6 +4,26 @@
 // ============================================================================
 
 ///|
+/// Persistent treap map: a key/value dictionary backed by a treap.
+///
+/// A treap is a randomized binary search tree where each node carries
+/// a priority derived from `K.hash()` and the tree is kept in heap
+/// order on priorities and BST order on keys. This gives `O(log n)`
+/// expected cost for `split`, `merge`, `insert_or_update`, `get`, and
+/// `contains`. Updates are persistent: every operation copies only
+/// the search/merge spine and shares all untouched subtrees with the
+/// previous map. Build with `empty` or `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let m = @challenge_persistent_treap_map.empty()
+///   let m = @challenge_persistent_treap_map.insert_or_update(m, "a", 1)
+///   let m = @challenge_persistent_treap_map.insert_or_update(m, "b", 2)
+///   assert_eq(@challenge_persistent_treap_map.get(m, "a"), Some(1))
+///   assert_eq(@challenge_persistent_treap_map.contains(m, "c"), false)
+/// }
+/// ```
 pub enum TreapMap[K, V] {
   Empty
   Node(

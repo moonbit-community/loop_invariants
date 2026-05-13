@@ -4,6 +4,25 @@
 // ============================================================================
 
 ///|
+/// A persistent AVL set storing keys of type `T`.
+///
+/// Each node caches its subtree `height`; after each insertion at most one
+/// single or double rotation restores the AVL invariant (left/right
+/// subtree heights differ by at most 1), keeping search and insert at
+/// `O(log n)`. The structure is persistent: `insert` returns a fresh tree
+/// that shares every untouched subtree with the source, copying only the
+/// root-to-leaf path. See `empty`, `insert`, `contains`, `inorder`, and
+/// `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let s = @challenge_persistent_avl_set.from_array([3, 1, 4, 1, 5, 9, 2])
+///   assert_eq(@challenge_persistent_avl_set.contains(s, 4), true)
+///   assert_eq(@challenge_persistent_avl_set.contains(s, 7), false)
+///   assert_eq(@challenge_persistent_avl_set.inorder(s), [1, 2, 3, 4, 5, 9])
+/// }
+/// ```
 pub enum Avl[T] {
   Empty
   Node(key~ : T, height~ : Int, left~ : Avl[T], right~ : Avl[T])

@@ -4,6 +4,27 @@
 // ============================================================================
 
 ///|
+/// Persistent rope: an immutable concatenation tree of strings.
+///
+/// A `Leaf` wraps a `String`; an internal `Node` stores its cached
+/// total `len` along with `left` and `right` subropes. `concat` glues
+/// two ropes in `O(1)` by building a single internal node, so building
+/// a long rope by repeated concatenation never copies the underlying
+/// strings. `length` is `O(1)` via the cached length. `to_string`
+/// flattens the rope in `O(n)`. Because nodes are never mutated,
+/// older ropes remain valid after any operation. See `empty`, `leaf`,
+/// `concat_many`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let a = @challenge_persistent_rope.leaf("Hello, ")
+///   let b = @challenge_persistent_rope.leaf("world!")
+///   let r = @challenge_persistent_rope.concat(a, b)
+///   assert_eq(@challenge_persistent_rope.to_string(r), "Hello, world!")
+///   assert_eq(@challenge_persistent_rope.length(r), 13)
+/// }
+/// ```
 pub enum Rope {
   Empty
   Leaf(value~ : String)

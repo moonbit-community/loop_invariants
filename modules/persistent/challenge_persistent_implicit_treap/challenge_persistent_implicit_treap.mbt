@@ -4,6 +4,26 @@
 // ============================================================================
 
 ///|
+/// Persistent implicit treap: a sequence indexed by position.
+///
+/// An implicit treap is a randomized binary search tree keyed by subtree
+/// `size` rather than by explicit keys, so it represents an ordered
+/// sequence accessible by index. Each node carries a random `priority`
+/// that maintains heap order, giving `O(log n)` expected time for
+/// `split`, `merge`, `insert_at`, and `get`. Operations are persistent:
+/// updates copy only the spine and share unchanged subtrees with the
+/// previous version. Build with `empty`/`from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let t = @challenge_persistent_implicit_treap.empty()
+///   let t = @challenge_persistent_implicit_treap.insert_at(t, 0, 10)
+///   let t = @challenge_persistent_implicit_treap.insert_at(t, 1, 20)
+///   let t = @challenge_persistent_implicit_treap.insert_at(t, 1, 15)
+///   assert_eq(@challenge_persistent_implicit_treap.to_array(t), [10, 15, 20])
+/// }
+/// ```
 pub enum Treap[T] {
   Empty
   Node(

@@ -11,6 +11,26 @@ struct Tree[T] {
 } derive(Debug)
 
 ///|
+/// A persistent min-binomial heap with priorities of type `T`.
+///
+/// The heap is stored as an array of optional binomial trees indexed by
+/// rank, mirroring the binary representation of the heap's size; merging
+/// proceeds rank by rank with a carry, just like binary addition. `insert`
+/// and `merge` take `O(log n)` time, `find_min` scans the rank array in
+/// `O(log n)`, and `delete_min` reassembles the heap in `O(log n)`. New
+/// versions share the bulk of the old `trees` array, so older heaps stay
+/// valid. See `empty`, `insert`, `merge`, `find_min`, and `delete_min`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let h = @challenge_persistent_binomial_heap.empty()
+///   let h = @challenge_persistent_binomial_heap.insert(h, 3)
+///   let h = @challenge_persistent_binomial_heap.insert(h, 1)
+///   let h = @challenge_persistent_binomial_heap.insert(h, 2)
+///   assert_eq(@challenge_persistent_binomial_heap.find_min(h), Some(1))
+/// }
+/// ```
 pub struct Heap[T] {
   trees : Array[Tree[T]?]
 } derive(Debug)

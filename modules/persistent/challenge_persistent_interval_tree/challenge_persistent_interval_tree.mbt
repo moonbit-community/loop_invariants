@@ -4,6 +4,34 @@
 // ============================================================================
 
 ///|
+/// Persistent augmented interval tree for overlap queries.
+///
+/// A BST keyed by interval `start`, where each node stores the
+/// `max_end` of its subtree. The `max_end` augmentation lets
+/// `find_overlap` prune branches that cannot contain an overlapping
+/// interval, giving `O(h)` queries (where `h` is the tree height).
+/// `insert` is also `O(h)`; both copy only the path from root to
+/// insertion site, sharing the rest with the previous version. See
+/// `empty`, `from_array`, and `size`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let t = @challenge_persistent_interval_tree.from_array([
+///     (1, 3),
+///     (5, 8),
+///     (10, 12),
+///   ])
+///   inspect(
+///     @challenge_persistent_interval_tree.find_overlap(t, 7, 9),
+///     content="Some((5, 8))",
+///   )
+///   inspect(
+///     @challenge_persistent_interval_tree.find_overlap(t, 9, 9),
+///     content="None",
+///   )
+/// }
+/// ```
 pub enum Tree {
   Empty
   Node(start~ : Int, end~ : Int, max_end~ : Int, left~ : Tree, right~ : Tree)
