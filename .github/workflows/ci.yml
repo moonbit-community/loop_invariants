@@ -7,7 +7,9 @@ on:
     branches: [main]
 
 jobs:
-  check-and-test:
+  # Required job: tests against the `latest` stable channel. This gates merges.
+  # `latest` lags `nightly`, so it stays green during upstream churn.
+  check-latest:
     strategy:
       fail-fast: false
       matrix:
@@ -17,11 +19,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      # Use the `latest` stable channel rather than `nightly`. Nightly has been
-      # bumping under us and breaking unrelated PRs (deque/queue constructor
-      # deprecations, then a Show -> Debug deprecation that broke 11 expect
-      # tests and produced ~200 warning sites). `latest` lags nightly but is
-      # stable enough to keep regular PRs green.
       - name: Set up MoonBit (latest) — Unix
         if: runner.os != 'Windows'
         run: |
@@ -33,6 +30,53 @@ jobs:
         shell: pwsh
         run: |
           $env:MOONBIT_INSTALL_VERSION = "latest"
+          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
+          iwr -useb https://cli.moonbitlang.com/install/powershell.ps1 | iex
+          "$env:USERPROFILE\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      - name: Show MoonBit version
+        run: moon version --all
+
+      - name: Update dependencies
+        run: moon update
+
+      - name: Check formatting
+        run: moon fmt --check
+
+      - name: Check
+        run: moon check --warn-list +20+25+65+74 --deny-warn
+
+      - name: Test
+        run: moon test
+
+  # Advisory job: tests against `nightly`. Allowed to fail without gating
+  # merges (`continue-on-error: true`). Watch this job in PR status to spot
+  # upstream regressions early. When it goes red, decide:
+  #   - upstream regression -> file a tracking issue, ignore on this PR
+  #   - PR introduced a real incompatibility -> fix on this PR
+  #   - deprecation that needs a code migration -> open a follow-up cleanup PR
+  check-nightly:
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up MoonBit (nightly) — Unix
+        if: runner.os != 'Windows'
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s nightly
+          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+
+      - name: Set up MoonBit (nightly) — Windows
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $env:MOONBIT_INSTALL_VERSION = "nightly"
           Set-ExecutionPolicy RemoteSigned -Scope CurrentUser -Force
           iwr -useb https://cli.moonbitlang.com/install/powershell.ps1 | iex
           "$env:USERPROFILE\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
