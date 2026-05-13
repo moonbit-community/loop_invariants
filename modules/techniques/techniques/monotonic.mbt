@@ -56,7 +56,7 @@ fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
   guard n >= k && k > 0 else { return [] }
   let result : Array[Int] = []
   // Deque stores indices; values at these indices are monotonic decreasing
-  let deque : @deque.Deque[Int] = @deque.new()
+  let deque : @deque.Deque[Int] = Deque([])
   for i in 0..<n {
     // Remove elements outside current window from front
     for pop_front = deque.front() is Some(front) && front <= i - k; pop_front; {

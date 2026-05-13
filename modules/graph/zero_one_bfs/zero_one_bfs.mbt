@@ -157,7 +157,7 @@ pub fn zero_one_bfs(graph : Graph, source : Int) -> Array[Int] {
     return dist
   }
   dist[source] = 0
-  let deque : @deque.Deque[Int] = @deque.Deque::new()
+  let deque : @deque.Deque[Int] = Deque([])
   deque.push_front(source)
   let _ = for popped = deque.pop_front() {
     match popped {
