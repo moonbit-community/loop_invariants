@@ -21,6 +21,24 @@ fn sqrt_ceil_from(n : Int, b : Int) -> Int {
 }
 
 ///|
+/// A sqrt-decomposition structure supporting point updates and range sums.
+///
+/// Partitions the array into blocks of size `ceil(sqrt(n))` and caches the
+/// sum of each block. A range query walks full blocks in O(1) each and only
+/// pays per-element cost on the (at most two) partial boundary blocks, for an
+/// `O(sqrt(n))` query and `O(1)` update. Build with `build_sqrt_decomp`, then
+/// use `range_sum` and `update`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+///   let sd = build_sqrt_decomp(arr[:])
+///   assert_eq(range_sum(sd, 0, 9), 45)
+///   update(sd, 2, 30)
+///   assert_eq(range_sum(sd, 0, 9), 72)
+/// }
+/// ```
 pub struct SqrtDecomp {
   n : Int
   block_size : Int

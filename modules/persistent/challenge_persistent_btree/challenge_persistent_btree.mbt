@@ -10,6 +10,24 @@ struct BNode[T] {
 } derive(Debug)
 
 ///|
+/// A persistent B-tree of minimum degree 2, storing keys of type `T`.
+///
+/// Each node holds 1 to 3 keys and (for internal nodes) one more child
+/// than keys; insertions that overflow a node trigger a split that
+/// promotes the median to the parent, keeping all leaves at the same
+/// depth. Search and insert both run in `O(log n)`; `insert` copies only
+/// the `O(log n)` nodes on the inserted path, so prior versions remain
+/// valid. See `empty`, `insert`, `contains`, `size`, and `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let t = @challenge_persistent_btree.from_array([5, 2, 8, 1, 3, 7])
+///   assert_eq(@challenge_persistent_btree.contains(t, 3), true)
+///   assert_eq(@challenge_persistent_btree.contains(t, 4), false)
+///   assert_eq(@challenge_persistent_btree.size(t), 6)
+/// }
+/// ```
 pub enum Tree[T] {
   Empty
   Node(node~ : BNode[T])

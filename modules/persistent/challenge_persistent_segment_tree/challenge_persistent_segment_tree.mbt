@@ -4,6 +4,26 @@
 // ============================================================================
 
 ///|
+/// Persistent segment tree supporting point updates and range-sum
+/// queries.
+///
+/// Each node stores the sum over its index range and the tree is built
+/// over a half-open interval `[l, r)` with `build`. Point updates via
+/// `add` and queries via `query` both run in `O(log n)`, while `build`
+/// is `O(n)`. Persistence is achieved by path copying: an update
+/// allocates only the `O(log n)` nodes along the root-to-leaf path and
+/// shares all untouched subtrees with the previous version.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr = [1, 2, 3, 4][:]
+///   let root = build(arr, 0, arr.length())
+///   let updated = apply_updates(root, arr.length(), [(1, 3), (3, -1)])
+///   assert_eq(query(root, 0, arr.length(), 0, 4), 10)
+///   assert_eq(query(updated, 0, arr.length(), 0, 4), 12)
+/// }
+/// ```
 pub enum Node {
   Leaf(sum~ : Int)
   Branch(sum~ : Int, left~ : Node, right~ : Node)

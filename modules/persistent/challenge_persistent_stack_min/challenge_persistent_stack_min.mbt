@@ -4,6 +4,26 @@
 // ============================================================================
 
 ///|
+/// Persistent min-stack: a stack that exposes its minimum in `O(1)`.
+///
+/// Each cons cell caches the minimum element of the suffix rooted at
+/// that node, so `min_value` is a constant-time field lookup rather
+/// than a linear scan. `push` computes the new minimum from the
+/// incoming value and the previous cached minimum, while `pop`
+/// returns the prior suffix unchanged, so both run in `O(1)` and
+/// share their tail with the older version. Build with `empty` or
+/// `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let s = @challenge_persistent_stack_min.empty()
+///   let s = @challenge_persistent_stack_min.push(s, 3)
+///   let s = @challenge_persistent_stack_min.push(s, 1)
+///   let s = @challenge_persistent_stack_min.push(s, 2)
+///   assert_eq(@challenge_persistent_stack_min.min_value(s), Some(1))
+/// }
+/// ```
 pub enum MinStack[T] {
   Nil
   Cons(value~ : T, min~ : T, tail~ : MinStack[T])

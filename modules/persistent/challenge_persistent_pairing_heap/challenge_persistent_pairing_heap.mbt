@@ -10,6 +10,28 @@ enum ChildList[T] {
 } derive(Debug)
 
 ///|
+/// Persistent pairing min-heap.
+///
+/// A multiway tree where each node holds a `value` smaller than every
+/// value in its `children` list. `merge` makes the heap with the
+/// larger root a new child of the other in `O(1)`, so `insert` (merge
+/// with a singleton) is `O(1)` as well. `delete_min` removes the root
+/// and merges its children with a two-pass pairing strategy
+/// (`merge_pairs_list` then `merge_all`), giving `O(log n)` amortized
+/// time. `find_min` is `O(1)`. All operations are persistent: nodes
+/// are never mutated; new heaps share substructure with the old ones.
+/// See `empty` and `size`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let h : @challenge_persistent_pairing_heap.Heap[Int] = @challenge_persistent_pairing_heap.empty()
+///   let h = @challenge_persistent_pairing_heap.insert(h, 8)
+///   let h = @challenge_persistent_pairing_heap.insert(h, 3)
+///   let h = @challenge_persistent_pairing_heap.insert(h, 6)
+///   inspect(@challenge_persistent_pairing_heap.find_min(h), content="Some(3)")
+/// }
+/// ```
 pub enum Heap[T] {
   Empty
   Node(value~ : T, children~ : ChildList[T])

@@ -10,6 +10,23 @@ enum Node[T] {
 } derive(Debug)
 
 ///|
+/// A persistent array of length `n` backed by a balanced binary tree.
+///
+/// Random access (`get_at`) and point update (`set_at`) both run in
+/// `O(log n)`; each update returns a new `PArray` that shares all
+/// unchanged subtrees with the source, copying only the `O(log n)` nodes
+/// on the path to the modified leaf. Construct values with `from_array`
+/// and convert back via `to_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let a0 = @challenge_persistent_array.from_array([10, 20, 30, 40])
+///   let a1 = @challenge_persistent_array.set_at(a0, 2, 99)
+///   assert_eq(@challenge_persistent_array.get_at(a0, 2), Some(30))
+///   assert_eq(@challenge_persistent_array.get_at(a1, 2), Some(99))
+/// }
+/// ```
 pub struct PArray[T] {
   root : Node[T]
   n : Int

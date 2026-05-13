@@ -4,6 +4,27 @@
 // ============================================================================
 
 ///|
+/// Persistent segment tree over the bitwise-xor monoid, supporting
+/// point assignments and range-xor queries.
+///
+/// Each node caches the xor-fold of its index range, combined with
+/// the `^` operator. `set_value` overwrites a single position in
+/// `O(log n)` and `range_xor` answers a half-open `[ql, qr)` query in
+/// `O(log n)`; `build` is `O(n)`. Out-of-range queries return `0`,
+/// which is the xor identity. Persistence is achieved by path
+/// copying so each version shares all untouched subtrees with its
+/// predecessor.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr = [5, 2, 7, 4][:]
+///   let root = build(arr, 0, arr.length())
+///   let updated = apply_updates(root, arr.length(), [(2, 1), (0, 6)])
+///   assert_eq(range_xor(root, 0, arr.length(), 0, 4), 5 ^ 2 ^ 7 ^ 4)
+///   assert_eq(range_xor(updated, 0, arr.length(), 0, 4), 6 ^ 2 ^ 1 ^ 4)
+/// }
+/// ```
 pub enum Node {
   Leaf(xor~ : Int)
   Branch(xor~ : Int, left~ : Node, right~ : Node)

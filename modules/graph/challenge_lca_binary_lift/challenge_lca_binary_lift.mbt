@@ -35,6 +35,29 @@ fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
 }
 
 ///|
+/// Precomputed tables for answering lowest-common-ancestor queries on a
+/// rooted tree via binary lifting.
+///
+/// Holds two arrays:
+///
+/// - `up[k][v]`: the `2^k`-th ancestor of `v`, or `-1` if it does not exist.
+/// - `depth[v]`: the depth of `v` from the root.
+///
+/// With these tables, `lca(tree, u, v)` first lifts the deeper node to the
+/// same depth as the shallower one, then lifts both nodes together from the
+/// largest power of two down to one, stopping just below their common
+/// ancestor. Build with `build_lca(n, edges, root)` in `O(n log n)`; each
+/// `lca` query runs in `O(log n)`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
+///   let tree = build_lca(5, edges[:], 0)
+///   assert_eq(lca(tree, 3, 4), 1)
+///   assert_eq(lca(tree, 3, 2), 0)
+/// }
+/// ```
 pub struct Lca {
   up : Array[Array[Int]]
   depth : Array[Int]

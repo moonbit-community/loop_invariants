@@ -43,6 +43,27 @@ pub fn div_nonneg(
 }
 
 ///|
+/// Compute `n mod d` for non-negative `n` and positive `d`.
+///
+/// Derived from `div_nonneg`: first computes the quotient `q = div_nonneg(n, d)`
+/// and returns `n - q * d`. The verified version carries the precondition
+/// `valid_division_args(n, d)` (i.e. `n >= 0 && d > 0`) and postcondition
+/// `mod_ok(n, d, result)` (i.e. `0 <= result < d` and `result = n - q*d` for
+/// the matching quotient).
+///
+/// Parameters:
+/// - `n`: dividend (precondition `n >= 0`).
+/// - `d`: divisor (precondition `d > 0`).
+///
+/// Returns: the remainder `r` with `0 <= r < d`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   assert_eq(mod_nonneg(10, 3), 1)
+///   assert_eq(mod_nonneg(0, 7), 0)
+/// }
+/// ```
 pub fn mod_nonneg(
   n : Int,
   d : Int,
@@ -57,6 +78,24 @@ pub fn mod_nonneg(
 }
 
 ///|
+/// Compute the pair `(n / d, n mod d)` for non-negative `n` and positive `d`.
+///
+/// Wraps `div_nonneg` and `mod_nonneg` to return both results in one call.
+/// Shares the precondition `valid_division_args(n, d)` (i.e. `n >= 0 && d > 0`).
+///
+/// Parameters:
+/// - `n`: dividend (precondition `n >= 0`).
+/// - `d`: divisor (precondition `d > 0`).
+///
+/// Returns: the tuple `(q, r)` with `n = q * d + r` and `0 <= r < d`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   assert_eq(div_mod_nonneg(25, 5), (5, 0))
+///   assert_eq(div_mod_nonneg(10, 3), (3, 1))
+/// }
+/// ```
 pub fn div_mod_nonneg(
   n : Int,
   d : Int,

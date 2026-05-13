@@ -10,6 +10,28 @@ enum Stack[T] {
 } derive(Debug)
 
 ///|
+/// A persistent double-ended queue of values of type `T`, implemented as
+/// a pair of immutable stacks (`front` and `back`).
+///
+/// `push_front` and `push_back` prepend to the appropriate stack in
+/// `O(1)`; when one side becomes empty, the other is reversed to
+/// normalize, giving `O(n)` worst-case but `O(1)` amortized cost per
+/// `pop_front`/`pop_back`/`peek_front`/`peek_back`. Each operation
+/// returns a new deque that shares the unchanged stack with the source.
+/// See `empty`, `push_front`, `push_back`, `peek_front`, `peek_back`,
+/// `pop_front`, `pop_back`, and `size`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let d = @challenge_persistent_deque.empty()
+///   let d = @challenge_persistent_deque.push_back(d, 1)
+///   let d = @challenge_persistent_deque.push_back(d, 2)
+///   let d = @challenge_persistent_deque.push_front(d, 0)
+///   assert_eq(@challenge_persistent_deque.peek_front(d), Some(0))
+///   assert_eq(@challenge_persistent_deque.peek_back(d), Some(2))
+/// }
+/// ```
 pub struct Deque[T] {
   front : Stack[T]
   back : Stack[T]

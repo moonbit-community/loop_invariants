@@ -16,6 +16,27 @@ struct Fenwick {
 } derive(Debug)
 
 ///|
+/// A persistent Fenwick structure of `n` integers that supports both
+/// range add (`range_add`) and range sum (`range_sum`).
+///
+/// Two persistent BIT arrays cooperate via the standard
+/// `(bit1, bit2)` trick: `bit1` records first-order deltas and `bit2`
+/// records weighted deltas so that the prefix sum reconstructs as
+/// `bit1.prefix * x - bit2.prefix`. Each `range_add` performs four point
+/// updates and costs `O(log^2 n)`; queries cost `O(log^2 n)`. Updates
+/// share the unchanged BIT subtrees with the source, so old versions are
+/// preserved. Construct with `make`, then call `range_add`,
+/// `prefix_sum_range`, `range_sum`, or `apply_updates`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let rf = @challenge_persistent_fenwick_range_add.make(6)
+///   let rf = @challenge_persistent_fenwick_range_add.range_add(rf, 1, 3, 5)
+///   let rf = @challenge_persistent_fenwick_range_add.range_add(rf, 2, 4, 2)
+///   assert_eq(@challenge_persistent_fenwick_range_add.range_sum(rf, 0, 5), 21)
+/// }
+/// ```
 pub struct RangeFenwick {
   bit1 : Fenwick
   bit2 : Fenwick

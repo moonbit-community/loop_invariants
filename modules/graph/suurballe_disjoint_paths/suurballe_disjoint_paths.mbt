@@ -363,29 +363,45 @@ fn extract_path(
 // PUBLIC API
 // ============================================================================
 
-/// Computes two edge-disjoint shortest paths from `source` to `sink` in a
+///|
+/// Compute two edge-disjoint shortest paths from `source` to `sink` in a
 /// directed graph with non-negative edge weights using Suurballe's algorithm.
 ///
+/// Runs Dijkstra to obtain the first shortest path and the resulting
+/// potentials, reweights edges to be non-negative, reverses the first path,
+/// then runs Dijkstra a second time. Reversed-direction edges that appear in
+/// both Dijkstra trees cancel during edge extraction, yielding two
+/// edge-disjoint `s-t` paths whose combined weight is minimal over all such
+/// pairs.
+///
 /// Parameters:
-/// - `n`      : total number of vertices; vertices are labelled `0..n-1`.
-/// - `edges`  : slice of `(u, v, w)` triples, where `u` and `v` are vertex
-///              indices and `w >= 0` is the edge weight.
-/// - `source` : start vertex (`0 <= source < n`, `source != sink`).
-/// - `sink`   : target vertex (`0 <= sink < n`).
+/// - `n`: total number of vertices; vertices are labelled `0..n-1`.
+/// - `edges`: slice of `(u, v, w)` triples with `w >= 0`.
+/// - `source`: start vertex (`0 <= source < n`, `source != sink`).
+/// - `sink`: target vertex (`0 <= sink < n`).
 ///
-/// Returns `Some((path1, path2))` where each path is a vertex list
-/// `[source, ..., sink]` and the two paths share no directed edge.
-/// The combined weight of both paths is minimal over all edge-disjoint pairs.
+/// Returns: `Some((path1, path2))` of vertex lists `[source, ..., sink]` whose
+/// directed-edge sets are disjoint, or `None` if no such pair exists or any
+/// input constraint is violated (`n <= 0`, vertex out of range, negative
+/// weight, or `source == sink`). Time `O(E log V)`, space `O(V + E)`.
 ///
-/// Returns `None` when:
-/// - no pair of edge-disjoint paths exists between `source` and `sink`, or
-/// - any input constraint is violated: `n <= 0`, vertex indices out of range,
-///   negative edge weight, or `source == sink`.
-///
-/// Time complexity:  `O(E log V)`
-/// Space complexity: `O(V + E)`
-
-///|
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let edges : Array[(Int, Int, Int64)] = [
+///     (0, 1, 1L),
+///     (1, 4, 1L),
+///     (0, 2, 1L),
+///     (2, 4, 1L),
+///     (0, 3, 2L),
+///     (3, 4, 0L),
+///   ]
+///   match suurballe_disjoint_paths(5, edges[:], 0, 4) {
+///     Some(_) => ()
+///     None => fail("expected two paths")
+///   }
+/// }
+/// ```
 pub fn suurballe_disjoint_paths(
   n : Int,
   edges : ArrayView[(Int, Int, Int64)],

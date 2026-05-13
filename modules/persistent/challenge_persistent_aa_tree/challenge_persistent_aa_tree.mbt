@@ -4,6 +4,24 @@
 // ============================================================================
 
 ///|
+/// A persistent AA tree (a simplified red-black variant) storing keys of
+/// type `T`.
+///
+/// Each node carries a `level` field; balance is restored after insertion
+/// by `skew` (right rotation) and `split` (left rotation that lifts a
+/// level), giving `O(log n)` search and insert. The tree is persistent:
+/// `insert` returns a new tree that shares unchanged subtrees with the
+/// input, copying only the root-to-leaf path. See `empty`, `insert`,
+/// `contains`, `inorder`, and `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let t = @challenge_persistent_aa_tree.from_array([3, 1, 4, 2])
+///   assert_eq(@challenge_persistent_aa_tree.contains(t, 1), true)
+///   assert_eq(@challenge_persistent_aa_tree.inorder(t), [1, 2, 3, 4])
+/// }
+/// ```
 pub enum Aa[T] {
   Empty
   Node(key~ : T, level~ : Int, left~ : Aa[T], right~ : Aa[T])

@@ -4,6 +4,28 @@
 // ============================================================================
 
 ///|
+/// Persistent treap set: an ordered set backed by a treap.
+///
+/// A treap is a randomized binary search tree that pairs BST order on
+/// keys with heap order on priorities; here priorities come from
+/// `T.hash()`, so two trees built from the same elements always have
+/// the same shape. `split`, `merge`, `insert`, and `contains` all run
+/// in `O(log n)` expected time, and `size` is a cached field lookup.
+/// Insertions are persistent: only the spine touched by the operation
+/// is rebuilt, and the rest of the tree is shared with the previous
+/// version. Build with `empty` or `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let s = @challenge_persistent_treap_set.empty()
+///   let s = @challenge_persistent_treap_set.insert(s, 3)
+///   let s = @challenge_persistent_treap_set.insert(s, 1)
+///   let s = @challenge_persistent_treap_set.insert(s, 2)
+///   assert_eq(@challenge_persistent_treap_set.contains(s, 2), true)
+///   assert_eq(@challenge_persistent_treap_set.size(s), 3)
+/// }
+/// ```
 pub enum Treap[T] {
   Empty
   Node(

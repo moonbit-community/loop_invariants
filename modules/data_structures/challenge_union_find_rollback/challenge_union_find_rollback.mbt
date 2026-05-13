@@ -3,6 +3,30 @@
 // ============================================================================
 
 ///|
+/// A disjoint-set union (DSU) with union-by-size and rollback support.
+///
+/// Path compression is intentionally omitted so that every `union` can be
+/// undone. Each union pushes the affected `(child, prior_size)` pair onto a
+/// history stack; `snapshot` captures the current stack height and
+/// `rollback(snap)` restores the structure to that exact state by undoing the
+/// recorded operations in reverse. With union-by-size and no compression, each
+/// `find` runs in `O(log n)`.
+///
+/// Constructed via `RollbackDSU::RollbackDSU(n)`. Use `union`, `find`, `same`,
+/// `snapshot`, and `rollback`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let dsu = RollbackDSU::RollbackDSU(4)
+///   let _ = dsu.union(0, 1)
+///   let snap = dsu.snapshot()
+///   let _ = dsu.union(1, 2)
+///   assert_true(dsu.same(0, 2))
+///   dsu.rollback(snap)
+///   assert_true(!dsu.same(0, 2))
+/// }
+/// ```
 pub struct RollbackDSU {
   parent : Array[Int]
   size : Array[Int]

@@ -4,12 +4,55 @@
 // ============================================================================
 
 ///|
+/// A line `y = m * x + b` stored in the Li Chao tree.
+///
+/// `m` is the slope and `b` is the y-intercept. The tree compares lines
+/// by their value at a fixed `x`, so each `Line` is evaluated as
+/// `m * x + b` during `insert` and `query`. Construct with a struct
+/// literal `{ m: ..., b: ... }`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let line : @challenge_persistent_li_chao_tree.Line = { m: 2, b: -5 }
+///   let t = @challenge_persistent_li_chao_tree.insert(
+///     @challenge_persistent_li_chao_tree.empty(),
+///     line,
+///     0,
+///     10,
+///   )
+///   assert_eq(@challenge_persistent_li_chao_tree.query(t, 0, 0, 10), -5)
+/// }
+/// ```
 pub(all) struct Line {
   m : Int
   b : Int
 } derive(Debug)
 
 ///|
+/// Persistent Li Chao segment tree for minimum-of-lines queries.
+///
+/// Over a fixed integer domain `[l, r)`, each segment tree node holds
+/// the line that achieves the minimum value at the midpoint of its
+/// range. `insert` walks down the tree, swapping the stored line with
+/// a new candidate when the candidate is better at the midpoint and
+/// recursing into the side where the lines cross, in `O(log (r - l))`
+/// time. `query` returns the minimum value at a given `x` in
+/// `O(log (r - l))`. Inserts are persistent: only the path is copied,
+/// other subtrees are shared. See `empty`, `size`, `from_array`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let lines : Array[@challenge_persistent_li_chao_tree.Line] = [
+///     { m: 1, b: 0 },
+///     { m: -1, b: 10 },
+///     { m: 2, b: -5 },
+///   ]
+///   let t = @challenge_persistent_li_chao_tree.from_array(lines, 0, 10)
+///   assert_eq(@challenge_persistent_li_chao_tree.query(t, 5, 0, 10), 5)
+/// }
+/// ```
 pub enum Node {
   Empty
   Node(line~ : Line, left~ : Node, right~ : Node)

@@ -25,6 +25,27 @@ pub fn gcd(a : Int, b : Int) -> Int {
 }
 
 ///|
+/// Persistent segment tree over the GCD monoid, supporting point
+/// assignments and range-gcd queries.
+///
+/// Each node caches the greatest common divisor of its index range,
+/// combined with the helper `gcd`. `set_value` overwrites a single
+/// position in `O(log n)` and `range_gcd` answers a half-open
+/// `[ql, qr)` query in `O(log n * log V)` including the inner
+/// Euclidean steps; `build` is `O(n * log V)`. Persistence is achieved
+/// by path copying so previous versions remain valid and share all
+/// untouched subtrees.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr = [6, 10, 15, 25][:]
+///   let root = build(arr, 0, arr.length())
+///   let updated = apply_updates(root, arr.length(), [(2, 5), (0, 9)])
+///   assert_eq(range_gcd(root, 0, arr.length(), 0, 4), 1)
+///   assert_eq(range_gcd(updated, 0, arr.length(), 0, 2), 1)
+/// }
+/// ```
 pub enum Node {
   Leaf(g~ : Int)
   Branch(g~ : Int, left~ : Node, right~ : Node)

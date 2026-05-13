@@ -10,6 +10,27 @@ enum Node {
 } derive(Debug)
 
 ///|
+/// Persistent order-statistic multiset over the integer domain `[lo, hi)`.
+///
+/// Backed by a persistent count-segment-tree (`root`) whose leaves
+/// represent individual integer values and whose internal nodes store
+/// occurrence counts. `add` inserts a value by copying only the path
+/// from root to leaf in `O(log (hi - lo))` time and memory, sharing all
+/// other nodes with the previous version. `kth` (0-based) descends
+/// using subtree counts and `size` returns the total count, both in
+/// `O(log (hi - lo))`. Values outside `[lo, hi)` are silently ignored.
+/// Build with `make(lo, hi)`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let os = @challenge_persistent_order_statistic.make(0, 10)
+///   let os = @challenge_persistent_order_statistic.add(os, 5)
+///   let os = @challenge_persistent_order_statistic.add(os, 2)
+///   let os = @challenge_persistent_order_statistic.add(os, 7)
+///   inspect(@challenge_persistent_order_statistic.kth(os, 1), content="Some(5)")
+/// }
+/// ```
 pub struct OrderStat {
   root : Node
   lo : Int

@@ -4,12 +4,51 @@
 // ============================================================================
 
 ///|
+/// A point in the 2D plane stored by the KD-tree.
+///
+/// Holds integer coordinates `x` and `y`. The KD-tree compares points
+/// along one axis at each level — axis 0 compares `x`, axis 1 compares
+/// `y` — and equality is structural (`derive(Eq)`) so duplicates are
+/// detected and not re-inserted. Construct with the struct literal
+/// `{ x: ..., y: ... }`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let p : @challenge_persistent_kd_tree.Point = { x: 1, y: 2 }
+///   let t = @challenge_persistent_kd_tree.insert(
+///     @challenge_persistent_kd_tree.empty(),
+///     p,
+///   )
+///   assert_eq(@challenge_persistent_kd_tree.contains(t, p), true)
+/// }
+/// ```
 pub(all) struct Point {
   x : Int
   y : Int
 } derive(Debug, Eq)
 
 ///|
+/// Persistent 2D KD-tree over `Point` values.
+///
+/// A binary tree that splits the plane on alternating axes (x at
+/// even depths, y at odd depths). `insert` walks to the correct leaf
+/// in `O(log n)` expected time on random input (worst case `O(n)`)
+/// and copies only the spine, sharing untouched subtrees with the
+/// previous version. `contains` follows the same path. Duplicate
+/// points are deduplicated. See `empty`, `from_array`, `size`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let t = @challenge_persistent_kd_tree.from_array([
+///     ({ x: 1, y: 2 } : @challenge_persistent_kd_tree.Point),
+///     { x: 3, y: 4 },
+///   ])
+///   assert_eq(@challenge_persistent_kd_tree.size(t), 2)
+///   assert_eq(@challenge_persistent_kd_tree.contains(t, { x: 3, y: 4 }), true)
+/// }
+/// ```
 pub enum Kd {
   Empty
   Node(point~ : Point, axis~ : Int, left~ : Kd, right~ : Kd)

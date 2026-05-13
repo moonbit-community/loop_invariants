@@ -4,6 +4,27 @@
 // ============================================================================
 
 ///|
+/// Persistent string trie node for lowercase ASCII words.
+///
+/// Each node stores a 26-slot child array indexed by `ch - 'a'` plus
+/// an `end` flag marking whether a word terminates here. The trie
+/// supports `add` to insert a word and `contains` to test membership,
+/// each running in `O(L)` where `L` is the word length. Insertion is
+/// persistent and path-copying: only the at-most `L` nodes along the
+/// inserted path are reallocated, while every other subtree is shared
+/// with the previous root. Start with `empty`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let t = @challenge_persistent_trie_string.empty()
+///   let t1 = @challenge_persistent_trie_string.add(t, "cat")
+///   let t2 = @challenge_persistent_trie_string.add(t1, "car")
+///   assert_eq(@challenge_persistent_trie_string.contains(t2, "cat"), true)
+///   assert_eq(@challenge_persistent_trie_string.contains(t2, "car"), true)
+///   assert_eq(@challenge_persistent_trie_string.contains(t1, "car"), false)
+/// }
+/// ```
 pub struct Node {
   end : Bool
   children : Array[Node?]

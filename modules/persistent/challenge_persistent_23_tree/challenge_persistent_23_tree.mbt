@@ -4,6 +4,26 @@
 // ============================================================================
 
 ///|
+/// A persistent 2-3 search tree of keys of type `T`.
+///
+/// Every internal node holds one key (`Two`) or two keys (`Three`); all
+/// leaves sit at the same depth, so the tree is perfectly height-balanced
+/// and search/insert run in `O(log n)`. Because the tree is persistent,
+/// `insert` returns a fresh tree that shares every untouched subtree with
+/// the input, copying only the path from the root to the modified leaf.
+/// Use `empty`, `insert`, `contains`, `size`, and `from_array` to build
+/// and query versions.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let t0 = @challenge_persistent_23_tree.empty()
+///   let t1 = @challenge_persistent_23_tree.insert(t0, 5)
+///   let t2 = @challenge_persistent_23_tree.insert(t1, 2)
+///   assert_eq(@challenge_persistent_23_tree.contains(t2, 5), true)
+///   assert_eq(@challenge_persistent_23_tree.contains(t0, 5), false)
+/// }
+/// ```
 pub enum Tree[T] {
   Empty
   Two(key~ : T, left~ : Tree[T], right~ : Tree[T])

@@ -10,6 +10,27 @@ enum Bucket[K, V] {
 } derive(Debug)
 
 ///|
+/// A persistent hash map from keys of type `K` to values of type `V`.
+///
+/// The map keeps a fixed-size bucket array and resolves collisions with
+/// an immutable cons-list per bucket. `put` returns a new map whose
+/// bucket array is a shallow copy with one entry replaced and whose
+/// modified bucket list shares its tail with the original, so prior
+/// versions are unaffected. With a well-distributed hash, `get` and
+/// `put` run in expected `O(1)`; worst case is `O(s)` for a bucket of
+/// size `s`. The bucket array is not resized, so choose `capacity`
+/// at construction. See `make`, `put`, `get`, `size`, and `capacity`.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let m = @challenge_persistent_hash_map.make(8)
+///   let m = @challenge_persistent_hash_map.put(m, "a", 1)
+///   let m = @challenge_persistent_hash_map.put(m, "b", 2)
+///   assert_eq(@challenge_persistent_hash_map.get(m, "a"), Some(1))
+///   assert_eq(@challenge_persistent_hash_map.size(m), 2)
+/// }
+/// ```
 pub struct HashMap[K, V] {
   buckets : Array[Bucket[K, V]]
   size : Int

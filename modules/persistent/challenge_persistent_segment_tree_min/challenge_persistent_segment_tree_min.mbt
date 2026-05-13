@@ -4,6 +4,27 @@
 // ============================================================================
 
 ///|
+/// Persistent segment tree over the `min` monoid, supporting point
+/// assignments and range-minimum queries.
+///
+/// Each node caches the minimum of its index range. `set_value`
+/// overwrites a single position in `O(log n)` and `range_min` answers
+/// a half-open `[ql, qr)` query in `O(log n)`; `build` is `O(n)`.
+/// Out-of-range queries return the sentinel `0x3fffffff` so that the
+/// recursive combiner treats them as `+infinity`. Persistence is
+/// achieved by path copying so each version shares all untouched
+/// subtrees with its predecessor.
+///
+/// Example:
+/// ```moonbit nocheck
+/// test {
+///   let arr = [5, 2, 7, 4][:]
+///   let root = build(arr, 0, arr.length())
+///   let updated = apply_updates(root, arr.length(), [(2, 1), (0, 6)])
+///   assert_eq(range_min(root, 0, arr.length(), 0, 4), 2)
+///   assert_eq(range_min(updated, 0, arr.length(), 0, 4), 1)
+/// }
+/// ```
 pub enum Node {
   Leaf(min~ : Int)
   Branch(min~ : Int, left~ : Node, right~ : Node)
