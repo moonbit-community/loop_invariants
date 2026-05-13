@@ -1,0 +1,27 @@
+predicate nonneg(x : Int) {
+  x >= 0
+}
+
+predicate divides(d : Int, n : Int) {
+  ((d == 0) && (n == 0)) || ((d != 0) && (∃ k : Int, n == k * d))
+}
+
+predicate common_divisor(d : Int, a : Int, b : Int) {
+  (divides(d, a)) && (divides(d, b))
+}
+
+predicate gcd_ok(a : Int, b : Int, result : Int) {
+  (result >= 0) && (divides(result, a)) && (divides(result, b))
+}
+
+predicate cd_forward(a : Int, b : Int, a0 : Int, b0 : Int) {
+  ∀ d : Int, (common_divisor(d, a, b)) → (common_divisor(d, a0, b0))
+}
+
+predicate cd_backward(a : Int, b : Int, a0 : Int, b0 : Int) {
+  ∀ d : Int, (common_divisor(d, a0, b0)) → (common_divisor(d, a, b))
+}
+
+predicate same_common_divisors(a : Int, b : Int, a0 : Int, b0 : Int) {
+  (cd_forward(a, b, a0, b0)) && (cd_backward(a, b, a0, b0))
+}

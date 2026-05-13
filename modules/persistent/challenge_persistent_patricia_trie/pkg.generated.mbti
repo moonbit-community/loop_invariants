@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_patricia_trie"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn contains(Trie, Int) -> Bool
+
+pub fn empty() -> Trie
+
+pub fn from_array(ArrayView[Int]) -> Trie
+
+pub fn insert(Trie, Int) -> Trie
+
+pub fn size(Trie) -> Int
+
+// Errors
+
+// Types and methods
+pub enum Trie {
+  Empty
+  Leaf(key~ : Int)
+  Branch(prefix~ : Int, mask~ : Int, left~ : Trie, right~ : Trie)
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+

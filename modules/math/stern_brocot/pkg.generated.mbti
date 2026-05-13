@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/stern_brocot"
+
+// Values
+pub fn best_rational_approximation(Int64, Int64, Int64) -> (Int64, Int64)
+
+pub fn stern_brocot_path(Int64, Int64) -> Array[Char]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
