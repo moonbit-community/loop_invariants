@@ -106,7 +106,11 @@ pub fn from_array(arr : ArrayView[Point]) -> Kd {
 test "persistent_kd_tree_from_array" {
   let empty_tree = from_array([])
   assert_eq(size(empty_tree), 0)
-  let points = [{ x: 1, y: 2 }, { x: 3, y: 4 }, { x: 1, y: 2 }]
+  let points : ReadOnlyArray[Point] = [
+    { x: 1, y: 2 },
+    { x: 3, y: 4 },
+    { x: 1, y: 2 },
+  ]
   let tree = from_array(points)
   assert_eq(size(tree), 2)
   assert_eq(contains(tree, { x: 1, y: 2 }), true)

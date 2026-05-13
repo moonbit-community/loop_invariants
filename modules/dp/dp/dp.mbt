@@ -61,8 +61,8 @@ fn knapsack_01(
 
 ///|
 test "knapsack 01" {
-  let weights = [1, 2, 3, 4]
-  let values = [1, 4, 5, 7]
+  let weights : ReadOnlyArray[Int] = [1, 2, 3, 4]
+  let values : ReadOnlyArray[Int] = [1, 4, 5, 7]
   assert_eq(knapsack_01(weights, values, 7), 12) // items 1,3 (4+7=11, wait let me recalc)
   // weights: 1,2,3,4  values: 1,4,5,7
   // capacity 7: take items with w=2,3 -> v=4+5=9, or w=3,4 -> 5+7=12, or w=1,2,4 -> 1+4+7=12
@@ -129,8 +129,8 @@ fn knapsack_unbounded(
 
 ///|
 test "knapsack unbounded" {
-  let weights = [1, 3, 4]
-  let values = [1, 4, 5]
+  let weights : ReadOnlyArray[Int] = [1, 3, 4]
+  let values : ReadOnlyArray[Int] = [1, 4, 5]
   // Capacity 7: best is 2 items of weight 3 (value 8) + 1 item of weight 1 (value 1) = 9
   // Or: 1 item of weight 4 (5) + 1 item of weight 3 (4) = 9
   assert_eq(knapsack_unbounded(weights, values, 7), 9)
@@ -222,9 +222,9 @@ fn lower_bound_lis(arr : ArrayView[Int], target : Int) -> Int {
 
 ///|
 test "LIS binary search" {
-  let nums = [10, 9, 2, 5, 3, 7, 101, 18]
+  let nums : ReadOnlyArray[Int] = [10, 9, 2, 5, 3, 7, 101, 18]
   assert_eq(lis_binary_search(nums), 4) // [2, 3, 7, 101] or [2, 3, 7, 18]
-  let nums2 = [0, 1, 0, 3, 2, 3]
+  let nums2 : ReadOnlyArray[Int] = [0, 1, 0, 3, 2, 3]
   assert_eq(lis_binary_search(nums2), 4) // [0, 1, 2, 3]
 }
 
@@ -285,9 +285,9 @@ fn coin_change_min(coins : ArrayView[Int], amount : Int) -> Int {
 
 ///|
 test "coin change min" {
-  let coins = [1, 2, 5]
+  let coins : ReadOnlyArray[Int] = [1, 2, 5]
   assert_eq(coin_change_min(coins, 11), 3) // 5 + 5 + 1
-  let coins2 = [2]
+  let coins2 : ReadOnlyArray[Int] = [2]
   assert_eq(coin_change_min(coins2, 3), -1) // impossible
 }
 
@@ -333,7 +333,7 @@ fn coin_change_ways(coins : ArrayView[Int], amount : Int) -> Int {
 
 ///|
 test "coin change ways" {
-  let coins = [1, 2, 5]
+  let coins : ReadOnlyArray[Int] = [1, 2, 5]
   assert_eq(coin_change_ways(coins, 5), 4) // [5], [2,2,1], [2,1,1,1], [1,1,1,1,1]
 }
 
@@ -448,7 +448,7 @@ fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "max subarray dp" {
-  let nums = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+  let nums : ReadOnlyArray[Int] = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
   assert_eq(max_subarray_dp(nums), 6) // [4, -1, 2, 1]
 }
 
@@ -499,9 +499,9 @@ fn house_robber(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "house robber" {
-  let nums = [2, 7, 9, 3, 1]
+  let nums : ReadOnlyArray[Int] = [2, 7, 9, 3, 1]
   assert_eq(house_robber(nums), 12) // 2 + 9 + 1
-  let nums2 = [1, 2, 3, 1]
+  let nums2 : ReadOnlyArray[Int] = [1, 2, 3, 1]
   assert_eq(house_robber(nums2), 4) // 1 + 3
 }
 
@@ -1023,7 +1023,7 @@ fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
 ///|
 test "matrix chain multiplication" {
   // Matrices: 10x30, 30x5, 5x60
-  let dims = [10, 30, 5, 60]
+  let dims : ReadOnlyArray[Int] = [10, 30, 5, 60]
   // Option 1: (AB)C = 10*30*5 + 10*5*60 = 1500 + 3000 = 4500
   // Option 2: A(BC) = 30*5*60 + 10*30*60 = 9000 + 18000 = 27000
   assert_eq(matrix_chain_mult(dims), 4500)

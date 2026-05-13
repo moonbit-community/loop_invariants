@@ -71,7 +71,7 @@ Queue now `[1,2]`. Continue until all nodes are processed.
 ///|
 test "toposort kahn basic" {
   let n = 4
-  let edges = [(0, 1), (0, 2), (1, 3), (2, 3)]
+  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
   let order_opt = @challenge_toposort_kahn.topo_sort(n, edges)
   guard order_opt is Some(order) else { fail("expected order") }
   inspect(@challenge_toposort_kahn.is_topo(order, n, edges), content="true")
@@ -86,7 +86,7 @@ test "toposort kahn basic" {
 ///|
 test "toposort kahn cycle" {
   let n = 3
-  let edges = [(0, 1), (1, 2), (2, 0)]
+  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
   let order_opt = @challenge_toposort_kahn.topo_sort(n, edges)
   debug_inspect(order_opt, content="None")
 }
@@ -100,7 +100,7 @@ test "toposort kahn cycle" {
 ///|
 test "toposort check" {
   let n = 3
-  let edges = [(0, 1), (0, 2)]
+  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2)]
   let order : Array[Int] = [0, 2, 1]
   inspect(@challenge_toposort_kahn.is_topo(order, n, edges), content="true")
 }

@@ -75,7 +75,12 @@ fn bellman_ford_with_neg_cycle(
 ///|
 test "bellman ford" {
   // Graph: 0 -> 1 (4), 0 -> 2 (5), 1 -> 2 (-3), 2 -> 3 (4)
-  let edges = [(0, 1, 4), (0, 2, 5), (1, 2, -3), (2, 3, 4)]
+  let edges : ReadOnlyArray[(Int, Int, Int)] = [
+    (0, 1, 4),
+    (0, 2, 5),
+    (1, 2, -3),
+    (2, 3, 4),
+  ]
   let (dist, has_neg) = bellman_ford_with_neg_cycle(4, edges, 0)
   assert_eq(has_neg, false)
   assert_eq(dist[0], 0)
@@ -87,7 +92,11 @@ test "bellman ford" {
 ///|
 test "bellman ford negative cycle" {
   // Graph with negative cycle: 0 -> 1 (1), 1 -> 2 (1), 2 -> 0 (-3)
-  let edges = [(0, 1, 1), (1, 2, 1), (2, 0, -3)]
+  let edges : ReadOnlyArray[(Int, Int, Int)] = [
+    (0, 1, 1),
+    (1, 2, 1),
+    (2, 0, -3),
+  ]
   let (_, has_neg) = bellman_ford_with_neg_cycle(3, edges, 0)
   assert_eq(has_neg, true)
 }
@@ -241,7 +250,7 @@ fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? 
 ///|
 test "topological sort kahn" {
   // DAG: 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3
-  let edges = [(0, 1), (0, 2), (1, 3), (2, 3)]
+  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
   let result = topological_sort_kahn(4, edges)
   assert_true(result is Some(_))
 }

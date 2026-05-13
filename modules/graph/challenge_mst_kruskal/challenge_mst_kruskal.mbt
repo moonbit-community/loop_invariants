@@ -86,7 +86,13 @@ pub fn mst_weight(n : Int, edges : ArrayView[(Int, Int, Int)]) -> Int? {
 
 ///|
 test "mst_weight" {
-  let edges = [(0, 1, 1), (1, 2, 2), (0, 2, 4), (2, 3, 3), (1, 3, 5)]
+  let edges : ReadOnlyArray[(Int, Int, Int)] = [
+    (0, 1, 1),
+    (1, 2, 2),
+    (0, 2, 4),
+    (2, 3, 3),
+    (1, 3, 5),
+  ]
   debug_inspect(mst_weight(4, edges), content="Some(6)")
   debug_inspect(mst_weight(4, [(0, 1, 1), (2, 3, 2)]), content="None")
 }
