@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/online_median"
+
+import {
+  "moonbitlang/core/priority_queue",
+}
+
+// Values
+pub fn new() -> OnlineMedian
+
+// Errors
+
+// Types and methods
+pub struct OnlineMedian {
+  lo : @priority_queue.PriorityQueue[Int]
+  hi : @priority_queue.PriorityQueue[Int]
+}
+pub fn OnlineMedian::add(Self, Int) -> Unit
+pub fn OnlineMedian::lower_median(Self) -> Int?
+pub fn OnlineMedian::median(Self) -> Double?
+pub fn OnlineMedian::size(Self) -> Int
+pub fn OnlineMedian::upper_median(Self) -> Int?
+
+// Type aliases
+
+// Traits
+
