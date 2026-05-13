@@ -17,7 +17,6 @@ pub(all) struct DominatorTree {
   tree : Array[Array[Int]]
 } derive(@debug.Debug)
 pub fn DominatorTree::dominates(Self, Int, Int) -> Bool
-pub impl Show for DominatorTree
 
 // Type aliases
 
