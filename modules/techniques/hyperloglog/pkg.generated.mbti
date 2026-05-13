@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/hyperloglog"
+
+// Values
+pub fn new(Int) -> HyperLogLog
+
+// Errors
+
+// Types and methods
+pub struct HyperLogLog {
+  precision : Int
+  m : Int
+  registers : Array[Int]
+}
+pub fn HyperLogLog::add(Self, Int64) -> Unit
+pub fn HyperLogLog::estimate(Self) -> Int64
+pub fn HyperLogLog::merge(Self, Self) -> Unit
+pub fn HyperLogLog::register_count(Self) -> Int
+
+// Type aliases
+
+// Traits
+
