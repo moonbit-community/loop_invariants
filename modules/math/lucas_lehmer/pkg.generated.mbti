@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/lucas_lehmer"
+
+// Values
+pub fn is_mersenne_prime(Int) -> Bool
+
+pub fn mersenne_prime_exponents_up_to(Int) -> Array[Int]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
