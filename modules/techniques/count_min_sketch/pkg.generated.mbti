@@ -1,0 +1,28 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/count_min_sketch"
+
+// Values
+pub fn from_error_bounds(Double, Double, seed~ : Int64) -> CountMinSketch
+
+pub fn new(width~ : Int, depth~ : Int, seed~ : Int64) -> CountMinSketch
+
+// Errors
+
+// Types and methods
+pub struct CountMinSketch {
+  width : Int
+  depth : Int
+  counts : Array[Array[Int64]]
+  hash_a : Array[Int64]
+  hash_b : Array[Int64]
+}
+pub fn CountMinSketch::add(Self, Int64, Int64) -> Unit
+pub fn CountMinSketch::depth_of(Self) -> Int
+pub fn CountMinSketch::estimate(Self, Int64) -> Int64
+pub fn CountMinSketch::merge(Self, Self) -> Unit
+pub fn CountMinSketch::width_of(Self) -> Int
+
+// Type aliases
+
+// Traits
+
