@@ -19,10 +19,10 @@ on:
       - 'v*'
   workflow_dispatch:
 
-# Keep in sync with `.github/workflows/ci.yml` — publishing should use the
-# same toolchain that gated the release.
+# Keep in sync with `.github/workflows/ci.yml`. The publish job should use
+# the same toolchain snapshot that gated the release.
 env:
-  MOONBIT_VERSION: "0.1.20260512"
+  MOONBIT_CACHE_KEY: "moonbit-2026-05-13"
 
 jobs:
   publish:
@@ -31,10 +31,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Set up MoonBit
-        run: |
-          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s "${MOONBIT_VERSION}"
-          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+      - name: Cache MoonBit toolchain
+        id: cache-moon
+        uses: actions/cache@v4
+        with:
+          path: ~/.moon
+          key: ${{ env.MOONBIT_CACHE_KEY }}-${{ runner.os }}-${{ runner.arch }}
+
+      - name: Install MoonBit (on cache miss)
+        if: steps.cache-moon.outputs.cache-hit != 'true'
+        run: curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s nightly
+
+      - name: Add MoonBit to PATH
+        run: echo "$HOME/.moon/bin" >> $GITHUB_PATH
 
       - name: Show MoonBit version
         run: moon version --all
