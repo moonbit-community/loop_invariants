@@ -327,8 +327,8 @@ test "two sat basic" {
   match sat.solve() {
     Some(assign) => {
       // x1 must be true
-      inspect(assign[1], content="true")
-      inspect(sat.verify(assign), content="true")
+      debug_inspect(assign[1], content="true")
+      debug_inspect(sat.verify(assign), content="true")
     }
     None => fail("should be satisfiable")
   }
@@ -346,7 +346,7 @@ test "two sat unsatisfiable" {
   // x0 and ¬x0
   sat.add_clause(0, false, 0, false) // x0
   sat.add_clause(0, true, 0, true) // ¬x0
-  inspect(sat.solve() is None, content="true")
+  debug_inspect(sat.solve() is None, content="true")
 }
 ```
 
@@ -364,8 +364,8 @@ test "two sat implication" {
   sat.set_value(0, true)
   match sat.solve() {
     Some(assign) => {
-      inspect(assign[0], content="true")
-      inspect(assign[1], content="true")
+      debug_inspect(assign[0], content="true")
+      debug_inspect(assign[1], content="true")
     }
     None => fail("should be satisfiable")
   }

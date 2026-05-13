@@ -37,10 +37,10 @@ fn count_set_bits(n : Int) -> Int {
 
 ///|
 test "count set bits" {
-  assert_eq(count_set_bits(0), 0)
-  assert_eq(count_set_bits(1), 1)
-  assert_eq(count_set_bits(7), 3) // 111
-  assert_eq(count_set_bits(255), 8) // 11111111
+  @debug.assert_eq(count_set_bits(0), 0)
+  @debug.assert_eq(count_set_bits(1), 1)
+  @debug.assert_eq(count_set_bits(7), 3) // 111
+  @debug.assert_eq(count_set_bits(255), 8) // 11111111
 }
 
 ///|
@@ -54,11 +54,11 @@ fn is_power_of_two(n : Int) -> Bool {
 
 ///|
 test "power of two" {
-  assert_eq(is_power_of_two(1), true) // 2^0
-  assert_eq(is_power_of_two(2), true) // 2^1
-  assert_eq(is_power_of_two(3), false)
-  assert_eq(is_power_of_two(16), true) // 2^4
-  assert_eq(is_power_of_two(0), false)
+  @debug.assert_eq(is_power_of_two(1), true) // 2^0
+  @debug.assert_eq(is_power_of_two(2), true) // 2^1
+  @debug.assert_eq(is_power_of_two(3), false)
+  @debug.assert_eq(is_power_of_two(16), true) // 2^4
+  @debug.assert_eq(is_power_of_two(0), false)
 }
 
 ///|
@@ -90,9 +90,9 @@ fn single_number(nums : ArrayView[Int]) -> Int {
 ///|
 test "single number" {
   let nums : ReadOnlyArray[Int] = [2, 2, 1]
-  assert_eq(single_number(nums), 1)
+  @debug.assert_eq(single_number(nums), 1)
   let nums2 : ReadOnlyArray[Int] = [4, 1, 2, 1, 2]
-  assert_eq(single_number(nums2), 4)
+  @debug.assert_eq(single_number(nums2), 4)
 }
 
 ///|
@@ -124,11 +124,11 @@ fn missing_number(nums : ArrayView[Int]) -> Int {
 ///|
 test "missing number" {
   let nums : ReadOnlyArray[Int] = [3, 0, 1]
-  assert_eq(missing_number(nums), 2)
+  @debug.assert_eq(missing_number(nums), 2)
   let nums2 : ReadOnlyArray[Int] = [0, 1]
-  assert_eq(missing_number(nums2), 2)
+  @debug.assert_eq(missing_number(nums2), 2)
   let nums3 : ReadOnlyArray[Int] = [9, 6, 4, 2, 3, 5, 7, 0, 1]
-  assert_eq(missing_number(nums3), 8)
+  @debug.assert_eq(missing_number(nums3), 8)
 }
 
 ///|
@@ -165,7 +165,7 @@ fn reverse_bits(n : Int) -> Int {
 test "reverse bits" {
   // 0b00000010100101000001111010011100 = 43261596
   // reversed = 0b00111001011110000010100101000000 = 964176192
-  assert_eq(reverse_bits(43261596), 964176192)
+  @debug.assert_eq(reverse_bits(43261596), 964176192)
 }
 
 ///|
@@ -176,7 +176,7 @@ fn hamming_distance(x : Int, y : Int) -> Int {
 
 ///|
 test "hamming distance" {
-  assert_eq(hamming_distance(1, 4), 2) // 001 vs 100
+  @debug.assert_eq(hamming_distance(1, 4), 2) // 001 vs 100
 }
 
 ///|
@@ -201,7 +201,7 @@ fn generate_subsets(elements : ArrayView[Int]) -> Array[Array[Int]] {
 test "generate subsets" {
   let elements : ReadOnlyArray[Int] = [1, 2, 3]
   let subsets = generate_subsets(elements)
-  assert_eq(subsets.length(), 8) // 2^3 = 8
+  @debug.assert_eq(subsets.length(), 8) // 2^3 = 8
 }
 
 ///|
@@ -219,10 +219,10 @@ fn gray_code(n : Int) -> Array[Int] {
 ///|
 test "gray code" {
   let codes = gray_code(3)
-  assert_eq(codes.length(), 8)
+  @debug.assert_eq(codes.length(), 8)
   // Verify adjacent codes differ by one bit
   for i in 0..<7 {
-    assert_eq(count_set_bits(codes[i] ^ codes[i + 1]), 1)
+    @debug.assert_eq(count_set_bits(codes[i] ^ codes[i + 1]), 1)
   }
 }
 
@@ -270,9 +270,9 @@ fn nim_xor(piles : ArrayView[Int]) -> Int {
 
 ///|
 test "nim winner" {
-  assert_eq(nim_winner([1, 2, 3]), "Second") // XOR = 0
-  assert_eq(nim_winner([1, 2, 4]), "First") // XOR = 7
-  assert_eq(nim_winner([3, 3]), "Second") // XOR = 0
+  @debug.assert_eq(nim_winner([1, 2, 3]), "Second") // XOR = 0
+  @debug.assert_eq(nim_winner([1, 2, 4]), "First") // XOR = 7
+  @debug.assert_eq(nim_winner([3, 3]), "Second") // XOR = 0
 }
 
 ///|
@@ -351,10 +351,10 @@ fn mex(values : ArrayView[Int]) -> Int {
 ///|
 test "sprague grundy simple" {
   // Pattern: sg(n) = n mod 4
-  assert_eq(sprague_grundy_simple(0), 0)
-  assert_eq(sprague_grundy_simple(1), 1)
-  assert_eq(sprague_grundy_simple(4), 0)
-  assert_eq(sprague_grundy_simple(5), 1)
+  @debug.assert_eq(sprague_grundy_simple(0), 0)
+  @debug.assert_eq(sprague_grundy_simple(1), 1)
+  @debug.assert_eq(sprague_grundy_simple(4), 0)
+  @debug.assert_eq(sprague_grundy_simple(5), 1)
 }
 
 ///|
@@ -378,7 +378,7 @@ test "combined game" {
   // Game 1: 3 stones (sg=3), Game 2: 5 stones (sg=1), Game 3: 4 stones (sg=0)
   let sg_values : ReadOnlyArray[Int] = [3, 1, 0]
   // XOR = 3 ^ 1 ^ 0 = 2 != 0, so First wins
-  assert_eq(combined_game_winner(sg_values), "First")
+  @debug.assert_eq(combined_game_winner(sg_values), "First")
 }
 
 ///|
@@ -434,7 +434,7 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
 ///|
 test "maximum xor pair" {
   let nums : ReadOnlyArray[Int] = [3, 10, 5, 25, 2, 8]
-  assert_eq(maximum_xor_pair(nums), 28) // 25 ^ 5 = 28
+  @debug.assert_eq(maximum_xor_pair(nums), 28) // 25 ^ 5 = 28
 }
 
 ///|
@@ -492,9 +492,9 @@ fn divide_bit(dividend : Int, divisor : Int) -> Int {
 
 ///|
 test "divide bit" {
-  assert_eq(divide_bit(10, 3), 3)
-  assert_eq(divide_bit(7, -3), -2)
-  assert_eq(divide_bit(1024, 7), 146)
+  @debug.assert_eq(divide_bit(10, 3), 3)
+  @debug.assert_eq(divide_bit(7, -3), -2)
+  @debug.assert_eq(divide_bit(1024, 7), 146)
 }
 
 ///|
@@ -505,8 +505,8 @@ fn lowest_set_bit(n : Int) -> Int {
 
 ///|
 test "lowest set bit" {
-  assert_eq(lowest_set_bit(12), 4) // 1100 -> lowest is 100 = 4
-  assert_eq(lowest_set_bit(10), 2) // 1010 -> lowest is 10 = 2
+  @debug.assert_eq(lowest_set_bit(12), 4) // 1100 -> lowest is 100 = 4
+  @debug.assert_eq(lowest_set_bit(10), 2) // 1010 -> lowest is 10 = 2
 }
 
 ///|
@@ -524,7 +524,7 @@ fn next_with_same_bits(n : Int) -> Int {
 ///|
 test "next with same bits" {
   // 0b0111 (7) -> 0b1011 (11) -> 0b1101 (13) -> 0b1110 (14)
-  assert_eq(next_with_same_bits(7), 11)
-  assert_eq(next_with_same_bits(11), 13)
-  assert_eq(next_with_same_bits(13), 14)
+  @debug.assert_eq(next_with_same_bits(7), 11)
+  @debug.assert_eq(next_with_same_bits(11), 13)
+  @debug.assert_eq(next_with_same_bits(13), 14)
 }

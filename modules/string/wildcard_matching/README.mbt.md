@@ -303,28 +303,40 @@ and `*` (any sequence including empty).
 ```mbt check
 ///|
 test "wildcard basics" {
-  inspect(@wildcard_matching.wildcard_match("aaabxc", "a*b?c"), content="true")
-  inspect(@wildcard_matching.wildcard_match("abc", "a?c"), content="true")
+  debug_inspect(
+    @wildcard_matching.wildcard_match("aaabxc", "a*b?c"),
+    content="true",
+  )
+  debug_inspect(@wildcard_matching.wildcard_match("abc", "a?c"), content="true")
 }
 ```
 
 ```mbt check
 ///|
 test "wildcard star and empty" {
-  inspect(@wildcard_matching.wildcard_match("", "*"), content="true")
-  inspect(@wildcard_matching.wildcard_match("hello", "h*o"), content="true")
+  debug_inspect(@wildcard_matching.wildcard_match("", "*"), content="true")
+  debug_inspect(
+    @wildcard_matching.wildcard_match("hello", "h*o"),
+    content="true",
+  )
 }
 ```
 
 ```mbt check
 ///|
 test "wildcard edge cases" {
-  inspect(@wildcard_matching.wildcard_match("", ""), content="true")
-  inspect(@wildcard_matching.wildcard_match("a", ""), content="false")
-  inspect(@wildcard_matching.wildcard_match("abcde", "a*c*e"), content="true")
-  inspect(@wildcard_matching.wildcard_match("abcde", "*****"), content="true")
-  inspect(@wildcard_matching.wildcard_match("abc", "???"), content="true")
-  inspect(@wildcard_matching.wildcard_match("ab", "???"), content="false")
+  debug_inspect(@wildcard_matching.wildcard_match("", ""), content="true")
+  debug_inspect(@wildcard_matching.wildcard_match("a", ""), content="false")
+  debug_inspect(
+    @wildcard_matching.wildcard_match("abcde", "a*c*e"),
+    content="true",
+  )
+  debug_inspect(
+    @wildcard_matching.wildcard_match("abcde", "*****"),
+    content="true",
+  )
+  debug_inspect(@wildcard_matching.wildcard_match("abc", "???"), content="true")
+  debug_inspect(@wildcard_matching.wildcard_match("ab", "???"), content="false")
 }
 ```
 

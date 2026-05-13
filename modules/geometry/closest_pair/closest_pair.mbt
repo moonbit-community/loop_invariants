@@ -309,7 +309,7 @@ test "closest pair basic" {
   ]
   let (dist, _, _) = closest_pair(points)
   // Closest pairs are adjacent, distance 1.0
-  inspect(dist < 1.1 && dist > 0.9, content="true")
+  debug_inspect(dist < 1.1 && dist > 0.9, content="true")
 }
 
 ///|
@@ -320,7 +320,7 @@ test "closest pair triangle" {
   // Distance from (1.5, 0.5) to (0, 0) = sqrt(2.25 + 0.25) = sqrt(2.5) ≈ 1.58
   // Distance from (1.5, 0.5) to (3, 0) = sqrt(2.25 + 0.25) = sqrt(2.5) ≈ 1.58
   // Distance from (0, 0) to (3, 0) = 3
-  inspect(dist < 1.6 && dist > 1.5, content="true")
+  debug_inspect(dist < 1.6 && dist > 1.5, content="true")
 }
 
 ///|
@@ -328,8 +328,8 @@ test "closest pair two points" {
   let points : Array[(Double, Double)] = [(0.0, 0.0), (3.0, 4.0)]
   let (dist, p1, p2) = closest_pair(points)
   // Distance = 5.0 (3-4-5 triangle)
-  inspect(dist < 5.1 && dist > 4.9, content="true")
-  inspect((p1 == 0 && p2 == 1) || (p1 == 1 && p2 == 0), content="true")
+  debug_inspect(dist < 5.1 && dist > 4.9, content="true")
+  debug_inspect((p1 == 0 && p2 == 1) || (p1 == 1 && p2 == 0), content="true")
 }
 
 ///|
@@ -342,7 +342,7 @@ test "closest pair cluster" {
   ]
   let (dist, _, _) = closest_pair(points)
   // Closest are (0,0) and (0.1,0) with distance 0.1
-  inspect(dist < 0.15 && dist > 0.05, content="true")
+  debug_inspect(dist < 0.15 && dist > 0.05, content="true")
 }
 
 ///|
@@ -359,21 +359,21 @@ test "closest pair vs naive" {
   // Both should give same distance
   let diff = dist1 - dist2
   let abs_diff = if diff < 0.0 { -diff } else { diff }
-  inspect(abs_diff < 0.001, content="true")
+  debug_inspect(abs_diff < 0.001, content="true")
 }
 
 ///|
 test "closest pair single" {
   let points : Array[(Double, Double)] = [(0.0, 0.0)]
   let (dist, _, _) = closest_pair(points)
-  inspect(dist > 1.0e17, content="true") // INF
+  debug_inspect(dist > 1.0e17, content="true") // INF
 }
 
 ///|
 test "closest pair empty" {
   let points : Array[(Double, Double)] = []
   let (dist, _, _) = closest_pair(points)
-  inspect(dist > 1.0e17, content="true")
+  debug_inspect(dist > 1.0e17, content="true")
 }
 
 ///|
@@ -385,16 +385,16 @@ test "k closest pairs" {
     (10.0, 0.0),
   ]
   let pairs = k_closest_pairs(points, 2)
-  inspect(pairs.length(), content="2")
+  debug_inspect(pairs.length(), content="2")
   // First two closest pairs should be (0,1) and (1,2) with distance 1.0
-  inspect(pairs[0].0 < 1.1, content="true")
-  inspect(pairs[1].0 < 1.1, content="true")
+  debug_inspect(pairs[0].0 < 1.1, content="true")
+  debug_inspect(pairs[1].0 < 1.1, content="true")
 }
 
 ///|
 test "sqrt_f64" {
   let s = sqrt_f64(4.0)
-  inspect(s > 1.99 && s < 2.01, content="true")
+  debug_inspect(s > 1.99 && s < 2.01, content="true")
   let s2 = sqrt_f64(2.0)
-  inspect(s2 > 1.41 && s2 < 1.42, content="true")
+  debug_inspect(s2 > 1.41 && s2 < 1.42, content="true")
 }

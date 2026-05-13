@@ -29,7 +29,10 @@ enum ChildList[T] {
 ///   let h = @challenge_persistent_pairing_heap.insert(h, 8)
 ///   let h = @challenge_persistent_pairing_heap.insert(h, 3)
 ///   let h = @challenge_persistent_pairing_heap.insert(h, 6)
-///   inspect(@challenge_persistent_pairing_heap.find_min(h), content="Some(3)")
+///   debug_inspect(
+///     @challenge_persistent_pairing_heap.find_min(h),
+///     content="Some(3)",
+///   )
 /// }
 /// ```
 pub enum Heap[T] {

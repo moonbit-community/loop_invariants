@@ -72,8 +72,8 @@ test "build adjacency list" {
   let a1 = adj[1].copy()
   a0.sort()
   a1.sort()
-  inspect(a0, content="[1, 2]")
-  inspect(a1, content="[0, 2]")
+  debug_inspect(a0, content="[1, 2]")
+  debug_inspect(a1, content="[0, 2]")
 }
 ```
 
@@ -124,7 +124,7 @@ test "bfs levels" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (0, 3), (1, 4), (3, 4)]
   let adj = build_adj(5, edges)
   let dist = bfs_levels(adj, 0)
-  inspect(dist, content="[0, 1, 2, 1, 2]")
+  debug_inspect(dist, content="[0, 1, 2, 1, 2]")
 }
 ```
 

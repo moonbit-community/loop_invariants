@@ -38,7 +38,7 @@ test "floyd_warshall" {
     [inf, inf, inf, 0],
   ]
   let dist = floyd_warshall(matrix, inf)
-  assert_eq(dist[0][2], 3)
-  assert_eq(dist[0][3], 6)
-  assert_eq(dist[1][3], 5)
+  @debug.assert_eq(dist[0][2], 3)
+  @debug.assert_eq(dist[0][3], 6)
+  @debug.assert_eq(dist[1][3], 5)
 }

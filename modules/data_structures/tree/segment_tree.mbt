@@ -176,16 +176,16 @@ test "lazy segment tree basic" {
   let st = LazySegmentTree(arr)
 
   // Initial sums
-  assert_eq(st.range_sum(0, 5), 15L) // 1+2+3+4+5
-  assert_eq(st.range_sum(0, 3), 6L) // 1+2+3
-  assert_eq(st.range_sum(2, 5), 12L) // 3+4+5
+  @debug.assert_eq(st.range_sum(0, 5), 15L) // 1+2+3+4+5
+  @debug.assert_eq(st.range_sum(0, 3), 6L) // 1+2+3
+  @debug.assert_eq(st.range_sum(2, 5), 12L) // 3+4+5
 
   // Add 10 to range [1, 4)
   st.range_update(1, 4, 10L)
   // Now: [1, 12, 13, 14, 5]
-  assert_eq(st.range_sum(0, 5), 45L) // 1+12+13+14+5
-  assert_eq(st.range_sum(1, 4), 39L) // 12+13+14
-  assert_eq(st.range_sum(0, 1), 1L) // unchanged
+  @debug.assert_eq(st.range_sum(0, 5), 45L) // 1+12+13+14+5
+  @debug.assert_eq(st.range_sum(1, 4), 39L) // 12+13+14
+  @debug.assert_eq(st.range_sum(0, 1), 1L) // unchanged
 }
 
 ///|
@@ -327,18 +327,18 @@ fn SetSegmentTree::query_helper(
 test "set segment tree" {
   let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
   let st = SetSegmentTree(arr)
-  assert_eq(st.range_sum(0, 5), 15L)
+  @debug.assert_eq(st.range_sum(0, 5), 15L)
 
   // Set [1, 4) to 10
   st.range_set(1, 4, 10L)
   // Now: [1, 10, 10, 10, 5]
-  assert_eq(st.range_sum(0, 5), 36L)
-  assert_eq(st.range_sum(1, 4), 30L)
+  @debug.assert_eq(st.range_sum(0, 5), 36L)
+  @debug.assert_eq(st.range_sum(1, 4), 30L)
 
   // Set [0, 3) to 0
   st.range_set(0, 3, 0L)
   // Now: [0, 0, 0, 10, 5]
-  assert_eq(st.range_sum(0, 5), 15L)
+  @debug.assert_eq(st.range_sum(0, 5), 15L)
 }
 
 ///|
@@ -484,15 +484,15 @@ fn RMQSegmentTree::min_helper(
 test "RMQ segment tree" {
   let arr : ReadOnlyArray[Int] = [3, 1, 4, 1, 5, 9, 2, 6]
   let st = RMQSegmentTree(arr)
-  assert_eq(st.range_min(0, 8), 1L) // min of all
-  assert_eq(st.range_min(0, 4), 1L) // min of [3,1,4,1]
-  assert_eq(st.range_min(4, 8), 2L) // min of [5,9,2,6]
+  @debug.assert_eq(st.range_min(0, 8), 1L) // min of all
+  @debug.assert_eq(st.range_min(0, 4), 1L) // min of [3,1,4,1]
+  @debug.assert_eq(st.range_min(4, 8), 2L) // min of [5,9,2,6]
 
   // Add 10 to range [0, 4)
   st.range_add(0, 4, 10L)
   // Now: [13, 11, 14, 11, 5, 9, 2, 6]
-  assert_eq(st.range_min(0, 8), 2L) // min is now 2
-  assert_eq(st.range_min(0, 4), 11L) // min of first 4
+  @debug.assert_eq(st.range_min(0, 8), 2L) // min is now 2
+  @debug.assert_eq(st.range_min(0, 4), 11L) // min of first 4
 }
 
 ///|
@@ -646,17 +646,17 @@ test "persistent segment tree" {
   let pst = PersistentSegmentTree(5)
 
   // Version 0: all zeros
-  assert_eq(pst.range_sum(0, 0, 5), 0L)
+  @debug.assert_eq(pst.range_sum(0, 0, 5), 0L)
 
   // Version 1: set position 2 to 10
   let v1 = pst.update(0, 2, 10L)
-  assert_eq(pst.range_sum(v1, 0, 5), 10L)
-  assert_eq(pst.range_sum(0, 0, 5), 0L) // Version 0 unchanged!
+  @debug.assert_eq(pst.range_sum(v1, 0, 5), 10L)
+  @debug.assert_eq(pst.range_sum(0, 0, 5), 0L) // Version 0 unchanged!
 
   // Version 2: set position 4 to 20
   let v2 = pst.update(v1, 4, 20L)
-  assert_eq(pst.range_sum(v2, 0, 5), 30L)
-  assert_eq(pst.range_sum(v1, 0, 5), 10L) // Version 1 unchanged!
+  @debug.assert_eq(pst.range_sum(v2, 0, 5), 30L)
+  @debug.assert_eq(pst.range_sum(v1, 0, 5), 10L) // Version 1 unchanged!
 }
 
 ///|
@@ -788,16 +788,16 @@ fn IterativeSegmentTree::range_sum(
 test "iterative segment tree" {
   let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
   let st = iterative_segment_tree_build(arr)
-  assert_eq(st.range_sum(0, 5), 15L)
-  assert_eq(st.range_sum(0, 3), 6L)
-  assert_eq(st.range_sum(2, 5), 12L)
-  assert_eq(st.range_sum(1, 4), 9L)
+  @debug.assert_eq(st.range_sum(0, 5), 15L)
+  @debug.assert_eq(st.range_sum(0, 3), 6L)
+  @debug.assert_eq(st.range_sum(2, 5), 12L)
+  @debug.assert_eq(st.range_sum(1, 4), 9L)
 
   // Update position 2 to 10
   st.update(2, 10L)
   // Now: [1, 2, 10, 4, 5]
-  assert_eq(st.range_sum(0, 5), 22L)
-  assert_eq(st.range_sum(0, 3), 13L)
+  @debug.assert_eq(st.range_sum(0, 5), 22L)
+  @debug.assert_eq(st.range_sum(0, 3), 13L)
 }
 
 ///|
@@ -892,20 +892,20 @@ test "max count segment tree" {
   let arr : ReadOnlyArray[Int] = [3, 1, 4, 1, 5, 9, 2, 6]
   let st = max_count_segment_tree_build(arr)
   let result = st.range_query(0, 8)
-  assert_eq(result.max_val, 9L)
-  assert_eq(result.count, 1) // Only one 9
+  @debug.assert_eq(result.max_val, 9L)
+  @debug.assert_eq(result.count, 1) // Only one 9
 
   // Query [0, 4) which is [3, 1, 4, 1]
   let result2 = st.range_query(0, 4)
-  assert_eq(result2.max_val, 4L)
-  assert_eq(result2.count, 1)
+  @debug.assert_eq(result2.max_val, 4L)
+  @debug.assert_eq(result2.count, 1)
 
   // Test with duplicates
   let arr2 : ReadOnlyArray[Int] = [3, 5, 5, 2, 5, 1]
   let st2 = max_count_segment_tree_build(arr2)
   let result3 = st2.range_query(0, 6)
-  assert_eq(result3.max_val, 5L)
-  assert_eq(result3.count, 3) // Three 5s
+  @debug.assert_eq(result3.max_val, 5L)
+  @debug.assert_eq(result3.count, 3) // Three 5s
 }
 
 ///|
@@ -1100,19 +1100,19 @@ test "2D segment tree" {
   let st = SegmentTree2D(matrix)
 
   // Sum of entire matrix
-  assert_eq(st.range_sum(0, 3, 0, 3), 45L)
+  @debug.assert_eq(st.range_sum(0, 3, 0, 3), 45L)
 
   // Sum of first row
-  assert_eq(st.range_sum(0, 1, 0, 3), 6L)
+  @debug.assert_eq(st.range_sum(0, 1, 0, 3), 6L)
 
   // Sum of first column
-  assert_eq(st.range_sum(0, 3, 0, 1), 12L)
+  @debug.assert_eq(st.range_sum(0, 3, 0, 1), 12L)
 
   // Sum of 2x2 submatrix
-  assert_eq(st.range_sum(0, 2, 0, 2), 12L) // 1+2+4+5
+  @debug.assert_eq(st.range_sum(0, 2, 0, 2), 12L) // 1+2+4+5
 
   // Update and query
   st.update(1, 1, 50L) // Change 5 to 50
-  assert_eq(st.range_sum(0, 3, 0, 3), 90L) // 45 + 45
-  assert_eq(st.range_sum(1, 2, 1, 2), 50L) // Just the updated cell
+  @debug.assert_eq(st.range_sum(0, 3, 0, 3), 90L) // 45 + 45
+  @debug.assert_eq(st.range_sum(1, 2, 1, 2), 50L) // Just the updated cell
 }

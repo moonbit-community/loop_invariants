@@ -45,5 +45,5 @@ pub fn sliding_window_min(arr : ArrayView[Int], k : Int) -> Array[Int] {
 ///|
 test "sliding_window_min" {
   let arr : Array[Int] = [4, 2, 12, 3, 5, 1]
-  assert_eq(sliding_window_min(arr, 3), [2, 2, 3, 1])
+  @debug.assert_eq(sliding_window_min(arr, 3), [2, 2, 3, 1])
 }

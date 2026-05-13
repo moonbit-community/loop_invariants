@@ -28,8 +28,8 @@ fn min(a : Int, b : Int) -> Int {
 /// test {
 ///   let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
 ///   let st = build_sparse_table(arr[:])
-///   assert_eq(range_min(st, 1, 5), 1)
-///   assert_eq(range_min(st, 0, 8), 0)
+///   @debug.assert_eq(range_min(st, 1, 5), 1)
+///   @debug.assert_eq(range_min(st, 0, 8), 0)
 /// }
 /// ```
 pub struct SparseTable {

@@ -29,7 +29,7 @@ enum MinStack[T] {
 ///   let q = @challenge_persistent_queue_min.enqueue(q, 5)
 ///   let q = @challenge_persistent_queue_min.enqueue(q, 2)
 ///   let q = @challenge_persistent_queue_min.enqueue(q, 7)
-///   inspect(@challenge_persistent_queue_min.min_queue(q), content="Some(2)")
+///   debug_inspect(@challenge_persistent_queue_min.min_queue(q), content="Some(2)")
 /// }
 /// ```
 pub struct MinQueue[T] {
@@ -150,5 +150,5 @@ test "persistent_queue_min" {
   debug_inspect(min_queue(q4), content="Some(2)")
   guard dequeue(q4) is Some((2, q5)) else { fail("expected dequeue") }
   debug_inspect(min_queue(q5), content="Some(7)")
-  assert_eq(size(q5), 1)
+  @debug.assert_eq(size(q5), 1)
 }

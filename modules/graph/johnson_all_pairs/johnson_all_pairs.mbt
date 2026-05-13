@@ -346,8 +346,8 @@ test "johnson basic" {
     (1, 3, 5L),
   ]
   let dist = johnson_all_pairs(4, edges).unwrap()
-  inspect(dist[0], content="[0, 1, -1, 1]")
-  inspect(dist[1], content="[4611686018427387903, 0, -2, 0]")
+  debug_inspect(dist[0], content="[0, 1, -1, 1]")
+  debug_inspect(dist[1], content="[4611686018427387903, 0, -2, 0]")
 }
 
 ///|
@@ -360,5 +360,5 @@ test "johnson negative cycle" {
 test "johnson unreachable" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 2L), (1, 2, 3L)]
   let dist = johnson_all_pairs(4, edges).unwrap()
-  inspect(dist[0][3], content="4611686018427387903")
+  debug_inspect(dist[0][3], content="4611686018427387903")
 }

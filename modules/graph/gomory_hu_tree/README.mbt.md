@@ -246,8 +246,8 @@ Query: min_cut(0, 3)
 test "gomory-hu tree example" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L), (1, 2, 3L), (1, 3, 1L)]
   let tree = @gomory_hu_tree.gomory_hu_tree(4, edges)
-  inspect(tree.min_cut(0, 2), content="3")
-  inspect(tree.min_cut(2, 3), content="1")
+  debug_inspect(tree.min_cut(0, 2), content="3")
+  debug_inspect(tree.min_cut(2, 3), content="1")
 }
 ```
 
@@ -259,9 +259,9 @@ test "gomory-hu tree on a line" {
   // 0 --5-- 1 --3-- 2 --1-- 3
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L), (1, 2, 3L), (2, 3, 1L)]
   let tree = @gomory_hu_tree.gomory_hu_tree(4, edges)
-  inspect(tree.min_cut(0, 3), content="1")
-  inspect(tree.min_cut(0, 2), content="3")
-  inspect(tree.min_cut(1, 2), content="3")
+  debug_inspect(tree.min_cut(0, 3), content="1")
+  debug_inspect(tree.min_cut(0, 2), content="3")
+  debug_inspect(tree.min_cut(1, 2), content="3")
 }
 ```
 
@@ -274,9 +274,9 @@ test "gomory-hu tree triangle" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, 1L), (0, 2, 1L)]
   let tree = @gomory_hu_tree.gomory_hu_tree(3, edges)
   // Min-cut between any pair is 2 (need to cut 2 edges)
-  inspect(tree.min_cut(0, 1), content="2")
-  inspect(tree.min_cut(0, 2), content="2")
-  inspect(tree.min_cut(1, 2), content="2")
+  debug_inspect(tree.min_cut(0, 1), content="2")
+  debug_inspect(tree.min_cut(0, 2), content="2")
+  debug_inspect(tree.min_cut(1, 2), content="2")
 }
 ```
 
@@ -298,10 +298,10 @@ test "gomory-hu tree two clusters" {
   ]
   let tree = @gomory_hu_tree.gomory_hu_tree(6, edges)
   // Any cut separating the clusters must cut the bridge edge.
-  inspect(tree.min_cut(0, 4), content="1")
+  debug_inspect(tree.min_cut(0, 4), content="1")
   // Within a cluster, the minimum cut is larger.
-  inspect(tree.min_cut(0, 2), content="10")
-  inspect(tree.min_cut(3, 5), content="10")
+  debug_inspect(tree.min_cut(0, 2), content="10")
+  debug_inspect(tree.min_cut(3, 5), content="10")
 }
 ```
 

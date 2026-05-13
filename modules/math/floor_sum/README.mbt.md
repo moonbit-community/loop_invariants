@@ -207,16 +207,16 @@ Result: 21
 ```mbt check
 ///|
 test "floor sum quick start" {
-  inspect(@floor_sum.floor_sum(4L, 5L, 3L, 2L), content="4")
-  inspect(@floor_sum.floor_sum(5L, 4L, 2L, 1L), content="4")
-  inspect(@floor_sum.floor_sum(5L, 3L, 2L, 1L), content="7")
+  debug_inspect(@floor_sum.floor_sum(4L, 5L, 3L, 2L), content="4")
+  debug_inspect(@floor_sum.floor_sum(5L, 4L, 2L, 1L), content="4")
+  debug_inspect(@floor_sum.floor_sum(5L, 3L, 2L, 1L), content="7")
 }
 ```
 
 ```mbt check
 ///|
 test "floor sum with reductions" {
-  inspect(@floor_sum.floor_sum(5L, 4L, 6L, 7L), content="21")
+  debug_inspect(@floor_sum.floor_sum(5L, 4L, 6L, 7L), content="21")
 }
 ```
 

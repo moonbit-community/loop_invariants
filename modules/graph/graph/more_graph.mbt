@@ -82,11 +82,11 @@ test "bellman ford" {
     (2, 3, 4),
   ]
   let (dist, has_neg) = bellman_ford_with_neg_cycle(4, edges, 0)
-  assert_eq(has_neg, false)
-  assert_eq(dist[0], 0)
-  assert_eq(dist[1], 4)
-  assert_eq(dist[2], 1) // 0 -> 1 -> 2 = 4 + (-3) = 1
-  assert_eq(dist[3], 5) // 0 -> 1 -> 2 -> 3 = 1 + 4 = 5
+  @debug.assert_eq(has_neg, false)
+  @debug.assert_eq(dist[0], 0)
+  @debug.assert_eq(dist[1], 4)
+  @debug.assert_eq(dist[2], 1) // 0 -> 1 -> 2 = 4 + (-3) = 1
+  @debug.assert_eq(dist[3], 5) // 0 -> 1 -> 2 -> 3 = 1 + 4 = 5
 }
 
 ///|
@@ -98,7 +98,7 @@ test "bellman ford negative cycle" {
     (2, 0, -3),
   ]
   let (_, has_neg) = bellman_ford_with_neg_cycle(3, edges, 0)
-  assert_eq(has_neg, true)
+  @debug.assert_eq(has_neg, true)
 }
 
 ///|
@@ -198,11 +198,11 @@ test "floyd warshall" {
   let inf = 2147483647 / 2
   let adj = [[0, 3, inf, 7], [8, 0, 2, inf], [5, inf, 0, 1], [2, inf, inf, 0]]
   let dist = floyd_warshall_all_pairs(adj)
-  assert_eq(dist[0][0], 0)
-  assert_eq(dist[0][1], 3)
-  assert_eq(dist[0][2], 5) // 0 -> 1 -> 2
-  assert_eq(dist[0][3], 6) // 0 -> 1 -> 2 -> 3
-  assert_eq(dist[3][1], 5) // 3 -> 0 -> 1
+  @debug.assert_eq(dist[0][0], 0)
+  @debug.assert_eq(dist[0][1], 3)
+  @debug.assert_eq(dist[0][2], 5) // 0 -> 1 -> 2
+  @debug.assert_eq(dist[0][3], 6) // 0 -> 1 -> 2 -> 3
+  @debug.assert_eq(dist[3][1], 5) // 3 -> 0 -> 1
 }
 
 ///|
@@ -305,11 +305,11 @@ fn is_bipartite(n : Int, adj : Array[Array[Int]]) -> Bool {
 test "bipartite" {
   // Bipartite graph: 0 -- 1, 0 -- 3, 1 -- 2, 2 -- 3
   let adj = [[1, 3], [0, 2], [1, 3], [0, 2]]
-  assert_eq(is_bipartite(4, adj), true)
+  @debug.assert_eq(is_bipartite(4, adj), true)
 
   // Non-bipartite: triangle 0 -- 1 -- 2 -- 0
   let adj2 = [[1, 2], [0, 2], [0, 1]]
-  assert_eq(is_bipartite(3, adj2), false)
+  @debug.assert_eq(is_bipartite(3, adj2), false)
 }
 
 ///|
@@ -370,11 +370,11 @@ fn dfs_has_cycle(
 test "cycle detection directed" {
   // Acyclic: 0 -> 1 -> 2
   let adj = [[1], [2], []]
-  assert_eq(has_cycle_directed(3, adj), false)
+  @debug.assert_eq(has_cycle_directed(3, adj), false)
 
   // Cyclic: 0 -> 1 -> 2 -> 0
   let adj2 = [[1], [2], [0]]
-  assert_eq(has_cycle_directed(3, adj2), true)
+  @debug.assert_eq(has_cycle_directed(3, adj2), true)
 }
 
 ///|
@@ -471,7 +471,7 @@ test "count sccs" {
   // Graph with 3 SCCs: {0,1,2}, {3}, {4}
   // 0 <-> 1, 1 -> 2, 2 -> 0, 2 -> 3, 3 -> 4
   let adj = [[1], [0, 2], [0, 3], [4], []]
-  assert_eq(count_sccs(5, adj), 3)
+  @debug.assert_eq(count_sccs(5, adj), 3)
 }
 
 ///|
@@ -565,7 +565,7 @@ test "prim mst" {
     [(2, 2), (6, 6), (7, 7)], // 8
   ]
   // MST weight = 4 + 8 + 2 + 4 + 2 + 1 + 7 + 9 = 37
-  assert_eq(prim_mst(9, adj), 37)
+  @debug.assert_eq(prim_mst(9, adj), 37)
 }
 
 ///|
@@ -698,5 +698,5 @@ test "kruskal mst" {
     (6, 8, 6),
     (7, 8, 7),
   ]
-  assert_eq(kruskal_mst(9, edges), 37)
+  @debug.assert_eq(kruskal_mst(9, edges), 37)
 }

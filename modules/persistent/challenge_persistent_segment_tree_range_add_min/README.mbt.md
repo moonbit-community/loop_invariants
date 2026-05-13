@@ -144,7 +144,7 @@ test "range add min basic" {
     2,
     2,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_min.range_min(
       root,
       0,
@@ -154,7 +154,7 @@ test "range add min basic" {
     ),
     content="2",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_min.range_min(
       v2,
       0,
@@ -164,7 +164,7 @@ test "range add min basic" {
     ),
     content="3",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_min.range_min(
       v2,
       0,
@@ -222,7 +222,7 @@ test "range add min apply updates" {
     arr.length(),
     [(0, 2, 2), (2, 3, 3)],
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_min.range_min(
       root,
       0,
@@ -232,7 +232,7 @@ test "range add min apply updates" {
     ),
     content="1",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_min.range_min(
       updated,
       0,
@@ -269,11 +269,11 @@ test "range add min root" {
     4,
     5,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_min.min_value(root),
     content="1",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_min.min_value(updated),
     content="4",
   )

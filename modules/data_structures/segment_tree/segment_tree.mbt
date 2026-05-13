@@ -465,10 +465,10 @@ fn IterativeSegTree::query(self : IterativeSegTree, l : Int, r : Int) -> Int64 {
 test "segment tree basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let st = SegmentTree(arr)
-  inspect(st.query(0, 4), content="15")
-  inspect(st.query(0, 2), content="6")
-  inspect(st.query(2, 4), content="12")
-  inspect(st.query(1, 3), content="9")
+  debug_inspect(st.query(0, 4), content="15")
+  debug_inspect(st.query(0, 2), content="6")
+  debug_inspect(st.query(2, 4), content="12")
+  debug_inspect(st.query(1, 3), content="9")
 }
 
 ///|
@@ -476,26 +476,26 @@ test "segment tree update" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let st = SegmentTree(arr)
   st.update(2, 10L)
-  inspect(st.query(0, 4), content="22") // 1+2+10+4+5
-  inspect(st.query(2, 2), content="10")
+  debug_inspect(st.query(0, 4), content="22") // 1+2+10+4+5
+  debug_inspect(st.query(2, 2), content="10")
 }
 
 ///|
 test "segment tree single element" {
   let arr : Array[Int64] = [42L]
   let st = SegmentTree(arr)
-  inspect(st.query(0, 0), content="42")
+  debug_inspect(st.query(0, 0), content="42")
   st.update(0, 100L)
-  inspect(st.query(0, 0), content="100")
+  debug_inspect(st.query(0, 0), content="100")
 }
 
 ///|
 test "segment tree min basic" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L, 9L]
   let st = SegmentTreeMin(arr)
-  inspect(st.query(0, 4), content="1")
-  inspect(st.query(0, 2), content="2")
-  inspect(st.query(2, 4), content="1")
+  debug_inspect(st.query(0, 4), content="1")
+  debug_inspect(st.query(0, 2), content="2")
+  debug_inspect(st.query(2, 4), content="1")
 }
 
 ///|
@@ -503,17 +503,17 @@ test "segment tree min update" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L, 9L]
   let st = SegmentTreeMin(arr)
   st.update(3, 100L) // Change 1 to 100
-  inspect(st.query(0, 4), content="2")
-  inspect(st.query(2, 4), content="8")
+  debug_inspect(st.query(0, 4), content="2")
+  debug_inspect(st.query(2, 4), content="8")
 }
 
 ///|
 test "iterative segment tree basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let st = IterativeSegTree(arr)
-  inspect(st.query(0, 4), content="15")
-  inspect(st.query(0, 2), content="6")
-  inspect(st.query(2, 4), content="12")
+  debug_inspect(st.query(0, 4), content="15")
+  debug_inspect(st.query(0, 2), content="6")
+  debug_inspect(st.query(2, 4), content="12")
 }
 
 ///|
@@ -521,7 +521,7 @@ test "iterative segment tree update" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let st = IterativeSegTree(arr)
   st.update(2, 10L)
-  inspect(st.query(0, 4), content="22")
+  debug_inspect(st.query(0, 4), content="22")
 }
 
 ///|
@@ -529,25 +529,25 @@ test "iterative segment tree update power of two" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
   let st = IterativeSegTree(arr)
   st.update(3, 100L)
-  inspect(st.query(0, 7), content="132")
-  inspect(st.query(0, 3), content="106")
-  inspect(st.query(4, 7), content="26")
+  debug_inspect(st.query(0, 7), content="132")
+  debug_inspect(st.query(0, 3), content="106")
+  debug_inspect(st.query(4, 7), content="26")
 }
 
 ///|
 test "segment tree empty" {
   let arr : Array[Int64] = []
   let st = SegmentTree(arr)
-  inspect(st.length(), content="0")
+  debug_inspect(st.length(), content="0")
 }
 
 ///|
 test "segment tree boundary" {
   let arr : Array[Int64] = [1L, 2L, 3L]
   let st = SegmentTree(arr)
-  inspect(st.query(-1, 0), content="0") // Invalid
-  inspect(st.query(0, 10), content="0") // Invalid
-  inspect(st.query(2, 1), content="0") // Invalid
+  debug_inspect(st.query(-1, 0), content="0") // Invalid
+  debug_inspect(st.query(0, 10), content="0") // Invalid
+  debug_inspect(st.query(2, 1), content="0") // Invalid
 }
 
 ///|
@@ -556,7 +556,7 @@ test "segment tree large" {
   let arr : Array[Int64] = [ for i in 0..<n => i.to_int64() ]
   let st = SegmentTree(arr)
   // Sum of 0..99 = 99*100/2 = 4950
-  inspect(st.query(0, 99), content="4950")
+  debug_inspect(st.query(0, 99), content="4950")
 }
 
 ///|
@@ -566,7 +566,7 @@ test "iterative vs recursive" {
   let st2 = IterativeSegTree(arr)
 
   // Both should give same results
-  inspect(st1.query(0, 7) == st2.query(0, 7), content="true")
-  inspect(st1.query(2, 5) == st2.query(2, 5), content="true")
-  inspect(st1.query(0, 0) == st2.query(0, 0), content="true")
+  debug_inspect(st1.query(0, 7) == st2.query(0, 7), content="true")
+  debug_inspect(st1.query(2, 5) == st2.query(2, 5), content="true")
+  debug_inspect(st1.query(0, 0) == st2.query(0, 0), content="true")
 }

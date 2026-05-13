@@ -197,8 +197,8 @@ new suffix. This is the only structural change needed during insertion.
 ///|
 test "suffix tree contains" {
   let tree = @suffix_tree.SuffixTree("banana")
-  inspect(tree.contains("ana"), content="true")
-  inspect(tree.contains("apple"), content="false")
+  debug_inspect(tree.contains("ana"), content="true")
+  debug_inspect(tree.contains("apple"), content="false")
 }
 ```
 
@@ -206,8 +206,8 @@ test "suffix tree contains" {
 ///|
 test "suffix tree count" {
   let tree = @suffix_tree.SuffixTree("banana")
-  inspect(tree.count_occurrences("ana"), content="2")
-  inspect(tree.count_occurrences("na"), content="2")
+  debug_inspect(tree.count_occurrences("ana"), content="2")
+  debug_inspect(tree.count_occurrences("na"), content="2")
 }
 ```
 

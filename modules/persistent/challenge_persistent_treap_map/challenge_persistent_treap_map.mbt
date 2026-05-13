@@ -20,8 +20,8 @@
 ///   let m = @challenge_persistent_treap_map.empty()
 ///   let m = @challenge_persistent_treap_map.insert_or_update(m, "a", 1)
 ///   let m = @challenge_persistent_treap_map.insert_or_update(m, "b", 2)
-///   assert_eq(@challenge_persistent_treap_map.get(m, "a"), Some(1))
-///   assert_eq(@challenge_persistent_treap_map.contains(m, "c"), false)
+///   @debug.assert_eq(@challenge_persistent_treap_map.get(m, "a"), Some(1))
+///   @debug.assert_eq(@challenge_persistent_treap_map.contains(m, "c"), false)
 /// }
 /// ```
 pub enum TreapMap[K, V] {

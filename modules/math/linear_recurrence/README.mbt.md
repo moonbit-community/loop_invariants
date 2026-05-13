@@ -226,7 +226,7 @@ test "linear recurrence fibonacci" {
   let m = 1000000007L
   let coeffs : Array[Int64] = [1L, 1L]
   let initial : Array[Int64] = [0L, 1L]
-  inspect(
+  debug_inspect(
     @linear_recurrence.linear_recurrence_nth(coeffs, initial, 7L, m),
     content="13",
   )
@@ -239,7 +239,7 @@ test "linear recurrence geometric" {
   let m = 1000000007L
   let coeffs : Array[Int64] = [2L] // f(n) = 2*f(n-1)
   let initial : Array[Int64] = [1L]
-  inspect(
+  debug_inspect(
     @linear_recurrence.linear_recurrence_nth(coeffs, initial, 5L, m),
     content="32",
   )
@@ -252,7 +252,7 @@ test "tribonacci" {
   let m = 1000000007L
   let coeffs : Array[Int64] = [1L, 1L, 1L]
   let initial : Array[Int64] = [0L, 0L, 1L]
-  inspect(
+  debug_inspect(
     @linear_recurrence.linear_recurrence_nth(coeffs, initial, 7L, m),
     content="13",
   )

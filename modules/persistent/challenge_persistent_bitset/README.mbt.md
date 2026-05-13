@@ -100,9 +100,9 @@ test "persistent bitset basic" {
   let bs0 = @challenge_persistent_bitset.make(5)
   let bs1 = @challenge_persistent_bitset.set(bs0, 2, 1)
   let bs2 = @challenge_persistent_bitset.set(bs1, 4, 1)
-  inspect(@challenge_persistent_bitset.get(bs0, 2), content="0")
-  inspect(@challenge_persistent_bitset.get(bs1, 2), content="1")
-  inspect(@challenge_persistent_bitset.get(bs2, 4), content="1")
+  debug_inspect(@challenge_persistent_bitset.get(bs0, 2), content="0")
+  debug_inspect(@challenge_persistent_bitset.get(bs1, 2), content="1")
+  debug_inspect(@challenge_persistent_bitset.get(bs2, 4), content="1")
 }
 ```
 
@@ -112,8 +112,8 @@ test "persistent bitset basic" {
 ///|
 test "persistent bitset count range" {
   let bs = @challenge_persistent_bitset.from_indices(6, [1, 3, 4])
-  inspect(@challenge_persistent_bitset.count_range(bs, 0, 6), content="3")
-  inspect(@challenge_persistent_bitset.count_range(bs, 2, 5), content="2")
+  debug_inspect(@challenge_persistent_bitset.count_range(bs, 0, 6), content="3")
+  debug_inspect(@challenge_persistent_bitset.count_range(bs, 2, 5), content="2")
 }
 ```
 
@@ -125,9 +125,18 @@ test "persistent bitset versions" {
   let bs0 = @challenge_persistent_bitset.make(4)
   let bs1 = @challenge_persistent_bitset.set(bs0, 0, 1)
   let bs2 = @challenge_persistent_bitset.set(bs1, 3, 1)
-  inspect(@challenge_persistent_bitset.count_range(bs0, 0, 4), content="0")
-  inspect(@challenge_persistent_bitset.count_range(bs1, 0, 4), content="1")
-  inspect(@challenge_persistent_bitset.count_range(bs2, 0, 4), content="2")
+  debug_inspect(
+    @challenge_persistent_bitset.count_range(bs0, 0, 4),
+    content="0",
+  )
+  debug_inspect(
+    @challenge_persistent_bitset.count_range(bs1, 0, 4),
+    content="1",
+  )
+  debug_inspect(
+    @challenge_persistent_bitset.count_range(bs2, 0, 4),
+    content="2",
+  )
 }
 ```
 
@@ -138,9 +147,12 @@ test "persistent bitset versions" {
 test "persistent bitset bounds" {
   let bs = @challenge_persistent_bitset.make(3)
   let bs2 = @challenge_persistent_bitset.set(bs, 99, 1)
-  inspect(@challenge_persistent_bitset.get(bs2, -1), content="0")
-  inspect(@challenge_persistent_bitset.get(bs2, 3), content="0")
-  inspect(@challenge_persistent_bitset.count_range(bs2, 0, 3), content="0")
+  debug_inspect(@challenge_persistent_bitset.get(bs2, -1), content="0")
+  debug_inspect(@challenge_persistent_bitset.get(bs2, 3), content="0")
+  debug_inspect(
+    @challenge_persistent_bitset.count_range(bs2, 0, 3),
+    content="0",
+  )
 }
 ```
 

@@ -233,10 +233,10 @@ pub fn XorBasis::rank(self : XorBasis) -> Int {
 ///|
 test "xor basis insert and rank" {
   let b = XorBasis()
-  inspect(b.insert(1L), content="true")
-  inspect(b.insert(2L), content="true")
-  inspect(b.insert(3L), content="false")
-  inspect(b.rank(), content="2")
+  debug_inspect(b.insert(1L), content="true")
+  debug_inspect(b.insert(2L), content="true")
+  debug_inspect(b.insert(3L), content="false")
+  debug_inspect(b.rank(), content="2")
 }
 
 ///|
@@ -244,12 +244,12 @@ test "xor basis represent" {
   let b = XorBasis()
   let _ = b.insert(5L) // 101
   let _ = b.insert(6L) // 110
-  inspect(b.max_xor(0L), content="6")
-  inspect(b.can_represent(3L), content="true")
-  inspect(b.can_represent(5L), content="true")
-  inspect(b.can_represent(6L), content="true")
-  inspect(b.can_represent(7L), content="false")
-  inspect(b.can_represent(8L), content="false")
+  debug_inspect(b.max_xor(0L), content="6")
+  debug_inspect(b.can_represent(3L), content="true")
+  debug_inspect(b.can_represent(5L), content="true")
+  debug_inspect(b.can_represent(6L), content="true")
+  debug_inspect(b.can_represent(7L), content="false")
+  debug_inspect(b.can_represent(8L), content="false")
 }
 
 ///|
@@ -257,7 +257,7 @@ test "xor basis dependent insert" {
   let b = XorBasis()
   let _ = b.insert(5L)
   let _ = b.insert(6L)
-  inspect(b.insert(3L), content="false")
+  debug_inspect(b.insert(3L), content="false")
 }
 
 ///|
@@ -266,8 +266,8 @@ test "xor basis copy insert" {
   let _ = b.insert(5L)
   let _ = b.insert(6L)
   let copy = { basis: b.basis.copy(), size: b.size }
-  inspect(copy.basis[2], content="5")
-  inspect(copy.insert(3L), content="false")
+  debug_inspect(copy.basis[2], content="5")
+  debug_inspect(copy.insert(3L), content="false")
 }
 
 ///|
@@ -276,6 +276,6 @@ test "xor basis max" {
   let _ = b.insert(8L)
   let _ = b.insert(5L)
   let _ = b.insert(10L)
-  inspect(b.max_xor(0L), content="15")
-  inspect(b.max_xor(7L), content="15")
+  debug_inspect(b.max_xor(0L), content="15")
+  debug_inspect(b.max_xor(7L), content="15")
 }

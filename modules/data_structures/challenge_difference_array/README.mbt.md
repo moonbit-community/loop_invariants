@@ -73,7 +73,7 @@ test "difference array basic" {
   let base : Array[Int] = [1, 2, 3, 4, 5]
   let updates : Array[(Int, Int, Int)] = [(1, 3, 2), (0, 0, -1), (2, 4, 1)]
   let updated = @challenge_difference_array.apply_range_add(base, updates)
-  inspect(updated, content="[0, 4, 6, 7, 6]")
+  debug_inspect(updated, content="[0, 4, 6, 7, 6]")
 }
 ```
 
@@ -85,7 +85,7 @@ test "difference array disjoint ranges" {
   let base : Array[Int] = [0, 0, 0, 0]
   let updates : Array[(Int, Int, Int)] = [(0, 1, 3), (2, 3, 1)]
   let updated = @challenge_difference_array.apply_range_add(base, updates)
-  inspect(updated, content="[3, 3, 1, 1]")
+  debug_inspect(updated, content="[3, 3, 1, 1]")
 }
 ```
 
@@ -97,7 +97,7 @@ test "difference array negative" {
   let base : Array[Int] = [10, 10, 10]
   let updates : Array[(Int, Int, Int)] = [(0, 2, -3), (1, 1, -2)]
   let updated = @challenge_difference_array.apply_range_add(base, updates)
-  inspect(updated, content="[7, 5, 7]")
+  debug_inspect(updated, content="[7, 5, 7]")
 }
 ```
 
@@ -109,7 +109,7 @@ test "difference array single points" {
   let base : Array[Int] = [5, 5, 5, 5]
   let updates : Array[(Int, Int, Int)] = [(2, 2, 4), (0, 0, -1)]
   let updated = @challenge_difference_array.apply_range_add(base, updates)
-  inspect(updated, content="[4, 5, 9, 5]")
+  debug_inspect(updated, content="[4, 5, 9, 5]")
 }
 ```
 

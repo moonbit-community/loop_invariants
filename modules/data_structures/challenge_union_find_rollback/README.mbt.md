@@ -81,11 +81,11 @@ test "rollback dsu basic" {
   let _ = dsu.union(2, 3)
   let snap = dsu.snapshot()
   let _ = dsu.union(1, 2)
-  inspect(dsu.same(0, 3), content="true")
+  debug_inspect(dsu.same(0, 3), content="true")
   dsu.rollback(snap)
-  inspect(dsu.same(0, 3), content="false")
-  inspect(dsu.same(0, 1), content="true")
-  inspect(dsu.same(2, 3), content="true")
+  debug_inspect(dsu.same(0, 3), content="false")
+  debug_inspect(dsu.same(0, 1), content="true")
+  debug_inspect(dsu.same(2, 3), content="true")
 }
 ```
 
@@ -101,11 +101,11 @@ test "rollback dsu nested snapshot" {
   let _ = dsu.union(0, 1)
   let snap1 = dsu.snapshot()
   let _ = dsu.union(1, 2)
-  inspect(dsu.same(0, 2), content="true")
+  debug_inspect(dsu.same(0, 2), content="true")
   dsu.rollback(snap1)
-  inspect(dsu.same(0, 2), content="false")
+  debug_inspect(dsu.same(0, 2), content="false")
   dsu.rollback(snap0)
-  inspect(dsu.same(0, 1), content="false")
+  debug_inspect(dsu.same(0, 1), content="false")
 }
 ```
 
@@ -121,7 +121,7 @@ test "rollback dsu redundant" {
   let _ = dsu.union(0, 1)
   let _ = dsu.union(0, 1) // no-op, but logged
   dsu.rollback(snap)
-  inspect(dsu.same(0, 1), content="false")
+  debug_inspect(dsu.same(0, 1), content="false")
 }
 ```
 

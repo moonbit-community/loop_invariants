@@ -55,7 +55,7 @@ const GAUSS_EPS : Double = 0.000000001
 ///   let b = [5.0, 1.0]
 ///   let res = gauss_solve(a, b)
 ///   assert_true(res.has_unique_solution)
-///   assert_eq(res.rank, 2)
+///   @debug.assert_eq(res.rank, 2)
 /// }
 /// ```
 pub struct GaussResult {
@@ -759,9 +759,9 @@ test "gauss basic 2x2" {
   let a : Array[Array[Double]] = [[1.0, 1.0], [2.0, -1.0]]
   let b : Array[Double] = [3.0, 3.0]
   let result = gauss_eliminate(a, b)
-  inspect(result.has_unique_solution, content="true")
-  inspect(abs(result.solution[0] - 2.0) < 0.001, content="true")
-  inspect(abs(result.solution[1] - 1.0) < 0.001, content="true")
+  debug_inspect(result.has_unique_solution, content="true")
+  debug_inspect(abs(result.solution[0] - 2.0) < 0.001, content="true")
+  debug_inspect(abs(result.solution[1] - 1.0) < 0.001, content="true")
 }
 
 ///|
@@ -777,10 +777,10 @@ test "gauss 3x3" {
   ]
   let b : Array[Double] = [6.0, 3.0, 2.0]
   let result = gauss_eliminate(a, b)
-  inspect(result.has_unique_solution, content="true")
-  inspect(abs(result.solution[0] - 1.0) < 0.001, content="true")
-  inspect(abs(result.solution[1] - 2.0) < 0.001, content="true")
-  inspect(abs(result.solution[2] - 3.0) < 0.001, content="true")
+  debug_inspect(result.has_unique_solution, content="true")
+  debug_inspect(abs(result.solution[0] - 1.0) < 0.001, content="true")
+  debug_inspect(abs(result.solution[1] - 2.0) < 0.001, content="true")
+  debug_inspect(abs(result.solution[2] - 3.0) < 0.001, content="true")
 }
 
 ///|
@@ -790,7 +790,7 @@ test "gauss no solution" {
   let a : Array[Array[Double]] = [[1.0, 1.0], [1.0, 1.0]]
   let b : Array[Double] = [1.0, 2.0]
   let result = gauss_eliminate(a, b)
-  inspect(result.has_solution, content="false")
+  debug_inspect(result.has_solution, content="false")
 }
 
 ///|
@@ -800,9 +800,9 @@ test "gauss infinite solutions" {
   let a : Array[Array[Double]] = [[1.0, 1.0], [2.0, 2.0]]
   let b : Array[Double] = [2.0, 4.0]
   let result = gauss_eliminate(a, b)
-  inspect(result.has_solution, content="true")
-  inspect(result.has_unique_solution, content="false")
-  inspect(result.rank, content="1")
+  debug_inspect(result.has_solution, content="true")
+  debug_inspect(result.has_unique_solution, content="false")
+  debug_inspect(result.rank, content="1")
 }
 
 ///|
@@ -813,9 +813,9 @@ test "gauss_mod basic" {
   let a : Array[Array[Int64]] = [[1L, 1L], [2L, 1L]]
   let b : Array[Int64] = [3L, 5L]
   let (solution, success) = gauss_mod(a, b, 7L)
-  inspect(success, content="true")
-  inspect(solution[0], content="2")
-  inspect(solution[1], content="1")
+  debug_inspect(success, content="true")
+  debug_inspect(solution[0], content="2")
+  debug_inspect(solution[1], content="1")
 }
 
 ///|
@@ -826,9 +826,9 @@ test "gauss_xor basic" {
   let a : Array[Array[Int]] = [[1, 1], [0, 1]]
   let b : Array[Int] = [1, 1]
   let (solution, success) = gauss_xor(a, b)
-  inspect(success, content="true")
-  inspect(solution[0], content="0")
-  inspect(solution[1], content="1")
+  debug_inspect(success, content="true")
+  debug_inspect(solution[0], content="0")
+  debug_inspect(solution[1], content="1")
 }
 
 ///|
@@ -840,7 +840,7 @@ test "gauss_xor lights out" {
   let a : Array[Array[Int]] = [[1, 1, 0], [0, 1, 1], [1, 0, 1]]
   let b : Array[Int] = [1, 0, 1]
   let (_, success) = gauss_xor(a, b)
-  inspect(success, content="true")
+  debug_inspect(success, content="true")
 }
 
 ///|
@@ -848,14 +848,14 @@ test "gauss empty" {
   let a : Array[Array[Double]] = []
   let b : Array[Double] = []
   let result = gauss_eliminate(a, b)
-  inspect(result.has_solution, content="true")
-  inspect(result.rank, content="0")
+  debug_inspect(result.has_solution, content="true")
+  debug_inspect(result.rank, content="0")
 }
 
 ///|
 test "mod_inverse" {
   // 3 * 5 = 15 ≡ 1 (mod 7)
-  inspect(mod_inverse(3L, 7L), content="5")
+  debug_inspect(mod_inverse(3L, 7L), content="5")
   // 2 * 4 = 8 ≡ 1 (mod 7)
-  inspect(mod_inverse(2L, 7L), content="4")
+  debug_inspect(mod_inverse(2L, 7L), content="4")
 }

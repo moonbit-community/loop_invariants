@@ -92,10 +92,10 @@ test "basic shortest paths" {
   let res = @dijkstra.dijkstra(g, 0)
 
   // Distances from source 0
-  inspect(res.dist[0], content="0") // Source
-  inspect(res.dist[1], content="1") // 0 -> 1
-  inspect(res.dist[2], content="3") // 0 -> 1 -> 2
-  inspect(res.dist[3], content="4") // 0 -> 1 -> 2 -> 3
+  debug_inspect(res.dist[0], content="0") // Source
+  debug_inspect(res.dist[1], content="1") // 0 -> 1
+  debug_inspect(res.dist[2], content="3") // 0 -> 1 -> 2
+  debug_inspect(res.dist[3], content="4") // 0 -> 1 -> 2 -> 3
 }
 ```
 
@@ -112,7 +112,7 @@ test "dense dijkstra" {
     [],
   ]
   let dist = @dijkstra.dijkstra_dense(adj, 0)
-  inspect(dist, content="[0, 2, 3, 4, 5]")
+  debug_inspect(dist, content="[0, 2, 3, 4, 5]")
 }
 ```
 
@@ -126,10 +126,10 @@ test "zero weight edges and unreachable" {
   g.add_edge(1, 2, 0)
   // Node 3 is unreachable from 0.
   let res = @dijkstra.dijkstra(g, 0)
-  inspect(res.dist[0], content="0")
-  inspect(res.dist[1], content="0")
-  inspect(res.dist[2], content="0")
-  inspect(res.dist[3] > 1000000, content="true")
+  debug_inspect(res.dist[0], content="0")
+  debug_inspect(res.dist[1], content="0")
+  debug_inspect(res.dist[2], content="0")
+  debug_inspect(res.dist[3] > 1000000, content="true")
 }
 ```
 
@@ -145,7 +145,7 @@ test "path reconstruction" {
   g.add_edge(2, 3, 1)
   let res = @dijkstra.dijkstra(g, 0)
   let path = @dijkstra.reconstruct_path(res, 3)
-  inspect(path, content="[0, 1, 2, 3]") // Actual path
+  debug_inspect(path, content="[0, 1, 2, 3]") // Actual path
 }
 ```
 

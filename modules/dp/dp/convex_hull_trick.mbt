@@ -112,13 +112,13 @@ test "convex hull trick basic" {
   cht.add_line(1L, 3L) // y = x + 3
 
   // At x=0: min(0, 1, 3) = 0
-  assert_eq(cht.query_min(0L), 0L)
+  @debug.assert_eq(cht.query_min(0L), 0L)
 
   // At x=2: min(6, 5, 5) = 5
-  assert_eq(cht.query_min(2L), 5L)
+  @debug.assert_eq(cht.query_min(2L), 5L)
 
   // At x=5: min(15, 11, 8) = 8
-  assert_eq(cht.query_min(5L), 8L)
+  @debug.assert_eq(cht.query_min(5L), 8L)
 }
 
 ///|
@@ -198,9 +198,9 @@ test "monotonic cht" {
   cht.add_line_mono(1L, 3L)
 
   // Monotonic queries
-  assert_eq(cht.query_mono_inc(0L), 0L)
-  assert_eq(cht.query_mono_inc(2L), 5L)
-  assert_eq(cht.query_mono_inc(5L), 8L)
+  @debug.assert_eq(cht.query_mono_inc(0L), 0L)
+  @debug.assert_eq(cht.query_mono_inc(2L), 5L)
+  @debug.assert_eq(cht.query_mono_inc(5L), 8L)
 }
 
 ///|
@@ -345,9 +345,9 @@ test "li chao tree" {
   lct.add_line_li_chao(3L, 0L)
   lct.add_line_li_chao(2L, 1L)
   lct.add_line_li_chao(1L, 3L)
-  assert_eq(lct.query_li_chao(0L), 0L)
-  assert_eq(lct.query_li_chao(2L), 5L)
-  assert_eq(lct.query_li_chao(5L), 8L)
+  @debug.assert_eq(lct.query_li_chao(0L), 0L)
+  @debug.assert_eq(lct.query_li_chao(2L), 5L)
+  @debug.assert_eq(lct.query_li_chao(5L), 8L)
 }
 
 ///|
@@ -431,9 +431,9 @@ test "divide conquer dp" {
   // dp[0] = 0 (initial)
   // dp[1] = dp[0] + cost(0,1) = 0 + 1 = 1
   // dp[2] = dp[0] + cost(0,2) = 0 + 4 = 4 (algorithm finds global min via divide-conquer)
-  assert_eq(dp[0], 0L)
-  assert_eq(dp[1], 1L)
-  assert_eq(dp[2], 4L)
+  @debug.assert_eq(dp[0], 0L)
+  @debug.assert_eq(dp[1], 1L)
+  @debug.assert_eq(dp[2], 4L)
 }
 
 ///|
@@ -594,11 +594,11 @@ test "sliding window dp" {
   // dp[2] = min(dp[0], dp[1]) + 3 = 1 + 3 = 4
   // dp[3] = min(dp[1], dp[2]) + 4 = 3 + 4 = 7
   // dp[4] = min(dp[2], dp[3]) + 5 = 4 + 5 = 9
-  assert_eq(dp[0], 1L)
-  assert_eq(dp[1], 3L)
-  assert_eq(dp[2], 4L)
-  assert_eq(dp[3], 7L)
-  assert_eq(dp[4], 9L)
+  @debug.assert_eq(dp[0], 1L)
+  @debug.assert_eq(dp[1], 3L)
+  @debug.assert_eq(dp[2], 4L)
+  @debug.assert_eq(dp[3], 7L)
+  @debug.assert_eq(dp[4], 9L)
 }
 
 ///|
@@ -838,5 +838,5 @@ test "slope trick abs sum" {
   st.add_abs(1L)
   st.add_abs(3L)
   st.add_abs(5L)
-  assert_eq(st.base_cost, 4L)
+  @debug.assert_eq(st.base_cost, 4L)
 }

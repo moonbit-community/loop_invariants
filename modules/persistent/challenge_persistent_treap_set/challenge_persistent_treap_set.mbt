@@ -22,8 +22,8 @@
 ///   let s = @challenge_persistent_treap_set.insert(s, 3)
 ///   let s = @challenge_persistent_treap_set.insert(s, 1)
 ///   let s = @challenge_persistent_treap_set.insert(s, 2)
-///   assert_eq(@challenge_persistent_treap_set.contains(s, 2), true)
-///   assert_eq(@challenge_persistent_treap_set.size(s), 3)
+///   @debug.assert_eq(@challenge_persistent_treap_set.contains(s, 2), true)
+///   @debug.assert_eq(@challenge_persistent_treap_set.size(s), 3)
 /// }
 /// ```
 pub enum Treap[T] {

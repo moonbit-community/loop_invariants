@@ -290,39 +290,39 @@ stateDiagram-v2
 ```mbt check
 ///|
 test "lucas theorem basics" {
-  inspect(@lucas_theorem.nck_mod_prime_lucas(10L, 3L, 7L), content="1")
-  inspect(@lucas_theorem.nck_mod_prime_lucas(12L, 5L, 3L), content="0")
-  inspect(@lucas_theorem.nck_mod_prime_lucas(8L, 3L, 3L), content="2")
+  debug_inspect(@lucas_theorem.nck_mod_prime_lucas(10L, 3L, 7L), content="1")
+  debug_inspect(@lucas_theorem.nck_mod_prime_lucas(12L, 5L, 3L), content="0")
+  debug_inspect(@lucas_theorem.nck_mod_prime_lucas(8L, 3L, 3L), content="2")
 }
 ```
 
 ```mbt check
 ///|
 test "lucas parity rule" {
-  inspect(@lucas_theorem.nck_mod_prime_lucas(13L, 5L, 2L), content="1")
-  inspect(@lucas_theorem.nck_mod_prime_lucas(13L, 6L, 2L), content="0")
+  debug_inspect(@lucas_theorem.nck_mod_prime_lucas(13L, 5L, 2L), content="1")
+  debug_inspect(@lucas_theorem.nck_mod_prime_lucas(13L, 6L, 2L), content="0")
 }
 ```
 
 ```mbt check
 ///|
 test "lucas base-5 example" {
-  inspect(@lucas_theorem.nck_mod_prime_lucas(7L, 2L, 5L), content="1")
+  debug_inspect(@lucas_theorem.nck_mod_prime_lucas(7L, 2L, 5L), content="1")
 }
 ```
 
 ```mbt check
 ///|
 test "lucas larger digits" {
-  inspect(@lucas_theorem.nck_mod_prime_lucas(100L, 50L, 7L), content="4")
+  debug_inspect(@lucas_theorem.nck_mod_prime_lucas(100L, 50L, 7L), content="4")
 }
 ```
 
 ```mbt check
 ///|
 test "lucas edge cases" {
-  inspect(@lucas_theorem.nck_mod_prime_lucas(5L, 9L, 7L), content="0")
-  inspect(@lucas_theorem.nck_mod_prime_lucas(5L, 2L, 1L), content="0")
+  debug_inspect(@lucas_theorem.nck_mod_prime_lucas(5L, 9L, 7L), content="0")
+  debug_inspect(@lucas_theorem.nck_mod_prime_lucas(5L, 2L, 1L), content="0")
 }
 ```
 

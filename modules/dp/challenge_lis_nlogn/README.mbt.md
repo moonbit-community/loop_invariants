@@ -152,7 +152,7 @@ The full code lives in `challenge_lis_nlogn.mbt`.
 test "lis example" {
   let nums : Array[Int] = [3, 1, 2, 1, 8, 5, 6]
   let len = @challenge_lis_nlogn.lis_length(nums)
-  inspect(len, content="4")
+  debug_inspect(len, content="4")
 }
 ```
 
@@ -163,7 +163,7 @@ test "lis example" {
 test "lis classic" {
   let nums : Array[Int] = [10, 9, 2, 5, 3, 7, 101, 18]
   let len = @challenge_lis_nlogn.lis_length(nums)
-  inspect(len, content="4")
+  debug_inspect(len, content="4")
 }
 ```
 
@@ -174,7 +174,7 @@ test "lis classic" {
 test "lis increasing" {
   let nums : Array[Int] = [1, 2, 3, 4, 5]
   let len = @challenge_lis_nlogn.lis_length(nums)
-  inspect(len, content="5")
+  debug_inspect(len, content="5")
 }
 ```
 
@@ -185,7 +185,7 @@ test "lis increasing" {
 test "lis decreasing" {
   let nums : Array[Int] = [9, 7, 5, 3]
   let len = @challenge_lis_nlogn.lis_length(nums)
-  inspect(len, content="1")
+  debug_inspect(len, content="1")
 }
 ```
 
@@ -196,7 +196,7 @@ test "lis decreasing" {
 test "lis duplicates" {
   let nums : Array[Int] = [2, 2, 2, 2]
   let len = @challenge_lis_nlogn.lis_length(nums)
-  inspect(len, content="1")
+  debug_inspect(len, content="1")
 }
 ```
 
@@ -207,7 +207,7 @@ test "lis duplicates" {
 test "lis negatives" {
   let nums : Array[Int] = [-3, -1, -2, 0, 2, -1, 3]
   let len = @challenge_lis_nlogn.lis_length(nums)
-  inspect(len, content="5")
+  debug_inspect(len, content="5")
 }
 ```
 

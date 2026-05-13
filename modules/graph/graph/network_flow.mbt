@@ -176,7 +176,7 @@ test "edmonds karp basic" {
   network.add_edge(3, 5, 10)
   network.add_edge(4, 5, 10)
   let max_flow = network.edmonds_karp(0, 5)
-  assert_eq(max_flow, 20)
+  @debug.assert_eq(max_flow, 20)
 }
 
 ///|
@@ -342,7 +342,7 @@ test "dinic basic" {
   network.add_edge_dinic(3, 5, 10)
   network.add_edge_dinic(4, 5, 10)
   let max_flow = network.dinic_max_flow(0, 5)
-  assert_eq(max_flow, 20)
+  @debug.assert_eq(max_flow, 20)
 }
 
 ///|
@@ -511,8 +511,8 @@ test "min cost max flow" {
   network.add_edge_mcmf(1, 3, 10, 1)
   network.add_edge_mcmf(2, 3, 10, 2)
   let (flow, cost) = network.min_cost_max_flow(0, 3)
-  assert_eq(flow, 20)
-  assert_eq(cost, 60)
+  @debug.assert_eq(flow, 20)
+  @debug.assert_eq(cost, 60)
 }
 
 ///|
@@ -543,7 +543,7 @@ fn bipartite_matching(
 test "bipartite matching" {
   let edges = [(0, 0), (0, 1), (1, 1), (1, 2), (2, 2)]
   let matching = bipartite_matching(3, 3, edges)
-  assert_eq(matching, 3)
+  @debug.assert_eq(matching, 3)
 }
 
 ///|
@@ -719,7 +719,7 @@ test "hungarian algorithm" {
   // Optimal: Worker 0 -> Job 2 (3), Worker 1 -> Job 0 (2), Worker 2 -> Job 1 (2)
   // or: Worker 0 -> Job 1 (1), Worker 1 -> Job 0 (2), Worker 2 -> Job 2 (2)
   // Total = 5
-  assert_eq(min_cost, 5)
+  @debug.assert_eq(min_cost, 5)
 }
 
 ///|
@@ -728,5 +728,5 @@ test "hungarian simple" {
   let min_cost = hungarian_algorithm(cost)
   // Optimal: 0->0 (1), 1->1 (4) = 5
   // or: 0->1 (2), 1->0 (3) = 5
-  assert_eq(min_cost, 5)
+  @debug.assert_eq(min_cost, 5)
 }

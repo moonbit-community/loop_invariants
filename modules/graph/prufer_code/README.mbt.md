@@ -237,9 +237,9 @@ Converts a Prufer sequence back into a labeled tree.
 test "prufer example" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
   let code = @prufer_code.prufer_encode(4, edges).unwrap()
-  inspect(code, content="[1, 2]")
+  debug_inspect(code, content="[1, 2]")
   let edges2 = @prufer_code.prufer_decode(code).unwrap()
-  inspect(edges2.length(), content="3")
+  debug_inspect(edges2.length(), content="3")
 }
 ```
 
@@ -268,7 +268,7 @@ graph TD
 test "prufer star tree" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
   let code = @prufer_code.prufer_encode(5, edges).unwrap()
-  inspect(code, content="[0, 0, 0]")
+  debug_inspect(code, content="[0, 0, 0]")
 }
 ```
 
@@ -295,7 +295,7 @@ graph LR
 test "prufer path tree" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
   let code = @prufer_code.prufer_encode(5, edges).unwrap()
-  inspect(code, content="[1, 2, 3]")
+  debug_inspect(code, content="[1, 2, 3]")
 }
 ```
 
@@ -320,11 +320,11 @@ test "prufer roundtrip" {
   // Encode the five-vertex tree 0-1-2, 1-3-4
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3), (3, 4)]
   let code = @prufer_code.prufer_encode(5, edges).unwrap()
-  inspect(code, content="[1, 1, 3]")
+  debug_inspect(code, content="[1, 1, 3]")
   // Decode back and re-encode; must get the same code
   let edges2 = @prufer_code.prufer_decode(code).unwrap()
   let code2 = @prufer_code.prufer_encode(5, edges2).unwrap()
-  inspect(code2, content="[1, 1, 3]")
+  debug_inspect(code2, content="[1, 1, 3]")
 }
 ```
 

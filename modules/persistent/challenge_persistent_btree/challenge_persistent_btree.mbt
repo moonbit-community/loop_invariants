@@ -23,9 +23,9 @@ struct BNode[T] {
 /// ```moonbit nocheck
 /// test {
 ///   let t = @challenge_persistent_btree.from_array([5, 2, 8, 1, 3, 7])
-///   assert_eq(@challenge_persistent_btree.contains(t, 3), true)
-///   assert_eq(@challenge_persistent_btree.contains(t, 4), false)
-///   assert_eq(@challenge_persistent_btree.size(t), 6)
+///   @debug.assert_eq(@challenge_persistent_btree.contains(t, 3), true)
+///   @debug.assert_eq(@challenge_persistent_btree.contains(t, 4), false)
+///   @debug.assert_eq(@challenge_persistent_btree.size(t), 6)
 /// }
 /// ```
 pub enum Tree[T] {

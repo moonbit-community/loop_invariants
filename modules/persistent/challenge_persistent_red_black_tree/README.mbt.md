@@ -171,13 +171,19 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> RB[T]
 ```mbt check
 ///|
 test "rb basic" {
-  let s = @challenge_persistent_red_black_tree.from_array(
-    [3, 1, 4, 1, 5, 9, 2, 6][:],
+  let s = @challenge_persistent_red_black_tree.from_array([
+    3, 1, 4, 1, 5, 9, 2, 6,
+  ])
+  debug_inspect(@challenge_persistent_red_black_tree.size(s), content="7")
+  debug_inspect(
+    @challenge_persistent_red_black_tree.contains(s, 4),
+    content="true",
   )
-  inspect(@challenge_persistent_red_black_tree.size(s), content="7")
-  inspect(@challenge_persistent_red_black_tree.contains(s, 4), content="true")
-  inspect(@challenge_persistent_red_black_tree.contains(s, 7), content="false")
-  inspect(
+  debug_inspect(
+    @challenge_persistent_red_black_tree.contains(s, 7),
+    content="false",
+  )
+  debug_inspect(
     @challenge_persistent_red_black_tree.inorder(s),
     content="[1, 2, 3, 4, 5, 6, 9]",
   )
@@ -194,15 +200,21 @@ test "rb persistent versions" {
   let t2 = @challenge_persistent_red_black_tree.insert(t1, 5)
   let t3 = @challenge_persistent_red_black_tree.insert(t2, 20)
   // t0 never saw 10
-  inspect(
+  debug_inspect(
     @challenge_persistent_red_black_tree.contains(t0, 10),
     content="false",
   )
   // t1 only knows 10
-  inspect(@challenge_persistent_red_black_tree.contains(t1, 10), content="true")
-  inspect(@challenge_persistent_red_black_tree.contains(t1, 5), content="false")
+  debug_inspect(
+    @challenge_persistent_red_black_tree.contains(t1, 10),
+    content="true",
+  )
+  debug_inspect(
+    @challenge_persistent_red_black_tree.contains(t1, 5),
+    content="false",
+  )
   // t3 knows everything
-  inspect(@challenge_persistent_red_black_tree.size(t3), content="3")
+  debug_inspect(@challenge_persistent_red_black_tree.size(t3), content="3")
 }
 ```
 
@@ -214,8 +226,8 @@ test "rb duplicates" {
   let t0 = @challenge_persistent_red_black_tree.empty()
   let t1 = @challenge_persistent_red_black_tree.insert(t0, 42)
   let t2 = @challenge_persistent_red_black_tree.insert(t1, 42)
-  inspect(@challenge_persistent_red_black_tree.size(t1), content="1")
-  inspect(@challenge_persistent_red_black_tree.size(t2), content="1")
+  debug_inspect(@challenge_persistent_red_black_tree.size(t1), content="1")
+  debug_inspect(@challenge_persistent_red_black_tree.size(t2), content="1")
 }
 ```
 
@@ -227,8 +239,8 @@ test "rb sequential ascending" {
   let arr : ReadOnlyArray[Int] = [
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
   ]
-  let t = @challenge_persistent_red_black_tree.from_array(arr[:])
-  inspect(@challenge_persistent_red_black_tree.size(t), content="20")
+  let t = @challenge_persistent_red_black_tree.from_array(arr)
+  debug_inspect(@challenge_persistent_red_black_tree.size(t), content="20")
 }
 ```
 

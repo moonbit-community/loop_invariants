@@ -215,15 +215,15 @@ test "point in polygon square" {
     { x: 4L, y: 4L },
     { x: 0L, y: 4L },
   ]
-  inspect(
+  debug_inspect(
     @point_in_polygon.point_in_polygon(poly, { x: 2L, y: 2L }),
     content="Inside",
   )
-  inspect(
+  debug_inspect(
     @point_in_polygon.point_in_polygon(poly, { x: 5L, y: 2L }),
     content="Outside",
   )
-  inspect(
+  debug_inspect(
     @point_in_polygon.point_in_polygon(poly, { x: 4L, y: 2L }),
     content="Boundary",
   )
@@ -273,15 +273,15 @@ test "point in concave polygon" {
     { x: 2L, y: 2L },
     { x: 0L, y: 4L },
   ]
-  inspect(
+  debug_inspect(
     @point_in_polygon.point_in_polygon(poly, { x: 1L, y: 1L }),
     content="Inside",
   )
-  inspect(
+  debug_inspect(
     @point_in_polygon.point_in_polygon(poly, { x: 3L, y: 3L }),
     content="Boundary",
   )
-  inspect(
+  debug_inspect(
     @point_in_polygon.point_in_polygon(poly, { x: 3L, y: 4L }),
     content="Outside",
   )
@@ -311,7 +311,7 @@ test "point on vertex" {
     { x: 4L, y: 0L },
     { x: 0L, y: 3L },
   ]
-  inspect(
+  debug_inspect(
     @point_in_polygon.point_in_polygon(tri, { x: 0L, y: 0L }),
     content="Boundary",
   )

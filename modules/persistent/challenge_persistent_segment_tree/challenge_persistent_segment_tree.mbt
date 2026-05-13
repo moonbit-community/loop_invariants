@@ -20,8 +20,8 @@
 ///   let arr = [1, 2, 3, 4][:]
 ///   let root = build(arr, 0, arr.length())
 ///   let updated = apply_updates(root, arr.length(), [(1, 3), (3, -1)])
-///   assert_eq(query(root, 0, arr.length(), 0, 4), 10)
-///   assert_eq(query(updated, 0, arr.length(), 0, 4), 12)
+///   @debug.assert_eq(query(root, 0, arr.length(), 0, 4), 10)
+///   @debug.assert_eq(query(updated, 0, arr.length(), 0, 4), 12)
 /// }
 /// ```
 pub enum Node {
@@ -124,7 +124,7 @@ test "persistent_segment_tree" {
   let arr = [1, 2, 3, 4][:]
   let root = build(arr, 0, arr.length())
   let updated = apply_updates(root, arr.length(), [(1, 3), (3, -1)])
-  assert_eq(query(root, 0, arr.length(), 0, 4), 10)
-  assert_eq(query(updated, 0, arr.length(), 0, 4), 12)
-  assert_eq(query(updated, 0, arr.length(), 1, 3), 8)
+  @debug.assert_eq(query(root, 0, arr.length(), 0, 4), 10)
+  @debug.assert_eq(query(updated, 0, arr.length(), 0, 4), 12)
+  @debug.assert_eq(query(updated, 0, arr.length(), 1, 3), 8)
 }

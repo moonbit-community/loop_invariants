@@ -20,8 +20,11 @@
 ///   let t = @challenge_persistent_interval_set.empty()
 ///   let t = @challenge_persistent_interval_set.insert_interval(t, 2, 5)
 ///   let t = @challenge_persistent_interval_set.insert_interval(t, 4, 7)
-///   assert_eq(@challenge_persistent_interval_set.contains_point(t, 6), true)
-///   assert_eq(@challenge_persistent_interval_set.to_array(t), [(2, 7)])
+///   @debug.assert_eq(
+///     @challenge_persistent_interval_set.contains_point(t, 6),
+///     true,
+///   )
+///   @debug.assert_eq(@challenge_persistent_interval_set.to_array(t), [(2, 7)])
 /// }
 /// ```
 pub enum Tree {
@@ -139,10 +142,10 @@ test "persistent_interval_set" {
   let t1 = insert_interval(t0, 2, 5)
   let t2 = insert_interval(t1, 8, 9)
   let t3 = insert_interval(t2, 4, 7)
-  assert_eq(contains_point(t3, 3), true)
-  assert_eq(contains_point(t3, 6), true)
-  assert_eq(contains_point(t3, 10), false)
-  assert_eq(contains_point(t1, 6), false)
+  @debug.assert_eq(contains_point(t3, 3), true)
+  @debug.assert_eq(contains_point(t3, 6), true)
+  @debug.assert_eq(contains_point(t3, 10), false)
+  @debug.assert_eq(contains_point(t1, 6), false)
 }
 
 ///|
@@ -151,6 +154,6 @@ test "persistent_interval_set_middle_insert" {
   let t2 = insert_interval(t1, 5, 6)
   let t3 = insert_interval(t2, 8, 9)
   let t4 = insert_interval(t3, 3, 4)
-  assert_eq(to_array(t3), [(1, 2), (5, 6), (8, 9)])
-  assert_eq(to_array(t4), [(1, 6), (8, 9)])
+  @debug.assert_eq(to_array(t3), [(1, 2), (5, 6), (8, 9)])
+  @debug.assert_eq(to_array(t4), [(1, 6), (8, 9)])
 }

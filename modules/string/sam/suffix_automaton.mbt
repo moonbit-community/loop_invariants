@@ -738,54 +738,60 @@ fn SuffixAutomaton::kth_substring(self : SuffixAutomaton, k : Int64) -> String? 
 test "suffix automaton construction" {
   let sam = SuffixAutomaton::build("aabba")
   guard sam.states.length() > 1 else { fail("SAM should have multiple states") }
-  inspect(sam.states.length() <= 9, content="true")
+  debug_inspect(sam.states.length() <= 9, content="true")
 }
 
 ///|
 test "suffix automaton contains" {
   let sam = SuffixAutomaton::build("abracadabra")
-  inspect(sam.contains("abra"), content="true")
-  inspect(sam.contains("bra"), content="true")
-  inspect(sam.contains("cad"), content="true")
-  inspect(sam.contains("abracadabra"), content="true")
-  inspect(sam.contains("a"), content="true")
-  inspect(sam.contains(""), content="true")
-  inspect(sam.contains("xyz"), content="false")
-  inspect(sam.contains("abracadabrax"), content="false")
+  debug_inspect(sam.contains("abra"), content="true")
+  debug_inspect(sam.contains("bra"), content="true")
+  debug_inspect(sam.contains("cad"), content="true")
+  debug_inspect(sam.contains("abracadabra"), content="true")
+  debug_inspect(sam.contains("a"), content="true")
+  debug_inspect(sam.contains(""), content="true")
+  debug_inspect(sam.contains("xyz"), content="false")
+  debug_inspect(sam.contains("abracadabrax"), content="false")
 }
 
 ///|
 test "suffix automaton count distinct" {
   // "aab": "", "a", "b", "aa", "ab", "aab" = 5 (excluding empty)
   let sam1 = SuffixAutomaton::build("aab")
-  inspect(sam1.count_distinct_substrings(), content="5")
+  debug_inspect(sam1.count_distinct_substrings(), content="5")
 
   // "aaa": "a", "aa", "aaa" = 3
   let sam3 = SuffixAutomaton::build("aaa")
-  inspect(sam3.count_distinct_substrings(), content="3")
+  debug_inspect(sam3.count_distinct_substrings(), content="3")
 }
 
 ///|
 test "suffix automaton occurrence count" {
   let sam = SuffixAutomaton::build("abracadabra")
   sam.compute_counts()
-  inspect(sam.count_occurrences("a"), content="5")
-  inspect(sam.count_occurrences("abra"), content="2")
-  inspect(sam.count_occurrences("bra"), content="2")
-  inspect(sam.count_occurrences("c"), content="1")
-  inspect(sam.count_occurrences("xyz"), content="0")
+  debug_inspect(sam.count_occurrences("a"), content="5")
+  debug_inspect(sam.count_occurrences("abra"), content="2")
+  debug_inspect(sam.count_occurrences("bra"), content="2")
+  debug_inspect(sam.count_occurrences("c"), content="1")
+  debug_inspect(sam.count_occurrences("xyz"), content="0")
 }
 
 ///|
 test "suffix automaton longest common substring" {
   let sam = SuffixAutomaton::build("abracadabra")
   let lcs1 = sam.longest_common_substring("cadaver")
-  inspect(lcs1, content="cada")
-  inspect(sam.longest_common_substring_length("cadaver"), content="4")
+  debug_inspect(lcs1, content=(
+    #|"cada"
+  ))
+  debug_inspect(sam.longest_common_substring_length("cadaver"), content="4")
   let lcs2 = sam.longest_common_substring("abra")
-  inspect(lcs2, content="abra")
+  debug_inspect(lcs2, content=(
+    #|"abra"
+  ))
   let lcs3 = sam.longest_common_substring("xyz")
-  inspect(lcs3, content="")
+  debug_inspect(lcs3, content=(
+    #|""
+  ))
 }
 
 ///|
@@ -804,13 +810,13 @@ test "suffix automaton stress" {
   let sam = SuffixAutomaton::build("ababababab")
 
   // Should contain all substrings
-  inspect(sam.contains("abab"), content="true")
-  inspect(sam.contains("baba"), content="true")
-  inspect(sam.contains("ababababab"), content="true")
+  debug_inspect(sam.contains("abab"), content="true")
+  debug_inspect(sam.contains("baba"), content="true")
+  debug_inspect(sam.contains("ababababab"), content="true")
 
   // Count should be correct
   sam.compute_counts()
-  inspect(sam.count_occurrences("ab") > 0, content="true")
+  debug_inspect(sam.count_occurrences("ab") > 0, content="true")
 }
 
 // ============================================================================
@@ -862,5 +868,5 @@ test "suffix automaton all substrings" {
   let sam = SuffixAutomaton::build("ab")
   let subs = sam.all_substrings()
   // Note: sort order depends on String.compare implementation
-  inspect(subs, content="[\"\", \"a\", \"b\", \"ab\"]")
+  debug_inspect(subs, content="[\"\", \"a\", \"b\", \"ab\"]")
 }

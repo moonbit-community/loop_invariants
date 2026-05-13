@@ -80,7 +80,7 @@ return low
 test "capacity for 1..10" {
   let weights : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   let ans = @challenge_binary_search_answer.min_capacity(weights, 5)
-  inspect(ans, content="15")
+  debug_inspect(ans, content="15")
 }
 ```
 
@@ -100,11 +100,11 @@ Day 5: 10
 ///|
 test "feasibility check" {
   let weights : Array[Int] = [3, 2, 2, 4, 1, 4]
-  inspect(
+  debug_inspect(
     @challenge_binary_search_answer.can_ship(weights, 3, 6),
     content="true",
   )
-  inspect(
+  debug_inspect(
     @challenge_binary_search_answer.can_ship(weights, 3, 5),
     content="false",
   )
@@ -121,7 +121,7 @@ If you have at least as many days as packages, the minimum capacity is just
 test "days equals packages" {
   let weights : Array[Int] = [2, 8, 3]
   let ans = @challenge_binary_search_answer.min_capacity(weights, 3)
-  inspect(ans, content="8")
+  debug_inspect(ans, content="8")
 }
 ```
 
@@ -134,7 +134,7 @@ If you have only one day, the capacity must be the sum.
 test "one day" {
   let weights : Array[Int] = [2, 8, 3]
   let ans = @challenge_binary_search_answer.min_capacity(weights, 1)
-  inspect(ans, content="13")
+  debug_inspect(ans, content="13")
 }
 ```
 

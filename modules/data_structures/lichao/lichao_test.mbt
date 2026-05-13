@@ -16,9 +16,9 @@ test "lichao basic max" {
 
   // Insert y = 2x + 1
   tree.insert(2L, 1L)
-  inspect(tree.query(0L), content="1")
-  inspect(tree.query(5L), content="11")
-  inspect(tree.query(-3L), content="-5")
+  debug_inspect(tree.query(0L), content="1")
+  debug_inspect(tree.query(5L), content="11")
+  debug_inspect(tree.query(-3L), content="-5")
 }
 
 ///|
@@ -40,10 +40,10 @@ test "lichao multiple lines max" {
   tree.insert(2L, 1L)
   tree.insert(-1L, 5L)
   tree.insert(1L, 2L)
-  inspect(tree.query(0L), content="5")
-  inspect(tree.query(1L), content="4")
-  inspect(tree.query(3L), content="7")
-  inspect(tree.query(-2L), content="7")
+  debug_inspect(tree.query(0L), content="5")
+  debug_inspect(tree.query(1L), content="4")
+  debug_inspect(tree.query(3L), content="7")
+  debug_inspect(tree.query(-2L), content="7")
 }
 
 ///|
@@ -51,9 +51,9 @@ test "lichao multiple lines max" {
 test "lichao single line" {
   let tree = @lichao.LiChaoTree(0L, 100L)
   tree.insert(3L, 5L) // y = 3x + 5
-  inspect(tree.query(0L), content="5")
-  inspect(tree.query(10L), content="35")
-  inspect(tree.query(100L), content="305")
+  debug_inspect(tree.query(0L), content="5")
+  debug_inspect(tree.query(10L), content="35")
+  debug_inspect(tree.query(100L), content="305")
 }
 
 ///|
@@ -67,9 +67,9 @@ test "lichao horizontal lines" {
   tree.insert(0L, 5L) // y = 5
 
   // All queries should return 20 (maximum horizontal line)
-  inspect(tree.query(0L), content="20")
-  inspect(tree.query(50L), content="20")
-  inspect(tree.query(100L), content="20")
+  debug_inspect(tree.query(0L), content="20")
+  debug_inspect(tree.query(50L), content="20")
+  debug_inspect(tree.query(100L), content="20")
 }
 
 ///|
@@ -96,10 +96,10 @@ test "lichao crossing lines" {
   let tree = @lichao.LiChaoTree(-100L, 100L)
   tree.insert(1L, 0L) // y = x
   tree.insert(-1L, 10L) // y = -x + 10
-  inspect(tree.query(0L), content="10") // max(0, 10) = 10
-  inspect(tree.query(5L), content="5") // max(5, 5) = 5
-  inspect(tree.query(10L), content="10") // max(10, 0) = 10
-  inspect(tree.query(-5L), content="15") // max(-5, 15) = 15
+  debug_inspect(tree.query(0L), content="10") // max(0, 10) = 10
+  debug_inspect(tree.query(5L), content="5") // max(5, 5) = 5
+  debug_inspect(tree.query(10L), content="10") // max(10, 0) = 10
+  debug_inspect(tree.query(-5L), content="15") // max(-5, 15) = 15
 }
 
 ///|
@@ -115,9 +115,9 @@ test "lichao min basic" {
   let tree = @lichao.LiChaoTreeMin(-100L, 100L)
   tree.insert(2L, 1L)
   tree.insert(-1L, 5L)
-  inspect(tree.query(0L), content="1")
-  inspect(tree.query(1L), content="3")
-  inspect(tree.query(-2L), content="-3")
+  debug_inspect(tree.query(0L), content="1")
+  debug_inspect(tree.query(1L), content="3")
+  debug_inspect(tree.query(-2L), content="-3")
 }
 
 ///|
@@ -129,13 +129,13 @@ test "lichao min multiple" {
   tree.insert(-1L, 200L) // y = -x + 200
 
   // At x = 0: min(100, 0, 200) = 0
-  inspect(tree.query(0L), content="0")
+  debug_inspect(tree.query(0L), content="0")
 
   // At x = 50: min(150, 100, 150) = 100
-  inspect(tree.query(50L), content="100")
+  debug_inspect(tree.query(50L), content="100")
 
   // At x = 100: min(200, 200, 100) = 100
-  inspect(tree.query(100L), content="100")
+  debug_inspect(tree.query(100L), content="100")
 }
 
 ///|
@@ -144,9 +144,9 @@ test "lichao large range" {
   let tree = @lichao.LiChaoTree(-1000000000L, 1000000000L)
   tree.insert(1L, 0L)
   tree.insert(-1L, 0L)
-  inspect(tree.query(0L), content="0")
-  inspect(tree.query(1000000L), content="1000000")
-  inspect(tree.query(-1000000L), content="1000000")
+  debug_inspect(tree.query(0L), content="0")
+  debug_inspect(tree.query(1000000L), content="1000000")
+  debug_inspect(tree.query(-1000000L), content="1000000")
 }
 
 ///|
@@ -161,7 +161,7 @@ test "lichao node efficiency" {
 
   // Should create relatively few nodes (O(L log N))
   let nodes = tree.node_count()
-  inspect(nodes < 100, content="true")
+  debug_inspect(nodes < 100, content="true")
 }
 
 ///|
@@ -171,7 +171,7 @@ test "lichao empty query" {
 
   // Query on empty tree returns minimum value
   let result = tree.query(50L)
-  inspect(result < 0L, content="true")
+  debug_inspect(result < 0L, content="true")
 }
 
 ///|
@@ -186,8 +186,8 @@ test "lichao parallel lines" {
   tree.insert(2L, 3L) // y = 2x + 3
 
   // The one with highest intercept always wins
-  inspect(tree.query(0L), content="5")
-  inspect(tree.query(50L), content="105")
+  debug_inspect(tree.query(0L), content="5")
+  debug_inspect(tree.query(50L), content="105")
 }
 
 ///|
@@ -198,13 +198,13 @@ test "lichao steep slopes" {
   tree.insert(-100L, 0L) // Very steep negative
 
   // At x = 0: max(0, 0) = 0
-  inspect(tree.query(0L), content="0")
+  debug_inspect(tree.query(0L), content="0")
 
   // At x = 5: max(500, -500) = 500
-  inspect(tree.query(5L), content="500")
+  debug_inspect(tree.query(5L), content="500")
 
   // At x = -5: max(-500, 500) = 500
-  inspect(tree.query(-5L), content="500")
+  debug_inspect(tree.query(-5L), content="500")
 }
 
 ///|
@@ -216,5 +216,5 @@ test "lichao min node count" {
   tree.insert(0L, 50L)
 
   // Verify node count is reasonable
-  inspect(tree.node_count() < 50, content="true")
+  debug_inspect(tree.node_count() < 50, content="true")
 }

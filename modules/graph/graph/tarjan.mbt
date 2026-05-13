@@ -236,7 +236,7 @@ test "tarjan_basic" {
   ] // 5
   let sccs = find_strongly_connected_components(graph)
   // Should have 3 SCCs
-  assert_eq(sccs.length(), 3)
+  @debug.assert_eq(sccs.length(), 3)
   // SCCs are found in reverse topological order
   // SCC containing 5 should be first (no outgoing edges to other SCCs)
   // Then SCC containing 3,4
@@ -248,8 +248,8 @@ test "tarjan_single_scc" {
   // Complete graph on 4 vertices - one big SCC
   let graph : Array[Array[Int]] = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]
   let sccs = find_strongly_connected_components(graph)
-  assert_eq(sccs.length(), 1)
-  assert_eq(sccs[0].length(), 4)
+  @debug.assert_eq(sccs.length(), 1)
+  @debug.assert_eq(sccs[0].length(), 4)
 }
 
 ///|
@@ -258,7 +258,7 @@ test "tarjan_dag" {
   // 0 → 1 → 2 → 3
   let graph : Array[Array[Int]] = [[1], [2], [3], []]
   let sccs = find_strongly_connected_components(graph)
-  assert_eq(sccs.length(), 4)
+  @debug.assert_eq(sccs.length(), 4)
 }
 
 // ============================================================================
@@ -486,7 +486,7 @@ test "kosaraju_basic" {
   // Same graph as tarjan_basic
   let graph : Array[Array[Int]] = [[1], [2], [0, 3], [4], [3, 5], []]
   let sccs = find_sccs_kosaraju(graph)
-  assert_eq(sccs.length(), 3)
+  @debug.assert_eq(sccs.length(), 3)
 }
 
 // ============================================================================
@@ -631,7 +631,7 @@ test "articulation_points" {
   ]
   let aps = find_articulation_points(graph)
   // Should find 1 and 2 as articulation points
-  assert_eq(aps.length(), 2)
+  @debug.assert_eq(aps.length(), 2)
 }
 
 // ============================================================================
@@ -757,7 +757,7 @@ test "bridges" {
   ]
   let bridges = find_bridges(graph)
   // Should find 2 bridges
-  assert_eq(bridges.length(), 2)
+  @debug.assert_eq(bridges.length(), 2)
 }
 
 // ============================================================================
@@ -872,7 +872,7 @@ test "topological_sort" {
   ] // 4
   let result = topological_sort_dfs(graph)
   guard result is Some(order) else { panic() }
-  assert_eq(order.length(), 5)
+  @debug.assert_eq(order.length(), 5)
   // 0 should come before 1, 3
   // 1 should come before 2
   // 3 should come before 4

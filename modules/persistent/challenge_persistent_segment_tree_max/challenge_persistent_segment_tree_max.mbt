@@ -21,8 +21,8 @@
 ///   let arr = [5, 2, 7, 4][:]
 ///   let root = build(arr, 0, arr.length())
 ///   let updated = apply_updates(root, arr.length(), [(2, 1), (0, 6)])
-///   assert_eq(range_max(root, 0, arr.length(), 0, 4), 7)
-///   assert_eq(range_max(updated, 0, arr.length(), 0, 4), 6)
+///   @debug.assert_eq(range_max(root, 0, arr.length(), 0, 4), 7)
+///   @debug.assert_eq(range_max(updated, 0, arr.length(), 0, 4), 6)
 /// }
 /// ```
 pub enum Node {
@@ -139,7 +139,7 @@ test "persistent_segment_tree_max" {
   let arr = [5, 2, 7, 4][:]
   let root = build(arr, 0, arr.length())
   let updated = apply_updates(root, arr.length(), [(2, 1), (0, 6)])
-  assert_eq(range_max(root, 0, arr.length(), 0, 4), 7)
-  assert_eq(range_max(updated, 0, arr.length(), 0, 4), 6)
-  assert_eq(range_max(updated, 0, arr.length(), 1, 3), 2)
+  @debug.assert_eq(range_max(root, 0, arr.length(), 0, 4), 7)
+  @debug.assert_eq(range_max(updated, 0, arr.length(), 0, 4), 6)
+  @debug.assert_eq(range_max(updated, 0, arr.length(), 1, 3), 2)
 }

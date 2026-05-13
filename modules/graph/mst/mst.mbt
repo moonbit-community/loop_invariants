@@ -388,8 +388,8 @@ test "mst kruskal basic" {
   mst.add_edge(0, 3, 4L)
   mst.add_edge(1, 3, 5L)
   let (edges, weight) = mst.kruskal()
-  inspect(edges.length(), content="3")
-  inspect(weight, content="6") // 1 + 2 + 3
+  debug_inspect(edges.length(), content="3")
+  debug_inspect(weight, content="6") // 1 + 2 + 3
 }
 
 ///|
@@ -406,7 +406,7 @@ test "mst disconnected" {
   let mst = MST(4)
   mst.add_edge(0, 1, 1L)
   mst.add_edge(2, 3, 2L)
-  inspect(mst.is_connected(), content="false")
+  debug_inspect(mst.is_connected(), content="false")
   debug_inspect(mst.get_mst_weight(), content="None")
 }
 

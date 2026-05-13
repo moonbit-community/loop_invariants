@@ -14,9 +14,9 @@
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   assert_eq(isqrt(0), 0)
-///   assert_eq(isqrt(15), 3)
-///   assert_eq(isqrt(16), 4)
+///   @debug.assert_eq(isqrt(0), 0)
+///   @debug.assert_eq(isqrt(15), 3)
+///   @debug.assert_eq(isqrt(16), 4)
 /// }
 /// ```
 pub fn isqrt(

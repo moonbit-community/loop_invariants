@@ -271,8 +271,8 @@ Node | Palindrome | Length | Suffix link
 ```mbt check
 ///|
 test "eertree example" {
-  inspect(@eertree.distinct_count("ababa"), content="5")
-  inspect(@eertree.longest_length("abacaba"), content="7")
+  debug_inspect(@eertree.distinct_count("ababa"), content="5")
+  debug_inspect(@eertree.longest_length("abacaba"), content="7")
 }
 ```
 
@@ -280,19 +280,19 @@ test "eertree example" {
 ///|
 test "eertree palindromes list" {
   let pals = @eertree.palindromes("aba")
-  inspect(pals.length(), content="3")
-  inspect(pals.contains("a"), content="true")
-  inspect(pals.contains("b"), content="true")
-  inspect(pals.contains("aba"), content="true")
+  debug_inspect(pals.length(), content="3")
+  debug_inspect(pals.contains("a"), content="true")
+  debug_inspect(pals.contains("b"), content="true")
+  debug_inspect(pals.contains("aba"), content="true")
 }
 ```
 
 ```mbt check
 ///|
 test "eertree edge cases" {
-  inspect(@eertree.distinct_count(""), content="0")
-  inspect(@eertree.distinct_count("aaaa"), content="4")
-  inspect(@eertree.longest_length("abba"), content="4")
+  debug_inspect(@eertree.distinct_count(""), content="0")
+  debug_inspect(@eertree.distinct_count("aaaa"), content="4")
+  debug_inspect(@eertree.longest_length("abba"), content="4")
 }
 ```
 
@@ -300,9 +300,9 @@ test "eertree edge cases" {
 ///|
 test "eertree even palindromes" {
   let pals = @eertree.palindromes("abba")
-  inspect(@eertree.distinct_count("abba"), content="4")
-  inspect(pals.contains("bb"), content="true")
-  inspect(pals.contains("abba"), content="true")
+  debug_inspect(@eertree.distinct_count("abba"), content="4")
+  debug_inspect(pals.contains("bb"), content="true")
+  debug_inspect(pals.contains("abba"), content="true")
 }
 ```
 

@@ -92,15 +92,15 @@ test "persistent segment tree" {
     arr.length(),
     [(1, 3), (3, -1)],
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree.query(root, 0, arr.length(), 0, 4),
     content="10",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree.query(updated, 0, arr.length(), 0, 4),
     content="12",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree.query(updated, 0, arr.length(), 1, 3),
     content="8",
   )
@@ -115,11 +115,11 @@ test "segment tree persistence" {
   let arr = [5, 0, 2][:]
   let root = @challenge_persistent_segment_tree.build(arr, 0, arr.length())
   let t1 = @challenge_persistent_segment_tree.add(root, 0, arr.length(), 1, 4)
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree.query(root, 0, arr.length(), 0, 3),
     content="7",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree.query(t1, 0, arr.length(), 0, 3),
     content="11",
   )
@@ -134,7 +134,7 @@ test "segment tree single" {
   let arr = [1, 1, 1][:]
   let root = @challenge_persistent_segment_tree.build(arr, 0, arr.length())
   let t1 = @challenge_persistent_segment_tree.add(root, 0, arr.length(), 2, 5)
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree.query(t1, 0, arr.length(), 2, 3),
     content="6",
   )

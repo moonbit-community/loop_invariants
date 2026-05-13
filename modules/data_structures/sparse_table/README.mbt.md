@@ -151,9 +151,9 @@ min is idempotent.
 test "sparse table range minimum" {
   let arr : Array[Int64] = [5L, 2L, 4L, 7L, 1L, 3L]
   let st = @sparse_table.SparseTableMin(arr)
-  inspect(st.query(1, 4), content="1") // min of [2,4,7,1]
-  inspect(st.query(0, 2), content="2") // min of [5,2,4]
-  inspect(st.query(3, 3), content="7") // single element
+  debug_inspect(st.query(1, 4), content="1") // min of [2,4,7,1]
+  debug_inspect(st.query(0, 2), content="2") // min of [5,2,4]
+  debug_inspect(st.query(3, 3), content="7") // single element
 }
 ```
 

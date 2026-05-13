@@ -169,7 +169,7 @@ test "floyd_cycle_detect" {
   ]
   let (has_cycle, start) = floyd_cycle_detect(nodes_with_cycle, 0)
   assert_true(has_cycle)
-  assert_eq(start, 2)
+  @debug.assert_eq(start, 2)
 
   // Create a list without cycle: 0 -> 1 -> 2 -> 3 -> end
   let nodes_no_cycle : Array[ListNode] = [
@@ -369,13 +369,13 @@ test "kmp_search" {
     'B', 'A', 'B',
   ]
   let pattern : Array[Char] = ['A', 'B', 'A', 'B', 'C', 'A', 'B', 'A', 'B']
-  assert_eq(kmp_search(text, pattern), 10)
+  @debug.assert_eq(kmp_search(text, pattern), 10)
   let text2 : Array[Char] = ['A', 'A', 'A', 'A', 'A', 'B']
   let pattern2 : Array[Char] = ['A', 'A', 'A', 'B']
-  assert_eq(kmp_search(text2, pattern2), 2)
+  @debug.assert_eq(kmp_search(text2, pattern2), 2)
   let text3 : Array[Char] = ['H', 'E', 'L', 'L', 'O']
   let pattern3 : Array[Char] = ['W', 'O', 'R', 'L', 'D']
-  assert_eq(kmp_search(text3, pattern3), -1)
+  @debug.assert_eq(kmp_search(text3, pattern3), -1)
 }
 
 // ============================================================================
@@ -530,15 +530,15 @@ fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
 test "edit_distance" {
   let kitten : Array[Char] = ['k', 'i', 't', 't', 'e', 'n']
   let sitting : Array[Char] = ['s', 'i', 't', 't', 'i', 'n', 'g']
-  assert_eq(edit_distance(kitten, sitting), 3)
-  assert_eq(edit_dist_spec(['a', 'b'], 2, ['a', 'c'], 2), 1)
+  @debug.assert_eq(edit_distance(kitten, sitting), 3)
+  @debug.assert_eq(edit_dist_spec(['a', 'b'], 2, ['a', 'c'], 2), 1)
   let abc : Array[Char] = ['a', 'b', 'c']
   let abc2 : Array[Char] = ['a', 'b', 'c']
-  assert_eq(edit_distance(abc, abc2), 0)
+  @debug.assert_eq(edit_distance(abc, abc2), 0)
   let empty : Array[Char] = []
   let hello : Array[Char] = ['h', 'e', 'l', 'l', 'o']
-  assert_eq(edit_distance(empty, hello), 5)
-  assert_eq(edit_distance(hello, empty), 5)
+  @debug.assert_eq(edit_distance(empty, hello), 5)
+  @debug.assert_eq(edit_distance(hello, empty), 5)
 }
 
 // ============================================================================

@@ -109,6 +109,6 @@ pub fn floor_sum(n : Int64, m : Int64, a : Int64, b : Int64) -> Int64 {
 
 ///|
 test "floor_sum" {
-  assert_eq(floor_sum(4L, 10L, 6L, 3L), 3L)
-  assert_eq(floor_sum(6L, 7L, 4L, 2L), 8L)
+  @debug.assert_eq(floor_sum(4L, 10L, 6L, 3L), 3L)
+  @debug.assert_eq(floor_sum(6L, 7L, 4L, 2L), 8L)
 }

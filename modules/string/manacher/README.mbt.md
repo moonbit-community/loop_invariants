@@ -394,17 +394,21 @@ Palindromes:
 ```mbt check
 ///|
 test "manacher basics" {
-  inspect(@manacher.longest_palindrome("cbbd"), content="bb")
-  inspect(@manacher.longest_palindrome("racecar"), content="racecar")
-  inspect(@manacher.longest_palindrome_len("abacaba"), content="7")
+  debug_inspect(@manacher.longest_palindrome("cbbd"), content=(
+    #|"bb"
+  ))
+  debug_inspect(@manacher.longest_palindrome("racecar"), content=(
+    #|"racecar"
+  ))
+  debug_inspect(@manacher.longest_palindrome_len("abacaba"), content="7")
 }
 ```
 
 ```mbt check
 ///|
 test "manacher counts" {
-  inspect(@manacher.count_palindromes("aaa"), content="6")
-  inspect(@manacher.count_palindromes("aaaa"), content="10")
+  debug_inspect(@manacher.count_palindromes("aaa"), content="6")
+  debug_inspect(@manacher.count_palindromes("aaaa"), content="10")
 }
 ```
 
@@ -412,16 +416,18 @@ test "manacher counts" {
 ///|
 test "manacher radii arrays" {
   let (d1, d2) = @manacher.manacher_radii("abba")
-  inspect(d1, content="[1, 1, 1, 1]")
-  inspect(d2, content="[0, 0, 2, 0]")
+  debug_inspect(d1, content="[1, 1, 1, 1]")
+  debug_inspect(d2, content="[0, 0, 2, 0]")
 }
 ```
 
 ```mbt check
 ///|
 test "manacher unique longest" {
-  inspect(@manacher.longest_palindrome("abaxyzzyxf"), content="xyzzyx")
-  inspect(@manacher.longest_palindrome_len("abcdef"), content="1")
+  debug_inspect(@manacher.longest_palindrome("abaxyzzyxf"), content=(
+    #|"xyzzyx"
+  ))
+  debug_inspect(@manacher.longest_palindrome_len("abcdef"), content="1")
 }
 ```
 

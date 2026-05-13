@@ -454,11 +454,11 @@ test "next greater element" {
   let arr : Array[Int64] = [4L, 5L, 2L, 10L, 8L]
   let nge = next_greater_element(arr)
   // NGE: 5(idx 1), 10(idx 3), 10(idx 3), none(-1), none(-1)
-  inspect(nge[0], content="1")
-  inspect(nge[1], content="3")
-  inspect(nge[2], content="3")
-  inspect(nge[3], content="-1")
-  inspect(nge[4], content="-1")
+  debug_inspect(nge[0], content="1")
+  debug_inspect(nge[1], content="3")
+  debug_inspect(nge[2], content="3")
+  debug_inspect(nge[3], content="-1")
+  debug_inspect(nge[4], content="-1")
 }
 
 ///|
@@ -466,11 +466,11 @@ test "next smaller element" {
   let arr : Array[Int64] = [4L, 5L, 2L, 10L, 8L]
   let nse = next_smaller_element(arr)
   // NSE: 2(idx 2), 2(idx 2), none(-1), 8(idx 4), none(-1)
-  inspect(nse[0], content="2")
-  inspect(nse[1], content="2")
-  inspect(nse[2], content="-1")
-  inspect(nse[3], content="4")
-  inspect(nse[4], content="-1")
+  debug_inspect(nse[0], content="2")
+  debug_inspect(nse[1], content="2")
+  debug_inspect(nse[2], content="-1")
+  debug_inspect(nse[3], content="4")
+  debug_inspect(nse[4], content="-1")
 }
 
 ///|
@@ -478,11 +478,11 @@ test "previous greater element" {
   let arr : Array[Int64] = [4L, 5L, 2L, 10L, 8L]
   let pge = previous_greater_element(arr)
   // PGE: none(-1), none(-1), 5(idx 1), none(-1), 10(idx 3)
-  inspect(pge[0], content="-1")
-  inspect(pge[1], content="-1")
-  inspect(pge[2], content="1")
-  inspect(pge[3], content="-1")
-  inspect(pge[4], content="3")
+  debug_inspect(pge[0], content="-1")
+  debug_inspect(pge[1], content="-1")
+  debug_inspect(pge[2], content="1")
+  debug_inspect(pge[3], content="-1")
+  debug_inspect(pge[4], content="3")
 }
 
 ///|
@@ -490,38 +490,38 @@ test "previous smaller element" {
   let arr : Array[Int64] = [4L, 5L, 2L, 10L, 8L]
   let pse = previous_smaller_element(arr)
   // PSE: none(-1), 4(idx 0), none(-1), 2(idx 2), 2(idx 2)
-  inspect(pse[0], content="-1")
-  inspect(pse[1], content="0")
-  inspect(pse[2], content="-1")
-  inspect(pse[3], content="2")
-  inspect(pse[4], content="2")
+  debug_inspect(pse[0], content="-1")
+  debug_inspect(pse[1], content="0")
+  debug_inspect(pse[2], content="-1")
+  debug_inspect(pse[3], content="2")
+  debug_inspect(pse[4], content="2")
 }
 
 ///|
 test "largest rectangle in histogram" {
   let heights : Array[Int64] = [2L, 1L, 5L, 6L, 2L, 3L]
   // Largest rectangle: height 5, width 2 (indices 2-3) = 10
-  inspect(largest_rectangle_in_histogram(heights), content="10")
+  debug_inspect(largest_rectangle_in_histogram(heights), content="10")
 }
 
 ///|
 test "largest rectangle uniform" {
   let heights : Array[Int64] = [3L, 3L, 3L, 3L]
-  inspect(largest_rectangle_in_histogram(heights), content="12")
+  debug_inspect(largest_rectangle_in_histogram(heights), content="12")
 }
 
 ///|
 test "trap rain water" {
   let heights : Array[Int64] = [0L, 1L, 0L, 2L, 1L, 0L, 1L, 3L, 2L, 1L, 2L, 1L]
   // Classic example: traps 6 units of water
-  inspect(trap_rain_water(heights), content="6")
+  debug_inspect(trap_rain_water(heights), content="6")
 }
 
 ///|
 test "trap rain water simple" {
   let heights : Array[Int64] = [3L, 0L, 2L]
   // Traps 2 units at index 1
-  inspect(trap_rain_water(heights), content="2")
+  debug_inspect(trap_rain_water(heights), content="2")
 }
 
 ///|
@@ -529,13 +529,13 @@ test "stock span" {
   let prices : Array[Int64] = [100L, 80L, 60L, 70L, 60L, 75L, 85L]
   let span = stock_span(prices)
   // Spans: 1, 1, 1, 2, 1, 4, 6
-  inspect(span[0], content="1")
-  inspect(span[1], content="1")
-  inspect(span[2], content="1")
-  inspect(span[3], content="2")
-  inspect(span[4], content="1")
-  inspect(span[5], content="4")
-  inspect(span[6], content="6")
+  debug_inspect(span[0], content="1")
+  debug_inspect(span[1], content="1")
+  debug_inspect(span[2], content="1")
+  debug_inspect(span[3], content="2")
+  debug_inspect(span[4], content="1")
+  debug_inspect(span[5], content="4")
+  debug_inspect(span[6], content="6")
 }
 
 ///|
@@ -546,20 +546,20 @@ test "sum subarray mins" {
   //            [3,1,2]=1, [1,2,4]=1,
   //            [3,1,2,4]=1
   // Sum = 3+1+2+4+1+1+2+1+1+1 = 17
-  inspect(sum_subarray_mins(arr), content="17")
+  debug_inspect(sum_subarray_mins(arr), content="17")
 }
 
 ///|
 test "monotonic stack empty" {
   let arr : Array[Int64] = []
-  inspect(next_greater_element(arr).length(), content="0")
-  inspect(largest_rectangle_in_histogram(arr), content="0")
+  debug_inspect(next_greater_element(arr).length(), content="0")
+  debug_inspect(largest_rectangle_in_histogram(arr), content="0")
 }
 
 ///|
 test "monotonic stack single" {
   let arr : Array[Int64] = [5L]
   let nge = next_greater_element(arr)
-  inspect(nge[0], content="-1")
-  inspect(largest_rectangle_in_histogram(arr), content="5")
+  debug_inspect(nge[0], content="-1")
+  debug_inspect(largest_rectangle_in_histogram(arr), content="5")
 }

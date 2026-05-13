@@ -761,9 +761,9 @@ test "mo distinct basic" {
   // [0,2]: {1,2,1} -> distinct = 2
   // [1,4]: {2,1,3,2} -> distinct = 3
   // [0,6]: {1,2,1,3,2,1,4} -> distinct = 4
-  inspect(answers[0], content="2")
-  inspect(answers[1], content="3")
-  inspect(answers[2], content="4")
+  debug_inspect(answers[0], content="2")
+  debug_inspect(answers[1], content="3")
+  debug_inspect(answers[2], content="4")
 }
 
 ///|
@@ -772,9 +772,9 @@ test "mo distinct single element" {
   let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = [(0, 0), (0, 3), (1, 2)]
   let answers = mo.answer_queries(queries)
-  inspect(answers[0], content="1")
-  inspect(answers[1], content="1")
-  inspect(answers[2], content="1")
+  debug_inspect(answers[0], content="1")
+  debug_inspect(answers[1], content="1")
+  debug_inspect(answers[2], content="1")
 }
 
 ///|
@@ -783,9 +783,9 @@ test "mo distinct all different" {
   let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = [(0, 4), (1, 3), (2, 2)]
   let answers = mo.answer_queries(queries)
-  inspect(answers[0], content="5")
-  inspect(answers[1], content="3")
-  inspect(answers[2], content="1")
+  debug_inspect(answers[0], content="5")
+  debug_inspect(answers[1], content="3")
+  debug_inspect(answers[2], content="1")
 }
 
 ///|
@@ -798,9 +798,9 @@ test "mo sum basic" {
   // [0,2]: 1+2+3 = 6
   // [1,3]: 2+3+4 = 9
   // [0,4]: 1+2+3+4+5 = 15
-  inspect(answers[0], content="6")
-  inspect(answers[1], content="9")
-  inspect(answers[2], content="15")
+  debug_inspect(answers[0], content="6")
+  debug_inspect(answers[1], content="9")
+  debug_inspect(answers[2], content="15")
 }
 
 ///|
@@ -809,7 +809,7 @@ test "mo sum single" {
   let mo = MoSum(arr)
   let queries : Array[(Int, Int)] = [(0, 0)]
   let answers = mo.answer_queries(queries)
-  inspect(answers[0], content="42")
+  debug_inspect(answers[0], content="42")
 }
 
 ///|
@@ -823,8 +823,8 @@ test "mo range count" {
 
   // [0,3] with [2,4]: {1,5,3,2} -> {3,2} -> 2
   // [0,6] with [3,5]: {1,5,3,2,4,3,5} -> {5,3,4,3,5} -> 5
-  inspect(answers[0], content="2")
-  inspect(answers[1], content="5")
+  debug_inspect(answers[0], content="2")
+  debug_inspect(answers[1], content="5")
 }
 
 ///|
@@ -838,10 +838,10 @@ test "mo mode basic" {
   // [4,7]: {2,1,1,1} -> mode=1, freq=3
   let (mode0, freq0) = answers[0]
   let (mode1, freq1) = answers[1]
-  inspect(mode0, content="2")
-  inspect(freq0, content="3")
-  inspect(mode1, content="1")
-  inspect(freq1, content="3")
+  debug_inspect(mode0, content="2")
+  debug_inspect(freq0, content="3")
+  debug_inspect(mode1, content="1")
+  debug_inspect(freq1, content="3")
 }
 
 ///|
@@ -850,7 +850,7 @@ test "mo empty queries" {
   let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = []
   let answers = mo.answer_queries(queries)
-  inspect(answers.length(), content="0")
+  debug_inspect(answers.length(), content="0")
 }
 
 ///|
@@ -859,7 +859,7 @@ test "mo empty array" {
   let mo = MoDistinct(arr)
   let queries : Array[(Int, Int)] = [(0, 0)]
   let answers = mo.answer_queries(queries)
-  inspect(answers.length(), content="0")
+  debug_inspect(answers.length(), content="0")
 }
 
 ///|
@@ -874,23 +874,23 @@ test "mo distinct many queries" {
   // [0,9]: {1,2,3,4,5,1,2,3,4,5} -> 5
   // [2,7]: {3,4,5,1,2,3} -> 5
   // [3,6]: {4,5,1,2} -> 4
-  inspect(answers[0], content="5")
-  inspect(answers[1], content="5")
-  inspect(answers[2], content="5")
-  inspect(answers[3], content="5")
-  inspect(answers[4], content="4")
+  debug_inspect(answers[0], content="5")
+  debug_inspect(answers[1], content="5")
+  debug_inspect(answers[2], content="5")
+  debug_inspect(answers[3], content="5")
+  debug_inspect(answers[4], content="4")
 }
 
 ///|
 test "isqrt" {
-  inspect(isqrt(0), content="0")
-  inspect(isqrt(1), content="1")
-  inspect(isqrt(4), content="2")
-  inspect(isqrt(9), content="3")
-  inspect(isqrt(10), content="3")
-  inspect(isqrt(15), content="3")
-  inspect(isqrt(16), content="4")
-  inspect(isqrt(100), content="10")
+  debug_inspect(isqrt(0), content="0")
+  debug_inspect(isqrt(1), content="1")
+  debug_inspect(isqrt(4), content="2")
+  debug_inspect(isqrt(9), content="3")
+  debug_inspect(isqrt(10), content="3")
+  debug_inspect(isqrt(15), content="3")
+  debug_inspect(isqrt(16), content="4")
+  debug_inspect(isqrt(100), content="10")
 }
 
 ///|
@@ -903,20 +903,20 @@ test "mo sum negative" {
   // [0,4]: -1-2+3-4+5 = 1
   // [0,1]: -1-2 = -3
   // [2,4]: 3-4+5 = 4
-  inspect(answers[0], content="1")
-  inspect(answers[1], content="-3")
-  inspect(answers[2], content="4")
+  debug_inspect(answers[0], content="1")
+  debug_inspect(answers[1], content="-3")
+  debug_inspect(answers[2], content="4")
 }
 
 ///|
 test "mo length" {
   let arr : Array[Int] = [1, 2, 3, 4, 5]
   let mo = MoDistinct(arr)
-  inspect(mo.length(), content="5")
+  debug_inspect(mo.length(), content="5")
   let mo_sum = MoSum([1L, 2L, 3L])
-  inspect(mo_sum.length(), content="3")
+  debug_inspect(mo_sum.length(), content="3")
   let mo_range = MoRangeCount([1, 2, 3])
-  inspect(mo_range.length(), content="3")
+  debug_inspect(mo_range.length(), content="3")
   let mo_mode = MoMode([1, 2, 2])
-  inspect(mo_mode.length(), content="3")
+  debug_inspect(mo_mode.length(), content="3")
 }

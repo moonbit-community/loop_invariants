@@ -196,14 +196,14 @@ connected      O(log n)              O(alpha(n))
 ///|
 test "union find connectivity" {
   let uf = @union_find.UnionFind(5)
-  inspect(uf.connected(0, 4), content="false")
+  debug_inspect(uf.connected(0, 4), content="false")
   let _ = uf.union(0, 1)
   let _ = uf.union(1, 2)
   let _ = uf.union(3, 4)
-  inspect(uf.connected(0, 2), content="true")
-  inspect(uf.connected(0, 4), content="false")
+  debug_inspect(uf.connected(0, 2), content="true")
+  debug_inspect(uf.connected(0, 4), content="false")
   let _ = uf.union(2, 3)
-  inspect(uf.connected(0, 4), content="true")
+  debug_inspect(uf.connected(0, 4), content="true")
 }
 ```
 
@@ -215,12 +215,12 @@ test "union find connectivity" {
 ///|
 test "union find count sets" {
   let uf = @union_find.UnionFind(6)
-  inspect(uf.count_sets(), content="6")
+  debug_inspect(uf.count_sets(), content="6")
   let _ = uf.union(0, 1)
   let _ = uf.union(2, 3)
-  inspect(uf.count_sets(), content="4")
+  debug_inspect(uf.count_sets(), content="4")
   let _ = uf.union(0, 2)
-  inspect(uf.count_sets(), content="3")
+  debug_inspect(uf.count_sets(), content="3")
 }
 ```
 
@@ -234,10 +234,10 @@ test "union find set size" {
   let uf = @union_find.UnionFind(5)
   let _ = uf.union(0, 1)
   let _ = uf.union(1, 2)
-  inspect(uf.set_size(0), content="3")
-  inspect(uf.set_size(3), content="1")
+  debug_inspect(uf.set_size(0), content="3")
+  debug_inspect(uf.set_size(3), content="1")
   let _ = uf.union(2, 3)
-  inspect(uf.set_size(3), content="4")
+  debug_inspect(uf.set_size(3), content="4")
 }
 ```
 

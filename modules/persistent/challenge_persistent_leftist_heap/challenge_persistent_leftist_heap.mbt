@@ -20,7 +20,10 @@
 /// ```moonbit nocheck
 /// test {
 ///   let h = @challenge_persistent_leftist_heap.from_array([5, 3, 7, 1])
-///   inspect(@challenge_persistent_leftist_heap.find_min(h), content="Some(1)")
+///   debug_inspect(
+///     @challenge_persistent_leftist_heap.find_min(h),
+///     content="Some(1)",
+///   )
 /// }
 /// ```
 pub enum Heap[T] {

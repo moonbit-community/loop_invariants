@@ -507,11 +507,11 @@ test "avl insert and search" {
   tree.insert(7L)
   tree.insert(1L)
   tree.insert(9L)
-  inspect(tree.search(5L), content="true")
-  inspect(tree.search(3L), content="true")
-  inspect(tree.search(9L), content="true")
-  inspect(tree.search(4L), content="false")
-  inspect(tree.is_balanced(), content="true")
+  debug_inspect(tree.search(5L), content="true")
+  debug_inspect(tree.search(3L), content="true")
+  debug_inspect(tree.search(9L), content="true")
+  debug_inspect(tree.search(4L), content="false")
+  debug_inspect(tree.is_balanced(), content="true")
 }
 
 ///|
@@ -521,10 +521,10 @@ test "avl left rotation" {
   tree.insert(1L)
   tree.insert(2L)
   tree.insert(3L)
-  inspect(tree.is_balanced(), content="true")
-  inspect(tree.search(1L), content="true")
-  inspect(tree.search(2L), content="true")
-  inspect(tree.search(3L), content="true")
+  debug_inspect(tree.is_balanced(), content="true")
+  debug_inspect(tree.search(1L), content="true")
+  debug_inspect(tree.search(2L), content="true")
+  debug_inspect(tree.search(3L), content="true")
 }
 
 ///|
@@ -534,7 +534,7 @@ test "avl right rotation" {
   tree.insert(3L)
   tree.insert(2L)
   tree.insert(1L)
-  inspect(tree.is_balanced(), content="true")
+  debug_inspect(tree.is_balanced(), content="true")
 }
 
 ///|
@@ -543,7 +543,7 @@ test "avl left-right rotation" {
   tree.insert(3L)
   tree.insert(1L)
   tree.insert(2L) // Triggers left-right rotation
-  inspect(tree.is_balanced(), content="true")
+  debug_inspect(tree.is_balanced(), content="true")
 }
 
 ///|
@@ -552,7 +552,7 @@ test "avl right-left rotation" {
   tree.insert(1L)
   tree.insert(3L)
   tree.insert(2L) // Triggers right-left rotation
-  inspect(tree.is_balanced(), content="true")
+  debug_inspect(tree.is_balanced(), content="true")
 }
 
 ///|
@@ -563,11 +563,11 @@ test "avl delete" {
   tree.insert(7L)
   tree.insert(1L)
   tree.insert(4L)
-  inspect(tree.search(3L), content="true")
-  inspect(tree.delete(3L), content="true")
-  inspect(tree.search(3L), content="false")
-  inspect(tree.delete(42L), content="false")
-  inspect(tree.is_balanced(), content="true")
+  debug_inspect(tree.search(3L), content="true")
+  debug_inspect(tree.delete(3L), content="true")
+  debug_inspect(tree.search(3L), content="false")
+  debug_inspect(tree.delete(42L), content="false")
+  debug_inspect(tree.is_balanced(), content="true")
 }
 
 ///|
@@ -585,11 +585,11 @@ test "avl min max" {
 ///|
 test "avl size" {
   let tree : AVLTree[Int64] = AVLTree()
-  inspect(tree.size(), content="0")
+  debug_inspect(tree.size(), content="0")
   tree.insert(1L)
   tree.insert(2L)
   tree.insert(3L)
-  inspect(tree.size(), content="3")
+  debug_inspect(tree.size(), content="3")
 }
 
 ///|
@@ -598,16 +598,16 @@ test "avl many insertions" {
   for i in 0..<100 {
     tree.insert(i.to_int64())
   }
-  inspect(tree.is_balanced(), content="true")
-  inspect(tree.size(), content="100")
+  debug_inspect(tree.is_balanced(), content="true")
+  debug_inspect(tree.size(), content="100")
   // Height should be around log2(100) ≈ 7
-  inspect(tree.height(tree.root) <= 10, content="true")
+  debug_inspect(tree.height(tree.root) <= 10, content="true")
 }
 
 ///|
 test "avl empty" {
   let tree = AVLTree()
-  inspect(tree.search(1L), content="false")
+  debug_inspect(tree.search(1L), content="false")
   debug_inspect(tree.min(), content="None")
-  inspect(tree.is_balanced(), content="true")
+  debug_inspect(tree.is_balanced(), content="true")
 }

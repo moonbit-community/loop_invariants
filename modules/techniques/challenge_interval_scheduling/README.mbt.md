@@ -69,7 +69,7 @@ test "interval scheduling basic" {
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
     intervals,
   )
-  inspect(count, content="3")
+  debug_inspect(count, content="3")
 }
 ```
 
@@ -84,7 +84,7 @@ test "interval scheduling disjoint" {
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
     intervals,
   )
-  inspect(count, content="3")
+  debug_inspect(count, content="3")
 }
 ```
 
@@ -101,7 +101,7 @@ test "interval scheduling nested" {
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
     intervals,
   )
-  inspect(count, content="3")
+  debug_inspect(count, content="3")
 }
 ```
 
@@ -116,7 +116,7 @@ test "interval scheduling touching" {
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
     intervals,
   )
-  inspect(count, content="3")
+  debug_inspect(count, content="3")
 }
 ```
 
@@ -131,7 +131,7 @@ test "interval scheduling tie" {
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
     intervals,
   )
-  inspect(count, content="2")
+  debug_inspect(count, content="2")
 }
 ```
 

@@ -28,7 +28,10 @@ enum Node {
 ///   let os = @challenge_persistent_order_statistic.add(os, 5)
 ///   let os = @challenge_persistent_order_statistic.add(os, 2)
 ///   let os = @challenge_persistent_order_statistic.add(os, 7)
-///   inspect(@challenge_persistent_order_statistic.kth(os, 1), content="Some(5)")
+///   debug_inspect(
+///     @challenge_persistent_order_statistic.kth(os, 1),
+///     content="Some(5)",
+///   )
 /// }
 /// ```
 pub struct OrderStat {

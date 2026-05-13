@@ -471,35 +471,39 @@ test "aho corasick basic" {
   let ac = AhoCorasick::from_patterns(["he", "she", "his", "hers"])
 
   // Test pattern_count and get_pattern
-  inspect(ac.pattern_count(), content="4")
-  inspect(ac.get_pattern(0), content="he")
-  inspect(ac.get_pattern(1), content="she")
+  debug_inspect(ac.pattern_count(), content="4")
+  debug_inspect(ac.get_pattern(0), content=(
+    #|"he"
+  ))
+  debug_inspect(ac.get_pattern(1), content=(
+    #|"she"
+  ))
 
   // Test count_matches
-  inspect(ac.count_matches("ushers"), content="3")
+  debug_inspect(ac.count_matches("ushers"), content="3")
   let matches = ac.search("ushers")
   // "she" at position 1, "he" at position 2, "hers" at position 2
-  inspect(matches.length(), content="3")
+  debug_inspect(matches.length(), content="3")
 
   // Verify matches
   let found_she = matches.filter(m => m.1 == 1).length() > 0 // "she"
   let found_he = matches.filter(m => m.1 == 0).length() > 0 // "he"
   let found_hers = matches.filter(m => m.1 == 3).length() > 0 // "hers"
-  inspect(found_she, content="true")
-  inspect(found_he, content="true")
-  inspect(found_hers, content="true")
+  debug_inspect(found_she, content="true")
+  debug_inspect(found_he, content="true")
+  debug_inspect(found_hers, content="true")
 }
 
 ///|
 test "aho corasick single pattern" {
   let ac = AhoCorasick::from_patterns(["abc"])
   let matches = ac.search("abcabcabc")
-  inspect(matches.length(), content="3")
+  debug_inspect(matches.length(), content="3")
 
   // Positions: 0, 3, 6
-  inspect(matches[0].0, content="0")
-  inspect(matches[1].0, content="3")
-  inspect(matches[2].0, content="6")
+  debug_inspect(matches[0].0, content="0")
+  debug_inspect(matches[1].0, content="3")
+  debug_inspect(matches[2].0, content="6")
 }
 
 ///|
@@ -507,23 +511,23 @@ test "aho corasick overlapping patterns" {
   let ac = AhoCorasick::from_patterns(["a", "ab", "abc"])
   let matches = ac.search("abc")
   // "a" at 0, "ab" at 0, "abc" at 0
-  inspect(matches.length(), content="3")
+  debug_inspect(matches.length(), content="3")
 }
 
 ///|
 test "aho corasick no match" {
   let ac = AhoCorasick::from_patterns(["xyz", "uvw"])
   let matches = ac.search("abcdef")
-  inspect(matches.length(), content="0")
-  inspect(ac.contains_any("abcdef"), content="false")
+  debug_inspect(matches.length(), content="0")
+  debug_inspect(ac.contains_any("abcdef"), content="false")
 }
 
 ///|
 test "aho corasick contains any" {
   let ac = AhoCorasick::from_patterns(["error", "warning", "fatal"])
-  inspect(ac.contains_any("this is an error message"), content="true")
-  inspect(ac.contains_any("fatal error occurred"), content="true")
-  inspect(ac.contains_any("all good here"), content="false")
+  debug_inspect(ac.contains_any("this is an error message"), content="true")
+  debug_inspect(ac.contains_any("fatal error occurred"), content="true")
+  debug_inspect(ac.contains_any("all good here"), content="false")
 }
 
 ///|
@@ -531,24 +535,28 @@ test "aho corasick repeated pattern" {
   let ac = AhoCorasick::from_patterns(["aa"])
   let matches = ac.search("aaaa")
   // Overlapping matches at positions 0, 1, 2
-  inspect(matches.length(), content="3")
+  debug_inspect(matches.length(), content="3")
 }
 
 ///|
 test "aho corasick find all" {
   let ac = AhoCorasick::from_patterns(["cat", "dog"])
   let results = ac.find_all("the cat and the dog")
-  inspect(results.length(), content="2")
+  debug_inspect(results.length(), content="2")
 
   // First match: "cat" at position 4
-  inspect(results[0].0, content="4")
-  inspect(results[0].1, content="7")
-  inspect(results[0].2, content="cat")
+  debug_inspect(results[0].0, content="4")
+  debug_inspect(results[0].1, content="7")
+  debug_inspect(results[0].2, content=(
+    #|"cat"
+  ))
 
   // Second match: "dog" at position 16
-  inspect(results[1].0, content="16")
-  inspect(results[1].1, content="19")
-  inspect(results[1].2, content="dog")
+  debug_inspect(results[1].0, content="16")
+  debug_inspect(results[1].1, content="19")
+  debug_inspect(results[1].2, content=(
+    #|"dog"
+  ))
 }
 
 ///|
@@ -557,7 +565,7 @@ test "aho corasick prefix patterns" {
   let ac = AhoCorasick::from_patterns(["a", "ab", "abc", "abcd"])
   let matches = ac.search("abcd")
   // All patterns match at position 0
-  inspect(matches.length(), content="4")
+  debug_inspect(matches.length(), content="4")
 
   // All should start at position 0
   for m in matches {
@@ -571,7 +579,7 @@ test "aho corasick suffix patterns" {
   let ac = AhoCorasick::from_patterns(["d", "cd", "bcd", "abcd"])
   let matches = ac.search("abcd")
   // "d" at 3, "cd" at 2, "bcd" at 1, "abcd" at 0
-  inspect(matches.length(), content="4")
+  debug_inspect(matches.length(), content="4")
 }
 
 ///|
@@ -579,14 +587,14 @@ test "aho corasick state count" {
   let ac = AhoCorasick::from_patterns(["abc", "abd", "abe"])
   // Shared prefix "ab" means fewer states than 3*3=9
   // States: root, a, ab, abc, abd, abe = 6
-  inspect(ac.state_count(), content="6")
+  debug_inspect(ac.state_count(), content="6")
 }
 
 ///|
 test "aho corasick empty text" {
   let ac = AhoCorasick::from_patterns(["a", "b"])
   let matches = ac.search("")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
@@ -596,9 +604,9 @@ test "aho corasick long text" {
   // Build text with multiple needles
   let text = "haystackneedlehaystackneedlehaystack"
   let matches = ac.search(text)
-  inspect(matches.length(), content="2")
-  inspect(matches[0].0, content="8")
-  inspect(matches[1].0, content="22")
+  debug_inspect(matches.length(), content="2")
+  debug_inspect(matches[0].0, content="8")
+  debug_inspect(matches[1].0, content="22")
 }
 
 ///|
@@ -608,14 +616,14 @@ test "aho corasick failure links" {
   let ac = AhoCorasick::from_patterns(["aba"])
   let matches = ac.search("ababa")
   // "aba" at position 0 and position 2 (overlapping)
-  inspect(matches.length(), content="2")
-  inspect(matches[0].0, content="0")
-  inspect(matches[1].0, content="2")
+  debug_inspect(matches.length(), content="2")
+  debug_inspect(matches[0].0, content="0")
+  debug_inspect(matches[1].0, content="2")
 }
 
 ///|
 test "aho corasick case sensitive" {
   let ac = AhoCorasick::from_patterns(["ABC"])
-  inspect(ac.contains_any("abc"), content="false")
-  inspect(ac.contains_any("ABC"), content="true")
+  debug_inspect(ac.contains_any("abc"), content="false")
+  debug_inspect(ac.contains_any("ABC"), content="true")
 }

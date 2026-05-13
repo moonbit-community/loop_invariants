@@ -283,14 +283,14 @@ test "dynamic forest" {
   let forest = @lct.DynamicForest(4)
 
   // 0-1-2   and 3 alone
-  inspect(forest.link(0, 1), content="true")
-  inspect(forest.link(1, 2), content="true")
-  inspect(forest.connected(0, 2), content="true")
-  inspect(forest.connected(0, 3), content="false")
+  debug_inspect(forest.link(0, 1), content="true")
+  debug_inspect(forest.link(1, 2), content="true")
+  debug_inspect(forest.connected(0, 2), content="true")
+  debug_inspect(forest.connected(0, 3), content="false")
 
   // Cut edge (1,2)
-  inspect(forest.cut(1, 2), content="true")
-  inspect(forest.connected(0, 2), content="false")
+  debug_inspect(forest.cut(1, 2), content="true")
+  debug_inspect(forest.connected(0, 2), content="false")
 }
 ```
 
@@ -305,7 +305,7 @@ test "lct path sum" {
   lct.link(2, 3)
   // Path 0-1-2-3 sums to 1+2+3+4 = 10
   lct.make_root(0)
-  inspect(lct.path_sum(3), content="10")
+  debug_inspect(lct.path_sum(3), content="10")
 }
 ```
 

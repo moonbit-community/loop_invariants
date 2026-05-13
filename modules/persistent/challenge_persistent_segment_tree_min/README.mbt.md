@@ -76,7 +76,7 @@ test "segment tree min basic" {
     arr.length(),
     [(2, 1), (0, 6)],
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_min.range_min(
       root,
       0,
@@ -86,7 +86,7 @@ test "segment tree min basic" {
     ),
     content="2",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_min.range_min(
       updated,
       0,
@@ -96,7 +96,7 @@ test "segment tree min basic" {
     ),
     content="1",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_min.range_min(
       updated,
       0,
@@ -123,7 +123,7 @@ test "segment tree min single" {
     1,
     1,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_min.range_min(t1, 0, arr.length(), 0, 3),
     content="1",
   )
@@ -144,7 +144,7 @@ test "segment tree min persistence" {
     2,
     0,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_min.range_min(
       root,
       0,
@@ -154,7 +154,7 @@ test "segment tree min persistence" {
     ),
     content="1",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_min.range_min(t1, 0, arr.length(), 0, 3),
     content="0",
   )

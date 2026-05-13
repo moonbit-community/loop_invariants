@@ -660,60 +660,60 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
 test "sqrt sum basic" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L]
   let sqrt = SqrtSum(arr)
-  inspect(sqrt.query(0, 8), content="45") // Sum 1..9
-  inspect(sqrt.query(0, 2), content="6") // 1+2+3
-  inspect(sqrt.query(3, 5), content="15") // 4+5+6
+  debug_inspect(sqrt.query(0, 8), content="45") // Sum 1..9
+  debug_inspect(sqrt.query(0, 2), content="6") // 1+2+3
+  debug_inspect(sqrt.query(3, 5), content="15") // 4+5+6
 }
 
 ///|
 test "sqrt sum update" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let sqrt = SqrtSum(arr)
-  inspect(sqrt.query(0, 4), content="15")
+  debug_inspect(sqrt.query(0, 4), content="15")
   sqrt.update(2, 10L)
-  inspect(sqrt.query(0, 4), content="22") // 1+2+10+4+5
+  debug_inspect(sqrt.query(0, 4), content="22") // 1+2+10+4+5
 }
 
 ///|
 test "sqrt min basic" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L, 9L, 3L, 7L, 4L, 6L]
   let sqrt = SqrtMin(arr)
-  inspect(sqrt.query(0, 8), content="1")
-  inspect(sqrt.query(0, 2), content="2")
-  inspect(sqrt.query(4, 8), content="3")
+  debug_inspect(sqrt.query(0, 8), content="1")
+  debug_inspect(sqrt.query(0, 2), content="2")
+  debug_inspect(sqrt.query(4, 8), content="3")
 }
 
 ///|
 test "sqrt min update" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L, 9L]
   let sqrt = SqrtMin(arr)
-  inspect(sqrt.query(0, 4), content="1")
+  debug_inspect(sqrt.query(0, 4), content="1")
   sqrt.update(3, 10L)
-  inspect(sqrt.query(0, 4), content="2")
+  debug_inspect(sqrt.query(0, 4), content="2")
 }
 
 ///|
 test "sqrt lazy range add" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L]
   let sqrt = SqrtLazy(arr)
-  inspect(sqrt.query(0, 8), content="45")
+  debug_inspect(sqrt.query(0, 8), content="45")
   sqrt.range_add(2, 6, 10L) // Add 10 to indices 2-6
-  inspect(sqrt.query(0, 8), content="95") // 45 + 5*10 = 95
-  inspect(sqrt.query(2, 6), content="75") // (3+4+5+6+7) + 5*10
+  debug_inspect(sqrt.query(0, 8), content="95") // 45 + 5*10 = 95
+  debug_inspect(sqrt.query(2, 6), content="75") // (3+4+5+6+7) + 5*10
 }
 
 ///|
 test "sqrt single element" {
   let arr : Array[Int64] = [42L]
   let sqrt = SqrtSum(arr)
-  inspect(sqrt.query(0, 0), content="42")
+  debug_inspect(sqrt.query(0, 0), content="42")
 }
 
 ///|
 test "sqrt empty" {
   let arr : Array[Int64] = []
   let sqrt = SqrtSum(arr)
-  inspect(sqrt.query(0, 0), content="0")
+  debug_inspect(sqrt.query(0, 0), content="0")
 }
 
 ///|
@@ -721,15 +721,15 @@ test "sqrt large" {
   let arr : Array[Int64] = [ for i in 0..<1000 => i.to_int64() ]
   let sqrt = SqrtSum(arr)
   // Sum 0..999 = 999*1000/2 = 499500
-  inspect(sqrt.query(0, 999), content="499500")
+  debug_inspect(sqrt.query(0, 999), content="499500")
 }
 
 ///|
 test "isqrt" {
-  inspect(isqrt(0), content="0")
-  inspect(isqrt(1), content="1")
-  inspect(isqrt(4), content="2")
-  inspect(isqrt(9), content="3")
-  inspect(isqrt(10), content="3")
-  inspect(isqrt(100), content="10")
+  debug_inspect(isqrt(0), content="0")
+  debug_inspect(isqrt(1), content="1")
+  debug_inspect(isqrt(4), content="2")
+  debug_inspect(isqrt(9), content="3")
+  debug_inspect(isqrt(10), content="3")
+  debug_inspect(isqrt(100), content="10")
 }

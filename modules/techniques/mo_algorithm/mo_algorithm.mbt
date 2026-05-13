@@ -331,10 +331,10 @@ test "mo distinct basic" {
   let mo = MoDistinct(arr)
   let queries = [(0, 2), (1, 4), (2, 6), (0, 6)]
   let results = mo.process_queries(queries)
-  inspect(results[0], content="2") // [1,2,1] -> {1,2}
-  inspect(results[1], content="3") // [2,1,3,1] -> {1,2,3}
-  inspect(results[2], content="4") // [1,3,1,2,4] -> {1,2,3,4}
-  inspect(results[3], content="4") // [1,2,1,3,1,2,4] -> {1,2,3,4}
+  debug_inspect(results[0], content="2") // [1,2,1] -> {1,2}
+  debug_inspect(results[1], content="3") // [2,1,3,1] -> {1,2,3}
+  debug_inspect(results[2], content="4") // [1,3,1,2,4] -> {1,2,3,4}
+  debug_inspect(results[3], content="4") // [1,2,1,3,1,2,4] -> {1,2,3,4}
 }
 
 ///|
@@ -343,7 +343,7 @@ test "mo distinct single element" {
   let mo = MoDistinct(arr)
   let queries = [(0, 0)]
   let results = mo.process_queries(queries)
-  inspect(results[0], content="1")
+  debug_inspect(results[0], content="1")
 }
 
 ///|
@@ -352,9 +352,9 @@ test "mo distinct all same" {
   let mo = MoDistinct(arr)
   let queries = [(0, 4), (1, 3), (2, 2)]
   let results = mo.process_queries(queries)
-  inspect(results[0], content="1")
-  inspect(results[1], content="1")
-  inspect(results[2], content="1")
+  debug_inspect(results[0], content="1")
+  debug_inspect(results[1], content="1")
+  debug_inspect(results[2], content="1")
 }
 
 ///|
@@ -363,9 +363,9 @@ test "mo distinct all different" {
   let mo = MoDistinct(arr)
   let queries = [(0, 4), (0, 2), (3, 4)]
   let results = mo.process_queries(queries)
-  inspect(results[0], content="5")
-  inspect(results[1], content="3")
-  inspect(results[2], content="2")
+  debug_inspect(results[0], content="5")
+  debug_inspect(results[1], content="3")
+  debug_inspect(results[2], content="2")
 }
 
 ///|
@@ -374,9 +374,9 @@ test "mo sum basic" {
   let mo = MoSum(arr)
   let queries = [(0, 4), (1, 3), (2, 2)]
   let results = mo.process_queries(queries)
-  inspect(results[0], content="15") // 1+2+3+4+5
-  inspect(results[1], content="9") // 2+3+4
-  inspect(results[2], content="3") // 3
+  debug_inspect(results[0], content="15") // 1+2+3+4+5
+  debug_inspect(results[1], content="9") // 2+3+4
+  debug_inspect(results[2], content="3") // 3
 }
 
 ///|
@@ -384,7 +384,7 @@ test "mo empty queries" {
   let arr = [1, 2, 3]
   let mo = MoDistinct(arr)
   let results = mo.process_queries([])
-  inspect(results.length(), content="0")
+  debug_inspect(results.length(), content="0")
 }
 
 ///|
@@ -394,8 +394,8 @@ test "mo large block" {
   let mo = MoDistinct(arr)
   let queries = [(0, 99), (0, 9), (50, 59), (25, 75)]
   let results = mo.process_queries(queries)
-  inspect(results[0], content="10") // All 0-9
-  inspect(results[1], content="10") // 0-9
-  inspect(results[2], content="10") // 0-9
-  inspect(results[3], content="10") // 0-9
+  debug_inspect(results[0], content="10") // All 0-9
+  debug_inspect(results[1], content="10") // 0-9
+  debug_inspect(results[2], content="10") // 0-9
+  debug_inspect(results[3], content="10") // 0-9
 }

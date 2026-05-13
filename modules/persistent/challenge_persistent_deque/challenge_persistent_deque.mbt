@@ -28,8 +28,8 @@ enum Stack[T] {
 ///   let d = @challenge_persistent_deque.push_back(d, 1)
 ///   let d = @challenge_persistent_deque.push_back(d, 2)
 ///   let d = @challenge_persistent_deque.push_front(d, 0)
-///   assert_eq(@challenge_persistent_deque.peek_front(d), Some(0))
-///   assert_eq(@challenge_persistent_deque.peek_back(d), Some(2))
+///   @debug.assert_eq(@challenge_persistent_deque.peek_front(d), Some(0))
+///   @debug.assert_eq(@challenge_persistent_deque.peek_back(d), Some(2))
 /// }
 /// ```
 pub struct Deque[T] {

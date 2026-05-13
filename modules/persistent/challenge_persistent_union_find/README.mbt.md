@@ -84,9 +84,12 @@ test "persistent union find basic" {
   let d1 = @challenge_persistent_union_find.union(d0, 0, 1)
   let d2 = @challenge_persistent_union_find.union(d1, 1, 2)
   let d3 = @challenge_persistent_union_find.union(d2, 3, 4)
-  inspect(@challenge_persistent_union_find.same(d2, 0, 2), content="true")
-  inspect(@challenge_persistent_union_find.same(d2, 0, 3), content="false")
-  inspect(@challenge_persistent_union_find.same(d3, 3, 4), content="true")
+  debug_inspect(@challenge_persistent_union_find.same(d2, 0, 2), content="true")
+  debug_inspect(
+    @challenge_persistent_union_find.same(d2, 0, 3),
+    content="false",
+  )
+  debug_inspect(@challenge_persistent_union_find.same(d3, 3, 4), content="true")
 }
 ```
 
@@ -100,8 +103,11 @@ test "persistent union find versions" {
   let d0 = @challenge_persistent_union_find.make(4)
   let d1 = @challenge_persistent_union_find.union(d0, 0, 1)
   let d2 = @challenge_persistent_union_find.union(d1, 2, 3)
-  inspect(@challenge_persistent_union_find.same(d1, 2, 3), content="false")
-  inspect(@challenge_persistent_union_find.same(d2, 2, 3), content="true")
+  debug_inspect(
+    @challenge_persistent_union_find.same(d1, 2, 3),
+    content="false",
+  )
+  debug_inspect(@challenge_persistent_union_find.same(d2, 2, 3), content="true")
 }
 ```
 
@@ -115,10 +121,16 @@ test "persistent union find branching" {
   let d0 = @challenge_persistent_union_find.make(3)
   let d1 = @challenge_persistent_union_find.union(d0, 0, 1)
   let d2 = @challenge_persistent_union_find.union(d0, 1, 2)
-  inspect(@challenge_persistent_union_find.same(d1, 0, 1), content="true")
-  inspect(@challenge_persistent_union_find.same(d1, 1, 2), content="false")
-  inspect(@challenge_persistent_union_find.same(d2, 1, 2), content="true")
-  inspect(@challenge_persistent_union_find.same(d2, 0, 1), content="false")
+  debug_inspect(@challenge_persistent_union_find.same(d1, 0, 1), content="true")
+  debug_inspect(
+    @challenge_persistent_union_find.same(d1, 1, 2),
+    content="false",
+  )
+  debug_inspect(@challenge_persistent_union_find.same(d2, 1, 2), content="true")
+  debug_inspect(
+    @challenge_persistent_union_find.same(d2, 0, 1),
+    content="false",
+  )
 }
 ```
 

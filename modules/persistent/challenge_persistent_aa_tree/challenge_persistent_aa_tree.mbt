@@ -18,8 +18,8 @@
 /// ```moonbit nocheck
 /// test {
 ///   let t = @challenge_persistent_aa_tree.from_array([3, 1, 4, 2])
-///   assert_eq(@challenge_persistent_aa_tree.contains(t, 1), true)
-///   assert_eq(@challenge_persistent_aa_tree.inorder(t), [1, 2, 3, 4])
+///   @debug.assert_eq(@challenge_persistent_aa_tree.contains(t, 1), true)
+///   @debug.assert_eq(@challenge_persistent_aa_tree.inorder(t), [1, 2, 3, 4])
 /// }
 /// ```
 pub enum Aa[T] {

@@ -140,9 +140,9 @@ test "persistent fenwick basic" {
   let fw2 = @challenge_persistent_fenwick.add(fw1, 1, 2)
   let fw3 = @challenge_persistent_fenwick.add(fw2, 2, 3)
   let fw4 = @challenge_persistent_fenwick.add(fw3, 3, 4)
-  inspect(@challenge_persistent_fenwick.prefix_sum(fw4, 0), content="1")
-  inspect(@challenge_persistent_fenwick.prefix_sum(fw4, 3), content="10")
-  inspect(@challenge_persistent_fenwick.range_sum(fw4, 1, 2), content="5")
+  debug_inspect(@challenge_persistent_fenwick.prefix_sum(fw4, 0), content="1")
+  debug_inspect(@challenge_persistent_fenwick.prefix_sum(fw4, 3), content="10")
+  debug_inspect(@challenge_persistent_fenwick.range_sum(fw4, 1, 2), content="5")
 }
 ```
 
@@ -154,9 +154,9 @@ test "persistent fenwick versions" {
   let fw0 = @challenge_persistent_fenwick.make(3)
   let fw1 = @challenge_persistent_fenwick.add(fw0, 0, 5)
   let fw2 = @challenge_persistent_fenwick.add(fw1, 2, 7)
-  inspect(@challenge_persistent_fenwick.prefix_sum(fw0, 2), content="0")
-  inspect(@challenge_persistent_fenwick.prefix_sum(fw1, 2), content="5")
-  inspect(@challenge_persistent_fenwick.prefix_sum(fw2, 2), content="12")
+  debug_inspect(@challenge_persistent_fenwick.prefix_sum(fw0, 2), content="0")
+  debug_inspect(@challenge_persistent_fenwick.prefix_sum(fw1, 2), content="5")
+  debug_inspect(@challenge_persistent_fenwick.prefix_sum(fw2, 2), content="12")
 }
 ```
 
@@ -167,7 +167,7 @@ test "persistent fenwick versions" {
 test "persistent fenwick bounds" {
   let fw0 = @challenge_persistent_fenwick.make(2)
   let fw1 = @challenge_persistent_fenwick.add(fw0, 5, 10)
-  inspect(@challenge_persistent_fenwick.prefix_sum(fw1, 1), content="0")
+  debug_inspect(@challenge_persistent_fenwick.prefix_sum(fw1, 1), content="0")
 }
 ```
 

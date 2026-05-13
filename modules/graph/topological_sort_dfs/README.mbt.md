@@ -312,8 +312,8 @@ test "topological sort: chain" {
   match result {
     None => fail("expected a valid order")
     Some(order) => {
-      inspect(order, content="[0, 1, 2, 3]")
-      inspect(is_topological_order(4, edges, order), content="true")
+      debug_inspect(order, content="[0, 1, 2, 3]")
+      debug_inspect(is_topological_order(4, edges, order), content="true")
     }
   }
 }
@@ -346,7 +346,7 @@ test "topological sort: multiple valid orders" {
   match result {
     None => fail("expected a valid order")
     Some(order) =>
-      inspect(is_topological_order(3, edges, order), content="true")
+      debug_inspect(is_topological_order(3, edges, order), content="true")
   }
 }
 ```
@@ -376,7 +376,7 @@ test "topological sort: disconnected graph" {
   match result {
     None => fail("expected a valid order")
     Some(order) =>
-      inspect(is_topological_order(5, edges, order), content="true")
+      debug_inspect(is_topological_order(5, edges, order), content="true")
   }
 }
 ```
@@ -403,7 +403,7 @@ No topological order exists.
 test "topological sort: cycle" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
   let result = @topological_sort_dfs.topological_sort(3, edges)
-  inspect(result is None, content="true")
+  debug_inspect(result is None, content="true")
 }
 ```
 

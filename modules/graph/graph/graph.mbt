@@ -129,7 +129,7 @@ test "topological_sort" {
   ] // 2's neighbors
   match topological_sort(dag) {
     Some(order) => {
-      assert_eq(order.length(), 3)
+      @debug.assert_eq(order.length(), 3)
       // 0 must come before 1 and 2, 1 must come before 2
       let pos : Array[Int] = Array::make(3, 0)
       for i, v in order {
@@ -285,10 +285,10 @@ test "dijkstra" {
     [], // 3 has no outgoing edges
   ]
   let dist = dijkstra(graph, 0)
-  assert_eq(dist[0], 0) // source
-  assert_eq(dist[1], 1) // 0 → 1
-  assert_eq(dist[2], 4) // 0 → 2
-  assert_eq(dist[3], 3) // 0 → 1 → 3
+  @debug.assert_eq(dist[0], 0) // source
+  @debug.assert_eq(dist[1], 1) // 0 → 1
+  @debug.assert_eq(dist[2], 4) // 0 → 2
+  @debug.assert_eq(dist[3], 3) // 0 → 1 → 3
 }
 
 // ============================================================================
@@ -348,23 +348,23 @@ test "union_find" {
   let uf = make_union_find(5)
 
   // Initially, each element is its own set
-  assert_eq(uf_find(uf, 0), 0)
-  assert_eq(uf_find(uf, 1), 1)
+  @debug.assert_eq(uf_find(uf, 0), 0)
+  @debug.assert_eq(uf_find(uf, 1), 1)
 
   // Union 0 and 1
   uf_union(uf, 0, 1)
-  assert_eq(uf_find(uf, 0), uf_find(uf, 1))
+  @debug.assert_eq(uf_find(uf, 0), uf_find(uf, 1))
 
   // Union 2 and 3
   uf_union(uf, 2, 3)
-  assert_eq(uf_find(uf, 2), uf_find(uf, 3))
+  @debug.assert_eq(uf_find(uf, 2), uf_find(uf, 3))
 
   // Different sets
   assert_true(uf_find(uf, 0) != uf_find(uf, 2))
 
   // Union the two sets
   uf_union(uf, 1, 3)
-  assert_eq(uf_find(uf, 0), uf_find(uf, 3))
+  @debug.assert_eq(uf_find(uf, 0), uf_find(uf, 3))
 }
 
 // ============================================================================
@@ -457,9 +457,9 @@ test "bellman_ford" {
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2)]
   match bellman_ford(3, edges, 0) {
     Some(dist) => {
-      assert_eq(dist[0], 0)
-      assert_eq(dist[1], 1)
-      assert_eq(dist[2], -1) // 1 + (-2) = -1
+      @debug.assert_eq(dist[0], 0)
+      @debug.assert_eq(dist[1], 1)
+      @debug.assert_eq(dist[2], -1) // 1 + (-2) = -1
     }
     None => assert_true(false)
   }
@@ -585,10 +585,10 @@ test "floyd_warshall" {
   // Triangle: 0 --1--> 1 --2--> 2, with shortcut 0 --4--> 2
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 2), (0, 2, 4)]
   let dist = floyd_warshall(3, edges)
-  assert_eq(dist[0][0], 0)
-  assert_eq(dist[0][1], 1)
-  assert_eq(dist[0][2], 3) // 0 → 1 → 2 is shorter than 0 → 2
-  assert_eq(dist[1][2], 2)
+  @debug.assert_eq(dist[0][0], 0)
+  @debug.assert_eq(dist[0][1], 1)
+  @debug.assert_eq(dist[0][2], 3) // 0 → 1 → 2 is shorter than 0 → 2
+  @debug.assert_eq(dist[1][2], 2)
 }
 
 // ============================================================================
@@ -720,6 +720,6 @@ test "kruskal" {
     (2, 3, 4),
   ]
   let (mst, weight) = kruskal(4, edges)
-  assert_eq(mst.length(), 3)
-  assert_eq(weight, 6) // 1 + 2 + 3 = 6
+  @debug.assert_eq(mst.length(), 3)
+  @debug.assert_eq(weight, 6) // 1 + 2 + 3 = 6
 }

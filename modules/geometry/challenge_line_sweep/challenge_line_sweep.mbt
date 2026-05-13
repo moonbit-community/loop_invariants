@@ -39,7 +39,7 @@ pub fn max_overlap(intervals : ArrayView[(Int, Int)]) -> Int {
 ///|
 test "max_overlap" {
   let intervals : Array[(Int, Int)] = [(1, 3), (2, 5), (4, 6)]
-  assert_eq(max_overlap(intervals), 2)
+  @debug.assert_eq(max_overlap(intervals), 2)
   let intervals2 : Array[(Int, Int)] = [(1, 2), (3, 4)]
-  assert_eq(max_overlap(intervals2), 1)
+  @debug.assert_eq(max_overlap(intervals2), 1)
 }

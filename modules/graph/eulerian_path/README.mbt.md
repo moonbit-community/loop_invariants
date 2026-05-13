@@ -288,7 +288,7 @@ graph LR
 test "directed eulerian path" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (0, 2)]
   let path = @eulerian_path.eulerian_path_directed(3, edges).unwrap()
-  inspect(path.length(), content="5")
+  debug_inspect(path.length(), content="5")
 }
 ```
 
@@ -297,7 +297,7 @@ test "directed eulerian path" {
 test "undirected eulerian circuit" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
   let path = @eulerian_path.eulerian_path_undirected(3, edges).unwrap()
-  inspect(path.length(), content="4")
+  debug_inspect(path.length(), content="4")
 }
 ```
 
@@ -307,7 +307,7 @@ test "directed no eulerian" {
   // Unbalanced degrees - no Eulerian path
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2)]
   let path = @eulerian_path.eulerian_path_directed(3, edges)
-  inspect(path is None, content="true")
+  debug_inspect(path is None, content="true")
 }
 ```
 
@@ -316,8 +316,8 @@ test "directed no eulerian" {
 test "directed circuit endpoints" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
   let path = @eulerian_path.eulerian_path_directed(3, edges).unwrap()
-  inspect(path.length(), content="4")
-  inspect(path[0] == path[path.length() - 1], content="true")
+  debug_inspect(path.length(), content="4")
+  debug_inspect(path[0] == path[path.length() - 1], content="true")
 }
 ```
 
@@ -329,7 +329,7 @@ test "undirected path endpoints" {
   let start = path[0]
   let end = path[path.length() - 1]
   let ok = (start == 0 && end == 3) || (start == 3 && end == 0)
-  inspect(ok, content="true")
+  debug_inspect(ok, content="true")
 }
 ```
 

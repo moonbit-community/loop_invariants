@@ -128,12 +128,12 @@ fn compare_suffixes(chars : Array[Char], i : Int, j : Int) -> Int {
 ///|
 test "suffix array simple" {
   let sa = build_suffix_array_simple("banana")
-  assert_eq(sa[0], 5) // "a"
-  assert_eq(sa[1], 3) // "ana"
-  assert_eq(sa[2], 1) // "anana"
-  assert_eq(sa[3], 0) // "banana"
-  assert_eq(sa[4], 4) // "na"
-  assert_eq(sa[5], 2) // "nana"
+  @debug.assert_eq(sa[0], 5) // "a"
+  @debug.assert_eq(sa[1], 3) // "ana"
+  @debug.assert_eq(sa[2], 1) // "anana"
+  @debug.assert_eq(sa[3], 0) // "banana"
+  @debug.assert_eq(sa[4], 4) // "na"
+  @debug.assert_eq(sa[5], 2) // "nana"
 }
 
 ///|
@@ -240,12 +240,12 @@ test "lcp array" {
   // Suffixes in order: a, ana, anana, banana, na, nana
   // LCP: [0, 1, 3, 0, 0, 2]
   //      (-, a/ana=1, ana/anana=3, anana/banana=0, banana/na=0, na/nana=2)
-  assert_eq(lcp[0], 0) // No predecessor
-  assert_eq(lcp[1], 1) // "a" vs "ana" = 1
-  assert_eq(lcp[2], 3) // "ana" vs "anana" = 3
-  assert_eq(lcp[3], 0) // "anana" vs "banana" = 0
-  assert_eq(lcp[4], 0) // "banana" vs "na" = 0
-  assert_eq(lcp[5], 2) // "na" vs "nana" = 2
+  @debug.assert_eq(lcp[0], 0) // No predecessor
+  @debug.assert_eq(lcp[1], 1) // "a" vs "ana" = 1
+  @debug.assert_eq(lcp[2], 3) // "ana" vs "anana" = 3
+  @debug.assert_eq(lcp[3], 0) // "anana" vs "banana" = 0
+  @debug.assert_eq(lcp[4], 0) // "banana" vs "na" = 0
+  @debug.assert_eq(lcp[5], 2) // "na" vs "nana" = 2
 }
 
 ///|
@@ -308,9 +308,9 @@ fn count_distinct_substrings(s : String) -> Int {
 
 ///|
 test "count distinct substrings" {
-  assert_eq(count_distinct_substrings("ab"), 3) // "a", "b", "ab"
-  assert_eq(count_distinct_substrings("aa"), 2) // "a", "aa"
-  assert_eq(count_distinct_substrings("abc"), 6) // "a", "b", "c", "ab", "bc", "abc"
+  @debug.assert_eq(count_distinct_substrings("ab"), 3) // "a", "b", "ab"
+  @debug.assert_eq(count_distinct_substrings("aa"), 2) // "a", "aa"
+  @debug.assert_eq(count_distinct_substrings("abc"), 6) // "a", "b", "c", "ab", "bc", "abc"
 }
 
 ///|
@@ -377,9 +377,9 @@ fn longest_repeated_substring(s : String) -> String {
 
 ///|
 test "longest repeated substring" {
-  assert_eq(longest_repeated_substring("banana"), "ana")
-  assert_eq(longest_repeated_substring("abcd"), "")
-  assert_eq(longest_repeated_substring("aaa"), "aa")
+  @debug.assert_eq(longest_repeated_substring("banana"), "ana")
+  @debug.assert_eq(longest_repeated_substring("abcd"), "")
+  @debug.assert_eq(longest_repeated_substring("aaa"), "aa")
 }
 
 ///|
@@ -538,10 +538,10 @@ fn compare_with_pattern(s : Array[Char], start : Int, p : Array[Char]) -> Int {
 test "pattern search" {
   let s = "banana"
   let matches = search_pattern(s, "ana")
-  assert_eq(matches.length(), 2) // positions 1 and 3
+  @debug.assert_eq(matches.length(), 2) // positions 1 and 3
   let matches2 = search_pattern(s, "ban")
-  assert_eq(matches2.length(), 1)
-  assert_eq(matches2[0], 0)
+  @debug.assert_eq(matches2.length(), 1)
+  @debug.assert_eq(matches2[0], 0)
 }
 
 ///|
@@ -627,8 +627,8 @@ fn longest_common_substring_sa(s1 : String, s2 : String) -> String {
 
 ///|
 test "longest common substring sa" {
-  assert_eq(longest_common_substring_sa("abcdef", "zbcdf"), "bcd")
-  assert_eq(longest_common_substring_sa("abc", "xyz"), "")
+  @debug.assert_eq(longest_common_substring_sa("abcdef", "zbcdf"), "bcd")
+  @debug.assert_eq(longest_common_substring_sa("abc", "xyz"), "")
 }
 
 ///|
@@ -685,9 +685,9 @@ fn count_substrings_by_char(s : String) -> Array[Int] {
 ///|
 test "count substrings by char" {
   let counts = count_substrings_by_char("abc")
-  assert_eq(counts[0], 3) // "a", "ab", "abc"
-  assert_eq(counts[1], 2) // "b", "bc"
-  assert_eq(counts[2], 1) // "c"
+  @debug.assert_eq(counts[0], 3) // "a", "ab", "abc"
+  @debug.assert_eq(counts[1], 2) // "b", "bc"
+  @debug.assert_eq(counts[2], 1) // "c"
 }
 
 ///|
@@ -754,7 +754,7 @@ test "burrows wheeler transform" {
   let bwt = burrows_wheeler_transform("banana")
   // SA: [5, 3, 1, 0, 4, 2] (sorted: "a", "ana", "anana", "banana", "na", "nana")
   // BWT[i] = chars[(SA[i]-1+n) % n]: indices [4,2,0,5,3,1] -> chars: [n,n,b,a,a,a]
-  assert_eq(bwt, "nnbaaa")
+  @debug.assert_eq(bwt, "nnbaaa")
 }
 
 ///|
@@ -822,7 +822,7 @@ fn smallest_rotation(s : String) -> String {
 
 ///|
 test "smallest rotation" {
-  assert_eq(smallest_rotation("bca"), "abc")
-  assert_eq(smallest_rotation("cba"), "acb")
-  assert_eq(smallest_rotation("abc"), "abc")
+  @debug.assert_eq(smallest_rotation("bca"), "abc")
+  @debug.assert_eq(smallest_rotation("cba"), "acb")
+  @debug.assert_eq(smallest_rotation("abc"), "abc")
 }

@@ -659,8 +659,8 @@ test "linkcut basic" {
   let lct = LinkCutTree(5)
 
   // Initially all nodes are separate trees
-  inspect(lct.find_root(0), content="0")
-  inspect(lct.find_root(4), content="4")
+  debug_inspect(lct.find_root(0), content="0")
+  debug_inspect(lct.find_root(4), content="4")
 }
 
 ///|
@@ -668,19 +668,19 @@ test "linkcut link and find_root" {
   let lct = LinkCutTree(5)
 
   // Build tree: 0 - 1 - 2, 3 - 4
-  inspect(lct.link(1, 0), content="true")
-  inspect(lct.link(2, 1), content="true")
-  inspect(lct.link(4, 3), content="true")
+  debug_inspect(lct.link(1, 0), content="true")
+  debug_inspect(lct.link(2, 1), content="true")
+  debug_inspect(lct.link(4, 3), content="true")
 
   // All of 0, 1, 2 should have same root
   let root012 = lct.find_root(2)
-  inspect(lct.find_root(0) == root012, content="true")
-  inspect(lct.find_root(1) == root012, content="true")
+  debug_inspect(lct.find_root(0) == root012, content="true")
+  debug_inspect(lct.find_root(1) == root012, content="true")
 
   // 3, 4 have different root
   let root34 = lct.find_root(4)
-  inspect(lct.find_root(3) == root34, content="true")
-  inspect(root012 != root34, content="true")
+  debug_inspect(lct.find_root(3) == root34, content="true")
+  debug_inspect(root012 != root34, content="true")
 }
 
 ///|
@@ -690,9 +690,9 @@ test "linkcut connected" {
   // Build tree: 0 - 1 - 2
   let _ = lct.link(1, 0)
   let _ = lct.link(2, 1)
-  inspect(lct.connected(0, 2), content="true")
-  inspect(lct.connected(1, 2), content="true")
-  inspect(lct.connected(0, 3), content="false")
+  debug_inspect(lct.connected(0, 2), content="true")
+  debug_inspect(lct.connected(1, 2), content="true")
+  debug_inspect(lct.connected(0, 3), content="false")
 }
 
 ///|
@@ -703,15 +703,15 @@ test "linkcut cut" {
   let _ = lct.link(1, 0)
   let _ = lct.link(2, 1)
   let _ = lct.link(3, 2)
-  inspect(lct.connected(0, 3), content="true")
+  debug_inspect(lct.connected(0, 3), content="true")
 
   // Cut edge 1-2
-  inspect(lct.cut(1, 2), content="true")
+  debug_inspect(lct.cut(1, 2), content="true")
 
   // Now 0-1 and 2-3 are separate trees
-  inspect(lct.connected(0, 1), content="true")
-  inspect(lct.connected(2, 3), content="true")
-  inspect(lct.connected(0, 2), content="false")
+  debug_inspect(lct.connected(0, 1), content="true")
+  debug_inspect(lct.connected(2, 3), content="true")
+  debug_inspect(lct.connected(0, 2), content="false")
 }
 
 ///|
@@ -735,15 +735,15 @@ test "linkcut lca" {
   // LCA of 5 and 4 should be 1
   // First make 0 the root
   lct.make_root(0)
-  inspect(lct.lca(5, 4), content="1")
+  debug_inspect(lct.lca(5, 4), content="1")
 
   // LCA of 3 and 4 should be 1
   lct.make_root(0)
-  inspect(lct.lca(3, 4), content="1")
+  debug_inspect(lct.lca(3, 4), content="1")
 
   // LCA of 5 and 2 should be 0
   lct.make_root(0)
-  inspect(lct.lca(5, 2), content="0")
+  debug_inspect(lct.lca(5, 2), content="0")
 }
 
 ///|
@@ -765,7 +765,7 @@ test "linkcut path sum" {
   lct.make_root(0)
 
   // Path sum from 4 to root: 1 + 2 + 3 + 4 + 5 = 15
-  inspect(lct.path_sum_to_root(4), content="15")
+  debug_inspect(lct.path_sum_to_root(4), content="15")
 }
 
 ///|
@@ -773,23 +773,23 @@ test "linkcut double link fails" {
   let lct = LinkCutTree(3)
 
   // First link succeeds
-  inspect(lct.link(1, 0), content="true")
+  debug_inspect(lct.link(1, 0), content="true")
 
   // Trying to link already connected nodes fails
-  inspect(lct.link(0, 1), content="false")
+  debug_inspect(lct.link(0, 1), content="false")
 }
 
 ///|
 test "linkcut size" {
   let lct = LinkCutTree(10)
-  inspect(lct.size(), content="10")
+  debug_inspect(lct.size(), content="10")
 }
 
 ///|
 test "linkcut get value" {
   let lct = LinkCutTree(3)
   lct.set_value(1, 42L)
-  inspect(lct.get_value(1), content="42")
+  debug_inspect(lct.get_value(1), content="42")
 }
 
 ///|
@@ -804,12 +804,12 @@ test "linkcut make root" {
 
   // Initially root should be 0
   lct.make_root(0)
-  inspect(lct.find_root(4) == 0, content="true")
+  debug_inspect(lct.find_root(4) == 0, content="true")
 
   // Make 2 the root
   lct.make_root(2)
-  inspect(lct.find_root(0) == 2, content="true")
-  inspect(lct.find_root(4) == 2, content="true")
+  debug_inspect(lct.find_root(0) == 2, content="true")
+  debug_inspect(lct.find_root(4) == 2, content="true")
 }
 
 ///|
@@ -823,12 +823,12 @@ test "linkcut star topology" {
 
   // All nodes should be in same tree
   for i in 1..<6 {
-    inspect(lct.connected(0, i), content="true")
+    debug_inspect(lct.connected(0, i), content="true")
   }
 
   // All pairs of leaves should be connected
-  inspect(lct.connected(1, 5), content="true")
-  inspect(lct.connected(2, 4), content="true")
+  debug_inspect(lct.connected(1, 5), content="true")
+  debug_inspect(lct.connected(2, 4), content="true")
 }
 
 ///|
@@ -839,13 +839,13 @@ test "linkcut cut_parent" {
   let _ = lct.link(1, 0)
   let _ = lct.link(2, 1)
   let _ = lct.link(3, 2)
-  inspect(lct.connected(0, 3), content="true")
+  debug_inspect(lct.connected(0, 3), content="true")
 
   // Cut 2 from its parent (1)
   lct.make_root(0)
   lct.cut_parent(2)
 
   // Now 0-1 and 2-3 should be separate
-  inspect(lct.connected(0, 1), content="true")
-  inspect(lct.connected(2, 3), content="true")
+  debug_inspect(lct.connected(0, 1), content="true")
+  debug_inspect(lct.connected(2, 3), content="true")
 }

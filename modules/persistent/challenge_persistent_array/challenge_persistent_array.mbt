@@ -23,8 +23,8 @@ enum Node[T] {
 /// test {
 ///   let a0 = @challenge_persistent_array.from_array([10, 20, 30, 40])
 ///   let a1 = @challenge_persistent_array.set_at(a0, 2, 99)
-///   assert_eq(@challenge_persistent_array.get_at(a0, 2), Some(30))
-///   assert_eq(@challenge_persistent_array.get_at(a1, 2), Some(99))
+///   @debug.assert_eq(@challenge_persistent_array.get_at(a0, 2), Some(30))
+///   @debug.assert_eq(@challenge_persistent_array.get_at(a1, 2), Some(99))
 /// }
 /// ```
 pub struct PArray[T] {

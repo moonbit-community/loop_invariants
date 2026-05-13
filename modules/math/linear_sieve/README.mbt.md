@@ -262,13 +262,13 @@ divisions are performed.
 ///|
 test "linear sieve quick start" {
   let sieve = @linear_sieve.LinearSieve(10)
-  inspect(sieve.primes, content="[2, 3, 5, 7]")
-  inspect(sieve.spf[10], content="2")
-  inspect(sieve.phi[10], content="4")
-  inspect(sieve.mu[10], content="1")
-  inspect(sieve.mu[4], content="0")
-  inspect(sieve.is_prime(7), content="true")
-  inspect(sieve.is_prime(9), content="false")
+  debug_inspect(sieve.primes, content="[2, 3, 5, 7]")
+  debug_inspect(sieve.spf[10], content="2")
+  debug_inspect(sieve.phi[10], content="4")
+  debug_inspect(sieve.mu[10], content="1")
+  debug_inspect(sieve.mu[4], content="0")
+  debug_inspect(sieve.is_prime(7), content="true")
+  debug_inspect(sieve.is_prime(9), content="false")
 }
 ```
 
@@ -276,8 +276,8 @@ test "linear sieve quick start" {
 ///|
 test "linear sieve factorization" {
   let sieve = @linear_sieve.LinearSieve(100)
-  inspect(sieve.factorize(84), content="[(2, 2), (3, 1), (7, 1)]")
-  inspect(sieve.is_prime(97), content="true")
+  debug_inspect(sieve.factorize(84), content="[(2, 2), (3, 1), (7, 1)]")
+  debug_inspect(sieve.is_prime(97), content="true")
 }
 ```
 

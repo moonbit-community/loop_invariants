@@ -23,9 +23,9 @@ test "mcmf basic" {
   mcmf.add_edge(1, 3, 1L, 3L)
   mcmf.add_edge(2, 3, 2L, 1L)
   let (flow, cost) = mcmf.compute(0, 3)
-  inspect(flow, content="3")
+  debug_inspect(flow, content="3")
   // Cost depends on path order, but should be reasonable
-  inspect(cost <= 12L, content="true")
+  debug_inspect(cost <= 12L, content="true")
 }
 
 ///|
@@ -34,8 +34,8 @@ test "mcmf simple" {
   let mcmf = @mcmf.MinCostMaxFlow(2)
   mcmf.add_edge(0, 1, 5L, 2L)
   let (flow, cost) = mcmf.compute(0, 1)
-  inspect(flow, content="5")
-  inspect(cost, content="10") // 5 * 2
+  debug_inspect(flow, content="5")
+  debug_inspect(cost, content="10") // 5 * 2
 }
 
 ///|
@@ -45,8 +45,8 @@ test "mcmf no path" {
   mcmf.add_edge(0, 1, 1L, 1L)
   // No edge to vertex 2
   let (flow, cost) = mcmf.compute(0, 2)
-  inspect(flow, content="0")
-  inspect(cost, content="0")
+  debug_inspect(flow, content="0")
+  debug_inspect(cost, content="0")
 }
 
 ///|
@@ -65,8 +65,8 @@ test "mcmf parallel edges" {
   mcmf.add_edge(0, 1, 2L, 1L) // Cheap
   mcmf.add_edge(0, 1, 2L, 3L) // Expensive
   let (flow, cost) = mcmf.compute(0, 1)
-  inspect(flow, content="4")
-  inspect(cost, content="8")
+  debug_inspect(flow, content="4")
+  debug_inspect(cost, content="8")
 }
 
 ///|
@@ -75,8 +75,8 @@ test "mcmf flow limit" {
   let mcmf = @mcmf.MinCostMaxFlow(2)
   mcmf.add_edge(0, 1, 10L, 1L)
   let (flow, cost) = mcmf.compute_with_limit(0, 1, 5L)
-  inspect(flow, content="5")
-  inspect(cost, content="5")
+  debug_inspect(flow, content="5")
+  debug_inspect(cost, content="5")
 }
 
 ///|
@@ -92,7 +92,7 @@ test "mcmf flow limit" {
 /// ```
 test "assignment basic" {
   let cost : Array[Array[Int64]] = [[1L, 3L], [2L, 2L]]
-  inspect(@mcmf.solve_assignment(cost), content="3")
+  debug_inspect(@mcmf.solve_assignment(cost), content="3")
 }
 
 ///|
@@ -109,7 +109,7 @@ test "assignment basic" {
 test "assignment larger" {
   let cost : Array[Array[Int64]] = [[9L, 2L, 7L], [6L, 4L, 3L], [5L, 8L, 1L]]
   let result = @mcmf.solve_assignment(cost)
-  inspect(result, content="9")
+  debug_inspect(result, content="9")
 }
 
 ///|
@@ -133,6 +133,6 @@ test "mcmf diamond" {
   mcmf.add_edge(1, 3, 3L, 1L)
   mcmf.add_edge(2, 3, 3L, 1L)
   let (flow, cost) = mcmf.compute(0, 3)
-  inspect(flow, content="6")
-  inspect(cost, content="15")
+  debug_inspect(flow, content="6")
+  debug_inspect(cost, content="15")
 }

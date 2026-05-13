@@ -63,7 +63,7 @@ test "scc kosaraju basic" {
     (3, 2),
   ]
   let comp = @challenge_scc_kosaraju.scc_kosaraju(n, edges)
-  inspect(comp, content="[0, 0, 1, 1]")
+  debug_inspect(comp, content="[0, 0, 1, 1]")
 }
 ```
 
@@ -80,7 +80,7 @@ test "scc kosaraju single" {
   let n = 3
   let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
   let comp = @challenge_scc_kosaraju.scc_kosaraju(n, edges)
-  inspect(comp, content="[0, 0, 0]")
+  debug_inspect(comp, content="[0, 0, 0]")
 }
 ```
 
@@ -94,7 +94,7 @@ test "scc kosaraju dag" {
   let n = 4
   let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
   let comp = @challenge_scc_kosaraju.scc_kosaraju(n, edges)
-  inspect(comp, content="[0, 1, 2, 3]")
+  debug_inspect(comp, content="[0, 1, 2, 3]")
 }
 ```
 

@@ -234,11 +234,11 @@ test "xor basis membership" {
   let _ = b.insert(3L) // 011
 
   // Span is {0, 3, 5, 6}
-  inspect(b.can_represent(0L), content="true")
-  inspect(b.can_represent(3L), content="true")
-  inspect(b.can_represent(5L), content="true")
-  inspect(b.can_represent(6L), content="true")
-  inspect(b.can_represent(1L), content="false")
+  debug_inspect(b.can_represent(0L), content="true")
+  debug_inspect(b.can_represent(3L), content="true")
+  debug_inspect(b.can_represent(5L), content="true")
+  debug_inspect(b.can_represent(6L), content="true")
+  debug_inspect(b.can_represent(1L), content="false")
 }
 ```
 
@@ -250,14 +250,14 @@ test "xor basis membership" {
 ///|
 test "xor basis rank" {
   let b = @xor_basis.XorBasis()
-  inspect(b.rank(), content="0")
-  inspect(b.insert(5L), content="true")
-  inspect(b.rank(), content="1")
-  inspect(b.insert(3L), content="true")
-  inspect(b.rank(), content="2")
+  debug_inspect(b.rank(), content="0")
+  debug_inspect(b.insert(5L), content="true")
+  debug_inspect(b.rank(), content="1")
+  debug_inspect(b.insert(3L), content="true")
+  debug_inspect(b.rank(), content="2")
   // 6 = 5 XOR 3, so it does not increase rank
-  inspect(b.insert(6L), content="false")
-  inspect(b.rank(), content="2")
+  debug_inspect(b.insert(6L), content="false")
+  debug_inspect(b.rank(), content="2")
 }
 ```
 
@@ -272,7 +272,7 @@ test "xor basis max xor" {
   let _ = b.insert(8L)
   let _ = b.insert(5L)
   let _ = b.insert(10L)
-  inspect(b.max_xor(0L), content="15")
+  debug_inspect(b.max_xor(0L), content="15")
 }
 ```
 

@@ -95,7 +95,7 @@ test "segment tree assign basic" {
     arr.length(),
     [(1, 3, 5), (0, 2, 0)],
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_assign.range_sum(
       root,
       0,
@@ -105,7 +105,7 @@ test "segment tree assign basic" {
     ),
     content="10",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_assign.range_sum(
       updated,
       0,
@@ -115,7 +115,7 @@ test "segment tree assign basic" {
     ),
     content="9",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_assign.range_sum(
       updated,
       0,
@@ -155,7 +155,7 @@ test "segment tree assign overlap" {
     3,
     10,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_assign.range_sum(
       t2,
       0,
@@ -165,7 +165,7 @@ test "segment tree assign overlap" {
     ),
     content="18",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_assign.range_sum(
       t2,
       0,
@@ -197,7 +197,7 @@ test "segment tree assign persistence" {
     2,
     5,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_assign.range_sum(
       root,
       0,
@@ -207,7 +207,7 @@ test "segment tree assign persistence" {
     ),
     content="3",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_assign.range_sum(
       t1,
       0,

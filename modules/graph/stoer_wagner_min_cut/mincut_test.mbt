@@ -60,9 +60,9 @@ test "stoer wagner cycle" {
     (3, 0, 1L),
   ]
   let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(4, edges).unwrap()
-  inspect(result.weight, content="2")
+  debug_inspect(result.weight, content="2")
   // Verify the cut is actually valid
-  inspect(cut_weight(4, edges, result.cut), content="2")
+  debug_inspect(cut_weight(4, edges, result.cut), content="2")
 }
 
 ///|
@@ -71,7 +71,7 @@ test "stoer wagner cycle" {
 test "stoer wagner disconnected" {
   let edges : Array[(Int, Int, Int64)] = []
   let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(3, edges).unwrap()
-  inspect(result.weight, content="0")
+  debug_inspect(result.weight, content="0")
 }
 
 ///|
@@ -100,8 +100,8 @@ test "stoer wagner complete k4" {
     (2, 3, 1L),
   ]
   let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(4, edges).unwrap()
-  inspect(result.weight, content="3")
-  inspect(cut_weight(4, edges, result.cut), content="3")
+  debug_inspect(result.weight, content="3")
+  debug_inspect(cut_weight(4, edges, result.cut), content="3")
 }
 
 ///|
@@ -138,7 +138,7 @@ test "stoer wagner weighted" {
     (2, 3, 10L),
   ]
   let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(4, edges).unwrap()
-  inspect(result.weight, content="2")
+  debug_inspect(result.weight, content="2")
 }
 
 ///|
@@ -148,8 +148,8 @@ test "stoer wagner weighted" {
 test "stoer wagner two vertices" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L)]
   let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(2, edges).unwrap()
-  inspect(result.weight, content="5")
-  inspect(result.cut.length(), content="1")
+  debug_inspect(result.weight, content="5")
+  debug_inspect(result.cut.length(), content="1")
 }
 
 ///|
@@ -173,5 +173,5 @@ test "stoer wagner parallel edges" {
   let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(3, edges).unwrap()
 
   // Cut {2} has weight 1, better than cut {0} with weight 5
-  inspect(result.weight, content="1")
+  debug_inspect(result.weight, content="1")
 }

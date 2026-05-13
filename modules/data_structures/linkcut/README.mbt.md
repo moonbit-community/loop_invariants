@@ -287,10 +287,10 @@ let lct = LinkCutTree(5)
 
 lct.link(1, 0)
 lct.link(2, 1)
-inspect(lct.connected(0, 2), content="true")
+debug_inspect(lct.connected(0, 2), content="true")
 
 lct.cut(1, 2)
-inspect(lct.connected(0, 2), content="false")
+debug_inspect(lct.connected(0, 2), content="false")
 ```
 
 ## Path Aggregates

@@ -414,7 +414,7 @@ test "halfplane square" {
     }),
   ]
   let poly = @halfplane_intersection.halfplane_intersection(planes).unwrap()
-  inspect(poly.length(), content="4")
+  debug_inspect(poly.length(), content="4")
 }
 ```
 
@@ -436,7 +436,7 @@ test "halfplane triangle" {
     }),
   ]
   let poly = @halfplane_intersection.halfplane_intersection(planes).unwrap()
-  inspect(poly.length(), content="3")
+  debug_inspect(poly.length(), content="3")
 }
 ```
 

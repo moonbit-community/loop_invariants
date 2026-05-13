@@ -47,6 +47,6 @@ pub fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
 test "edit_distance" {
   let s1 : Array[Char] = ['k', 'i', 't', 't', 'e', 'n']
   let s2 : Array[Char] = ['s', 'i', 't', 't', 'i', 'n', 'g']
-  assert_eq(edit_distance(s1, s2), 3)
-  assert_eq(edit_distance(['a', 'b'], ['a', 'c']), 1)
+  @debug.assert_eq(edit_distance(s1, s2), 3)
+  @debug.assert_eq(edit_distance(['a', 'b'], ['a', 'c']), 1)
 }

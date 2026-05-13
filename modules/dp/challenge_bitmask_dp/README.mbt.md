@@ -88,7 +88,7 @@ test "bitmask dp tsp basic" {
     [4, 5, 6, 0],
   ]
   let best = @challenge_bitmask_dp.tsp_min_cycle(dist, inf)
-  inspect(best, content="13")
+  debug_inspect(best, content="13")
 }
 ```
 
@@ -107,7 +107,7 @@ test "bitmask dp tsp triangle" {
   let inf = 1_000_000
   let dist : Array[Array[Int]] = [[0, 2, 4], [2, 0, 1], [4, 1, 0]]
   let best = @challenge_bitmask_dp.tsp_min_cycle(dist, inf)
-  inspect(best, content="7")
+  debug_inspect(best, content="7")
 }
 ```
 
@@ -134,7 +134,7 @@ test "bitmask dp tsp ring" {
     [2, 9, 9, 2, 0],
   ]
   let best = @challenge_bitmask_dp.tsp_min_cycle(dist, inf)
-  inspect(best, content="10")
+  debug_inspect(best, content="10")
 }
 ```
 
@@ -154,7 +154,7 @@ test "bitmask dp tsp unreachable" {
     [inf, inf, 1, 0],
   ]
   let best = @challenge_bitmask_dp.tsp_min_cycle(dist, inf)
-  inspect(best, content="-1")
+  debug_inspect(best, content="-1")
 }
 ```
 

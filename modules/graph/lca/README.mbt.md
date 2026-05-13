@@ -201,8 +201,8 @@ dist(u, v) = dist_to_root[u] + dist_to_root[v]
 test "lca basic" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5)]
   let lca = @lca.LCA(6, edges)
-  inspect(lca.query(4, 5), content="1")
-  inspect(lca.query(4, 2), content="0")
+  debug_inspect(lca.query(4, 5), content="1")
+  debug_inspect(lca.query(4, 2), content="0")
 }
 ```
 
@@ -213,7 +213,7 @@ test "lca distance via depths" {
   let lca = @lca.LCA(4, edges)
   let l = lca.query(2, 3)
   let dist = lca.depth[2] + lca.depth[3] - 2 * lca.depth[l]
-  inspect(dist, content="2")
+  debug_inspect(dist, content="2")
 }
 ```
 

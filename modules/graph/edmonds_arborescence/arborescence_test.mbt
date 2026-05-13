@@ -33,11 +33,11 @@ test "arborescence basic" {
     { from: 2, to: 3, weight: 1L },
   ]
   let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
-  inspect(res.cost, content="3")
-  inspect(res.parent[0], content="-1") // root
-  inspect(res.parent[1], content="0") // 0→1
-  inspect(res.parent[2], content="1") // 1→2
-  inspect(res.parent[3], content="2") // 2→3
+  debug_inspect(res.cost, content="3")
+  debug_inspect(res.parent[0], content="-1") // root
+  debug_inspect(res.parent[1], content="0") // 0→1
+  debug_inspect(res.parent[2], content="1") // 1→2
+  debug_inspect(res.parent[3], content="2") // 2→3
 }
 
 ///|
@@ -80,7 +80,7 @@ test "arborescence cycle" {
   let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
 
   // Optimal: 0→1→2→3 with cost 3
-  inspect(res.cost, content="3")
+  debug_inspect(res.cost, content="3")
 }
 
 ///|
@@ -99,7 +99,7 @@ test "arborescence unreachable" {
     { from: 2, to: 3, weight: 1L },
   ]
   let res = @edmonds_arborescence.min_arborescence(4, edges, 0)
-  inspect(res is None, content="true")
+  debug_inspect(res is None, content="true")
 }
 
 ///|
@@ -107,8 +107,8 @@ test "arborescence unreachable" {
 test "arborescence single vertex" {
   let edges : Array[@edmonds_arborescence.Edge] = []
   let res = @edmonds_arborescence.min_arborescence(1, edges, 0).unwrap()
-  inspect(res.cost, content="0")
-  inspect(res.parent[0], content="-1")
+  debug_inspect(res.cost, content="0")
+  debug_inspect(res.parent[0], content="-1")
 }
 
 ///|
@@ -119,21 +119,21 @@ test "arborescence invalid" {
   ]
 
   // Invalid root
-  inspect(
+  debug_inspect(
     @edmonds_arborescence.min_arborescence(2, edges, -1) is None,
     content="true",
   )
-  inspect(
+  debug_inspect(
     @edmonds_arborescence.min_arborescence(2, edges, 5) is None,
     content="true",
   )
 
   // Invalid n
-  inspect(
+  debug_inspect(
     @edmonds_arborescence.min_arborescence(0, edges, 0) is None,
     content="true",
   )
-  inspect(
+  debug_inspect(
     @edmonds_arborescence.min_arborescence(-1, edges, 0) is None,
     content="true",
   )
@@ -164,7 +164,7 @@ test "arborescence path choice" {
     { from: 1, to: 2, weight: 3L },
   ]
   let res = @edmonds_arborescence.min_arborescence(3, edges, 0).unwrap()
-  inspect(res.cost, content="3") // 1 + 2 = 3
-  inspect(res.parent[1], content="0")
-  inspect(res.parent[2], content="0") // Direct edge, not via 1
+  debug_inspect(res.cost, content="3") // 1 + 2 = 3
+  debug_inspect(res.parent[1], content="0")
+  debug_inspect(res.parent[2], content="0") // Direct edge, not via 1
 }

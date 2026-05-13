@@ -26,8 +26,8 @@ enum Node {
 ///   let fw = @challenge_persistent_fenwick.make(5)
 ///   let fw = @challenge_persistent_fenwick.add(fw, 1, 3)
 ///   let fw = @challenge_persistent_fenwick.add(fw, 3, 4)
-///   assert_eq(@challenge_persistent_fenwick.prefix_sum(fw, 3), 7)
-///   assert_eq(@challenge_persistent_fenwick.range_sum(fw, 2, 4), 4)
+///   @debug.assert_eq(@challenge_persistent_fenwick.prefix_sum(fw, 3), 7)
+///   @debug.assert_eq(@challenge_persistent_fenwick.range_sum(fw, 2, 4), 4)
 /// }
 /// ```
 pub struct Fenwick {

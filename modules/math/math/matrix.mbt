@@ -164,14 +164,14 @@ fn fibonacci_matrix(n : Int64, modulo : Int64) -> Int64 {
 test "fibonacci_matrix" {
   let modulo = 1000000007L
   // F(0)=0, F(1)=1, F(2)=1, F(3)=2, F(4)=3, F(5)=5, F(6)=8, F(7)=13, F(8)=21
-  assert_eq(fibonacci_matrix(0L, modulo), 0L)
-  assert_eq(fibonacci_matrix(1L, modulo), 1L)
-  assert_eq(fibonacci_matrix(2L, modulo), 1L)
-  assert_eq(fibonacci_matrix(5L, modulo), 5L)
-  assert_eq(fibonacci_matrix(10L, modulo), 55L)
-  assert_eq(fibonacci_matrix(20L, modulo), 6765L)
+  @debug.assert_eq(fibonacci_matrix(0L, modulo), 0L)
+  @debug.assert_eq(fibonacci_matrix(1L, modulo), 1L)
+  @debug.assert_eq(fibonacci_matrix(2L, modulo), 1L)
+  @debug.assert_eq(fibonacci_matrix(5L, modulo), 5L)
+  @debug.assert_eq(fibonacci_matrix(10L, modulo), 55L)
+  @debug.assert_eq(fibonacci_matrix(20L, modulo), 6765L)
   // F(50) = 12586269025
-  assert_eq(fibonacci_matrix(50L, modulo), 12586269025L % modulo)
+  @debug.assert_eq(fibonacci_matrix(50L, modulo), 12586269025L % modulo)
 }
 
 // ============================================================================
@@ -311,14 +311,14 @@ fn tribonacci_matrix(n : Int64, modulo : Int64) -> Int64 {
 test "tribonacci_matrix" {
   let modulo = 1000000007L
   // T(0)=0, T(1)=1, T(2)=1, T(3)=2, T(4)=4, T(5)=7, T(6)=13, T(7)=24
-  assert_eq(tribonacci_matrix(0L, modulo), 0L)
-  assert_eq(tribonacci_matrix(1L, modulo), 1L)
-  assert_eq(tribonacci_matrix(2L, modulo), 1L)
-  assert_eq(tribonacci_matrix(3L, modulo), 2L)
-  assert_eq(tribonacci_matrix(4L, modulo), 4L)
-  assert_eq(tribonacci_matrix(5L, modulo), 7L)
-  assert_eq(tribonacci_matrix(6L, modulo), 13L)
-  assert_eq(tribonacci_matrix(7L, modulo), 24L)
+  @debug.assert_eq(tribonacci_matrix(0L, modulo), 0L)
+  @debug.assert_eq(tribonacci_matrix(1L, modulo), 1L)
+  @debug.assert_eq(tribonacci_matrix(2L, modulo), 1L)
+  @debug.assert_eq(tribonacci_matrix(3L, modulo), 2L)
+  @debug.assert_eq(tribonacci_matrix(4L, modulo), 4L)
+  @debug.assert_eq(tribonacci_matrix(5L, modulo), 7L)
+  @debug.assert_eq(tribonacci_matrix(6L, modulo), 13L)
+  @debug.assert_eq(tribonacci_matrix(7L, modulo), 24L)
 }
 
 // ============================================================================
@@ -475,14 +475,14 @@ test "count_paths" {
   let modulo = 1000000007L
   // Paths of length 1: just the adjacency matrix
   let paths1 = count_paths(adj, 3, 1L, modulo)
-  assert_eq(paths1[0 * 3 + 1], 1L) // 0→1
-  assert_eq(paths1[0 * 3 + 0], 0L) // 0→0 (no self-loop of length 1)
+  @debug.assert_eq(paths1[0 * 3 + 1], 1L) // 0→1
+  @debug.assert_eq(paths1[0 * 3 + 0], 0L) // 0→0 (no self-loop of length 1)
   // Paths of length 2 from 0 to 0: 0→1→0 and 0→2→0
   let paths2 = count_paths(adj, 3, 2L, modulo)
-  assert_eq(paths2[0 * 3 + 0], 2L) // Two paths: 0→1→0 and 0→2→0
+  @debug.assert_eq(paths2[0 * 3 + 0], 2L) // Two paths: 0→1→0 and 0→2→0
   // Paths of length 3 from 0 to 1: 0→1→0→1, 0→1→2→1, 0→2→0→1
   let paths3 = count_paths(adj, 3, 3L, modulo)
-  assert_eq(paths3[0 * 3 + 1], 3L)
+  @debug.assert_eq(paths3[0 * 3 + 1], 3L)
 }
 
 // ============================================================================
@@ -598,11 +598,11 @@ test "matrix_chain_order" {
   // Option 2: A1·(A2·A3) = 30·5·60 + 10·30·60 = 9000 + 18000 = 27000
   // Optimal: Option 1 with cost 4500
   let dims : Array[Int] = [10, 30, 5, 60]
-  assert_eq(matrix_chain_order(dims), 4500)
+  @debug.assert_eq(matrix_chain_order(dims), 4500)
   // Another example: [40, 20, 30, 10, 30]
   // Matrices: 40×20, 20×30, 30×10, 10×30
   let dims2 : Array[Int] = [40, 20, 30, 10, 30]
-  assert_eq(matrix_chain_order(dims2), 26000)
+  @debug.assert_eq(matrix_chain_order(dims2), 26000)
 }
 
 // ============================================================================
@@ -668,10 +668,10 @@ test "strassen_2x2" {
   let (c11, c12, c21, c22) = strassen_2x2(1, 2, 3, 4, 5, 6, 7, 8)
   // Standard: [[1,2],[3,4]] × [[5,6],[7,8]] = [[1·5+2·7, 1·6+2·8], [3·5+4·7, 3·6+4·8]]
   //         = [[5+14, 6+16], [15+28, 18+32]] = [[19, 22], [43, 50]]
-  assert_eq(c11, 19)
-  assert_eq(c12, 22)
-  assert_eq(c21, 43)
-  assert_eq(c22, 50)
+  @debug.assert_eq(c11, 19)
+  @debug.assert_eq(c12, 22)
+  @debug.assert_eq(c21, 43)
+  @debug.assert_eq(c22, 50)
 }
 
 // ============================================================================
@@ -756,12 +756,15 @@ fn fibonacci_fast_doubling(n : Int64, modulo : Int64) -> (Int64, Int64) {
 ///|
 test "fibonacci_fast_doubling" {
   let modulo = 1000000007L
-  assert_eq(fibonacci_fast_doubling(0L, modulo), (0L, 1L))
-  assert_eq(fibonacci_fast_doubling(1L, modulo).0, 1L)
-  assert_eq(fibonacci_fast_doubling(10L, modulo).0, 55L)
-  assert_eq(fibonacci_fast_doubling(50L, modulo).0, 12586269025L % modulo)
+  @debug.assert_eq(fibonacci_fast_doubling(0L, modulo), (0L, 1L))
+  @debug.assert_eq(fibonacci_fast_doubling(1L, modulo).0, 1L)
+  @debug.assert_eq(fibonacci_fast_doubling(10L, modulo).0, 55L)
+  @debug.assert_eq(
+    fibonacci_fast_doubling(50L, modulo).0,
+    12586269025L % modulo,
+  )
   // Verify consistency with matrix method
-  assert_eq(
+  @debug.assert_eq(
     fibonacci_fast_doubling(100L, modulo).0,
     fibonacci_matrix(100L, modulo),
   )
@@ -808,11 +811,11 @@ fn lucas_matrix(n : Int64, modulo : Int64) -> Int64 {
 test "lucas_matrix" {
   let modulo = 1000000007L
   // L(0)=2, L(1)=1, L(2)=3, L(3)=4, L(4)=7, L(5)=11, L(6)=18
-  assert_eq(lucas_matrix(0L, modulo), 2L)
-  assert_eq(lucas_matrix(1L, modulo), 1L)
-  assert_eq(lucas_matrix(2L, modulo), 3L)
-  assert_eq(lucas_matrix(3L, modulo), 4L)
-  assert_eq(lucas_matrix(4L, modulo), 7L)
-  assert_eq(lucas_matrix(5L, modulo), 11L)
-  assert_eq(lucas_matrix(6L, modulo), 18L)
+  @debug.assert_eq(lucas_matrix(0L, modulo), 2L)
+  @debug.assert_eq(lucas_matrix(1L, modulo), 1L)
+  @debug.assert_eq(lucas_matrix(2L, modulo), 3L)
+  @debug.assert_eq(lucas_matrix(3L, modulo), 4L)
+  @debug.assert_eq(lucas_matrix(4L, modulo), 7L)
+  @debug.assert_eq(lucas_matrix(5L, modulo), 11L)
+  @debug.assert_eq(lucas_matrix(6L, modulo), 18L)
 }

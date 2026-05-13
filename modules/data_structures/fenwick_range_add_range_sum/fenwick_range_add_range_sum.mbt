@@ -66,7 +66,7 @@ pub struct FenwickRangeAddRangeSum {
 /// ```mbt check
 /// test {
 ///   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum(5)
-///   inspect(st.range_sum(0, 4), content="0")
+///   debug_inspect(st.range_sum(0, 4), content="0")
 /// }
 /// ```
 pub fn FenwickRangeAddRangeSum::FenwickRangeAddRangeSum(
@@ -96,8 +96,8 @@ pub fn FenwickRangeAddRangeSum::FenwickRangeAddRangeSum(
 ///   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum::from_array([
 ///     1L, 2L, 3L, 4L, 5L,
 ///   ])
-///   inspect(st.range_sum(0, 4), content="15")
-///   inspect(st.range_sum(1, 3), content="9")
+///   debug_inspect(st.range_sum(0, 4), content="15")
+///   debug_inspect(st.range_sum(1, 3), content="9")
 /// }
 /// ```
 pub fn FenwickRangeAddRangeSum::from_array(
@@ -198,10 +198,10 @@ fn sum_bit(bit : Array[Int64], idx : Int) -> Int64 {
 /// test {
 ///   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum(5)
 ///   st.range_add(1, 3, 10L)
-///   inspect(st.range_sum(0, 0), content="0")
-///   inspect(st.range_sum(1, 1), content="10")
-///   inspect(st.range_sum(3, 3), content="10")
-///   inspect(st.range_sum(4, 4), content="0")
+///   debug_inspect(st.range_sum(0, 0), content="0")
+///   debug_inspect(st.range_sum(1, 1), content="10")
+///   debug_inspect(st.range_sum(3, 3), content="10")
+///   debug_inspect(st.range_sum(4, 4), content="0")
 /// }
 /// ```
 pub fn FenwickRangeAddRangeSum::range_add(
@@ -273,8 +273,8 @@ fn FenwickRangeAddRangeSum::prefix_sum(
 ///     1L, 2L, 3L, 4L, 5L,
 ///   ])
 ///   st.range_add(1, 3, 2L)
-///   inspect(st.range_sum(0, 4), content="21")
-///   inspect(st.range_sum(1, 3), content="15")
+///   debug_inspect(st.range_sum(0, 4), content="21")
+///   debug_inspect(st.range_sum(1, 3), content="15")
 /// }
 /// ```
 pub fn FenwickRangeAddRangeSum::range_sum(

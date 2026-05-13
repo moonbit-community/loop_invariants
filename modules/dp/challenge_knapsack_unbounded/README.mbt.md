@@ -61,7 +61,7 @@ test "knapsack unbounded basic" {
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 7,
   )
-  inspect(best, content="13") // 3 + 2 + 2 (5 + 4 + 4)
+  debug_inspect(best, content="13") // 3 + 2 + 2 (5 + 4 + 4)
 }
 ```
 
@@ -75,7 +75,7 @@ test "knapsack unbounded single item" {
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 10,
   )
-  inspect(best, content="12") // 3 + 3 + 3
+  debug_inspect(best, content="12") // 3 + 3 + 3
 }
 ```
 
@@ -89,7 +89,7 @@ test "knapsack unbounded ratio" {
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 20,
   )
-  inspect(best, content="36") // 5 * 4
+  debug_inspect(best, content="36") // 5 * 4
 }
 ```
 
@@ -103,7 +103,7 @@ test "knapsack unbounded too small" {
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 4,
   )
-  inspect(best, content="0")
+  debug_inspect(best, content="0")
 }
 ```
 
@@ -117,7 +117,7 @@ test "knapsack unbounded mixed" {
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 14,
   )
-  inspect(best, content="26") // 7 + 7
+  debug_inspect(best, content="26") // 7 + 7
 }
 ```
 

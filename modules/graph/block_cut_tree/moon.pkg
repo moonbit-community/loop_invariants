@@ -1,3 +1,4 @@
 import {
   "bobzhang/loop_invariants_graph/biconnected_components",
+  "moonbitlang/core/debug",
 }

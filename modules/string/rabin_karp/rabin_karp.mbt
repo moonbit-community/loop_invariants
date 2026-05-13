@@ -437,29 +437,29 @@ fn HashArray::compare(
 ///|
 test "rabin_karp basic" {
   let matches = rabin_karp_search("abababab", "aba")
-  inspect(matches.length(), content="3")
-  inspect(matches[0], content="0")
-  inspect(matches[1], content="2")
-  inspect(matches[2], content="4")
+  debug_inspect(matches.length(), content="3")
+  debug_inspect(matches[0], content="0")
+  debug_inspect(matches[1], content="2")
+  debug_inspect(matches[2], content="4")
 }
 
 ///|
 test "rabin_karp no match" {
   let matches = rabin_karp_search("abcdef", "xyz")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "rabin_karp full match" {
   let matches = rabin_karp_search("abc", "abc")
-  inspect(matches.length(), content="1")
-  inspect(matches[0], content="0")
+  debug_inspect(matches.length(), content="1")
+  debug_inspect(matches[0], content="0")
 }
 
 ///|
 test "rabin_karp count" {
-  inspect(rabin_karp_count("aaaa", "aa"), content="3")
-  inspect(rabin_karp_count("abcabc", "abc"), content="2")
+  debug_inspect(rabin_karp_count("aaaa", "aa"), content="3")
+  debug_inspect(rabin_karp_count("abcabc", "abc"), content="2")
 }
 
 ///|
@@ -468,16 +468,16 @@ test "rabin_karp multi" {
   let patterns : Array[String] = ["abc", "cab", "bc"]
   let matches = rabin_karp_multi(text, patterns)
   // Should find multiple matches
-  inspect(matches.length() >= 5, content="true")
+  debug_inspect(matches.length() >= 5, content="true")
 }
 
 ///|
 test "hash_array basic" {
   let ha = HashArray("abcabc")
   // Hash of "abc" at positions 0-3 and 3-6 should be same
-  inspect(ha.compare(0, 3, 3, 6), content="true")
+  debug_inspect(ha.compare(0, 3, 3, 6), content="true")
   // Different substrings should differ
-  inspect(ha.compare(0, 2, 1, 3), content="false")
+  debug_inspect(ha.compare(0, 2, 1, 3), content="false")
 }
 
 ///|
@@ -485,24 +485,24 @@ test "hash_array get_hash" {
   let ha = HashArray("abcd")
   let h1 = ha.get_hash(0, 2) // "ab"
   let h2 = ha.get_hash(2, 4) // "cd"
-  inspect(h1 != h2, content="true")
+  debug_inspect(h1 != h2, content="true")
 }
 
 ///|
 test "rabin_karp empty pattern" {
   let matches = rabin_karp_search("abc", "")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "rabin_karp pattern longer" {
   let matches = rabin_karp_search("ab", "abcd")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "pow_mod" {
-  inspect(pow_mod(2L, 10, 1000L), content="24") // 1024 % 1000
-  inspect(pow_mod(3L, 0, 100L), content="1")
-  inspect(pow_mod(5L, 3, 1000L), content="125")
+  debug_inspect(pow_mod(2L, 10, 1000L), content="24") // 1024 % 1000
+  debug_inspect(pow_mod(3L, 0, 100L), content="1")
+  debug_inspect(pow_mod(5L, 3, 1000L), content="125")
 }

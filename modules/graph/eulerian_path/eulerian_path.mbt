@@ -395,14 +395,14 @@ fn valid_path_undirected(
 test "eulerian directed path" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (0, 2)]
   let path = eulerian_path_directed(3, edges).unwrap()
-  inspect(valid_path_directed(edges, path), content="true")
+  debug_inspect(valid_path_directed(edges, path), content="true")
 }
 
 ///|
 test "eulerian directed chain" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2)]
   let path = eulerian_path_directed(3, edges).unwrap()
-  inspect(path, content="[0, 1, 2]")
+  debug_inspect(path, content="[0, 1, 2]")
 }
 
 ///|
@@ -415,14 +415,14 @@ test "eulerian directed none" {
 test "eulerian undirected circuit" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
   let path = eulerian_path_undirected(3, edges).unwrap()
-  inspect(valid_path_undirected(edges, path), content="true")
+  debug_inspect(valid_path_undirected(edges, path), content="true")
 }
 
 ///|
 test "eulerian undirected path" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2)]
   let path = eulerian_path_undirected(3, edges).unwrap()
-  inspect(path, content="[0, 1, 2]")
+  debug_inspect(path, content="[0, 1, 2]")
 }
 
 ///|

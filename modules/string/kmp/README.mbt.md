@@ -185,22 +185,22 @@ test "kmp complete example" {
   let pattern = "aba"
 
   // All occurrences
-  inspect(@kmp.kmp_search(text, pattern), content="[0, 5, 7]")
+  debug_inspect(@kmp.kmp_search(text, pattern), content="[0, 5, 7]")
 
   // First occurrence
-  inspect(@kmp.kmp_find_first(text, "cab"), content="4")
-  inspect(@kmp.kmp_find_first(text, "xyz"), content="-1")
+  debug_inspect(@kmp.kmp_find_first(text, "cab"), content="4")
+  debug_inspect(@kmp.kmp_find_first(text, "xyz"), content="-1")
 
   // Count occurrences
-  inspect(@kmp.kmp_count(text, pattern), content="3")
+  debug_inspect(@kmp.kmp_count(text, pattern), content="3")
 
   // Failure function
   let fail = @kmp.compute_failure("ABAB")
-  inspect(fail, content="[0, 0, 1, 2]")
+  debug_inspect(fail, content="[0, 0, 1, 2]")
 
   // Prefix function alias
   let pi = @kmp.prefix_function("ababa")
-  inspect(pi, content="[0, 0, 1, 2, 3]")
+  debug_inspect(pi, content="[0, 0, 1, 2, 3]")
 }
 ```
 
@@ -242,11 +242,11 @@ Z:       9  0  0  2  0  2  0  2  0
 ///|
 test "z-function example" {
   let z = @kmp.compute_z_function("AABXAAB")
-  inspect(z[0], content="7")
-  inspect(z[1], content="1")
-  inspect(z[4], content="3")
+  debug_inspect(z[0], content="7")
+  debug_inspect(z[1], content="1")
+  debug_inspect(z[4], content="3")
   let matches = @kmp.z_search("ABABDABACDABABCABAB", "ABAB")
-  inspect(matches.length(), content="3")
+  debug_inspect(matches.length(), content="3")
 }
 ```
 

@@ -76,7 +76,7 @@ Result: `[2, 2, 3, 1]`
 test "sliding window min basic" {
   let arr : Array[Int] = [4, 2, 12, 3, 5, 1]
   let mins = @challenge_sliding_window_min.sliding_window_min(arr, 3)
-  inspect(mins, content="[2, 2, 3, 1]")
+  debug_inspect(mins, content="[2, 2, 3, 1]")
 }
 ```
 
@@ -89,7 +89,7 @@ test "sliding window min basic" {
 test "sliding window min classic" {
   let arr : Array[Int] = [1, 3, -1, -3, 5, 3, 6, 7]
   let mins = @challenge_sliding_window_min.sliding_window_min(arr, 3)
-  inspect(mins, content="[-1, -3, -3, -3, 3, 3]")
+  debug_inspect(mins, content="[-1, -3, -3, -3, 3, 3]")
 }
 ```
 
@@ -102,7 +102,7 @@ test "sliding window min classic" {
 test "sliding window min k1" {
   let arr : Array[Int] = [5, 4, 6]
   let mins = @challenge_sliding_window_min.sliding_window_min(arr, 1)
-  inspect(mins, content="[5, 4, 6]")
+  debug_inspect(mins, content="[5, 4, 6]")
 }
 ```
 

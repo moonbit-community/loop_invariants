@@ -680,8 +680,8 @@ test "rolling hash basic" {
   // Same substrings should have same hash
   let h1 = rh.get_hash(0, 2) // "abc"
   let h2 = rh.get_hash(3, 5) // "abc"
-  inspect(h1 is Some(_), content="true")
-  inspect(h1 == h2, content="true")
+  debug_inspect(h1 is Some(_), content="true")
+  debug_inspect(h1 == h2, content="true")
 }
 
 ///|
@@ -689,15 +689,15 @@ test "rolling hash different" {
   let rh = RollingHash("abcdef")
   let h1 = rh.get_hash(0, 2) // "abc"
   let h2 = rh.get_hash(3, 5) // "def"
-  inspect(h1 != h2, content="true")
+  debug_inspect(h1 != h2, content="true")
 }
 
 ///|
 test "rolling hash substrings equal" {
   let rh = RollingHash("abcabcabc")
-  inspect(rh.substrings_equal(0, 2, 3, 5), content="true") // "abc" == "abc"
-  inspect(rh.substrings_equal(0, 2, 6, 8), content="true") // "abc" == "abc"
-  inspect(rh.substrings_equal(0, 2, 1, 3), content="false") // "abc" != "bca"
+  debug_inspect(rh.substrings_equal(0, 2, 3, 5), content="true") // "abc" == "abc"
+  debug_inspect(rh.substrings_equal(0, 2, 6, 8), content="true") // "abc" == "abc"
+  debug_inspect(rh.substrings_equal(0, 2, 1, 3), content="false") // "abc" != "bca"
 }
 
 ///|
@@ -713,104 +713,104 @@ test "double rolling hash" {
   let drh = DoubleRollingHash("abcabc")
   let h1 = drh.get_hash(0, 2)
   let h2 = drh.get_hash(3, 5)
-  inspect(h1 == h2, content="true")
-  inspect(drh.substrings_equal(0, 2, 3, 5), content="true")
+  debug_inspect(h1 == h2, content="true")
+  debug_inspect(drh.substrings_equal(0, 2, 3, 5), content="true")
 }
 
 ///|
 test "rabin karp find pattern" {
   let matches = find_pattern_rabin_karp("aabcaabxaab", "aab")
-  inspect(matches.length(), content="3")
-  inspect(matches[0], content="0")
-  inspect(matches[1], content="4")
-  inspect(matches[2], content="8")
+  debug_inspect(matches.length(), content="3")
+  debug_inspect(matches[0], content="0")
+  debug_inspect(matches[1], content="4")
+  debug_inspect(matches[2], content="8")
 }
 
 ///|
 test "rabin karp no match" {
   let matches = find_pattern_rabin_karp("abcdef", "xyz")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "rabin karp full match" {
   let matches = find_pattern_rabin_karp("abc", "abc")
-  inspect(matches.length(), content="1")
-  inspect(matches[0], content="0")
+  debug_inspect(matches.length(), content="1")
+  debug_inspect(matches[0], content="0")
 }
 
 ///|
 test "rabin karp overlapping" {
   let matches = find_pattern_rabin_karp("aaaa", "aa")
-  inspect(matches.length(), content="3")
-  inspect(matches[0], content="0")
-  inspect(matches[1], content="1")
-  inspect(matches[2], content="2")
+  debug_inspect(matches.length(), content="3")
+  debug_inspect(matches[0], content="0")
+  debug_inspect(matches[1], content="1")
+  debug_inspect(matches[2], content="2")
 }
 
 ///|
 test "count pattern" {
-  inspect(count_pattern_rabin_karp("mississippi", "issi"), content="2")
-  inspect(count_pattern_rabin_karp("abcabc", "abc"), content="2")
-  inspect(count_pattern_rabin_karp("hello", "xyz"), content="0")
+  debug_inspect(count_pattern_rabin_karp("mississippi", "issi"), content="2")
+  debug_inspect(count_pattern_rabin_karp("abcabc", "abc"), content="2")
+  debug_inspect(count_pattern_rabin_karp("hello", "xyz"), content="0")
 }
 
 ///|
 test "longest common substring" {
-  inspect(longest_common_substring("abcdef", "bcfghi"), content="2") // "bc"
-  inspect(longest_common_substring("abcabc", "abc"), content="3") // "abc"
-  inspect(longest_common_substring("xyz", "abc"), content="0") // none
+  debug_inspect(longest_common_substring("abcdef", "bcfghi"), content="2") // "bc"
+  debug_inspect(longest_common_substring("abcabc", "abc"), content="3") // "abc"
+  debug_inspect(longest_common_substring("xyz", "abc"), content="0") // none
 }
 
 ///|
 test "longest common substring same" {
-  inspect(longest_common_substring("abc", "abc"), content="3")
+  debug_inspect(longest_common_substring("abc", "abc"), content="3")
 }
 
 ///|
 test "count distinct substrings" {
   // "abc" has: "a", "b", "c", "ab", "bc", "abc" = 6 distinct
-  inspect(count_distinct_substrings("abc"), content="6")
+  debug_inspect(count_distinct_substrings("abc"), content="6")
 
   // "aaa" has: "a", "aa", "aaa" = 3 distinct
-  inspect(count_distinct_substrings("aaa"), content="3")
+  debug_inspect(count_distinct_substrings("aaa"), content="3")
 }
 
 ///|
 test "count distinct substrings abab" {
   // "abab": "a"(x2), "b"(x2), "ab"(x2), "ba", "aba", "bab", "abab"
   // Distinct: "a", "b", "ab", "ba", "aba", "bab", "abab" = 7
-  inspect(count_distinct_substrings("abab"), content="7")
+  debug_inspect(count_distinct_substrings("abab"), content="7")
 }
 
 ///|
 test "rolling hash empty" {
   let rh = RollingHash("")
-  inspect(rh.length(), content="0")
+  debug_inspect(rh.length(), content="0")
   debug_inspect(rh.get_hash(0, 0), content="None")
 }
 
 ///|
 test "rolling hash single" {
   let rh = RollingHash("a")
-  inspect(rh.length(), content="1")
-  inspect(rh.get_hash(0, 0) is Some(_), content="true")
+  debug_inspect(rh.length(), content="1")
+  debug_inspect(rh.get_hash(0, 0) is Some(_), content="true")
 }
 
 ///|
 test "double hash length" {
   let drh = DoubleRollingHash("hello")
-  inspect(drh.length(), content="5")
+  debug_inspect(drh.length(), content="5")
 }
 
 ///|
 test "pattern empty" {
   let matches = find_pattern_rabin_karp("abc", "")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "pattern longer than text" {
   let matches = find_pattern_rabin_karp("ab", "abcd")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }

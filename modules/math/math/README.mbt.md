@@ -39,9 +39,9 @@ with bit shifts and subtraction. It is often faster on low-level hardware.
 ```mbt nocheck
 ///|
 test "binary_gcd examples" {
-  inspect(binary_gcd(48, 18), content="6")
-  inspect(binary_gcd(100, 35), content="5")
-  inspect(binary_gcd(17, 13), content="1")
+  debug_inspect(binary_gcd(48, 18), content="6")
+  debug_inspect(binary_gcd(100, 35), content="5")
+  debug_inspect(binary_gcd(17, 13), content="1")
 }
 ```
 
@@ -65,8 +65,8 @@ Check: -48 + 54 = 6
 ///|
 test "extended_gcd_64 example" {
   let (g, x, y) = extended_gcd_64(48L, 18L)
-  inspect(g, content="6")
-  inspect(48L * x + 18L * y, content="6")
+  debug_inspect(g, content="6")
+  debug_inspect(48L * x + 18L * y, content="6")
 }
 ```
 
@@ -83,8 +83,8 @@ It exists **only if** `gcd(a, m) = 1`.
 ```mbt nocheck
 ///|
 test "mod_inverse examples" {
-  inspect(mod_inverse(3L, 10L), content="Some(7)") // 3 * 7 = 21 = 1 mod 10
-  inspect(mod_inverse(2L, 4L), content="None")
+  debug_inspect(mod_inverse(3L, 10L), content="Some(7)") // 3 * 7 = 21 = 1 mod 10
+  debug_inspect(mod_inverse(2L, 4L), content="None")
 }
 ```
 
@@ -101,7 +101,7 @@ Example: 3^10 mod 7
 ```mbt nocheck
 ///|
 test "mod_exp example" {
-  inspect(mod_exp(3L, 10L, 7L), content="4")
+  debug_inspect(mod_exp(3L, 10L, 7L), content="4")
 }
 ```
 
@@ -121,9 +121,9 @@ Test bases show it is composite
 ```mbt nocheck
 ///|
 test "is_prime_32 examples" {
-  inspect(is_prime_32(2), content="true")
-  inspect(is_prime_32(17), content="true")
-  inspect(is_prime_32(561), content="false")
+  debug_inspect(is_prime_32(2), content="true")
+  debug_inspect(is_prime_32(17), content="true")
+  debug_inspect(is_prime_32(561), content="false")
 }
 ```
 
@@ -154,8 +154,8 @@ mod 5: 0 1 2 3 4 0 1 2 3 4 0 1 2 3 4
 test "chinese_remainder example" {
   let congruences : Array[(Int64, Int64)] = [(2L, 3L), (3L, 5L)]
   let (x, m) = chinese_remainder(congruences[:])
-  inspect(m, content="15")
-  inspect(x, content="8")
+  debug_inspect(m, content="15")
+  debug_inspect(x, content="8")
 }
 ```
 
@@ -177,9 +177,9 @@ indices in O(1).
 ```mbt nocheck
 ///|
 test "ctz examples" {
-  inspect(count_trailing_zeros(1), content="0")
-  inspect(count_trailing_zeros(8), content="3")
-  inspect(count_trailing_zeros(40), content="3")
+  debug_inspect(count_trailing_zeros(1), content="0")
+  debug_inspect(count_trailing_zeros(8), content="3")
+  debug_inspect(count_trailing_zeros(40), content="3")
 }
 ```
 
@@ -197,10 +197,10 @@ ilog2(8) = 3
 ```mbt nocheck
 ///|
 test "ilog2 examples" {
-  inspect(ilog2(1), content="0")
-  inspect(ilog2(3), content="1")
-  inspect(ilog2(8), content="3")
-  inspect(ilog2(1024), content="10")
+  debug_inspect(ilog2(1), content="0")
+  debug_inspect(ilog2(3), content="1")
+  debug_inspect(ilog2(8), content="3")
+  debug_inspect(ilog2(1024), content="10")
 }
 ```
 
@@ -217,9 +217,9 @@ Examples:
 ```mbt nocheck
 ///|
 test "is_perfect_power examples" {
-  inspect(is_perfect_power(8), content="true")
-  inspect(is_perfect_power(27), content="true")
-  inspect(is_perfect_power(10), content="false")
+  debug_inspect(is_perfect_power(8), content="true")
+  debug_inspect(is_perfect_power(27), content="true")
+  debug_inspect(is_perfect_power(10), content="false")
 }
 ```
 
@@ -240,8 +240,8 @@ So a single matrix power gives `F(n)` in O(log n).
 ///|
 test "fibonacci_matrix examples" {
   let m = 1000000007L
-  inspect(fibonacci_matrix(10L, m), content="55")
-  inspect(fibonacci_matrix(20L, m), content="6765")
+  debug_inspect(fibonacci_matrix(10L, m), content="55")
+  debug_inspect(fibonacci_matrix(20L, m), content="6765")
 }
 ```
 
@@ -259,8 +259,8 @@ Tribonacci: `T(n) = T(n-1) + T(n-2) + T(n-3)` with `T(0)=0, T(1)=1, T(2)=1`.
 ///|
 test "tribonacci_matrix examples" {
   let m = 1000000007L
-  inspect(tribonacci_matrix(5L, m), content="7")
-  inspect(tribonacci_matrix(7L, m), content="24")
+  debug_inspect(tribonacci_matrix(5L, m), content="7")
+  debug_inspect(tribonacci_matrix(7L, m), content="24")
 }
 ```
 
@@ -285,7 +285,7 @@ Example graph (triangle):
 test "count_paths triangle" {
   let adj : Array[Int64] = [0L, 1L, 1L, 1L, 0L, 1L, 1L, 1L, 0L]
   let paths2 = count_paths(adj, 3, 2L, 1000000007L)
-  inspect(paths2[0 * 3 + 0], content="2") // 0->1->0 and 0->2->0
+  debug_inspect(paths2[0 * 3 + 0], content="2") // 0->1->0 and 0->2->0
 }
 ```
 
@@ -304,7 +304,7 @@ A*(B*C) costs 30*5*60 + 10*30*60 = 27000
 ///|
 test "matrix_chain_order examples" {
   let dims : Array[Int] = [10, 30, 5, 60]
-  inspect(matrix_chain_order(dims[:]), content="4500")
+  debug_inspect(matrix_chain_order(dims[:]), content="4500")
 }
 ```
 
@@ -317,7 +317,7 @@ Strassen showed that 2x2 multiplication can be done with **7 multiplications**
 ///|
 test "strassen_2x2 example" {
   let (c11, c12, c21, c22) = strassen_2x2(1, 2, 3, 4, 5, 6, 7, 8)
-  inspect([c11, c12, c21, c22], content="[19, 22, 43, 50]")
+  debug_inspect([c11, c12, c21, c22], content="[19, 22, 43, 50]")
 }
 ```
 
@@ -334,8 +334,8 @@ F(2k+1) = F(k)^2 + F(k+1)^2
 ///|
 test "fibonacci_fast_doubling examples" {
   let m = 1000000007L
-  inspect(fibonacci_fast_doubling(10L, m).0, content="55")
-  inspect(fibonacci_fast_doubling(50L, m).0, content="586268941")
+  debug_inspect(fibonacci_fast_doubling(10L, m).0, content="55")
+  debug_inspect(fibonacci_fast_doubling(50L, m).0, content="586268941")
 }
 ```
 
@@ -351,8 +351,8 @@ L(0) = 2, L(1) = 1
 ///|
 test "lucas_matrix examples" {
   let m = 1000000007L
-  inspect(lucas_matrix(5L, m), content="11")
-  inspect(lucas_matrix(6L, m), content="18")
+  debug_inspect(lucas_matrix(5L, m), content="11")
+  debug_inspect(lucas_matrix(6L, m), content="18")
 }
 ```
 
@@ -390,7 +390,7 @@ test "polynomial_multiply_fft example" {
   let a = [1, 2] // 1 + 2x
   let b = [3, 4] // 3 + 4x
   let c = polynomial_multiply_fft(a, b)
-  inspect(c, content="[3, 10, 8]") // 3 + 10x + 8x^2
+  debug_inspect(c, content="[3, 10, 8]") // 3 + 10x + 8x^2
 }
 ```
 
@@ -404,7 +404,7 @@ test "polynomial_multiply_ntt example" {
   let a : Array[Int64] = [1L, 1L, 1L]
   let b : Array[Int64] = [1L, 1L]
   let c = polynomial_multiply_ntt(a, b)
-  inspect(c, content="[1, 2, 2, 1]")
+  debug_inspect(c, content="[1, 2, 2, 1]")
 }
 ```
 
@@ -420,7 +420,7 @@ Coin change via polynomial multiplication:
 test "count_change_polynomial example" {
   let coins = [1, 2, 5]
   let ways = count_change_polynomial(coins, 10)
-  inspect(ways[10], content="10")
+  debug_inspect(ways[10], content="10")
 }
 ```
 
@@ -440,7 +440,7 @@ test "pattern_match_fft example" {
   let text = [1, 2, 3, 2, 1]
   let pattern = [2, 3]
   let result = pattern_match_fft(text, pattern)
-  inspect(result[1], content="13")
+  debug_inspect(result[1], content="13")
 }
 ```
 

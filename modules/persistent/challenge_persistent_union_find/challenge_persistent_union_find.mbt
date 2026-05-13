@@ -33,9 +33,9 @@ struct PArray {
 ///   let d = @challenge_persistent_union_find.make(4)
 ///   let d1 = @challenge_persistent_union_find.union(d, 0, 1)
 ///   let d2 = @challenge_persistent_union_find.union(d1, 2, 3)
-///   assert_eq(@challenge_persistent_union_find.same(d2, 0, 1), true)
-///   assert_eq(@challenge_persistent_union_find.same(d2, 0, 2), false)
-///   assert_eq(@challenge_persistent_union_find.same(d, 0, 1), false)
+///   @debug.assert_eq(@challenge_persistent_union_find.same(d2, 0, 1), true)
+///   @debug.assert_eq(@challenge_persistent_union_find.same(d2, 0, 2), false)
+///   @debug.assert_eq(@challenge_persistent_union_find.same(d, 0, 1), false)
 /// }
 /// ```
 pub struct DSU {

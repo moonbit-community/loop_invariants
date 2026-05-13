@@ -145,11 +145,11 @@ Result: (start=1, length=3) = "bcb"
 ///|
 test "longest palindrome range" {
   let s1 : Array[Char] = ['a', 'b', 'a', 'c', 'a', 'b', 'a']
-  inspect(@string.longest_palindrome_range(s1), content="(0, 7)")
+  debug_inspect(@string.longest_palindrome_range(s1), content="(0, 7)")
   let s2 : Array[Char] = ['a', 'b', 'b', 'a']
-  inspect(@string.longest_palindrome_range(s2), content="(0, 4)")
+  debug_inspect(@string.longest_palindrome_range(s2), content="(0, 4)")
   let s3 : Array[Char] = ['a', 'b', 'c', 'b', 'd']
-  inspect(@string.longest_palindrome_range(s3), content="(1, 3)")
+  debug_inspect(@string.longest_palindrome_range(s3), content="(1, 3)")
 }
 ```
 
@@ -242,10 +242,10 @@ Result: "AC"
 test "lcs length" {
   let s1 : Array[Char] = ['A', 'B', 'C', 'D', 'E', 'F']
   let s2 : Array[Char] = ['A', 'C', 'B', 'C', 'F']
-  inspect(@string.lcs_length(s1, s2), content="4")
+  debug_inspect(@string.lcs_length(s1, s2), content="4")
   let s3 : Array[Char] = ['A', 'B', 'C']
   let s4 : Array[Char] = ['D', 'E', 'F']
-  inspect(@string.lcs_length(s3, s4), content="0")
+  debug_inspect(@string.lcs_length(s3, s4), content="0")
 }
 ```
 

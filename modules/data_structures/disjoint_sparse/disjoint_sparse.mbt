@@ -502,7 +502,7 @@ test "disjoint sparse sum edge cases" {
   let arr : Array[Int64] = [42L]
   let dst = DisjointSparseSum(arr)
   debug_inspect(dst.query(0, 0), content="Some(42)")
-  inspect(dst.length(), content="1")
+  debug_inspect(dst.length(), content="1")
 }
 
 ///|
@@ -510,7 +510,7 @@ test "disjoint sparse sum empty" {
   let arr : Array[Int64] = []
   let dst = DisjointSparseSum(arr)
   debug_inspect(dst.query(0, 0), content="None")
-  inspect(dst.length(), content="0")
+  debug_inspect(dst.length(), content="0")
 }
 
 ///|
@@ -572,7 +572,7 @@ test "disjoint sparse prod modular" {
 
   // Product modulo should be handled correctly
   let result = dst.query(0, 2)
-  inspect(result is Some(_), content="true")
+  debug_inspect(result is Some(_), content="true")
 }
 
 ///|
@@ -598,22 +598,22 @@ test "disjoint sparse sum non power of 2" {
 test "disjoint sparse xor length" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let dst = DisjointSparseXor(arr)
-  inspect(dst.length(), content="5")
+  debug_inspect(dst.length(), content="5")
 }
 
 ///|
 test "disjoint sparse prod length" {
   let arr : Array[Int64] = [1L, 2L, 3L]
   let dst = DisjointSparseProd(arr, 1000000007L)
-  inspect(dst.length(), content="3")
+  debug_inspect(dst.length(), content="3")
 }
 
 ///|
 test "highest bit" {
-  inspect(highest_bit(1), content="0")
-  inspect(highest_bit(2), content="1")
-  inspect(highest_bit(3), content="1")
-  inspect(highest_bit(4), content="2")
-  inspect(highest_bit(7), content="2")
-  inspect(highest_bit(8), content="3")
+  debug_inspect(highest_bit(1), content="0")
+  debug_inspect(highest_bit(2), content="1")
+  debug_inspect(highest_bit(3), content="1")
+  debug_inspect(highest_bit(4), content="2")
+  debug_inspect(highest_bit(7), content="2")
+  debug_inspect(highest_bit(8), content="3")
 }

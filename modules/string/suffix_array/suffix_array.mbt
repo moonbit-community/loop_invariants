@@ -461,92 +461,102 @@ pub fn SuffixArray::get_suffix(self : SuffixArray, i : Int) -> String {
 ///|
 test "suffix array construction" {
   let sa = SuffixArray("banana")
-  inspect(sa.sa[0], content="5")
-  inspect(sa.sa[1], content="3")
-  inspect(sa.sa[2], content="1")
-  inspect(sa.sa[3], content="0")
-  inspect(sa.sa[4], content="4")
-  inspect(sa.sa[5], content="2")
+  debug_inspect(sa.sa[0], content="5")
+  debug_inspect(sa.sa[1], content="3")
+  debug_inspect(sa.sa[2], content="1")
+  debug_inspect(sa.sa[3], content="0")
+  debug_inspect(sa.sa[4], content="4")
+  debug_inspect(sa.sa[5], content="2")
 }
 
 ///|
 test "suffix array lcp" {
   let sa = SuffixArray("banana")
-  inspect(sa.lcp[1], content="1")
-  inspect(sa.lcp[2], content="3")
-  inspect(sa.lcp[3], content="0")
-  inspect(sa.lcp[4], content="0")
-  inspect(sa.lcp[5], content="2")
+  debug_inspect(sa.lcp[1], content="1")
+  debug_inspect(sa.lcp[2], content="3")
+  debug_inspect(sa.lcp[3], content="0")
+  debug_inspect(sa.lcp[4], content="0")
+  debug_inspect(sa.lcp[5], content="2")
 }
 
 ///|
 test "suffix array convenience" {
   let sa = suffix_array("banana")
-  inspect(sa, content="[5, 3, 1, 0, 4, 2]")
+  debug_inspect(sa, content="[5, 3, 1, 0, 4, 2]")
   let lcp = lcp_array("banana", sa)
-  inspect(lcp, content="[0, 1, 3, 0, 0, 2]")
+  debug_inspect(lcp, content="[0, 1, 3, 0, 0, 2]")
 }
 
 ///|
 test "suffix array search" {
   let sa = SuffixArray("banana")
   let matches = sa.find_all("ana")
-  inspect(matches.length(), content="2")
-  inspect(matches[0], content="1")
-  inspect(matches[1], content="3")
-  inspect(sa.count("na"), content="2")
-  inspect(sa.count("xyz"), content="0")
+  debug_inspect(matches.length(), content="2")
+  debug_inspect(matches[0], content="1")
+  debug_inspect(matches[1], content="3")
+  debug_inspect(sa.count("na"), content="2")
+  debug_inspect(sa.count("xyz"), content="0")
 }
 
 ///|
 test "suffix array longest repeated" {
   let sa = SuffixArray("banana")
-  inspect(sa.longest_repeated_substring(), content="ana")
+  debug_inspect(sa.longest_repeated_substring(), content=(
+    #|"ana"
+  ))
   let sa2 = SuffixArray("abcabc")
-  inspect(sa2.longest_repeated_substring(), content="abc")
+  debug_inspect(sa2.longest_repeated_substring(), content=(
+    #|"abc"
+  ))
 }
 
 ///|
 test "suffix array distinct substrings" {
   let sa = SuffixArray("banana")
-  inspect(sa.count_distinct_substrings(), content="15")
+  debug_inspect(sa.count_distinct_substrings(), content="15")
 }
 
 ///|
 test "suffix array empty" {
   let sa = SuffixArray("")
-  inspect(sa.sa.length(), content="0")
+  debug_inspect(sa.sa.length(), content="0")
 }
 
 ///|
 test "suffix array single char" {
   let sa = SuffixArray("a")
-  inspect(sa.sa.length(), content="1")
-  inspect(sa.sa[0], content="0")
-  inspect(sa.count_distinct_substrings(), content="1")
+  debug_inspect(sa.sa.length(), content="1")
+  debug_inspect(sa.sa[0], content="0")
+  debug_inspect(sa.count_distinct_substrings(), content="1")
 }
 
 ///|
 test "suffix array all same" {
   let sa = SuffixArray("aaaa")
-  inspect(sa.sa[0], content="3")
-  inspect(sa.sa[1], content="2")
-  inspect(sa.sa[2], content="1")
-  inspect(sa.sa[3], content="0")
-  inspect(sa.count_distinct_substrings(), content="4")
+  debug_inspect(sa.sa[0], content="3")
+  debug_inspect(sa.sa[1], content="2")
+  debug_inspect(sa.sa[2], content="1")
+  debug_inspect(sa.sa[3], content="0")
+  debug_inspect(sa.count_distinct_substrings(), content="4")
 }
 
 ///|
 test "suffix array pattern not found" {
   let sa = SuffixArray("banana")
   let matches = sa.find_all("xyz")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "suffix array get suffix" {
   let sa = SuffixArray("banana")
-  inspect(sa.get_suffix(0), content="a")
-  inspect(sa.get_suffix(1), content="ana")
-  inspect(sa.get_suffix(3), content="banana")
+  debug_inspect(sa.get_suffix(0), content=(
+    #|"a"
+  ))
+  debug_inspect(sa.get_suffix(1), content=(
+    #|"ana"
+  ))
+  debug_inspect(sa.get_suffix(3), content=(
+    #|"banana"
+  ))
 }

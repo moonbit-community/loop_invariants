@@ -55,7 +55,7 @@ test "fenwick2d example" {
   let fw = @challenge_fenwick_2d.Fenwick2D(3, 3)
   fw.add(0, 0, 5)
   fw.add(1, 2, 3)
-  inspect(fw.range_sum(0, 0, 3, 3), content="8")
+  debug_inspect(fw.range_sum(0, 0, 3, 3), content="8")
 }
 ```
 
@@ -67,8 +67,8 @@ test "fenwick2d partial sum" {
   let fw = @challenge_fenwick_2d.Fenwick2D(4, 4)
   fw.add(1, 1, 2)
   fw.add(2, 3, 4)
-  inspect(fw.range_sum(0, 0, 2, 2), content="2")
-  inspect(fw.range_sum(0, 0, 4, 4), content="6")
+  debug_inspect(fw.range_sum(0, 0, 2, 2), content="2")
+  debug_inspect(fw.range_sum(0, 0, 4, 4), content="6")
 }
 ```
 
@@ -82,8 +82,8 @@ test "fenwick2d multiple points" {
   fw.add(1, 1, 2)
   fw.add(2, 3, 4)
   fw.add(3, 0, 5)
-  inspect(fw.range_sum(0, 0, 4, 4), content="12")
-  inspect(fw.range_sum(1, 1, 3, 4), content="6")
+  debug_inspect(fw.range_sum(0, 0, 4, 4), content="12")
+  debug_inspect(fw.range_sum(1, 1, 3, 4), content="6")
 }
 ```
 

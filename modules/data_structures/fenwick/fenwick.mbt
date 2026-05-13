@@ -737,38 +737,38 @@ test "fenwick tree basic" {
   ft.add(2, 3L)
   ft.add(3, 4L)
   ft.add(4, 5L)
-  inspect(ft.prefix_sum(0), content="1")
-  inspect(ft.prefix_sum(1), content="3")
-  inspect(ft.prefix_sum(2), content="6")
-  inspect(ft.prefix_sum(4), content="15")
+  debug_inspect(ft.prefix_sum(0), content="1")
+  debug_inspect(ft.prefix_sum(1), content="3")
+  debug_inspect(ft.prefix_sum(2), content="6")
+  debug_inspect(ft.prefix_sum(4), content="15")
 }
 
 ///|
 test "fenwick tree from array" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let ft = FenwickTree::from_array(arr)
-  inspect(ft.prefix_sum(0), content="1")
-  inspect(ft.prefix_sum(2), content="6")
-  inspect(ft.prefix_sum(4), content="15")
+  debug_inspect(ft.prefix_sum(0), content="1")
+  debug_inspect(ft.prefix_sum(2), content="6")
+  debug_inspect(ft.prefix_sum(4), content="15")
 }
 
 ///|
 test "fenwick tree range sum" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let ft = FenwickTree::from_array(arr)
-  inspect(ft.range_sum(0, 4), content="15")
-  inspect(ft.range_sum(1, 3), content="9")
-  inspect(ft.range_sum(2, 2), content="3")
+  debug_inspect(ft.range_sum(0, 4), content="15")
+  debug_inspect(ft.range_sum(1, 3), content="9")
+  debug_inspect(ft.range_sum(2, 2), content="3")
 }
 
 ///|
 test "fenwick tree get and set" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let ft = FenwickTree::from_array(arr)
-  inspect(ft.get(2), content="3")
+  debug_inspect(ft.get(2), content="3")
   ft.set(2, 10L)
-  inspect(ft.get(2), content="10")
-  inspect(ft.prefix_sum(4), content="22")
+  debug_inspect(ft.get(2), content="10")
+  debug_inspect(ft.prefix_sum(4), content="22")
 }
 
 ///|
@@ -788,9 +788,9 @@ test "fenwick tree 2d" {
   ft.add(2, 0, 7L)
   ft.add(2, 1, 8L)
   ft.add(2, 2, 9L)
-  inspect(ft.prefix_sum(0, 0), content="1")
-  inspect(ft.prefix_sum(1, 1), content="12") // 1+2+4+5
-  inspect(ft.prefix_sum(2, 2), content="45") // sum of all
+  debug_inspect(ft.prefix_sum(0, 0), content="1")
+  debug_inspect(ft.prefix_sum(1, 1), content="12") // 1+2+4+5
+  debug_inspect(ft.prefix_sum(2, 2), content="45") // sum of all
 }
 
 ///|
@@ -811,10 +811,10 @@ test "fenwick tree 2d range" {
   ft.add(2, 2, 9L)
 
   // Center 2x2: 5+6+8+9 = 28
-  inspect(ft.range_sum(1, 1, 2, 2), content="28")
+  debug_inspect(ft.range_sum(1, 1, 2, 2), content="28")
 
   // Middle row: 4+5+6 = 15
-  inspect(ft.range_sum(1, 0, 1, 2), content="15")
+  debug_inspect(ft.range_sum(1, 0, 1, 2), content="15")
 }
 
 ///|
@@ -823,11 +823,11 @@ test "fenwick tree range update point query" {
 
   // Add 10 to range [1, 3]
   ft.range_add(1, 3, 10L)
-  inspect(ft.query(0), content="0")
-  inspect(ft.query(1), content="10")
-  inspect(ft.query(2), content="10")
-  inspect(ft.query(3), content="10")
-  inspect(ft.query(4), content="0")
+  debug_inspect(ft.query(0), content="0")
+  debug_inspect(ft.query(1), content="10")
+  debug_inspect(ft.query(2), content="10")
+  debug_inspect(ft.query(3), content="10")
+  debug_inspect(ft.query(4), content="0")
 }
 
 ///|
@@ -836,28 +836,28 @@ test "fenwick tree range range" {
 
   // Add 1 to each element [0, 4]
   ft.range_add(0, 4, 1L)
-  inspect(ft.range_sum(0, 4), content="5")
+  debug_inspect(ft.range_sum(0, 4), content="5")
 
   // Add 2 to [1, 3]
   ft.range_add(1, 3, 2L)
   // Now: [1, 3, 3, 3, 1]
-  inspect(ft.range_sum(0, 4), content="11")
-  inspect(ft.range_sum(1, 3), content="9")
+  debug_inspect(ft.range_sum(0, 4), content="11")
+  debug_inspect(ft.range_sum(1, 3), content="9")
 }
 
 ///|
 test "fenwick tree empty" {
   let ft = FenwickTree(0)
-  inspect(ft.length(), content="0")
-  inspect(ft.prefix_sum(0), content="0")
+  debug_inspect(ft.length(), content="0")
+  debug_inspect(ft.prefix_sum(0), content="0")
 }
 
 ///|
 test "fenwick tree single element" {
   let ft = FenwickTree(1)
   ft.add(0, 42L)
-  inspect(ft.prefix_sum(0), content="42")
-  inspect(ft.get(0), content="42")
+  debug_inspect(ft.prefix_sum(0), content="42")
+  debug_inspect(ft.get(0), content="42")
 }
 
 ///|
@@ -866,19 +866,19 @@ test "fenwick tree negative values" {
   ft.add(0, -5L)
   ft.add(1, 10L)
   ft.add(2, -3L)
-  inspect(ft.prefix_sum(0), content="-5")
-  inspect(ft.prefix_sum(1), content="5")
-  inspect(ft.prefix_sum(2), content="2")
+  debug_inspect(ft.prefix_sum(0), content="-5")
+  debug_inspect(ft.prefix_sum(1), content="5")
+  debug_inspect(ft.prefix_sum(2), content="2")
 }
 
 ///|
 test "lowbit function" {
-  inspect(lowbit(1), content="1")
-  inspect(lowbit(2), content="2")
-  inspect(lowbit(3), content="1")
-  inspect(lowbit(4), content="4")
-  inspect(lowbit(6), content="2")
-  inspect(lowbit(8), content="8")
+  debug_inspect(lowbit(1), content="1")
+  debug_inspect(lowbit(2), content="2")
+  debug_inspect(lowbit(3), content="1")
+  debug_inspect(lowbit(4), content="4")
+  debug_inspect(lowbit(6), content="2")
+  debug_inspect(lowbit(8), content="8")
 }
 
 ///|
@@ -889,7 +889,7 @@ test "fenwick tree large updates" {
   for i in 0..<10 {
     ft.add(i, 1000000000L)
   }
-  inspect(ft.prefix_sum(9), content="10000000000")
+  debug_inspect(ft.prefix_sum(9), content="10000000000")
 }
 
 ///|
@@ -897,8 +897,8 @@ test "fenwick tree boundary" {
   let ft = FenwickTree(5)
   ft.add(0, 1L)
   ft.add(4, 5L)
-  inspect(ft.prefix_sum(-1), content="0")
-  inspect(ft.prefix_sum(0), content="1")
-  inspect(ft.prefix_sum(4), content="6")
-  inspect(ft.prefix_sum(10), content="6") // Beyond bounds returns total
+  debug_inspect(ft.prefix_sum(-1), content="0")
+  debug_inspect(ft.prefix_sum(0), content="1")
+  debug_inspect(ft.prefix_sum(4), content="6")
+  debug_inspect(ft.prefix_sum(10), content="6") // Beyond bounds returns total
 }

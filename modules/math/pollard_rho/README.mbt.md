@@ -298,16 +298,16 @@ From `pkg.generated.mbti`:
 ///|
 test "pollard rho quick start" {
   let factors = @pollard_rho.factorize_with_counts(8051L)
-  inspect(factors, content="[(83, 1), (97, 1)]")
+  debug_inspect(factors, content="[(83, 1), (97, 1)]")
 }
 ```
 
 ```mbt check
 ///|
 test "pollard rho primes" {
-  inspect(@pollard_rho.is_prime(2L), content="true")
-  inspect(@pollard_rho.is_prime(97L), content="true")
-  inspect(@pollard_rho.is_prime(221L), content="false")
+  debug_inspect(@pollard_rho.is_prime(2L), content="true")
+  debug_inspect(@pollard_rho.is_prime(97L), content="true")
+  debug_inspect(@pollard_rho.is_prime(221L), content="false")
 }
 ```
 
@@ -316,7 +316,7 @@ test "pollard rho primes" {
 test "pollard rho large semiprime" {
   let n = 1000003L * 1000033L
   let factors = @pollard_rho.factorize_with_counts(n)
-  inspect(factors, content="[(1000003, 1), (1000033, 1)]")
+  debug_inspect(factors, content="[(1000003, 1), (1000033, 1)]")
 }
 ```
 
@@ -332,7 +332,7 @@ test "pollard rho large semiprime" {
 ///|
 test "pollard rho repeated factors" {
   let factors = @pollard_rho.factorize_with_counts(360L)
-  inspect(factors, content="[(2, 3), (3, 2), (5, 1)]")
+  debug_inspect(factors, content="[(2, 3), (3, 2), (5, 1)]")
 }
 ```
 

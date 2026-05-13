@@ -417,7 +417,7 @@ test "max flow basic" {
   mf.add_edge(4, t, 10L)
 
   // Max flow = 13 (min cut at edges 1->2: 4, 3->4: 9)
-  inspect(mf.max_flow(s, t), content="13")
+  debug_inspect(mf.max_flow(s, t), content="13")
 }
 
 ///|
@@ -427,7 +427,7 @@ test "max flow simple path" {
   mf.add_edge(0, 1, 5L)
   mf.add_edge(1, 2, 5L)
   mf.add_edge(2, 3, 5L)
-  inspect(mf.max_flow(0, 3), content="5")
+  debug_inspect(mf.max_flow(0, 3), content="5")
 }
 
 ///|
@@ -437,7 +437,7 @@ test "max flow parallel edges" {
   mf.add_edge(0, 1, 5L)
   mf.add_edge(0, 1, 3L)
   mf.add_edge(0, 1, 2L)
-  inspect(mf.max_flow(0, 1), content="10")
+  debug_inspect(mf.max_flow(0, 1), content="10")
 }
 
 ///|
@@ -447,7 +447,7 @@ test "max flow bottleneck" {
   mf.add_edge(0, 1, 100L)
   mf.add_edge(1, 2, 1L)
   mf.add_edge(2, 3, 100L)
-  inspect(mf.max_flow(0, 3), content="1")
+  debug_inspect(mf.max_flow(0, 3), content="1")
 }
 
 ///|
@@ -456,7 +456,7 @@ test "max flow no path" {
   let mf = MaxFlow(4)
   mf.add_edge(0, 1, 10L)
   mf.add_edge(2, 3, 10L)
-  inspect(mf.max_flow(0, 3), content="0")
+  debug_inspect(mf.max_flow(0, 3), content="0")
 }
 
 ///|
@@ -483,7 +483,7 @@ test "max flow bipartite matching" {
   mf.add_edge(6, 7, 1L)
 
   // Maximum matching = 3
-  inspect(mf.max_flow(0, 7), content="3")
+  debug_inspect(mf.max_flow(0, 7), content="3")
 }
 
 ///|
@@ -495,7 +495,7 @@ test "max flow min cut" {
   mf.add_edge(2, 3, 3L)
   let flow = mf.max_flow(0, 3)
   // Max flow: 0->1->3 (2) + 0->2->3 (2) = 4
-  inspect(flow, content="4")
+  debug_inspect(flow, content="4")
   let cut = mf.min_cut(0)
   // Cut should have total capacity = max flow
   let cut_capacity = for i = 0, cut_capacity = 0L; i < cut.length(); {
@@ -514,20 +514,20 @@ test "max flow min cut" {
       #|At i = cut.length(), cut_capacity is the full cut sum.
     ),
   }
-  inspect(cut_capacity, content="4")
+  debug_inspect(cut_capacity, content="4")
 }
 
 ///|
 test "max flow undirected edge" {
   let mf = MaxFlow(2)
   mf.add_undirected_edge(0, 1, 7L)
-  inspect(mf.max_flow(0, 1), content="7")
+  debug_inspect(mf.max_flow(0, 1), content="7")
 }
 
 ///|
 test "max flow empty" {
   let mf = MaxFlow(2)
-  inspect(mf.max_flow(0, 1), content="0")
+  debug_inspect(mf.max_flow(0, 1), content="0")
 }
 
 ///|
@@ -537,5 +537,5 @@ test "max flow self loop ignored" {
   mf.add_edge(1, 2, 10L)
   // Self loop doesn't affect flow
   mf.add_edge(1, 1, 100L)
-  inspect(mf.max_flow(0, 2), content="10")
+  debug_inspect(mf.max_flow(0, 2), content="10")
 }

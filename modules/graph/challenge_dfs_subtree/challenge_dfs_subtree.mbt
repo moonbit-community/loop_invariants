@@ -58,8 +58,8 @@ test "subtree_sizes" {
   // Tree: 0-1, 0-2, 2-3
   let adj : Array[Array[Int]] = [[1, 2], [0], [0, 3], [2]]
   let size = subtree_sizes(adj, 0)
-  assert_eq(size[0], 4)
-  assert_eq(size[1], 1)
-  assert_eq(size[2], 2)
-  assert_eq(size[3], 1)
+  @debug.assert_eq(size[0], 4)
+  @debug.assert_eq(size[1], 1)
+  @debug.assert_eq(size[2], 2)
+  @debug.assert_eq(size[3], 1)
 }

@@ -166,9 +166,9 @@ test "mos algorithm range sum" {
   let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
   let queries = [(0, 3), (1, 4), (0, 5)]
   let results = mos_algorithm_range_sum(arr, queries)
-  assert_eq(results[0], 6) // 1+2+3 = 6
-  assert_eq(results[1], 9) // 2+3+4 = 9
-  assert_eq(results[2], 15) // 1+2+3+4+5 = 15
+  @debug.assert_eq(results[0], 6) // 1+2+3 = 6
+  @debug.assert_eq(results[1], 9) // 2+3+4 = 9
+  @debug.assert_eq(results[2], 15) // 1+2+3+4+5 = 15
 }
 
 ///|
@@ -266,13 +266,13 @@ fn SqrtDecomposition::update_sqrt(
 test "sqrt decomposition rmq" {
   let arr = [3, 1, 4, 1, 5, 9, 2, 6]
   let sd = SqrtDecomposition(arr)
-  assert_eq(sd.query_min(0, 4), 1)
-  assert_eq(sd.query_min(4, 8), 2)
-  assert_eq(sd.query_min(2, 6), 1)
+  @debug.assert_eq(sd.query_min(0, 4), 1)
+  @debug.assert_eq(sd.query_min(4, 8), 2)
+  @debug.assert_eq(sd.query_min(2, 6), 1)
   sd.update_sqrt(1, 10)
-  assert_eq(sd.query_min(0, 4), 1)
+  @debug.assert_eq(sd.query_min(0, 4), 1)
   sd.update_sqrt(3, 10)
-  assert_eq(sd.query_min(0, 4), 3)
+  @debug.assert_eq(sd.query_min(0, 4), 3)
 }
 
 ///|
@@ -333,9 +333,9 @@ test "range mode query" {
   let arr : ReadOnlyArray[Int] = [1, 2, 1, 1, 2, 3, 2, 2]
   let queries = [(0, 4), (4, 8), (0, 8)]
   let results = range_mode(arr, queries)
-  assert_eq(results[0], 1) // [1,2,1,1] -> mode is 1
-  assert_eq(results[1], 2) // [2,3,2,2] -> mode is 2
-  assert_eq(results[2], 2) // full array -> mode is 2
+  @debug.assert_eq(results[0], 1) // [1,2,1,1] -> mode is 1
+  @debug.assert_eq(results[1], 2) // [2,3,2,2] -> mode is 2
+  @debug.assert_eq(results[2], 2) // full array -> mode is 2
 }
 
 ///|
@@ -412,10 +412,10 @@ fn BlockSum::update_block_sum(self : BlockSum, idx : Int, val : Int) -> Unit {
 test "block sum" {
   let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   let bs = BlockSum(arr)
-  assert_eq(bs.query_sum(0, 5), 15) // 1+2+3+4+5
-  assert_eq(bs.query_sum(3, 7), 22) // 4+5+6+7
+  @debug.assert_eq(bs.query_sum(0, 5), 15) // 1+2+3+4+5
+  @debug.assert_eq(bs.query_sum(3, 7), 22) // 4+5+6+7
   bs.update_block_sum(4, 10) // Change 5 to 10
-  assert_eq(bs.query_sum(0, 5), 20) // 1+2+3+4+10
+  @debug.assert_eq(bs.query_sum(0, 5), 20) // 1+2+3+4+10
 }
 
 ///|
@@ -479,10 +479,10 @@ test "mo union find" {
   let uf = MoUnionFind(5)
   assert_true(uf.union_mo(0, 1))
   assert_true(uf.union_mo(2, 3))
-  assert_eq(uf.find_mo(0), uf.find_mo(1))
+  @debug.assert_eq(uf.find_mo(0), uf.find_mo(1))
   assert_true(uf.find_mo(0) != uf.find_mo(2))
   assert_true(uf.union_mo(1, 3))
-  assert_eq(uf.find_mo(0), uf.find_mo(3))
+  @debug.assert_eq(uf.find_mo(0), uf.find_mo(3))
   assert_false(uf.union_mo(0, 2)) // Already connected
 }
 
@@ -551,9 +551,9 @@ test "offline lca simple" {
   let adj : Array[Array[Int]] = [[1, 2], [0, 3, 4], [0], [1], [1]]
   let queries = [(3, 4), (3, 2), (1, 2)]
   let results = offline_lca_simple(adj, queries, 0)
-  assert_eq(results[0], 1) // LCA(3,4) = 1
-  assert_eq(results[1], 0) // LCA(3,2) = 0
-  assert_eq(results[2], 0) // LCA(1,2) = 0
+  @debug.assert_eq(results[0], 1) // LCA(3,4) = 1
+  @debug.assert_eq(results[1], 0) // LCA(3,2) = 0
+  @debug.assert_eq(results[2], 0) // LCA(1,2) = 0
 }
 
 ///|
@@ -630,7 +630,7 @@ fn find_tree_centroid(adj : Array[Array[Int]], root : Int) -> Int {
 test "find tree centroid" {
   let adj : Array[Array[Int]] = [[1], [0, 2], [1, 3], [2, 4], [3]]
   let centroid = find_tree_centroid(adj, 0)
-  assert_eq(centroid, 2) // Middle node
+  @debug.assert_eq(centroid, 2) // Middle node
 }
 
 ///|
@@ -683,7 +683,7 @@ test "euler tour" {
   let et = build_euler_tour(adj, 0)
   assert_true(et.enter[1] < et.enter[3])
   assert_true(et.enter[3] < et.exit[1])
-  assert_eq(et.tour.length(), adj.length())
+  @debug.assert_eq(et.tour.length(), adj.length())
 }
 
 ///|
@@ -783,8 +783,8 @@ fn BinaryLifting::lca_binary_lifting(
 test "binary lifting lca" {
   let adj : Array[Array[Int]] = [[1, 2], [0, 3, 4], [0], [1], [1]]
   let bl = build_binary_lifting(adj, 0)
-  assert_eq(bl.lca_binary_lifting(3, 4), 1)
-  assert_eq(bl.lca_binary_lifting(3, 2), 0)
-  assert_eq(bl.lca_binary_lifting(1, 2), 0)
-  assert_eq(bl.lca_binary_lifting(3, 1), 1)
+  @debug.assert_eq(bl.lca_binary_lifting(3, 4), 1)
+  @debug.assert_eq(bl.lca_binary_lifting(3, 2), 0)
+  @debug.assert_eq(bl.lca_binary_lifting(1, 2), 0)
+  @debug.assert_eq(bl.lca_binary_lifting(3, 1), 1)
 }

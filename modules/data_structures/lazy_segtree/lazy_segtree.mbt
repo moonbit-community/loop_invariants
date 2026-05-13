@@ -878,7 +878,7 @@ test "lazy segtree min range add" {
 test "lazy segtree sum empty" {
   let arr : Array[Int64] = []
   let st = LazySegTreeSum(arr)
-  inspect(st.length(), content="0")
+  debug_inspect(st.length(), content="0")
   debug_inspect(st.range_sum(0, 0), content="None")
 }
 
@@ -915,9 +915,9 @@ test "lazy segtree length" {
   let st1 = LazySegTreeSum([1L, 2L, 3L])
   let st2 = LazySegTreeSetSum([1L, 2L])
   let st3 = LazySegTreeMin([1L])
-  inspect(st1.length(), content="3")
-  inspect(st2.length(), content="2")
-  inspect(st3.length(), content="1")
+  debug_inspect(st1.length(), content="3")
+  debug_inspect(st2.length(), content="2")
+  debug_inspect(st3.length(), content="1")
 }
 
 ///|

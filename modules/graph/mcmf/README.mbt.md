@@ -237,8 +237,8 @@ test "mcmf simple edge" {
   let mcmf = @mcmf.MinCostMaxFlow(2)
   mcmf.add_edge(0, 1, 5L, 2L)
   let (flow, cost) = mcmf.compute(0, 1)
-  inspect(flow, content="5")
-  inspect(cost, content="10")
+  debug_inspect(flow, content="5")
+  debug_inspect(cost, content="10")
 }
 ```
 
@@ -277,8 +277,8 @@ test "mcmf diamond" {
   mcmf.add_edge(1, 3, 3L, 1L)
   mcmf.add_edge(2, 3, 3L, 1L)
   let (flow, cost) = mcmf.compute(0, 3)
-  inspect(flow, content="6")
-  inspect(cost, content="15")
+  debug_inspect(flow, content="6")
+  debug_inspect(cost, content="15")
 }
 ```
 
@@ -292,8 +292,8 @@ test "mcmf limited flow" {
   let mcmf = @mcmf.MinCostMaxFlow(2)
   mcmf.add_edge(0, 1, 10L, 1L)
   let (flow, cost) = mcmf.compute_with_limit(0, 1, 5L)
-  inspect(flow, content="5")
-  inspect(cost, content="5")
+  debug_inspect(flow, content="5")
+  debug_inspect(cost, content="5")
 }
 ```
 
@@ -338,7 +338,7 @@ Alternative: worker 0 -> job 1 (3) + worker 1 -> job 0 (2) = 5  (worse)
 ///|
 test "assignment example" {
   let cost : Array[Array[Int64]] = [[1L, 3L], [2L, 2L]]
-  inspect(@mcmf.solve_assignment(cost), content="3")
+  debug_inspect(@mcmf.solve_assignment(cost), content="3")
 }
 ```
 

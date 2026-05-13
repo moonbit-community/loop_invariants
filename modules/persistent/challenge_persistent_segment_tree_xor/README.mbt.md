@@ -112,7 +112,7 @@ test "xor basic" {
   )
 
   // Original xor stays the same.
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_xor.range_xor(
       root,
       0,
@@ -124,7 +124,7 @@ test "xor basic" {
   )
 
   // After updates, xor changes.
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_xor.range_xor(v2, 0, arr.length(), 0, 4),
     content="1",
   )
@@ -175,7 +175,7 @@ test "xor apply updates" {
     arr.length(),
     [(0, 7), (2, 5)],
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_xor.range_xor(
       root,
       0,
@@ -185,7 +185,7 @@ test "xor apply updates" {
     ),
     content="0",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_xor.range_xor(
       updated,
       0,
@@ -217,8 +217,11 @@ test "xor root" {
     1,
     3,
   )
-  inspect(@challenge_persistent_segment_tree_xor.xor_value(root), content="1")
-  inspect(
+  debug_inspect(
+    @challenge_persistent_segment_tree_xor.xor_value(root),
+    content="1",
+  )
+  debug_inspect(
     @challenge_persistent_segment_tree_xor.xor_value(updated),
     content="4",
   )

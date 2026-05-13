@@ -253,7 +253,7 @@ fn next_greater(xs : ArrayView[Int]) -> Array[Int] {
 ///|
 test "monotonic stack: next greater" {
   let xs : ReadOnlyArray[Int] = [4, 5, 2, 25]
-  inspect(next_greater(xs), content="[5, 25, 25, -1]")
+  debug_inspect(next_greater(xs), content="[5, 25, 25, -1]")
 }
 ```
 
@@ -465,7 +465,7 @@ test "meet in the middle: subset sum" {
   for s in left_sums {
     for t in right_sums {
       if s + t == target {
-        inspect(true, content="true")
+        debug_inspect(true, content="true")
         return
       }
     }

@@ -42,7 +42,7 @@ jobs:
         run: moon fmt --check
 
       - name: Check
-        run: moon check --warn-list +25+65+74 --deny-warn
+        run: moon check --warn-list +20+25+65+74 --deny-warn
 
       - name: Test
         run: moon test

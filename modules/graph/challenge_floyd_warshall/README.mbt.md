@@ -64,9 +64,9 @@ test "floyd warshall basic" {
     [inf, inf, inf, 0],
   ]
   let dist = @challenge_floyd_warshall.floyd_warshall(matrix, inf)
-  inspect(dist[0][2], content="3")
-  inspect(dist[0][3], content="6")
-  inspect(dist[1][3], content="5")
+  debug_inspect(dist[0][2], content="3")
+  debug_inspect(dist[0][3], content="6")
+  debug_inspect(dist[1][3], content="5")
 }
 ```
 
@@ -78,8 +78,8 @@ test "floyd warshall negative edge" {
   let inf = 1_000_000_000
   let matrix : Array[Array[Int]] = [[0, 2, inf], [inf, 0, -4], [3, inf, 0]]
   let dist = @challenge_floyd_warshall.floyd_warshall(matrix, inf)
-  inspect(dist[0][2], content="-2") // 0->1->2
-  inspect(dist[2][1], content="5") // 2->0->1
+  debug_inspect(dist[0][2], content="-2") // 0->1->2
+  debug_inspect(dist[2][1], content="5") // 2->0->1
 }
 ```
 
@@ -91,8 +91,8 @@ test "floyd warshall unreachable" {
   let inf = 1_000_000_000
   let matrix : Array[Array[Int]] = [[0, 1, inf], [inf, 0, inf], [inf, inf, 0]]
   let dist = @challenge_floyd_warshall.floyd_warshall(matrix, inf)
-  inspect(dist[0][1], content="1")
-  inspect(dist[0][2] > 100000000, content="true")
+  debug_inspect(dist[0][1], content="1")
+  debug_inspect(dist[0][2] > 100000000, content="true")
 }
 ```
 
@@ -108,7 +108,7 @@ test "floyd warshall negative cycle detection" {
   let inf = 1_000_000_000
   let matrix : Array[Array[Int]] = [[0, 1, inf], [inf, 0, -2], [-2, inf, 0]]
   let dist = @challenge_floyd_warshall.floyd_warshall(matrix, inf)
-  inspect(dist[0][0] < 0, content="true")
+  debug_inspect(dist[0][0] < 0, content="true")
 }
 ```
 

@@ -99,8 +99,8 @@ The maximum LCP value identifies the **longest repeated substring**.
 test "suffix array helpers" {
   let sa = @suffix_array.suffix_array("banana")
   let lcp = @suffix_array.lcp_array("banana", sa)
-  inspect(sa, content="[5, 3, 1, 0, 4, 2]")
-  inspect(lcp, content="[0, 1, 3, 0, 0, 2]")
+  debug_inspect(sa, content="[5, 3, 1, 0, 4, 2]")
+  debug_inspect(lcp, content="[0, 1, 3, 0, 0, 2]")
 }
 ```
 
@@ -190,8 +190,8 @@ matches at sa[lo], sa[lo+1], ..., sa[hi]
 ///|
 test "suffix array search" {
   let sa = @suffix_array.SuffixArray("mississippi")
-  inspect(sa.find_all("issi"), content="[1, 4]")
-  inspect(sa.count("ss"), content="2")
+  debug_inspect(sa.find_all("issi"), content="[1, 4]")
+  debug_inspect(sa.count("ss"), content="2")
 }
 ```
 
@@ -211,7 +211,9 @@ array. The substring is `text[sa[max_lcp_idx] : sa[max_lcp_idx] + max_lcp]`.
 ///|
 test "longest repeated substring" {
   let sa = @suffix_array.SuffixArray("banana")
-  inspect(sa.longest_repeated_substring(), content="ana")
+  debug_inspect(sa.longest_repeated_substring(), content=(
+    #|"ana"
+  ))
 }
 ```
 
@@ -219,7 +221,9 @@ test "longest repeated substring" {
 ///|
 test "longest repeated substring overlap" {
   let sa = @suffix_array.SuffixArray("aaaaa")
-  inspect(sa.longest_repeated_substring(), content="aaaa")
+  debug_inspect(sa.longest_repeated_substring(), content=(
+    #|"aaaa"
+  ))
 }
 ```
 
@@ -246,7 +250,7 @@ Distinct = 21 - 6 = 15
 ///|
 test "distinct substrings" {
   let sa = @suffix_array.SuffixArray("banana")
-  inspect(sa.count_distinct_substrings(), content="15")
+  debug_inspect(sa.count_distinct_substrings(), content="15")
 }
 ```
 

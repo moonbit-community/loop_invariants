@@ -163,7 +163,7 @@ test "triangulation triangle" {
     { x: 1L, y: 0L },
     { x: 0L, y: 1L },
   ]
-  inspect(min_weight_triangulation(points).unwrap(), content="4")
+  debug_inspect(min_weight_triangulation(points).unwrap(), content="4")
 }
 
 ///|
@@ -174,7 +174,7 @@ test "triangulation square" {
     { x: 1L, y: 1L },
     { x: 0L, y: 1L },
   ]
-  inspect(min_weight_triangulation(points).unwrap(), content="8")
+  debug_inspect(min_weight_triangulation(points).unwrap(), content="8")
 }
 
 ///|

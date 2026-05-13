@@ -227,9 +227,9 @@ test "euler tour subtree sums" {
   }
 
   // Subtree(1) has nodes {1,3,4} = 1 + 2 + 3 = 6
-  inspect(subtree_sum(1), content="6")
+  debug_inspect(subtree_sum(1), content="6")
   // Subtree(2) has nodes {2,5} = 4 + 6 = 10
-  inspect(subtree_sum(2), content="10")
+  debug_inspect(subtree_sum(2), content="10")
 }
 ```
 
@@ -374,8 +374,8 @@ test "lca by parent climbing" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
   let adj = build_adj(n, edges)
   let (parent, depth) = parent_and_depth(n, adj, 0)
-  inspect(lca_naive(3, 4, parent, depth), content="1")
-  inspect(lca_naive(3, 5, parent, depth), content="0")
+  debug_inspect(lca_naive(3, 4, parent, depth), content="1")
+  debug_inspect(lca_naive(3, 5, parent, depth), content="0")
 }
 ```
 

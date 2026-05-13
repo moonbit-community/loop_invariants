@@ -176,11 +176,11 @@ test "persistent avl versions" {
   let t1 = @challenge_persistent_avl_set.insert(t0, 5)
   let t2 = @challenge_persistent_avl_set.insert(t1, 2)
   let t3 = @challenge_persistent_avl_set.insert(t2, 8)
-  inspect(@challenge_persistent_avl_set.contains(t0, 5), content="false")
-  inspect(@challenge_persistent_avl_set.contains(t1, 5), content="true")
-  inspect(@challenge_persistent_avl_set.contains(t2, 2), content="true")
-  inspect(@challenge_persistent_avl_set.contains(t3, 8), content="true")
-  inspect(@challenge_persistent_avl_set.size(t3), content="3")
+  debug_inspect(@challenge_persistent_avl_set.contains(t0, 5), content="false")
+  debug_inspect(@challenge_persistent_avl_set.contains(t1, 5), content="true")
+  debug_inspect(@challenge_persistent_avl_set.contains(t2, 2), content="true")
+  debug_inspect(@challenge_persistent_avl_set.contains(t3, 8), content="true")
+  debug_inspect(@challenge_persistent_avl_set.size(t3), content="3")
 }
 ```
 
@@ -190,7 +190,10 @@ test "persistent avl versions" {
 ///|
 test "avl inorder sorted" {
   let t = @challenge_persistent_avl_set.from_array([7, 1, 5, 3])
-  inspect(@challenge_persistent_avl_set.inorder(t), content="[1, 3, 5, 7]")
+  debug_inspect(
+    @challenge_persistent_avl_set.inorder(t),
+    content="[1, 3, 5, 7]",
+  )
 }
 ```
 
@@ -202,8 +205,8 @@ test "avl duplicates" {
   let t0 = @challenge_persistent_avl_set.empty()
   let t1 = @challenge_persistent_avl_set.insert(t0, 4)
   let t2 = @challenge_persistent_avl_set.insert(t1, 4)
-  inspect(@challenge_persistent_avl_set.size(t1), content="1")
-  inspect(@challenge_persistent_avl_set.size(t2), content="1")
+  debug_inspect(@challenge_persistent_avl_set.size(t1), content="1")
+  debug_inspect(@challenge_persistent_avl_set.size(t2), content="1")
 }
 ```
 
@@ -213,7 +216,10 @@ test "avl duplicates" {
 ///|
 test "avl negatives" {
   let t = @challenge_persistent_avl_set.from_array([-3, 0, -1, 2])
-  inspect(@challenge_persistent_avl_set.inorder(t), content="[-3, -1, 0, 2]")
+  debug_inspect(
+    @challenge_persistent_avl_set.inorder(t),
+    content="[-3, -1, 0, 2]",
+  )
 }
 ```
 

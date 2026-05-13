@@ -489,78 +489,90 @@ test "manacher basic" {
   let result = manacher("babad")
   let longest = result.longest_palindrome()
   // "bab" or "aba" are both valid
-  inspect(longest.length(), content="3")
-  inspect(result.palindrome_length_at(0, true) >= 1, content="true")
-  inspect(result.get_all_palindromes().length() > 0, content="true")
+  debug_inspect(longest.length(), content="3")
+  debug_inspect(result.palindrome_length_at(0, true) >= 1, content="true")
+  debug_inspect(result.get_all_palindromes().length() > 0, content="true")
 }
 
 ///|
 test "manacher even palindrome" {
   let result = manacher("cbbd")
-  inspect(result.longest_palindrome(), content="bb")
+  debug_inspect(result.longest_palindrome(), content=(
+    #|"bb"
+  ))
 }
 
 ///|
 test "manacher single char" {
   let result = manacher("a")
-  inspect(result.longest_palindrome(), content="a")
+  debug_inspect(result.longest_palindrome(), content=(
+    #|"a"
+  ))
 }
 
 ///|
 test "manacher empty" {
   let result = manacher("")
-  inspect(result.longest_palindrome(), content="")
+  debug_inspect(result.longest_palindrome(), content=(
+    #|""
+  ))
 }
 
 ///|
 test "manacher all same" {
   let result = manacher("aaaa")
-  inspect(result.longest_palindrome(), content="aaaa")
+  debug_inspect(result.longest_palindrome(), content=(
+    #|"aaaa"
+  ))
 }
 
 ///|
 test "manacher no palindrome longer than 1" {
   let result = manacher("abcd")
-  inspect(result.longest_palindrome().length(), content="1")
+  debug_inspect(result.longest_palindrome().length(), content="1")
 }
 
 ///|
 test "manacher count palindromes" {
   let result = manacher("aaa")
   // Palindromes: a(3), aa(2), aaa(1) = 6 total
-  inspect(result.count_palindromes(), content="6")
+  debug_inspect(result.count_palindromes(), content="6")
 }
 
 ///|
 test "manacher complex" {
   let result = manacher("abacaba")
-  inspect(result.longest_palindrome(), content="abacaba")
+  debug_inspect(result.longest_palindrome(), content=(
+    #|"abacaba"
+  ))
 }
 
 ///|
 test "manacher is palindrome" {
   let result = manacher("abacaba")
-  inspect(result.is_palindrome(0, 7), content="true") // abacaba
-  inspect(result.is_palindrome(0, 3), content="true") // aba
-  inspect(result.is_palindrome(0, 2), content="false") // ab
+  debug_inspect(result.is_palindrome(0, 7), content="true") // abacaba
+  debug_inspect(result.is_palindrome(0, 3), content="true") // aba
+  debug_inspect(result.is_palindrome(0, 2), content="false") // ab
 }
 
 ///|
 test "manacher racecar" {
   let result = manacher("racecar")
-  inspect(result.longest_palindrome(), content="racecar")
+  debug_inspect(result.longest_palindrome(), content=(
+    #|"racecar"
+  ))
 }
 
 ///|
 test "manacher radii" {
   let (d1, d2) = manacher_radii("abba")
-  inspect(d1, content="[1, 1, 1, 1]")
-  inspect(d2, content="[0, 0, 2, 0]")
+  debug_inspect(d1, content="[1, 1, 1, 1]")
+  debug_inspect(d2, content="[0, 0, 2, 0]")
 }
 
 ///|
 test "manacher longest length" {
-  inspect(longest_palindrome_len("abacaba"), content="7")
-  inspect(longest_palindrome_len("babad"), content="3")
-  inspect(longest_palindrome_len("cbbd"), content="2")
+  debug_inspect(longest_palindrome_len("abacaba"), content="7")
+  debug_inspect(longest_palindrome_len("babad"), content="3")
+  debug_inspect(longest_palindrome_len("cbbd"), content="2")
 }

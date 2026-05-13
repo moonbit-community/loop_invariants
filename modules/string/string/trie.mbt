@@ -1181,11 +1181,11 @@ test "trie_basic" {
   trie.insert("apple")
   trie.insert("app")
   trie.insert("application")
-  inspect(trie.search("apple"), content="true")
-  inspect(trie.search("app"), content="true")
-  inspect(trie.search("appl"), content="false")
-  inspect(trie.starts_with("app"), content="true")
-  inspect(trie.starts_with("apl"), content="false")
+  debug_inspect(trie.search("apple"), content="true")
+  debug_inspect(trie.search("app"), content="true")
+  debug_inspect(trie.search("appl"), content="false")
+  debug_inspect(trie.starts_with("app"), content="true")
+  debug_inspect(trie.starts_with("apl"), content="false")
 }
 
 ///|
@@ -1195,9 +1195,9 @@ test "trie_prefix_count" {
   trie.insert("app")
   trie.insert("application")
   trie.insert("banana")
-  inspect(trie.count_prefix("app"), content="3")
-  inspect(trie.count_prefix("ban"), content="1")
-  inspect(trie.count_prefix("xyz"), content="0")
+  debug_inspect(trie.count_prefix("app"), content="3")
+  debug_inspect(trie.count_prefix("ban"), content="1")
+  debug_inspect(trie.count_prefix("xyz"), content="0")
 }
 
 ///|
@@ -1208,7 +1208,7 @@ test "aho_corasick_basic" {
   // "she" at position 4 (ends at 4)
   // "he" at position 4 (ends at 4) - overlaps with she
   // "hers" at position 6 (ends at 6)
-  inspect(matches.length() >= 2, content="true")
+  debug_inspect(matches.length() >= 2, content="true")
   if matches.length() > 0 {
     let first = matches[0]
     let _ = first.position
@@ -1222,7 +1222,7 @@ test "aho_corasick_overlapping" {
   let ac = AhoCorasick(patterns)
   let matches = ac.search("abc")
   // Should find: "a" at 1, "ab" at 2, "abc" at 3
-  inspect(matches.length(), content="3")
+  debug_inspect(matches.length(), content="3")
 }
 
 ///|
@@ -1234,16 +1234,16 @@ test "xor_trie_basic" {
   // Max XOR with 6 (00000110):
   // 6 ^ 3 = 5, 6 ^ 10 = 12, 6 ^ 5 = 3
   // Maximum is 12
-  inspect(trie.max_xor(6), content="12")
+  debug_inspect(trie.max_xor(6), content="12")
 }
 
 ///|
 test "xor_trie_single" {
   let trie = XORTrie(4)
   trie.insert(7) // 0111
-  inspect(trie.max_xor(0), content="7") // 0 ^ 7 = 7
-  inspect(trie.max_xor(7), content="0") // 7 ^ 7 = 0
-  inspect(trie.max_xor(8), content="15") // 1000 ^ 0111 = 1111
+  debug_inspect(trie.max_xor(0), content="7") // 0 ^ 7 = 7
+  debug_inspect(trie.max_xor(7), content="0") // 7 ^ 7 = 0
+  debug_inspect(trie.max_xor(8), content="15") // 1000 ^ 0111 = 1111
 }
 
 ///|
@@ -1254,8 +1254,8 @@ test "persistent_trie_basic" {
   // Version 1 should have "hello"
   // Version 2 should have both "hello" and "help"
   // (Note: simplified implementation - full version tracking needs more work)
-  inspect(v1, content="1")
-  inspect(v2, content="2")
+  debug_inspect(v1, content="1")
+  debug_inspect(v2, content="2")
   let _ = trie.search_version("hello", v1)
   let _ = trie.search_version("help", v1)
   let _ = trie.search_version("help", v2)
@@ -1267,11 +1267,11 @@ test "radix_tree_basic" {
   tree.insert("test")
   tree.insert("testing")
   tree.insert("team")
-  inspect(tree.search("test"), content="true")
-  inspect(tree.search("testing"), content="true")
-  inspect(tree.search("team"), content="true")
-  inspect(tree.search("tea"), content="false")
-  inspect(tree.search("tester"), content="false")
+  debug_inspect(tree.search("test"), content="true")
+  debug_inspect(tree.search("testing"), content="true")
+  debug_inspect(tree.search("team"), content="true")
+  debug_inspect(tree.search("tea"), content="false")
+  debug_inspect(tree.search("tester"), content="false")
 }
 
 ///|
@@ -1283,19 +1283,19 @@ test "radix_tree_prefix_sharing" {
   tree.insert("rubens")
   tree.insert("ruber")
   tree.insert("rubicon")
-  inspect(tree.search("romane"), content="true")
-  inspect(tree.search("romanus"), content="true")
-  inspect(tree.search("rubicon"), content="true")
-  inspect(tree.search("rom"), content="false")
-  inspect(tree.search("rub"), content="false")
+  debug_inspect(tree.search("romane"), content="true")
+  debug_inspect(tree.search("romanus"), content="true")
+  debug_inspect(tree.search("rubicon"), content="true")
+  debug_inspect(tree.search("rom"), content="false")
+  debug_inspect(tree.search("rub"), content="false")
 }
 
 ///|
 test "empty_trie" {
   let trie = Trie()
-  inspect(trie.search("any"), content="false")
-  inspect(trie.starts_with("a"), content="false")
-  inspect(trie.count_prefix("xyz"), content="0")
+  debug_inspect(trie.search("any"), content="false")
+  debug_inspect(trie.starts_with("a"), content="false")
+  debug_inspect(trie.count_prefix("xyz"), content="0")
 }
 
 ///|
@@ -1304,8 +1304,8 @@ test "single_character_words" {
   trie.insert("a")
   trie.insert("b")
   trie.insert("c")
-  inspect(trie.search("a"), content="true")
-  inspect(trie.search("b"), content="true")
-  inspect(trie.search("d"), content="false")
-  inspect(trie.count_prefix("a"), content="1")
+  debug_inspect(trie.search("a"), content="true")
+  debug_inspect(trie.search("b"), content="true")
+  debug_inspect(trie.search("d"), content="false")
+  debug_inspect(trie.count_prefix("a"), content="1")
 }

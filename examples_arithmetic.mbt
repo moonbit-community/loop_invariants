@@ -37,9 +37,9 @@ fn div_mod_nonneg(n : Int, d : Int) -> (Int, Int) {
 
 ///|
 test "div_mod_nonneg" {
-  assert_eq(div_mod_nonneg(10, 3), (3, 1))
-  assert_eq(div_mod_nonneg(25, 5), (5, 0))
-  assert_eq(div_mod_nonneg(0, 7), (0, 0))
+  @debug.assert_eq(div_mod_nonneg(10, 3), (3, 1))
+  @debug.assert_eq(div_mod_nonneg(25, 5), (5, 0))
+  @debug.assert_eq(div_mod_nonneg(0, 7), (0, 0))
 }
 
 // ============================================================================
@@ -96,8 +96,8 @@ fn horner_eval(coeffs : ArrayView[Int], x : Int) -> Int {
 ///|
 test "horner_eval" {
   // 2x^2 - 3x + 5 at x=4 -> 25
-  assert_eq(horner_eval([2, -3, 5], 4), 25)
-  assert_eq(horner_eval([1], 10), 1)
-  assert_eq(horner_eval([3, 0, 0], 2), 12) // 3x^2
-  assert_eq(poly_prefix([2, -3, 5], 3, 4), 25)
+  @debug.assert_eq(horner_eval([2, -3, 5], 4), 25)
+  @debug.assert_eq(horner_eval([1], 10), 1)
+  @debug.assert_eq(horner_eval([3, 0, 0], 2), 12) // 3x^2
+  @debug.assert_eq(poly_prefix([2, -3, 5], 3, 4), 25)
 }

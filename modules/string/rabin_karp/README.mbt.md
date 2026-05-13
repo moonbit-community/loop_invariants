@@ -230,14 +230,14 @@ From `pkg.generated.mbti`:
 ///|
 test "rabin karp search" {
   let matches = @rabin_karp.rabin_karp_search("abababab", "aba")
-  inspect(matches, content="[0, 2, 4]")
+  debug_inspect(matches, content="[0, 2, 4]")
 }
 ```
 
 ```mbt check
 ///|
 test "rabin karp count" {
-  inspect(@rabin_karp.rabin_karp_count("aaaa", "aa"), content="3")
+  debug_inspect(@rabin_karp.rabin_karp_count("aaaa", "aa"), content="3")
 }
 ```
 
@@ -246,7 +246,7 @@ test "rabin karp count" {
 test "rabin karp multi" {
   let patterns = ["aba", "bab", "ab"]
   let hits = @rabin_karp.rabin_karp_multi("ababab", patterns)
-  inspect(
+  debug_inspect(
     hits,
     content="[(0, 0), (1, 1), (0, 2), (1, 3), (2, 0), (2, 2), (2, 4)]",
   )

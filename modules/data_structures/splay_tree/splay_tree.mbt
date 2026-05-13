@@ -391,10 +391,10 @@ test "splay insert and contains" {
   tree.insert(7L)
   tree.insert(1L)
   tree.insert(9L)
-  inspect(tree.contains(5L), content="true")
-  inspect(tree.contains(3L), content="true")
-  inspect(tree.contains(7L), content="true")
-  inspect(tree.contains(2L), content="false")
+  debug_inspect(tree.contains(5L), content="true")
+  debug_inspect(tree.contains(3L), content="true")
+  debug_inspect(tree.contains(7L), content="true")
+  debug_inspect(tree.contains(2L), content="false")
 }
 
 ///|
@@ -403,22 +403,22 @@ test "splay delete" {
   tree.insert(5L)
   tree.insert(3L)
   tree.insert(7L)
-  inspect(tree.delete(3L), content="true")
-  inspect(tree.contains(3L), content="false")
-  inspect(tree.contains(5L), content="true")
-  inspect(tree.contains(7L), content="true")
+  debug_inspect(tree.delete(3L), content="true")
+  debug_inspect(tree.contains(3L), content="false")
+  debug_inspect(tree.contains(5L), content="true")
+  debug_inspect(tree.contains(7L), content="true")
 }
 
 ///|
 test "splay size" {
   let tree : SplayTree[Int64] = SplayTree()
-  inspect(tree.size(), content="0")
+  debug_inspect(tree.size(), content="0")
   tree.insert(1L)
   tree.insert(2L)
   tree.insert(3L)
-  inspect(tree.size(), content="3")
+  debug_inspect(tree.size(), content="3")
   let _ = tree.delete(2L)
-  inspect(tree.size(), content="2")
+  debug_inspect(tree.size(), content="2")
 }
 
 ///|
@@ -457,26 +457,26 @@ test "splay count less" {
   tree.insert(5L)
   tree.insert(7L)
   tree.insert(9L)
-  inspect(tree.count_less(5L), content="2") // 1, 3
-  inspect(tree.count_less(10L), content="5") // all
-  inspect(tree.count_less(1L), content="0") // none
+  debug_inspect(tree.count_less(5L), content="2") // 1, 3
+  debug_inspect(tree.count_less(10L), content="5") // all
+  debug_inspect(tree.count_less(1L), content="0") // none
 }
 
 ///|
 test "splay empty" {
   let tree = SplayTree()
-  inspect(tree.contains(1L), content="false")
+  debug_inspect(tree.contains(1L), content="false")
   debug_inspect(tree.min(), content="None")
   debug_inspect(tree.max(), content="None")
-  inspect(tree.size(), content="0")
+  debug_inspect(tree.size(), content="0")
 }
 
 ///|
 test "splay delete nonexistent" {
   let tree = SplayTree()
   tree.insert(5L)
-  inspect(tree.delete(10L), content="false")
-  inspect(tree.size(), content="1")
+  debug_inspect(tree.delete(10L), content="false")
+  debug_inspect(tree.size(), content="1")
 }
 
 ///|
@@ -485,7 +485,7 @@ test "splay sequential insert" {
   for i in 0..<100 {
     tree.insert(i.to_int64())
   }
-  inspect(tree.size(), content="100")
+  debug_inspect(tree.size(), content="100")
   debug_inspect(tree.min(), content="Some(0)")
   debug_inspect(tree.max(), content="Some(99)")
 }

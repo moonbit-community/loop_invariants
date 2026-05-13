@@ -121,7 +121,7 @@ test "skew heap basic" {
     fail("expected delete_min")
   }
   debug_inspect(@challenge_persistent_skew_heap.find_min(h4), content="Some(4)")
-  inspect(@challenge_persistent_skew_heap.size(h4), content="2")
+  debug_inspect(@challenge_persistent_skew_heap.size(h4), content="2")
 }
 ```
 
@@ -146,7 +146,7 @@ test "skew heap merge" {
     @challenge_persistent_skew_heap.find_min(merged),
     content="Some(1)",
   )
-  inspect(@challenge_persistent_skew_heap.size(merged), content="6")
+  debug_inspect(@challenge_persistent_skew_heap.size(merged), content="6")
 }
 ```
 
@@ -161,7 +161,7 @@ Notice that `a` and `b` are unchanged, because `merge` is persistent.
 test "skew heap from array" {
   let h = @challenge_persistent_skew_heap.from_array([7, 1, 5])
   debug_inspect(@challenge_persistent_skew_heap.find_min(h), content="Some(1)")
-  inspect(@challenge_persistent_skew_heap.size(h), content="3")
+  debug_inspect(@challenge_persistent_skew_heap.size(h), content="3")
 }
 ```
 

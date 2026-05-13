@@ -306,14 +306,14 @@ Per operation amortized = O(log^2 n)  [tight bound]
 ///|
 test "segment tree beats example" {
   let st = @segment_tree_beats.SegmentTreeBeats([5L, 1L, 7L, 3L, 9L])
-  inspect(st.range_sum(0, 5), content="25")
-  inspect(st.range_max(0, 5), content="9")
+  debug_inspect(st.range_sum(0, 5), content="25")
+  debug_inspect(st.range_max(0, 5), content="9")
   st.range_chmin(1, 4, 4L)
-  inspect(st.range_sum(0, 5), content="22")
-  inspect(st.range_max(0, 5), content="9")
+  debug_inspect(st.range_sum(0, 5), content="22")
+  debug_inspect(st.range_max(0, 5), content="9")
   st.range_chmin(0, 5, 4L)
-  inspect(st.range_sum(0, 5), content="16")
-  inspect(st.range_max(0, 5), content="4")
+  debug_inspect(st.range_sum(0, 5), content="16")
+  debug_inspect(st.range_max(0, 5), content="4")
 }
 ```
 
@@ -326,8 +326,8 @@ test "segment tree beats example" {
 test "segment tree beats clamp" {
   let st = @segment_tree_beats.SegmentTreeBeats([10L, 20L, 30L, 40L, 50L])
   st.range_chmin(0, 5, 25L)
-  inspect(st.range_sum(0, 5), content="105")
-  inspect(st.range_max(0, 5), content="25")
+  debug_inspect(st.range_sum(0, 5), content="105")
+  debug_inspect(st.range_max(0, 5), content="25")
 }
 ```
 

@@ -81,7 +81,7 @@ priv struct HLD {
 ///   hld.add_edge(2, 3)
 ///   hld.add_edge(3, 4)
 ///   hld.build(0)
-///   inspect(hld.path_length(0, 4), content="4")
+///   debug_inspect(hld.path_length(0, 4), content="4")
 /// }
 /// ```
 fn HLD::HLD(n : Int) -> HLD {
@@ -113,7 +113,7 @@ fn HLD::HLD(n : Int) -> HLD {
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(1, 2)
 ///   hld.build(0)
-///   inspect(hld.path_length(0, 2), content="2")
+///   debug_inspect(hld.path_length(0, 2), content="2")
 /// }
 /// ```
 fn HLD::add_edge(self : HLD, u : Int, v : Int) -> Unit {
@@ -216,8 +216,8 @@ fn HLD::dfs_hld(self : HLD, u : Int, head : Int) -> Unit {
 ///   hld.add_edge(0, 2)
 ///   hld.add_edge(0, 3)
 ///   hld.build(0)
-///   inspect(hld.lca(1, 2), content="0")
-///   inspect(hld.lca(2, 3), content="0")
+///   debug_inspect(hld.lca(1, 2), content="0")
+///   debug_inspect(hld.lca(2, 3), content="0")
 /// }
 /// ```
 fn HLD::build(self : HLD, root : Int) -> Unit {
@@ -250,9 +250,9 @@ fn HLD::build(self : HLD, root : Int) -> Unit {
 ///   hld.add_edge(1, 3)
 ///   hld.add_edge(1, 4)
 ///   hld.build(0)
-///   inspect(hld.lca(3, 4), content="1")
-///   inspect(hld.lca(3, 2), content="0")
-///   inspect(hld.lca(0, 4), content="0")
+///   debug_inspect(hld.lca(3, 4), content="1")
+///   debug_inspect(hld.lca(3, 2), content="0")
+///   debug_inspect(hld.lca(0, 4), content="0")
 /// }
 /// ```
 fn HLD::lca(self : HLD, u : Int, v : Int) -> Int {
@@ -289,9 +289,9 @@ fn HLD::lca(self : HLD, u : Int, v : Int) -> Int {
 ///   hld.add_edge(2, 3)
 ///   hld.add_edge(3, 4)
 ///   hld.build(0)
-///   inspect(hld.path_length(0, 4), content="4")
-///   inspect(hld.path_length(1, 3), content="2")
-///   inspect(hld.path_length(2, 2), content="0")
+///   debug_inspect(hld.path_length(0, 4), content="4")
+///   debug_inspect(hld.path_length(1, 3), content="2")
+///   debug_inspect(hld.path_length(2, 2), content="0")
 /// }
 /// ```
 fn HLD::path_length(self : HLD, u : Int, v : Int) -> Int {
@@ -321,7 +321,7 @@ fn HLD::path_length(self : HLD, u : Int, v : Int) -> Int {
 ///     hld.add_edge(i, i + 1)
 ///   }
 ///   hld.build(0)
-///   inspect(hld.count_chains(0, 7), content="1")
+///   debug_inspect(hld.count_chains(0, 7), content="1")
 /// }
 /// ```
 fn HLD::count_chains(self : HLD, u : Int, v : Int) -> Int {
@@ -354,9 +354,9 @@ fn HLD::count_chains(self : HLD, u : Int, v : Int) -> Int {
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(1, 2)
 ///   hld.build(0)
-///   inspect(hld.get_position(0), content="0")
-///   inspect(hld.get_position(1), content="1")
-///   inspect(hld.get_position(2), content="2")
+///   debug_inspect(hld.get_position(0), content="0")
+///   debug_inspect(hld.get_position(1), content="1")
+///   debug_inspect(hld.get_position(2), content="2")
 /// }
 /// ```
 fn HLD::get_position(self : HLD, u : Int) -> Int {
@@ -380,9 +380,9 @@ fn HLD::get_position(self : HLD, u : Int) -> Int {
 ///   hld.add_edge(0, 1)
 ///   hld.add_edge(1, 2)
 ///   hld.build(0)
-///   inspect(hld.get_chain_head(0), content="0")
-///   inspect(hld.get_chain_head(1), content="0")
-///   inspect(hld.get_chain_head(2), content="0")
+///   debug_inspect(hld.get_chain_head(0), content="0")
+///   debug_inspect(hld.get_chain_head(1), content="0")
+///   debug_inspect(hld.get_chain_head(2), content="0")
 /// }
 /// ```
 fn HLD::get_chain_head(self : HLD, u : Int) -> Int {
@@ -408,13 +408,13 @@ test "hld basic" {
   hld.add_edge(2, 5)
   hld.add_edge(2, 6)
   hld.build(0)
-  inspect(hld.lca(3, 4), content="1")
-  inspect(hld.lca(3, 5), content="0")
-  inspect(hld.lca(5, 6), content="2")
+  debug_inspect(hld.lca(3, 4), content="1")
+  debug_inspect(hld.lca(3, 5), content="0")
+  debug_inspect(hld.lca(5, 6), content="2")
   let pos3 = hld.get_position(3)
   let head3 = hld.get_chain_head(3)
-  inspect(pos3 >= 0 && pos3 < 7, content="true")
-  inspect(head3 >= 0 && head3 < 7, content="true")
+  debug_inspect(pos3 >= 0 && pos3 < 7, content="true")
+  debug_inspect(head3 >= 0 && head3 < 7, content="true")
 }
 
 ///|
@@ -426,9 +426,9 @@ test "hld path length" {
   hld.add_edge(2, 3)
   hld.add_edge(3, 4)
   hld.build(0)
-  inspect(hld.path_length(0, 4), content="4")
-  inspect(hld.path_length(1, 3), content="2")
-  inspect(hld.path_length(2, 2), content="0")
+  debug_inspect(hld.path_length(0, 4), content="4")
+  debug_inspect(hld.path_length(1, 3), content="2")
+  debug_inspect(hld.path_length(2, 2), content="0")
 }
 
 ///|
@@ -444,15 +444,15 @@ test "hld chain count" {
 
   // Chain switches should be O(log n)
   let chains = hld.count_chains(3, 6)
-  inspect(chains <= 4, content="true")
+  debug_inspect(chains <= 4, content="true")
 }
 
 ///|
 test "hld single node" {
   let hld = HLD(1)
   hld.build(0)
-  inspect(hld.lca(0, 0), content="0")
-  inspect(hld.path_length(0, 0), content="0")
+  debug_inspect(hld.lca(0, 0), content="0")
+  debug_inspect(hld.path_length(0, 0), content="0")
 }
 
 ///|
@@ -464,6 +464,6 @@ test "hld linear" {
   hld.build(0)
 
   // Linear tree should be one heavy chain
-  inspect(hld.count_chains(0, 7), content="1")
-  inspect(hld.lca(0, 7), content="0")
+  debug_inspect(hld.count_chains(0, 7), content="1")
+  debug_inspect(hld.lca(0, 7), content="0")
 }

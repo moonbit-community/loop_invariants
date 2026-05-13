@@ -279,10 +279,10 @@ test "gauss unique solution" {
   let a = [[2.0, 1.0], [1.0, -1.0]]
   let b = [5.0, 1.0]
   let res = @gauss.gauss_solve(a, b)
-  inspect(res.has_unique_solution, content="true")
+  debug_inspect(res.has_unique_solution, content="true")
   let ok = (res.solution[0] - 2.0).abs() < 0.000001 &&
     (res.solution[1] - 1.0).abs() < 0.000001
-  inspect(ok, content="true")
+  debug_inspect(ok, content="true")
 }
 ```
 
@@ -292,7 +292,7 @@ test "gauss no solution" {
   let a = [[1.0, 1.0], [1.0, 1.0]]
   let b = [1.0, 2.0]
   let res = @gauss.gauss_solve(a, b)
-  inspect(res.has_solution, content="false")
+  debug_inspect(res.has_solution, content="false")
 }
 ```
 
@@ -302,8 +302,8 @@ test "gauss infinite solutions" {
   let a = [[1.0, 1.0], [2.0, 2.0]]
   let b = [1.0, 2.0]
   let res = @gauss.gauss_solve(a, b)
-  inspect(res.has_solution, content="true")
-  inspect(res.has_unique_solution, content="false")
+  debug_inspect(res.has_solution, content="true")
+  debug_inspect(res.has_unique_solution, content="false")
 }
 ```
 

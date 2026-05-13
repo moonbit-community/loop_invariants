@@ -266,7 +266,7 @@ test "cycle becomes one block" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
   let tree = @block_cut_tree.build_block_cut_tree(4, edges)
   let block = 4
-  inspect(tree.adj[block].length(), content="4")
+  debug_inspect(tree.adj[block].length(), content="4")
   assert_true(tree.adj[block].contains(0))
   assert_true(tree.adj[block].contains(1))
   assert_true(tree.adj[block].contains(2))
@@ -316,7 +316,7 @@ test "disconnected graph" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (3, 4)]
   let tree = @block_cut_tree.build_block_cut_tree(6, edges)
   // There are three blocks: (0,1), (1,2), (3,4)
-  inspect(tree.component_count, content="3")
+  debug_inspect(tree.component_count, content="3")
 }
 ```
 

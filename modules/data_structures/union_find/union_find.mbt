@@ -379,11 +379,11 @@ fn WeightedUnionFind::union_with_weight(
 ///|
 test "union find basic" {
   let uf = UnionFind(5)
-  inspect(uf.count_sets(), content="5")
+  debug_inspect(uf.count_sets(), content="5")
   let _ = uf.union(0, 1)
-  inspect(uf.count_sets(), content="4")
-  inspect(uf.connected(0, 1), content="true")
-  inspect(uf.connected(0, 2), content="false")
+  debug_inspect(uf.count_sets(), content="4")
+  debug_inspect(uf.connected(0, 1), content="true")
+  debug_inspect(uf.connected(0, 2), content="false")
 }
 
 ///|
@@ -392,19 +392,19 @@ test "union find transitivity" {
   let _ = uf.union(0, 1)
   let _ = uf.union(1, 2)
   let _ = uf.union(3, 4)
-  inspect(uf.connected(0, 2), content="true") // Transitive
-  inspect(uf.connected(0, 3), content="false")
+  debug_inspect(uf.connected(0, 2), content="true") // Transitive
+  debug_inspect(uf.connected(0, 3), content="false")
   let _ = uf.union(2, 3)
-  inspect(uf.connected(0, 4), content="true") // All connected
-  inspect(uf.count_sets(), content="1")
+  debug_inspect(uf.connected(0, 4), content="true") // All connected
+  debug_inspect(uf.count_sets(), content="1")
 }
 
 ///|
 test "union find same set" {
   let uf = UnionFind(3)
   let _ = uf.union(0, 1)
-  inspect(uf.union(0, 1), content="false") // Already same set
-  inspect(uf.count_sets(), content="2")
+  debug_inspect(uf.union(0, 1), content="false") // Already same set
+  debug_inspect(uf.count_sets(), content="2")
 }
 
 ///|
@@ -416,9 +416,9 @@ test "union find find" {
 
   // All should have same root
   let root = uf.find(0)
-  inspect(uf.find(1) == root, content="true")
-  inspect(uf.find(2) == root, content="true")
-  inspect(uf.find(3) == root, content="true")
+  debug_inspect(uf.find(1) == root, content="true")
+  debug_inspect(uf.find(2) == root, content="true")
+  debug_inspect(uf.find(3) == root, content="true")
 }
 
 ///|
@@ -426,16 +426,16 @@ test "union find set size" {
   let uf = UnionFind(5)
   let _ = uf.union(0, 1)
   let _ = uf.union(0, 2)
-  inspect(uf.set_size(0), content="3")
-  inspect(uf.set_size(3), content="1")
+  debug_inspect(uf.set_size(0), content="3")
+  debug_inspect(uf.set_size(3), content="1")
 }
 
 ///|
 test "union find invalid" {
   let uf = UnionFind(3)
-  inspect(uf.find(-1), content="-1")
-  inspect(uf.find(10), content="-1")
-  inspect(uf.union(-1, 0), content="false")
+  debug_inspect(uf.find(-1), content="-1")
+  debug_inspect(uf.find(10), content="-1")
+  debug_inspect(uf.union(-1, 0), content="false")
 }
 
 ///|
@@ -458,10 +458,10 @@ test "weighted union find consistency" {
   let _ = wuf.union_with_weight(1, 2, 3L)
 
   // Adding consistent constraint
-  inspect(wuf.union_with_weight(0, 2, 8L), content="true")
+  debug_inspect(wuf.union_with_weight(0, 2, 8L), content="true")
 
   // Adding inconsistent constraint
-  inspect(wuf.union_with_weight(0, 2, 10L), content="false")
+  debug_inspect(wuf.union_with_weight(0, 2, 10L), content="false")
 }
 
 ///|
@@ -476,14 +476,14 @@ test "weighted union find diff" {
 ///|
 test "union find empty" {
   let uf = UnionFind(0)
-  inspect(uf.count_sets(), content="0")
+  debug_inspect(uf.count_sets(), content="0")
 }
 
 ///|
 test "union find single" {
   let uf = UnionFind(1)
-  inspect(uf.count_sets(), content="1")
-  inspect(uf.find(0), content="0")
+  debug_inspect(uf.count_sets(), content="1")
+  debug_inspect(uf.find(0), content="0")
 }
 
 ///|
@@ -500,6 +500,6 @@ test "union find path compression" {
 
   // After find with path compression, all should point to root
   for i in 0..<10 {
-    inspect(uf.find(i) == root, content="true")
+    debug_inspect(uf.find(i) == root, content="true")
   }
 }

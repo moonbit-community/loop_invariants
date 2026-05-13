@@ -151,11 +151,15 @@ pub fn min_cyclic_rotation(s : String) -> String {
 
 ///|
 test "min rotation basic" {
-  inspect(min_cyclic_rotation("baca"), content="abac")
-  inspect(min_cyclic_rotation_index("baca"), content="3")
+  debug_inspect(min_cyclic_rotation("baca"), content=(
+    #|"abac"
+  ))
+  debug_inspect(min_cyclic_rotation_index("baca"), content="3")
 }
 
 ///|
 test "min rotation repeated" {
-  inspect(min_cyclic_rotation("ababab"), content="ababab")
+  debug_inspect(min_cyclic_rotation("ababab"), content=(
+    #|"ababab"
+  ))
 }

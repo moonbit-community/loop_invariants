@@ -55,7 +55,7 @@ test "dag shortest path example" {
   ]
   let dist = @challenge_dag_shortest_path.dag_shortest_paths(4, edges, 0)
   guard dist is Some(d) else { fail("expected distances") }
-  inspect(d, content="[0, 2, 3, 4]")
+  debug_inspect(d, content="[0, 2, 3, 4]")
 }
 ```
 
@@ -73,7 +73,7 @@ test "dag shortest path negative edges" {
   ]
   let dist = @challenge_dag_shortest_path.dag_shortest_paths(4, edges, 0)
   guard dist is Some(d) else { fail("expected distances") }
-  inspect(d, content="[0, 2, -2, 1]")
+  debug_inspect(d, content="[0, 2, -2, 1]")
 }
 ```
 
@@ -88,9 +88,9 @@ test "dag shortest path unreachable" {
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1)]
   let dist = @challenge_dag_shortest_path.dag_shortest_paths(4, edges, 0)
   guard dist is Some(d) else { fail("expected distances") }
-  inspect(d[0], content="0")
-  inspect(d[1], content="1")
-  inspect(d[2] > 1000000, content="true")
+  debug_inspect(d[0], content="0")
+  debug_inspect(d[1], content="1")
+  debug_inspect(d[2] > 1000000, content="true")
 }
 ```
 
@@ -104,7 +104,7 @@ If there is a cycle, topological order does not exist, so the function returns
 test "dag shortest path cycle" {
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 2), (2, 0, 3)]
   let dist = @challenge_dag_shortest_path.dag_shortest_paths(3, edges, 0)
-  inspect(dist is None, content="true")
+  debug_inspect(dist is None, content="true")
 }
 ```
 

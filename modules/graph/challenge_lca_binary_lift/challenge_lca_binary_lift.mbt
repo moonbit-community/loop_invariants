@@ -54,8 +54,8 @@ fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
 /// test {
 ///   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
 ///   let tree = build_lca(5, edges[:], 0)
-///   assert_eq(lca(tree, 3, 4), 1)
-///   assert_eq(lca(tree, 3, 2), 0)
+///   @debug.assert_eq(lca(tree, 3, 4), 1)
+///   @debug.assert_eq(lca(tree, 3, 2), 0)
 /// }
 /// ```
 pub struct Lca {

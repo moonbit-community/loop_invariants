@@ -114,7 +114,7 @@ test "binary trie max xor" {
   let t2 = @challenge_persistent_binary_trie.insert(t1, 5, 3)
   // value 2 (0010) xor 5 (0101) = 7
   let best = @challenge_persistent_binary_trie.max_xor(t2, 2, 3)
-  inspect(best, content="7")
+  debug_inspect(best, content="7")
 }
 ```
 
@@ -128,10 +128,10 @@ test "binary trie persistence" {
   let t2 = @challenge_persistent_binary_trie.insert(t1, 3, 2)
   let best1 = @challenge_persistent_binary_trie.max_xor(t1, 2, 2)
   let best2 = @challenge_persistent_binary_trie.max_xor(t2, 2, 2)
-  inspect(best1, content="3")
-  inspect(best2, content="3")
-  inspect(@challenge_persistent_binary_trie.count(t0), content="0")
-  inspect(@challenge_persistent_binary_trie.count(t2), content="2")
+  debug_inspect(best1, content="3")
+  debug_inspect(best2, content="3")
+  debug_inspect(@challenge_persistent_binary_trie.count(t0), content="0")
+  debug_inspect(@challenge_persistent_binary_trie.count(t2), content="2")
 }
 ```
 
@@ -143,8 +143,8 @@ test "binary trie duplicates" {
   let t0 = @challenge_persistent_binary_trie.empty()
   let t1 = @challenge_persistent_binary_trie.insert(t0, 4, 3)
   let t2 = @challenge_persistent_binary_trie.insert(t1, 4, 3)
-  inspect(@challenge_persistent_binary_trie.count(t1), content="1")
-  inspect(@challenge_persistent_binary_trie.count(t2), content="2")
+  debug_inspect(@challenge_persistent_binary_trie.count(t1), content="1")
+  debug_inspect(@challenge_persistent_binary_trie.count(t2), content="2")
 }
 ```
 

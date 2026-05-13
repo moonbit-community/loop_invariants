@@ -265,7 +265,7 @@ test "push-relabel example" {
   pr.add_edge(3, 5, 20L)
   pr.add_edge(4, 5, 4L)
   let flow = pr.max_flow(0, 5)
-  inspect(flow, content="23")
+  debug_inspect(flow, content="23")
 }
 ```
 
@@ -280,7 +280,7 @@ test "push-relabel undirected" {
   pr.add_undirected_edge(0, 2, 4L)
   pr.add_undirected_edge(2, 3, 6L)
   let flow = pr.max_flow(0, 3)
-  inspect(flow, content="7")
+  debug_inspect(flow, content="7")
 }
 ```
 

@@ -373,7 +373,7 @@ test "bellman_ford basic" {
   debug_inspect(result.get_distance(2), content="Some(7)")
   debug_inspect(result.get_distance(3), content="Some(4)")
   debug_inspect(result.get_distance(4), content="Some(-2)")
-  inspect(result.has_negative_cycle(), content="false")
+  debug_inspect(result.has_negative_cycle(), content="false")
 }
 
 ///|
@@ -385,15 +385,15 @@ test "bellman_ford wrapper" {
     (2, 3, 1),
   ]
   let (dist, neg) = bellman_ford(4, edges, 0)
-  inspect(dist, content="[0, 1, 3, 4]")
-  inspect(neg, content="false")
+  debug_inspect(dist, content="[0, 1, 3, 4]")
+  debug_inspect(neg, content="false")
 }
 
 ///|
 test "bellman_ford wrapper negative cycle" {
   let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2), (2, 1, -2)]
   let (_dist, neg) = bellman_ford(3, edges, 0)
-  inspect(neg, content="true")
+  debug_inspect(neg, content="true")
 }
 
 ///|
@@ -403,7 +403,7 @@ test "bellman_ford negative cycle" {
   bf.add_edge(1, 2, -1L)
   bf.add_edge(2, 0, -1L) // Creates negative cycle: 0->1->2->0 = -1
   let result = bf.compute(0)
-  inspect(result.has_negative_cycle(), content="true")
+  debug_inspect(result.has_negative_cycle(), content="true")
 }
 
 ///|
@@ -441,9 +441,9 @@ test "spfa basic" {
   spfa.add_edge(4, 3, 7L)
   let result = spfa.compute(0)
   guard result is Some(dist) else { fail("Expected distances") }
-  inspect(dist[0], content="0")
-  inspect(dist[1], content="2")
-  inspect(dist[4], content="-2")
+  debug_inspect(dist[0], content="0")
+  debug_inspect(dist[1], content="2")
+  debug_inspect(dist[4], content="-2")
 }
 
 ///|

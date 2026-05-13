@@ -34,7 +34,10 @@ struct Fenwick {
 ///   let rf = @challenge_persistent_fenwick_range_add.make(6)
 ///   let rf = @challenge_persistent_fenwick_range_add.range_add(rf, 1, 3, 5)
 ///   let rf = @challenge_persistent_fenwick_range_add.range_add(rf, 2, 4, 2)
-///   assert_eq(@challenge_persistent_fenwick_range_add.range_sum(rf, 0, 5), 21)
+///   @debug.assert_eq(
+///     @challenge_persistent_fenwick_range_add.range_sum(rf, 0, 5),
+///     21,
+///   )
 /// }
 /// ```
 pub struct RangeFenwick {

@@ -1,3 +1,4 @@
 import {
   "bobzhang/loop_invariants_graph/min_cut_st",
+  "moonbitlang/core/debug",
 }

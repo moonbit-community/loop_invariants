@@ -103,5 +103,5 @@ pub fn mo_range_sum(
 test "mo_range_sum_shrinks_right_boundary" {
   let arr : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8]
   let queries : Array[(Int, Int)] = [(0, 6), (3, 4)]
-  assert_eq(mo_range_sum(arr, queries), [21, 4])
+  @debug.assert_eq(mo_range_sum(arr, queries), [21, 4])
 }

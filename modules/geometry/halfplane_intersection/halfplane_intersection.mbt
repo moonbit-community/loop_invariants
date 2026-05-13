@@ -392,13 +392,13 @@ test "halfplane square" {
     HalfPlane::from_points({ x: 0.0, y: 1.0 }, { x: 0.0, y: 0.0 }),
   ]
   let poly = halfplane_intersection(planes).unwrap()
-  inspect(poly.length(), content="4")
+  debug_inspect(poly.length(), content="4")
   let min_x = poly[:].iter().map(p => p.x).minimum().unwrap()
   let max_x = poly[:].iter().map(p => p.x).maximum().unwrap()
   let min_y = poly[:].iter().map(p => p.y).minimum().unwrap()
   let max_y = poly[:].iter().map(p => p.y).maximum().unwrap()
-  inspect(approx(min_x, 0.0) && approx(max_x, 1.0), content="true")
-  inspect(approx(min_y, 0.0) && approx(max_y, 1.0), content="true")
+  debug_inspect(approx(min_x, 0.0) && approx(max_x, 1.0), content="true")
+  debug_inspect(approx(min_y, 0.0) && approx(max_y, 1.0), content="true")
 }
 
 ///|
@@ -424,6 +424,6 @@ test "halfplane keeps most restrictive parallel line" {
   let max_x = poly[:].iter().map(p => p.x).maximum().unwrap()
   let min_y = poly[:].iter().map(p => p.y).minimum().unwrap()
   let max_y = poly[:].iter().map(p => p.y).maximum().unwrap()
-  inspect(approx(min_x, 1.0) && approx(max_x, 3.0), content="true")
-  inspect(approx(min_y, 0.0) && approx(max_y, 2.0), content="true")
+  debug_inspect(approx(min_x, 1.0) && approx(max_x, 3.0), content="true")
+  debug_inspect(approx(min_y, 0.0) && approx(max_y, 2.0), content="true")
 }

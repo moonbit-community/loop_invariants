@@ -89,15 +89,15 @@ test "trie basic" {
   let root1 = @challenge_persistent_trie_string.add(root0, "cat")
   let root2 = @challenge_persistent_trie_string.add(root1, "car")
   let root3 = @challenge_persistent_trie_string.add(root2, "dog")
-  inspect(
+  debug_inspect(
     @challenge_persistent_trie_string.contains(root3, "cat"),
     content="true",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_trie_string.contains(root3, "car"),
     content="true",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_trie_string.contains(root3, "cow"),
     content="false",
   )
@@ -114,15 +114,15 @@ test "trie versions" {
   let root0 = @challenge_persistent_trie_string.empty()
   let root1 = @challenge_persistent_trie_string.add(root0, "hi")
   let root2 = @challenge_persistent_trie_string.add(root1, "hit")
-  inspect(
+  debug_inspect(
     @challenge_persistent_trie_string.contains(root1, "hit"),
     content="false",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_trie_string.contains(root2, "hit"),
     content="true",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_trie_string.contains(root2, "hi"),
     content="true",
   )
@@ -141,11 +141,11 @@ present.
 test "trie prefix" {
   let root0 = @challenge_persistent_trie_string.empty()
   let root1 = @challenge_persistent_trie_string.add(root0, "car")
-  inspect(
+  debug_inspect(
     @challenge_persistent_trie_string.contains(root1, "car"),
     content="true",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_trie_string.contains(root1, "ca"),
     content="false",
   )

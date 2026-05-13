@@ -198,10 +198,10 @@ test "tarjan offline lca y shape" {
     [1], // 4
   ]
   let queries : ReadOnlyArray[(Int, Int)] = [(3, 4), (3, 2), (4, 2)]
-  let ans = @tarjan_offline_lca.tarjan_offline_lca(5, adj[:], 0, queries[:])
-  inspect(ans[0], content="1")
-  inspect(ans[1], content="0")
-  inspect(ans[2], content="0")
+  let ans = @tarjan_offline_lca.tarjan_offline_lca(5, adj, 0, queries)
+  debug_inspect(ans[0], content="1")
+  debug_inspect(ans[1], content="0")
+  debug_inspect(ans[2], content="0")
 }
 ```
 
@@ -219,10 +219,10 @@ test "tarjan offline lca chain ancestor" {
     [3], // 4
   ]
   let queries : ReadOnlyArray[(Int, Int)] = [(2, 4), (0, 4), (1, 3)]
-  let ans = @tarjan_offline_lca.tarjan_offline_lca(5, adj[:], 0, queries[:])
-  inspect(ans[0], content="2")
-  inspect(ans[1], content="0")
-  inspect(ans[2], content="1")
+  let ans = @tarjan_offline_lca.tarjan_offline_lca(5, adj, 0, queries)
+  debug_inspect(ans[0], content="2")
+  debug_inspect(ans[1], content="0")
+  debug_inspect(ans[2], content="1")
 }
 ```
 
@@ -233,9 +233,9 @@ test "tarjan offline lca chain ancestor" {
 test "tarjan offline lca self query" {
   let adj : Array[Array[Int]] = [[1], [0, 2], [1]]
   let queries : ReadOnlyArray[(Int, Int)] = [(0, 0), (2, 2)]
-  let ans = @tarjan_offline_lca.tarjan_offline_lca(3, adj[:], 0, queries[:])
-  inspect(ans[0], content="0")
-  inspect(ans[1], content="2")
+  let ans = @tarjan_offline_lca.tarjan_offline_lca(3, adj, 0, queries)
+  debug_inspect(ans[0], content="0")
+  debug_inspect(ans[1], content="2")
 }
 ```
 
@@ -247,22 +247,12 @@ test "tarjan offline lca different roots" {
   // Same edges as the y-shape example: (0,1), (0,2), (1,3), (1,4).
   let adj : Array[Array[Int]] = [[1, 2], [0, 3, 4], [0], [1], [1]]
   let queries : ReadOnlyArray[(Int, Int)] = [(3, 2)]
-  let rooted_0 = @tarjan_offline_lca.tarjan_offline_lca(
-    5,
-    adj[:],
-    0,
-    queries[:],
-  )
-  let rooted_1 = @tarjan_offline_lca.tarjan_offline_lca(
-    5,
-    adj[:],
-    1,
-    queries[:],
-  )
+  let rooted_0 = @tarjan_offline_lca.tarjan_offline_lca(5, adj, 0, queries)
+  let rooted_1 = @tarjan_offline_lca.tarjan_offline_lca(5, adj, 1, queries)
   // Under root 0, both 3 and 2 share ancestor 0.
   // Under root 1, the tree becomes 1 - 0 - 2 and 1 - 3 / 4, so LCA(3, 2) = 1.
-  inspect(rooted_0[0], content="0")
-  inspect(rooted_1[0], content="1")
+  debug_inspect(rooted_0[0], content="0")
+  debug_inspect(rooted_1[0], content="1")
 }
 ```
 
