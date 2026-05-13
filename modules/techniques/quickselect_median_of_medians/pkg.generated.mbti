@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/quickselect_median_of_medians"
+
+// Values
+pub fn median(ArrayView[Int]) -> Int?
+
+pub fn select_kth(ArrayView[Int], Int) -> Int?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
