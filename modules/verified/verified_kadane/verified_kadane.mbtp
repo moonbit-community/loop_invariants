@@ -1,0 +1,8 @@
+predicate nonempty(arr : ArrayView[Int]) {
+  arr.length() >= 1
+}
+
+predicate kadane_post(arr : ArrayView[Int], best : Int) {
+  (arr.length() >= 1) &&
+  (∃ k : Int, ((0 <= k) && (k < arr.length())) && (arr[k] <= best))
+}

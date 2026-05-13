@@ -1,0 +1,27 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_geometry/welzl_smallest_enclosing_circle"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn smallest_enclosing_circle(ArrayView[Point]) -> Circle
+
+// Errors
+
+// Types and methods
+pub(all) struct Circle {
+  center : Point
+  radius : Double
+} derive(@debug.Debug)
+
+pub(all) struct Point {
+  x : Double
+  y : Double
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits
+

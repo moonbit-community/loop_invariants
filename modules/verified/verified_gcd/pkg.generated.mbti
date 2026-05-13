@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_verified/verified_gcd"
+
+// Values
+pub fn gcd_binary(Int, Int) -> Int
+
+pub fn gcd_euclid(Int, Int) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
