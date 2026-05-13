@@ -14,7 +14,7 @@
 /// - `cut`: the vertices on one side of the cut.
 ///
 /// Returns the total crossing edge weight. Used in tests to confirm that
-/// the weight reported by `stoer_wagner_min_cut` matches the actual cut.
+/// the weight reported by `@stoer_wagner_min_cut.stoer_wagner_min_cut` matches the actual cut.
 fn cut_weight(
   n : Int,
   edges : ArrayView[(Int, Int, Int64)],
@@ -59,7 +59,7 @@ test "stoer wagner cycle" {
     (2, 3, 1L),
     (3, 0, 1L),
   ]
-  let result = stoer_wagner_min_cut(4, edges).unwrap()
+  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(4, edges).unwrap()
   inspect(result.weight, content="2")
   // Verify the cut is actually valid
   inspect(cut_weight(4, edges, result.cut), content="2")
@@ -70,7 +70,7 @@ test "stoer wagner cycle" {
 /// isolated by removing no edges at all.
 test "stoer wagner disconnected" {
   let edges : Array[(Int, Int, Int64)] = []
-  let result = stoer_wagner_min_cut(3, edges).unwrap()
+  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(3, edges).unwrap()
   inspect(result.weight, content="0")
 }
 
@@ -78,7 +78,9 @@ test "stoer wagner disconnected" {
 /// Single vertex: no cut exists, so the function returns `None`.
 test "stoer wagner n1" {
   let edges : Array[(Int, Int, Int64)] = []
-  guard stoer_wagner_min_cut(1, edges) is None else { fail("expected None") }
+  guard @stoer_wagner_min_cut.stoer_wagner_min_cut(1, edges) is None else {
+    fail("expected None")
+  }
 }
 
 ///|
@@ -97,7 +99,7 @@ test "stoer wagner complete k4" {
     (1, 3, 1L),
     (2, 3, 1L),
   ]
-  let result = stoer_wagner_min_cut(4, edges).unwrap()
+  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(4, edges).unwrap()
   inspect(result.weight, content="3")
   inspect(cut_weight(4, edges, result.cut), content="3")
 }
@@ -135,7 +137,7 @@ test "stoer wagner weighted" {
     (1, 3, 1L),
     (2, 3, 10L),
   ]
-  let result = stoer_wagner_min_cut(4, edges).unwrap()
+  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(4, edges).unwrap()
   inspect(result.weight, content="2")
 }
 
@@ -145,7 +147,7 @@ test "stoer wagner weighted" {
 /// The only possible cut is {0} vs {1}; cut weight = 5.
 test "stoer wagner two vertices" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L)]
-  let result = stoer_wagner_min_cut(2, edges).unwrap()
+  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(2, edges).unwrap()
   inspect(result.weight, content="5")
   inspect(result.cut.length(), content="1")
 }
@@ -168,7 +170,7 @@ test "stoer wagner parallel edges" {
     (0, 1, 3L), // Same edge, different weight
     (1, 2, 1L),
   ]
-  let result = stoer_wagner_min_cut(3, edges).unwrap()
+  let result = @stoer_wagner_min_cut.stoer_wagner_min_cut(3, edges).unwrap()
 
   // Cut {2} has weight 1, better than cut {0} with weight 5
   inspect(result.weight, content="1")

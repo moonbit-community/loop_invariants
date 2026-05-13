@@ -5,7 +5,7 @@
 ///|
 /// Test basic insert and get operations.
 test "implicit treap basic" {
-  let treap = ImplicitTreap::ImplicitTreap()
+  let treap = @implicit_treap.ImplicitTreap::@implicit_treap.ImplicitTreap()
 
   // Insert elements: [10, 20, 30]
   treap.insert(0, 10L)
@@ -28,7 +28,7 @@ test "implicit treap basic" {
 ///   Result: [10, 20, 30]
 /// ```
 test "implicit treap insert at position" {
-  let treap = ImplicitTreap::ImplicitTreap()
+  let treap = @implicit_treap.ImplicitTreap::@implicit_treap.ImplicitTreap()
 
   // Build [10, 30]
   treap.insert(0, 10L)
@@ -51,7 +51,9 @@ test "implicit treap insert at position" {
 ///   Result:  [20, 40, 50]
 /// ```
 test "implicit treap delete" {
-  let treap = ImplicitTreap::from_array([10L, 20L, 30L, 40L, 50L])
+  let treap = @implicit_treap.ImplicitTreap::from_array([
+    10L, 20L, 30L, 40L, 50L,
+  ])
   inspect(treap.size(), content="5")
 
   // Delete at position 2 (value 30)
@@ -76,7 +78,7 @@ test "implicit treap delete" {
 ///   range_sum(3, 3) = 0 (empty range)
 /// ```
 test "implicit treap range sum" {
-  let treap = ImplicitTreap::from_array([1L, 2L, 3L, 4L, 5L])
+  let treap = @implicit_treap.ImplicitTreap::from_array([1L, 2L, 3L, 4L, 5L])
 
   // Sum of full range
   inspect(treap.range_sum(0, 5), content="15")
@@ -96,7 +98,7 @@ test "implicit treap range sum" {
 ///
 /// SEQUENCE: [5, 2, 8, 1, 9]
 test "implicit treap range min max" {
-  let treap = ImplicitTreap::from_array([5L, 2L, 8L, 1L, 9L])
+  let treap = @implicit_treap.ImplicitTreap::from_array([5L, 2L, 8L, 1L, 9L])
   debug_inspect(treap.range_min(0, 5), content="Some(1)")
   debug_inspect(treap.range_max(0, 5), content="Some(9)")
 
@@ -118,7 +120,7 @@ test "implicit treap range min max" {
 ///   reverse(0, 5): [5, 2, 3, 4, 1]
 /// ```
 test "implicit treap reverse" {
-  let treap = ImplicitTreap::from_array([1L, 2L, 3L, 4L, 5L])
+  let treap = @implicit_treap.ImplicitTreap::from_array([1L, 2L, 3L, 4L, 5L])
 
   // Reverse [1, 4): [1, 4, 3, 2, 5]
   treap.reverse(1, 4)
@@ -132,7 +134,7 @@ test "implicit treap reverse" {
 ///|
 /// Test set operation and aggregate updates.
 test "implicit treap set" {
-  let treap = ImplicitTreap::from_array([1L, 2L, 3L, 4L, 5L])
+  let treap = @implicit_treap.ImplicitTreap::from_array([1L, 2L, 3L, 4L, 5L])
   treap.set(2, 100L)
   debug_inspect(treap.get(2), content="Some(100)")
   inspect(treap.to_array(), content="[1, 2, 100, 4, 5]")
@@ -144,7 +146,7 @@ test "implicit treap set" {
 ///|
 /// Test push/pop operations (deque behavior).
 test "implicit treap push pop" {
-  let treap = ImplicitTreap::ImplicitTreap()
+  let treap = @implicit_treap.ImplicitTreap::@implicit_treap.ImplicitTreap()
   treap.push_back(1L)
   treap.push_back(2L)
   treap.push_front(0L)
@@ -158,7 +160,7 @@ test "implicit treap push pop" {
 ///|
 /// Stress test with larger sequence.
 test "implicit treap stress" {
-  let treap = ImplicitTreap::ImplicitTreap()
+  let treap = @implicit_treap.ImplicitTreap::@implicit_treap.ImplicitTreap()
 
   // Build sequence 0..99
   for i in 0..<100 {
@@ -181,7 +183,7 @@ test "implicit treap stress" {
 ///
 /// SEQUENCE: [1, 2, 3, 4, 5, 6]
 test "implicit treap multiple reverses" {
-  let treap = ImplicitTreap::from_array([1L, 2L, 3L, 4L, 5L, 6L])
+  let treap = @implicit_treap.ImplicitTreap::from_array([1L, 2L, 3L, 4L, 5L, 6L])
 
   // Reverse [0, 3): [3, 2, 1, 4, 5, 6]
   treap.reverse(0, 3)
@@ -200,8 +202,8 @@ test "implicit treap multiple reverses" {
 /// Test rope-like operations (concatenation and splitting).
 test "implicit treap rope operations" {
   // Simulate rope: concatenate two sequences
-  let treap1 = ImplicitTreap::from_array([1L, 2L, 3L])
-  let treap2 = ImplicitTreap::from_array([4L, 5L, 6L])
+  let treap1 = @implicit_treap.ImplicitTreap::from_array([1L, 2L, 3L])
+  let treap2 = @implicit_treap.ImplicitTreap::from_array([4L, 5L, 6L])
 
   // Manual concatenation by inserting elements
   for i in 0..<treap2.size() {

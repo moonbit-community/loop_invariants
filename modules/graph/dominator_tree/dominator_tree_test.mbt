@@ -43,7 +43,7 @@ test "dominator tree basic" {
     (4, 5),
     (2, 5),
   ]
-  let dom = build_dominator_tree(6, edges, 0).unwrap()
+  let dom = @dominator_tree.build_dominator_tree(6, edges, 0).unwrap()
 
   // Check immediate dominators
   inspect(dom.idom[0], content="0") // root dominates itself
@@ -70,7 +70,7 @@ test "dominator tree basic" {
 /// ```
 test "dominator tree unreachable" {
   let edges : Array[(Int, Int)] = [(0, 1), (2, 3)]
-  let dom = build_dominator_tree(4, edges, 0).unwrap()
+  let dom = @dominator_tree.build_dominator_tree(4, edges, 0).unwrap()
 
   // Reachable vertices
   inspect(dom.idom[0], content="0")
@@ -98,7 +98,7 @@ test "dominator tree unreachable" {
 /// ```
 test "dominator tree diamond" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
-  let dom = build_dominator_tree(4, edges, 0).unwrap()
+  let dom = @dominator_tree.build_dominator_tree(4, edges, 0).unwrap()
   inspect(dom.idom[0], content="0")
   inspect(dom.idom[1], content="0")
   inspect(dom.idom[2], content="0")
@@ -119,7 +119,7 @@ test "dominator tree diamond" {
 /// ```
 test "dominator tree linear" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
-  let dom = build_dominator_tree(5, edges, 0).unwrap()
+  let dom = @dominator_tree.build_dominator_tree(5, edges, 0).unwrap()
 
   // In a linear chain, each vertex dominates all successors
   inspect(dom.idom[0], content="0")
@@ -142,19 +142,31 @@ test "dominator tree invalid" {
   let edges : Array[(Int, Int)] = [(0, 1)]
 
   // Invalid root
-  debug_inspect(build_dominator_tree(2, edges, -1), content="None")
-  debug_inspect(build_dominator_tree(2, edges, 5), content="None")
+  debug_inspect(
+    @dominator_tree.build_dominator_tree(2, edges, -1),
+    content="None",
+  )
+  debug_inspect(
+    @dominator_tree.build_dominator_tree(2, edges, 5),
+    content="None",
+  )
 
   // Invalid n
-  debug_inspect(build_dominator_tree(0, edges, 0), content="None")
-  debug_inspect(build_dominator_tree(-1, edges, 0), content="None")
+  debug_inspect(
+    @dominator_tree.build_dominator_tree(0, edges, 0),
+    content="None",
+  )
+  debug_inspect(
+    @dominator_tree.build_dominator_tree(-1, edges, 0),
+    content="None",
+  )
 }
 
 ///|
 /// Test dominator tree children structure.
 test "dominator tree children" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3), (3, 4)]
-  let dom = build_dominator_tree(5, edges, 0).unwrap()
+  let dom = @dominator_tree.build_dominator_tree(5, edges, 0).unwrap()
 
   // Check tree structure
   // 0's children should include 1, 2, and 3
