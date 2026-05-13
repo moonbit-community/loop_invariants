@@ -176,7 +176,7 @@ Use sliding window when:
 test "readme max" {
   let arr : Array[Int64] = [1L, 3L, -1L, -3L, 5L, 3L, 6L, 7L]
   let maxs = @sliding_window.sliding_window_max(arr, 3)
-  inspect(maxs, content="[3, 3, 5, 5, 6, 7]")
+  debug_inspect(maxs, content="[3, 3, 5, 5, 6, 7]")
 }
 ```
 
@@ -187,7 +187,7 @@ test "readme max" {
 test "readme min" {
   let arr : Array[Int64] = [1L, 3L, -1L, -3L, 5L, 3L, 6L, 7L]
   let mins = @sliding_window.sliding_window_min(arr, 3)
-  inspect(mins, content="[-1, -3, -3, -3, 3, 3]")
+  debug_inspect(mins, content="[-1, -3, -3, -3, 3, 3]")
 }
 ```
 
@@ -198,7 +198,7 @@ test "readme min" {
 test "readme sum" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let sums = @sliding_window.sliding_window_sum(arr, 3)
-  inspect(sums, content="[6, 9, 12]")
+  debug_inspect(sums, content="[6, 9, 12]")
 }
 ```
 
@@ -208,7 +208,10 @@ test "readme sum" {
 ///|
 test "readme longest" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  inspect(@sliding_window.longest_subarray_with_sum_le(arr, 6L), content="3")
+  debug_inspect(
+    @sliding_window.longest_subarray_with_sum_le(arr, 6L),
+    content="3",
+  )
 }
 ```
 
@@ -218,7 +221,7 @@ test "readme longest" {
 ///|
 test "readme min subarray" {
   let arr : Array[Int64] = [2L, 3L, 1L, 2L, 4L, 3L]
-  inspect(@sliding_window.min_subarray_with_sum_ge(arr, 7L), content="2")
+  debug_inspect(@sliding_window.min_subarray_with_sum_ge(arr, 7L), content="2")
 }
 ```
 

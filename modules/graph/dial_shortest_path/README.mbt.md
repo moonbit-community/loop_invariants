@@ -182,7 +182,7 @@ test "dial shortest path example" {
   g.add_edge(2, 3, 1)
   g.add_edge(3, 4, 0)
   let dist = @dial_shortest_path.dial_shortest_paths(g, 0)
-  inspect(dist, content="[0, 1, 2, 3, 3]")
+  debug_inspect(dist, content="[0, 1, 2, 3, 3]")
 }
 ```
 
@@ -194,7 +194,7 @@ test "dial shortest path undirected" {
   g.add_undirected_edge(1, 2, 1)
   g.add_undirected_edge(2, 3, 2)
   let dist = @dial_shortest_path.dial_shortest_paths(g, 0)
-  inspect(dist, content="[0, 1, 2, 4]")
+  debug_inspect(dist, content="[0, 1, 2, 4]")
 }
 ```
 

@@ -232,7 +232,7 @@ test "fibonacci recurrence" {
   let m = 1000000007L
   let seq : Array[Int64] = [0L, 1L, 1L, 2L, 3L, 5L, 8L]
   let coeffs = @berlekamp_massey.berlekamp_massey(seq, m)
-  inspect(coeffs, content="[1, 1]")
+  debug_inspect(coeffs, content="[1, 1]")
 }
 ```
 
@@ -246,7 +246,7 @@ test "geometric progression" {
   let m = 1000000007L
   let seq : Array[Int64] = [1L, 2L, 4L, 8L, 16L]
   let coeffs = @berlekamp_massey.berlekamp_massey(seq, m)
-  inspect(coeffs, content="[2]")
+  debug_inspect(coeffs, content="[2]")
 }
 ```
 
@@ -260,7 +260,7 @@ test "constant sequence" {
   let m = 1000000007L
   let seq : Array[Int64] = [7L, 7L, 7L, 7L]
   let coeffs = @berlekamp_massey.berlekamp_massey(seq, m)
-  inspect(coeffs, content="[1]")
+  debug_inspect(coeffs, content="[1]")
 }
 ```
 
@@ -274,7 +274,7 @@ test "custom recurrence length 2" {
   let m = 1000000007L
   let seq : Array[Int64] = [1L, 2L, 7L, 20L, 61L, 182L]
   let coeffs = @berlekamp_massey.berlekamp_massey(seq, m)
-  inspect(coeffs, content="[2, 3]")
+  debug_inspect(coeffs, content="[2, 3]")
 }
 ```
 
@@ -289,10 +289,10 @@ test "verify next term" {
   let m = 1000000007L
   let seq : Array[Int64] = [1L, 2L, 7L, 20L, 61L]
   let coeffs = @berlekamp_massey.berlekamp_massey(seq, m)
-  inspect(coeffs, content="[2, 3]")
+  debug_inspect(coeffs, content="[2, 3]")
   // Predict the next term using the recurrence.
   let next = (coeffs[0] * seq[4] + coeffs[1] * seq[3]) % m
-  inspect(next, content="182")
+  debug_inspect(next, content="182")
 }
 ```
 

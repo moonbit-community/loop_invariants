@@ -195,7 +195,7 @@ sentinel and `prefix[n]` covers the full string.
 ///|
 test "string hash example" {
   let hits = @string_hash.hash_pattern_match("abababab", "aba")
-  inspect(hits, content="[0, 2, 4]")
+  debug_inspect(hits, content="[0, 2, 4]")
 }
 ```
 

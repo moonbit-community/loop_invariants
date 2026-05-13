@@ -226,12 +226,12 @@ test "scc example" {
   adj[2].push(0)
   adj[2].push(3)
   let res = @scc.find_sccs(4, adj)
-  inspect(res.num_sccs, content="2")
-  inspect(
+  debug_inspect(res.num_sccs, content="2")
+  debug_inspect(
     res.component[0] == res.component[1] && res.component[1] == res.component[2],
     content="true",
   )
-  inspect(res.component[3] != res.component[0], content="true")
+  debug_inspect(res.component[3] != res.component[0], content="true")
 }
 ```
 
@@ -253,11 +253,11 @@ test "scc condensation dag" {
   adj[1].push(2)
   adj[3].push(4)
   let res = @scc.find_sccs(5, adj)
-  inspect(res.num_sccs, content="3")
+  debug_inspect(res.num_sccs, content="3")
   let c0 = res.component[0]
   let c2 = res.component[2]
   let c4 = res.component[4]
-  inspect(c0 != c2 && c2 != c4, content="true")
+  debug_inspect(c0 != c2 && c2 != c4, content="true")
 }
 ```
 
@@ -318,7 +318,7 @@ test "two sat example" {
   // (NOT x0 OR x1)
   ts.add_clause(0, false, 1, true)
   let ans = ts.solve()
-  inspect(ans is Some(_), content="true")
+  debug_inspect(ans is Some(_), content="true")
 }
 ```
 

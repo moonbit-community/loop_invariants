@@ -117,7 +117,7 @@ After popping `7` and then `2`, the minimum becomes `5`.
 test "min-stack from array" {
   let s = @challenge_persistent_stack_min.from_array([4, 1, 6])
   debug_inspect(@challenge_persistent_stack_min.min_value(s), content="Some(1)")
-  inspect(@challenge_persistent_stack_min.size(s), content="3")
+  debug_inspect(@challenge_persistent_stack_min.size(s), content="3")
 }
 ```
 

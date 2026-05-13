@@ -21,7 +21,9 @@
 ///   let t = @challenge_persistent_implicit_treap.insert_at(t, 0, 10)
 ///   let t = @challenge_persistent_implicit_treap.insert_at(t, 1, 20)
 ///   let t = @challenge_persistent_implicit_treap.insert_at(t, 1, 15)
-///   assert_eq(@challenge_persistent_implicit_treap.to_array(t), [10, 15, 20])
+///   @debug.assert_eq(@challenge_persistent_implicit_treap.to_array(t), [
+///     10, 15, 20,
+///   ])
 /// }
 /// ```
 pub enum Treap[T] {
@@ -156,8 +158,8 @@ test "persistent_implicit_treap" {
   let t1 = insert_at(t0, 0, 10)
   let t2 = insert_at(t1, 1, 20)
   let t3 = insert_at(t2, 1, 15)
-  assert_eq(to_array(t3), [10, 15, 20])
+  @debug.assert_eq(to_array(t3), [10, 15, 20])
   debug_inspect(get(t3, 2), content="Some(20)")
   let built = from_array([1, 2, 3])
-  assert_eq(to_array(built), [1, 2, 3])
+  @debug.assert_eq(to_array(built), [1, 2, 3])
 }

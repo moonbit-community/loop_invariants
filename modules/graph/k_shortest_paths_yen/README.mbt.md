@@ -245,9 +245,9 @@ test "yen k shortest paths" {
     (1, 2, 1L),
   ]
   let paths = @k_shortest_paths_yen.yen_k_shortest_paths(4, edges, 0, 3, 3)
-  inspect(paths[0].cost, content="2")
-  inspect(paths[1].cost, content="4")
-  inspect(paths[2].cost, content="5")
+  debug_inspect(paths[0].cost, content="2")
+  debug_inspect(paths[1].cost, content="4")
+  debug_inspect(paths[2].cost, content="5")
 }
 ```
 
@@ -257,8 +257,8 @@ test "yen fewer than k" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, 1L)]
   let paths = @k_shortest_paths_yen.yen_k_shortest_paths(3, edges, 0, 2, 5)
   // Only one simple path exists: 0->1->2
-  inspect(paths.length(), content="1")
-  inspect(paths[0].nodes, content="[0, 1, 2]")
+  debug_inspect(paths.length(), content="1")
+  debug_inspect(paths[0].nodes, content="[0, 1, 2]")
 }
 ```
 

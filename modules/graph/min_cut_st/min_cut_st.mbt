@@ -379,15 +379,15 @@ test "min cut st basic" {
     (2, 3, 3L),
   ]
   let result = min_cut_st(4, edges, 0, 3).unwrap()
-  inspect(result.value, content="4")
-  inspect(cut_capacity(4, edges, result.source_side), content="4")
+  debug_inspect(result.value, content="4")
+  debug_inspect(cut_capacity(4, edges, result.source_side), content="4")
 }
 
 ///|
 test "min cut st no path" {
   let edges : Array[(Int, Int, Int64)] = []
   let result = min_cut_st(3, edges, 0, 2).unwrap()
-  inspect(result.value, content="0")
+  debug_inspect(result.value, content="0")
 }
 
 ///|

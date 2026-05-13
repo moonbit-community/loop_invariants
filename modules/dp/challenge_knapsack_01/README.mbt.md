@@ -62,7 +62,7 @@ test "knapsack 01 basic" {
   let weights : Array[Int] = [2, 3, 4]
   let values : Array[Int] = [4, 5, 6]
   let best = @challenge_knapsack_01.knapsack_01(weights, values, 5)
-  inspect(best, content="9") // items 2 + 3
+  debug_inspect(best, content="9") // items 2 + 3
 }
 ```
 
@@ -74,7 +74,7 @@ test "knapsack 01 choose combo" {
   let weights : Array[Int] = [1, 3, 4]
   let values : Array[Int] = [15, 20, 30]
   let best = @challenge_knapsack_01.knapsack_01(weights, values, 4)
-  inspect(best, content="35") // 1 + 3
+  debug_inspect(best, content="35") // 1 + 3
 }
 ```
 
@@ -86,7 +86,7 @@ test "knapsack 01 small capacity" {
   let weights : Array[Int] = [5, 6]
   let values : Array[Int] = [10, 12]
   let best = @challenge_knapsack_01.knapsack_01(weights, values, 4)
-  inspect(best, content="0")
+  debug_inspect(best, content="0")
 }
 ```
 
@@ -98,7 +98,7 @@ test "knapsack 01 larger" {
   let weights : Array[Int] = [2, 2, 6, 5, 4]
   let values : Array[Int] = [6, 3, 5, 4, 6]
   let best = @challenge_knapsack_01.knapsack_01(weights, values, 10)
-  inspect(best, content="15")
+  debug_inspect(best, content="15")
 }
 ```
 
@@ -114,7 +114,7 @@ test "knapsack 01 mismatched lengths" {
   let weights : Array[Int] = [2, 3]
   let values : Array[Int] = [4, 5, 100]
   let best = @challenge_knapsack_01.knapsack_01(weights, values, 3)
-  inspect(best, content="5")
+  debug_inspect(best, content="5")
 }
 ```
 

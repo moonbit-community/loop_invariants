@@ -388,16 +388,16 @@ test "z algorithm basic" {
   let z = compute_z("aabcaab")
 
   // Z[0] is always n (entire string matches prefix)
-  inspect(z[0], content="7")
+  debug_inspect(z[0], content="7")
 
   // Z[1] = 1: "a" matches prefix "a"
-  inspect(z[1], content="1")
+  debug_inspect(z[1], content="1")
 
   // Z[2] = 0: "b" doesn't match prefix "a"
-  inspect(z[2], content="0")
+  debug_inspect(z[2], content="0")
 
   // Z[4] = 3: "aab" matches prefix "aab"
-  inspect(z[4], content="3")
+  debug_inspect(z[4], content="3")
 }
 
 ///|
@@ -405,16 +405,16 @@ test "z algorithm aaaa" {
   let z = compute_z("aaaa")
 
   // All suffixes match prefix
-  inspect(z[0], content="4")
-  inspect(z[1], content="3")
-  inspect(z[2], content="2")
-  inspect(z[3], content="1")
+  debug_inspect(z[0], content="4")
+  debug_inspect(z[1], content="3")
+  debug_inspect(z[2], content="2")
+  debug_inspect(z[3], content="1")
 }
 
 ///|
 test "z function alias" {
   let z = z_function("aaaaa")
-  inspect(z, content="[5, 4, 3, 2, 1]")
+  debug_inspect(z, content="[5, 4, 3, 2, 1]")
 }
 
 ///|
@@ -422,38 +422,38 @@ test "z algorithm abcd" {
   let z = compute_z("abcd")
 
   // No suffix matches prefix except trivially
-  inspect(z[0], content="4")
-  inspect(z[1], content="0")
-  inspect(z[2], content="0")
-  inspect(z[3], content="0")
+  debug_inspect(z[0], content="4")
+  debug_inspect(z[1], content="0")
+  debug_inspect(z[2], content="0")
+  debug_inspect(z[3], content="0")
 }
 
 ///|
 test "z algorithm empty" {
   let z = compute_z("")
-  inspect(z.length(), content="0")
+  debug_inspect(z.length(), content="0")
 }
 
 ///|
 test "find pattern basic" {
   let matches = find_pattern("aabcaabxaab", "aab")
-  inspect(matches.length(), content="3")
-  inspect(matches[0], content="0")
-  inspect(matches[1], content="4")
-  inspect(matches[2], content="8")
+  debug_inspect(matches.length(), content="3")
+  debug_inspect(matches[0], content="0")
+  debug_inspect(matches[1], content="4")
+  debug_inspect(matches[2], content="8")
 }
 
 ///|
 test "find pattern no match" {
   let matches = find_pattern("abcdef", "xyz")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "find pattern full match" {
   let matches = find_pattern("abc", "abc")
-  inspect(matches.length(), content="1")
-  inspect(matches[0], content="0")
+  debug_inspect(matches.length(), content="1")
+  debug_inspect(matches[0], content="0")
 }
 
 ///|
@@ -461,38 +461,38 @@ test "find pattern overlapping" {
   let matches = find_pattern("aaaa", "aa")
 
   // "aa" appears at positions 0, 1, 2
-  inspect(matches.length(), content="3")
-  inspect(matches[0], content="0")
-  inspect(matches[1], content="1")
-  inspect(matches[2], content="2")
+  debug_inspect(matches.length(), content="3")
+  debug_inspect(matches[0], content="0")
+  debug_inspect(matches[1], content="1")
+  debug_inspect(matches[2], content="2")
 }
 
 ///|
 test "z search alias" {
   let matches = z_search("ababa", "aba")
-  inspect(matches, content="[0, 2]")
+  debug_inspect(matches, content="[0, 2]")
 }
 
 ///|
 test "count pattern" {
-  inspect(count_pattern("mississippi", "issi"), content="2")
-  inspect(count_pattern("abcabc", "abc"), content="2")
-  inspect(count_pattern("hello", "xyz"), content="0")
+  debug_inspect(count_pattern("mississippi", "issi"), content="2")
+  debug_inspect(count_pattern("abcabc", "abc"), content="2")
+  debug_inspect(count_pattern("hello", "xyz"), content="0")
 }
 
 ///|
 test "longest prefix suffix" {
   // "abcab": prefix "ab" = suffix "ab"
-  inspect(longest_prefix_suffix("abcab"), content="2")
+  debug_inspect(longest_prefix_suffix("abcab"), content="2")
 
   // "aaaa": prefix "aaa" = suffix "aaa"
-  inspect(longest_prefix_suffix("aaaa"), content="3")
+  debug_inspect(longest_prefix_suffix("aaaa"), content="3")
 
   // "abcd": no proper prefix-suffix
-  inspect(longest_prefix_suffix("abcd"), content="0")
+  debug_inspect(longest_prefix_suffix("abcd"), content="0")
 
   // "a": trivially 0
-  inspect(longest_prefix_suffix("a"), content="0")
+  debug_inspect(longest_prefix_suffix("a"), content="0")
 }
 
 ///|
@@ -503,48 +503,48 @@ test "all borders" {
   // Actually: "a" is NOT a border, let me recalculate
   // s[0..2] = "aab", s[3..5] = "aab" - yes, border of length 3
   // No border of length 1 or 2
-  inspect(borders.length() >= 1, content="true")
+  debug_inspect(borders.length() >= 1, content="true")
 }
 
 ///|
 test "string period" {
   // "abab" has period 2 ("ab" repeats)
-  inspect(string_period("abab"), content="2")
+  debug_inspect(string_period("abab"), content="2")
 
   // "abcabc" has period 3 ("abc" repeats)
-  inspect(string_period("abcabc"), content="3")
+  debug_inspect(string_period("abcabc"), content="3")
 
   // "abcd" has period 4 (itself)
-  inspect(string_period("abcd"), content="4")
+  debug_inspect(string_period("abcd"), content="4")
 
   // "aaaa" has period 1
-  inspect(string_period("aaaa"), content="1")
+  debug_inspect(string_period("aaaa"), content="1")
 }
 
 ///|
 test "is repetition" {
-  inspect(is_repetition("abab"), content="true")
-  inspect(is_repetition("abcabc"), content="true")
-  inspect(is_repetition("aaaa"), content="true")
-  inspect(is_repetition("abcd"), content="false")
-  inspect(is_repetition("abc"), content="false")
+  debug_inspect(is_repetition("abab"), content="true")
+  debug_inspect(is_repetition("abcabc"), content="true")
+  debug_inspect(is_repetition("aaaa"), content="true")
+  debug_inspect(is_repetition("abcd"), content="false")
+  debug_inspect(is_repetition("abc"), content="false")
 }
 
 ///|
 test "z algorithm single char" {
   let z = compute_z("x")
-  inspect(z.length(), content="1")
-  inspect(z[0], content="1")
+  debug_inspect(z.length(), content="1")
+  debug_inspect(z[0], content="1")
 }
 
 ///|
 test "find pattern empty pattern" {
   let matches = find_pattern("abc", "")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "find pattern longer pattern" {
   let matches = find_pattern("ab", "abcd")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }

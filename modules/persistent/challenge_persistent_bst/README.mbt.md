@@ -113,10 +113,10 @@ test "persistent bst" {
   let t1 = @challenge_persistent_bst.insert(t0, 4)
   let t2 = @challenge_persistent_bst.insert(t1, 2)
   let t3 = @challenge_persistent_bst.insert(t2, 6)
-  inspect(@challenge_persistent_bst.contains(t3, 2), content="true")
-  inspect(@challenge_persistent_bst.contains(t3, 3), content="false")
-  inspect(@challenge_persistent_bst.inorder(t3), content="[2, 4, 6]")
-  inspect(@challenge_persistent_bst.size(t3), content="3")
+  debug_inspect(@challenge_persistent_bst.contains(t3, 2), content="true")
+  debug_inspect(@challenge_persistent_bst.contains(t3, 3), content="false")
+  debug_inspect(@challenge_persistent_bst.inorder(t3), content="[2, 4, 6]")
+  debug_inspect(@challenge_persistent_bst.size(t3), content="3")
 }
 ```
 
@@ -126,8 +126,8 @@ test "persistent bst" {
 ///|
 test "persistent bst from array" {
   let t = @challenge_persistent_bst.from_array([3, 1, 4, 2])
-  inspect(@challenge_persistent_bst.contains(t, 4), content="true")
-  inspect(@challenge_persistent_bst.inorder(t), content="[1, 2, 3, 4]")
+  debug_inspect(@challenge_persistent_bst.contains(t, 4), content="true")
+  debug_inspect(@challenge_persistent_bst.inorder(t), content="[1, 2, 3, 4]")
 }
 ```
 
@@ -139,9 +139,9 @@ test "persistent bst versions" {
   let t0 = @challenge_persistent_bst.empty()
   let t1 = @challenge_persistent_bst.insert(t0, 5)
   let t2 = @challenge_persistent_bst.insert(t1, 1)
-  inspect(@challenge_persistent_bst.contains(t0, 5), content="false")
-  inspect(@challenge_persistent_bst.contains(t1, 5), content="true")
-  inspect(@challenge_persistent_bst.contains(t2, 1), content="true")
+  debug_inspect(@challenge_persistent_bst.contains(t0, 5), content="false")
+  debug_inspect(@challenge_persistent_bst.contains(t1, 5), content="true")
+  debug_inspect(@challenge_persistent_bst.contains(t2, 1), content="true")
 }
 ```
 
@@ -153,8 +153,8 @@ test "persistent bst duplicates" {
   let t0 = @challenge_persistent_bst.empty()
   let t1 = @challenge_persistent_bst.insert(t0, 4)
   let t2 = @challenge_persistent_bst.insert(t1, 4)
-  inspect(@challenge_persistent_bst.size(t1), content="1")
-  inspect(@challenge_persistent_bst.size(t2), content="1")
+  debug_inspect(@challenge_persistent_bst.size(t1), content="1")
+  debug_inspect(@challenge_persistent_bst.size(t2), content="1")
 }
 ```
 

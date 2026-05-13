@@ -27,8 +27,8 @@ enum Bucket[K, V] {
 ///   let m = @challenge_persistent_hash_map.make(8)
 ///   let m = @challenge_persistent_hash_map.put(m, "a", 1)
 ///   let m = @challenge_persistent_hash_map.put(m, "b", 2)
-///   assert_eq(@challenge_persistent_hash_map.get(m, "a"), Some(1))
-///   assert_eq(@challenge_persistent_hash_map.size(m), 2)
+///   @debug.assert_eq(@challenge_persistent_hash_map.get(m, "a"), Some(1))
+///   @debug.assert_eq(@challenge_persistent_hash_map.size(m), 2)
 /// }
 /// ```
 pub struct HashMap[K, V] {

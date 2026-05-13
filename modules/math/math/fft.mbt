@@ -815,14 +815,14 @@ fn pattern_match_fft(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
 
 ///|
 test "bit_reverse" {
-  inspect(bit_reverse(0, 3), content="0")
-  inspect(bit_reverse(1, 3), content="4") // 001 -> 100
-  inspect(bit_reverse(2, 3), content="2") // 010 -> 010
-  inspect(bit_reverse(3, 3), content="6") // 011 -> 110
-  inspect(bit_reverse(4, 3), content="1") // 100 -> 001
-  inspect(bit_reverse(5, 3), content="5") // 101 -> 101
-  inspect(bit_reverse(6, 3), content="3") // 110 -> 011
-  inspect(bit_reverse(7, 3), content="7") // 111 -> 111
+  debug_inspect(bit_reverse(0, 3), content="0")
+  debug_inspect(bit_reverse(1, 3), content="4") // 001 -> 100
+  debug_inspect(bit_reverse(2, 3), content="2") // 010 -> 010
+  debug_inspect(bit_reverse(3, 3), content="6") // 011 -> 110
+  debug_inspect(bit_reverse(4, 3), content="1") // 100 -> 001
+  debug_inspect(bit_reverse(5, 3), content="5") // 101 -> 101
+  debug_inspect(bit_reverse(6, 3), content="3") // 110 -> 011
+  debug_inspect(bit_reverse(7, 3), content="7") // 111 -> 111
 }
 
 ///|
@@ -831,10 +831,10 @@ test "polynomial_multiply_fft_simple" {
   let a = [1, 2]
   let b = [3, 4]
   let result = polynomial_multiply_fft(a, b)
-  inspect(result.length(), content="3")
-  inspect(result[0], content="3")
-  inspect(result[1], content="10")
-  inspect(result[2], content="8")
+  debug_inspect(result.length(), content="3")
+  debug_inspect(result[0], content="3")
+  debug_inspect(result[1], content="10")
+  debug_inspect(result[2], content="8")
 }
 
 ///|
@@ -843,11 +843,11 @@ test "polynomial_multiply_fft_larger" {
   let a = [1, 1, 1]
   let b = [1, 1]
   let result = polynomial_multiply_fft(a, b)
-  inspect(result.length(), content="4")
-  inspect(result[0], content="1")
-  inspect(result[1], content="2")
-  inspect(result[2], content="2")
-  inspect(result[3], content="1")
+  debug_inspect(result.length(), content="4")
+  debug_inspect(result[0], content="1")
+  debug_inspect(result[1], content="2")
+  debug_inspect(result[2], content="2")
+  debug_inspect(result[3], content="1")
 }
 
 ///|
@@ -855,10 +855,10 @@ test "polynomial_multiply_ntt_simple" {
   let a : Array[Int64] = [1L, 2L]
   let b : Array[Int64] = [3L, 4L]
   let result = polynomial_multiply_ntt(a, b)
-  inspect(result.length(), content="3")
-  inspect(result[0], content="3")
-  inspect(result[1], content="10")
-  inspect(result[2], content="8")
+  debug_inspect(result.length(), content="3")
+  debug_inspect(result[0], content="3")
+  debug_inspect(result[1], content="10")
+  debug_inspect(result[2], content="8")
 }
 
 ///|
@@ -866,11 +866,11 @@ test "polynomial_multiply_ntt_larger" {
   let a : Array[Int64] = [1L, 1L, 1L]
   let b : Array[Int64] = [1L, 1L]
   let result = polynomial_multiply_ntt(a, b)
-  inspect(result.length(), content="4")
-  inspect(result[0], content="1")
-  inspect(result[1], content="2")
-  inspect(result[2], content="2")
-  inspect(result[3], content="1")
+  debug_inspect(result.length(), content="4")
+  debug_inspect(result[0], content="1")
+  debug_inspect(result[1], content="2")
+  debug_inspect(result[2], content="2")
+  debug_inspect(result[3], content="1")
 }
 
 ///|
@@ -881,18 +881,18 @@ test "count_change" {
   // Ways to make 1: 1 (1)
   // Ways to make 2: 2 (1+1, 2)
   // Ways to make 5: 4 (11111, 1112, 122, 5)
-  inspect(ways[0], content="1")
-  inspect(ways[1], content="1")
-  inspect(ways[2], content="2")
-  inspect(ways[5], content="4")
-  inspect(ways[10], content="10") // 10 ways to make 10 cents
+  debug_inspect(ways[0], content="1")
+  debug_inspect(ways[1], content="1")
+  debug_inspect(ways[2], content="2")
+  debug_inspect(ways[5], content="4")
+  debug_inspect(ways[10], content="10") // 10 ways to make 10 cents
 }
 
 ///|
 test "ntt_mod_pow" {
-  inspect(ntt_mod_pow(2L, 10L, 1000L), content="24") // 1024 mod 1000
-  inspect(ntt_mod_pow(3L, 4L, 100L), content="81") // 81 mod 100
-  inspect(ntt_mod_pow(5L, 3L, 13L), content="8") // 125 mod 13
+  debug_inspect(ntt_mod_pow(2L, 10L, 1000L), content="24") // 1024 mod 1000
+  debug_inspect(ntt_mod_pow(3L, 4L, 100L), content="81") // 81 mod 100
+  debug_inspect(ntt_mod_pow(5L, 3L, 13L), content="8") // 125 mod 13
 }
 
 ///|
@@ -901,14 +901,14 @@ test "fft_trig" {
   let sin_0 = fft_sin(0.0)
   let cos_0 = fft_cos(0.0)
   // sin(0) ≈ 0, cos(0) ≈ 1
-  inspect(sin_0 < 0.0001 && sin_0 > -0.0001, content="true")
-  inspect(cos_0 > 0.999, content="true")
+  debug_inspect(sin_0 < 0.0001 && sin_0 > -0.0001, content="true")
+  debug_inspect(cos_0 > 0.999, content="true")
   // sin(π/2) ≈ 1, cos(π/2) ≈ 0
   let half_pi = fft_pi / 2.0
   let sin_half = fft_sin(half_pi)
   let cos_half = fft_cos(half_pi)
-  inspect(sin_half > 0.999, content="true")
-  inspect(cos_half < 0.01 && cos_half > -0.01, content="true")
+  debug_inspect(sin_half > 0.999, content="true")
+  debug_inspect(cos_half < 0.01 && cos_half > -0.01, content="true")
 }
 
 ///|
@@ -920,9 +920,9 @@ test "pattern_match_fft" {
   let text = [1, 2, 3, 2, 1]
   let pattern = [2, 3]
   let result = pattern_match_fft(text, pattern)
-  inspect(result.length(), content="4")
+  debug_inspect(result.length(), content="4")
   // result[1] should have high value where pattern matches
-  inspect(result[1], content="13") // 2*2 + 3*3 = 13 (match position)
+  debug_inspect(result[1], content="13") // 2*2 + 3*3 = 13 (match position)
 }
 
 ///|
@@ -932,21 +932,21 @@ test "polynomial_multiply_with_zeros" {
   let b : Array[Int] = [1, 0, 1]
   let result = polynomial_multiply_fft(a, b)
   // (x + x^3) * (1 + x^2) = x + x^3 + x^3 + x^5 = x + 2x^3 + x^5
-  inspect(result.length(), content="6")
-  inspect(result[0], content="0")
-  inspect(result[1], content="1")
-  inspect(result[2], content="0")
-  inspect(result[3], content="2")
-  inspect(result[4], content="0")
-  inspect(result[5], content="1")
+  debug_inspect(result.length(), content="6")
+  debug_inspect(result[0], content="0")
+  debug_inspect(result[1], content="1")
+  debug_inspect(result[2], content="0")
+  debug_inspect(result[3], content="2")
+  debug_inspect(result[4], content="0")
+  debug_inspect(result[5], content="1")
 }
 
 ///|
 test "empty_polynomial" {
   let empty : Array[Int] = []
   let non_empty = [1, 2, 3]
-  inspect(polynomial_multiply_fft(empty, non_empty).length(), content="0")
-  inspect(polynomial_multiply_fft(non_empty, empty).length(), content="0")
+  debug_inspect(polynomial_multiply_fft(empty, non_empty).length(), content="0")
+  debug_inspect(polynomial_multiply_fft(non_empty, empty).length(), content="0")
 }
 
 ///|
@@ -954,8 +954,8 @@ test "single_element_polynomial" {
   let a = [5]
   let b = [3]
   let result = polynomial_multiply_fft(a, b)
-  inspect(result.length(), content="1")
-  inspect(result[0], content="15")
+  debug_inspect(result.length(), content="1")
+  debug_inspect(result[0], content="15")
 }
 
 ///|
@@ -967,8 +967,8 @@ test "large_polynomial_multiply" {
   let result = polynomial_multiply_fft(a, b)
   // (1 + x + x^2 + ... + x^15)^2
   // coefficient of x^k is min(k+1, 2n-1-k) for k < 2n-1
-  inspect(result.length(), content="31")
-  inspect(result[0], content="1") // x^0 coefficient
-  inspect(result[15], content="16") // x^15 coefficient (middle)
-  inspect(result[30], content="1") // x^30 coefficient
+  debug_inspect(result.length(), content="31")
+  debug_inspect(result[0], content="1") // x^0 coefficient
+  debug_inspect(result[15], content="16") // x^15 coefficient (middle)
+  debug_inspect(result[30], content="1") // x^30 coefficient
 }

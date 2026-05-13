@@ -696,8 +696,8 @@ test "wavelet tree build and access" {
   // Array: [3, 0, 1, 2, 3, 1, 2, 0]
   let arr = [3, 0, 1, 2, 3, 1, 2, 0]
   let wt = WaveletTree::build(arr, 4)
-  inspect(wt.size(), content="8")
-  inspect(wt.alphabet_size(), content="4")
+  debug_inspect(wt.size(), content="8")
+  debug_inspect(wt.alphabet_size(), content="4")
 
   // Access each element
   debug_inspect(wt.access(0), content="Some(3)")
@@ -720,20 +720,20 @@ test "wavelet tree count" {
   let wt = WaveletTree::build(arr, 4)
 
   // Count in full range
-  inspect(wt.count(0, 8, 0), content="2") // 0 appears at indices 1, 7
-  inspect(wt.count(0, 8, 1), content="2") // 1 appears at indices 2, 5
-  inspect(wt.count(0, 8, 2), content="2") // 2 appears at indices 3, 6
-  inspect(wt.count(0, 8, 3), content="2") // 3 appears at indices 0, 4
+  debug_inspect(wt.count(0, 8, 0), content="2") // 0 appears at indices 1, 7
+  debug_inspect(wt.count(0, 8, 1), content="2") // 1 appears at indices 2, 5
+  debug_inspect(wt.count(0, 8, 2), content="2") // 2 appears at indices 3, 6
+  debug_inspect(wt.count(0, 8, 3), content="2") // 3 appears at indices 0, 4
 
   // Count in subrange
-  inspect(wt.count(0, 4, 3), content="1") // [3,0,1,2]: one 3
-  inspect(wt.count(4, 8, 3), content="1") // [3,1,2,0]: one 3
-  inspect(wt.count(1, 5, 0), content="1") // [0,1,2,3]: one 0
-  inspect(wt.count(1, 5, 1), content="1") // [0,1,2,3]: one 1
+  debug_inspect(wt.count(0, 4, 3), content="1") // [3,0,1,2]: one 3
+  debug_inspect(wt.count(4, 8, 3), content="1") // [3,1,2,0]: one 3
+  debug_inspect(wt.count(1, 5, 0), content="1") // [0,1,2,3]: one 0
+  debug_inspect(wt.count(1, 5, 1), content="1") // [0,1,2,3]: one 1
 
   // Non-existent value
-  inspect(wt.count(0, 8, 5), content="0")
-  inspect(wt.count(0, 8, -1), content="0")
+  debug_inspect(wt.count(0, 8, 5), content="0")
+  debug_inspect(wt.count(0, 8, -1), content="0")
 }
 
 ///|
@@ -742,15 +742,15 @@ test "wavelet tree count_less" {
   let wt = WaveletTree::build(arr, 4)
 
   // Count less than v in full range
-  inspect(wt.count_less(0, 8, 0), content="0") // Nothing < 0
-  inspect(wt.count_less(0, 8, 1), content="2") // Two 0s
-  inspect(wt.count_less(0, 8, 2), content="4") // Two 0s + two 1s
-  inspect(wt.count_less(0, 8, 3), content="6") // Two 0s + two 1s + two 2s
-  inspect(wt.count_less(0, 8, 4), content="8") // All elements
+  debug_inspect(wt.count_less(0, 8, 0), content="0") // Nothing < 0
+  debug_inspect(wt.count_less(0, 8, 1), content="2") // Two 0s
+  debug_inspect(wt.count_less(0, 8, 2), content="4") // Two 0s + two 1s
+  debug_inspect(wt.count_less(0, 8, 3), content="6") // Two 0s + two 1s + two 2s
+  debug_inspect(wt.count_less(0, 8, 4), content="8") // All elements
 
   // Count less in subrange [0, 4) = [3, 0, 1, 2]
-  inspect(wt.count_less(0, 4, 2), content="2") // One 0, one 1
-  inspect(wt.count_less(0, 4, 3), content="3") // One 0, one 1, one 2
+  debug_inspect(wt.count_less(0, 4, 2), content="2") // One 0, one 1
+  debug_inspect(wt.count_less(0, 4, 3), content="3") // One 0, one 1, one 2
 }
 
 ///|
@@ -759,13 +759,13 @@ test "wavelet tree count_range" {
   let wt = WaveletTree::build(arr, 4)
 
   // Count values in value range
-  inspect(wt.count_range(0, 8, 0, 2), content="4") // 0s and 1s
-  inspect(wt.count_range(0, 8, 1, 3), content="4") // 1s and 2s
-  inspect(wt.count_range(0, 8, 2, 4), content="4") // 2s and 3s
-  inspect(wt.count_range(0, 8, 0, 4), content="8") // All
+  debug_inspect(wt.count_range(0, 8, 0, 2), content="4") // 0s and 1s
+  debug_inspect(wt.count_range(0, 8, 1, 3), content="4") // 1s and 2s
+  debug_inspect(wt.count_range(0, 8, 2, 4), content="4") // 2s and 3s
+  debug_inspect(wt.count_range(0, 8, 0, 4), content="8") // All
 
   // Subrange
-  inspect(wt.count_range(0, 4, 0, 2), content="2") // [3,0,1,2]: one 0, one 1
+  debug_inspect(wt.count_range(0, 4, 0, 2), content="2") // [3,0,1,2]: one 0, one 1
 }
 
 ///|
@@ -833,31 +833,40 @@ test "wavelet tree distinct values" {
   let wt = WaveletTree::build(arr, 4)
 
   // All distinct values in full range
-  inspect(wt.distinct_values(0, 8), content="[(0, 2), (1, 2), (2, 2), (3, 2)]")
+  debug_inspect(
+    wt.distinct_values(0, 8),
+    content="[(0, 2), (1, 2), (2, 2), (3, 2)]",
+  )
 
   // Subrange [0, 4) = [3, 0, 1, 2]
-  inspect(wt.distinct_values(0, 4), content="[(0, 1), (1, 1), (2, 1), (3, 1)]")
+  debug_inspect(
+    wt.distinct_values(0, 4),
+    content="[(0, 1), (1, 1), (2, 1), (3, 1)]",
+  )
 
   // Subrange [1, 5) = [0, 1, 2, 3]
-  inspect(wt.distinct_values(1, 5), content="[(0, 1), (1, 1), (2, 1), (3, 1)]")
+  debug_inspect(
+    wt.distinct_values(1, 5),
+    content="[(0, 1), (1, 1), (2, 1), (3, 1)]",
+  )
 }
 
 ///|
 test "wavelet tree empty" {
   let wt = WaveletTree::build([], 4)
-  inspect(wt.size(), content="0")
+  debug_inspect(wt.size(), content="0")
   debug_inspect(wt.access(0), content="None")
-  inspect(wt.count(0, 0, 1), content="0")
+  debug_inspect(wt.count(0, 0, 1), content="0")
   debug_inspect(wt.quantile(0, 0, 1), content="None")
 }
 
 ///|
 test "wavelet tree single element" {
   let wt = WaveletTree::build([5], 10)
-  inspect(wt.size(), content="1")
+  debug_inspect(wt.size(), content="1")
   debug_inspect(wt.access(0), content="Some(5)")
-  inspect(wt.count(0, 1, 5), content="1")
-  inspect(wt.count(0, 1, 3), content="0")
+  debug_inspect(wt.count(0, 1, 5), content="1")
+  debug_inspect(wt.count(0, 1, 3), content="0")
   debug_inspect(wt.quantile(0, 1, 1), content="Some(5)")
 }
 
@@ -879,7 +888,7 @@ test "wavelet tree stress" {
   debug_inspect(wt.quantile(0, 100, 100), content="Some(9)") // 100th smallest is 9
 
   // Count less
-  inspect(wt.count_less(0, 100, 5), content="50") // 50 elements < 5
+  debug_inspect(wt.count_less(0, 100, 5), content="50") // 50 elements < 5
 }
 
 ///|

@@ -296,9 +296,9 @@ test "triangle with a tail" {
   let res = @biconnected_components.biconnected_components(4, edges)
   let sizes = res.components.map(c => c.length())
   sizes.sort_by((a, b) => a - b)
-  inspect(sizes, content="[1, 3]")
+  debug_inspect(sizes, content="[1, 3]")
   res.articulation_points.sort_by((a, b) => a - b)
-  inspect(res.articulation_points, content="[1]")
+  debug_inspect(res.articulation_points, content="[1]")
 }
 ```
 
@@ -319,8 +319,8 @@ test "cycle has one component" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
   let res = @biconnected_components.biconnected_components(4, edges)
   let sizes = res.components.map(c => c.length())
-  inspect(sizes, content="[4]")
-  inspect(res.articulation_points, content="[]")
+  debug_inspect(sizes, content="[4]")
+  debug_inspect(res.articulation_points, content="[]")
 }
 ```
 
@@ -351,9 +351,9 @@ test "two triangles share a vertex" {
   let res = @biconnected_components.biconnected_components(5, edges)
   let sizes = res.components.map(c => c.length())
   sizes.sort_by((a, b) => a - b)
-  inspect(sizes, content="[3, 3]")
+  debug_inspect(sizes, content="[3, 3]")
   res.articulation_points.sort_by((a, b) => a - b)
-  inspect(res.articulation_points, content="[1]")
+  debug_inspect(res.articulation_points, content="[1]")
 }
 ```
 
@@ -369,9 +369,9 @@ test "disconnected graph" {
   let res = @biconnected_components.biconnected_components(6, edges)
   let sizes = res.components.map(c => c.length())
   sizes.sort_by((a, b) => a - b)
-  inspect(sizes, content="[1, 1, 1]")
+  debug_inspect(sizes, content="[1, 1, 1]")
   res.articulation_points.sort_by((a, b) => a - b)
-  inspect(res.articulation_points, content="[1]")
+  debug_inspect(res.articulation_points, content="[1]")
 }
 ```
 

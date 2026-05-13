@@ -120,7 +120,7 @@ test "persistent deque pop" {
   match front {
     None => fail("expected non-empty deque")
     Some((v, rest)) => {
-      inspect(v, content="1")
+      debug_inspect(v, content="1")
       debug_inspect(
         @challenge_persistent_deque.peek_front(rest),
         content="Some(2)",
@@ -131,7 +131,7 @@ test "persistent deque pop" {
   match back {
     None => fail("expected non-empty deque")
     Some((v, rest)) => {
-      inspect(v, content="3")
+      debug_inspect(v, content="3")
       debug_inspect(
         @challenge_persistent_deque.peek_back(rest),
         content="Some(2)",

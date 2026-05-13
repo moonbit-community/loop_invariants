@@ -12,7 +12,7 @@ test "push-relabel max flow classic" {
   pr.add_edge(3, 5, 20L)
   pr.add_edge(4, 5, 4L)
   let flow = pr.max_flow(0, 5)
-  inspect(flow, content="23")
+  debug_inspect(flow, content="23")
 }
 
 ///|
@@ -24,5 +24,5 @@ test "push-relabel small network" {
   pr.add_edge(1, 3, 4L)
   pr.add_edge(2, 3, 2L)
   let flow = pr.max_flow(0, 3)
-  inspect(flow, content="6")
+  debug_inspect(flow, content="6")
 }

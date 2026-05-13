@@ -285,10 +285,10 @@ test "convex hull trick quick start" {
   cht.add_line(1L, 0L) // y = x
   cht.add_line(2L, 1L) // y = 2x + 1
   cht.add_line(3L, -1L) // y = 3x - 1
-  inspect(cht.query(0L), content="1")
-  inspect(cht.query(1L), content="3")
-  inspect(cht.query(2L), content="5")
-  inspect(cht.query(3L), content="8")
+  debug_inspect(cht.query(0L), content="1")
+  debug_inspect(cht.query(1L), content="3")
+  debug_inspect(cht.query(2L), content="5")
+  debug_inspect(cht.query(3L), content="8")
 }
 ```
 

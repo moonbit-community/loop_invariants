@@ -25,8 +25,8 @@ fn lowbit(x : Int) -> Int {
 ///   g.add(0, 0, 1)
 ///   g.add(1, 1, 2)
 ///   g.add(2, 2, 4)
-///   assert_eq(g.range_sum(0, 0, 3, 3), 7)
-///   assert_eq(g.range_sum(1, 1, 3, 3), 6)
+///   @debug.assert_eq(g.range_sum(0, 0, 3, 3), 7)
+///   @debug.assert_eq(g.range_sum(1, 1, 3, 3), 6)
 /// }
 /// ```
 pub struct Fenwick2D {

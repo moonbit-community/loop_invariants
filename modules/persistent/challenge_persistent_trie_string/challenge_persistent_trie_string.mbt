@@ -20,9 +20,9 @@
 ///   let t = @challenge_persistent_trie_string.empty()
 ///   let t1 = @challenge_persistent_trie_string.add(t, "cat")
 ///   let t2 = @challenge_persistent_trie_string.add(t1, "car")
-///   assert_eq(@challenge_persistent_trie_string.contains(t2, "cat"), true)
-///   assert_eq(@challenge_persistent_trie_string.contains(t2, "car"), true)
-///   assert_eq(@challenge_persistent_trie_string.contains(t1, "car"), false)
+///   @debug.assert_eq(@challenge_persistent_trie_string.contains(t2, "cat"), true)
+///   @debug.assert_eq(@challenge_persistent_trie_string.contains(t2, "car"), true)
+///   @debug.assert_eq(@challenge_persistent_trie_string.contains(t1, "car"), false)
 /// }
 /// ```
 pub struct Node {
@@ -99,9 +99,9 @@ test "persistent_trie_string" {
   let root1 = add(root0, "cat")
   let root2 = add(root1, "car")
   let root3 = add(root2, "dog")
-  assert_eq(contains(root3, "cat"), true)
-  assert_eq(contains(root3, "car"), true)
-  assert_eq(contains(root3, "cow"), false)
-  assert_eq(contains(root1, "cat"), true)
-  assert_eq(contains(root1, "dog"), false)
+  @debug.assert_eq(contains(root3, "cat"), true)
+  @debug.assert_eq(contains(root3, "car"), true)
+  @debug.assert_eq(contains(root3, "cow"), false)
+  @debug.assert_eq(contains(root1, "cat"), true)
+  @debug.assert_eq(contains(root1, "dog"), false)
 }

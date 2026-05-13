@@ -186,8 +186,8 @@ test "fenwick range add range sum example" {
     1L, 2L, 3L, 4L, 5L,
   ])
   st.range_add(1, 3, 2L)
-  inspect(st.range_sum(0, 4), content="21")
-  inspect(st.range_sum(1, 3), content="15")
+  debug_inspect(st.range_sum(0, 4), content="21")
+  debug_inspect(st.range_sum(1, 3), content="15")
 }
 ```
 
@@ -198,7 +198,7 @@ test "fenwick range add range sum example" {
 test "fenwick range add point query" {
   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum(4)
   st.range_add(0, 3, 5L)
-  inspect(st.range_sum(2, 2), content="5")
+  debug_inspect(st.range_sum(2, 2), content="5")
 }
 ```
 
@@ -208,8 +208,8 @@ test "fenwick multiple range adds" {
   let st = @fenwick_range_add_range_sum.FenwickRangeAddRangeSum(5)
   st.range_add(0, 2, 10L) // [10, 10, 10, 0, 0]
   st.range_add(2, 4, 5L) // [10, 10, 15, 5, 5]
-  inspect(st.range_sum(0, 4), content="45")
-  inspect(st.range_sum(1, 3), content="30")
+  debug_inspect(st.range_sum(0, 4), content="45")
+  debug_inspect(st.range_sum(1, 3), content="30")
 }
 ```
 

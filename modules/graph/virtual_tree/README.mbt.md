@@ -281,10 +281,10 @@ test "virtual tree basic example" {
   adj[2].push(5)
   adj[5].push(2)
   let vt = @virtual_tree.build_virtual_tree(adj, [3, 4, 5])
-  inspect(vt.nodes, content="[0, 1, 3, 4, 5]")
+  debug_inspect(vt.nodes, content="[0, 1, 3, 4, 5]")
   let adj0 = vt.adj[0].copy()
   adj0.sort()
-  inspect(adj0, content="[1, 5]")
+  debug_inspect(adj0, content="[1, 5]")
 }
 ```
 
@@ -304,8 +304,8 @@ test "virtual tree single node" {
   adj[1].push(2)
   adj[2].push(1)
   let vt = @virtual_tree.build_virtual_tree(adj, [2])
-  inspect(vt.nodes, content="[2]")
-  inspect(vt.adj[2].length(), content="0")
+  debug_inspect(vt.nodes, content="[2]")
+  debug_inspect(vt.adj[2].length(), content="0")
 }
 ```
 

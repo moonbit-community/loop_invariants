@@ -59,6 +59,6 @@ pub fn coordinate_compress(values : ArrayView[Int]) -> (Array[Int], Array[Int]) 
 test "coordinate_compress" {
   let values : Array[Int] = [100, 50, 100, -10]
   let (comp, uniq) = coordinate_compress(values)
-  assert_eq(uniq, [-10, 50, 100])
-  assert_eq(comp, [2, 1, 2, 0])
+  @debug.assert_eq(uniq, [-10, 50, 100])
+  @debug.assert_eq(comp, [2, 1, 2, 0])
 }

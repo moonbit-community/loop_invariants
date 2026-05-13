@@ -356,25 +356,25 @@ fn SegmentTreeBeats::sum_impl(
 test "segment tree beats range chmin" {
   let values : Array[Int64] = [5L, 1L, 7L, 3L, 9L]
   let st = SegmentTreeBeats(values)
-  inspect(st.range_sum(0, 5), content="25")
-  inspect(st.range_max(0, 5), content="9")
+  debug_inspect(st.range_sum(0, 5), content="25")
+  debug_inspect(st.range_max(0, 5), content="9")
   st.range_chmin(1, 4, 4L)
-  inspect(st.range_sum(0, 5), content="22")
-  inspect(st.range_max(0, 5), content="9")
+  debug_inspect(st.range_sum(0, 5), content="22")
+  debug_inspect(st.range_max(0, 5), content="9")
   st.range_chmin(0, 5, 4L)
-  inspect(st.range_sum(0, 5), content="16")
-  inspect(st.range_max(0, 5), content="4")
+  debug_inspect(st.range_sum(0, 5), content="16")
+  debug_inspect(st.range_max(0, 5), content="4")
   st.range_chmin(2, 5, 2L)
-  inspect(st.range_sum(0, 5), content="11")
-  inspect(st.range_max(0, 5), content="4")
+  debug_inspect(st.range_sum(0, 5), content="11")
+  debug_inspect(st.range_max(0, 5), content="4")
 }
 
 ///|
 test "segment tree beats single element" {
   let st = SegmentTreeBeats([10L])
-  inspect(st.range_sum(0, 1), content="10")
-  inspect(st.range_max(0, 1), content="10")
+  debug_inspect(st.range_sum(0, 1), content="10")
+  debug_inspect(st.range_max(0, 1), content="10")
   st.range_chmin(0, 1, 6L)
-  inspect(st.range_sum(0, 1), content="6")
-  inspect(st.range_max(0, 1), content="6")
+  debug_inspect(st.range_sum(0, 1), content="6")
+  debug_inspect(st.range_max(0, 1), content="6")
 }

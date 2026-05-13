@@ -221,7 +221,7 @@ test "ntt convolution example" {
   let a : Array[Int64] = [1L, 2L]
   let b : Array[Int64] = [3L, 4L]
   let c = @fft.ntt_convolution(a, b)
-  inspect(c, content="[3, 10, 8]")
+  debug_inspect(c, content="[3, 10, 8]")
 }
 ```
 
@@ -237,9 +237,9 @@ test "polynomial multiplication concept" {
   //
   // This achieves O(n log n) instead of O(n²)
 
-  inspect(1 * 3, content="3") // constant term
-  inspect(1 * 4 + 2 * 3, content="10") // x coefficient
-  inspect(2 * 4, content="8") // x² coefficient
+  debug_inspect(1 * 3, content="3") // constant term
+  debug_inspect(1 * 4 + 2 * 3, content="10") // x coefficient
+  debug_inspect(2 * 4, content="8") // x² coefficient
 }
 ```
 

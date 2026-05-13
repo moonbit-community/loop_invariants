@@ -15,19 +15,19 @@ test "lct basic operations" {
   let lct = @lct.LinkCutTree(5)
 
   // Initially, each node is its own root
-  inspect(lct.find_root(0), content="0")
-  inspect(lct.find_root(1), content="1")
-  inspect(lct.find_root(2), content="2")
+  debug_inspect(lct.find_root(0), content="0")
+  debug_inspect(lct.find_root(1), content="1")
+  debug_inspect(lct.find_root(2), content="2")
 
   // Link: 1 -> 0 (1 becomes child of 0)
   lct.link(1, 0)
-  inspect(lct.find_root(1), content="0")
-  inspect(lct.connected(0, 1), content="true")
+  debug_inspect(lct.find_root(1), content="0")
+  debug_inspect(lct.connected(0, 1), content="true")
 
   // Link: 2 -> 1 (2 becomes child of 1)
   lct.link(2, 1)
-  inspect(lct.find_root(2), content="0")
-  inspect(lct.connected(0, 2), content="true")
+  debug_inspect(lct.find_root(2), content="0")
+  debug_inspect(lct.connected(0, 2), content="true")
 }
 
 ///|
@@ -45,15 +45,15 @@ test "lct cut operation" {
   lct.link(1, 0)
   lct.link(2, 1)
   lct.link(3, 2)
-  inspect(lct.find_root(3), content="0")
+  debug_inspect(lct.find_root(3), content="0")
 
   // Cut 2 from 1
   lct.cut(2)
 
   // Now 2 and 3 are in separate tree from 0 and 1
-  inspect(lct.find_root(3), content="2")
-  inspect(lct.find_root(1), content="0")
-  inspect(lct.connected(1, 3), content="false")
+  debug_inspect(lct.find_root(3), content="2")
+  debug_inspect(lct.find_root(1), content="0")
+  debug_inspect(lct.connected(1, 3), content="false")
 }
 
 ///|
@@ -77,17 +77,17 @@ test "lct path sum" {
   lct.link(4, 3)
 
   // Path sum from 4 to root (0): 10 + 20 + 30 + 40 + 50 = 150
-  inspect(lct.path_sum(4), content="150")
+  debug_inspect(lct.path_sum(4), content="150")
 
   // Path sum from 2 to root (0): 10 + 20 + 30 = 60
-  inspect(lct.path_sum(2), content="60")
+  debug_inspect(lct.path_sum(2), content="60")
 
   // Path sum from 0 to root (0): just 10
-  inspect(lct.path_sum(0), content="10")
+  debug_inspect(lct.path_sum(0), content="10")
 
   // Update value and check path sum changes
   lct.update_value(2, 100)
-  inspect(lct.path_sum(4), content="220") // 10+20+100+40+50
+  debug_inspect(lct.path_sum(4), content="220") // 10+20+100+40+50
 }
 
 ///|
@@ -119,13 +119,13 @@ test "lct lca" {
   lct.link(6, 4)
 
   // LCA of 3 and 4 is 1 (their common parent)
-  inspect(lct.lca(3, 4), content="1")
+  debug_inspect(lct.lca(3, 4), content="1")
 
   // LCA of 3 and 5 is 0 (root, as they're in different subtrees)
-  inspect(lct.lca(3, 5), content="0")
+  debug_inspect(lct.lca(3, 5), content="0")
 
   // LCA of 6 and 3 is 1 (6's grandparent = 3's parent)
-  inspect(lct.lca(6, 3), content="1")
+  debug_inspect(lct.lca(6, 3), content="1")
 }
 
 ///|
@@ -143,12 +143,12 @@ test "lct make root" {
   lct.link(1, 0)
   lct.link(2, 1)
   lct.link(3, 2)
-  inspect(lct.find_root(3), content="0")
+  debug_inspect(lct.find_root(3), content="0")
 
   // Make 2 the new root
   lct.make_root(2)
-  inspect(lct.find_root(3), content="2")
-  inspect(lct.find_root(0), content="2")
+  debug_inspect(lct.find_root(3), content="2")
+  debug_inspect(lct.find_root(0), content="2")
 }
 
 ///|
@@ -195,10 +195,10 @@ test "lct stress test" {
   lct.cut(25)
 
   // Nodes 0-24 have root 0, nodes 25-49 have root 25
-  inspect(lct.find_root(24), content="0")
-  inspect(lct.find_root(25), content="25")
-  inspect(lct.find_root(49), content="25")
-  inspect(lct.connected(24, 25), content="false")
+  debug_inspect(lct.find_root(24), content="0")
+  debug_inspect(lct.find_root(25), content="25")
+  debug_inspect(lct.find_root(49), content="25")
+  debug_inspect(lct.connected(24, 25), content="false")
 }
 
 ///|
@@ -207,21 +207,21 @@ test "dynamic forest" {
   let forest = @lct.DynamicForest(5)
 
   // Initially disconnected
-  inspect(forest.connected(0, 1), content="false")
+  debug_inspect(forest.connected(0, 1), content="false")
 
   // Link 0-1
-  inspect(forest.link(0, 1), content="true")
-  inspect(forest.connected(0, 1), content="true")
+  debug_inspect(forest.link(0, 1), content="true")
+  debug_inspect(forest.connected(0, 1), content="true")
 
   // Link 1-2, 2-3, 3-4
   let _ = forest.link(1, 2)
   let _ = forest.link(2, 3)
   let _ = forest.link(3, 4)
-  inspect(forest.connected(0, 4), content="true")
+  debug_inspect(forest.connected(0, 4), content="true")
 
   // Cut 2-3
-  inspect(forest.cut(2, 3), content="true")
-  inspect(forest.connected(0, 2), content="true")
-  inspect(forest.connected(3, 4), content="true")
-  inspect(forest.connected(0, 4), content="false")
+  debug_inspect(forest.cut(2, 3), content="true")
+  debug_inspect(forest.connected(0, 2), content="true")
+  debug_inspect(forest.connected(3, 4), content="true")
+  debug_inspect(forest.connected(0, 4), content="false")
 }

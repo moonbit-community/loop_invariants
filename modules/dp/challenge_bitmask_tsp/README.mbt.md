@@ -83,7 +83,7 @@ test "tsp example" {
     [20, 25, 30, 0],
   ]
   let ans = @challenge_bitmask_tsp.tsp_min_cycle(dist)
-  inspect(ans, content="80")
+  debug_inspect(ans, content="80")
 }
 ```
 
@@ -101,7 +101,7 @@ cost = 10 + 25 + 30 + 15 = 80
 test "tsp triangle" {
   let dist : Array[Array[Int]] = [[0, 2, 4], [2, 0, 1], [4, 1, 0]]
   let ans = @challenge_bitmask_tsp.tsp_min_cycle(dist)
-  inspect(ans, content="7")
+  debug_inspect(ans, content="7")
 }
 ```
 
@@ -126,7 +126,7 @@ test "tsp ring" {
     [2, 9, 8, 2, 0],
   ]
   let ans = @challenge_bitmask_tsp.tsp_min_cycle(dist)
-  inspect(ans, content="11")
+  debug_inspect(ans, content="11")
 }
 ```
 
@@ -142,7 +142,7 @@ test "tsp asymmetric" {
   // 0->1->2->0 = 1 + 3 + 4 = 8
   // 0->2->1->0 = 10 + 5 + 2 = 17
   let ans = @challenge_bitmask_tsp.tsp_min_cycle(dist)
-  inspect(ans, content="8")
+  debug_inspect(ans, content="8")
 }
 ```
 

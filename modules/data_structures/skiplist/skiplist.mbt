@@ -810,7 +810,7 @@ test "skip list basic operations" {
   let sl : SkipList[Int, Int] = SkipList()
 
   // Empty list check
-  inspect(sl.is_empty(), content="true")
+  debug_inspect(sl.is_empty(), content="true")
 
   // Test insert and search
   sl.insert(5, 50)
@@ -835,16 +835,16 @@ test "skip list delete" {
   sl.insert(3, 30)
   sl.insert(4, 40)
   sl.insert(5, 50)
-  inspect(sl.length(), content="5")
+  debug_inspect(sl.length(), content="5")
 
   // Delete existing key
-  inspect(sl.delete(3), content="true")
+  debug_inspect(sl.delete(3), content="true")
   debug_inspect(sl.search(3), content="None")
-  inspect(sl.length(), content="4")
+  debug_inspect(sl.length(), content="4")
 
   // Delete non-existing key
-  inspect(sl.delete(100), content="false")
-  inspect(sl.length(), content="4")
+  debug_inspect(sl.delete(100), content="false")
+  debug_inspect(sl.length(), content="4")
 
   // Remaining elements still accessible
   debug_inspect(sl.search(1), content="Some(10)")
@@ -862,11 +862,11 @@ test "skip list range query" {
 
   // Query range [5, 13] - should include 6, 8, 10, 12
   let range = sl.range_query(5, 13)
-  inspect(range, content="[(6, 60), (8, 80), (10, 100), (12, 120)]")
+  debug_inspect(range, content="[(6, 60), (8, 80), (10, 100), (12, 120)]")
 
   // Query range [0, 4]
   let range2 = sl.range_query(0, 4)
-  inspect(range2, content="[(0, 0), (2, 20), (4, 40)]")
+  debug_inspect(range2, content="[(0, 0), (2, 20), (4, 40)]")
 }
 
 ///|
@@ -915,9 +915,9 @@ test "skip list ordered statistics" {
   }
 
   // Count less than
-  inspect(sl.count_less_than(5), content="2") // 1, 3 are < 5
-  inspect(sl.count_less_than(1), content="0") // Nothing < 1
-  inspect(sl.count_less_than(10), content="5") // All elements < 10
+  debug_inspect(sl.count_less_than(5), content="2") // 1, 3 are < 5
+  debug_inspect(sl.count_less_than(1), content="0") // Nothing < 1
+  debug_inspect(sl.count_less_than(10), content="5") // All elements < 10
 
   // K-th element (0-indexed)
   debug_inspect(sl.kth_element(0), content="Some((1, 10))") // 1st element is 1
@@ -934,7 +934,7 @@ test "skip list stress test" {
   for i in 0..<100 {
     sl.insert(i, i * 10)
   }
-  inspect(sl.length(), content="100")
+  debug_inspect(sl.length(), content="100")
 
   // Verify all elements are searchable
   for i in 0..<100 {
@@ -947,7 +947,7 @@ test "skip list stress test" {
       guard sl.delete(i) else { fail("Delete failed") }
     }
   }
-  inspect(sl.length(), content="50")
+  debug_inspect(sl.length(), content="50")
 
   // Verify deletions
   for i in 0..<100 {
@@ -1175,7 +1175,7 @@ test "multi skip list duplicates" {
   msl.insert(5, 52)
   msl.insert(3, 30)
   msl.insert(3, 31)
-  inspect(msl.size, content="5")
+  debug_inspect(msl.size, content="5")
 
   // Search returns all values for key
   debug_inspect(msl.search(5), content="Some([50, 51, 52])")

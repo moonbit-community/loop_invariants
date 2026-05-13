@@ -397,9 +397,9 @@ fn count_distinct_substrings(s : String, k : Int) -> Int {
 test "string_hash basic" {
   let sh = StringHash("abcabc")
   // Hash of "abc" at positions 0-3 and 3-6 should be same
-  inspect(sh.compare(0, 3, 3, 6), content="true")
+  debug_inspect(sh.compare(0, 3, 3, 6), content="true")
   // Different substrings should differ
-  inspect(sh.compare(0, 2, 1, 3), content="false")
+  debug_inspect(sh.compare(0, 2, 1, 3), content="false")
 }
 
 ///|
@@ -407,21 +407,21 @@ test "string_hash get_hash" {
   let sh = StringHash("abcd")
   let h1 = sh.get_hash(0, 2) // "ab"
   let h2 = sh.get_hash(2, 4) // "cd"
-  inspect(h1 != h2, content="true")
+  debug_inspect(h1 != h2, content="true")
 }
 
 ///|
 test "string_hash lcp" {
   let sh = StringHash("abcabcabc")
-  inspect(sh.lcp(0, 3), content="6") // "abcabc" matches
-  inspect(sh.lcp(0, 1), content="0") // "abc..." vs "bca..." no common prefix
+  debug_inspect(sh.lcp(0, 3), content="6") // "abcabc" matches
+  debug_inspect(sh.lcp(0, 1), content="0") // "abc..." vs "bca..." no common prefix
 }
 
 ///|
 test "double_hash basic" {
   let dh = DoubleHash("abcabc")
-  inspect(dh.compare(0, 3, 3, 6), content="true")
-  inspect(dh.compare(0, 2, 1, 3), content="false")
+  debug_inspect(dh.compare(0, 3, 3, 6), content="true")
+  debug_inspect(dh.compare(0, 2, 1, 3), content="false")
 }
 
 ///|
@@ -430,39 +430,39 @@ test "double_hash collision resistance" {
   let (h1a, h1b) = dh.get_hash(0, 2)
   let (h2a, h2b) = dh.get_hash(2, 4)
   // Same substring "ab" should have same hash
-  inspect(h1a == h2a && h1b == h2b, content="true")
+  debug_inspect(h1a == h2a && h1b == h2b, content="true")
 }
 
 ///|
 test "hash_pattern_match" {
   let matches = hash_pattern_match("abababab", "aba")
-  inspect(matches.length(), content="3")
-  inspect(matches[0], content="0")
-  inspect(matches[1], content="2")
-  inspect(matches[2], content="4")
+  debug_inspect(matches.length(), content="3")
+  debug_inspect(matches[0], content="0")
+  debug_inspect(matches[1], content="2")
+  debug_inspect(matches[2], content="4")
 }
 
 ///|
 test "hash_pattern_match no match" {
   let matches = hash_pattern_match("abcdef", "xyz")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "count_distinct_substrings" {
   // "aaa" has only 1 distinct substring of length 1 ("a")
-  inspect(count_distinct_substrings("aaa", 1), content="1")
+  debug_inspect(count_distinct_substrings("aaa", 1), content="1")
   // "abc" has 3 distinct substrings of length 1 ("a", "b", "c")
-  inspect(count_distinct_substrings("abc", 1), content="3")
+  debug_inspect(count_distinct_substrings("abc", 1), content="3")
   // "abab" has 2 distinct substrings of length 2 ("ab", "ba")
-  inspect(count_distinct_substrings("abab", 2), content="2")
+  debug_inspect(count_distinct_substrings("abab", 2), content="2")
 }
 
 ///|
 test "string_hash empty" {
   let sh = StringHash("")
-  inspect(sh.length(), content="0")
-  inspect(sh.get_hash(0, 0), content="0")
+  debug_inspect(sh.length(), content="0")
+  debug_inspect(sh.get_hash(0, 0), content="0")
 }
 
 ///|
@@ -471,12 +471,12 @@ test "string_hash full string" {
   let h1 = sh.get_hash(0, 3)
   let sh2 = StringHash("abc")
   let h2 = sh2.get_hash(0, 3)
-  inspect(h1 == h2, content="true")
+  debug_inspect(h1 == h2, content="true")
 }
 
 ///|
 test "string_hash single char" {
   let sh = StringHash("aaaa")
-  inspect(sh.compare(0, 1, 1, 2), content="true")
-  inspect(sh.compare(0, 1, 2, 3), content="true")
+  debug_inspect(sh.compare(0, 1, 1, 2), content="true")
+  debug_inspect(sh.compare(0, 1, 2, 3), content="true")
 }

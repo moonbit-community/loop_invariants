@@ -196,7 +196,7 @@ test "dinic max flow example" {
     (2, 3, 4),
   ]
   let flow = @dinic.max_flow(4, edges, 0, 3)
-  inspect(flow, content="5")
+  debug_inspect(flow, content="5")
 }
 ```
 
@@ -205,7 +205,7 @@ test "dinic max flow example" {
 test "dinic no path" {
   let edges : Array[(Int, Int, Int64)] = [(0, 1, 5), (2, 3, 7)]
   let flow = @dinic.max_flow(4, edges, 0, 3)
-  inspect(flow, content="0")
+  debug_inspect(flow, content="0")
 }
 ```
 
@@ -220,11 +220,11 @@ test "dinic struct usage" {
   d.add_edge(1, 3, 10)
   d.add_edge(2, 3, 10)
   let flow = d.max_flow(0, 3)
-  inspect(flow, content="20")
+  debug_inspect(flow, content="20")
   // Reuse the struct with a reset
   d.reset()
   let flow2 = d.max_flow(0, 3)
-  inspect(flow2, content="20")
+  debug_inspect(flow2, content="20")
 }
 ```
 
@@ -244,12 +244,12 @@ test "dinic min cut example" {
   d.add_edge(1, 3, 2)
   d.add_edge(2, 3, 3)
   let flow = d.max_flow(0, 3)
-  inspect(flow, content="4")
+  debug_inspect(flow, content="4")
   let source_side = d.min_cut_source_side(0)
   // Source (0) is always on source side
-  inspect(source_side.contains(0), content="true")
+  debug_inspect(source_side.contains(0), content="true")
   // Sink (3) is always on sink side
-  inspect(source_side.contains(3), content="false")
+  debug_inspect(source_side.contains(3), content="false")
 }
 ```
 

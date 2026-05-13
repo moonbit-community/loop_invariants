@@ -129,7 +129,7 @@ test "leftist heap merge" {
     @challenge_persistent_leftist_heap.find_min(merged),
     content="Some(1)",
   )
-  inspect(@challenge_persistent_leftist_heap.size(merged), content="4")
+  debug_inspect(@challenge_persistent_leftist_heap.size(merged), content="4")
 }
 ```
 

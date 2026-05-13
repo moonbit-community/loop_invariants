@@ -167,7 +167,7 @@ fn dsu_union(parent : Array[Int], rank : Array[Int], a : Int, b : Int) -> Unit {
 ///   let adj : Array[Array[Int]] = [[1, 2], [0, 3, 4], [0], [1], [1]]
 ///   let queries : ReadOnlyArray[(Int, Int)] = [(3, 4), (3, 2), (4, 2), (1, 1)]
 ///   let ans = @tarjan_offline_lca.tarjan_offline_lca(5, adj[:], 0, queries[:])
-///   assert_eq(ans, [1, 0, 0, 1])
+///   @debug.assert_eq(ans, [1, 0, 0, 1])
 /// }
 /// ```
 ///
@@ -331,26 +331,26 @@ test "tarjan offline lca tiny tree" {
   //     / \
   //    3   4
   let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
-  let adj = build_adj(5, edges[:])
+  let adj = build_adj(5, edges)
   let queries : ReadOnlyArray[(Int, Int)] = [(3, 4), (3, 2), (4, 2), (1, 1)]
-  let ans = tarjan_offline_lca(5, adj[:], 0, queries[:])
-  assert_eq(ans[0], 1) // lca(3, 4)
-  assert_eq(ans[1], 0) // lca(3, 2)
-  assert_eq(ans[2], 0) // lca(4, 2)
-  assert_eq(ans[3], 1) // lca(1, 1)
+  let ans = tarjan_offline_lca(5, adj, 0, queries)
+  @debug.assert_eq(ans[0], 1) // lca(3, 4)
+  @debug.assert_eq(ans[1], 0) // lca(3, 2)
+  @debug.assert_eq(ans[2], 0) // lca(4, 2)
+  @debug.assert_eq(ans[3], 1) // lca(1, 1)
 }
 
 ///|
 test "tarjan offline lca linear chain" {
   // 0 - 1 - 2 - 3 - 4
   let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
-  let adj = build_adj(5, edges[:])
+  let adj = build_adj(5, edges)
   let queries : ReadOnlyArray[(Int, Int)] = [(0, 4), (2, 4), (1, 3), (3, 0)]
-  let ans = tarjan_offline_lca(5, adj[:], 0, queries[:])
-  assert_eq(ans[0], 0)
-  assert_eq(ans[1], 2)
-  assert_eq(ans[2], 1)
-  assert_eq(ans[3], 0)
+  let ans = tarjan_offline_lca(5, adj, 0, queries)
+  @debug.assert_eq(ans[0], 0)
+  @debug.assert_eq(ans[1], 2)
+  @debug.assert_eq(ans[2], 1)
+  @debug.assert_eq(ans[3], 0)
 }
 
 ///|
@@ -363,12 +363,12 @@ test "tarjan offline lca non-zero root" {
   //              \
   //               2
   let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
-  let adj = build_adj(5, edges[:])
+  let adj = build_adj(5, edges)
   let queries : ReadOnlyArray[(Int, Int)] = [(3, 2), (4, 0), (3, 4)]
-  let ans = tarjan_offline_lca(5, adj[:], 1, queries[:])
-  assert_eq(ans[0], 1) // lca(3, 2) with root 1
-  assert_eq(ans[1], 1) // lca(4, 0) with root 1
-  assert_eq(ans[2], 1) // lca(3, 4) with root 1
+  let ans = tarjan_offline_lca(5, adj, 1, queries)
+  @debug.assert_eq(ans[0], 1) // lca(3, 2) with root 1
+  @debug.assert_eq(ans[1], 1) // lca(4, 0) with root 1
+  @debug.assert_eq(ans[2], 1) // lca(3, 4) with root 1
 }
 
 ///|
@@ -395,7 +395,7 @@ test "tarjan offline lca caterpillar deep paths" {
     (2, 6),
     (3, 7),
   ]
-  let adj = build_adj(8, edges[:])
+  let adj = build_adj(8, edges)
   let queries : ReadOnlyArray[(Int, Int)] = [
     (4, 5), //  side leg vs spine -> meet at 0
     (4, 7), //  side leg vs deep spine -> meet at 0
@@ -405,14 +405,14 @@ test "tarjan offline lca caterpillar deep paths" {
     (1, 5), //  parent and child
     (4, 4), //  self
   ]
-  let ans = tarjan_offline_lca(8, adj[:], 0, queries[:])
-  assert_eq(ans[0], 0)
-  assert_eq(ans[1], 0)
-  assert_eq(ans[2], 1)
-  assert_eq(ans[3], 2)
-  assert_eq(ans[4], 3)
-  assert_eq(ans[5], 1)
-  assert_eq(ans[6], 4)
+  let ans = tarjan_offline_lca(8, adj, 0, queries)
+  @debug.assert_eq(ans[0], 0)
+  @debug.assert_eq(ans[1], 0)
+  @debug.assert_eq(ans[2], 1)
+  @debug.assert_eq(ans[3], 2)
+  @debug.assert_eq(ans[4], 3)
+  @debug.assert_eq(ans[5], 1)
+  @debug.assert_eq(ans[6], 4)
 }
 
 ///|
@@ -420,23 +420,23 @@ test "tarjan offline lca empty cases" {
   // No nodes, no queries.
   let empty_adj : ReadOnlyArray[Array[Int]] = []
   let empty_q : ReadOnlyArray[(Int, Int)] = []
-  let ans0 = tarjan_offline_lca(0, empty_adj[:], 0, empty_q[:])
-  assert_eq(ans0.length(), 0)
+  let ans0 = tarjan_offline_lca(0, empty_adj, 0, empty_q)
+  @debug.assert_eq(ans0.length(), 0)
 
   // Single node, single self-query.
   let one_adj : Array[Array[Int]] = [[]]
   let one_q : ReadOnlyArray[(Int, Int)] = [(0, 0)]
-  let ans1 = tarjan_offline_lca(1, one_adj[:], 0, one_q[:])
-  assert_eq(ans1, [0])
+  let ans1 = tarjan_offline_lca(1, one_adj, 0, one_q)
+  @debug.assert_eq(ans1, [0])
 }
 
 ///|
 test "tarjan offline lca out-of-range query stays at sentinel" {
   let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2)]
-  let adj = build_adj(3, edges[:])
+  let adj = build_adj(3, edges)
   let queries : ReadOnlyArray[(Int, Int)] = [(0, 5), (-1, 1), (1, 2)]
-  let ans = tarjan_offline_lca(3, adj[:], 0, queries[:])
-  assert_eq(ans[0], -1) // invalid second endpoint
-  assert_eq(ans[1], -1) // invalid first endpoint
-  assert_eq(ans[2], 1) // valid query still answered
+  let ans = tarjan_offline_lca(3, adj, 0, queries)
+  @debug.assert_eq(ans[0], -1) // invalid second endpoint
+  @debug.assert_eq(ans[1], -1) // invalid first endpoint
+  @debug.assert_eq(ans[2], 1) // valid query still answered
 }

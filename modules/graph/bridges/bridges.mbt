@@ -257,11 +257,11 @@ test "bridges basic" {
   bf.find()
 
   // Bridges: (2,3) and (3,4)
-  inspect(bf.get_bridges().length(), content="2")
+  debug_inspect(bf.get_bridges().length(), content="2")
 
   // Articulation points: 2 and 3
   let aps = bf.get_articulation_points()
-  inspect(aps.length(), content="2")
+  debug_inspect(aps.length(), content="2")
 }
 
 ///|
@@ -273,8 +273,8 @@ test "bridges cycle" {
   bf.add_edge(2, 3)
   bf.add_edge(3, 0)
   bf.find()
-  inspect(bf.get_bridges().length(), content="0")
-  inspect(bf.get_articulation_points().length(), content="0")
+  debug_inspect(bf.get_bridges().length(), content="0")
+  debug_inspect(bf.get_articulation_points().length(), content="0")
 }
 
 ///|
@@ -286,8 +286,8 @@ test "bridges linear" {
   bf.add_edge(1, 2)
   bf.add_edge(2, 3)
   bf.find()
-  inspect(bf.get_bridges().length(), content="3")
-  inspect(bf.get_articulation_points().length(), content="2")
+  debug_inspect(bf.get_bridges().length(), content="3")
+  debug_inspect(bf.get_articulation_points().length(), content="2")
 }
 
 ///|
@@ -299,16 +299,16 @@ test "bridges star" {
   bf.add_edge(0, 3)
   bf.add_edge(0, 4)
   bf.find()
-  inspect(bf.is_articulation_point(0), content="true")
-  inspect(bf.get_bridges().length(), content="4")
+  debug_inspect(bf.is_articulation_point(0), content="true")
+  debug_inspect(bf.get_bridges().length(), content="4")
 }
 
 ///|
 test "bridges single" {
   let bf = BridgeFinder(1)
   bf.find()
-  inspect(bf.get_bridges().length(), content="0")
-  inspect(bf.get_articulation_points().length(), content="0")
+  debug_inspect(bf.get_bridges().length(), content="0")
+  debug_inspect(bf.get_articulation_points().length(), content="0")
 }
 
 ///|
@@ -317,5 +317,5 @@ test "bridges two components" {
   bf.add_edge(0, 1)
   bf.add_edge(2, 3)
   bf.find()
-  inspect(bf.get_bridges().length(), content="2")
+  debug_inspect(bf.get_bridges().length(), content="2")
 }

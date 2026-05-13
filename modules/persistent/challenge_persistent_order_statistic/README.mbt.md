@@ -146,7 +146,7 @@ test "order statistic bounds" {
   let os0 = @challenge_persistent_order_statistic.make(0, 5)
   let os1 = @challenge_persistent_order_statistic.add(os0, 2)
   let os2 = @challenge_persistent_order_statistic.add(os1, 9)
-  inspect(@challenge_persistent_order_statistic.size(os2), content="1")
+  debug_inspect(@challenge_persistent_order_statistic.size(os2), content="1")
   debug_inspect(
     @challenge_persistent_order_statistic.kth(os2, 0),
     content="Some(2)",

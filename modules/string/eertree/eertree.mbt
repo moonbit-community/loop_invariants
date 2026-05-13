@@ -424,7 +424,7 @@ test "eertree basic" {
   let tree = Eertree::from_string("abba")
 
   // Distinct palindromes: "a", "b", "bb", "abba"
-  inspect(tree.count_distinct(), content="4")
+  debug_inspect(tree.count_distinct(), content="4")
 }
 
 ///|
@@ -432,7 +432,7 @@ test "eertree single char" {
   let tree = Eertree::from_string("aaaa")
 
   // Distinct palindromes: "a", "aa", "aaa", "aaaa"
-  inspect(tree.count_distinct(), content="4")
+  debug_inspect(tree.count_distinct(), content="4")
 }
 
 ///|
@@ -440,7 +440,7 @@ test "eertree all different" {
   let tree = Eertree::from_string("abcd")
 
   // Distinct palindromes: "a", "b", "c", "d"
-  inspect(tree.count_distinct(), content="4")
+  debug_inspect(tree.count_distinct(), content="4")
 }
 
 ///|
@@ -448,13 +448,13 @@ test "eertree abacaba" {
   let tree = Eertree::from_string("abacaba")
 
   // Distinct palindromes: "a", "b", "c", "aba", "aca", "bacab", "abacaba"
-  inspect(tree.count_distinct(), content="7")
+  debug_inspect(tree.count_distinct(), content="7")
 }
 
 ///|
 test "eertree longest" {
   let tree = Eertree::from_string("abacaba")
-  inspect(tree.longest_length(), content="7") // "abacaba"
+  debug_inspect(tree.longest_length(), content="7") // "abacaba"
 }
 
 ///|
@@ -464,24 +464,24 @@ test "eertree total count" {
 
   // "a" appears 3 times, "aa" appears 2 times, "aaa" appears 1 time
   // Total = 3 + 2 + 1 = 6
-  inspect(tree.count_total(), content="6")
+  debug_inspect(tree.count_total(), content="6")
 }
 
 ///|
 test "eertree contains" {
   let tree = Eertree::from_string("abacaba")
-  inspect(tree.contains_palindrome("aba"), content="true")
-  inspect(tree.contains_palindrome("abacaba"), content="true")
-  inspect(tree.contains_palindrome("a"), content="true")
-  inspect(tree.contains_palindrome("xyz"), content="false")
-  inspect(tree.contains_palindrome("ab"), content="false") // not a palindrome
+  debug_inspect(tree.contains_palindrome("aba"), content="true")
+  debug_inspect(tree.contains_palindrome("abacaba"), content="true")
+  debug_inspect(tree.contains_palindrome("a"), content="true")
+  debug_inspect(tree.contains_palindrome("xyz"), content="false")
+  debug_inspect(tree.contains_palindrome("ab"), content="false") // not a palindrome
 }
 
 ///|
 test "eertree empty" {
   let tree = Eertree::from_string("")
-  inspect(tree.count_distinct(), content="0")
-  inspect(tree.longest_length(), content="0")
+  debug_inspect(tree.count_distinct(), content="0")
+  debug_inspect(tree.longest_length(), content="0")
 }
 
 ///|
@@ -489,7 +489,7 @@ test "eertree get palindromes" {
   let tree = Eertree::from_string("aba")
   let palindromes = tree.get_palindromes()
   // Should contain "a", "b", "aba"
-  inspect(palindromes.length(), content="3")
+  debug_inspect(palindromes.length(), content="3")
 
   // Verify each is a palindrome
   for p in palindromes {
@@ -526,10 +526,10 @@ test "eertree mississippi" {
 test "eertree incremental" {
   let tree = Eertree()
   tree.add_char('a')
-  inspect(tree.count_distinct(), content="1")
+  debug_inspect(tree.count_distinct(), content="1")
   tree.add_char('b')
-  inspect(tree.count_distinct(), content="2")
+  debug_inspect(tree.count_distinct(), content="2")
   tree.add_char('a')
   // Now we have "aba" as new palindrome
-  inspect(tree.count_distinct(), content="3")
+  debug_inspect(tree.count_distinct(), content="3")
 }

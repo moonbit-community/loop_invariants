@@ -19,8 +19,8 @@
 ///   let s = @challenge_persistent_stack.empty()
 ///   let s1 = @challenge_persistent_stack.push(s, 1)
 ///   let s2 = @challenge_persistent_stack.push(s1, 2)
-///   assert_eq(@challenge_persistent_stack.peek(s2), Some(2))
-///   assert_eq(@challenge_persistent_stack.peek(s1), Some(1))
+///   @debug.assert_eq(@challenge_persistent_stack.peek(s2), Some(2))
+///   @debug.assert_eq(@challenge_persistent_stack.peek(s1), Some(1))
 /// }
 /// ```
 pub enum Stack[T] {

@@ -20,8 +20,8 @@
 ///   let t0 = @challenge_persistent_23_tree.empty()
 ///   let t1 = @challenge_persistent_23_tree.insert(t0, 5)
 ///   let t2 = @challenge_persistent_23_tree.insert(t1, 2)
-///   assert_eq(@challenge_persistent_23_tree.contains(t2, 5), true)
-///   assert_eq(@challenge_persistent_23_tree.contains(t0, 5), false)
+///   @debug.assert_eq(@challenge_persistent_23_tree.contains(t2, 5), true)
+///   @debug.assert_eq(@challenge_persistent_23_tree.contains(t0, 5), false)
 /// }
 /// ```
 pub enum Tree[T] {

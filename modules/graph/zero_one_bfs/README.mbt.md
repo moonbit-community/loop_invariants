@@ -163,7 +163,7 @@ test "0-1 bfs example" {
   g.add_edge(1, 3, 1)
   g.add_edge(3, 4, 1)
   let dist = @zero_one_bfs.zero_one_bfs(g, 0)
-  inspect(dist, content="[0, 0, 1, 1, 2]")
+  debug_inspect(dist, content="[0, 0, 1, 1, 2]")
 }
 ```
 
@@ -179,7 +179,7 @@ test "0-1 bfs undirected" {
   g.add_undirected_edge(1, 2, 1)
   g.add_undirected_edge(2, 3, 0)
   let dist = @zero_one_bfs.zero_one_bfs(g, 0)
-  inspect(dist, content="[0, 0, 1, 1]")
+  debug_inspect(dist, content="[0, 0, 1, 1]")
 }
 ```
 
@@ -196,10 +196,10 @@ test "0-1 bfs unreachable" {
   let g = @zero_one_bfs.Graph(3)
   g.add_edge(0, 1, 1)
   let dist = @zero_one_bfs.zero_one_bfs(g, 0)
-  inspect(dist[0], content="0")
-  inspect(dist[1], content="1")
+  debug_inspect(dist[0], content="0")
+  debug_inspect(dist[1], content="1")
   // dist[2] is a large constant (unreachable)
-  inspect(dist[2] > 1000000, content="true")
+  debug_inspect(dist[2] > 1000000, content="true")
 }
 ```
 

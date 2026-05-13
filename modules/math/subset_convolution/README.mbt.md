@@ -292,7 +292,7 @@ test "subset convolution quick start" {
   let f : Array[Int64] = [1L, 2L, 3L, 4L]
   let g : Array[Int64] = [5L, 6L, 7L, 8L]
   let h = @subset_convolution.subset_convolution(f, g)
-  inspect(h, content="[5, 16, 22, 60]")
+  debug_inspect(h, content="[5, 16, 22, 60]")
 }
 ```
 
@@ -304,7 +304,7 @@ test "subset convolution identity" {
   let f : Array[Int64] = [3L, 7L, 5L, 11L]
   let delta : Array[Int64] = [1L, 0L, 0L, 0L]
   let h = @subset_convolution.subset_convolution(f, delta)
-  inspect(h, content="[3, 7, 5, 11]")
+  debug_inspect(h, content="[3, 7, 5, 11]")
 }
 ```
 

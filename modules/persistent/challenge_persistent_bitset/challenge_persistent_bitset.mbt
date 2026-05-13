@@ -24,9 +24,9 @@ enum Node {
 /// ```moonbit nocheck
 /// test {
 ///   let b = @challenge_persistent_bitset.from_indices(8, [1, 3, 5])
-///   assert_eq(@challenge_persistent_bitset.get(b, 3), 1)
-///   assert_eq(@challenge_persistent_bitset.get(b, 4), 0)
-///   assert_eq(@challenge_persistent_bitset.count_range(b, 0, 8), 3)
+///   @debug.assert_eq(@challenge_persistent_bitset.get(b, 3), 1)
+///   @debug.assert_eq(@challenge_persistent_bitset.get(b, 4), 0)
+///   @debug.assert_eq(@challenge_persistent_bitset.count_range(b, 0, 8), 3)
 /// }
 /// ```
 pub struct Bitset {

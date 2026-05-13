@@ -21,8 +21,8 @@
 ///   let arr = [5, 2, 7, 4][:]
 ///   let root = build(arr, 0, arr.length())
 ///   let updated = apply_updates(root, arr.length(), [(2, 1), (0, 6)])
-///   assert_eq(range_xor(root, 0, arr.length(), 0, 4), 5 ^ 2 ^ 7 ^ 4)
-///   assert_eq(range_xor(updated, 0, arr.length(), 0, 4), 6 ^ 2 ^ 1 ^ 4)
+///   @debug.assert_eq(range_xor(root, 0, arr.length(), 0, 4), 5 ^ 2 ^ 7 ^ 4)
+///   @debug.assert_eq(range_xor(updated, 0, arr.length(), 0, 4), 6 ^ 2 ^ 1 ^ 4)
 /// }
 /// ```
 pub enum Node {
@@ -123,6 +123,6 @@ test "persistent_segment_tree_xor" {
   let arr = [5, 2, 7, 4][:]
   let root = build(arr, 0, arr.length())
   let updated = apply_updates(root, arr.length(), [(2, 1), (0, 6)])
-  assert_eq(range_xor(root, 0, arr.length(), 0, 4), 5 ^ 2 ^ 7 ^ 4)
-  assert_eq(range_xor(updated, 0, arr.length(), 0, 4), 6 ^ 2 ^ 1 ^ 4)
+  @debug.assert_eq(range_xor(root, 0, arr.length(), 0, 4), 5 ^ 2 ^ 7 ^ 4)
+  @debug.assert_eq(range_xor(updated, 0, arr.length(), 0, 4), 6 ^ 2 ^ 1 ^ 4)
 }

@@ -89,9 +89,12 @@ test "treap set basic" {
   let t1 = @challenge_persistent_treap_set.insert(t0, 3)
   let t2 = @challenge_persistent_treap_set.insert(t1, 1)
   let t3 = @challenge_persistent_treap_set.insert(t2, 5)
-  inspect(@challenge_persistent_treap_set.contains(t3, 3), content="true")
-  inspect(@challenge_persistent_treap_set.contains(t3, 2), content="false")
-  inspect(@challenge_persistent_treap_set.size(t3), content="3")
+  debug_inspect(@challenge_persistent_treap_set.contains(t3, 3), content="true")
+  debug_inspect(
+    @challenge_persistent_treap_set.contains(t3, 2),
+    content="false",
+  )
+  debug_inspect(@challenge_persistent_treap_set.size(t3), content="3")
 }
 ```
 
@@ -106,11 +109,20 @@ Each insert returns a new version, while older versions remain unchanged.
 test "treap set split merge" {
   let t = @challenge_persistent_treap_set.from_array([1, 3, 5, 7])
   let (left, right) = @challenge_persistent_treap_set.split(t, 4)
-  inspect(@challenge_persistent_treap_set.contains(left, 1), content="true")
-  inspect(@challenge_persistent_treap_set.contains(left, 5), content="false")
-  inspect(@challenge_persistent_treap_set.contains(right, 7), content="true")
+  debug_inspect(
+    @challenge_persistent_treap_set.contains(left, 1),
+    content="true",
+  )
+  debug_inspect(
+    @challenge_persistent_treap_set.contains(left, 5),
+    content="false",
+  )
+  debug_inspect(
+    @challenge_persistent_treap_set.contains(right, 7),
+    content="true",
+  )
   let merged = @challenge_persistent_treap_set.merge(left, right)
-  inspect(@challenge_persistent_treap_set.size(merged), content="4")
+  debug_inspect(@challenge_persistent_treap_set.size(merged), content="4")
 }
 ```
 
@@ -122,9 +134,9 @@ test "treap set split merge" {
 ///|
 test "treap set from array" {
   let t = @challenge_persistent_treap_set.from_array([2, 5, 2, 8])
-  inspect(@challenge_persistent_treap_set.contains(t, 2), content="true")
-  inspect(@challenge_persistent_treap_set.contains(t, 8), content="true")
-  inspect(@challenge_persistent_treap_set.size(t), content="3")
+  debug_inspect(@challenge_persistent_treap_set.contains(t, 2), content="true")
+  debug_inspect(@challenge_persistent_treap_set.contains(t, 8), content="true")
+  debug_inspect(@challenge_persistent_treap_set.size(t), content="3")
 }
 ```
 

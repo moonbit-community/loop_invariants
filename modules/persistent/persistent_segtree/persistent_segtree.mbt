@@ -602,8 +602,8 @@ test "persistent segtree basic" {
   let tree = PersistentSegTree(arr)
 
   // Version 0: original array
-  inspect(tree.query(0, 0, 4), content="15") // 1+2+3+4+5
-  inspect(tree.query(0, 1, 3), content="9") // 2+3+4
+  debug_inspect(tree.query(0, 0, 4), content="15") // 1+2+3+4+5
+  debug_inspect(tree.query(0, 1, 3), content="9") // 2+3+4
 }
 
 ///|
@@ -613,14 +613,14 @@ test "persistent segtree update" {
 
   // Update position 2 to 10
   let v1 = tree.update(0, 2, 10L)
-  inspect(v1, content="1")
+  debug_inspect(v1, content="1")
 
   // Version 0 unchanged
-  inspect(tree.query(0, 0, 4), content="15")
+  debug_inspect(tree.query(0, 0, 4), content="15")
 
   // Version 1 has update
-  inspect(tree.query(1, 0, 4), content="22") // 1+2+10+4+5
-  inspect(tree.query(1, 2, 2), content="10")
+  debug_inspect(tree.query(1, 0, 4), content="22") // 1+2+10+4+5
+  debug_inspect(tree.query(1, 2, 2), content="10")
 }
 
 ///|
@@ -635,11 +635,11 @@ test "persistent segtree multiple versions" {
   let _ = tree.update(v3, 3, 5L)
 
   // All versions accessible
-  inspect(tree.query(0, 0, 3), content="4") // [1,1,1,1]
-  inspect(tree.query(1, 0, 3), content="5") // [2,1,1,1]
-  inspect(tree.query(2, 0, 3), content="7") // [2,3,1,1]
-  inspect(tree.query(3, 0, 3), content="10") // [2,3,4,1]
-  inspect(tree.query(4, 0, 3), content="14") // [2,3,4,5]
+  debug_inspect(tree.query(0, 0, 3), content="4") // [1,1,1,1]
+  debug_inspect(tree.query(1, 0, 3), content="5") // [2,1,1,1]
+  debug_inspect(tree.query(2, 0, 3), content="7") // [2,3,1,1]
+  debug_inspect(tree.query(3, 0, 3), content="10") // [2,3,4,1]
+  debug_inspect(tree.query(4, 0, 3), content="14") // [2,3,4,5]
 }
 
 ///|
@@ -650,8 +650,8 @@ test "persistent segtree branching versions" {
   // Branch from version 0
   let _ = tree.update(0, 0, 10L) // [10, 2, 3]
   let _ = tree.update(0, 1, 20L) // [1, 20, 3] - branch from v0
-  inspect(tree.query(1, 0, 2), content="15") // 10+2+3
-  inspect(tree.query(2, 0, 2), content="24") // 1+20+3
+  debug_inspect(tree.query(1, 0, 2), content="15") // 10+2+3
+  debug_inspect(tree.query(2, 0, 2), content="24") // 1+20+3
 }
 
 ///|
@@ -666,35 +666,35 @@ test "persistent segtree space efficiency" {
 
   // For n=8, log n = 3, so ~4 new nodes (including leaf)
   let new_nodes = after_one - initial_nodes
-  inspect(new_nodes <= 10, content="true") // Should be small
+  debug_inspect(new_nodes <= 10, content="true") // Should be small
 }
 
 ///|
 test "persistent segtree get and add" {
   let arr : Array[Int64] = [5L, 10L, 15L]
   let tree = PersistentSegTree(arr)
-  inspect(tree.get(0, 1), content="10")
+  debug_inspect(tree.get(0, 1), content="10")
   let v1 = tree.add(0, 1, 5L) // Add 5 to position 1
-  inspect(tree.get(v1, 1), content="15")
-  inspect(tree.get(0, 1), content="10") // Original unchanged
+  debug_inspect(tree.get(v1, 1), content="15")
+  debug_inspect(tree.get(0, 1), content="10") // Original unchanged
 }
 
 ///|
 test "persistent segtree empty" {
   let arr : Array[Int64] = []
   let tree = PersistentSegTree(arr)
-  inspect(tree.version_count(), content="0")
-  inspect(tree.query(0, 0, 0), content="0")
+  debug_inspect(tree.version_count(), content="0")
+  debug_inspect(tree.query(0, 0, 0), content="0")
 }
 
 ///|
 test "persistent segtree single element" {
   let arr : Array[Int64] = [42L]
   let tree = PersistentSegTree(arr)
-  inspect(tree.query(0, 0, 0), content="42")
+  debug_inspect(tree.query(0, 0, 0), content="42")
   let v1 = tree.update(0, 0, 100L)
-  inspect(tree.query(v1, 0, 0), content="100")
-  inspect(tree.query(0, 0, 0), content="42")
+  debug_inspect(tree.query(v1, 0, 0), content="100")
+  debug_inspect(tree.query(0, 0, 0), content="42")
 }
 
 ///|
@@ -755,5 +755,5 @@ test "kth smallest duplicates" {
 test "kth smallest size" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let kth = KthSmallest(arr)
-  inspect(kth.size(), content="5")
+  debug_inspect(kth.size(), content="5")
 }

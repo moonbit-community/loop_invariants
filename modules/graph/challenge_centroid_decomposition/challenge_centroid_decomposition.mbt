@@ -91,8 +91,8 @@ fn decompose(
 /// test {
 ///   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
 ///   let cd = build_centroid(5, edges[:])
-///   assert_eq(cd.parent[2], -1)
-///   assert_eq(cd.level[2], 0)
+///   @debug.assert_eq(cd.parent[2], -1)
+///   @debug.assert_eq(cd.level[2], 0)
 /// }
 /// ```
 pub struct CentroidDecomp {

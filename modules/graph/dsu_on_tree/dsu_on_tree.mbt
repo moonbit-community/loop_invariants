@@ -309,7 +309,7 @@ test "dsu on tree mode sum" {
   adj[4].push(1)
   let colors : Array[Int] = [1, 2, 1, 2, 3]
   let result = subtree_color_mode_sum(adj, colors)
-  inspect(result, content="[3, 2, 1, 2, 3]")
+  debug_inspect(result, content="[3, 2, 1, 2, 3]")
 }
 
 ///|
@@ -321,7 +321,7 @@ test "dsu on tree tie case" {
   adj[2].push(1)
   let colors : Array[Int] = [5, 5, 7]
   let result = subtree_color_mode_sum(adj, colors)
-  inspect(result, content="[5, 12, 7]")
+  debug_inspect(result, content="[5, 12, 7]")
 }
 
 ///|
@@ -335,5 +335,5 @@ test "dsu on tree keeps carried state when parent edge is skipped" {
   adj[3].push(1)
   let colors : Array[Int] = [1, 2, 2, 3]
   let result = subtree_color_mode_sum(adj, colors)
-  inspect(result, content="[2, 2, 2, 3]")
+  debug_inspect(result, content="[2, 2, 2, 3]")
 }

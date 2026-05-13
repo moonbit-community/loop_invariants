@@ -288,7 +288,7 @@ test "fenwick2d example" {
   let fw = @fenwick2d.Fenwick2D(3, 3)
   fw.update(1, 1, 5)
   fw.update(2, 3, 2)
-  inspect(fw.range_sum(1, 1, 3, 3), content="7")
+  debug_inspect(fw.range_sum(1, 1, 3, 3), content="7")
 }
 ```
 
@@ -299,8 +299,8 @@ test "fenwick2d prefix and single cell" {
   fw.update(1, 1, 4)
   fw.update(1, 2, 1)
   fw.update(2, 1, 2)
-  inspect(fw.prefix_sum(2, 2), content="7") // 4+1+2
-  inspect(fw.get(1, 2), content="1")
+  debug_inspect(fw.prefix_sum(2, 2), content="7") // 4+1+2
+  debug_inspect(fw.get(1, 2), content="1")
 }
 ```
 

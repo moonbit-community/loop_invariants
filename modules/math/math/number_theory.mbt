@@ -325,19 +325,19 @@ test "chinese_remainder" {
   // Solution: x = 23 (mod 105)
   let congruences : Array[(Int64, Int64)] = [(2L, 3L), (3L, 5L), (2L, 7L)]
   let (x, m) = chinese_remainder(congruences)
-  assert_eq(m, 105L)
-  assert_eq(x % 3L, 2L)
-  assert_eq(x % 5L, 3L)
-  assert_eq(x % 7L, 2L)
+  @debug.assert_eq(m, 105L)
+  @debug.assert_eq(x % 3L, 2L)
+  @debug.assert_eq(x % 5L, 3L)
+  @debug.assert_eq(x % 7L, 2L)
 
   // x ≡ 0 (mod 2), x ≡ 0 (mod 3), x ≡ 1 (mod 5)
   // Solution: x = 6 (mod 30)
   let congruences2 : Array[(Int64, Int64)] = [(0L, 2L), (0L, 3L), (1L, 5L)]
   let (x2, m2) = chinese_remainder(congruences2)
-  assert_eq(m2, 30L)
-  assert_eq(x2 % 2L, 0L)
-  assert_eq(x2 % 3L, 0L)
-  assert_eq(x2 % 5L, 1L)
+  @debug.assert_eq(m2, 30L)
+  @debug.assert_eq(x2 % 2L, 0L)
+  @debug.assert_eq(x2 % 3L, 0L)
+  @debug.assert_eq(x2 % 5L, 1L)
 }
 
 // ============================================================================
@@ -480,13 +480,13 @@ fn gcd_spec(a : Int, b : Int) -> Int {
 
 ///|
 test "binary_gcd" {
-  assert_eq(binary_gcd(48, 18), 6)
-  assert_eq(binary_gcd(100, 35), 5)
-  assert_eq(binary_gcd(17, 13), 1)
-  assert_eq(binary_gcd(1024, 512), 512)
-  assert_eq(binary_gcd(7, 7), 7)
-  assert_eq(binary_gcd(1, 1000), 1)
-  assert_eq(gcd_spec(48, 18), 6)
+  @debug.assert_eq(binary_gcd(48, 18), 6)
+  @debug.assert_eq(binary_gcd(100, 35), 5)
+  @debug.assert_eq(binary_gcd(17, 13), 1)
+  @debug.assert_eq(binary_gcd(1024, 512), 512)
+  @debug.assert_eq(binary_gcd(7, 7), 7)
+  @debug.assert_eq(binary_gcd(1, 1000), 1)
+  @debug.assert_eq(gcd_spec(48, 18), 6)
 }
 
 // ============================================================================
@@ -526,13 +526,13 @@ fn count_trailing_zeros(n : Int) -> Int {
 
 ///|
 test "count_trailing_zeros" {
-  assert_eq(count_trailing_zeros(1), 0) // 0b1
-  assert_eq(count_trailing_zeros(2), 1) // 0b10
-  assert_eq(count_trailing_zeros(4), 2) // 0b100
-  assert_eq(count_trailing_zeros(8), 3) // 0b1000
-  assert_eq(count_trailing_zeros(12), 2) // 0b1100, lowest is at position 2
-  assert_eq(count_trailing_zeros(0x80000000), 31)
-  assert_eq(count_trailing_zeros(0), 32) // Convention: all zeros
+  @debug.assert_eq(count_trailing_zeros(1), 0) // 0b1
+  @debug.assert_eq(count_trailing_zeros(2), 1) // 0b10
+  @debug.assert_eq(count_trailing_zeros(4), 2) // 0b100
+  @debug.assert_eq(count_trailing_zeros(8), 3) // 0b1000
+  @debug.assert_eq(count_trailing_zeros(12), 2) // 0b1100, lowest is at position 2
+  @debug.assert_eq(count_trailing_zeros(0x80000000), 31)
+  @debug.assert_eq(count_trailing_zeros(0), 32) // Convention: all zeros
 }
 
 // ============================================================================
@@ -589,14 +589,14 @@ fn ilog2(n : Int) -> Int {
 
 ///|
 test "ilog2" {
-  assert_eq(ilog2(1), 0)
-  assert_eq(ilog2(2), 1)
-  assert_eq(ilog2(3), 1)
-  assert_eq(ilog2(4), 2)
-  assert_eq(ilog2(7), 2)
-  assert_eq(ilog2(8), 3)
-  assert_eq(ilog2(1023), 9)
-  assert_eq(ilog2(1024), 10)
+  @debug.assert_eq(ilog2(1), 0)
+  @debug.assert_eq(ilog2(2), 1)
+  @debug.assert_eq(ilog2(3), 1)
+  @debug.assert_eq(ilog2(4), 2)
+  @debug.assert_eq(ilog2(7), 2)
+  @debug.assert_eq(ilog2(8), 3)
+  @debug.assert_eq(ilog2(1023), 9)
+  @debug.assert_eq(ilog2(1024), 10)
 }
 
 // ============================================================================
@@ -628,7 +628,7 @@ test "mod_inverse" {
 
   // 17 × 8 = 136 ≡ 1 (mod 27)
   match mod_inverse(17L, 27L) {
-    Some(inv) => assert_eq(17L * inv % 27L, 1L)
+    Some(inv) => @debug.assert_eq(17L * inv % 27L, 1L)
     None => assert_true(false)
   }
 }

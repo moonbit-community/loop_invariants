@@ -176,7 +176,7 @@ test "point in polygon square" {
     { x: 4L, y: 4L },
     { x: 0L, y: 4L },
   ]
-  inspect(point_in_polygon(poly, { x: 2L, y: 2L }), content="Inside")
-  inspect(point_in_polygon(poly, { x: 5L, y: 2L }), content="Outside")
-  inspect(point_in_polygon(poly, { x: 4L, y: 2L }), content="Boundary")
+  debug_inspect(point_in_polygon(poly, { x: 2L, y: 2L }), content="Inside")
+  debug_inspect(point_in_polygon(poly, { x: 5L, y: 2L }), content="Outside")
+  debug_inspect(point_in_polygon(poly, { x: 4L, y: 2L }), content="Boundary")
 }

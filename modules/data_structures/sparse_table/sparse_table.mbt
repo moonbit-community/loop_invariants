@@ -312,48 +312,48 @@ fn SparseTableGCD::query(self : SparseTableGCD, l : Int, r : Int) -> Int64 {
 test "sparse table min basic" {
   let arr : Array[Int64] = [3L, 1L, 4L, 1L, 5L, 9L, 2L, 6L]
   let st = SparseTableMin(arr)
-  inspect(st.query(0, 7), content="1")
-  inspect(st.query(0, 1), content="1")
-  inspect(st.query(4, 7), content="2")
-  inspect(st.query(2, 5), content="1")
+  debug_inspect(st.query(0, 7), content="1")
+  debug_inspect(st.query(0, 1), content="1")
+  debug_inspect(st.query(4, 7), content="2")
+  debug_inspect(st.query(2, 5), content="1")
 }
 
 ///|
 test "sparse table min single" {
   let arr : Array[Int64] = [42L]
   let st = SparseTableMin(arr)
-  inspect(st.query(0, 0), content="42")
+  debug_inspect(st.query(0, 0), content="42")
 }
 
 ///|
 test "sparse table max basic" {
   let arr : Array[Int64] = [3L, 1L, 4L, 1L, 5L, 9L, 2L, 6L]
   let st = SparseTableMax(arr)
-  inspect(st.query(0, 7), content="9")
-  inspect(st.query(0, 2), content="4")
-  inspect(st.query(6, 7), content="6")
+  debug_inspect(st.query(0, 7), content="9")
+  debug_inspect(st.query(0, 2), content="4")
+  debug_inspect(st.query(6, 7), content="6")
 }
 
 ///|
 test "sparse table gcd" {
   let arr : Array[Int64] = [12L, 18L, 24L, 36L]
   let st = SparseTableGCD(arr)
-  inspect(st.query(0, 3), content="6")
-  inspect(st.query(0, 1), content="6")
-  inspect(st.query(2, 3), content="12")
+  debug_inspect(st.query(0, 3), content="6")
+  debug_inspect(st.query(0, 1), content="6")
+  debug_inspect(st.query(2, 3), content="12")
 }
 
 ///|
 test "sparse table empty" {
   let arr : Array[Int64] = []
   let st = SparseTableMin(arr)
-  inspect(st.n, content="0")
+  debug_inspect(st.n, content="0")
 }
 
 ///|
 test "sparse table power of 2" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L]
   let st = SparseTableMin(arr)
-  inspect(st.query(0, 7), content="1")
-  inspect(st.query(4, 7), content="5")
+  debug_inspect(st.query(0, 7), content="1")
+  debug_inspect(st.query(4, 7), content="5")
 }

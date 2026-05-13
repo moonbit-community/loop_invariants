@@ -110,7 +110,7 @@ test "suurballe disjoint paths basic" {
       let cost2 = path_cost(p2, edges)
       guard cost1 is Some(c1) else { fail("missing edge for p1") }
       guard cost2 is Some(c2) else { fail("missing edge for p2") }
-      inspect(c1 + c2, content="4")
+      debug_inspect(c1 + c2, content="4")
     }
   }
 }
@@ -121,5 +121,5 @@ test "suurballe no disjoint paths" {
   let result = @suurballe_disjoint_paths.suurballe_disjoint_paths(
     4, edges, 0, 3,
   )
-  inspect(result is None, content="true")
+  debug_inspect(result is None, content="true")
 }

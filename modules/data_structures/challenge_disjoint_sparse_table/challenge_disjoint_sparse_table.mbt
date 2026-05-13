@@ -49,8 +49,8 @@ fn highest_bit(x : Int) -> Int {
 /// test {
 ///   let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
 ///   let dst = build_disjoint_sparse_table(arr[:])
-///   assert_eq(range_min(dst, 1, 5), 1)
-///   assert_eq(range_min(dst, 5, 8), 0)
+///   @debug.assert_eq(range_min(dst, 1, 5), 1)
+///   @debug.assert_eq(range_min(dst, 5, 8), 0)
 /// }
 /// ```
 pub struct DisjointSparseTable {

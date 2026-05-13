@@ -488,10 +488,10 @@ test "matrix multiply" {
   let c = a.multiply_no_mod(b)
 
   // [[1*5+2*7, 1*6+2*8], [3*5+4*7, 3*6+4*8]] = [[19, 22], [43, 50]]
-  inspect(c.get(0, 0), content="19")
-  inspect(c.get(0, 1), content="22")
-  inspect(c.get(1, 0), content="43")
-  inspect(c.get(1, 1), content="50")
+  debug_inspect(c.get(0, 0), content="19")
+  debug_inspect(c.get(0, 1), content="22")
+  debug_inspect(c.get(1, 0), content="43")
+  debug_inspect(c.get(1, 1), content="50")
 }
 
 ///|
@@ -499,14 +499,14 @@ test "matrix identity" {
   let a = Matrix::from_array([[1L, 2L], [3L, 4L]])
   let i = Matrix::identity(2)
   let b = a.multiply_no_mod(i)
-  inspect(a.equals(b), content="true")
+  debug_inspect(a.equals(b), content="true")
 }
 
 ///|
 test "matrix set" {
   let m = Matrix(1, 1)
   m.set(0, 0, 7L)
-  inspect(m.get(0, 0), content="7")
+  debug_inspect(m.get(0, 0), content="7")
 }
 
 ///|
@@ -514,28 +514,28 @@ test "matrix power" {
   let a = Matrix::from_array([[1L, 1L], [1L, 0L]])
   let a2 = a.power(2L)
   // [[1,1],[1,0]]^2 = [[2,1],[1,1]]
-  inspect(a2.get(0, 0), content="2")
-  inspect(a2.get(0, 1), content="1")
-  inspect(a2.get(1, 0), content="1")
-  inspect(a2.get(1, 1), content="1")
+  debug_inspect(a2.get(0, 0), content="2")
+  debug_inspect(a2.get(0, 1), content="1")
+  debug_inspect(a2.get(1, 0), content="1")
+  debug_inspect(a2.get(1, 1), content="1")
 }
 
 ///|
 test "fibonacci" {
-  inspect(fibonacci(0L), content="0")
-  inspect(fibonacci(1L), content="1")
-  inspect(fibonacci(2L), content="1")
-  inspect(fibonacci(3L), content="2")
-  inspect(fibonacci(4L), content="3")
-  inspect(fibonacci(5L), content="5")
-  inspect(fibonacci(10L), content="55")
-  inspect(fibonacci(20L), content="6765")
+  debug_inspect(fibonacci(0L), content="0")
+  debug_inspect(fibonacci(1L), content="1")
+  debug_inspect(fibonacci(2L), content="1")
+  debug_inspect(fibonacci(3L), content="2")
+  debug_inspect(fibonacci(4L), content="3")
+  debug_inspect(fibonacci(5L), content="5")
+  debug_inspect(fibonacci(10L), content="55")
+  debug_inspect(fibonacci(20L), content="6765")
 }
 
 ///|
 test "fibonacci large" {
   // F(50) = 12586269025, mod 10^9+7 = 586268941
-  inspect(fibonacci(50L), content="586268941")
+  debug_inspect(fibonacci(50L), content="586268941")
 }
 
 ///|
@@ -543,9 +543,9 @@ test "solve_recurrence fibonacci" {
   // Fibonacci: f(n) = f(n-1) + f(n-2)
   let coeffs : Array[Int64] = [1L, 1L]
   let initial : Array[Int64] = [0L, 1L] // f(0)=0, f(1)=1
-  inspect(solve_recurrence(coeffs, initial, 0L), content="0")
-  inspect(solve_recurrence(coeffs, initial, 1L), content="1")
-  inspect(solve_recurrence(coeffs, initial, 10L), content="55")
+  debug_inspect(solve_recurrence(coeffs, initial, 0L), content="0")
+  debug_inspect(solve_recurrence(coeffs, initial, 1L), content="1")
+  debug_inspect(solve_recurrence(coeffs, initial, 10L), content="55")
 }
 
 ///|
@@ -555,10 +555,10 @@ test "solve_recurrence tribonacci" {
   let initial : Array[Int64] = [0L, 0L, 1L] // f(0)=0, f(1)=0, f(2)=1
 
   // T(3) = 1, T(4) = 2, T(5) = 4, T(6) = 7
-  inspect(solve_recurrence(coeffs, initial, 3L), content="1")
-  inspect(solve_recurrence(coeffs, initial, 4L), content="2")
-  inspect(solve_recurrence(coeffs, initial, 5L), content="4")
-  inspect(solve_recurrence(coeffs, initial, 6L), content="7")
+  debug_inspect(solve_recurrence(coeffs, initial, 3L), content="1")
+  debug_inspect(solve_recurrence(coeffs, initial, 4L), content="2")
+  debug_inspect(solve_recurrence(coeffs, initial, 5L), content="4")
+  debug_inspect(solve_recurrence(coeffs, initial, 6L), content="7")
 }
 
 ///|
@@ -567,10 +567,10 @@ test "count_paths" {
   let adj : Array[Array[Int64]] = [[0L, 1L, 0L], [0L, 0L, 1L], [1L, 0L, 0L]]
   let paths2 = count_paths(adj, 2L)
   // 2 steps from 0: 0->1->2
-  inspect(paths2.get(0, 2), content="1")
+  debug_inspect(paths2.get(0, 2), content="1")
   let paths3 = count_paths(adj, 3L)
   // 3 steps from 0 back to 0: 0->1->2->0
-  inspect(paths3.get(0, 0), content="1")
+  debug_inspect(paths3.get(0, 0), content="1")
 }
 
 ///|
@@ -578,12 +578,12 @@ test "matrix power zero" {
   let a = Matrix::from_array([[2L, 3L], [4L, 5L]])
   let a0 = a.power(0L)
   let i = Matrix::identity(2)
-  inspect(a0.equals(i), content="true")
+  debug_inspect(a0.equals(i), content="true")
 }
 
 ///|
 test "matrix power one" {
   let a = Matrix::from_array([[2L, 3L], [4L, 5L]])
   let a1 = a.power(1L)
-  inspect(a.equals(a1), content="true")
+  debug_inspect(a.equals(a1), content="true")
 }

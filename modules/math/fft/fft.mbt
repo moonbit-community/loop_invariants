@@ -617,9 +617,9 @@ test "ntt basic multiplication" {
   let b : Array[Int64] = [3L, 4L]
   let ntt = NTT(4)
   let result = ntt.multiply(a, b)
-  inspect(result[0], content="3")
-  inspect(result[1], content="10")
-  inspect(result[2], content="8")
+  debug_inspect(result[0], content="3")
+  debug_inspect(result[1], content="10")
+  debug_inspect(result[2], content="8")
 }
 
 ///|
@@ -629,11 +629,11 @@ test "ntt larger multiplication" {
   let b : Array[Int64] = [1L, 1L, 1L]
   let ntt = NTT(8)
   let result = ntt.multiply(a, b)
-  inspect(result[0], content="1")
-  inspect(result[1], content="2")
-  inspect(result[2], content="3")
-  inspect(result[3], content="2")
-  inspect(result[4], content="1")
+  debug_inspect(result[0], content="1")
+  debug_inspect(result[1], content="2")
+  debug_inspect(result[2], content="3")
+  debug_inspect(result[3], content="2")
+  debug_inspect(result[4], content="1")
 }
 
 ///|
@@ -644,7 +644,7 @@ test "ntt vs naive" {
   let ntt_result = ntt.multiply(a, b)
   let naive_result = poly_multiply_naive(a, b)
   for i in 0..<naive_result.length() {
-    inspect(ntt_result[i] == naive_result[i], content="true")
+    debug_inspect(ntt_result[i] == naive_result[i], content="true")
   }
 }
 
@@ -654,24 +654,27 @@ test "karatsuba vs naive" {
   let b : Array[Int64] = [6L, 7L, 8L, 9L, 10L]
   let karatsuba_result = poly_multiply_karatsuba(a, b)
   let naive_result = poly_multiply_naive(a, b)
-  inspect(karatsuba_result.length() == naive_result.length(), content="true")
+  debug_inspect(
+    karatsuba_result.length() == naive_result.length(),
+    content="true",
+  )
   for i in 0..<naive_result.length() {
-    inspect(karatsuba_result[i] == naive_result[i], content="true")
+    debug_inspect(karatsuba_result[i] == naive_result[i], content="true")
   }
 }
 
 ///|
 test "mod_pow" {
-  inspect(mod_pow(3L, 0L, 7L), content="1")
-  inspect(mod_pow(3L, 1L, 7L), content="3")
-  inspect(mod_pow(3L, 2L, 7L), content="2") // 9 % 7 = 2
-  inspect(mod_pow(2L, 10L, 1000L), content="24") // 1024 % 1000 = 24
+  debug_inspect(mod_pow(3L, 0L, 7L), content="1")
+  debug_inspect(mod_pow(3L, 1L, 7L), content="3")
+  debug_inspect(mod_pow(3L, 2L, 7L), content="2") // 9 % 7 = 2
+  debug_inspect(mod_pow(2L, 10L, 1000L), content="24") // 1024 % 1000 = 24
 }
 
 ///|
 test "bit_reverse" {
-  inspect(bit_reverse(0, 3), content="0")
-  inspect(bit_reverse(1, 3), content="4") // 001 -> 100
-  inspect(bit_reverse(2, 3), content="2") // 010 -> 010
-  inspect(bit_reverse(3, 3), content="6") // 011 -> 110
+  debug_inspect(bit_reverse(0, 3), content="0")
+  debug_inspect(bit_reverse(1, 3), content="4") // 001 -> 100
+  debug_inspect(bit_reverse(2, 3), content="2") // 010 -> 010
+  debug_inspect(bit_reverse(3, 3), content="6") // 011 -> 110
 }

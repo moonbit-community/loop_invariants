@@ -406,10 +406,10 @@ test "fenwick2d basic" {
   ft.update(2, 2, 4L)
 
   // Prefix sums
-  inspect(ft.prefix_sum(1, 1), content="1")
-  inspect(ft.prefix_sum(1, 2), content="3") // 1 + 2
-  inspect(ft.prefix_sum(2, 1), content="4") // 1 + 3
-  inspect(ft.prefix_sum(2, 2), content="10") // 1 + 2 + 3 + 4
+  debug_inspect(ft.prefix_sum(1, 1), content="1")
+  debug_inspect(ft.prefix_sum(1, 2), content="3") // 1 + 2
+  debug_inspect(ft.prefix_sum(2, 1), content="4") // 1 + 3
+  debug_inspect(ft.prefix_sum(2, 2), content="10") // 1 + 2 + 3 + 4
 }
 
 ///|
@@ -425,11 +425,11 @@ test "fenwick2d range sum" {
   ft.update(2, 2, 4L)
 
   // Range queries
-  inspect(ft.range_sum(1, 1, 1, 1), content="1")
-  inspect(ft.range_sum(1, 1, 1, 2), content="3") // row 1
-  inspect(ft.range_sum(1, 1, 2, 1), content="4") // col 1
-  inspect(ft.range_sum(2, 2, 2, 2), content="4") // single element
-  inspect(ft.range_sum(1, 2, 2, 2), content="6") // right column: 2 + 4
+  debug_inspect(ft.range_sum(1, 1, 1, 1), content="1")
+  debug_inspect(ft.range_sum(1, 1, 1, 2), content="3") // row 1
+  debug_inspect(ft.range_sum(1, 1, 2, 1), content="4") // col 1
+  debug_inspect(ft.range_sum(2, 2, 2, 2), content="4") // single element
+  debug_inspect(ft.range_sum(1, 2, 2, 2), content="6") // right column: 2 + 4
 }
 
 ///|
@@ -438,25 +438,25 @@ test "fenwick2d get" {
   ft.update(1, 1, 5L)
   ft.update(2, 2, 10L)
   ft.update(3, 3, 15L)
-  inspect(ft.get(1, 1), content="5")
-  inspect(ft.get(2, 2), content="10")
-  inspect(ft.get(3, 3), content="15")
-  inspect(ft.get(1, 2), content="0") // empty cell
+  debug_inspect(ft.get(1, 1), content="5")
+  debug_inspect(ft.get(2, 2), content="10")
+  debug_inspect(ft.get(3, 3), content="15")
+  debug_inspect(ft.get(1, 2), content="0") // empty cell
 }
 
 ///|
 test "fenwick2d update multiple times" {
   let ft = Fenwick2D(3, 3)
   ft.update(1, 1, 5L)
-  inspect(ft.get(1, 1), content="5")
+  debug_inspect(ft.get(1, 1), content="5")
   ft.update(1, 1, 3L)
-  inspect(ft.get(1, 1), content="8") // 5 + 3
+  debug_inspect(ft.get(1, 1), content="8") // 5 + 3
   ft.update(1, 1, -2L)
-  inspect(ft.get(1, 1), content="6") // 8 - 2
+  debug_inspect(ft.get(1, 1), content="6") // 8 - 2
 
   // Test set function
   ft.set(1, 1, 6L, 10L) // old value 6, new value 10
-  inspect(ft.get(1, 1), content="10")
+  debug_inspect(ft.get(1, 1), content="10")
 }
 
 ///|
@@ -469,10 +469,10 @@ test "fenwick2d larger grid" {
   }
 
   // Sum of diagonal: 1 + 2 + 3 + 4 + 5 = 15
-  inspect(ft.prefix_sum(5, 5), content="15")
+  debug_inspect(ft.prefix_sum(5, 5), content="15")
 
   // Sum excluding first row and column
-  inspect(ft.range_sum(2, 2, 5, 5), content="14") // 2 + 3 + 4 + 5
+  debug_inspect(ft.range_sum(2, 2, 5, 5), content="14") // 2 + 3 + 4 + 5
 }
 
 ///|
@@ -481,11 +481,11 @@ test "fenwick2d range update basic" {
 
   // Add 5 to rectangle [(1,1), (2,2)]
   ft.range_add(1, 1, 2, 2, 5L)
-  inspect(ft.query(1, 1), content="5")
-  inspect(ft.query(1, 2), content="5")
-  inspect(ft.query(2, 1), content="5")
-  inspect(ft.query(2, 2), content="5")
-  inspect(ft.query(3, 3), content="0") // outside range
+  debug_inspect(ft.query(1, 1), content="5")
+  debug_inspect(ft.query(1, 2), content="5")
+  debug_inspect(ft.query(2, 1), content="5")
+  debug_inspect(ft.query(2, 2), content="5")
+  debug_inspect(ft.query(3, 3), content="0") // outside range
 }
 
 ///|
@@ -497,43 +497,43 @@ test "fenwick2d range update overlapping" {
 
   // Add 3 to [(2,2), (3,3)]
   ft.range_add(2, 2, 3, 3, 3L)
-  inspect(ft.query(1, 1), content="5")
-  inspect(ft.query(2, 2), content="8") // 5 + 3 (overlap)
-  inspect(ft.query(3, 3), content="3")
-  inspect(ft.query(1, 3), content="0")
+  debug_inspect(ft.query(1, 1), content="5")
+  debug_inspect(ft.query(2, 2), content="8") // 5 + 3 (overlap)
+  debug_inspect(ft.query(3, 3), content="3")
+  debug_inspect(ft.query(1, 3), content="0")
 }
 
 ///|
 test "fenwick2d empty" {
   let ft = Fenwick2D(3, 3)
-  inspect(ft.prefix_sum(3, 3), content="0")
-  inspect(ft.range_sum(1, 1, 3, 3), content="0")
-  inspect(ft.get(2, 2), content="0")
+  debug_inspect(ft.prefix_sum(3, 3), content="0")
+  debug_inspect(ft.range_sum(1, 1, 3, 3), content="0")
+  debug_inspect(ft.get(2, 2), content="0")
 }
 
 ///|
 test "fenwick2d boundary" {
   let ft = Fenwick2D(3, 3)
   ft.update(3, 3, 100L)
-  inspect(ft.prefix_sum(3, 3), content="100")
-  inspect(ft.prefix_sum(2, 3), content="0")
-  inspect(ft.prefix_sum(3, 2), content="0")
+  debug_inspect(ft.prefix_sum(3, 3), content="100")
+  debug_inspect(ft.prefix_sum(2, 3), content="0")
+  debug_inspect(ft.prefix_sum(3, 2), content="0")
 
   // Out of bounds queries should handle gracefully
-  inspect(ft.prefix_sum(0, 0), content="0")
-  inspect(ft.prefix_sum(5, 5), content="100") // clamped to bounds
+  debug_inspect(ft.prefix_sum(0, 0), content="0")
+  debug_inspect(ft.prefix_sum(5, 5), content="100") // clamped to bounds
 }
 
 ///|
 test "fenwick2d dimensions" {
   let ft = Fenwick2D(10, 20)
-  inspect(ft.get_rows(), content="10")
-  inspect(ft.get_cols(), content="20")
+  debug_inspect(ft.get_rows(), content="10")
+  debug_inspect(ft.get_cols(), content="20")
 }
 
 ///|
 test "fenwick2d range dimensions" {
   let ft = Fenwick2DRange(15, 25)
-  inspect(ft.get_rows(), content="15")
-  inspect(ft.get_cols(), content="25")
+  debug_inspect(ft.get_rows(), content="15")
+  debug_inspect(ft.get_cols(), content="25")
 }

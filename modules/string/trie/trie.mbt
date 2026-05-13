@@ -754,11 +754,11 @@ test "trie basic insert and search" {
   trie.insert("hello")
   trie.insert("world")
   trie.insert("help")
-  inspect(trie.search("hello"), content="true")
-  inspect(trie.search("world"), content="true")
-  inspect(trie.search("help"), content="true")
-  inspect(trie.search("hell"), content="false")
-  inspect(trie.search("helper"), content="false")
+  debug_inspect(trie.search("hello"), content="true")
+  debug_inspect(trie.search("world"), content="true")
+  debug_inspect(trie.search("help"), content="true")
+  debug_inspect(trie.search("hell"), content="false")
+  debug_inspect(trie.search("helper"), content="false")
 }
 
 ///|
@@ -767,10 +767,10 @@ test "trie starts_with" {
   trie.insert("hello")
   trie.insert("help")
   trie.insert("world")
-  inspect(trie.starts_with("hel"), content="true")
-  inspect(trie.starts_with("hello"), content="true")
-  inspect(trie.starts_with("wor"), content="true")
-  inspect(trie.starts_with("xyz"), content="false")
+  debug_inspect(trie.starts_with("hel"), content="true")
+  debug_inspect(trie.starts_with("hello"), content="true")
+  debug_inspect(trie.starts_with("wor"), content="true")
+  debug_inspect(trie.starts_with("xyz"), content="false")
 }
 
 ///|
@@ -779,13 +779,13 @@ test "trie delete" {
   trie.insert("hello")
   trie.insert("hello")
   trie.insert("help")
-  inspect(trie.count_word("hello"), content="2")
-  inspect(trie.delete("hello"), content="true")
-  inspect(trie.count_word("hello"), content="1")
-  inspect(trie.search("hello"), content="true")
-  inspect(trie.delete("hello"), content="true")
-  inspect(trie.search("hello"), content="false")
-  inspect(trie.search("help"), content="true")
+  debug_inspect(trie.count_word("hello"), content="2")
+  debug_inspect(trie.delete("hello"), content="true")
+  debug_inspect(trie.count_word("hello"), content="1")
+  debug_inspect(trie.search("hello"), content="true")
+  debug_inspect(trie.delete("hello"), content="true")
+  debug_inspect(trie.search("hello"), content="false")
+  debug_inspect(trie.search("help"), content="true")
 }
 
 ///|
@@ -795,10 +795,10 @@ test "trie prefix count" {
   trie.insert("card")
   trie.insert("care")
   trie.insert("cat")
-  inspect(trie.count_prefix("ca"), content="4")
-  inspect(trie.count_prefix("car"), content="3")
-  inspect(trie.count_prefix("card"), content="1")
-  inspect(trie.count_prefix("dog"), content="0")
+  debug_inspect(trie.count_prefix("ca"), content="4")
+  debug_inspect(trie.count_prefix("car"), content="3")
+  debug_inspect(trie.count_prefix("card"), content="1")
+  debug_inspect(trie.count_prefix("dog"), content="0")
 }
 
 ///|
@@ -809,7 +809,7 @@ test "trie autocomplete" {
   trie.insert("care")
   trie.insert("cat")
   let results = trie.autocomplete("car")
-  inspect(results.length(), content="3") // car, card, care
+  debug_inspect(results.length(), content="3") // car, card, care
 }
 
 ///|
@@ -823,15 +823,25 @@ test "trie autocomplete contents and skipped characters" {
   trie.insert("app")
   trie.insert("apple")
   let results = trie.autocomplete("car")
-  inspect(results.length(), content="4")
-  inspect(results[0], content="car")
-  inspect(results[1], content="card")
-  inspect(results[2], content="care")
-  inspect(results[3], content="care")
-  inspect(trie.search("ab"), content="true")
-  inspect(trie.delete("a-b"), content="true")
-  inspect(trie.search("ab"), content="false")
-  inspect(trie.longest_prefix("app!zz"), content="app")
+  debug_inspect(results.length(), content="4")
+  debug_inspect(results[0], content=(
+    #|"car"
+  ))
+  debug_inspect(results[1], content=(
+    #|"card"
+  ))
+  debug_inspect(results[2], content=(
+    #|"care"
+  ))
+  debug_inspect(results[3], content=(
+    #|"care"
+  ))
+  debug_inspect(trie.search("ab"), content="true")
+  debug_inspect(trie.delete("a-b"), content="true")
+  debug_inspect(trie.search("ab"), content="false")
+  debug_inspect(trie.longest_prefix("app!zz"), content=(
+    #|"app"
+  ))
 }
 
 ///|
@@ -841,22 +851,22 @@ test "trie all_words" {
   trie.insert("ab")
   trie.insert("abc")
   let words = trie.all_words()
-  inspect(words.length(), content="3")
+  debug_inspect(words.length(), content="3")
 }
 
 ///|
 test "trie empty" {
   let trie = Trie()
-  inspect(trie.search("anything"), content="false")
-  inspect(trie.starts_with("any"), content="false")
+  debug_inspect(trie.search("anything"), content="false")
+  debug_inspect(trie.starts_with("any"), content="false")
 }
 
 ///|
 test "trie single char" {
   let trie = Trie()
   trie.insert("a")
-  inspect(trie.search("a"), content="true")
-  inspect(trie.search("b"), content="false")
+  debug_inspect(trie.search("a"), content="true")
+  debug_inspect(trie.search("b"), content="false")
 }
 
 ///|
@@ -865,9 +875,15 @@ test "trie longest prefix" {
   trie.insert("a")
   trie.insert("app")
   trie.insert("apple")
-  inspect(trie.longest_prefix("application"), content="app")
-  inspect(trie.longest_prefix("apple"), content="apple")
-  inspect(trie.longest_prefix("appetizer"), content="app")
+  debug_inspect(trie.longest_prefix("application"), content=(
+    #|"app"
+  ))
+  debug_inspect(trie.longest_prefix("apple"), content=(
+    #|"apple"
+  ))
+  debug_inspect(trie.longest_prefix("appetizer"), content=(
+    #|"app"
+  ))
 }
 
 ///|
@@ -876,10 +892,10 @@ test "compressed trie basic" {
   trie.insert("hello")
   trie.insert("help")
   trie.insert("world")
-  inspect(trie.search("hello"), content="true")
-  inspect(trie.search("help"), content="true")
-  inspect(trie.search("world"), content="true")
-  inspect(trie.search("hel"), content="false")
+  debug_inspect(trie.search("hello"), content="true")
+  debug_inspect(trie.search("help"), content="true")
+  debug_inspect(trie.search("world"), content="true")
+  debug_inspect(trie.search("hel"), content="false")
 }
 
 ///|
@@ -888,10 +904,10 @@ test "compressed trie shared prefix" {
   trie.insert("test")
   trie.insert("testing")
   trie.insert("tested")
-  inspect(trie.search("test"), content="true")
-  inspect(trie.search("testing"), content="true")
-  inspect(trie.search("tested"), content="true")
-  inspect(trie.search("tes"), content="false")
+  debug_inspect(trie.search("test"), content="true")
+  debug_inspect(trie.search("testing"), content="true")
+  debug_inspect(trie.search("tested"), content="true")
+  debug_inspect(trie.search("tes"), content="false")
 }
 
 ///|
@@ -900,13 +916,13 @@ test "trie duplicate insert" {
   trie.insert("hello")
   trie.insert("hello")
   trie.insert("hello")
-  inspect(trie.count_word("hello"), content="3")
-  inspect(trie.count_prefix("hello"), content="3")
+  debug_inspect(trie.count_word("hello"), content="3")
+  debug_inspect(trie.count_prefix("hello"), content="3")
 }
 
 ///|
 test "common prefix len" {
-  inspect(common_prefix_len("hello", "help"), content="3")
-  inspect(common_prefix_len("abc", "xyz"), content="0")
-  inspect(common_prefix_len("test", "testing"), content="4")
+  debug_inspect(common_prefix_len("hello", "help"), content="3")
+  debug_inspect(common_prefix_len("abc", "xyz"), content="0")
+  debug_inspect(common_prefix_len("test", "testing"), content="4")
 }

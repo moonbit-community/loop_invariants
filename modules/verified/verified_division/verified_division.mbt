@@ -60,8 +60,8 @@ pub fn div_nonneg(
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   assert_eq(mod_nonneg(10, 3), 1)
-///   assert_eq(mod_nonneg(0, 7), 0)
+///   @debug.assert_eq(mod_nonneg(10, 3), 1)
+///   @debug.assert_eq(mod_nonneg(0, 7), 0)
 /// }
 /// ```
 pub fn mod_nonneg(
@@ -92,8 +92,8 @@ pub fn mod_nonneg(
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   assert_eq(div_mod_nonneg(25, 5), (5, 0))
-///   assert_eq(div_mod_nonneg(10, 3), (3, 1))
+///   @debug.assert_eq(div_mod_nonneg(25, 5), (5, 0))
+///   @debug.assert_eq(div_mod_nonneg(10, 3), (3, 1))
 /// }
 /// ```
 pub fn div_mod_nonneg(
@@ -109,8 +109,8 @@ pub fn div_mod_nonneg(
 
 ///|
 test "verified_division_examples" {
-  assert_eq(div_nonneg(10, 3), 3)
-  assert_eq(mod_nonneg(10, 3), 1)
-  assert_eq(div_mod_nonneg(25, 5), (5, 0))
-  assert_eq(div_mod_nonneg(0, 7), (0, 0))
+  @debug.assert_eq(div_nonneg(10, 3), 3)
+  @debug.assert_eq(mod_nonneg(10, 3), 1)
+  @debug.assert_eq(div_mod_nonneg(25, 5), (5, 0))
+  @debug.assert_eq(div_mod_nonneg(0, 7), (0, 0))
 }

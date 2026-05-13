@@ -21,7 +21,7 @@
 ///   let s = @challenge_persistent_stack_min.push(s, 3)
 ///   let s = @challenge_persistent_stack_min.push(s, 1)
 ///   let s = @challenge_persistent_stack_min.push(s, 2)
-///   assert_eq(@challenge_persistent_stack_min.min_value(s), Some(1))
+///   @debug.assert_eq(@challenge_persistent_stack_min.min_value(s), Some(1))
 /// }
 /// ```
 pub enum MinStack[T] {

@@ -157,7 +157,7 @@ test "interval tree same start" {
     @challenge_persistent_interval_tree.find_overlap(t2, 6, 6),
     content="Some((2, 7))",
   )
-  inspect(@challenge_persistent_interval_tree.size(t2), content="1")
+  debug_inspect(@challenge_persistent_interval_tree.size(t2), content="1")
 }
 ```
 

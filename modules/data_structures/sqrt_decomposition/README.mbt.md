@@ -189,9 +189,9 @@ Block size `B = ⌊√n⌋` minimises the sum `O(B) + O(n/B)` to `O(√n)`.
 test "sqrt decomposition example" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let sd = @sqrt_decomposition.SqrtSum(arr)
-  inspect(sd.query(1, 3), content="9")
+  debug_inspect(sd.query(1, 3), content="9")
   sd.update(2, 10L)
-  inspect(sd.query(1, 3), content="16")
+  debug_inspect(sd.query(1, 3), content="16")
 }
 ```
 

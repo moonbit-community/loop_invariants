@@ -64,7 +64,7 @@ length is 2.
 ///|
 test "tree diameter chain" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
-  inspect(@challenge_tree_diameter.tree_diameter(5, edges), content="4")
+  debug_inspect(@challenge_tree_diameter.tree_diameter(5, edges), content="4")
 }
 ```
 
@@ -76,7 +76,7 @@ test "tree diameter chain" {
 ///|
 test "tree diameter star" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3)]
-  inspect(@challenge_tree_diameter.tree_diameter(4, edges), content="2")
+  debug_inspect(@challenge_tree_diameter.tree_diameter(4, edges), content="2")
 }
 ```
 
@@ -88,7 +88,7 @@ test "tree diameter star" {
 ///|
 test "tree diameter single" {
   let edges : Array[(Int, Int)] = []
-  inspect(@challenge_tree_diameter.tree_diameter(1, edges), content="0")
+  debug_inspect(@challenge_tree_diameter.tree_diameter(1, edges), content="0")
 }
 ```
 

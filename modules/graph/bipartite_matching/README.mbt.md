@@ -180,7 +180,7 @@ test "small matching" {
   graph.add_edge(0, 1)
   graph.add_edge(1, 1)
   let matcher = graph.hungarian()
-  inspect(matcher.max_matching(), content="2")
+  debug_inspect(matcher.max_matching(), content="2")
 }
 ```
 
@@ -195,7 +195,7 @@ test "unbalanced sets" {
   graph.add_edge(2, 1)
   graph.add_edge(3, 1)
   let matcher = graph.hopcroft_karp()
-  inspect(matcher.max_matching(), content="2")
+  debug_inspect(matcher.max_matching(), content="2")
 }
 ```
 
@@ -215,7 +215,7 @@ test "assignment example" {
   graph.add_edge(1, 1)
   graph.add_edge(2, 1)
   let matcher = graph.hungarian()
-  inspect(matcher.max_matching(), content="3")
+  debug_inspect(matcher.max_matching(), content="3")
 }
 ```
 
@@ -233,7 +233,7 @@ test "min vertex cover" {
   let matching_size = matcher.max_matching()
   let (left_cover, right_cover) = matcher.min_vertex_cover()
   // König's theorem: cover size equals matching size
-  inspect(
+  debug_inspect(
     left_cover.length() + right_cover.length() == matching_size,
     content="true",
   )

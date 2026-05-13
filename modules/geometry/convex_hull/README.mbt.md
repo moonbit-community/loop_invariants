@@ -253,7 +253,7 @@ test "convex hull example" {
     { x: 2L, y: 2L }, // Interior point - will be excluded
   ]
   let hull = @convex_hull.convex_hull(pts)
-  inspect(hull.length(), content="4") // Square has 4 corners
+  debug_inspect(hull.length(), content="4") // Square has 4 corners
 }
 ```
 
@@ -284,7 +284,7 @@ test "area example" {
     { x: 0L, y: 4L },
   ]
   // Area = 16, so 2 * area = 32
-  inspect(@convex_hull.polygon_area_2x(square), content="32")
+  debug_inspect(@convex_hull.polygon_area_2x(square), content="32")
 }
 ```
 
@@ -310,9 +310,18 @@ test "point in hull example" {
     { x: 4L, y: 4L },
     { x: 0L, y: 4L },
   ]
-  inspect(@convex_hull.point_in_hull(square, { x: 2L, y: 2L }), content="1")
-  inspect(@convex_hull.point_in_hull(square, { x: 2L, y: 0L }), content="0")
-  inspect(@convex_hull.point_in_hull(square, { x: 5L, y: 5L }), content="-1")
+  debug_inspect(
+    @convex_hull.point_in_hull(square, { x: 2L, y: 2L }),
+    content="1",
+  )
+  debug_inspect(
+    @convex_hull.point_in_hull(square, { x: 2L, y: 0L }),
+    content="0",
+  )
+  debug_inspect(
+    @convex_hull.point_in_hull(square, { x: 5L, y: 5L }),
+    content="-1",
+  )
 }
 ```
 
@@ -347,7 +356,7 @@ test "diameter example" {
     { x: 0L, y: 4L },
   ]
   // Diagonal = sqrt(32), so diameter^2 = 32
-  inspect(@convex_hull.hull_diameter_squared(square), content="32")
+  debug_inspect(@convex_hull.hull_diameter_squared(square), content="32")
 }
 ```
 
@@ -387,8 +396,8 @@ test "all algorithms same result" {
   let h2 = @convex_hull.convex_hull_graham(pts)
   let h3 = @convex_hull.convex_hull_jarvis(pts)
   // All three return the same number of hull vertices
-  inspect(h1.length(), content="5")
-  inspect(
+  debug_inspect(h1.length(), content="5")
+  debug_inspect(
     h1.length() == h2.length() && h2.length() == h3.length(),
     content="true",
   )

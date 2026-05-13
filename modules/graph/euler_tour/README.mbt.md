@@ -202,8 +202,8 @@ LCA(1, 3): look at steps first[1]..first[3] = 1..4
 test "euler tour subtree basics" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3)]
   let tour = @euler_tour.build_euler_tour(4, edges, 0)
-  inspect(tour.subtree_size(1), content="3")
-  inspect(tour.is_ancestor(1, 3), content="true")
+  debug_inspect(tour.subtree_size(1), content="3")
+  debug_inspect(tour.is_ancestor(1, 3), content="true")
 }
 ```
 
@@ -214,7 +214,7 @@ test "euler tour subtree nodes" {
   let tour = @euler_tour.build_euler_tour(4, edges, 0)
   let nodes = tour.subtree_nodes(1)
   nodes.sort_by((a, b) => a - b)
-  inspect(nodes, content="[1, 2, 3]")
+  debug_inspect(nodes, content="[1, 2, 3]")
 }
 ```
 
@@ -223,8 +223,8 @@ test "euler tour subtree nodes" {
 test "euler tour arrays" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
   let (tin, tout, order) = @euler_tour.euler_tour(5, edges, 0)
-  inspect(order.length(), content="5")
-  inspect(tin[0] < tout[0], content="true")
+  debug_inspect(order.length(), content="5")
+  debug_inspect(tin[0] < tout[0], content="true")
 }
 ```
 
@@ -241,7 +241,7 @@ test "euler tour subtree sum" {
   let start = info.entry[1]
   let end = info.exit[1]
   let total = flat[start:end].fold(init=0, (acc, v) => acc + v)
-  inspect(total, content="6")
+  debug_inspect(total, content="6")
 }
 ```
 

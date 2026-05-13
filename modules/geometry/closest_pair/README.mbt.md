@@ -198,8 +198,8 @@ graph TD
 test "closest pair line" {
   let points : Array[(Double, Double)] = [(0.0, 0.0), (1.0, 0.0), (4.0, 0.0)]
   let (dist, p1, p2) = @closest_pair.closest_pair(points)
-  inspect(dist, content="1")
-  inspect((p1, p2), content="(0, 1)")
+  debug_inspect(dist, content="1")
+  debug_inspect((p1, p2), content="(0, 1)")
 }
 ```
 
@@ -213,7 +213,7 @@ test "closest pair triangle" {
   let points : Array[(Double, Double)] = [(0.0, 0.0), (3.0, 0.0), (1.5, 0.5)]
   let (dist, _, _) = @closest_pair.closest_pair(points)
   // Closest distance is about 1.58
-  inspect(dist < 1.6 && dist > 1.5, content="true")
+  debug_inspect(dist < 1.6 && dist > 1.5, content="true")
 }
 ```
 
@@ -231,7 +231,7 @@ test "closest pair cluster" {
     (10.1, 10.0),
   ]
   let (dist, _, _) = @closest_pair.closest_pair(points)
-  inspect(dist < 0.15 && dist > 0.05, content="true")
+  debug_inspect(dist < 0.15 && dist > 0.05, content="true")
 }
 ```
 

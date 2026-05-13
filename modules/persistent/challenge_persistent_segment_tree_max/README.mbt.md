@@ -76,7 +76,7 @@ test "segment tree max basic" {
     arr.length(),
     [(2, 1), (0, 6)],
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_max.range_max(
       root,
       0,
@@ -86,7 +86,7 @@ test "segment tree max basic" {
     ),
     content="7",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_max.range_max(
       updated,
       0,
@@ -96,7 +96,7 @@ test "segment tree max basic" {
     ),
     content="6",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_max.range_max(
       updated,
       0,
@@ -123,7 +123,7 @@ test "segment tree max single" {
     2,
     10,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_max.range_max(t1, 0, arr.length(), 0, 3),
     content="10",
   )
@@ -144,7 +144,7 @@ test "segment tree max persistence" {
     0,
     2,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_max.range_max(
       root,
       0,
@@ -154,7 +154,7 @@ test "segment tree max persistence" {
     ),
     content="6",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_max.range_max(t1, 0, arr.length(), 0, 3),
     content="6",
   )

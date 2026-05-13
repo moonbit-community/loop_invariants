@@ -120,7 +120,7 @@ fn on_segment(a : Point, b : Point, p : Point) -> Bool {
 /// let b = Point::{ x: 4L, y: 4L }
 /// let c = Point::{ x: 0L, y: 4L }
 /// let d = Point::{ x: 4L, y: 0L }
-/// assert_eq(segments_intersect(a, b, c, d), true)
+/// @debug.assert_eq(segments_intersect(a, b, c, d), true)
 /// ```
 ///
 /// Parallel horizontal segments with a gap:
@@ -130,7 +130,7 @@ fn on_segment(a : Point, b : Point, p : Point) -> Bool {
 /// let b = Point::{ x: 1L, y: 0L }
 /// let c = Point::{ x: 2L, y: 0L }
 /// let d = Point::{ x: 3L, y: 0L }
-/// assert_eq(segments_intersect(a, b, c, d), false)
+/// @debug.assert_eq(segments_intersect(a, b, c, d), false)
 /// ```
 pub fn segments_intersect(a : Point, b : Point, c : Point, d : Point) -> Bool {
   let o1 = cross(a, b, c)

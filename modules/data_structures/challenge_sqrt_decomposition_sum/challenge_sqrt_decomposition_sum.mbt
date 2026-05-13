@@ -34,9 +34,9 @@ fn sqrt_ceil_from(n : Int, b : Int) -> Int {
 /// test {
 ///   let arr : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ///   let sd = build_sqrt_decomp(arr[:])
-///   assert_eq(range_sum(sd, 0, 9), 45)
+///   @debug.assert_eq(range_sum(sd, 0, 9), 45)
 ///   update(sd, 2, 30)
-///   assert_eq(range_sum(sd, 0, 9), 72)
+///   @debug.assert_eq(range_sum(sd, 0, 9), 72)
 /// }
 /// ```
 pub struct SqrtDecomp {

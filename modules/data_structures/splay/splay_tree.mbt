@@ -639,28 +639,28 @@ test "splay tree basic operations" {
   let st : SplayTree[Int] = SplayTree()
 
   // Initially empty
-  inspect(st.is_empty(), content="true")
+  debug_inspect(st.is_empty(), content="true")
 
   // Insert elements
-  inspect(st.insert(5), content="true")
-  inspect(st.insert(3), content="true")
-  inspect(st.insert(7), content="true")
-  inspect(st.insert(1), content="true")
-  inspect(st.insert(9), content="true")
+  debug_inspect(st.insert(5), content="true")
+  debug_inspect(st.insert(3), content="true")
+  debug_inspect(st.insert(7), content="true")
+  debug_inspect(st.insert(1), content="true")
+  debug_inspect(st.insert(9), content="true")
 
   // Duplicate insert should fail
-  inspect(st.insert(5), content="false")
+  debug_inspect(st.insert(5), content="false")
 
   // Not empty after insertions
-  inspect(st.is_empty(), content="false")
+  debug_inspect(st.is_empty(), content="false")
 
   // Size check
-  inspect(st.size(), content="5")
+  debug_inspect(st.size(), content="5")
 
   // Search
-  inspect(st.search(5), content="true")
-  inspect(st.search(3), content="true")
-  inspect(st.search(100), content="false")
+  debug_inspect(st.search(5), content="true")
+  debug_inspect(st.search(3), content="true")
+  debug_inspect(st.search(100), content="false")
 }
 
 ///|
@@ -669,21 +669,21 @@ test "splay tree delete" {
   for i in 1..<=5 {
     let _ = st.insert(i)
   }
-  inspect(st.size(), content="5")
+  debug_inspect(st.size(), content="5")
 
   // Delete middle
-  inspect(st.delete(3), content="true")
-  inspect(st.size(), content="4")
-  inspect(st.search(3), content="false")
+  debug_inspect(st.delete(3), content="true")
+  debug_inspect(st.size(), content="4")
+  debug_inspect(st.search(3), content="false")
 
   // Delete non-existent
-  inspect(st.delete(100), content="false")
+  debug_inspect(st.delete(100), content="false")
 
   // Remaining elements still accessible
-  inspect(st.search(1), content="true")
-  inspect(st.search(2), content="true")
-  inspect(st.search(4), content="true")
-  inspect(st.search(5), content="true")
+  debug_inspect(st.search(1), content="true")
+  debug_inspect(st.search(2), content="true")
+  debug_inspect(st.search(4), content="true")
+  debug_inspect(st.search(5), content="true")
 }
 
 ///|
@@ -716,9 +716,9 @@ test "splay tree order statistics" {
   debug_inspect(st.kth_element(6), content="None")
 
   // Count less than
-  inspect(st.count_less(5), content="2") // 1, 3
-  inspect(st.count_less(1), content="0")
-  inspect(st.count_less(10), content="5")
+  debug_inspect(st.count_less(5), content="2") // 1, 3
+  debug_inspect(st.count_less(1), content="0")
+  debug_inspect(st.count_less(10), content="5")
 }
 
 ///|
@@ -730,7 +730,7 @@ test "splay tree inorder" {
   let _ = st.insert(1)
   let _ = st.insert(9)
   // In-order should be sorted
-  inspect(st.inorder(), content="[1, 3, 5, 7, 9]")
+  debug_inspect(st.inorder(), content="[1, 3, 5, 7, 9]")
 }
 
 ///|
@@ -741,7 +741,7 @@ test "splay tree stress" {
   for i in 0..<100 {
     let _ = st.insert(i)
   }
-  inspect(st.size(), content="100")
+  debug_inspect(st.size(), content="100")
 
   // Search all
   for i in 0..<100 {
@@ -754,7 +754,7 @@ test "splay tree stress" {
       guard st.delete(i) else { fail("Delete failed") }
     }
   }
-  inspect(st.size(), content="50")
+  debug_inspect(st.size(), content="50")
 }
 
 ///|
@@ -770,11 +770,11 @@ test "splay tree split join" {
   // Check sizes
   let left_size = if left >= 0 { st.nodes[left].size } else { 0 }
   let right_size = if right >= 0 { st.nodes[right].size } else { 0 }
-  inspect(left_size, content="5")
-  inspect(right_size, content="5")
+  debug_inspect(left_size, content="5")
+  debug_inspect(right_size, content="5")
 
   // Join them back
   st.join(left, right)
-  inspect(st.size(), content="10")
-  inspect(st.inorder(), content="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]")
+  debug_inspect(st.size(), content="10")
+  debug_inspect(st.inorder(), content="[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]")
 }

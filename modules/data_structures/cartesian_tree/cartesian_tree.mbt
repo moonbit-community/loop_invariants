@@ -716,10 +716,10 @@ test "cartesian tree construction" {
   debug_inspect(tree.root_value(), content="Some(1)")
 
   // Verify in-order property
-  inspect(tree.verify_inorder(arr), content="true")
+  debug_inspect(tree.verify_inorder(arr), content="true")
 
   // Verify heap property
-  inspect(tree.verify_heap(), content="true")
+  debug_inspect(tree.verify_heap(), content="true")
 }
 
 ///|
@@ -756,7 +756,7 @@ test "cartesian tree rmq index" {
 test "cartesian tree empty" {
   let arr : Array[Int64] = []
   let tree = CartesianTree(arr)
-  inspect(tree.length(), content="0")
+  debug_inspect(tree.length(), content="0")
   debug_inspect(tree.root_value(), content="None")
   debug_inspect(tree.query_min(0, 0), content="None")
 }
@@ -767,8 +767,8 @@ test "cartesian tree single" {
   let tree = CartesianTree(arr)
   debug_inspect(tree.root_value(), content="Some(42)")
   debug_inspect(tree.query_min(0, 0), content="Some(42)")
-  inspect(tree.verify_inorder(arr), content="true")
-  inspect(tree.verify_heap(), content="true")
+  debug_inspect(tree.verify_inorder(arr), content="true")
+  debug_inspect(tree.verify_heap(), content="true")
 }
 
 ///|
@@ -777,8 +777,8 @@ test "cartesian tree sorted ascending" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let tree = CartesianTree(arr)
   debug_inspect(tree.root_value(), content="Some(1)")
-  inspect(tree.verify_inorder(arr), content="true")
-  inspect(tree.verify_heap(), content="true")
+  debug_inspect(tree.verify_inorder(arr), content="true")
+  debug_inspect(tree.verify_heap(), content="true")
 
   // RMQ should work correctly
   debug_inspect(tree.query_min(0, 4), content="Some(1)")
@@ -791,8 +791,8 @@ test "cartesian tree sorted descending" {
   let arr : Array[Int64] = [5L, 4L, 3L, 2L, 1L]
   let tree = CartesianTree(arr)
   debug_inspect(tree.root_value(), content="Some(1)")
-  inspect(tree.verify_inorder(arr), content="true")
-  inspect(tree.verify_heap(), content="true")
+  debug_inspect(tree.verify_inorder(arr), content="true")
+  debug_inspect(tree.verify_heap(), content="true")
   debug_inspect(tree.query_min(0, 4), content="Some(1)")
   debug_inspect(tree.query_min(0, 2), content="Some(3)")
 }
@@ -816,11 +816,11 @@ test "nearest smaller left" {
   // 6: 2 at index 1 -> 1
   // 1: no smaller to left -> -1
   // 9: 1 at index 3 -> 3
-  inspect(result[0], content="-1")
-  inspect(result[1], content="-1")
-  inspect(result[2], content="1")
-  inspect(result[3], content="-1")
-  inspect(result[4], content="3")
+  debug_inspect(result[0], content="-1")
+  debug_inspect(result[1], content="-1")
+  debug_inspect(result[2], content="1")
+  debug_inspect(result[3], content="-1")
+  debug_inspect(result[4], content="3")
 }
 
 ///|
@@ -833,11 +833,11 @@ test "nearest smaller right" {
   // 6: 1 at index 3 -> 3
   // 1: no smaller to right -> -1
   // 9: no smaller to right -> -1
-  inspect(result[0], content="1")
-  inspect(result[1], content="3")
-  inspect(result[2], content="3")
-  inspect(result[3], content="-1")
-  inspect(result[4], content="-1")
+  debug_inspect(result[0], content="1")
+  debug_inspect(result[1], content="3")
+  debug_inspect(result[2], content="3")
+  debug_inspect(result[3], content="-1")
+  debug_inspect(result[4], content="-1")
 }
 
 ///|
@@ -848,7 +848,7 @@ test "largest rectangle histogram" {
 
   // Largest is 10 (height 5, width 2 from indices 2-3, or height 2, width 5)
   // Actually: heights[2]=5, heights[3]=6, min=5, width=2, area=10
-  inspect(area, content="10")
+  debug_inspect(area, content="10")
 }
 
 ///|
@@ -857,7 +857,7 @@ test "largest rectangle histogram all same" {
   let area = largest_rectangle_histogram(heights)
 
   // 3 * 4 = 12
-  inspect(area, content="12")
+  debug_inspect(area, content="12")
 }
 
 ///|
@@ -872,13 +872,13 @@ test "largest rectangle histogram ascending" {
   // idx 2: height 3, width 3 -> 9
   // idx 3: height 4, width 2 -> 8
   // idx 4: height 5, width 1 -> 5
-  inspect(area, content="9")
+  debug_inspect(area, content="9")
 }
 
 ///|
 test "largest rectangle empty" {
   let heights : Array[Int64] = []
-  inspect(largest_rectangle_histogram(heights), content="0")
+  debug_inspect(largest_rectangle_histogram(heights), content="0")
 }
 
 ///|
@@ -895,9 +895,9 @@ test "cartesian tree number different shapes" {
   let num3 = tree3.tree_number()
 
   // All three should be different
-  inspect(num1 != num2, content="true")
-  inspect(num2 != num3, content="true")
-  inspect(num1 != num3, content="true")
+  debug_inspect(num1 != num2, content="true")
+  debug_inspect(num2 != num3, content="true")
+  debug_inspect(num1 != num3, content="true")
 }
 
 ///|
@@ -909,7 +909,7 @@ test "cartesian tree number same shape" {
   let tree2 = CartesianTree(arr2)
 
   // Same shape, same tree number
-  inspect(tree1.tree_number() == tree2.tree_number(), content="true")
+  debug_inspect(tree1.tree_number() == tree2.tree_number(), content="true")
 }
 
 ///|
@@ -928,7 +928,7 @@ test "cartesian tree lca" {
 
   // LCA of same node is itself
   let node0 = tree.index_to_node[0]
-  inspect(tree.lca(node0, node0) == node0, content="true")
+  debug_inspect(tree.lca(node0, node0) == node0, content="true")
 }
 
 ///|
@@ -936,23 +936,23 @@ test "cartesian tree large" {
   // Test with larger array
   let arr = [ for i in 0..<100 => (i * 7 % 100).to_int64() ]
   let tree = CartesianTree(arr)
-  inspect(tree.verify_inorder(arr), content="true")
-  inspect(tree.verify_heap(), content="true")
+  debug_inspect(tree.verify_inorder(arr), content="true")
+  debug_inspect(tree.verify_heap(), content="true")
 
   // Find global minimum
   let min_val = tree.query_min(0, 99)
-  inspect(min_val is Some(_), content="true")
+  debug_inspect(min_val is Some(_), content="true")
 }
 
 ///|
 test "histogram single bar" {
   let heights : Array[Int64] = [5L]
-  inspect(largest_rectangle_histogram(heights), content="5")
+  debug_inspect(largest_rectangle_histogram(heights), content="5")
 }
 
 ///|
 test "histogram two bars" {
   let heights : Array[Int64] = [2L, 4L]
   // Min(2*2, 4*1) vs max = 4
-  inspect(largest_rectangle_histogram(heights), content="4")
+  debug_inspect(largest_rectangle_histogram(heights), content="4")
 }

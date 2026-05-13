@@ -452,7 +452,7 @@ test "euler_tour basic" {
 
   // Check entry < exit
   for i in 0..<5 {
-    inspect(et.entry[i] < et.exit[i], content="true")
+    debug_inspect(et.entry[i] < et.exit[i], content="true")
   }
 }
 
@@ -468,11 +468,11 @@ test "euler_tour subtree" {
   // Subtree of 1 should include 1, 3, 4
   let subtree = et.get_subtree(1)
   let (start, end) = et.subtree_range(1)
-  inspect(subtree.length(), content="3")
-  inspect(end - start, content="3")
-  inspect(subtree.contains(1), content="true")
-  inspect(subtree.contains(3), content="true")
-  inspect(subtree.contains(4), content="true")
+  debug_inspect(subtree.length(), content="3")
+  debug_inspect(end - start, content="3")
+  debug_inspect(subtree.contains(1), content="true")
+  debug_inspect(subtree.contains(3), content="true")
+  debug_inspect(subtree.contains(4), content="true")
 }
 
 ///|
@@ -483,10 +483,10 @@ test "euler_tour ancestor" {
   et.add_edge(1, 2)
   et.add_edge(2, 3)
   et.build(0)
-  inspect(et.is_ancestor(0, 3), content="true")
-  inspect(et.is_ancestor(1, 3), content="true")
-  inspect(et.is_ancestor(3, 1), content="false")
-  inspect(et.is_ancestor(2, 2), content="true") // Node is ancestor of itself
+  debug_inspect(et.is_ancestor(0, 3), content="true")
+  debug_inspect(et.is_ancestor(1, 3), content="true")
+  debug_inspect(et.is_ancestor(3, 1), content="false")
+  debug_inspect(et.is_ancestor(2, 2), content="true") // Node is ancestor of itself
 }
 
 ///|
@@ -502,10 +502,10 @@ test "euler_tour_lca basic" {
   et.add_edge(1, 3)
   et.add_edge(1, 4)
   et.build(0)
-  inspect(et.lca(3, 4), content="1")
-  inspect(et.lca(3, 2), content="0")
-  inspect(et.lca(1, 4), content="1")
-  inspect(et.lca(0, 3), content="0")
+  debug_inspect(et.lca(3, 4), content="1")
+  debug_inspect(et.lca(3, 2), content="0")
+  debug_inspect(et.lca(1, 4), content="1")
+  debug_inspect(et.lca(0, 3), content="0")
 }
 
 ///|
@@ -516,17 +516,17 @@ test "euler_tour_lca distance" {
   et.add_edge(1, 3)
   et.add_edge(1, 4)
   et.build(0)
-  inspect(et.distance(3, 4), content="2") // 3 -> 1 -> 4
-  inspect(et.distance(3, 2), content="3") // 3 -> 1 -> 0 -> 2
-  inspect(et.distance(0, 0), content="0")
+  debug_inspect(et.distance(3, 4), content="2") // 3 -> 1 -> 4
+  debug_inspect(et.distance(3, 2), content="3") // 3 -> 1 -> 0 -> 2
+  debug_inspect(et.distance(0, 0), content="0")
 }
 
 ///|
 test "euler_tour single node" {
   let et = EulerTour(1)
   et.build(0)
-  inspect(et.subtree_size(0), content="1")
-  inspect(et.is_ancestor(0, 0), content="true")
+  debug_inspect(et.subtree_size(0), content="1")
+  debug_inspect(et.is_ancestor(0, 0), content="true")
 }
 
 ///|
@@ -537,10 +537,10 @@ test "euler_tour_lca chain" {
   et.add_edge(1, 2)
   et.add_edge(2, 3)
   et.build(0)
-  inspect(et.lca(0, 3), content="0")
-  inspect(et.lca(1, 3), content="1")
-  inspect(et.lca(2, 3), content="2")
-  inspect(et.distance(0, 3), content="3")
+  debug_inspect(et.lca(0, 3), content="0")
+  debug_inspect(et.lca(1, 3), content="1")
+  debug_inspect(et.lca(2, 3), content="2")
+  debug_inspect(et.distance(0, 3), content="3")
 }
 
 ///|
@@ -550,8 +550,8 @@ test "euler_tour depth" {
   et.add_edge(1, 2)
   et.add_edge(2, 3)
   et.build(0)
-  inspect(et.depth[0], content="0")
-  inspect(et.depth[1], content="1")
-  inspect(et.depth[2], content="2")
-  inspect(et.depth[3], content="3")
+  debug_inspect(et.depth[0], content="0")
+  debug_inspect(et.depth[1], content="1")
+  debug_inspect(et.depth[2], content="2")
+  debug_inspect(et.depth[3], content="3")
 }

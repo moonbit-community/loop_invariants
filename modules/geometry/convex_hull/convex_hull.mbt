@@ -551,7 +551,7 @@ test "monotone chain basic" {
     { x: 2L, y: 2L }, // Interior point
   ]
   let hull = convex_hull_monotone(points)
-  inspect(hull.length(), content="4")
+  debug_inspect(hull.length(), content="4")
 }
 
 ///|
@@ -562,7 +562,7 @@ test "monotone chain triangle" {
     { x: 2L, y: 3L },
   ]
   let hull = convex_hull_monotone(points)
-  inspect(hull.length(), content="3")
+  debug_inspect(hull.length(), content="3")
 }
 
 ///|
@@ -575,7 +575,7 @@ test "graham scan basic" {
     { x: 2L, y: 2L },
   ]
   let hull = convex_hull_graham(points)
-  inspect(hull.length(), content="4")
+  debug_inspect(hull.length(), content="4")
 }
 
 ///|
@@ -588,7 +588,7 @@ test "jarvis march basic" {
     { x: 2L, y: 2L },
   ]
   let hull = convex_hull_jarvis(points)
-  inspect(hull.length(), content="4")
+  debug_inspect(hull.length(), content="4")
 }
 
 ///|
@@ -602,7 +602,7 @@ test "convex hull collinear points" {
 
   // Collinear points form a degenerate hull (line segment)
   let hull = convex_hull_monotone(points)
-  inspect(hull.length(), content="2")
+  debug_inspect(hull.length(), content="2")
 }
 
 ///|
@@ -615,21 +615,21 @@ test "convex hull alias" {
     { x: 1L, y: 1L },
   ]
   let hull = convex_hull(points)
-  inspect(hull.length(), content="4")
+  debug_inspect(hull.length(), content="4")
 }
 
 ///|
 test "convex hull single point" {
   let points : Array[Point] = [{ x: 5L, y: 5L }]
   let hull = convex_hull_monotone(points)
-  inspect(hull.length(), content="1")
+  debug_inspect(hull.length(), content="1")
 }
 
 ///|
 test "convex hull two points" {
   let points : Array[Point] = [{ x: 0L, y: 0L }, { x: 5L, y: 5L }]
   let hull = convex_hull_monotone(points)
-  inspect(hull.length(), content="2")
+  debug_inspect(hull.length(), content="2")
 }
 
 ///|
@@ -642,7 +642,7 @@ test "polygon area" {
     { x: 0L, y: 4L },
   ]
   // Area = 16, so 2x = 32
-  inspect(polygon_area_2x(square), content="32")
+  debug_inspect(polygon_area_2x(square), content="32")
 
   // Triangle with base 4, height 3
   let triangle : Array[Point] = [
@@ -651,7 +651,7 @@ test "polygon area" {
     { x: 2L, y: 3L },
   ]
   // Area = 6, so 2x = 12
-  inspect(polygon_area_2x(triangle), content="12")
+  debug_inspect(polygon_area_2x(triangle), content="12")
 }
 
 ///|
@@ -664,16 +664,16 @@ test "point in hull" {
   ]
 
   // Inside
-  inspect(point_in_hull(square, { x: 2L, y: 2L }), content="1")
+  debug_inspect(point_in_hull(square, { x: 2L, y: 2L }), content="1")
 
   // On boundary
-  inspect(point_in_hull(square, { x: 2L, y: 0L }), content="0")
+  debug_inspect(point_in_hull(square, { x: 2L, y: 0L }), content="0")
 
   // On corner
-  inspect(point_in_hull(square, { x: 0L, y: 0L }), content="0")
+  debug_inspect(point_in_hull(square, { x: 0L, y: 0L }), content="0")
 
   // Outside
-  inspect(point_in_hull(square, { x: 5L, y: 5L }), content="-1")
+  debug_inspect(point_in_hull(square, { x: 5L, y: 5L }), content="-1")
 }
 
 ///|
@@ -686,7 +686,7 @@ test "hull diameter" {
     { x: 0L, y: 4L },
   ]
   // Diameter squared = 32
-  inspect(hull_diameter_squared(square), content="32")
+  debug_inspect(hull_diameter_squared(square), content="32")
 }
 
 ///|
@@ -704,10 +704,10 @@ test "convex hull complex" {
     { x: 8L, y: 2L },
   ]
   let hull = convex_hull_monotone(points)
-  inspect(hull.length(), content="4")
+  debug_inspect(hull.length(), content="4")
 
   // Area should be 100, so 2x = 200
-  inspect(polygon_area_2x(hull), content="200")
+  debug_inspect(polygon_area_2x(hull), content="200")
 }
 
 ///|
@@ -725,11 +725,11 @@ test "all algorithms agree" {
   let hull3 = convex_hull_jarvis(points)
 
   // All should have the same size
-  inspect(
+  debug_inspect(
     hull1.length() == hull2.length() && hull2.length() == hull3.length(),
     content="true",
   )
-  inspect(hull1.length(), content="5")
+  debug_inspect(hull1.length(), content="5")
 }
 
 ///|
@@ -739,21 +739,21 @@ test "cross product" {
   let b = { x: 0L, y: 1L }
 
   // Counterclockwise
-  inspect(cross(o, a, b) > 0L, content="true")
+  debug_inspect(cross(o, a, b) > 0L, content="true")
 
   // Clockwise
-  inspect(cross(o, b, a) < 0L, content="true")
+  debug_inspect(cross(o, b, a) < 0L, content="true")
 
   // Collinear
   let c = { x: 2L, y: 0L }
-  inspect(cross(o, a, c), content="0")
+  debug_inspect(cross(o, a, c), content="0")
 }
 
 ///|
 test "convex hull empty" {
   let points : Array[Point] = []
   let hull = convex_hull_monotone(points)
-  inspect(hull.length(), content="0")
+  debug_inspect(hull.length(), content="0")
 }
 
 ///|
@@ -765,14 +765,14 @@ test "convex hull all same point" {
   ]
   let hull = convex_hull_monotone(points)
   // After sorting and processing, should have 1 unique point
-  inspect(hull.length() >= 1, content="true")
+  debug_inspect(hull.length() >= 1, content="true")
 }
 
 ///|
 test "hull diameter line" {
   let points : Array[Point] = [{ x: 0L, y: 0L }, { x: 10L, y: 0L }]
   // Diameter = 10, squared = 100
-  inspect(hull_diameter_squared(points), content="100")
+  debug_inspect(hull_diameter_squared(points), content="100")
 }
 
 ///|
@@ -784,8 +784,8 @@ test "point in hull triangle" {
   ]
 
   // Center of triangle (centroid)
-  inspect(point_in_hull(triangle, { x: 3L, y: 2L }), content="1")
+  debug_inspect(point_in_hull(triangle, { x: 3L, y: 2L }), content="1")
 
   // Outside
-  inspect(point_in_hull(triangle, { x: 0L, y: 6L }), content="-1")
+  debug_inspect(point_in_hull(triangle, { x: 0L, y: 6L }), content="-1")
 }

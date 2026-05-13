@@ -131,11 +131,11 @@ range_sum(2, 4) = 12
 test "range add basic" {
   let rf0 = @challenge_persistent_fenwick_range_add.make(5)
   let rf1 = @challenge_persistent_fenwick_range_add.range_add(rf0, 1, 3, 3)
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf1, 1, 3),
     content="9",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf1, 0, 4),
     content="9",
   )
@@ -150,11 +150,11 @@ test "range add two updates" {
   let rf0 = @challenge_persistent_fenwick_range_add.make(5)
   let rf1 = @challenge_persistent_fenwick_range_add.range_add(rf0, 1, 3, 3)
   let rf2 = @challenge_persistent_fenwick_range_add.range_add(rf1, 2, 4, 2)
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf2, 2, 4),
     content="12",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf2, 0, 1),
     content="3",
   )
@@ -169,15 +169,15 @@ test "range add persistence" {
   let rf0 = @challenge_persistent_fenwick_range_add.make(4)
   let rf1 = @challenge_persistent_fenwick_range_add.range_add(rf0, 0, 1, 5)
   let rf2 = @challenge_persistent_fenwick_range_add.range_add(rf1, 2, 3, 7)
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf0, 0, 3),
     content="0",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf1, 0, 3),
     content="10",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf2, 0, 3),
     content="24",
   )
@@ -192,15 +192,15 @@ test "range add apply updates" {
   let rf0 = @challenge_persistent_fenwick_range_add.make(5)
   let updates : Array[(Int, Int, Int)] = [(0, 2, 1), (1, 4, 2)]
   let rf = @challenge_persistent_fenwick_range_add.apply_updates(rf0, updates)
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf, 0, 0),
     content="1",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf, 1, 2),
     content="6",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_fenwick_range_add.range_sum(rf, 3, 4),
     content="4",
   )

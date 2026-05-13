@@ -496,13 +496,13 @@ test "sliding window max basic" {
   let result = sliding_window_max(arr, 3)
   // Windows: [1,3,-1], [3,-1,-3], [-1,-3,5], [-3,5,3], [5,3,6], [3,6,7]
   // Max:     3, 3, 5, 5, 6, 7
-  inspect(result.length(), content="6")
-  inspect(result[0], content="3")
-  inspect(result[1], content="3")
-  inspect(result[2], content="5")
-  inspect(result[3], content="5")
-  inspect(result[4], content="6")
-  inspect(result[5], content="7")
+  debug_inspect(result.length(), content="6")
+  debug_inspect(result[0], content="3")
+  debug_inspect(result[1], content="3")
+  debug_inspect(result[2], content="5")
+  debug_inspect(result[3], content="5")
+  debug_inspect(result[4], content="6")
+  debug_inspect(result[5], content="7")
 }
 
 ///|
@@ -510,9 +510,9 @@ test "sliding window min basic" {
   let arr : Array[Int64] = [1L, 3L, -1L, -3L, 5L, 3L, 6L, 7L]
   let result = sliding_window_min(arr, 3)
   // Min: -1, -3, -3, -3, 3, 3
-  inspect(result[0], content="-1")
-  inspect(result[1], content="-3")
-  inspect(result[2], content="-3")
+  debug_inspect(result[0], content="-1")
+  debug_inspect(result[1], content="-3")
+  debug_inspect(result[2], content="-3")
 }
 
 ///|
@@ -520,44 +520,44 @@ test "sliding window sum" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
   let result = sliding_window_sum(arr, 3)
   // Sums: 6, 9, 12
-  inspect(result.length(), content="3")
-  inspect(result[0], content="6")
-  inspect(result[1], content="9")
-  inspect(result[2], content="12")
+  debug_inspect(result.length(), content="3")
+  debug_inspect(result[0], content="6")
+  debug_inspect(result[1], content="9")
+  debug_inspect(result[2], content="12")
 }
 
 ///|
 test "sliding window k=1" {
   let arr : Array[Int64] = [5L, 2L, 8L, 1L]
   let result = sliding_window_max(arr, 1)
-  inspect(result.length(), content="4")
-  inspect(result[0], content="5")
-  inspect(result[1], content="2")
-  inspect(result[2], content="8")
-  inspect(result[3], content="1")
+  debug_inspect(result.length(), content="4")
+  debug_inspect(result[0], content="5")
+  debug_inspect(result[1], content="2")
+  debug_inspect(result[2], content="8")
+  debug_inspect(result[3], content="1")
 }
 
 ///|
 test "sliding window k=n" {
   let arr : Array[Int64] = [1L, 5L, 3L, 2L]
   let result = sliding_window_max(arr, 4)
-  inspect(result.length(), content="1")
-  inspect(result[0], content="5")
+  debug_inspect(result.length(), content="1")
+  debug_inspect(result[0], content="5")
 }
 
 ///|
 test "longest subarray" {
   let arr : Array[Int64] = [1L, 2L, 3L, 4L, 5L]
-  inspect(longest_subarray_with_sum_le(arr, 6L), content="3") // [1,2,3]
-  inspect(longest_subarray_with_sum_le(arr, 15L), content="5") // entire array
-  inspect(longest_subarray_with_sum_le(arr, 0L), content="0") // none
-  inspect(longest_subarray_with_sum_le(arr, -1L), content="0") // shrink past right
+  debug_inspect(longest_subarray_with_sum_le(arr, 6L), content="3") // [1,2,3]
+  debug_inspect(longest_subarray_with_sum_le(arr, 15L), content="5") // entire array
+  debug_inspect(longest_subarray_with_sum_le(arr, 0L), content="0") // none
+  debug_inspect(longest_subarray_with_sum_le(arr, -1L), content="0") // shrink past right
 }
 
 ///|
 test "min subarray sum ge" {
   let arr : Array[Int64] = [2L, 3L, 1L, 2L, 4L, 3L]
-  inspect(min_subarray_with_sum_ge(arr, 7L), content="2") // [4,3]
-  inspect(min_subarray_with_sum_ge(arr, 100L), content="0") // impossible
-  inspect(min_subarray_with_sum_ge(arr, 0L), content="1") // any single element
+  debug_inspect(min_subarray_with_sum_ge(arr, 7L), content="2") // [4,3]
+  debug_inspect(min_subarray_with_sum_ge(arr, 100L), content="0") // impossible
+  debug_inspect(min_subarray_with_sum_ge(arr, 0L), content="1") // any single element
 }

@@ -298,7 +298,7 @@ test "basic max flow" {
   mf.add_edge(0, 2, 2L)
   mf.add_edge(1, 3, 2L)
   mf.add_edge(2, 3, 3L)
-  inspect(mf.max_flow(0, 3), content="4")
+  debug_inspect(mf.max_flow(0, 3), content="4")
 }
 ```
 
@@ -328,7 +328,7 @@ test "bipartite matching" {
   mf.add_edge(4, 7, 1L)
   mf.add_edge(5, 7, 1L)
   mf.add_edge(6, 7, 1L)
-  inspect(mf.max_flow(0, 7), content="3")
+  debug_inspect(mf.max_flow(0, 7), content="3")
 }
 ```
 

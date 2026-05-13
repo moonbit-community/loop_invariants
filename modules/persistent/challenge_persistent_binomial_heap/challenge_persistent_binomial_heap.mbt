@@ -28,7 +28,7 @@ struct Tree[T] {
 ///   let h = @challenge_persistent_binomial_heap.insert(h, 3)
 ///   let h = @challenge_persistent_binomial_heap.insert(h, 1)
 ///   let h = @challenge_persistent_binomial_heap.insert(h, 2)
-///   assert_eq(@challenge_persistent_binomial_heap.find_min(h), Some(1))
+///   @debug.assert_eq(@challenge_persistent_binomial_heap.find_min(h), Some(1))
 /// }
 /// ```
 pub struct Heap[T] {

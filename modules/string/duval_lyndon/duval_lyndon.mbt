@@ -61,11 +61,11 @@ pub fn duval_factorization(s : String) -> Array[String] {
 ///|
 test "duval banana" {
   let factors = duval_factorization("banana")
-  inspect(factors, content="[\"b\", \"an\", \"an\", \"a\"]")
+  debug_inspect(factors, content="[\"b\", \"an\", \"an\", \"a\"]")
 }
 
 ///|
 test "duval ababab" {
   let factors = duval_factorization("ababab")
-  inspect(factors, content="[\"ab\", \"ab\", \"ab\"]")
+  debug_inspect(factors, content="[\"ab\", \"ab\", \"ab\"]")
 }

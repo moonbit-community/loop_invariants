@@ -22,7 +22,7 @@ test "dinic basic" {
   dinic.add_edge(0, 2, 2L)
   dinic.add_edge(1, 3, 2L)
   dinic.add_edge(2, 3, 3L)
-  inspect(dinic.max_flow(0, 3), content="4")
+  debug_inspect(dinic.max_flow(0, 3), content="4")
 }
 
 ///|
@@ -30,8 +30,8 @@ test "dinic basic" {
 test "dinic simple" {
   let dinic = @dinic.Dinic(2)
   dinic.add_edge(0, 1, 5L)
-  inspect(dinic.max_flow(0, 1), content="5")
-  inspect(dinic.get_flow(0, 1), content="5")
+  debug_inspect(dinic.max_flow(0, 1), content="5")
+  debug_inspect(dinic.get_flow(0, 1), content="5")
 }
 
 ///|
@@ -40,7 +40,7 @@ test "dinic parallel" {
   let dinic = @dinic.Dinic(2)
   dinic.add_edge(0, 1, 3L)
   dinic.add_edge(0, 1, 2L)
-  inspect(dinic.max_flow(0, 1), content="5")
+  debug_inspect(dinic.max_flow(0, 1), content="5")
 }
 
 ///|
@@ -62,7 +62,7 @@ test "dinic diamond" {
   dinic.add_edge(0, 2, 10L)
   dinic.add_edge(1, 3, 10L)
   dinic.add_edge(2, 3, 10L)
-  inspect(dinic.max_flow(0, 3), content="20")
+  debug_inspect(dinic.max_flow(0, 3), content="20")
 }
 
 ///|
@@ -78,7 +78,7 @@ test "dinic bottleneck" {
   let dinic = @dinic.Dinic(3)
   dinic.add_edge(0, 1, 100L)
   dinic.add_edge(1, 2, 1L) // Bottleneck
-  inspect(dinic.max_flow(0, 2), content="1")
+  debug_inspect(dinic.max_flow(0, 2), content="1")
 }
 
 ///|
@@ -87,7 +87,7 @@ test "dinic no path" {
   let dinic = @dinic.Dinic(3)
   dinic.add_edge(0, 1, 5L)
   // No edge to vertex 2
-  inspect(dinic.max_flow(0, 2), content="0")
+  debug_inspect(dinic.max_flow(0, 2), content="0")
 }
 
 ///|
@@ -102,7 +102,7 @@ test "dinic min cut" {
   let source_side = dinic.min_cut_source_side(0)
   // Source side should include source
   let has_source = source_side.contains(0)
-  inspect(has_source, content="true")
+  debug_inspect(has_source, content="true")
 }
 
 ///|
@@ -125,7 +125,7 @@ test "dinic larger" {
   dinic.add_edge(3, 5, 20L)
   dinic.add_edge(4, 3, 7L)
   dinic.add_edge(4, 5, 4L)
-  inspect(dinic.max_flow(0, 5), content="23")
+  debug_inspect(dinic.max_flow(0, 5), content="23")
 }
 
 ///|
@@ -133,7 +133,7 @@ test "dinic larger" {
 test "dinic reset" {
   let dinic = @dinic.Dinic(2)
   dinic.add_edge(0, 1, 5L)
-  inspect(dinic.max_flow(0, 1), content="5")
+  debug_inspect(dinic.max_flow(0, 1), content="5")
   dinic.reset()
-  inspect(dinic.max_flow(0, 1), content="5")
+  debug_inspect(dinic.max_flow(0, 1), content="5")
 }

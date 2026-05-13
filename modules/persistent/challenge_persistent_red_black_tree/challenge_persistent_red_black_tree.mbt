@@ -45,9 +45,9 @@ pub enum Color {
 ///   let s = @challenge_persistent_red_black_tree.from_array(
 ///     [3, 1, 4, 1, 5, 9, 2, 6][:],
 ///   )
-///   assert_eq(@challenge_persistent_red_black_tree.contains(s, 4), true)
-///   assert_eq(@challenge_persistent_red_black_tree.contains(s, 7), false)
-///   assert_eq(@challenge_persistent_red_black_tree.inorder(s), [
+///   @debug.assert_eq(@challenge_persistent_red_black_tree.contains(s, 4), true)
+///   @debug.assert_eq(@challenge_persistent_red_black_tree.contains(s, 7), false)
+///   @debug.assert_eq(@challenge_persistent_red_black_tree.inorder(s), [
 ///     1, 2, 3, 4, 5, 6, 9,
 ///   ])
 /// }
@@ -249,7 +249,7 @@ fn[T : Compare] ins(t : RB[T], key : T) -> RB[T] {
 /// ```moonbit nocheck
 /// test {
 ///   let s : @challenge_persistent_red_black_tree.RB[Int] = @challenge_persistent_red_black_tree.empty()
-///   assert_eq(@challenge_persistent_red_black_tree.size(s), 0)
+///   @debug.assert_eq(@challenge_persistent_red_black_tree.size(s), 0)
 /// }
 /// ```
 pub fn[T] empty() -> RB[T] {
@@ -281,7 +281,7 @@ pub fn[T] empty() -> RB[T] {
 ///   let s = @challenge_persistent_red_black_tree.empty()
 ///   let s = @challenge_persistent_red_black_tree.insert(s, 5)
 ///   let s = @challenge_persistent_red_black_tree.insert(s, 2)
-///   assert_eq(@challenge_persistent_red_black_tree.contains(s, 5), true)
+///   @debug.assert_eq(@challenge_persistent_red_black_tree.contains(s, 5), true)
 /// }
 /// ```
 pub fn[T : Compare] insert(t : RB[T], key : T) -> RB[T] {
@@ -301,8 +301,8 @@ pub fn[T : Compare] insert(t : RB[T], key : T) -> RB[T] {
 /// ```moonbit nocheck
 /// test {
 ///   let s = @challenge_persistent_red_black_tree.from_array([1, 2, 3][:])
-///   assert_eq(@challenge_persistent_red_black_tree.contains(s, 2), true)
-///   assert_eq(@challenge_persistent_red_black_tree.contains(s, 9), false)
+///   @debug.assert_eq(@challenge_persistent_red_black_tree.contains(s, 2), true)
+///   @debug.assert_eq(@challenge_persistent_red_black_tree.contains(s, 9), false)
 /// }
 /// ```
 pub fn[T : Compare] contains(t : RB[T], key : T) -> Bool {
@@ -364,7 +364,7 @@ pub fn[T] inorder(t : RB[T]) -> Array[T] {
 /// ```moonbit nocheck
 /// test {
 ///   let s = @challenge_persistent_red_black_tree.from_array([4, 1, 3, 2][:])
-///   assert_eq(@challenge_persistent_red_black_tree.inorder(s), [1, 2, 3, 4])
+///   @debug.assert_eq(@challenge_persistent_red_black_tree.inorder(s), [1, 2, 3, 4])
 /// }
 /// ```
 pub fn[T : Compare] from_array(arr : ArrayView[T]) -> RB[T] {
@@ -393,19 +393,19 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> RB[T] {
 
 ///|
 test "persistent rb invariants and contains" {
-  let tree = from_array([7, 3, 18, 10, 22, 8, 11, 26, 15][:])
+  let tree = from_array([7, 3, 18, 10, 22, 8, 11, 26, 15])
   let none : Int? = None
   assert_true(rb_valid(tree, none, none))
   assert_true(contains(tree, 15))
   assert_true(contains(tree, 26))
-  assert_eq(contains(tree, 99), false)
-  assert_eq(size(tree), 9)
+  @debug.assert_eq(contains(tree, 99), false)
+  @debug.assert_eq(size(tree), 9)
 }
 
 ///|
 test "persistent rb inorder is sorted" {
-  let tree = from_array([5, 2, 8, 1, 9, 3, 7, 4, 6][:])
-  assert_eq(inorder(tree), [1, 2, 3, 4, 5, 6, 7, 8, 9])
+  let tree = from_array([5, 2, 8, 1, 9, 3, 7, 4, 6])
+  @debug.assert_eq(inorder(tree), [1, 2, 3, 4, 5, 6, 7, 8, 9])
 }
 
 ///|
@@ -413,9 +413,9 @@ test "persistent rb duplicates ignored" {
   let t0 = empty()
   let t1 = insert(t0, 4)
   let t2 = insert(t1, 4)
-  assert_eq(size(t1), 1)
-  assert_eq(size(t2), 1)
-  assert_eq(inorder(t2), [4])
+  @debug.assert_eq(size(t1), 1)
+  @debug.assert_eq(size(t2), 1)
+  @debug.assert_eq(inorder(t2), [4])
 }
 
 ///|
@@ -425,11 +425,11 @@ test "persistent rb versions are independent" {
   let t2 = insert(t1, 2)
   let t3 = insert(t2, 8)
   // Older versions are unchanged
-  assert_eq(contains(t0, 5), false)
-  assert_eq(contains(t1, 2), false)
-  assert_eq(contains(t2, 8), false)
+  @debug.assert_eq(contains(t0, 5), false)
+  @debug.assert_eq(contains(t1, 2), false)
+  @debug.assert_eq(contains(t2, 8), false)
   // Newer versions accumulate elements
-  assert_eq(size(t3), 3)
+  @debug.assert_eq(size(t3), 3)
   assert_true(contains(t3, 5))
   assert_true(contains(t3, 2))
   assert_true(contains(t3, 8))
@@ -458,6 +458,6 @@ test "persistent rb sequential inserts preserve invariants" {
 
 ///|
 test "persistent rb negative keys" {
-  let tree = from_array([-5, 0, -1, 3, -3, 2][:])
-  assert_eq(inorder(tree), [-5, -3, -1, 0, 2, 3])
+  let tree = from_array([-5, 0, -1, 3, -3, 2])
+  @debug.assert_eq(inorder(tree), [-5, -3, -1, 0, 2, 3])
 }

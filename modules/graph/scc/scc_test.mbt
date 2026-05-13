@@ -12,9 +12,9 @@
 test "scc single cycle" {
   let adj : Array[Array[Int]] = [[1], [2], [0]]
   let result = @scc.find_sccs(3, adj)
-  inspect(result.num_sccs, content="1")
-  inspect(result.component[0] == result.component[1], content="true")
-  inspect(result.component[1] == result.component[2], content="true")
+  debug_inspect(result.num_sccs, content="1")
+  debug_inspect(result.component[0] == result.component[1], content="true")
+  debug_inspect(result.component[1] == result.component[2], content="true")
 }
 
 ///|
@@ -28,7 +28,7 @@ test "scc single cycle" {
 test "scc two components" {
   let adj : Array[Array[Int]] = [[1], [], [3], []]
   let result = @scc.find_sccs(4, adj)
-  inspect(result.num_sccs, content="4")
+  debug_inspect(result.num_sccs, content="4")
 }
 
 ///|
@@ -42,12 +42,12 @@ test "scc two components" {
 test "scc with dag" {
   let adj : Array[Array[Int]] = [[1], [2], [0, 3], []]
   let result = @scc.find_sccs(4, adj)
-  inspect(result.num_sccs, content="2")
+  debug_inspect(result.num_sccs, content="2")
   // {0,1,2} same SCC
-  inspect(result.component[0] == result.component[1], content="true")
-  inspect(result.component[1] == result.component[2], content="true")
+  debug_inspect(result.component[0] == result.component[1], content="true")
+  debug_inspect(result.component[1] == result.component[2], content="true")
   // {3} different SCC
-  inspect(result.component[2] != result.component[3], content="true")
+  debug_inspect(result.component[2] != result.component[3], content="true")
 }
 
 ///|
@@ -56,7 +56,7 @@ test "scc kosaraju same result" {
   let adj : Array[Array[Int]] = [[1], [2], [0, 3], []]
   let tarjan = @scc.find_sccs(4, adj)
   let kosaraju = @scc.find_sccs_kosaraju(4, adj)
-  inspect(tarjan.num_sccs == kosaraju.num_sccs, content="true")
+  debug_inspect(tarjan.num_sccs == kosaraju.num_sccs, content="true")
 }
 
 ///|
@@ -74,7 +74,7 @@ test "scc condensation graph" {
   } nobreak {
     has_edge
   }
-  inspect(has_edge, content="true")
+  debug_inspect(has_edge, content="true")
 }
 
 ///|
@@ -82,7 +82,7 @@ test "scc condensation graph" {
 test "scc empty" {
   let adj : Array[Array[Int]] = []
   let result = @scc.find_sccs(0, adj)
-  inspect(result.num_sccs, content="0")
+  debug_inspect(result.num_sccs, content="0")
 }
 
 ///|
@@ -90,8 +90,8 @@ test "scc empty" {
 test "scc single vertex" {
   let adj : Array[Array[Int]] = [[]]
   let result = @scc.find_sccs(1, adj)
-  inspect(result.num_sccs, content="1")
-  inspect(result.component[0], content="0")
+  debug_inspect(result.num_sccs, content="1")
+  debug_inspect(result.component[0], content="0")
 }
 
 ///|
@@ -99,7 +99,7 @@ test "scc single vertex" {
 test "scc self loop" {
   let adj : Array[Array[Int]] = [[0]]
   let result = @scc.find_sccs(1, adj)
-  inspect(result.num_sccs, content="1")
+  debug_inspect(result.num_sccs, content="1")
 }
 
 ///|
@@ -117,7 +117,7 @@ test "two sat satisfiable" {
   sat.add_clause(0, true, 1, false) // NOT x₀ OR x₁
   sat.add_clause(0, false, 1, true) // x₀ OR NOT x₁
   match sat.solve() {
-    Some(assignment) => inspect(assignment.length(), content="2")
+    Some(assignment) => debug_inspect(assignment.length(), content="2")
     None => fail("Should be satisfiable")
   }
 }
@@ -162,7 +162,7 @@ test "scc sizes" {
       #|  At i = length, total = n.
     ),
   }
-  inspect(total, content="4")
+  debug_inspect(total, content="4")
 }
 
 ///|
@@ -176,9 +176,9 @@ test "scc sizes" {
 test "scc complex" {
   let adj : Array[Array[Int]] = [[1], [0, 2], [3], [2]]
   let result = @scc.find_sccs(4, adj)
-  inspect(result.num_sccs, content="2")
+  debug_inspect(result.num_sccs, content="2")
   // {0,1} same SCC
-  inspect(result.component[0] == result.component[1], content="true")
+  debug_inspect(result.component[0] == result.component[1], content="true")
   // {2,3} same SCC
-  inspect(result.component[2] == result.component[3], content="true")
+  debug_inspect(result.component[2] == result.component[3], content="true")
 }

@@ -98,8 +98,11 @@ test "persistent array" {
   let arr2 = @challenge_persistent_array.set_at(arr, 1, 10)
   debug_inspect(@challenge_persistent_array.get_at(arr, 1), content="Some(2)")
   debug_inspect(@challenge_persistent_array.get_at(arr2, 1), content="Some(10)")
-  inspect(@challenge_persistent_array.to_array(arr2), content="[1, 10, 3, 4]")
-  inspect(@challenge_persistent_array.length(arr2), content="4")
+  debug_inspect(
+    @challenge_persistent_array.to_array(arr2),
+    content="[1, 10, 3, 4]",
+  )
+  debug_inspect(@challenge_persistent_array.length(arr2), content="4")
 }
 ```
 
@@ -111,9 +114,9 @@ test "persistent array versions" {
   let arr0 = @challenge_persistent_array.from_array([5, 6, 7])
   let arr1 = @challenge_persistent_array.set_at(arr0, 0, 9)
   let arr2 = @challenge_persistent_array.set_at(arr1, 2, 1)
-  inspect(@challenge_persistent_array.to_array(arr0), content="[5, 6, 7]")
-  inspect(@challenge_persistent_array.to_array(arr1), content="[9, 6, 7]")
-  inspect(@challenge_persistent_array.to_array(arr2), content="[9, 6, 1]")
+  debug_inspect(@challenge_persistent_array.to_array(arr0), content="[5, 6, 7]")
+  debug_inspect(@challenge_persistent_array.to_array(arr1), content="[9, 6, 7]")
+  debug_inspect(@challenge_persistent_array.to_array(arr2), content="[9, 6, 1]")
 }
 ```
 
@@ -126,7 +129,7 @@ test "persistent array bounds" {
   debug_inspect(@challenge_persistent_array.get_at(arr, -1), content="None")
   debug_inspect(@challenge_persistent_array.get_at(arr, 3), content="None")
   let arr2 = @challenge_persistent_array.set_at(arr, 99, 10)
-  inspect(@challenge_persistent_array.to_array(arr2), content="[1, 2, 3]")
+  debug_inspect(@challenge_persistent_array.to_array(arr2), content="[1, 2, 3]")
 }
 ```
 

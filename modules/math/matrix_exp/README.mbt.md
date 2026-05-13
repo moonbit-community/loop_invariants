@@ -181,8 +181,8 @@ result.get(0, 1) = 55 = F(10)
 ```mbt nocheck
 ///|
 test "fibonacci example" {
-  inspect(fibonacci(10L), content="55")
-  inspect(fibonacci(20L), content="6765")
+  debug_inspect(fibonacci(10L), content="55")
+  debug_inspect(fibonacci(20L), content="6765")
 }
 ```
 
@@ -224,7 +224,7 @@ graph LR
 test "solve_recurrence examples" {
   let coeffs : Array[Int64] = [1L, 1L]
   let initial : Array[Int64] = [0L, 1L]
-  inspect(solve_recurrence(coeffs, initial, 10L), content="55")
+  debug_inspect(solve_recurrence(coeffs, initial, 10L), content="55")
 }
 ```
 
@@ -279,7 +279,7 @@ A^3 (walks of length 3):
 test "count_paths example" {
   let adj : Array[Array[Int64]] = [[0L, 1L, 0L], [0L, 0L, 1L], [1L, 0L, 0L]]
   let paths2 = count_paths(adj, 2L)
-  inspect(paths2.get(0, 2), content="1")
+  debug_inspect(paths2.get(0, 2), content="1")
 }
 ```
 
@@ -324,7 +324,7 @@ invariant `result * base^e = M^n` holds from the very first iteration.
 test "identity example" {
   let a = Matrix::from_array([[1L, 2L], [3L, 4L]])
   let i = Matrix::identity(2)
-  inspect(a.multiply_no_mod(i).equals(a), content="true")
+  debug_inspect(a.multiply_no_mod(i).equals(a), content="true")
 }
 ```
 

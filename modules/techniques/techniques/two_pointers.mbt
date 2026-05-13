@@ -192,7 +192,7 @@ fn skip_duplicates_backward(
 test "three sum" {
   let arr = [-1, 0, 1, 2, -1, -4]
   let result = three_sum(arr, 0)
-  assert_eq(result.length(), 2)
+  @debug.assert_eq(result.length(), 2)
 }
 
 ///|
@@ -250,7 +250,7 @@ fn max_water_container(heights : ArrayView[Int]) -> Int {
 ///|
 test "max water container" {
   let heights : ReadOnlyArray[Int] = [1, 8, 6, 2, 5, 4, 8, 3, 7]
-  assert_eq(max_water_container(heights), 49) // indices 1 and 8: min(8,7) * 7
+  @debug.assert_eq(max_water_container(heights), 49) // indices 1 and 8: min(8,7) * 7
 }
 
 ///|
@@ -314,7 +314,7 @@ fn trap_water_two_pointer(height : ArrayView[Int]) -> Int {
 ///|
 test "trap rain water" {
   let height : ReadOnlyArray[Int] = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
-  assert_eq(trap_water_two_pointer(height), 6)
+  @debug.assert_eq(trap_water_two_pointer(height), 6)
 }
 
 ///|
@@ -387,13 +387,13 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
 test "sliding window maximum" {
   let nums : ReadOnlyArray[Int] = [1, 3, -1, -3, 5, 3, 6, 7]
   let result = sliding_window_max_deque(nums, 3)
-  assert_eq(result.length(), 6)
-  assert_eq(result[0], 3)
-  assert_eq(result[1], 3)
-  assert_eq(result[2], 5)
-  assert_eq(result[3], 5)
-  assert_eq(result[4], 6)
-  assert_eq(result[5], 7)
+  @debug.assert_eq(result.length(), 6)
+  @debug.assert_eq(result[0], 3)
+  @debug.assert_eq(result[1], 3)
+  @debug.assert_eq(result[2], 5)
+  @debug.assert_eq(result[3], 5)
+  @debug.assert_eq(result[4], 6)
+  @debug.assert_eq(result[5], 7)
 }
 
 ///|
@@ -536,9 +536,9 @@ fn contract_window(
 
 ///|
 test "min window substring" {
-  assert_eq(min_window_substring("ADOBECODEBANC", "ABC"), "BANC")
-  assert_eq(min_window_substring("a", "a"), "a")
-  assert_eq(min_window_substring("a", "aa"), "")
+  @debug.assert_eq(min_window_substring("ADOBECODEBANC", "ABC"), "BANC")
+  @debug.assert_eq(min_window_substring("a", "a"), "a")
+  @debug.assert_eq(min_window_substring("a", "aa"), "")
 }
 
 ///|
@@ -587,9 +587,9 @@ fn longest_unique_substring(s : String) -> Int {
 
 ///|
 test "longest unique substring" {
-  assert_eq(longest_unique_substring("abcabcbb"), 3) // "abc"
-  assert_eq(longest_unique_substring("bbbbb"), 1) // "b"
-  assert_eq(longest_unique_substring("pwwkew"), 3) // "wke"
+  @debug.assert_eq(longest_unique_substring("abcabcbb"), 3) // "abc"
+  @debug.assert_eq(longest_unique_substring("bbbbb"), 1) // "b"
+  @debug.assert_eq(longest_unique_substring("pwwkew"), 3) // "wke"
 }
 
 ///|
@@ -643,9 +643,9 @@ fn subarray_sum_equals_k(nums : ArrayView[Int], k : Int) -> Int {
 ///|
 test "subarray sum equals k" {
   let nums : ReadOnlyArray[Int] = [1, 1, 1]
-  assert_eq(subarray_sum_equals_k(nums, 2), 2)
+  @debug.assert_eq(subarray_sum_equals_k(nums, 2), 2)
   let nums2 : ReadOnlyArray[Int] = [1, 2, 3]
-  assert_eq(subarray_sum_equals_k(nums2, 3), 2)
+  @debug.assert_eq(subarray_sum_equals_k(nums2, 3), 2)
 }
 
 ///|
@@ -710,8 +710,8 @@ fn character_replacement(s : String, k : Int) -> Int {
 
 ///|
 test "character replacement" {
-  assert_eq(character_replacement("ABAB", 2), 4)
-  assert_eq(character_replacement("AABABBA", 1), 4)
+  @debug.assert_eq(character_replacement("ABAB", 2), 4)
+  @debug.assert_eq(character_replacement("AABABBA", 1), 4)
 }
 
 ///|
@@ -810,9 +810,9 @@ fn remove_duplicates(nums : Array[Int]) -> Int {
 ///|
 test "remove duplicates" {
   let nums = [1, 1, 2]
-  assert_eq(remove_duplicates(nums), 2)
-  assert_eq(nums[0], 1)
-  assert_eq(nums[1], 2)
+  @debug.assert_eq(remove_duplicates(nums), 2)
+  @debug.assert_eq(nums[0], 1)
+  @debug.assert_eq(nums[1], 2)
 }
 
 ///|
@@ -850,11 +850,11 @@ fn move_zeroes(nums : Array[Int]) -> Unit {
 test "move zeroes" {
   let nums = [0, 1, 0, 3, 12]
   move_zeroes(nums)
-  assert_eq(nums[0], 1)
-  assert_eq(nums[1], 3)
-  assert_eq(nums[2], 12)
-  assert_eq(nums[3], 0)
-  assert_eq(nums[4], 0)
+  @debug.assert_eq(nums[0], 1)
+  @debug.assert_eq(nums[1], 3)
+  @debug.assert_eq(nums[2], 12)
+  @debug.assert_eq(nums[3], 0)
+  @debug.assert_eq(nums[4], 0)
 }
 
 ///|
@@ -913,12 +913,12 @@ fn sort_colors(nums : Array[Int]) -> Unit {
 test "sort colors" {
   let nums = [2, 0, 2, 1, 1, 0]
   sort_colors(nums)
-  assert_eq(nums[0], 0)
-  assert_eq(nums[1], 0)
-  assert_eq(nums[2], 1)
-  assert_eq(nums[3], 1)
-  assert_eq(nums[4], 2)
-  assert_eq(nums[5], 2)
+  @debug.assert_eq(nums[0], 0)
+  @debug.assert_eq(nums[1], 0)
+  @debug.assert_eq(nums[2], 1)
+  @debug.assert_eq(nums[3], 1)
+  @debug.assert_eq(nums[4], 2)
+  @debug.assert_eq(nums[5], 2)
 }
 
 ///|
@@ -982,5 +982,5 @@ test "partition" {
 ///|
 test "fruit into baskets" {
   let fruits : ReadOnlyArray[Int] = [1, 2, 1, 2]
-  inspect(fruit_into_baskets(fruits), content="4")
+  debug_inspect(fruit_into_baskets(fruits), content="4")
 }

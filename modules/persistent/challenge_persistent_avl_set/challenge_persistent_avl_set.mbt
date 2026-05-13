@@ -18,9 +18,9 @@
 /// ```moonbit nocheck
 /// test {
 ///   let s = @challenge_persistent_avl_set.from_array([3, 1, 4, 1, 5, 9, 2])
-///   assert_eq(@challenge_persistent_avl_set.contains(s, 4), true)
-///   assert_eq(@challenge_persistent_avl_set.contains(s, 7), false)
-///   assert_eq(@challenge_persistent_avl_set.inorder(s), [1, 2, 3, 4, 5, 9])
+///   @debug.assert_eq(@challenge_persistent_avl_set.contains(s, 4), true)
+///   @debug.assert_eq(@challenge_persistent_avl_set.contains(s, 7), false)
+///   @debug.assert_eq(@challenge_persistent_avl_set.inorder(s), [1, 2, 3, 4, 5, 9])
 /// }
 /// ```
 pub enum Avl[T] {

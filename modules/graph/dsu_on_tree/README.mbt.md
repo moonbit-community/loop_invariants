@@ -236,7 +236,7 @@ test "dsu on tree example" {
   adj[4].push(1)
   let colors : Array[Int] = [1, 2, 1, 2, 3]
   let result = @dsu_on_tree.subtree_color_mode_sum(adj, colors)
-  inspect(result, content="[3, 2, 1, 2, 3]")
+  debug_inspect(result, content="[3, 2, 1, 2, 3]")
 }
 ```
 
@@ -252,7 +252,7 @@ test "dsu on tree tie" {
   let result = @dsu_on_tree.subtree_color_mode_sum(adj, colors)
   // Node 1's subtree has colors {5,7} so max frequency is 1, sum = 12
   // Node 0's subtree includes all nodes, max frequency is 2 for color 5
-  inspect(result, content="[5, 12, 7]")
+  debug_inspect(result, content="[5, 12, 7]")
 }
 ```
 

@@ -60,8 +60,8 @@ pub fn lis_length(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "lis_length" {
-  assert_eq(lis_length([10, 9, 2, 5, 3, 7, 101, 18]), 4)
-  assert_eq(lis_length([0, 1, 0, 3, 2, 3]), 4)
-  assert_eq(lis_length([7, 7, 7, 7]), 1)
-  assert_eq(lis_length([]), 0)
+  @debug.assert_eq(lis_length([10, 9, 2, 5, 3, 7, 101, 18]), 4)
+  @debug.assert_eq(lis_length([0, 1, 0, 3, 2, 3]), 4)
+  @debug.assert_eq(lis_length([7, 7, 7, 7]), 1)
+  @debug.assert_eq(lis_length([]), 0)
 }

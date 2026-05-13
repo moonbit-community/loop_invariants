@@ -386,14 +386,14 @@ test "implicit treap demo" {
 
   // Insert 25 at index 2
   treap.insert(2, 25L)
-  inspect(treap.to_array(), content="[10, 20, 25, 30, 40]")
+  debug_inspect(treap.to_array(), content="[10, 20, 25, 30, 40]")
 
   // Reverse [1, 4)
   treap.reverse(1, 4)
-  inspect(treap.to_array(), content="[10, 30, 25, 20, 40]")
+  debug_inspect(treap.to_array(), content="[10, 30, 25, 20, 40]")
 
   // Range sum [0, 3)
-  inspect(treap.range_sum(0, 3), content="65")
+  debug_inspect(treap.range_sum(0, 3), content="65")
 }
 ```
 
@@ -406,7 +406,7 @@ test "implicit treap split merge pattern" {
   let (a, b) = treap.split(treap.root, 1)
   let (mid, c) = treap.split(b, 3)
   treap.root = treap.merge(mid, treap.merge(a, c))
-  inspect(treap.to_array(), content="[2, 3, 4, 1, 5]")
+  debug_inspect(treap.to_array(), content="[2, 3, 4, 1, 5]")
 }
 ```
 

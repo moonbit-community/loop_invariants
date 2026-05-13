@@ -227,8 +227,8 @@ character-by-character to eliminate false positives.
 ///|
 test "rolling hash pattern search" {
   let hits = @rolling_hash.find_pattern_rabin_karp("aabcaabxaab", "aab")
-  inspect(hits, content="[0, 4, 8]")
-  inspect(
+  debug_inspect(hits, content="[0, 4, 8]")
+  debug_inspect(
     @rolling_hash.count_pattern_rabin_karp("mississippi", "issi"),
     content="2",
   )
@@ -244,7 +244,7 @@ test "rolling hash pattern search" {
 test "rolling hash overlapping" {
   let hits = @rolling_hash.find_pattern_rabin_karp("aaaaa", "aa")
   // Overlaps allowed: positions 0,1,2,3
-  inspect(hits, content="[0, 1, 2, 3]")
+  debug_inspect(hits, content="[0, 1, 2, 3]")
 }
 ```
 

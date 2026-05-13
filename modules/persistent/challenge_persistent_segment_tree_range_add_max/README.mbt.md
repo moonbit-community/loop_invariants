@@ -147,7 +147,7 @@ test "range add max basic" {
   )
 
   // Max in the original version stays the same.
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_max.range_max(
       root,
       0,
@@ -159,7 +159,7 @@ test "range add max basic" {
   )
 
   // After both updates, the max is still 7, but in a different place.
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_max.range_max(
       v2,
       0,
@@ -171,7 +171,7 @@ test "range add max basic" {
   )
 
   // A smaller range shows the updated values.
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_max.range_max(
       v2,
       0,
@@ -229,7 +229,7 @@ test "range add max apply updates" {
     arr.length(),
     [(0, 3, 4)],
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_max.range_max(
       root,
       0,
@@ -239,7 +239,7 @@ test "range add max apply updates" {
     ),
     content="3",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_max.range_max(
       updated,
       0,
@@ -276,11 +276,11 @@ test "range add max root" {
     4,
     5,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_max.max_value(root),
     content="6",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_range_add_max.max_value(updated),
     content="7",
   )

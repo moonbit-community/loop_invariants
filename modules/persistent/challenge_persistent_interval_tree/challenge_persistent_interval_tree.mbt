@@ -22,11 +22,11 @@
 ///     (5, 8),
 ///     (10, 12),
 ///   ])
-///   inspect(
+///   debug_inspect(
 ///     @challenge_persistent_interval_tree.find_overlap(t, 7, 9),
 ///     content="Some((5, 8))",
 ///   )
-///   inspect(
+///   debug_inspect(
 ///     @challenge_persistent_interval_tree.find_overlap(t, 9, 9),
 ///     content="None",
 ///   )

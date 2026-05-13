@@ -108,11 +108,11 @@ test "kd tree basic" {
   let t1 = @challenge_persistent_kd_tree.insert(t0, { x: 2, y: 2 })
   let t2 = @challenge_persistent_kd_tree.insert(t1, { x: 1, y: 5 })
   let t3 = @challenge_persistent_kd_tree.insert(t2, { x: 4, y: 1 })
-  inspect(
+  debug_inspect(
     @challenge_persistent_kd_tree.contains(t3, { x: 1, y: 5 }),
     content="true",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_kd_tree.contains(t3, { x: 3, y: 3 }),
     content="false",
   )
@@ -130,11 +130,11 @@ test "kd tree from array" {
     { x: 1, y: 5 },
   ]
   let t = @challenge_persistent_kd_tree.from_array(pts)
-  inspect(
+  debug_inspect(
     @challenge_persistent_kd_tree.contains(t, { x: 3, y: 4 }),
     content="true",
   )
-  inspect(@challenge_persistent_kd_tree.size(t), content="3")
+  debug_inspect(@challenge_persistent_kd_tree.size(t), content="3")
 }
 ```
 
@@ -146,15 +146,15 @@ test "kd tree persistence" {
   let t0 = @challenge_persistent_kd_tree.empty()
   let t1 = @challenge_persistent_kd_tree.insert(t0, { x: 0, y: 0 })
   let t2 = @challenge_persistent_kd_tree.insert(t1, { x: 5, y: 5 })
-  inspect(
+  debug_inspect(
     @challenge_persistent_kd_tree.contains(t0, { x: 0, y: 0 }),
     content="false",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_kd_tree.contains(t1, { x: 0, y: 0 }),
     content="true",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_kd_tree.contains(t2, { x: 5, y: 5 }),
     content="true",
   )

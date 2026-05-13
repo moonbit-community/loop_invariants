@@ -62,7 +62,7 @@ repeat until hi - lo <= 3:
 test "ternary search unimodal" {
   let arr : Array[Int] = [9, 7, 5, 3, 4, 6, 8]
   let idx = @challenge_ternary_search.find_min_unimodal(arr)
-  inspect(idx, content="3")
+  debug_inspect(idx, content="3")
 }
 ```
 
@@ -78,7 +78,7 @@ at the end).
 test "ternary search decreasing" {
   let arr : Array[Int] = [5, 4, 3, 2, 1]
   let idx = @challenge_ternary_search.find_min_unimodal(arr)
-  inspect(idx, content="4")
+  debug_inspect(idx, content="4")
 }
 ```
 
@@ -93,7 +93,7 @@ Here the valley is at the beginning.
 test "ternary search increasing" {
   let arr : Array[Int] = [1, 2, 3, 4, 5]
   let idx = @challenge_ternary_search.find_min_unimodal(arr)
-  inspect(idx, content="0")
+  debug_inspect(idx, content="0")
 }
 ```
 

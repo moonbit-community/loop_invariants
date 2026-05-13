@@ -103,9 +103,9 @@ test "basic xor queries" {
   trie.insert(5L) // 0101
   trie.insert(1L) // 0001
   trie.insert(7L) // 0111
-  inspect(trie.size(), content="3")
-  inspect(trie.max_xor(2L), content="7") // 2 xor 5 = 7
-  inspect(trie.min_xor(2L), content="3") // 2 xor 1 = 3
+  debug_inspect(trie.size(), content="3")
+  debug_inspect(trie.max_xor(2L), content="7") // 2 xor 5 = 7
+  debug_inspect(trie.min_xor(2L), content="3") // 2 xor 1 = 3
 }
 ```
 
@@ -120,14 +120,14 @@ test "duplicates and remove" {
   trie.insert(3L) // 11
   trie.insert(3L) // duplicate
   trie.insert(1L) // 01
-  inspect(trie.size(), content="3")
-  inspect(trie.max_xor(0L), content="3")
-  inspect(trie.remove(3L), content="true")
-  inspect(trie.size(), content="2")
-  inspect(trie.max_xor(0L), content="3") // still present once
-  inspect(trie.remove(3L), content="true")
-  inspect(trie.size(), content="1")
-  inspect(trie.max_xor(0L), content="1")
+  debug_inspect(trie.size(), content="3")
+  debug_inspect(trie.max_xor(0L), content="3")
+  debug_inspect(trie.remove(3L), content="true")
+  debug_inspect(trie.size(), content="2")
+  debug_inspect(trie.max_xor(0L), content="3") // still present once
+  debug_inspect(trie.remove(3L), content="true")
+  debug_inspect(trie.size(), content="1")
+  debug_inspect(trie.max_xor(0L), content="1")
 }
 ```
 
@@ -137,10 +137,10 @@ test "duplicates and remove" {
 ///|
 test "empty trie" {
   let trie = @binary_trie_xor.BinaryTrie(4)
-  inspect(trie.size(), content="0")
-  inspect(trie.max_xor(10L), content="0")
-  inspect(trie.min_xor(10L), content="0")
-  inspect(trie.remove(10L), content="false")
+  debug_inspect(trie.size(), content="0")
+  debug_inspect(trie.max_xor(10L), content="0")
+  debug_inspect(trie.min_xor(10L), content="0")
+  debug_inspect(trie.remove(10L), content="false")
 }
 ```
 

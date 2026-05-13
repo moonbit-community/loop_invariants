@@ -336,7 +336,7 @@ graph LR
 ///|
 test "duval banana" {
   let factors = @duval_lyndon.duval_factorization("banana")
-  inspect(factors, content="[\"b\", \"an\", \"an\", \"a\"]")
+  debug_inspect(factors, content="[\"b\", \"an\", \"an\", \"a\"]")
 }
 ```
 
@@ -344,7 +344,7 @@ test "duval banana" {
 ///|
 test "duval ababab" {
   let factors = @duval_lyndon.duval_factorization("ababab")
-  inspect(factors, content="[\"ab\", \"ab\", \"ab\"]")
+  debug_inspect(factors, content="[\"ab\", \"ab\", \"ab\"]")
 }
 ```
 
@@ -354,7 +354,7 @@ test "duval ababab" {
 ///|
 test "duval single char" {
   let factors = @duval_lyndon.duval_factorization("aaaa")
-  inspect(factors, content="[\"a\", \"a\", \"a\", \"a\"]")
+  debug_inspect(factors, content="[\"a\", \"a\", \"a\", \"a\"]")
 }
 ```
 
@@ -362,7 +362,7 @@ test "duval single char" {
 ///|
 test "duval already lyndon" {
   let factors = @duval_lyndon.duval_factorization("abcd")
-  inspect(factors, content="[\"abcd\"]")
+  debug_inspect(factors, content="[\"abcd\"]")
 }
 ```
 
@@ -370,7 +370,7 @@ test "duval already lyndon" {
 ///|
 test "duval repeating with tail" {
   let factors = @duval_lyndon.duval_factorization("abcabcab")
-  inspect(factors, content="[\"abc\", \"abc\", \"ab\"]")
+  debug_inspect(factors, content="[\"abc\", \"abc\", \"ab\"]")
 }
 ```
 
@@ -378,7 +378,7 @@ test "duval repeating with tail" {
 ///|
 test "duval decreasing" {
   let factors = @duval_lyndon.duval_factorization("dcba")
-  inspect(factors, content="[\"d\", \"c\", \"b\", \"a\"]")
+  debug_inspect(factors, content="[\"d\", \"c\", \"b\", \"a\"]")
 }
 ```
 
@@ -386,7 +386,7 @@ test "duval decreasing" {
 ///|
 test "duval mixed tail" {
   let factors = @duval_lyndon.duval_factorization("cabca")
-  inspect(factors, content="[\"c\", \"abc\", \"a\"]")
+  debug_inspect(factors, content="[\"c\", \"abc\", \"a\"]")
 }
 ```
 
@@ -394,7 +394,7 @@ test "duval mixed tail" {
 ///|
 test "duval empty" {
   let factors = @duval_lyndon.duval_factorization("")
-  inspect(factors, content="[]")
+  debug_inspect(factors, content="[]")
 }
 ```
 

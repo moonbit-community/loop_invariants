@@ -18,9 +18,9 @@
 /// ```moonbit nocheck
 /// test {
 ///   let t = @challenge_persistent_bst.from_array([5, 2, 8, 1, 3])
-///   assert_eq(@challenge_persistent_bst.contains(t, 3), true)
-///   assert_eq(@challenge_persistent_bst.contains(t, 4), false)
-///   assert_eq(@challenge_persistent_bst.inorder(t), [1, 2, 3, 5, 8])
+///   @debug.assert_eq(@challenge_persistent_bst.contains(t, 3), true)
+///   @debug.assert_eq(@challenge_persistent_bst.contains(t, 4), false)
+///   @debug.assert_eq(@challenge_persistent_bst.inorder(t), [1, 2, 3, 5, 8])
 /// }
 /// ```
 pub enum Tree[T] {

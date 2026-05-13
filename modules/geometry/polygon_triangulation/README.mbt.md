@@ -282,7 +282,7 @@ test "triangulation square" {
     { x: 1L, y: 1L },
     { x: 0L, y: 1L },
   ]
-  inspect(
+  debug_inspect(
     @polygon_triangulation.min_weight_triangulation(points).unwrap(),
     content="8",
   )
@@ -303,7 +303,7 @@ test "triangulation triangle" {
     { x: 1L, y: 0L },
     { x: 0L, y: 1L },
   ]
-  inspect(
+  debug_inspect(
     @polygon_triangulation.min_weight_triangulation(points).unwrap(),
     content="4",
   )
@@ -320,7 +320,7 @@ test "triangulation too few points" {
     { x: 1L, y: 0L },
   ]
   // A line segment cannot be triangulated.
-  inspect(
+  debug_inspect(
     @polygon_triangulation.min_weight_triangulation(two_pts) is None,
     content="true",
   )
@@ -343,7 +343,7 @@ test "triangulation pentagon" {
   ]
   // We just check it returns Some(...) and is deterministic.
   let ans = @polygon_triangulation.min_weight_triangulation(points)
-  inspect(ans is Some(_), content="true")
+  debug_inspect(ans is Some(_), content="true")
 }
 ```
 

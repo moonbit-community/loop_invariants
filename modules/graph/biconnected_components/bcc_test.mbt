@@ -28,9 +28,9 @@ test "biconnected components basic" {
   // Sort component sizes for comparison
   let sizes = result.components.map(c => c.length())
   sizes.sort_by((a, b) => a - b)
-  inspect(sizes, content="[1, 3]") // Bridge has 1 edge, triangle has 3
+  debug_inspect(sizes, content="[1, 3]") // Bridge has 1 edge, triangle has 3
   result.articulation_points.sort_by((a, b) => a - b)
-  inspect(result.articulation_points, content="[1]")
+  debug_inspect(result.articulation_points, content="[1]")
 }
 
 ///|
@@ -59,9 +59,9 @@ test "biconnected components tree" {
   // Each edge is a separate component
   let sizes = result.components.map(c => c.length())
   sizes.sort_by((a, b) => a - b)
-  inspect(sizes, content="[1, 1, 1]")
+  debug_inspect(sizes, content="[1, 1, 1]")
   result.articulation_points.sort_by((a, b) => a - b)
-  inspect(result.articulation_points, content="[1]")
+  debug_inspect(result.articulation_points, content="[1]")
 }
 
 ///|
@@ -86,11 +86,11 @@ test "biconnected components cycle" {
   let result = @biconnected_components.biconnected_components(4, edges)
 
   // One component with 4 edges
-  inspect(result.components.length(), content="1")
-  inspect(result.components[0].length(), content="4")
+  debug_inspect(result.components.length(), content="1")
+  debug_inspect(result.components[0].length(), content="4")
 
   // No articulation points in a cycle
-  inspect(result.articulation_points, content="[]")
+  debug_inspect(result.articulation_points, content="[]")
 }
 
 ///|
@@ -106,10 +106,10 @@ test "biconnected components disconnected" {
   let result = @biconnected_components.biconnected_components(4, edges)
 
   // Two components, each with one edge
-  inspect(result.components.length(), content="2")
+  debug_inspect(result.components.length(), content="2")
 
   // No articulation points (bridges don't create APs in 2-vertex components)
-  inspect(result.articulation_points, content="[]")
+  debug_inspect(result.articulation_points, content="[]")
 }
 
 ///|
@@ -117,8 +117,8 @@ test "biconnected components disconnected" {
 test "biconnected components empty" {
   let edges : Array[(Int, Int)] = []
   let result = @biconnected_components.biconnected_components(3, edges)
-  inspect(result.components, content="[]")
-  inspect(result.articulation_points, content="[]")
+  debug_inspect(result.components, content="[]")
+  debug_inspect(result.articulation_points, content="[]")
 }
 
 ///|
@@ -137,11 +137,11 @@ test "biconnected components chain" {
   let result = @biconnected_components.biconnected_components(6, edges)
 
   // Each edge is separate (linear chain = all bridges)
-  inspect(result.components.length(), content="5")
+  debug_inspect(result.components.length(), content="5")
 
   // Vertices 1 and 2 are articulation points
   result.articulation_points.sort_by((a, b) => a - b)
-  inspect(result.articulation_points, content="[1, 2]")
+  debug_inspect(result.articulation_points, content="[1, 2]")
 }
 
 ///|
@@ -149,6 +149,6 @@ test "biconnected components chain" {
 test "biconnected components single vertex" {
   let edges : Array[(Int, Int)] = []
   let result = @biconnected_components.biconnected_components(1, edges)
-  inspect(result.components, content="[]")
-  inspect(result.articulation_points, content="[]")
+  debug_inspect(result.components, content="[]")
+  debug_inspect(result.articulation_points, content="[]")
 }

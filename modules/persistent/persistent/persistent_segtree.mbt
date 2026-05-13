@@ -253,9 +253,9 @@ test "persistent segment tree basic" {
   let pst = PersistentSegTree::build(arr)
 
   // Initial version (0) sum queries
-  inspect(pst.query(0, 0, 4), content="15") // 1+2+3+4+5 = 15
-  inspect(pst.query(0, 1, 3), content="9") // 2+3+4 = 9
-  inspect(pst.query(0, 2, 2), content="3") // just 3
+  debug_inspect(pst.query(0, 0, 4), content="15") // 1+2+3+4+5 = 15
+  debug_inspect(pst.query(0, 1, 3), content="9") // 2+3+4 = 9
+  debug_inspect(pst.query(0, 2, 2), content="3") // just 3
 }
 
 ///|
@@ -265,15 +265,15 @@ test "persistent segment tree update creates version" {
 
   // Update position 2: 3 -> 10, creates version 1
   let v1 = pst.update(0, 2, 10L)
-  inspect(v1, content="1")
+  debug_inspect(v1, content="1")
 
   // Version 0 unchanged
-  inspect(pst.query(0, 0, 4), content="15")
-  inspect(pst.query(0, 2, 2), content="3")
+  debug_inspect(pst.query(0, 0, 4), content="15")
+  debug_inspect(pst.query(0, 2, 2), content="3")
 
   // Version 1 has the update
-  inspect(pst.query(1, 0, 4), content="22") // 1+2+10+4+5 = 22
-  inspect(pst.query(1, 2, 2), content="10")
+  debug_inspect(pst.query(1, 0, 4), content="22") // 1+2+10+4+5 = 22
+  debug_inspect(pst.query(1, 2, 2), content="10")
 }
 
 ///|
@@ -281,40 +281,40 @@ test "persistent segment tree multiple versions" {
   let pst = PersistentSegTree(5)
 
   // v0: [0, 0, 0, 0, 0], sum = 0
-  inspect(pst.query(0, 0, 4), content="0")
+  debug_inspect(pst.query(0, 0, 4), content="0")
 
   // v1: [10, 0, 0, 0, 0]
   let v1 = pst.update(0, 0, 10L)
-  inspect(pst.query(v1, 0, 4), content="10")
+  debug_inspect(pst.query(v1, 0, 4), content="10")
 
   // v2: [10, 20, 0, 0, 0] (branch from v1)
   let v2 = pst.update(v1, 1, 20L)
-  inspect(pst.query(v2, 0, 4), content="30")
+  debug_inspect(pst.query(v2, 0, 4), content="30")
 
   // v3: [0, 0, 30, 0, 0] (branch from v0, independent of v1/v2)
   let v3 = pst.update(0, 2, 30L)
-  inspect(pst.query(v3, 0, 4), content="30")
+  debug_inspect(pst.query(v3, 0, 4), content="30")
 
   // All versions still accessible
-  inspect(pst.query(0, 0, 4), content="0")
-  inspect(pst.query(v1, 0, 4), content="10")
-  inspect(pst.query(v2, 0, 4), content="30")
-  inspect(pst.query(v3, 0, 4), content="30")
+  debug_inspect(pst.query(0, 0, 4), content="0")
+  debug_inspect(pst.query(v1, 0, 4), content="10")
+  debug_inspect(pst.query(v2, 0, 4), content="30")
+  debug_inspect(pst.query(v3, 0, 4), content="30")
 
   // Check individual positions
-  inspect(pst.get(v2, 0), content="10")
-  inspect(pst.get(v2, 1), content="20")
-  inspect(pst.get(v3, 2), content="30")
+  debug_inspect(pst.get(v2, 0), content="10")
+  debug_inspect(pst.get(v2, 1), content="20")
+  debug_inspect(pst.get(v3, 2), content="30")
 }
 
 ///|
 test "persistent segment tree version count" {
   let pst = PersistentSegTree(3)
-  inspect(pst.version_count(), content="1") // v0
+  debug_inspect(pst.version_count(), content="1") // v0
   let _ = pst.update(0, 0, 1L)
-  inspect(pst.version_count(), content="2") // v0, v1
+  debug_inspect(pst.version_count(), content="2") // v0, v1
   let _ = pst.update(1, 1, 2L)
-  inspect(pst.version_count(), content="3") // v0, v1, v2
+  debug_inspect(pst.version_count(), content="3") // v0, v1, v2
 }
 
 ///|
@@ -324,15 +324,15 @@ test "persistent segment tree fork" {
 
   // Fork v0 -> v1 (same state as v0)
   let v1 = pst.fork(0)
-  inspect(pst.query(v1, 0, 2), content="6")
+  debug_inspect(pst.query(v1, 0, 2), content="6")
 
   // Update v1
   let v2 = pst.update(v1, 0, 10L)
-  inspect(pst.query(v2, 0, 2), content="15") // 10+2+3
+  debug_inspect(pst.query(v2, 0, 2), content="15") // 10+2+3
 
   // v0 and v1 still unchanged
-  inspect(pst.query(0, 0, 2), content="6")
-  inspect(pst.query(v1, 0, 2), content="6")
+  debug_inspect(pst.query(0, 0, 2), content="6")
+  debug_inspect(pst.query(v1, 0, 2), content="6")
 }
 
 // ============================================================================
@@ -555,27 +555,27 @@ fn PersistentArray::version_count(self : PersistentArray) -> Int {
 ///|
 test "persistent array" {
   let empty = PersistentArray(2, 7L)
-  inspect(empty.get(0, 1), content="7")
+  debug_inspect(empty.get(0, 1), content="7")
   let parr = PersistentArray::from_array([10L, 20L, 30L])
 
   // v0: [10, 20, 30]
-  inspect(parr.get(0, 0), content="10")
-  inspect(parr.get(0, 1), content="20")
-  inspect(parr.get(0, 2), content="30")
+  debug_inspect(parr.get(0, 0), content="10")
+  debug_inspect(parr.get(0, 1), content="20")
+  debug_inspect(parr.get(0, 2), content="30")
 
   // v1: [100, 20, 30]
   let v1 = parr.set(0, 0, 100L)
-  inspect(parr.get(v1, 0), content="100")
+  debug_inspect(parr.get(v1, 0), content="100")
 
   // v2: [100, 200, 30] (from v1)
   let v2 = parr.set(v1, 1, 200L)
-  inspect(parr.get(v2, 1), content="200")
+  debug_inspect(parr.get(v2, 1), content="200")
 
   // v3: [10, 20, 300] (from v0, independent branch)
   let v3 = parr.set(0, 2, 300L)
-  inspect(parr.get(v3, 2), content="300")
-  inspect(parr.get(v3, 0), content="10") // unchanged from v0
+  debug_inspect(parr.get(v3, 2), content="300")
+  debug_inspect(parr.get(v3, 0), content="10") // unchanged from v0
 
   // All versions accessible
-  inspect(parr.version_count(), content="4")
+  debug_inspect(parr.version_count(), content="4")
 }

@@ -414,9 +414,9 @@ test "lca on a small tree" {
   hld.add_edge(1, 3)
   hld.add_edge(1, 4)
   hld.build(0)
-  inspect(hld.lca(3, 4), content="1")
-  inspect(hld.lca(3, 2), content="0")
-  inspect(hld.lca(0, 4), content="0")
+  debug_inspect(hld.lca(3, 4), content="1")
+  debug_inspect(hld.lca(3, 2), content="0")
+  debug_inspect(hld.lca(0, 4), content="0")
 }
 ```
 
@@ -430,9 +430,9 @@ test "path length on a linear chain" {
   hld.add_edge(2, 3)
   hld.add_edge(3, 4)
   hld.build(0)
-  inspect(hld.path_length(0, 4), content="4")
-  inspect(hld.path_length(1, 3), content="2")
-  inspect(hld.path_length(2, 2), content="0")
+  debug_inspect(hld.path_length(0, 4), content="4")
+  debug_inspect(hld.path_length(1, 3), content="2")
+  debug_inspect(hld.path_length(2, 2), content="0")
 }
 ```
 
@@ -445,8 +445,8 @@ test "linear tree is one chain" {
   }
   hld.build(0)
   // A linear tree is a single heavy chain: all nodes share head 0
-  inspect(hld.count_chains(0, 7), content="1")
-  inspect(hld.get_chain_head(7), content="0")
+  debug_inspect(hld.count_chains(0, 7), content="1")
+  debug_inspect(hld.get_chain_head(7), content="0")
 }
 ```
 
@@ -462,8 +462,8 @@ test "positions and chain heads on a star" {
   hld.build(0)
   // Each leaf forms its own chain (only one child can be heavy)
   let p0 = hld.get_position(0)
-  inspect(p0 >= 0 && p0 < 5, content="true")
-  inspect(hld.path_length(1, 4), content="2")
-  inspect(hld.lca(1, 4), content="0")
+  debug_inspect(p0 >= 0 && p0 < 5, content="true")
+  debug_inspect(hld.path_length(1, 4), content="2")
+  debug_inspect(hld.lca(1, 4), content="0")
 }
 ```

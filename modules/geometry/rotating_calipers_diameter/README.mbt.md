@@ -198,7 +198,7 @@ test "diameter square" {
     { x: 0L, y: 2L },
   ]
   let result = @rotating_calipers_diameter.convex_diameter(points).unwrap()
-  inspect(result.dist2, content="8")
+  debug_inspect(result.dist2, content="8")
 }
 ```
 
@@ -224,7 +224,7 @@ test "diameter triangle" {
     { x: 2L, y: 3L },
   ]
   let result = @rotating_calipers_diameter.convex_diameter(points).unwrap()
-  inspect(result.dist2, content="16")
+  debug_inspect(result.dist2, content="16")
 }
 ```
 
@@ -250,7 +250,7 @@ test "diameter rectangle" {
     { x: 0L, y: 1L },
   ]
   let result = @rotating_calipers_diameter.convex_diameter(points).unwrap()
-  inspect(result.dist2, content="10")
+  debug_inspect(result.dist2, content="10")
 }
 ```
 

@@ -138,7 +138,7 @@ fn inv_mod(x : Int64, m : Int64) -> Int64 {
 ///   let seq : Array[Int64] = [0L, 1L, 1L, 2L, 3L, 5L, 8L]
 ///   let coeffs = @berlekamp_massey.berlekamp_massey(seq, m)
 ///   // s[i] = 1*s[i-1] + 1*s[i-2]
-///   inspect(coeffs, content="[1, 1]")
+///   debug_inspect(coeffs, content="[1, 1]")
 /// }
 /// ```
 ///
@@ -150,7 +150,7 @@ fn inv_mod(x : Int64, m : Int64) -> Int64 {
 ///   let seq : Array[Int64] = [1L, 2L, 4L, 8L, 16L]
 ///   let coeffs = @berlekamp_massey.berlekamp_massey(seq, m)
 ///   // s[i] = 2*s[i-1]
-///   inspect(coeffs, content="[2]")
+///   debug_inspect(coeffs, content="[2]")
 /// }
 /// ```
 pub fn berlekamp_massey(seq : ArrayView[Int64], m : Int64) -> Array[Int64] {
@@ -197,14 +197,14 @@ pub fn berlekamp_massey(seq : ArrayView[Int64], m : Int64) -> Array[Int64] {
 
 ///|
 test "mod_norm handles negative input" {
-  inspect(mod_norm(-1L, 7L), content="6")
-  inspect(mod_norm(-15L, 7L), content="6")
-  inspect(mod_norm(15L, 7L), content="1")
+  debug_inspect(mod_norm(-1L, 7L), content="6")
+  debug_inspect(mod_norm(-15L, 7L), content="6")
+  debug_inspect(mod_norm(15L, 7L), content="1")
 }
 
 ///|
 test "pow_mod handles edge exponents and signs" {
-  inspect(pow_mod(5L, 0L, 7L), content="1")
-  inspect(pow_mod(-2L, 4L, 7L), content="2")
-  inspect(pow_mod(-2L, 5L, 7L), content="3")
+  debug_inspect(pow_mod(5L, 0L, 7L), content="1")
+  debug_inspect(pow_mod(-2L, 4L, 7L), content="2")
+  debug_inspect(pow_mod(-2L, 5L, 7L), content="3")
 }

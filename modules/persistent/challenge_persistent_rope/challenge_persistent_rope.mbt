@@ -21,8 +21,8 @@
 ///   let a = @challenge_persistent_rope.leaf("Hello, ")
 ///   let b = @challenge_persistent_rope.leaf("world!")
 ///   let r = @challenge_persistent_rope.concat(a, b)
-///   assert_eq(@challenge_persistent_rope.to_string(r), "Hello, world!")
-///   assert_eq(@challenge_persistent_rope.length(r), 13)
+///   @debug.assert_eq(@challenge_persistent_rope.to_string(r), "Hello, world!")
+///   @debug.assert_eq(@challenge_persistent_rope.length(r), 13)
 /// }
 /// ```
 pub enum Rope {

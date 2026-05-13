@@ -90,6 +90,6 @@ pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int {
 ///|
 test "meet_in_middle" {
   let nums : Array[Int] = [3, 34, 4, 12, 5, 2]
-  assert_eq(best_subset_sum_leq(nums, 9), 9)
-  assert_eq(best_subset_sum_leq(nums, 10), 10)
+  @debug.assert_eq(best_subset_sum_leq(nums, 9), 9)
+  @debug.assert_eq(best_subset_sum_leq(nums, 10), 10)
 }

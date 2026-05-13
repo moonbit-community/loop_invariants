@@ -78,7 +78,7 @@ test "segment tree lazy basic" {
     arr.length(),
     [(1, 3, 2), (0, 2, -1)],
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_lazy.range_sum(
       root,
       0,
@@ -88,7 +88,7 @@ test "segment tree lazy basic" {
     ),
     content="10",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_lazy.range_sum(
       updated,
       0,
@@ -98,7 +98,7 @@ test "segment tree lazy basic" {
     ),
     content="12",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_lazy.range_sum(
       updated,
       0,
@@ -134,11 +134,11 @@ test "segment tree lazy overlap" {
     4,
     2,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_lazy.range_sum(t2, 0, arr.length(), 0, 4),
     content="19",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_lazy.range_sum(t2, 0, arr.length(), 2, 3),
     content="7",
   )
@@ -160,7 +160,7 @@ test "segment tree lazy persistence" {
     2,
     3,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_lazy.range_sum(
       root,
       0,
@@ -170,7 +170,7 @@ test "segment tree lazy persistence" {
     ),
     content="3",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_lazy.range_sum(t1, 0, arr.length(), 0, 3),
     content="9",
   )

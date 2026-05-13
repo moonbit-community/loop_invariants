@@ -193,9 +193,9 @@ across the boundary into the pattern.
 ///|
 test "z array and search" {
   let z = @z_algorithm.compute_z("aabcaab")
-  inspect(z, content="[7, 1, 0, 0, 3, 1, 0]")
+  debug_inspect(z, content="[7, 1, 0, 0, 3, 1, 0]")
   let hits = @z_algorithm.find_pattern("aabcaabxaab", "aab")
-  inspect(hits, content="[0, 4, 8]")
+  debug_inspect(hits, content="[0, 4, 8]")
 }
 ```
 
@@ -203,9 +203,9 @@ test "z array and search" {
 ///|
 test "z aliases" {
   let z2 = @z_algorithm.z_function("aaaaa")
-  inspect(z2, content="[5, 4, 3, 2, 1]")
+  debug_inspect(z2, content="[5, 4, 3, 2, 1]")
   let hits2 = @z_algorithm.z_search("ababa", "aba")
-  inspect(hits2, content="[0, 2]")
+  debug_inspect(hits2, content="[0, 2]")
 }
 ```
 
@@ -213,7 +213,7 @@ test "z aliases" {
 ///|
 test "count pattern" {
   let cnt = @z_algorithm.count_pattern("aaaaa", "aa")
-  inspect(cnt, content="4") // overlaps allowed: "aa" at 0,1,2,3
+  debug_inspect(cnt, content="4") // overlaps allowed: "aa" at 0,1,2,3
 }
 ```
 

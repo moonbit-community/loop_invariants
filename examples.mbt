@@ -41,10 +41,10 @@ fn fib_loop(n : Int) -> Int {
 ///|
 test {
   // Verify equivalence for several values
-  assert_eq(fib_loop(0), fib(0)) // 0
-  assert_eq(fib_loop(1), fib(1)) // 1
-  assert_eq(fib_loop(5), fib(5)) // 5
-  assert_eq(fib_loop(10), fib(10)) // 55
+  @debug.assert_eq(fib_loop(0), fib(0)) // 0
+  @debug.assert_eq(fib_loop(1), fib(1)) // 1
+  @debug.assert_eq(fib_loop(5), fib(5)) // 5
+  @debug.assert_eq(fib_loop(10), fib(10)) // 55
 }
 
 // ============================================================================
@@ -196,10 +196,10 @@ fn gcd_loop(a : Int, b : Int) -> Int {
 
 ///|
 test "gcd" {
-  assert_eq(gcd_loop(48, 18), gcd_rec(48, 18)) // 6
-  assert_eq(gcd_loop(100, 35), gcd_rec(100, 35)) // 5
-  assert_eq(gcd_loop(17, 13), gcd_rec(17, 13)) // 1 (coprime)
-  assert_eq(gcd_loop(0, 5), gcd_rec(0, 5)) // 5
+  @debug.assert_eq(gcd_loop(48, 18), gcd_rec(48, 18)) // 6
+  @debug.assert_eq(gcd_loop(100, 35), gcd_rec(100, 35)) // 5
+  @debug.assert_eq(gcd_loop(17, 13), gcd_rec(17, 13)) // 1 (coprime)
+  @debug.assert_eq(gcd_loop(0, 5), gcd_rec(0, 5)) // 5
 }
 
 // ============================================================================
@@ -253,10 +253,10 @@ fn pow_loop(base : Int, exp : Int) -> Int {
 
 ///|
 test "pow" {
-  assert_eq(pow_loop(2, 10), pow_rec(2, 10)) // 1024
-  assert_eq(pow_loop(3, 5), pow_rec(3, 5)) // 243
-  assert_eq(pow_loop(5, 0), pow_rec(5, 0)) // 1
-  assert_eq(pow_loop(7, 1), pow_rec(7, 1)) // 7
+  @debug.assert_eq(pow_loop(2, 10), pow_rec(2, 10)) // 1024
+  @debug.assert_eq(pow_loop(3, 5), pow_rec(3, 5)) // 243
+  @debug.assert_eq(pow_loop(5, 0), pow_rec(5, 0)) // 1
+  @debug.assert_eq(pow_loop(7, 1), pow_rec(7, 1)) // 7
 }
 
 // ============================================================================
@@ -306,13 +306,13 @@ fn reverse_inplace(arr : Array[Int]) -> Unit {
 test "reverse" {
   let arr1 : Array[Int] = [1, 2, 3, 4, 5]
   reverse_inplace(arr1)
-  assert_eq(arr1, [5, 4, 3, 2, 1])
+  @debug.assert_eq(arr1, [5, 4, 3, 2, 1])
   let arr2 : Array[Int] = [1, 2]
   reverse_inplace(arr2)
-  assert_eq(arr2, [2, 1])
+  @debug.assert_eq(arr2, [2, 1])
   let arr3 : Array[Int] = [42]
   reverse_inplace(arr3)
-  assert_eq(arr3, [42])
+  @debug.assert_eq(arr3, [42])
 }
 
 // ============================================================================
@@ -363,13 +363,13 @@ fn isqrt(n : Int) -> Int {
 
 ///|
 test "isqrt" {
-  assert_eq(isqrt(0), 0)
-  assert_eq(isqrt(1), 1)
-  assert_eq(isqrt(4), 2)
-  assert_eq(isqrt(8), 2) // floor(sqrt(8)) = 2
-  assert_eq(isqrt(9), 3)
-  assert_eq(isqrt(99), 9)
-  assert_eq(isqrt(100), 10)
+  @debug.assert_eq(isqrt(0), 0)
+  @debug.assert_eq(isqrt(1), 1)
+  @debug.assert_eq(isqrt(4), 2)
+  @debug.assert_eq(isqrt(8), 2) // floor(sqrt(8)) = 2
+  @debug.assert_eq(isqrt(9), 3)
+  @debug.assert_eq(isqrt(99), 9)
+  @debug.assert_eq(isqrt(100), 10)
 }
 
 // ============================================================================
@@ -582,10 +582,10 @@ fn kadane(arr : ArrayView[Int]) -> Int {
 
 ///|
 test "kadane" {
-  assert_eq(kadane([-2, 1, -3, 4, -1, 2, 1, -5, 4]), 6) // [4,-1,2,1]
-  assert_eq(kadane([1]), 1)
-  assert_eq(kadane([5, 4, -1, 7, 8]), 23) // entire array
-  assert_eq(kadane([-1, -2, -3]), -1) // least negative
+  @debug.assert_eq(kadane([-2, 1, -3, 4, -1, 2, 1, -5, 4]), 6) // [4,-1,2,1]
+  @debug.assert_eq(kadane([1]), 1)
+  @debug.assert_eq(kadane([5, 4, -1, 7, 8]), 23) // entire array
+  @debug.assert_eq(kadane([-1, -2, -3]), -1) // least negative
 }
 
 // ============================================================================
@@ -741,11 +741,11 @@ fn merge(left : ArrayView[Int], right : ArrayView[Int]) -> Array[Int] {
 
 ///|
 test "merge" {
-  assert_eq(merge([1, 3, 5], [2, 4, 6]), [1, 2, 3, 4, 5, 6])
-  assert_eq(merge([1, 2, 3], [4, 5, 6]), [1, 2, 3, 4, 5, 6])
-  assert_eq(merge([4, 5, 6], [1, 2, 3]), [1, 2, 3, 4, 5, 6])
-  assert_eq(merge([], [1, 2]), [1, 2])
-  assert_eq(merge([1, 2], []), [1, 2])
+  @debug.assert_eq(merge([1, 3, 5], [2, 4, 6]), [1, 2, 3, 4, 5, 6])
+  @debug.assert_eq(merge([1, 2, 3], [4, 5, 6]), [1, 2, 3, 4, 5, 6])
+  @debug.assert_eq(merge([4, 5, 6], [1, 2, 3]), [1, 2, 3, 4, 5, 6])
+  @debug.assert_eq(merge([], [1, 2]), [1, 2])
+  @debug.assert_eq(merge([1, 2], []), [1, 2])
 }
 
 // ============================================================================
@@ -821,14 +821,14 @@ fn extended_gcd(a : Int, b : Int) -> (Int, Int, Int) {
 ///|
 test "extended_gcd" {
   let (g1, x1, y1) = extended_gcd(48, 18)
-  assert_eq(g1, 6)
-  assert_eq(48 * x1 + 18 * y1, 6) // Bézout identity
+  @debug.assert_eq(g1, 6)
+  @debug.assert_eq(48 * x1 + 18 * y1, 6) // Bézout identity
   let (g2, x2, y2) = extended_gcd(35, 15)
-  assert_eq(g2, 5)
-  assert_eq(35 * x2 + 15 * y2, 5)
+  @debug.assert_eq(g2, 5)
+  @debug.assert_eq(35 * x2 + 15 * y2, 5)
   let (g3, x3, y3) = extended_gcd(17, 13)
-  assert_eq(g3, 1) // coprime
-  assert_eq(17 * x3 + 13 * y3, 1)
+  @debug.assert_eq(g3, 1) // coprime
+  @debug.assert_eq(17 * x3 + 13 * y3, 1)
 }
 
 // ============================================================================
@@ -977,13 +977,13 @@ fn isqrt_newton(n : Int) -> Int {
 
 ///|
 test "isqrt_newton" {
-  assert_eq(isqrt_newton(0), 0)
-  assert_eq(isqrt_newton(1), 1)
-  assert_eq(isqrt_newton(4), 2)
-  assert_eq(isqrt_newton(8), 2)
-  assert_eq(isqrt_newton(9), 3)
-  assert_eq(isqrt_newton(100), 10)
-  assert_eq(isqrt_newton(1000000), 1000)
+  @debug.assert_eq(isqrt_newton(0), 0)
+  @debug.assert_eq(isqrt_newton(1), 1)
+  @debug.assert_eq(isqrt_newton(4), 2)
+  @debug.assert_eq(isqrt_newton(8), 2)
+  @debug.assert_eq(isqrt_newton(9), 3)
+  @debug.assert_eq(isqrt_newton(100), 10)
+  @debug.assert_eq(isqrt_newton(1000000), 1000)
 }
 
 // ============================================================================
@@ -1056,10 +1056,10 @@ fn sieve(n : Int) -> Array[Int] {
 
 ///|
 test "sieve" {
-  assert_eq(sieve(10), [2, 3, 5, 7])
-  assert_eq(sieve(20), [2, 3, 5, 7, 11, 13, 17, 19])
-  assert_eq(sieve(2), [2])
-  assert_eq(sieve(1), [])
+  @debug.assert_eq(sieve(10), [2, 3, 5, 7])
+  @debug.assert_eq(sieve(20), [2, 3, 5, 7, 11, 13, 17, 19])
+  @debug.assert_eq(sieve(2), [2])
+  @debug.assert_eq(sieve(1), [])
 }
 
 // ============================================================================
@@ -1127,12 +1127,12 @@ fn mod_pow(base : Int, exp : Int, m : Int) -> Int {
 
 ///|
 test "mod_pow" {
-  assert_eq(mod_pow(2, 10, 1000), 24) // 1024 mod 1000
-  assert_eq(mod_pow(3, 5, 7), 5) // 243 mod 7
-  assert_eq(mod_pow(2, 0, 100), 1) // anything^0 = 1
-  assert_eq(mod_pow(5, 3, 13), 8) // 125 mod 13
+  @debug.assert_eq(mod_pow(2, 10, 1000), 24) // 1024 mod 1000
+  @debug.assert_eq(mod_pow(3, 5, 7), 5) // 243 mod 7
+  @debug.assert_eq(mod_pow(2, 0, 100), 1) // anything^0 = 1
+  @debug.assert_eq(mod_pow(5, 3, 13), 8) // 125 mod 13
   // Fermat's little theorem: a^(p-1) ≡ 1 (mod p) for prime p
-  assert_eq(mod_pow(2, 6, 7), 1) // 2^6 mod 7 = 64 mod 7 = 1
+  @debug.assert_eq(mod_pow(2, 6, 7), 1) // 2^6 mod 7 = 64 mod 7 = 1
 }
 
 // ============================================================================
@@ -1196,12 +1196,12 @@ fn popcount(n : Int) -> Int {
 
 ///|
 test "popcount" {
-  assert_eq(popcount(0), 0)
-  assert_eq(popcount(1), 1)
-  assert_eq(popcount(7), 3) // 0b111
-  assert_eq(popcount(8), 1) // 0b1000
-  assert_eq(popcount(255), 8) // 0b11111111
-  assert_eq(popcount(0x55555555), 16) // alternating bits
+  @debug.assert_eq(popcount(0), 0)
+  @debug.assert_eq(popcount(1), 1)
+  @debug.assert_eq(popcount(7), 3) // 0b111
+  @debug.assert_eq(popcount(8), 1) // 0b1000
+  @debug.assert_eq(popcount(255), 8) // 0b11111111
+  @debug.assert_eq(popcount(0x55555555), 16) // alternating bits
 }
 
 // ============================================================================
@@ -1324,12 +1324,12 @@ fn reverse_range(arr : Array[Int], lo : Int, hi : Int) -> Unit {
 test "next_permutation" {
   let arr1 : Array[Int] = [1, 2, 3]
   assert_true(next_permutation(arr1))
-  assert_eq(arr1, [1, 3, 2])
+  @debug.assert_eq(arr1, [1, 3, 2])
   assert_true(next_permutation(arr1))
-  assert_eq(arr1, [2, 1, 3])
+  @debug.assert_eq(arr1, [2, 1, 3])
   let arr2 : Array[Int] = [3, 2, 1]
   assert_true(!next_permutation(arr2)) // wraps around
-  assert_eq(arr2, [1, 2, 3])
+  @debug.assert_eq(arr2, [1, 2, 3])
 }
 
 // ============================================================================
@@ -1453,9 +1453,9 @@ fn lis_length(arr : ArrayView[Int]) -> Int {
 
 ///|
 test "lis_length" {
-  assert_eq(lis_length([10, 9, 2, 5, 3, 7, 101, 18]), 4) // [2,3,7,18] or [2,5,7,101]
-  assert_eq(lis_length([0, 1, 0, 3, 2, 3]), 4) // [0,1,2,3]
-  assert_eq(lis_length([7, 7, 7, 7]), 1) // all same, LIS = 1
-  assert_eq(lis_length([1, 2, 3, 4, 5]), 5) // already sorted
-  assert_eq(lis_length([5, 4, 3, 2, 1]), 1) // decreasing
+  @debug.assert_eq(lis_length([10, 9, 2, 5, 3, 7, 101, 18]), 4) // [2,3,7,18] or [2,5,7,101]
+  @debug.assert_eq(lis_length([0, 1, 0, 3, 2, 3]), 4) // [0,1,2,3]
+  @debug.assert_eq(lis_length([7, 7, 7, 7]), 1) // all same, LIS = 1
+  @debug.assert_eq(lis_length([1, 2, 3, 4, 5]), 5) // already sorted
+  @debug.assert_eq(lis_length([5, 4, 3, 2, 1]), 1) // decreasing
 }

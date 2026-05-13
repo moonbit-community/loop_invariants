@@ -63,7 +63,7 @@ fn knapsack_01(
 test "knapsack 01" {
   let weights : ReadOnlyArray[Int] = [1, 2, 3, 4]
   let values : ReadOnlyArray[Int] = [1, 4, 5, 7]
-  assert_eq(knapsack_01(weights, values, 7), 12) // items 1,3 (4+7=11, wait let me recalc)
+  @debug.assert_eq(knapsack_01(weights, values, 7), 12) // items 1,3 (4+7=11, wait let me recalc)
   // weights: 1,2,3,4  values: 1,4,5,7
   // capacity 7: take items with w=2,3 -> v=4+5=9, or w=3,4 -> 5+7=12, or w=1,2,4 -> 1+4+7=12
   // Actually w=1+2+4=7, v=1+4+7=12
@@ -133,7 +133,7 @@ test "knapsack unbounded" {
   let values : ReadOnlyArray[Int] = [1, 4, 5]
   // Capacity 7: best is 2 items of weight 3 (value 8) + 1 item of weight 1 (value 1) = 9
   // Or: 1 item of weight 4 (5) + 1 item of weight 3 (4) = 9
-  assert_eq(knapsack_unbounded(weights, values, 7), 9)
+  @debug.assert_eq(knapsack_unbounded(weights, values, 7), 9)
 }
 
 ///|
@@ -223,9 +223,9 @@ fn lower_bound_lis(arr : ArrayView[Int], target : Int) -> Int {
 ///|
 test "LIS binary search" {
   let nums : ReadOnlyArray[Int] = [10, 9, 2, 5, 3, 7, 101, 18]
-  assert_eq(lis_binary_search(nums), 4) // [2, 3, 7, 101] or [2, 3, 7, 18]
+  @debug.assert_eq(lis_binary_search(nums), 4) // [2, 3, 7, 101] or [2, 3, 7, 18]
   let nums2 : ReadOnlyArray[Int] = [0, 1, 0, 3, 2, 3]
-  assert_eq(lis_binary_search(nums2), 4) // [0, 1, 2, 3]
+  @debug.assert_eq(lis_binary_search(nums2), 4) // [0, 1, 2, 3]
 }
 
 ///|
@@ -286,9 +286,9 @@ fn coin_change_min(coins : ArrayView[Int], amount : Int) -> Int {
 ///|
 test "coin change min" {
   let coins : ReadOnlyArray[Int] = [1, 2, 5]
-  assert_eq(coin_change_min(coins, 11), 3) // 5 + 5 + 1
+  @debug.assert_eq(coin_change_min(coins, 11), 3) // 5 + 5 + 1
   let coins2 : ReadOnlyArray[Int] = [2]
-  assert_eq(coin_change_min(coins2, 3), -1) // impossible
+  @debug.assert_eq(coin_change_min(coins2, 3), -1) // impossible
 }
 
 ///|
@@ -334,7 +334,7 @@ fn coin_change_ways(coins : ArrayView[Int], amount : Int) -> Int {
 ///|
 test "coin change ways" {
   let coins : ReadOnlyArray[Int] = [1, 2, 5]
-  assert_eq(coin_change_ways(coins, 5), 4) // [5], [2,2,1], [2,1,1,1], [1,1,1,1,1]
+  @debug.assert_eq(coin_change_ways(coins, 5), 4) // [5], [2,2,1], [2,1,1,1], [1,1,1,1,1]
 }
 
 ///|
@@ -401,9 +401,9 @@ fn longest_common_subsequence(s1 : String, s2 : String) -> Int {
 
 ///|
 test "longest common subsequence" {
-  assert_eq(longest_common_subsequence("abcde", "ace"), 3) // "ace"
-  assert_eq(longest_common_subsequence("abc", "abc"), 3)
-  assert_eq(longest_common_subsequence("abc", "def"), 0)
+  @debug.assert_eq(longest_common_subsequence("abcde", "ace"), 3) // "ace"
+  @debug.assert_eq(longest_common_subsequence("abc", "abc"), 3)
+  @debug.assert_eq(longest_common_subsequence("abc", "def"), 0)
 }
 
 ///|
@@ -449,7 +449,7 @@ fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
 ///|
 test "max subarray dp" {
   let nums : ReadOnlyArray[Int] = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
-  assert_eq(max_subarray_dp(nums), 6) // [4, -1, 2, 1]
+  @debug.assert_eq(max_subarray_dp(nums), 6) // [4, -1, 2, 1]
 }
 
 ///|
@@ -500,9 +500,9 @@ fn house_robber(nums : ArrayView[Int]) -> Int {
 ///|
 test "house robber" {
   let nums : ReadOnlyArray[Int] = [2, 7, 9, 3, 1]
-  assert_eq(house_robber(nums), 12) // 2 + 9 + 1
+  @debug.assert_eq(house_robber(nums), 12) // 2 + 9 + 1
   let nums2 : ReadOnlyArray[Int] = [1, 2, 3, 1]
-  assert_eq(house_robber(nums2), 4) // 1 + 3
+  @debug.assert_eq(house_robber(nums2), 4) // 1 + 3
 }
 
 ///|
@@ -549,8 +549,8 @@ fn unique_paths(m : Int, n : Int) -> Int {
 
 ///|
 test "unique paths" {
-  assert_eq(unique_paths(3, 7), 28)
-  assert_eq(unique_paths(3, 2), 3)
+  @debug.assert_eq(unique_paths(3, 7), 28)
+  @debug.assert_eq(unique_paths(3, 2), 3)
 }
 
 ///|
@@ -616,7 +616,7 @@ fn min_path_sum(grid : Array[Array[Int]]) -> Int {
 ///|
 test "min path sum" {
   let grid = [[1, 3, 1], [1, 5, 1], [4, 2, 1]]
-  assert_eq(min_path_sum(grid), 7) // 1→3→1→1→1
+  @debug.assert_eq(min_path_sum(grid), 7) // 1→3→1→1→1
 }
 
 ///|
@@ -710,10 +710,10 @@ fn matches_word(chars : Array[Char], start : Int, word : Array[Char]) -> Bool {
 test "word break" {
   let s = "leetcode"
   let dict = ["leet", "code"]
-  assert_eq(word_break(s, dict), true)
+  @debug.assert_eq(word_break(s, dict), true)
   let s2 = "applepenapple"
   let dict2 = ["apple", "pen"]
-  assert_eq(word_break(s2, dict2), true)
+  @debug.assert_eq(word_break(s2, dict2), true)
 }
 
 ///|
@@ -819,9 +819,9 @@ fn min_palindrome_cuts(s : String) -> Int {
 
 ///|
 test "min palindrome cuts" {
-  assert_eq(min_palindrome_cuts("aab"), 1) // "aa" | "b"
-  assert_eq(min_palindrome_cuts("a"), 0)
-  assert_eq(min_palindrome_cuts("ab"), 1)
+  @debug.assert_eq(min_palindrome_cuts("aab"), 1) // "aa" | "b"
+  @debug.assert_eq(min_palindrome_cuts("a"), 0)
+  @debug.assert_eq(min_palindrome_cuts("ab"), 1)
 }
 
 ///|
@@ -877,9 +877,9 @@ fn egg_drop(eggs : Int, floors : Int) -> Int {
 
 ///|
 test "egg drop" {
-  assert_eq(egg_drop(1, 10), 10) // With 1 egg, need 10 trials worst case
-  assert_eq(egg_drop(2, 10), 4) // With 2 eggs, 4 trials suffice
-  assert_eq(egg_drop(2, 100), 14) // With 2 eggs, 14 trials for 100 floors
+  @debug.assert_eq(egg_drop(1, 10), 10) // With 1 egg, need 10 trials worst case
+  @debug.assert_eq(egg_drop(2, 10), 4) // With 2 eggs, 4 trials suffice
+  @debug.assert_eq(egg_drop(2, 100), 14) // With 2 eggs, 14 trials for 100 floors
 }
 
 ///|
@@ -945,8 +945,8 @@ fn longest_palindromic_subsequence(s : String) -> Int {
 
 ///|
 test "longest palindromic subsequence" {
-  assert_eq(longest_palindromic_subsequence("bbbab"), 4) // "bbbb"
-  assert_eq(longest_palindromic_subsequence("cbbd"), 2) // "bb"
+  @debug.assert_eq(longest_palindromic_subsequence("bbbab"), 4) // "bbbb"
+  @debug.assert_eq(longest_palindromic_subsequence("cbbd"), 2) // "bb"
 }
 
 ///|
@@ -1026,5 +1026,5 @@ test "matrix chain multiplication" {
   let dims : ReadOnlyArray[Int] = [10, 30, 5, 60]
   // Option 1: (AB)C = 10*30*5 + 10*5*60 = 1500 + 3000 = 4500
   // Option 2: A(BC) = 30*5*60 + 10*30*60 = 9000 + 18000 = 27000
-  assert_eq(matrix_chain_mult(dims), 4500)
+  @debug.assert_eq(matrix_chain_mult(dims), 4500)
 }

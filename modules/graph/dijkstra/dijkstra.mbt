@@ -563,11 +563,11 @@ test "dijkstra basic" {
   g.add_edge(2, 3, 3L)
   g.add_edge(3, 4, 4L)
   let result = dijkstra(g, 0)
-  inspect(result.dist[0], content="0")
-  inspect(result.dist[1], content="1")
-  inspect(result.dist[2], content="3")
-  inspect(result.dist[3], content="6")
-  inspect(result.dist[4], content="10")
+  debug_inspect(result.dist[0], content="0")
+  debug_inspect(result.dist[1], content="1")
+  debug_inspect(result.dist[2], content="3")
+  debug_inspect(result.dist[3], content="6")
+  debug_inspect(result.dist[4], content="10")
 }
 
 ///|
@@ -580,9 +580,9 @@ test "dijkstra dense basic" {
     [],
   ]
   let dist = dijkstra_dense(adj, 0)
-  inspect(dist, content="[0, 2, 3, 4, 5]")
+  debug_inspect(dist, content="[0, 2, 3, 4, 5]")
   let dist2 = dijkstra_dense(adj, 4)
-  inspect(dist2[0] == DIJK_INF_INT, content="true")
+  debug_inspect(dist2[0] == DIJK_INF_INT, content="true")
 }
 
 ///|
@@ -594,7 +594,7 @@ test "dijkstra with shortcuts" {
   g.add_edge(0, 3, 10L) // Long direct path
   let result = dijkstra(g, 0)
   // Should take 0->1->2->3 (cost 3) not 0->3 (cost 10)
-  inspect(result.dist[3], content="3")
+  debug_inspect(result.dist[3], content="3")
 }
 
 ///|
@@ -604,9 +604,9 @@ test "dijkstra unreachable" {
   // Vertex 2 is unreachable
 
   let result = dijkstra(g, 0)
-  inspect(result.dist[0], content="0")
-  inspect(result.dist[1], content="1")
-  inspect(result.dist[2] == INF, content="true")
+  debug_inspect(result.dist[0], content="0")
+  debug_inspect(result.dist[1], content="1")
+  debug_inspect(result.dist[2] == INF, content="true")
 }
 
 ///|
@@ -617,7 +617,7 @@ test "dijkstra undirected" {
   g.add_undirected_edge(2, 3, 3L)
   g.add_undirected_edge(0, 3, 10L)
   let result = dijkstra(g, 0)
-  inspect(result.dist[3], content="6") // 0->1->2->3
+  debug_inspect(result.dist[3], content="6") // 0->1->2->3
 }
 
 ///|
@@ -632,9 +632,9 @@ test "path reconstruction" {
   let path = reconstruct_path(result, 3)
 
   // Should be length 3: either 0->1->2->3 or 0->4->3
-  inspect(path.length(), content="3")
-  inspect(path[0], content="0")
-  inspect(path[path.length() - 1], content="3")
+  debug_inspect(path.length(), content="3")
+  debug_inspect(path[0], content="0")
+  debug_inspect(path[path.length() - 1], content="3")
 }
 
 ///|
@@ -650,7 +650,7 @@ test "shortest distance helper" {
 test "dijkstra single vertex" {
   let g = Graph(1)
   let result = dijkstra(g, 0)
-  inspect(result.dist[0], content="0")
+  debug_inspect(result.dist[0], content="0")
 }
 
 ///|
@@ -667,12 +667,12 @@ test "dijkstra complex graph" {
   g.add_edge(3, 4, 6L)
   g.add_edge(4, 5, 9L)
   let result = dijkstra(g, 0)
-  inspect(result.dist[0], content="0")
-  inspect(result.dist[1], content="7")
-  inspect(result.dist[2], content="9")
-  inspect(result.dist[3], content="20")
-  inspect(result.dist[4], content="26")
-  inspect(result.dist[5], content="11")
+  debug_inspect(result.dist[0], content="0")
+  debug_inspect(result.dist[1], content="7")
+  debug_inspect(result.dist[2], content="9")
+  debug_inspect(result.dist[3], content="20")
+  debug_inspect(result.dist[4], content="26")
+  debug_inspect(result.dist[5], content="11")
 }
 
 ///|
@@ -685,31 +685,31 @@ test "min heap basic" {
 
   // Should come out in order: 1, 2, 5, 8
   match heap.pop() {
-    Some(e) => inspect(e.dist, content="1")
+    Some(e) => debug_inspect(e.dist, content="1")
     None => fail("Expected element")
   }
   match heap.pop() {
-    Some(e) => inspect(e.dist, content="2")
+    Some(e) => debug_inspect(e.dist, content="2")
     None => fail("Expected element")
   }
   match heap.pop() {
-    Some(e) => inspect(e.dist, content="5")
+    Some(e) => debug_inspect(e.dist, content="5")
     None => fail("Expected element")
   }
   match heap.pop() {
-    Some(e) => inspect(e.dist, content="8")
+    Some(e) => debug_inspect(e.dist, content="8")
     None => fail("Expected element")
   }
-  inspect(heap.is_empty(), content="true")
+  debug_inspect(heap.is_empty(), content="true")
 }
 
 ///|
 test "dijkstra invalid source" {
   let g = Graph(3)
   let result = dijkstra(g, -1)
-  inspect(result.dist[0] == INF, content="true")
+  debug_inspect(result.dist[0] == INF, content="true")
   let result2 = dijkstra(g, 10)
-  inspect(result2.dist[0] == INF, content="true")
+  debug_inspect(result2.dist[0] == INF, content="true")
 }
 
 ///|
@@ -743,7 +743,7 @@ test "path reconstruction unreachable" {
   let g = Graph(3)
   let result = dijkstra(g, 0)
   let path = reconstruct_path(result, 2)
-  inspect(path.length(), content="0")
+  debug_inspect(path.length(), content="0")
 }
 
 ///|
@@ -752,7 +752,7 @@ test "dijkstra zero weight edge" {
   g.add_edge(0, 1, 0L)
   g.add_edge(1, 2, 0L)
   let result = dijkstra(g, 0)
-  inspect(result.dist[2], content="0")
+  debug_inspect(result.dist[2], content="0")
 }
 
 ///|
@@ -763,16 +763,16 @@ test "dijkstra multiple paths same length" {
   g.add_edge(1, 3, 1L)
   g.add_edge(2, 3, 1L)
   let result = dijkstra(g, 0)
-  inspect(result.dist[3], content="2") // Either path works
+  debug_inspect(result.dist[3], content="2") // Either path works
 }
 
 ///|
 test "graph creation" {
   let g = Graph(5)
-  inspect(g.n, content="5")
-  inspect(g.adj.length(), content="5")
+  debug_inspect(g.n, content="5")
+  debug_inspect(g.adj.length(), content="5")
   g.add_edge(0, 1, 10L)
-  inspect(g.adj[0].length(), content="1")
-  inspect(g.adj[0][0].to, content="1")
-  inspect(g.adj[0][0].weight, content="10")
+  debug_inspect(g.adj[0].length(), content="1")
+  debug_inspect(g.adj[0][0].to, content="1")
+  debug_inspect(g.adj[0][0].weight, content="10")
 }

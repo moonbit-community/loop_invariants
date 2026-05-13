@@ -74,7 +74,10 @@ test "toposort kahn basic" {
   let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
   let order_opt = @challenge_toposort_kahn.topo_sort(n, edges)
   guard order_opt is Some(order) else { fail("expected order") }
-  inspect(@challenge_toposort_kahn.is_topo(order, n, edges), content="true")
+  debug_inspect(
+    @challenge_toposort_kahn.is_topo(order, n, edges),
+    content="true",
+  )
 }
 ```
 
@@ -102,7 +105,10 @@ test "toposort check" {
   let n = 3
   let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2)]
   let order : Array[Int] = [0, 2, 1]
-  inspect(@challenge_toposort_kahn.is_topo(order, n, edges), content="true")
+  debug_inspect(
+    @challenge_toposort_kahn.is_topo(order, n, edges),
+    content="true",
+  )
 }
 ```
 

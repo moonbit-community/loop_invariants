@@ -1262,40 +1262,40 @@ test "sqrt sum basic" {
   let sq = SqrtSum::build(arr)
 
   // Full range sum
-  inspect(sq.query(0, 8), content="45")
+  debug_inspect(sq.query(0, 8), content="45")
 
   // Partial ranges
-  inspect(sq.query(0, 2), content="6") // 1+2+3
-  inspect(sq.query(3, 5), content="15") // 4+5+6
-  inspect(sq.query(6, 8), content="24") // 7+8+9
+  debug_inspect(sq.query(0, 2), content="6") // 1+2+3
+  debug_inspect(sq.query(3, 5), content="15") // 4+5+6
+  debug_inspect(sq.query(6, 8), content="24") // 7+8+9
 
   // Single element
-  inspect(sq.query(4, 4), content="5")
+  debug_inspect(sq.query(4, 4), content="5")
 
   // Cross-block query
-  inspect(sq.query(2, 6), content="25") // 3+4+5+6+7
+  debug_inspect(sq.query(2, 6), content="25") // 3+4+5+6+7
 
   // Test get and length
-  inspect(sq.length(), content="9")
-  inspect(sq.get(0), content="1")
-  inspect(sq.get(4), content="5")
+  debug_inspect(sq.length(), content="9")
+  debug_inspect(sq.get(0), content="1")
+  debug_inspect(sq.get(4), content="5")
 }
 
 ///|
 test "sqrt sum update" {
   let arr = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   let sq = SqrtSum::build(arr)
-  inspect(sq.query(0, 8), content="45")
+  debug_inspect(sq.query(0, 8), content="45")
 
   // Update element
   sq.update(4, 100) // Change 5 to 100
-  inspect(sq.query(0, 8), content="140") // 45 - 5 + 100
-  inspect(sq.query(4, 4), content="100")
-  inspect(sq.query(3, 5), content="110") // 4 + 100 + 6
+  debug_inspect(sq.query(0, 8), content="140") // 45 - 5 + 100
+  debug_inspect(sq.query(4, 4), content="100")
+  debug_inspect(sq.query(3, 5), content="110") // 4 + 100 + 6
 
   // Another update
   sq.update(0, 10) // Change 1 to 10
-  inspect(sq.query(0, 2), content="15") // 10+2+3
+  debug_inspect(sq.query(0, 2), content="15") // 10+2+3
 }
 
 ///|
@@ -1304,38 +1304,38 @@ test "sqrt min basic" {
   let sq = SqrtMin::build(arr)
 
   // Full range minimum
-  inspect(sq.query(0, 8), content="1")
+  debug_inspect(sq.query(0, 8), content="1")
 
   // Partial ranges
-  inspect(sq.query(0, 2), content="2") // min(5,2,8)
-  inspect(sq.query(3, 5), content="1") // min(1,9,3)
-  inspect(sq.query(6, 8), content="4") // min(7,4,6)
+  debug_inspect(sq.query(0, 2), content="2") // min(5,2,8)
+  debug_inspect(sq.query(3, 5), content="1") // min(1,9,3)
+  debug_inspect(sq.query(6, 8), content="4") // min(7,4,6)
 
   // Single element
-  inspect(sq.query(4, 4), content="9")
+  debug_inspect(sq.query(4, 4), content="9")
 
   // Test get_value and length
-  inspect(sq.length(), content="9")
-  inspect(sq.get_value(0), content="5")
-  inspect(sq.get_value(3), content="1")
+  debug_inspect(sq.length(), content="9")
+  debug_inspect(sq.get_value(0), content="5")
+  debug_inspect(sq.get_value(3), content="1")
 }
 
 ///|
 test "sqrt min range add" {
   let arr = [5, 2, 8, 1, 9, 3, 7, 4, 6]
   let sq = SqrtMin::build(arr)
-  inspect(sq.query(0, 8), content="1")
+  debug_inspect(sq.query(0, 8), content="1")
 
   // Add 10 to range [3, 5]
   sq.range_add(3, 5, 10)
   // New values: [5, 2, 8, 11, 19, 13, 7, 4, 6]
-  inspect(sq.query(3, 5), content="11") // min(11, 19, 13)
-  inspect(sq.query(0, 8), content="2") // min is now 2
+  debug_inspect(sq.query(3, 5), content="11") // min(11, 19, 13)
+  debug_inspect(sq.query(0, 8), content="2") // min is now 2
 
   // Add -5 to all
   sq.range_add(0, 8, -5)
   // New values: [0, -3, 3, 6, 14, 8, 2, -1, 1]
-  inspect(sq.query(0, 8), content="-3")
+  debug_inspect(sq.query(0, 8), content="-3")
 }
 
 ///|
@@ -1350,7 +1350,7 @@ test "mo algorithm distinct" {
   // [0,8] = all: 4 distinct (1, 2, 3, 4)
   // [3,6] = [3,2,1,4]: 4 distinct
   // [5,8] = [1,4,1,2]: 3 distinct (1, 2, 4)
-  inspect(results, content="[2, 3, 4, 4, 3]")
+  debug_inspect(results, content="[2, 3, 4, 4, 3]")
 }
 
 ///|
@@ -1358,11 +1358,11 @@ test "mo algorithm empty" {
   let arr : Array[Int] = []
   let solver = MoSolver(arr)
   let results = solver.solve_distinct([])
-  inspect(results, content="[]")
+  debug_inspect(results, content="[]")
   let arr2 = [1, 2, 3]
   let solver2 = MoSolver(arr2)
   let results2 = solver2.solve_distinct([])
-  inspect(results2, content="[]")
+  debug_inspect(results2, content="[]")
 }
 
 ///|
@@ -1370,7 +1370,7 @@ test "mo algorithm left expansion path" {
   let arr = [1, 2, 1, 3, 2, 4, 4, 5, 1]
   let solver = MoSolver(arr)
   let queries = [(4, 5), (3, 8), (6, 6)]
-  inspect(solver.solve_distinct(queries), content="[2, 5, 1]")
+  debug_inspect(solver.solve_distinct(queries), content="[2, 5, 1]")
 }
 
 ///|
@@ -1379,31 +1379,31 @@ test "interval tree assign" {
   let tree = IntervalTree(arr)
 
   // Query initial sum
-  inspect(tree.query_sum(0, 7), content="8")
+  debug_inspect(tree.query_sum(0, 7), content="8")
 
   // Assign 5 to [2, 5]
   tree.assign(2, 5, 5)
   // Array: [1, 1, 5, 5, 5, 5, 1, 1]
-  inspect(tree.query_sum(0, 7), content="24") // 2 + 20 + 2
-  inspect(tree.query_sum(2, 5), content="20") // 4 * 5
+  debug_inspect(tree.query_sum(0, 7), content="24") // 2 + 20 + 2
+  debug_inspect(tree.query_sum(2, 5), content="20") // 4 * 5
 
   // Assign 10 to [4, 6]
   tree.assign(4, 6, 10)
   // Array: [1, 1, 5, 5, 10, 10, 10, 1]
-  inspect(tree.query_sum(0, 7), content="43") // 2 + 10 + 30 + 1
+  debug_inspect(tree.query_sum(0, 7), content="43") // 2 + 10 + 30 + 1
 }
 
 ///|
 test "interval tree range add" {
   let arr = [1, 2, 3, 4, 5]
   let tree = IntervalTree(arr)
-  inspect(tree.query_sum(0, 4), content="15")
+  debug_inspect(tree.query_sum(0, 4), content="15")
 
   // Add 10 to [1, 3]
   tree.range_add(1, 3, 10)
   // Array: [1, 12, 13, 14, 5]
-  inspect(tree.query_sum(0, 4), content="45")
-  inspect(tree.query_sum(1, 3), content="39")
+  debug_inspect(tree.query_sum(0, 4), content="45")
+  debug_inspect(tree.query_sum(1, 3), content="39")
 }
 
 ///|
@@ -1428,13 +1428,13 @@ test "isqrt ceil" {
     isqrt_ceil(n)
   }
 
-  inspect(test_isqrt(1), content="1")
-  inspect(test_isqrt(4), content="2")
-  inspect(test_isqrt(5), content="3") // ceil(sqrt(5)) = 3
-  inspect(test_isqrt(9), content="3")
-  inspect(test_isqrt(10), content="4") // ceil(sqrt(10)) = 4
-  inspect(test_isqrt(16), content="4")
-  inspect(test_isqrt(100), content="10")
+  debug_inspect(test_isqrt(1), content="1")
+  debug_inspect(test_isqrt(4), content="2")
+  debug_inspect(test_isqrt(5), content="3") // ceil(sqrt(5)) = 3
+  debug_inspect(test_isqrt(9), content="3")
+  debug_inspect(test_isqrt(10), content="4") // ceil(sqrt(10)) = 4
+  debug_inspect(test_isqrt(16), content="4")
+  debug_inspect(test_isqrt(100), content="10")
 }
 
 ///|
@@ -1444,15 +1444,15 @@ test "sqrt decomposition stress" {
   let sq = SqrtSum::build(arr)
 
   // Sum 1 to 100 = 5050
-  inspect(sq.query(0, 99), content="5050")
+  debug_inspect(sq.query(0, 99), content="5050")
 
   // Sum 1 to 50 = 1275
-  inspect(sq.query(0, 49), content="1275")
+  debug_inspect(sq.query(0, 49), content="1275")
 
   // Sum 51 to 100 = 3775
-  inspect(sq.query(50, 99), content="3775")
+  debug_inspect(sq.query(50, 99), content="3775")
 
   // Update and verify
   sq.update(49, 1000) // Change 50 to 1000
-  inspect(sq.query(0, 99), content="6000") // 5050 - 50 + 1000
+  debug_inspect(sq.query(0, 99), content="6000") // 5050 - 50 + 1000
 }

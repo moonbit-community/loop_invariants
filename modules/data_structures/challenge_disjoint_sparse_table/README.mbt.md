@@ -74,9 +74,18 @@ unique midpoint they cross at level k.
 test "disjoint sparse example" {
   let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
   let dst = @challenge_disjoint_sparse_table.build_disjoint_sparse_table(arr)
-  inspect(@challenge_disjoint_sparse_table.range_min(dst, 1, 5), content="1")
-  inspect(@challenge_disjoint_sparse_table.range_min(dst, 2, 4), content="4")
-  inspect(@challenge_disjoint_sparse_table.range_min(dst, 5, 8), content="0")
+  debug_inspect(
+    @challenge_disjoint_sparse_table.range_min(dst, 1, 5),
+    content="1",
+  )
+  debug_inspect(
+    @challenge_disjoint_sparse_table.range_min(dst, 2, 4),
+    content="4",
+  )
+  debug_inspect(
+    @challenge_disjoint_sparse_table.range_min(dst, 5, 8),
+    content="0",
+  )
 }
 ```
 
@@ -87,8 +96,14 @@ test "disjoint sparse example" {
 test "disjoint sparse edge ranges" {
   let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
   let dst = @challenge_disjoint_sparse_table.build_disjoint_sparse_table(arr)
-  inspect(@challenge_disjoint_sparse_table.range_min(dst, 3, 4), content="7")
-  inspect(@challenge_disjoint_sparse_table.range_min(dst, 0, 8), content="0")
+  debug_inspect(
+    @challenge_disjoint_sparse_table.range_min(dst, 3, 4),
+    content="7",
+  )
+  debug_inspect(
+    @challenge_disjoint_sparse_table.range_min(dst, 0, 8),
+    content="0",
+  )
 }
 ```
 
@@ -99,8 +114,14 @@ test "disjoint sparse edge ranges" {
 test "disjoint sparse different array" {
   let arr : Array[Int] = [9, 8, 7, 6, 5, 4]
   let dst = @challenge_disjoint_sparse_table.build_disjoint_sparse_table(arr)
-  inspect(@challenge_disjoint_sparse_table.range_min(dst, 1, 4), content="6")
-  inspect(@challenge_disjoint_sparse_table.range_min(dst, 2, 6), content="4")
+  debug_inspect(
+    @challenge_disjoint_sparse_table.range_min(dst, 1, 4),
+    content="6",
+  )
+  debug_inspect(
+    @challenge_disjoint_sparse_table.range_min(dst, 2, 6),
+    content="4",
+  )
 }
 ```
 

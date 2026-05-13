@@ -20,7 +20,10 @@
 ///   let t0 = @challenge_persistent_binary_trie.empty()
 ///   let t1 = @challenge_persistent_binary_trie.insert(t0, 0b0101, 4)
 ///   let t2 = @challenge_persistent_binary_trie.insert(t1, 0b1100, 4)
-///   assert_eq(@challenge_persistent_binary_trie.max_xor(t2, 0b0011, 4), 0b1111)
+///   @debug.assert_eq(
+///     @challenge_persistent_binary_trie.max_xor(t2, 0b0011, 4),
+///     0b1111,
+///   )
 /// }
 /// ```
 pub enum Node {

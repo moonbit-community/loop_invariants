@@ -205,8 +205,13 @@ Termination:
 ```mbt check
 ///|
 test "min rotation basic" {
-  inspect(@minimum_cyclic_rotation.min_cyclic_rotation("baca"), content="abac")
-  inspect(
+  debug_inspect(
+    @minimum_cyclic_rotation.min_cyclic_rotation("baca"),
+    content=(
+      #|"abac"
+    ),
+  )
+  debug_inspect(
     @minimum_cyclic_rotation.min_cyclic_rotation_index("baca"),
     content="3",
   )
@@ -221,13 +226,23 @@ The smallest index is `0`.
 ```mbt check
 ///|
 test "min rotation repeated patterns" {
-  inspect(@minimum_cyclic_rotation.min_cyclic_rotation("abab"), content="abab")
-  inspect(
+  debug_inspect(
+    @minimum_cyclic_rotation.min_cyclic_rotation("abab"),
+    content=(
+      #|"abab"
+    ),
+  )
+  debug_inspect(
     @minimum_cyclic_rotation.min_cyclic_rotation_index("abab"),
     content="0",
   )
-  inspect(@minimum_cyclic_rotation.min_cyclic_rotation("aaaa"), content="aaaa")
-  inspect(
+  debug_inspect(
+    @minimum_cyclic_rotation.min_cyclic_rotation("aaaa"),
+    content=(
+      #|"aaaa"
+    ),
+  )
+  debug_inspect(
     @minimum_cyclic_rotation.min_cyclic_rotation_index("aaaa"),
     content="0",
   )
@@ -249,11 +264,13 @@ rotations:
 ```mbt check
 ///|
 test "min rotation clear winner" {
-  inspect(
+  debug_inspect(
     @minimum_cyclic_rotation.min_cyclic_rotation("caaab"),
-    content="aaabc",
+    content=(
+      #|"aaabc"
+    ),
   )
-  inspect(
+  debug_inspect(
     @minimum_cyclic_rotation.min_cyclic_rotation_index("caaab"),
     content="1",
   )
@@ -272,9 +289,15 @@ fn canon(s : String) -> String {
 
 ///|
 test "canonicalization by minimum rotation" {
-  inspect(canon("abc"), content="abc")
-  inspect(canon("bca"), content="abc")
-  inspect(canon("acb"), content="acb")
+  debug_inspect(canon("abc"), content=(
+    #|"abc"
+  ))
+  debug_inspect(canon("bca"), content=(
+    #|"abc"
+  ))
+  debug_inspect(canon("acb"), content=(
+    #|"acb"
+  ))
 }
 ```
 
@@ -302,7 +325,7 @@ test "rotate parallel data by min rotation index" {
   let idx = @minimum_cyclic_rotation.min_cyclic_rotation_index(s)
   let weights : Array[Int] = [10, 20, 30, 40]
   let rotated = rotate_array(weights, idx)
-  inspect(rotated, content="[40, 10, 20, 30]")
+  debug_inspect(rotated, content="[40, 10, 20, 30]")
 }
 ```
 

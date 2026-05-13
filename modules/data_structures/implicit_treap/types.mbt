@@ -157,7 +157,7 @@ pub(all) struct ImplicitTreap {
 /// ```
 /// let treap = ImplicitTreap()
 /// treap.push_back(42L)
-/// inspect(treap.size(), content="1")
+/// debug_inspect(treap.size(), content="1")
 /// ```
 pub fn ImplicitTreap::ImplicitTreap() -> ImplicitTreap {
   { nodes: [], root: -1, rand_state: 12345, free_list: [] }
@@ -172,7 +172,7 @@ pub fn ImplicitTreap::ImplicitTreap() -> ImplicitTreap {
 /// Example:
 /// ```
 /// let treap = ImplicitTreap::from_array([1L, 2L, 3L])
-/// inspect(treap.size(), content="3")
+/// debug_inspect(treap.size(), content="3")
 /// ```
 pub fn ImplicitTreap::size(self : ImplicitTreap) -> Int {
   self.get_size(self.root)

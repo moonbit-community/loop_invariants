@@ -71,8 +71,8 @@ test "stack basic" {
   guard @challenge_persistent_stack.pop(s2) is Some((2, s3)) else {
     fail("expected pop")
   }
-  inspect(@challenge_persistent_stack.to_array(s3), content="[1]")
-  inspect(@challenge_persistent_stack.size(s3), content="1")
+  debug_inspect(@challenge_persistent_stack.to_array(s3), content="[1]")
+  debug_inspect(@challenge_persistent_stack.size(s3), content="1")
 }
 ```
 
@@ -88,10 +88,10 @@ test "stack versions" {
   let s2 = @challenge_persistent_stack.push(s1, 20)
 
   // s1 still only has 10
-  inspect(@challenge_persistent_stack.to_array(s1), content="[10]")
+  debug_inspect(@challenge_persistent_stack.to_array(s1), content="[10]")
 
   // s2 has 20 on top of 10
-  inspect(@challenge_persistent_stack.to_array(s2), content="[20, 10]")
+  debug_inspect(@challenge_persistent_stack.to_array(s2), content="[20, 10]")
 }
 ```
 
@@ -105,7 +105,7 @@ test "stack versions" {
 ///|
 test "stack from array" {
   let s = @challenge_persistent_stack.from_array([7, 1, 5])
-  inspect(@challenge_persistent_stack.to_array(s), content="[7, 1, 5]")
+  debug_inspect(@challenge_persistent_stack.to_array(s), content="[7, 1, 5]")
   debug_inspect(@challenge_persistent_stack.peek(s), content="Some(7)")
 }
 ```
@@ -126,7 +126,7 @@ test "stack to array" {
   let s1 = @challenge_persistent_stack.push(s0, 3)
   let s2 = @challenge_persistent_stack.push(s1, 8)
   let s3 = @challenge_persistent_stack.push(s2, 2)
-  inspect(@challenge_persistent_stack.to_array(s3), content="[2, 8, 3]")
+  debug_inspect(@challenge_persistent_stack.to_array(s3), content="[2, 8, 3]")
 }
 ```
 

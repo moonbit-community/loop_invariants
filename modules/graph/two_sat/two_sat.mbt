@@ -347,10 +347,10 @@ test "two sat basic satisfiable" {
   sat.add_clause(0, true, 1, false) // ¬x0 ∨ x1
   match sat.solve() {
     Some(assignment) => {
-      inspect(assignment[1], content="true") // x1 must be true
-      inspect(sat.verify(assignment), content="true")
+      debug_inspect(assignment[1], content="true") // x1 must be true
+      debug_inspect(sat.verify(assignment), content="true")
     }
-    None => inspect(false, content="true") // Should be satisfiable
+    None => debug_inspect(false, content="true") // Should be satisfiable
   }
 }
 
@@ -361,8 +361,8 @@ test "two sat unsatisfiable" {
   sat.add_clause(0, false, 0, false) // x0 ∨ x0 = x0
   sat.add_clause(0, true, 0, true) // ¬x0 ∨ ¬x0 = ¬x0
   match sat.solve() {
-    Some(_) => inspect(false, content="true") // Should be unsatisfiable
-    None => inspect(true, content="true")
+    Some(_) => debug_inspect(false, content="true") // Should be unsatisfiable
+    None => debug_inspect(true, content="true")
   }
 }
 
@@ -374,8 +374,8 @@ test "two sat three variables" {
   sat.add_clause(1, true, 2, false) // ¬x1 ∨ x2
   sat.add_clause(0, true, 2, true) // ¬x0 ∨ ¬x2
   match sat.solve() {
-    Some(assignment) => inspect(sat.verify(assignment), content="true")
-    None => inspect(false, content="true")
+    Some(assignment) => debug_inspect(sat.verify(assignment), content="true")
+    None => debug_inspect(false, content="true")
   }
 }
 
@@ -386,10 +386,10 @@ test "two sat set value" {
   sat.add_clause(0, false, 1, false) // x0 ∨ x1
   match sat.solve() {
     Some(assignment) => {
-      inspect(assignment[0], content="true")
-      inspect(sat.verify(assignment), content="true")
+      debug_inspect(assignment[0], content="true")
+      debug_inspect(sat.verify(assignment), content="true")
     }
-    None => inspect(false, content="true")
+    None => debug_inspect(false, content="true")
   }
 }
 
@@ -400,11 +400,11 @@ test "two sat implication" {
   sat.set_value(0, true) // x0 = true
   match sat.solve() {
     Some(assignment) => {
-      inspect(assignment[0], content="true")
-      inspect(assignment[1], content="true") // Must be true due to implication
-      inspect(sat.verify(assignment), content="true")
+      debug_inspect(assignment[0], content="true")
+      debug_inspect(assignment[1], content="true") // Must be true due to implication
+      debug_inspect(sat.verify(assignment), content="true")
     }
-    None => inspect(false, content="true")
+    None => debug_inspect(false, content="true")
   }
 }
 
@@ -412,8 +412,8 @@ test "two sat implication" {
 test "two sat empty" {
   let sat = TwoSat(0)
   match sat.solve() {
-    Some(assignment) => inspect(assignment.length(), content="0")
-    None => inspect(false, content="true")
+    Some(assignment) => debug_inspect(assignment.length(), content="0")
+    None => debug_inspect(false, content="true")
   }
 }
 
@@ -426,8 +426,8 @@ test "two sat complex" {
   sat.add_clause(2, false, 3, false)
   sat.add_clause(0, true, 3, true)
   match sat.solve() {
-    Some(assignment) => inspect(sat.verify(assignment), content="true")
-    None => inspect(false, content="true")
+    Some(assignment) => debug_inspect(sat.verify(assignment), content="true")
+    None => debug_inspect(false, content="true")
   }
 }
 
@@ -442,7 +442,7 @@ test "two sat chain contradiction" {
 
   // This creates x0 → x1 → x2 → ¬x0, contradiction
   match sat.solve() {
-    Some(_) => inspect(false, content="true")
-    None => inspect(true, content="true")
+    Some(_) => debug_inspect(false, content="true")
+    None => debug_inspect(true, content="true")
   }
 }

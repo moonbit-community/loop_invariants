@@ -173,7 +173,7 @@ test "diameter square" {
     { x: 0L, y: 2L },
   ]
   let result = convex_diameter(points).unwrap()
-  inspect(result.dist2, content="8")
+  debug_inspect(result.dist2, content="8")
 }
 
 ///|
@@ -184,14 +184,14 @@ test "diameter triangle" {
     { x: 0L, y: 3L },
   ]
   let result = convex_diameter(points).unwrap()
-  inspect(result.dist2, content="25")
+  debug_inspect(result.dist2, content="25")
 }
 
 ///|
 test "diameter two points" {
   let points : Array[Point] = [{ x: -1L, y: 0L }, { x: 2L, y: 0L }]
   let result = convex_diameter(points).unwrap()
-  inspect(result.dist2, content="9")
+  debug_inspect(result.dist2, content="9")
 }
 
 ///|
@@ -205,7 +205,7 @@ test "diameter hexagon advances antipodal pointer multiple times" {
     { x: 0L, y: 0L },
   ]
   let result = convex_diameter(points).unwrap()
-  inspect(result.dist2, content="9")
+  debug_inspect(result.dist2, content="9")
 }
 
 ///|
@@ -218,8 +218,8 @@ test "diameter keeps antipodal state across outer iterations" {
     { x: 1L, y: 18L },
   ]
   let result = convex_diameter(points).unwrap()
-  inspect(result.dist2, content="3380")
-  inspect(
+  debug_inspect(result.dist2, content="3380")
+  debug_inspect(
     (result.i == 1 && result.j == 3) || (result.i == 3 && result.j == 1),
     content="true",
   )

@@ -105,7 +105,7 @@ test "reservoir_sample" {
   let stream : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   let rng = make_rng(42L)
   let sample = reservoir_sample(stream, 3, rng)
-  assert_eq(sample.length(), 3)
+  @debug.assert_eq(sample.length(), 3)
   // Can't test randomness easily, just verify structure
 }
 
@@ -186,7 +186,7 @@ test "fisher_yates_shuffle" {
   fisher_yates_shuffle(arr, rng)
   // Verify it's still a permutation (contains same elements)
   arr.sort_by_key(x => x)
-  assert_eq(arr, [1, 2, 3, 4, 5])
+  @debug.assert_eq(arr, [1, 2, 3, 4, 5])
 }
 
 // ============================================================================
@@ -604,7 +604,7 @@ test "skip_list_search" {
     { value: 7, forward: [-1, -1] }, // 7 is last
   ]
   let list : SkipList = { nodes, head: 0, max_level: 2 }
-  assert_eq(skip_list_search(list, 5), 3)
-  assert_eq(skip_list_search(list, 1), 1)
-  assert_eq(skip_list_search(list, 10), -1)
+  @debug.assert_eq(skip_list_search(list, 5), 3)
+  @debug.assert_eq(skip_list_search(list, 1), 1)
+  @debug.assert_eq(skip_list_search(list, 10), -1)
 }

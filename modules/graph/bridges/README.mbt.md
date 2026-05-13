@@ -221,10 +221,10 @@ test "triangle with tail" {
   let bridges = @bridges.find_bridges(4, edges)
   let normalized = bridges.map(e => if e.0 < e.1 { e } else { (e.1, e.0) })
   normalized.sort_by((a, b) => if a.0 == b.0 { a.1 - b.1 } else { a.0 - b.0 })
-  inspect(normalized, content="[(1, 3)]")
+  debug_inspect(normalized, content="[(1, 3)]")
   let cuts = @bridges.articulation_points(4, edges)
   cuts.sort_by((a, b) => a - b)
-  inspect(cuts, content="[1]")
+  debug_inspect(cuts, content="[1]")
 }
 ```
 
@@ -240,8 +240,8 @@ test "cycle has no bridges" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
   let bridges = @bridges.find_bridges(4, edges)
   let cuts = @bridges.articulation_points(4, edges)
-  inspect(bridges.length(), content="0")
-  inspect(cuts.length(), content="0")
+  debug_inspect(bridges.length(), content="0")
+  debug_inspect(cuts.length(), content="0")
 }
 ```
 
@@ -269,10 +269,10 @@ satisfies `low[v] > disc[u]` (since `disc[v] = disc[u] + 1`).
 test "line graph" {
   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
   let bridges = @bridges.find_bridges(4, edges)
-  inspect(bridges.length(), content="3")
+  debug_inspect(bridges.length(), content="3")
   let cuts = @bridges.articulation_points(4, edges)
   cuts.sort_by((a, b) => a - b)
-  inspect(cuts, content="[1, 2]")
+  debug_inspect(cuts, content="[1, 2]")
 }
 ```
 
@@ -295,9 +295,9 @@ leaf is in its own subtree isolated from the others.
 test "star graph" {
   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
   let bridges = @bridges.find_bridges(5, edges)
-  inspect(bridges.length(), content="4")
+  debug_inspect(bridges.length(), content="4")
   let cuts = @bridges.articulation_points(5, edges)
-  inspect(cuts, content="[0]")
+  debug_inspect(cuts, content="[0]")
 }
 ```
 

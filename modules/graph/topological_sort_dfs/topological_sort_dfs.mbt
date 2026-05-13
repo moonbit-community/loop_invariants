@@ -193,7 +193,7 @@ test "topological sort basic" {
     let (u, v) = edge
     pos[u] < pos[v]
   })
-  inspect(ok, content="true")
+  debug_inspect(ok, content="true")
 }
 
 ///|

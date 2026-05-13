@@ -193,10 +193,10 @@ test "suurballe basic example" {
   match result {
     None => fail("expected two disjoint paths")
     Some((p1, p2)) => {
-      assert_eq(p1[0], 0)
-      assert_eq(p1[p1.length() - 1], 4)
-      assert_eq(p2[0], 0)
-      assert_eq(p2[p2.length() - 1], 4)
+      @debug.assert_eq(p1[0], 0)
+      @debug.assert_eq(p1[p1.length() - 1], 4)
+      @debug.assert_eq(p2[0], 0)
+      @debug.assert_eq(p2[p2.length() - 1], 4)
       assert_true(p1.length() >= 2)
       assert_true(p2.length() >= 2)
     }
@@ -213,7 +213,7 @@ test "suurballe returns None when no pair exists" {
   let result = @suurballe_disjoint_paths.suurballe_disjoint_paths(
     4, edges, 0, 3,
   )
-  inspect(result is None, content="true")
+  debug_inspect(result is None, content="true")
 }
 ```
 

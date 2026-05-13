@@ -50,5 +50,5 @@ test "tsp_min_cycle" {
     [3, 2, 0, 6],
     [4, 5, 6, 0],
   ]
-  assert_eq(tsp_min_cycle(dist, inf), 13)
+  @debug.assert_eq(tsp_min_cycle(dist, inf), 13)
 }

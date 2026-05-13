@@ -30,7 +30,7 @@ enum Stack[T] {
 ///   guard @challenge_persistent_queue.dequeue(q) is Some((x, _)) else {
 ///     fail("expected dequeue")
 ///   }
-///   assert_eq(x, 1)
+///   @debug.assert_eq(x, 1)
 /// }
 /// ```
 pub struct Queue[T] {

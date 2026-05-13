@@ -198,10 +198,10 @@ If the existing transition target `q` must be split (its length is wrong), a
 test "suffix automaton example" {
   let sam = @suffix_automaton.SuffixAutomaton(10)
   sam.build("abab")
-  inspect(sam.contains("aba"), content="true")
-  inspect(sam.contains("ac"), content="false")
-  inspect(sam.count_distinct_substrings(), content="7")
-  inspect(
+  debug_inspect(sam.contains("aba"), content="true")
+  debug_inspect(sam.contains("ac"), content="false")
+  debug_inspect(sam.count_distinct_substrings(), content="7")
+  debug_inspect(
     @suffix_automaton.longest_common_substring("abcde", "cdefg"),
     content="3",
   )
@@ -217,10 +217,10 @@ test "suffix automaton example" {
 test "suffix automaton occurrences" {
   let sam = @suffix_automaton.SuffixAutomaton(10)
   sam.build("aaaa")
-  inspect(sam.count_occurrences("a"), content="4")
-  inspect(sam.count_occurrences("aa"), content="3")
-  inspect(sam.count_occurrences("aaa"), content="2")
-  inspect(sam.count_occurrences("aaaa"), content="1")
+  debug_inspect(sam.count_occurrences("a"), content="4")
+  debug_inspect(sam.count_occurrences("aa"), content="3")
+  debug_inspect(sam.count_occurrences("aaa"), content="2")
+  debug_inspect(sam.count_occurrences("aaaa"), content="1")
 }
 ```
 

@@ -264,7 +264,7 @@ test "centroid basic" {
   ct.build()
 
   // Centroid of linear tree of 5 nodes is node 2
-  inspect(ct.get_depth(2), content="0") // Root of centroid tree
+  debug_inspect(ct.get_depth(2), content="0") // Root of centroid tree
 }
 
 ///|
@@ -278,16 +278,16 @@ test "centroid star" {
   ct.build()
 
   // Center node 0 is the centroid
-  inspect(ct.get_depth(0), content="0")
-  inspect(ct.get_parent(0), content="-1")
+  debug_inspect(ct.get_depth(0), content="0")
+  debug_inspect(ct.get_parent(0), content="-1")
 }
 
 ///|
 test "centroid single" {
   let ct = CentroidTree(1)
   ct.build()
-  inspect(ct.get_depth(0), content="0")
-  inspect(ct.get_parent(0), content="-1")
+  debug_inspect(ct.get_depth(0), content="0")
+  debug_inspect(ct.get_parent(0), content="-1")
 }
 
 ///|
@@ -309,5 +309,5 @@ test "centroid depth bound" {
     .iter()
     .maximum()
     .unwrap_or(0)
-  inspect(max_depth <= 3, content="true")
+  debug_inspect(max_depth <= 3, content="true")
 }

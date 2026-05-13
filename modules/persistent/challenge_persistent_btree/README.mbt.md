@@ -115,9 +115,9 @@ test "btree basic" {
   let t1 = @challenge_persistent_btree.insert(t0, 10)
   let t2 = @challenge_persistent_btree.insert(t1, 5)
   let t3 = @challenge_persistent_btree.insert(t2, 20)
-  inspect(@challenge_persistent_btree.contains(t3, 5), content="true")
-  inspect(@challenge_persistent_btree.contains(t3, 7), content="false")
-  inspect(@challenge_persistent_btree.size(t3), content="3")
+  debug_inspect(@challenge_persistent_btree.contains(t3, 5), content="true")
+  debug_inspect(@challenge_persistent_btree.contains(t3, 7), content="false")
+  debug_inspect(@challenge_persistent_btree.size(t3), content="3")
 }
 ```
 
@@ -127,9 +127,9 @@ test "btree basic" {
 ///|
 test "btree from array" {
   let t = @challenge_persistent_btree.from_array([8, 3, 1, 6, 4, 7, 10, 14])
-  inspect(@challenge_persistent_btree.contains(t, 6), content="true")
-  inspect(@challenge_persistent_btree.contains(t, 2), content="false")
-  inspect(@challenge_persistent_btree.size(t), content="8")
+  debug_inspect(@challenge_persistent_btree.contains(t, 6), content="true")
+  debug_inspect(@challenge_persistent_btree.contains(t, 2), content="false")
+  debug_inspect(@challenge_persistent_btree.size(t), content="8")
 }
 ```
 
@@ -141,9 +141,9 @@ test "btree versions" {
   let t0 = @challenge_persistent_btree.empty()
   let t1 = @challenge_persistent_btree.insert(t0, 4)
   let t2 = @challenge_persistent_btree.insert(t1, 9)
-  inspect(@challenge_persistent_btree.contains(t0, 4), content="false")
-  inspect(@challenge_persistent_btree.contains(t1, 4), content="true")
-  inspect(@challenge_persistent_btree.contains(t2, 9), content="true")
+  debug_inspect(@challenge_persistent_btree.contains(t0, 4), content="false")
+  debug_inspect(@challenge_persistent_btree.contains(t1, 4), content="true")
+  debug_inspect(@challenge_persistent_btree.contains(t2, 9), content="true")
 }
 ```
 
@@ -155,8 +155,8 @@ test "btree duplicates" {
   let t0 = @challenge_persistent_btree.empty()
   let t1 = @challenge_persistent_btree.insert(t0, 2)
   let t2 = @challenge_persistent_btree.insert(t1, 2)
-  inspect(@challenge_persistent_btree.size(t1), content="1")
-  inspect(@challenge_persistent_btree.size(t2), content="1")
+  debug_inspect(@challenge_persistent_btree.size(t1), content="1")
+  debug_inspect(@challenge_persistent_btree.size(t2), content="1")
 }
 ```
 

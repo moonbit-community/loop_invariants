@@ -98,7 +98,7 @@ test "segment tree gcd basic" {
     arr.length(),
     [(2, 5), (0, 9)],
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_gcd.range_gcd(
       root,
       0,
@@ -108,7 +108,7 @@ test "segment tree gcd basic" {
     ),
     content="1",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_gcd.range_gcd(
       updated,
       0,
@@ -118,7 +118,7 @@ test "segment tree gcd basic" {
     ),
     content="1",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_gcd.range_gcd(
       updated,
       0,
@@ -145,7 +145,7 @@ test "segment tree gcd single" {
     1,
     6,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_gcd.range_gcd(
       root,
       0,
@@ -155,7 +155,7 @@ test "segment tree gcd single" {
     ),
     content="6",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_gcd.range_gcd(t1, 0, arr.length(), 0, 3),
     content="6",
   )
@@ -176,7 +176,7 @@ test "segment tree gcd persistence" {
     0,
     6,
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_gcd.range_gcd(
       root,
       0,
@@ -186,7 +186,7 @@ test "segment tree gcd persistence" {
     ),
     content="4",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_segment_tree_gcd.range_gcd(t1, 0, arr.length(), 0, 3),
     content="2",
   )

@@ -34,7 +34,7 @@ struct Edge {
 ///   add_edge(g, 0, 2, 2)
 ///   add_edge(g, 1, 3, 2)
 ///   add_edge(g, 2, 3, 4)
-///   assert_eq(max_flow(g, 0, 3), 5)
+///   @debug.assert_eq(max_flow(g, 0, 3), 5)
 /// }
 /// ```
 pub struct FlowGraph {

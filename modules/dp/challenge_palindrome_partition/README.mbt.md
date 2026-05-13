@@ -117,7 +117,7 @@ The full code is in `challenge_palindrome_partition.mbt`.
 ///|
 test "palindrome partition example" {
   let cuts = @challenge_palindrome_partition.min_palindrome_cuts("aab")
-  inspect(cuts, content="1")
+  debug_inspect(cuts, content="1")
 }
 ```
 
@@ -127,7 +127,7 @@ test "palindrome partition example" {
 ///|
 test "palindrome partition no cuts" {
   let cuts = @challenge_palindrome_partition.min_palindrome_cuts("ababa")
-  inspect(cuts, content="0")
+  debug_inspect(cuts, content="0")
 }
 ```
 
@@ -137,7 +137,7 @@ test "palindrome partition no cuts" {
 ///|
 test "palindrome partition all single" {
   let cuts = @challenge_palindrome_partition.min_palindrome_cuts("abc")
-  inspect(cuts, content="2")
+  debug_inspect(cuts, content="2")
 }
 ```
 
@@ -147,7 +147,7 @@ test "palindrome partition all single" {
 ///|
 test "palindrome partition banana" {
   let cuts = @challenge_palindrome_partition.min_palindrome_cuts("banana")
-  inspect(cuts, content="1")
+  debug_inspect(cuts, content="1")
 }
 ```
 
@@ -157,7 +157,7 @@ test "palindrome partition banana" {
 ///|
 test "palindrome partition empty" {
   let cuts = @challenge_palindrome_partition.min_palindrome_cuts("")
-  inspect(cuts, content="0")
+  debug_inspect(cuts, content="0")
 }
 ```
 

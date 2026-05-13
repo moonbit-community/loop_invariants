@@ -18,7 +18,7 @@
 ///   xs[0] = 1
 ///   xs[1] = -2
 ///   xs[2] = 5
-///   assert_eq(count_nonneg(xs), 2)
+///   @debug.assert_eq(count_nonneg(xs), 2)
 /// }
 /// ```
 pub fn count_nonneg(
@@ -66,16 +66,16 @@ test "count_nonneg" {
   xs1[1] = -2
   xs1[2] = 0
   xs1[3] = 5
-  assert_eq(count_nonneg(xs1), 3)
+  @debug.assert_eq(count_nonneg(xs1), 3)
 
   let xs2 = FixedArray::make(3, 0)
   xs2[0] = -1
   xs2[1] = -4
   xs2[2] = -8
-  assert_eq(count_nonneg(xs2), 0)
+  @debug.assert_eq(count_nonneg(xs2), 0)
 
   let xs3 = FixedArray::make(2, 0)
   xs3[0] = 7
   xs3[1] = 9
-  assert_eq(count_nonneg(xs3), 2)
+  @debug.assert_eq(count_nonneg(xs3), 2)
 }

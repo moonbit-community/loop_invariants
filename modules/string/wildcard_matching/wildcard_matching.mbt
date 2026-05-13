@@ -146,14 +146,14 @@ pub fn wildcard_match(text : String, pattern : String) -> Bool {
 
 ///|
 test "wildcard basic" {
-  inspect(wildcard_match("aaabxc", "a*b?c"), content="true")
-  inspect(wildcard_match("abc", "a?c"), content="true")
-  inspect(wildcard_match("ac", "a?c"), content="false")
+  debug_inspect(wildcard_match("aaabxc", "a*b?c"), content="true")
+  debug_inspect(wildcard_match("abc", "a?c"), content="true")
+  debug_inspect(wildcard_match("ac", "a?c"), content="false")
 }
 
 ///|
 test "wildcard star" {
-  inspect(wildcard_match("", "*"), content="true")
-  inspect(wildcard_match("hello", "*"), content="true")
-  inspect(wildcard_match("hello", "h*o"), content="true")
+  debug_inspect(wildcard_match("", "*"), content="true")
+  debug_inspect(wildcard_match("hello", "*"), content="true")
+  debug_inspect(wildcard_match("hello", "h*o"), content="true")
 }

@@ -338,104 +338,104 @@ pub fn z_search(text : String, pattern : String) -> Array[Int] {
 ///|
 test "failure function basic" {
   let fail = compute_failure("ABAB")
-  inspect(fail.length(), content="4")
-  inspect(fail[0], content="0")
-  inspect(fail[1], content="0")
-  inspect(fail[2], content="1")
-  inspect(fail[3], content="2")
+  debug_inspect(fail.length(), content="4")
+  debug_inspect(fail[0], content="0")
+  debug_inspect(fail[1], content="0")
+  debug_inspect(fail[2], content="1")
+  debug_inspect(fail[3], content="2")
 }
 
 ///|
 test "failure function all same" {
   let fail = compute_failure("AAAA")
-  inspect(fail[0], content="0")
-  inspect(fail[1], content="1")
-  inspect(fail[2], content="2")
-  inspect(fail[3], content="3")
+  debug_inspect(fail[0], content="0")
+  debug_inspect(fail[1], content="1")
+  debug_inspect(fail[2], content="2")
+  debug_inspect(fail[3], content="3")
 }
 
 ///|
 test "failure function complex" {
   let fail = compute_failure("ABACABA")
-  inspect(fail[0], content="0")
-  inspect(fail[1], content="0")
-  inspect(fail[2], content="1")
-  inspect(fail[3], content="0")
-  inspect(fail[4], content="1")
-  inspect(fail[5], content="2")
-  inspect(fail[6], content="3")
+  debug_inspect(fail[0], content="0")
+  debug_inspect(fail[1], content="0")
+  debug_inspect(fail[2], content="1")
+  debug_inspect(fail[3], content="0")
+  debug_inspect(fail[4], content="1")
+  debug_inspect(fail[5], content="2")
+  debug_inspect(fail[6], content="3")
 }
 
 ///|
 test "prefix function alias" {
   let pi = prefix_function("ababa")
-  inspect(pi, content="[0, 0, 1, 2, 3]")
+  debug_inspect(pi, content="[0, 0, 1, 2, 3]")
 }
 
 ///|
 test "kmp search basic" {
   let matches = kmp_search("ABABDABACDABABCABAB", "ABAB")
-  inspect(matches.length(), content="3")
-  inspect(matches[0], content="0")
-  inspect(matches[1], content="10")
-  inspect(matches[2], content="15")
+  debug_inspect(matches.length(), content="3")
+  debug_inspect(matches[0], content="0")
+  debug_inspect(matches[1], content="10")
+  debug_inspect(matches[2], content="15")
 }
 
 ///|
 test "kmp search no match" {
   let matches = kmp_search("ABABAB", "XYZ")
-  inspect(matches.length(), content="0")
+  debug_inspect(matches.length(), content="0")
 }
 
 ///|
 test "kmp search single char" {
   let matches = kmp_search("AAAAA", "A")
-  inspect(matches.length(), content="5")
+  debug_inspect(matches.length(), content="5")
 }
 
 ///|
 test "kmp search overlapping" {
   let matches = kmp_search("AAAA", "AA")
-  inspect(matches.length(), content="3")
+  debug_inspect(matches.length(), content="3")
 }
 
 ///|
 test "kmp find first" {
-  inspect(kmp_find_first("HELLO WORLD", "WORLD"), content="6")
-  inspect(kmp_find_first("HELLO WORLD", "XYZ"), content="-1")
+  debug_inspect(kmp_find_first("HELLO WORLD", "WORLD"), content="6")
+  debug_inspect(kmp_find_first("HELLO WORLD", "XYZ"), content="-1")
 }
 
 ///|
 test "z function basic" {
   let z = compute_z_function("AABXAAB")
-  inspect(z[0], content="7")
-  inspect(z[1], content="1")
-  inspect(z[4], content="3")
+  debug_inspect(z[0], content="7")
+  debug_inspect(z[1], content="1")
+  debug_inspect(z[4], content="3")
 }
 
 ///|
 test "z function all same" {
   let z = compute_z_function("AAAA")
-  inspect(z[0], content="4")
-  inspect(z[1], content="3")
-  inspect(z[2], content="2")
-  inspect(z[3], content="1")
+  debug_inspect(z[0], content="4")
+  debug_inspect(z[1], content="3")
+  debug_inspect(z[2], content="2")
+  debug_inspect(z[3], content="1")
 }
 
 ///|
 test "z search basic" {
   let matches = z_search("ABABDABACDABABCABAB", "ABAB")
-  inspect(matches.length(), content="3")
+  debug_inspect(matches.length(), content="3")
 }
 
 ///|
 test "empty pattern" {
-  inspect(kmp_search("HELLO", "").length(), content="0")
-  inspect(z_search("HELLO", "").length(), content="0")
+  debug_inspect(kmp_search("HELLO", "").length(), content="0")
+  debug_inspect(z_search("HELLO", "").length(), content="0")
 }
 
 ///|
 test "empty string" {
-  inspect(compute_failure("").length(), content="0")
-  inspect(compute_z_function("").length(), content="0")
+  debug_inspect(compute_failure("").length(), content="0")
+  debug_inspect(compute_z_function("").length(), content="0")
 }

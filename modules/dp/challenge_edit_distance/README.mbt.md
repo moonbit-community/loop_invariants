@@ -63,7 +63,7 @@ test "edit distance basic" {
   let a : Array[Char] = ['k', 'i', 't', 't', 'e', 'n']
   let b : Array[Char] = ['s', 'i', 't', 't', 'i', 'n', 'g']
   let dist = @challenge_edit_distance.edit_distance(a, b)
-  inspect(dist, content="3")
+  debug_inspect(dist, content="3")
 }
 ```
 
@@ -75,7 +75,7 @@ test "edit distance short" {
   let a : Array[Char] = ['f', 'l', 'a', 'w']
   let b : Array[Char] = ['l', 'a', 'w', 'n']
   let dist = @challenge_edit_distance.edit_distance(a, b)
-  inspect(dist, content="2")
+  debug_inspect(dist, content="2")
 }
 ```
 
@@ -87,7 +87,7 @@ test "edit distance empty" {
   let a : Array[Char] = []
   let b : Array[Char] = ['a', 'b', 'c']
   let dist = @challenge_edit_distance.edit_distance(a, b)
-  inspect(dist, content="3")
+  debug_inspect(dist, content="3")
 }
 ```
 
@@ -99,7 +99,7 @@ test "edit distance longer" {
   let a : Array[Char] = ['i', 'n', 't', 'e', 'n', 't', 'i', 'o', 'n']
   let b : Array[Char] = ['e', 'x', 'e', 'c', 'u', 't', 'i', 'o', 'n']
   let dist = @challenge_edit_distance.edit_distance(a, b)
-  inspect(dist, content="5")
+  debug_inspect(dist, content="5")
 }
 ```
 

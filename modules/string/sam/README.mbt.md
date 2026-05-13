@@ -373,9 +373,9 @@ k=3 ("ab"):
 ```mbt check
 ///|
 test "sam example" {
-  inspect(@sam.contains_substring("abab", "aba"), content="true")
-  inspect(@sam.contains_substring("abab", "ac"), content="false")
-  inspect(@sam.distinct_substrings_count("abab"), content="7")
+  debug_inspect(@sam.contains_substring("abab", "aba"), content="true")
+  debug_inspect(@sam.contains_substring("abab", "ac"), content="false")
+  debug_inspect(@sam.distinct_substrings_count("abab"), content="7")
 }
 ```
 

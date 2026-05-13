@@ -169,7 +169,7 @@ The actual code uses a recursive delete, but the behavior matches this idea.
 ///|
 test "treap empty" {
   let t : @treap.Treap[Int] = Treap()
-  inspect(t.size(), content="0")
+  debug_inspect(t.size(), content="0")
   debug_inspect(t.min(), content="None")
   debug_inspect(t.max(), content="None")
   debug_inspect(t.kth_element(0), content="None")
@@ -189,9 +189,9 @@ test "treap basic insert and contains" {
   t.insert(7)
   t.insert(1)
   t.insert(9)
-  inspect(t.size(), content="5")
-  inspect(t.contains(5), content="true")
-  inspect(t.contains(10), content="false")
+  debug_inspect(t.size(), content="5")
+  debug_inspect(t.contains(5), content="true")
+  debug_inspect(t.contains(10), content="false")
 }
 ```
 
@@ -211,7 +211,7 @@ test "treap min max and to_array" {
   }
   debug_inspect(t.min(), content="Some(1)")
   debug_inspect(t.max(), content="Some(9)")
-  inspect(t.to_array(), content="[1, 3, 5, 7, 9]")
+  debug_inspect(t.to_array(), content="[1, 3, 5, 7, 9]")
 }
 ```
 
@@ -226,10 +226,10 @@ test "treap delete one key" {
   t.insert(5)
   t.insert(3)
   t.insert(7)
-  inspect(t.delete(3), content="true")
-  inspect(t.contains(3), content="false")
-  inspect(t.size(), content="2")
-  inspect(t.delete(42), content="false")
+  debug_inspect(t.delete(3), content="true")
+  debug_inspect(t.contains(3), content="false")
+  debug_inspect(t.size(), content="2")
+  debug_inspect(t.delete(42), content="false")
 }
 ```
 
@@ -246,11 +246,11 @@ test "treap duplicates" {
   t.insert(5)
   t.insert(5)
   t.insert(5)
-  inspect(t.size(), content="3")
-  inspect(t.to_array(), content="[5, 5, 5]")
-  inspect(t.delete(5), content="true")
-  inspect(t.size(), content="2")
-  inspect(t.to_array(), content="[5, 5]")
+  debug_inspect(t.size(), content="3")
+  debug_inspect(t.to_array(), content="[5, 5, 5]")
+  debug_inspect(t.delete(5), content="true")
+  debug_inspect(t.size(), content="2")
+  debug_inspect(t.to_array(), content="[5, 5]")
 }
 ```
 
@@ -272,8 +272,8 @@ test "treap order statistics" {
   debug_inspect(t.kth_element(2), content="Some(5)")
   debug_inspect(t.kth_element(4), content="Some(9)")
   debug_inspect(t.kth_element(5), content="None")
-  inspect(t.count_less_than(5), content="2")
-  inspect(t.count_less_than(10), content="5")
+  debug_inspect(t.count_less_than(5), content="2")
+  debug_inspect(t.count_less_than(10), content="5")
 }
 ```
 

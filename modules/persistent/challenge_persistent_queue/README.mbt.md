@@ -98,7 +98,7 @@ test "persistent queue basic" {
   guard @challenge_persistent_queue.dequeue(q3) is Some((v, q4)) else {
     fail("expected dequeue")
   }
-  inspect(v, content="1")
+  debug_inspect(v, content="1")
   debug_inspect(@challenge_persistent_queue.peek(q4), content="Some(2)")
 }
 ```
@@ -128,7 +128,7 @@ test "persistent queue empty" {
   match q2 {
     None => fail("expected non-empty")
     Some((v, rest)) => {
-      inspect(v, content="5")
+      debug_inspect(v, content="5")
       debug_inspect(@challenge_persistent_queue.peek(rest), content="None")
     }
   }

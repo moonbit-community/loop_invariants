@@ -42,8 +42,8 @@ pub fn gcd(a : Int, b : Int) -> Int {
 ///   let arr = [6, 10, 15, 25][:]
 ///   let root = build(arr, 0, arr.length())
 ///   let updated = apply_updates(root, arr.length(), [(2, 5), (0, 9)])
-///   assert_eq(range_gcd(root, 0, arr.length(), 0, 4), 1)
-///   assert_eq(range_gcd(updated, 0, arr.length(), 0, 2), 1)
+///   @debug.assert_eq(range_gcd(root, 0, arr.length(), 0, 4), 1)
+///   @debug.assert_eq(range_gcd(updated, 0, arr.length(), 0, 2), 1)
 /// }
 /// ```
 pub enum Node {
@@ -146,7 +146,7 @@ test "persistent_segment_tree_gcd" {
   let arr = [6, 10, 15, 25][:]
   let root = build(arr, 0, arr.length())
   let updated = apply_updates(root, arr.length(), [(2, 5), (0, 9)])
-  assert_eq(range_gcd(root, 0, arr.length(), 0, 4), 1)
-  assert_eq(range_gcd(updated, 0, arr.length(), 0, 4), 1)
-  assert_eq(range_gcd(updated, 0, arr.length(), 0, 2), 1)
+  @debug.assert_eq(range_gcd(root, 0, arr.length(), 0, 4), 1)
+  @debug.assert_eq(range_gcd(updated, 0, arr.length(), 0, 4), 1)
+  @debug.assert_eq(range_gcd(updated, 0, arr.length(), 0, 2), 1)
 }

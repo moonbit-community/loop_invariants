@@ -104,12 +104,15 @@ test "interval set basic" {
   let t1 = @challenge_persistent_interval_set.insert_interval(t0, 2, 5)
   let t2 = @challenge_persistent_interval_set.insert_interval(t1, 8, 9)
   let t3 = @challenge_persistent_interval_set.insert_interval(t2, 4, 7)
-  inspect(@challenge_persistent_interval_set.to_array(t3), content="[(2, 9)]")
-  inspect(
+  debug_inspect(
+    @challenge_persistent_interval_set.to_array(t3),
+    content="[(2, 9)]",
+  )
+  debug_inspect(
     @challenge_persistent_interval_set.contains_point(t3, 6),
     content="true",
   )
-  inspect(
+  debug_inspect(
     @challenge_persistent_interval_set.contains_point(t3, 10),
     content="false",
   )
@@ -124,7 +127,10 @@ test "interval set adjacency" {
   let t0 = @challenge_persistent_interval_set.empty()
   let t1 = @challenge_persistent_interval_set.insert_interval(t0, 1, 2)
   let t2 = @challenge_persistent_interval_set.insert_interval(t1, 3, 5)
-  inspect(@challenge_persistent_interval_set.to_array(t2), content="[(1, 5)]")
+  debug_inspect(
+    @challenge_persistent_interval_set.to_array(t2),
+    content="[(1, 5)]",
+  )
 }
 ```
 
@@ -135,7 +141,10 @@ test "interval set adjacency" {
 test "interval set normalize" {
   let t0 = @challenge_persistent_interval_set.empty()
   let t1 = @challenge_persistent_interval_set.insert_interval(t0, 9, 4)
-  inspect(@challenge_persistent_interval_set.to_array(t1), content="[(4, 9)]")
+  debug_inspect(
+    @challenge_persistent_interval_set.to_array(t1),
+    content="[(4, 9)]",
+  )
 }
 ```
 
@@ -147,9 +156,12 @@ test "interval set persistence" {
   let t0 = @challenge_persistent_interval_set.empty()
   let t1 = @challenge_persistent_interval_set.insert_interval(t0, 0, 1)
   let t2 = @challenge_persistent_interval_set.insert_interval(t1, 5, 6)
-  inspect(@challenge_persistent_interval_set.to_array(t0), content="[]")
-  inspect(@challenge_persistent_interval_set.to_array(t1), content="[(0, 1)]")
-  inspect(
+  debug_inspect(@challenge_persistent_interval_set.to_array(t0), content="[]")
+  debug_inspect(
+    @challenge_persistent_interval_set.to_array(t1),
+    content="[(0, 1)]",
+  )
+  debug_inspect(
     @challenge_persistent_interval_set.to_array(t2),
     content="[(0, 1), (5, 6)]",
   )

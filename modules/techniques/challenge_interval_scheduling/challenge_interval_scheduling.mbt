@@ -48,5 +48,5 @@ test "interval_scheduling" {
     { start: 5, end: 9 },
     { start: 8, end: 9 },
   ]
-  assert_eq(max_non_overlapping(intervals), 3)
+  @debug.assert_eq(max_non_overlapping(intervals), 3)
 }

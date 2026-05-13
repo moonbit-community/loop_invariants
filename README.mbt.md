@@ -52,7 +52,7 @@ If you want a snippet that should not run, use `mbt nocheck` instead.
 ```mbt check
 ///|
 test "doc example runs" {
-  inspect(1 + 1, content="2")
+  debug_inspect(1 + 1, content="2")
 }
 ```
 
@@ -86,7 +86,7 @@ test "invariant sum example" {
     proof_invariant: 0 <= i && i <= n,
     proof_reasoning: "sum equals the total of xs[0..i).",
   }
-  inspect(total, content="10")
+  debug_inspect(total, content="10")
 }
 ```
 
@@ -110,7 +110,7 @@ test "invariant max example" {
     proof_invariant: 0 <= i && i <= n,
     proof_reasoning: "best is max of xs[0..i).",
   }
-  inspect(best, content="7")
+  debug_inspect(best, content="7")
 }
 ```
 
@@ -127,7 +127,7 @@ test "simple loop example" {
   } nobreak {
     sum
   }
-  inspect(sum, content="6")
+  debug_inspect(sum, content="6")
 }
 ```
 

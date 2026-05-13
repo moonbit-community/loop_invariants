@@ -13,8 +13,8 @@ test "hungarian basic perfect matching" {
   graph.add_edge(2, 1)
   graph.add_edge(2, 2)
   let matcher = graph.hungarian()
-  inspect(matcher.max_matching(), content="3")
-  inspect(matcher.get_matching().length(), content="3")
+  debug_inspect(matcher.max_matching(), content="3")
+  debug_inspect(matcher.get_matching().length(), content="3")
 }
 
 ///|
@@ -25,7 +25,7 @@ test "hungarian imperfect" {
   graph.add_edge(1, 0)
   graph.add_edge(2, 1)
   let matcher = graph.hungarian()
-  inspect(matcher.max_matching(), content="2")
+  debug_inspect(matcher.max_matching(), content="2")
 }
 
 ///|
@@ -38,8 +38,8 @@ test "hopcroft_karp basic" {
   graph.add_edge(2, 1)
   graph.add_edge(2, 2)
   let matcher = graph.hopcroft_karp()
-  inspect(matcher.max_matching(), content="3")
-  inspect(matcher.get_matching().length(), content="3")
+  debug_inspect(matcher.max_matching(), content="3")
+  debug_inspect(matcher.get_matching().length(), content="3")
 }
 
 ///|
@@ -55,23 +55,23 @@ test "hopcroft_karp larger" {
   ..add_edge(3, 0)
   .add_edge(3, 3)
   let matcher = graph.hopcroft_karp()
-  inspect(matcher.max_matching(), content="4")
-  inspect(matcher.get_matching().length(), content="4")
+  debug_inspect(matcher.max_matching(), content="4")
+  debug_inspect(matcher.get_matching().length(), content="4")
 }
 
 ///|
 test "empty graph" {
   let graph = @bipartite_matching.BipartiteGraph(2, 2)
-  inspect(graph.hungarian().max_matching(), content="0")
+  debug_inspect(graph.hungarian().max_matching(), content="0")
   let graph2 = @bipartite_matching.BipartiteGraph(2, 2)
-  inspect(graph2.hopcroft_karp().max_matching(), content="0")
+  debug_inspect(graph2.hopcroft_karp().max_matching(), content="0")
 }
 
 ///|
 test "single edge" {
   let graph = @bipartite_matching.BipartiteGraph(1, 1)
   graph.add_edge(0, 0)
-  inspect(graph.hungarian().max_matching(), content="1")
+  debug_inspect(graph.hungarian().max_matching(), content="1")
 }
 
 ///|
@@ -85,8 +85,8 @@ test "algorithms agree" {
   }
   let hungarian_result = graph1.hungarian().max_matching()
   let hk_result = graph2.hopcroft_karp().max_matching()
-  inspect(hungarian_result == hk_result, content="true")
-  inspect(hungarian_result, content="4")
+  debug_inspect(hungarian_result == hk_result, content="true")
+  debug_inspect(hungarian_result, content="4")
 }
 
 ///|
@@ -101,7 +101,7 @@ test "min_vertex_cover" {
   let (left, right) = matcher.min_vertex_cover()
   // Vertex cover size should equal max matching size (König's theorem)
   let cover_size = left.length() + right.length()
-  inspect(cover_size == matching_size, content="true")
+  debug_inspect(cover_size == matching_size, content="true")
 }
 
 ///|
@@ -129,5 +129,5 @@ test "min_vertex_cover covers all edges" {
       let (u, v) = edge
       left_set[u] || right_set[v]
     })
-  inspect(all_covered, content="true")
+  debug_inspect(all_covered, content="true")
 }

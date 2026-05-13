@@ -135,9 +135,9 @@ test "trie insert and search" {
   trie.insert("hello")
   trie.insert("world")
   trie.insert("help")
-  inspect(trie.search("hello"), content="true")
-  inspect(trie.search("help"), content="true")
-  inspect(trie.search("hell"), content="false")
+  debug_inspect(trie.search("hello"), content="true")
+  debug_inspect(trie.search("help"), content="true")
+  debug_inspect(trie.search("hell"), content="false")
 }
 ```
 
@@ -153,10 +153,10 @@ test "trie prefix queries" {
   trie.insert("card")
   trie.insert("care")
   trie.insert("cat")
-  inspect(trie.starts_with("ca"), content="true")
-  inspect(trie.count_prefix("ca"), content="4")
-  inspect(trie.count_prefix("car"), content="3")
-  inspect(trie.count_prefix("dog"), content="0")
+  debug_inspect(trie.starts_with("ca"), content="true")
+  debug_inspect(trie.count_prefix("ca"), content="4")
+  debug_inspect(trie.count_prefix("car"), content="3")
+  debug_inspect(trie.count_prefix("dog"), content="0")
 }
 ```
 
@@ -176,8 +176,8 @@ test "trie duplicates" {
   trie.insert("hello")
   trie.insert("hello")
   trie.insert("hello")
-  inspect(trie.count_word("hello"), content="3")
-  inspect(trie.count_prefix("hello"), content="3")
+  debug_inspect(trie.count_word("hello"), content="3")
+  debug_inspect(trie.count_prefix("hello"), content="3")
 }
 ```
 
@@ -194,12 +194,12 @@ test "trie delete one copy" {
   let trie = Trie()
   trie.insert("hello")
   trie.insert("hello")
-  inspect(trie.count_word("hello"), content="2")
-  inspect(trie.delete("hello"), content="true")
-  inspect(trie.count_word("hello"), content="1")
-  inspect(trie.search("hello"), content="true")
-  inspect(trie.delete("hello"), content="true")
-  inspect(trie.search("hello"), content="false")
+  debug_inspect(trie.count_word("hello"), content="2")
+  debug_inspect(trie.delete("hello"), content="true")
+  debug_inspect(trie.count_word("hello"), content="1")
+  debug_inspect(trie.search("hello"), content="true")
+  debug_inspect(trie.delete("hello"), content="true")
+  debug_inspect(trie.search("hello"), content="false")
 }
 ```
 
@@ -218,7 +218,7 @@ test "trie autocomplete" {
   trie.insert("care")
   trie.insert("cat")
   let results = trie.autocomplete("car")
-  inspect(results.length(), content="3") // car, card, care
+  debug_inspect(results.length(), content="3") // car, card, care
 }
 ```
 
@@ -239,9 +239,9 @@ test "trie longest prefix" {
   trie.insert("a")
   trie.insert("app")
   trie.insert("apple")
-  inspect(trie.longest_prefix("application"), content="app")
-  inspect(trie.longest_prefix("apple"), content="apple")
-  inspect(trie.longest_prefix("appetizer"), content="app")
+  debug_inspect(trie.longest_prefix("application"), content="app")
+  debug_inspect(trie.longest_prefix("apple"), content="apple")
+  debug_inspect(trie.longest_prefix("appetizer"), content="app")
 }
 ```
 
@@ -285,10 +285,10 @@ test "compressed trie basic" {
   trie.insert("test")
   trie.insert("testing")
   trie.insert("tested")
-  inspect(trie.search("test"), content="true")
-  inspect(trie.search("testing"), content="true")
-  inspect(trie.search("tested"), content="true")
-  inspect(trie.search("tes"), content="false")
+  debug_inspect(trie.search("test"), content="true")
+  debug_inspect(trie.search("testing"), content="true")
+  debug_inspect(trie.search("tested"), content="true")
+  debug_inspect(trie.search("tes"), content="false")
 }
 ```
 
