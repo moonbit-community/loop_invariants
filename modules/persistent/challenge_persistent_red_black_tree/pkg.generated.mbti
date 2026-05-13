@@ -1,0 +1,37 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_persistent/challenge_persistent_red_black_tree"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn[T : Compare] contains(RB[T], T) -> Bool
+
+pub fn[T] empty() -> RB[T]
+
+pub fn[T : Compare] from_array(ArrayView[T]) -> RB[T]
+
+pub fn[T] inorder(RB[T]) -> Array[T]
+
+pub fn[T : Compare] insert(RB[T], T) -> RB[T]
+
+pub fn[T] size(RB[T]) -> Int
+
+// Errors
+
+// Types and methods
+pub enum Color {
+  Red
+  Black
+} derive(Eq, @debug.Debug)
+
+pub enum RB[T] {
+  Empty
+  Node(color~ : Color, key~ : T, left~ : RB[T], right~ : RB[T])
+} derive(@debug.Debug)
+
+// Type aliases
+
+// Traits
+
