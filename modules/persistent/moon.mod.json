@@ -1,6 +1,6 @@
 {
   "name": "bobzhang/loop_invariants_persistent",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "readme": "README.md",
   "repository": "https://github.com/moonbit-community/loop_invariants",
   "license": "Apache-2.0",
