@@ -8,7 +8,7 @@ pub fn sliding_window_min(arr : ArrayView[Int], k : Int) -> Array[Int] {
   let n = arr.length()
   guard n >= k && k > 0 else { return [] }
   let result : Array[Int] = []
-  let deque : @deque.Deque[Int] = @deque.new()
+  let deque : @deque.Deque[Int] = Deque([])
   for i in 0..<n {
     let _ = for front = deque.front() {
       match front {

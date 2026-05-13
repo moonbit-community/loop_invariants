@@ -81,7 +81,7 @@ fn HopcroftKarp::HopcroftKarp(graph : BipartiteGraph) -> HopcroftKarp {
 /// vertex, and `dist[n_left]` holds the layer of the first unmatched right
 /// vertex reached (or `HK_INF` if none was found).
 fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
-  let queue : @queue.Queue[Int] = @queue.new()
+  let queue : @queue.Queue[Int] = Queue([])
   for u in 0..<self.graph.n_left {
     if self.match_left[u] < 0 {
       self.dist[u] = 0

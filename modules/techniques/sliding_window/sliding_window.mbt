@@ -62,7 +62,7 @@ pub fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
     return [m]
   }
   let result : Array[Int64] = []
-  let dq : @deque.Deque[Int] = @deque.new()
+  let dq : @deque.Deque[Int] = Deque([])
   for i in 0..<n {
     // Remove elements outside window
     let _ = for front = dq.front() {
@@ -189,7 +189,7 @@ pub fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
     return [m]
   }
   let result : Array[Int64] = []
-  let dq : @deque.Deque[Int] = @deque.new()
+  let dq : @deque.Deque[Int] = Deque([])
   for i in 0..<n {
     let _ = for front = dq.front() {
       match front {
