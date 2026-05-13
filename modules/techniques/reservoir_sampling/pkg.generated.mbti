@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/reservoir_sampling"
+
+// Values
+pub fn new(capacity~ : Int, seed~ : Int64) -> Reservoir
+
+// Errors
+
+// Types and methods
+pub struct Reservoir {
+  capacity : Int
+  mut count : Int
+  reservoir : Array[Int64]
+  mut rng_state : Int64
+}
+pub fn Reservoir::add(Self, Int64) -> Unit
+pub fn Reservoir::add_many(Self, ArrayView[Int64]) -> Unit
+pub fn Reservoir::capacity_of(Self) -> Int
+pub fn Reservoir::items_seen(Self) -> Int
+pub fn Reservoir::sample(Self) -> Array[Int64]
+
+// Type aliases
+
+// Traits
+
