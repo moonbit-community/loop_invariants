@@ -501,13 +501,19 @@ test "suffix array search" {
 ///|
 test "suffix array longest repeated" {
   let sa = SuffixArray("banana")
-  debug_inspect(sa.longest_repeated_substring(), content=(
-    #|"ana"
-  ))
+  debug_inspect(
+    sa.longest_repeated_substring(),
+    content=(
+      #|"ana"
+    ),
+  )
   let sa2 = SuffixArray("abcabc")
-  debug_inspect(sa2.longest_repeated_substring(), content=(
-    #|"abc"
-  ))
+  debug_inspect(
+    sa2.longest_repeated_substring(),
+    content=(
+      #|"abc"
+    ),
+  )
 }
 
 ///|
@@ -550,13 +556,22 @@ test "suffix array pattern not found" {
 ///|
 test "suffix array get suffix" {
   let sa = SuffixArray("banana")
-  debug_inspect(sa.get_suffix(0), content=(
-    #|"a"
-  ))
-  debug_inspect(sa.get_suffix(1), content=(
-    #|"ana"
-  ))
-  debug_inspect(sa.get_suffix(3), content=(
-    #|"banana"
-  ))
+  debug_inspect(
+    sa.get_suffix(0),
+    content=(
+      #|"a"
+    ),
+  )
+  debug_inspect(
+    sa.get_suffix(1),
+    content=(
+      #|"ana"
+    ),
+  )
+  debug_inspect(
+    sa.get_suffix(3),
+    content=(
+      #|"banana"
+    ),
+  )
 }

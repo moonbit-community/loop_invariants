@@ -472,12 +472,18 @@ test "aho corasick basic" {
 
   // Test pattern_count and get_pattern
   debug_inspect(ac.pattern_count(), content="4")
-  debug_inspect(ac.get_pattern(0), content=(
-    #|"he"
-  ))
-  debug_inspect(ac.get_pattern(1), content=(
-    #|"she"
-  ))
+  debug_inspect(
+    ac.get_pattern(0),
+    content=(
+      #|"he"
+    ),
+  )
+  debug_inspect(
+    ac.get_pattern(1),
+    content=(
+      #|"she"
+    ),
+  )
 
   // Test count_matches
   debug_inspect(ac.count_matches("ushers"), content="3")
@@ -547,16 +553,22 @@ test "aho corasick find all" {
   // First match: "cat" at position 4
   debug_inspect(results[0].0, content="4")
   debug_inspect(results[0].1, content="7")
-  debug_inspect(results[0].2, content=(
-    #|"cat"
-  ))
+  debug_inspect(
+    results[0].2,
+    content=(
+      #|"cat"
+    ),
+  )
 
   // Second match: "dog" at position 16
   debug_inspect(results[1].0, content="16")
   debug_inspect(results[1].1, content="19")
-  debug_inspect(results[1].2, content=(
-    #|"dog"
-  ))
+  debug_inspect(
+    results[1].2,
+    content=(
+      #|"dog"
+    ),
+  )
 }
 
 ///|

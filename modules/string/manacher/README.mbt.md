@@ -394,12 +394,18 @@ Palindromes:
 ```mbt check
 ///|
 test "manacher basics" {
-  debug_inspect(@manacher.longest_palindrome("cbbd"), content=(
-    #|"bb"
-  ))
-  debug_inspect(@manacher.longest_palindrome("racecar"), content=(
-    #|"racecar"
-  ))
+  debug_inspect(
+    @manacher.longest_palindrome("cbbd"),
+    content=(
+      #|"bb"
+    ),
+  )
+  debug_inspect(
+    @manacher.longest_palindrome("racecar"),
+    content=(
+      #|"racecar"
+    ),
+  )
   debug_inspect(@manacher.longest_palindrome_len("abacaba"), content="7")
 }
 ```
@@ -424,9 +430,12 @@ test "manacher radii arrays" {
 ```mbt check
 ///|
 test "manacher unique longest" {
-  debug_inspect(@manacher.longest_palindrome("abaxyzzyxf"), content=(
-    #|"xyzzyx"
-  ))
+  debug_inspect(
+    @manacher.longest_palindrome("abaxyzzyxf"),
+    content=(
+      #|"xyzzyx"
+    ),
+  )
   debug_inspect(@manacher.longest_palindrome_len("abcdef"), content="1")
 }
 ```

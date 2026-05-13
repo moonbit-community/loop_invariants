@@ -117,26 +117,35 @@ pub fn longest_common_substring(a : String, b : String) -> LCSResult {
 ///|
 test "lcs banana ananas" {
   let result = longest_common_substring("banana", "ananas")
-  debug_inspect(result.substring, content=(
-    #|"anana"
-  ))
+  debug_inspect(
+    result.substring,
+    content=(
+      #|"anana"
+    ),
+  )
   debug_inspect(result.length, content="5")
 }
 
 ///|
 test "lcs no match" {
   let result = longest_common_substring("abc", "xyz")
-  debug_inspect(result.substring, content=(
-    #|""
-  ))
+  debug_inspect(
+    result.substring,
+    content=(
+      #|""
+    ),
+  )
   debug_inspect(result.length, content="0")
 }
 
 ///|
 test "lcs identical strings" {
   let result = longest_common_substring("hello", "hello")
-  debug_inspect(result.substring, content=(
-    #|"hello"
-  ))
+  debug_inspect(
+    result.substring,
+    content=(
+      #|"hello"
+    ),
+  )
   debug_inspect(result.length, content="5")
 }

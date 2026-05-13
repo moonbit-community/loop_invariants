@@ -117,9 +117,12 @@ test "persistent rope concat" {
   let a = @challenge_persistent_rope.leaf("foo")
   let b = @challenge_persistent_rope.leaf("bar")
   let rope = @challenge_persistent_rope.concat(a, b)
-  debug_inspect(@challenge_persistent_rope.to_string(rope), content=(
-    #|"foobar"
-  ))
+  debug_inspect(
+    @challenge_persistent_rope.to_string(rope),
+    content=(
+      #|"foobar"
+    ),
+  )
   debug_inspect(@challenge_persistent_rope.length(rope), content="6")
 }
 ```
@@ -138,15 +141,24 @@ test "persistent rope versions" {
     r2,
     @challenge_persistent_rope.leaf("c"),
   )
-  debug_inspect(@challenge_persistent_rope.to_string(r1), content=(
-    #|"a"
-  ))
-  debug_inspect(@challenge_persistent_rope.to_string(r2), content=(
-    #|"ab"
-  ))
-  debug_inspect(@challenge_persistent_rope.to_string(r3), content=(
-    #|"abc"
-  ))
+  debug_inspect(
+    @challenge_persistent_rope.to_string(r1),
+    content=(
+      #|"a"
+    ),
+  )
+  debug_inspect(
+    @challenge_persistent_rope.to_string(r2),
+    content=(
+      #|"ab"
+    ),
+  )
+  debug_inspect(
+    @challenge_persistent_rope.to_string(r3),
+    content=(
+      #|"abc"
+    ),
+  )
 }
 ```
 
