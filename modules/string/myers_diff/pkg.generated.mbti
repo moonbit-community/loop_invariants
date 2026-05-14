@@ -1,0 +1,21 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_string/myers_diff"
+
+// Values
+pub fn diff(Array[Int], Array[Int]) -> Array[Edit]
+
+pub fn shortest_edit_distance(Array[Int], Array[Int]) -> Int
+
+// Errors
+
+// Types and methods
+pub enum Edit {
+  Equal(Int)
+  Insert(Int)
+  Delete(Int)
+} derive(Eq)
+
+// Type aliases
+
+// Traits
+
