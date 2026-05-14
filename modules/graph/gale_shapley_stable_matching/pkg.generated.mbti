@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/gale_shapley_stable_matching"
+
+// Values
+pub fn is_stable(ArrayView[Array[Int]], ArrayView[Array[Int]], ArrayView[Int]) -> Bool
+
+pub fn stable_match(ArrayView[Array[Int]], ArrayView[Array[Int]]) -> Array[Int]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
