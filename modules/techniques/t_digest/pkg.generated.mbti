@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/t_digest"
+
+// Values
+pub fn new(compression~ : Double) -> TDigest
+
+// Errors
+
+// Types and methods
+pub struct TDigest {
+  compression : Double
+  means : Array[Double]
+  weights : Array[Double]
+  mut total_weight : Double
+}
+pub fn TDigest::add(Self, Double) -> Unit
+pub fn TDigest::centroid_count(Self) -> Int
+pub fn TDigest::compress(Self) -> Unit
+pub fn TDigest::count(Self) -> Int
+pub fn TDigest::quantile(Self, Double) -> Double
+
+// Type aliases
+
+// Traits
+
