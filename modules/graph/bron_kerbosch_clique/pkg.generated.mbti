@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/bron_kerbosch_clique"
+
+// Values
+pub fn maximal_cliques(Int, ArrayView[(Int, Int)]) -> Array[Array[Int]]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
