@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_geometry/jarvis_march"
+
+// Values
+pub fn convex_hull(Array[JmPoint]) -> Array[JmPoint]
+
+pub fn jm_point(Double, Double) -> JmPoint
+
+// Errors
+
+// Types and methods
+pub struct JmPoint {
+  x : Double
+  y : Double
+} derive(Eq)
+
+// Type aliases
+
+// Traits
+
