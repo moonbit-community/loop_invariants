@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/cuckoo_filter"
+
+// Values
+pub fn new(m~ : Int, b~ : Int, seed~ : Int64) -> CuckooFilter
+
+// Errors
+
+// Types and methods
+pub struct CuckooFilter {
+  m : Int
+  b : Int
+  table : Array[Int]
+  mut count : Int
+  mut rng_state : Int64
+}
+pub fn CuckooFilter::capacity(Self) -> Int
+pub fn CuckooFilter::contains(Self, Int64) -> Bool
+pub fn CuckooFilter::count_of(Self) -> Int
+pub fn CuckooFilter::delete(Self, Int64) -> Bool
+pub fn CuckooFilter::insert(Self, Int64) -> Bool
+
+// Type aliases
+
+// Traits
+
