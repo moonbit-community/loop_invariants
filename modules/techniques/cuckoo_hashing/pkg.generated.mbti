@@ -1,0 +1,28 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/cuckoo_hashing"
+
+// Values
+pub fn new(m~ : Int, seed~ : Int64) -> CuckooHash
+
+// Errors
+
+// Types and methods
+pub struct CuckooHash {
+  m : Int
+  mut count : Int
+  max_kicks : Int
+  table_1 : Array[Int64?]
+  table_2 : Array[Int64?]
+  salt_1 : Int64
+  salt_2 : Int64
+}
+pub fn CuckooHash::capacity(Self) -> Int
+pub fn CuckooHash::contains(Self, Int64) -> Bool
+pub fn CuckooHash::count_of(Self) -> Int
+pub fn CuckooHash::insert(Self, Int64) -> Bool
+pub fn CuckooHash::load_factor(Self) -> Double
+
+// Type aliases
+
+// Traits
+
