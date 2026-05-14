@@ -1,0 +1,21 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/dancing_links_exact_cover"
+
+// Values
+pub fn new(Int, Int, ArrayView[(Int, Int)]) -> DLX
+
+// Errors
+
+// Types and methods
+pub struct DLX {
+  nodes : Array[Node]
+  column_ids : Array[Int]
+}
+pub fn DLX::solve(Self, Int) -> Array[Array[Int]]
+
+type Node
+
+// Type aliases
+
+// Traits
+
