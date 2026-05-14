@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_geometry/quickhull"
+
+// Values
+pub fn convex_hull(Array[Point]) -> Array[Point]
+
+pub fn point(Double, Double) -> Point
+
+// Errors
+
+// Types and methods
+pub struct Point {
+  x : Double
+  y : Double
+} derive(Eq)
+
+// Type aliases
+
+// Traits
+
