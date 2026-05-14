@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/sieve_of_atkin"
+
+// Values
+pub fn is_prime_atkin(Int) -> Bool
+
+pub fn primes_up_to(Int) -> Array[Int]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
