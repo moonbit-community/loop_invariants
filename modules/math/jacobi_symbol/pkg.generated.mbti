@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/jacobi_symbol"
+
+// Values
+pub fn jacobi(Int64, Int64) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
