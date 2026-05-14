@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/minhash_jaccard"
+
+// Values
+pub fn new(k~ : Int, seed~ : Int64) -> MinHash
+
+// Errors
+
+// Types and methods
+pub struct MinHash {
+  k : Int
+  salts : Array[Int64]
+  signatures : Array[Int64]
+}
+pub fn MinHash::add(Self, Int64) -> Unit
+pub fn MinHash::add_many(Self, ArrayView[Int64]) -> Unit
+pub fn MinHash::merge(Self, Self) -> Unit
+pub fn MinHash::signature(Self) -> Array[Int64]
+pub fn MinHash::similarity_with(Self, Self) -> Double
+pub fn MinHash::width(Self) -> Int
+
+// Type aliases
+
+// Traits
+
