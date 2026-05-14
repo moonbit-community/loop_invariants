@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/simhash"
+
+// Values
+pub fn hamming_distance(Int64, Int64) -> Int
+
+pub fn new() -> SimHash
+
+// Errors
+
+// Types and methods
+pub struct SimHash {
+  counters : Array[Int]
+}
+pub fn SimHash::add(Self, Int64) -> Unit
+pub fn SimHash::add_weighted(Self, Int64, Int) -> Unit
+pub fn SimHash::counters_of(Self) -> Array[Int]
+pub fn SimHash::merge(Self, Self) -> Unit
+pub fn SimHash::signature(Self) -> Int64
+
+// Type aliases
+
+// Traits
+
