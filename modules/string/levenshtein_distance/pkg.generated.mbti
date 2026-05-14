@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_string/levenshtein_distance"
+
+// Values
+pub fn distance(Array[Int], Array[Int]) -> Int
+
+pub fn distance_weighted(Array[Int], Array[Int], cost_insert~ : Int, cost_delete~ : Int, cost_subst~ : Int) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
