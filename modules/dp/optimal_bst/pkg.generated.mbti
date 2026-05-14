@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_dp/optimal_bst"
+
+// Values
+pub fn min_cost(Array[Double]) -> Double
+
+pub fn min_cost_with_tree(Array[Double]) -> (Double, Array[Int])
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
