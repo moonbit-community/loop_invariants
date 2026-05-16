@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/a_star"
+
+// Values
+pub fn a_star(Int, Array[Array[Edge]], Int, Int, (Int) -> Int64) -> AStarResult
+
+// Errors
+
+// Types and methods
+pub(all) struct AStarResult {
+  dist : Int64?
+  path : Array[Int]
+  expanded : Int
+}
+
+pub(all) struct Edge {
+  to : Int
+  w : Int64
+}
+
+// Type aliases
+
+// Traits
+
