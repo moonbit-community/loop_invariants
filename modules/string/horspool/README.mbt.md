@@ -100,8 +100,14 @@ test "horspool first vs none" {
     }
     r
   }
-  debug_inspect(@horspool.find_first(to_arr("abc"), to_arr("c")), content="Some(2)")
-  debug_inspect(@horspool.find_first(to_arr("abc"), to_arr("z")), content="None")
+  debug_inspect(
+    @horspool.find_first(to_arr("abc"), to_arr("c")),
+    content="Some(2)",
+  )
+  debug_inspect(
+    @horspool.find_first(to_arr("abc"), to_arr("z")),
+    content="None",
+  )
 }
 ```
 
