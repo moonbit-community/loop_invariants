@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/majority_vote"
+
+// Values
+pub fn[T : Eq] find_candidate(Array[T]) -> T
+
+pub fn[T : Eq] majority(Array[T]) -> T?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
