@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_string/horspool"
+
+// Values
+pub fn find_all(Array[Int], Array[Int]) -> Array[Int]
+
+pub fn find_first(Array[Int], Array[Int]) -> Int?
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
