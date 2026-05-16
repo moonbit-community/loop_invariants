@@ -93,7 +93,11 @@ pub fn merge(r1 : Int64, m1 : Int64, r2 : Int64, m2 : Int64) -> (Int64, Int64)? 
   let lcm = m1 / g * m2
   // x = r1 + m1 * ((diff / g) * p mod (m2 / g))
   let m2g = m2 / g
-  let k = safe_mod(diff / g * p, m2g)
+  // Reduce diff/g modulo m2g before multiplying by p to avoid Int64 overflow
+  // when diff/g is large (e.g. from accumulated LCMs or large raw residues).
+  // safe_mod(diff/g, m2g) ∈ [0, m2g) and |p| ≤ m2g/2, so the product fits
+  // in Int64 whenever m2g ≤ 2^32.
+  let k = safe_mod(safe_mod(diff / g, m2g) * p, m2g)
   let r = safe_mod(r1 + m1 * k, lcm)
   Some((r, lcm))
 }
@@ -223,6 +227,24 @@ test "crt agrees with brute force" {
       }
       @debug.assert_eq(found, true)
     }
+  }
+}
+
+///|
+test "crt large residue overflow guard" {
+  // Regression: diff/g * p overflowed Int64 before the safe_mod fix.
+  // Use a residue close to Int64.MAX to trigger the previously-overflowing path.
+  // r ≡ 9000000000000000000 (mod 10^9+7) and 0 (mod 10^9+9).
+  // Normalised first residue: 9000000000000000000 mod (10^9+7).
+  let m1 = 1000000007L
+  let m2 = 1000000009L
+  let raw_r1 = 9000000000000000000L
+  match solve([raw_r1, 0L], [m1, m2]) {
+    Some((x, _)) => {
+      @debug.assert_eq(x % m1, raw_r1 % m1)
+      @debug.assert_eq(x % m2, 0L)
+    }
+    None => @debug.assert_eq(true, false)
   }
 }
 
