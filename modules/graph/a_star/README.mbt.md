@@ -87,10 +87,7 @@ test "a_star reaches target" {
     [{ to: 2, w: 2L }],
     [],
   ]
-  debug_inspect(
-    @a_star.a_star(3, adj, 0, 2, _ => 0L).dist,
-    content="Some(3)",
-  )
+  debug_inspect(@a_star.a_star(3, adj, 0, 2, _ => 0L).dist, content="Some(3)")
 }
 ```
 
@@ -98,10 +95,7 @@ test "a_star reaches target" {
 ///|
 test "a_star unreachable" {
   let adj : Array[Array[@a_star.Edge]] = [[{ to: 1, w: 1L }], [], []]
-  debug_inspect(
-    @a_star.a_star(3, adj, 0, 2, _ => 0L).dist,
-    content="None",
-  )
+  debug_inspect(@a_star.a_star(3, adj, 0, 2, _ => 0L).dist, content="None")
 }
 ```
 
