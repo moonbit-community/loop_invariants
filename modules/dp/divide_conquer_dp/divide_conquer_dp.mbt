@@ -6,7 +6,7 @@
 //
 // Many DPs have the shape
 //
-//   dp_t[j] = min_{i < j}  ( dp_{t-1}[i] + C(i, j) )
+//   dp_t[j] = min_{i ≤ j}  ( dp_{t-1}[i] + C(i, j) )
 //
 // for `t = 1..T` layers and `j = 0..N`. The naive cost is `O(T * N^2)`.
 //
@@ -135,10 +135,13 @@ test "dq dp partition into 2" {
   // sum of (max - min within each group). Equivalent recurrence:
   //   dp_0[0] = 0; dp_0[j>0] = INF                  (empty prefix has 0 cost
   //                                                  only for j = 0)
-  //   dp_t[j] = min_{i<j} ( dp_{t-1}[i] + cost(i+1, j) )
+  //   dp_t[j] = min_{i<=j} ( dp_{t-1}[i] + cost(i, j) )
   //
-  // For testing, we just verify that the value at the final position
-  // equals what a brute force computes.
+  // Degenerate splits (i == j) are harmless because cost(i, i) = 0 and
+  // the QI guarantees a real split is always at least as cheap.
+  //
+  // For testing, we verify the value at the final position equals what
+  // a brute force over real splits computes.
   let arr = [3L, 1L, 4L, 1L, 5L]
   let n = arr.length()
   // Set up "j = number of elements consumed"; dp_0[0] = 0 else INF.
