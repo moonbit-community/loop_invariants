@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/euler_totient"
+
+// Values
+pub fn phi(Int64) -> Int64
+
+pub fn sieve(Int) -> Array[Int64]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
