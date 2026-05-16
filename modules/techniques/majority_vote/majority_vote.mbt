@@ -118,22 +118,26 @@ pub fn[T : Eq] find_candidate(arr : Array[T]) -> T {
       #|    (a) zero or more "cancellation pairs" — each pair holds two
       #|        elements with distinct values that cancel each other out;
       #|    (b) exactly `cnt` copies of `cand`.
-      #|  In other words: count(cand in processed) >= cnt, and the excess
-      #|  of cand occurrences over all other occurrences combined equals cnt.
+      #|  Note: pairs may include occurrences of `cand` paired with some
+      #|  other value, so count(cand in processed) >= cnt (not necessarily
+      #|  equal), and the number of cancellation pairs p satisfies
+      #|  2p + cnt == number of elements processed so far.
       #|MAINTENANCE:
       #|  - If cnt == 0: the new element x becomes the sole candidate with
-      #|    cnt := 1. The invariant is vacuously reset: x provides one
-      #|    uncancelled copy.
+      #|    cnt := 1. Previous elements are fully accounted for by pairs
+      #|    (since cnt was 0); x contributes one fresh uncancelled copy.
       #|  - If x == cand: we gain one more uncancelled copy of cand,
       #|    so cnt := cnt + 1.
-      #|  - If x != cand: we cancel one existing copy of cand against x,
+      #|  - If x != cand: we cancel one uncancelled copy of cand against x,
       #|    so cnt := cnt - 1. Since cnt > 0 before this step, cnt >= 0
       #|    after.
       #|CONSEQUENCE:
       #|  If a strict majority element M exists (appears > n/2 times in
-      #|  arr), then at most n - count(M) non-M elements can participate in
-      #|  cancellations with M. Since count(M) > n/2, some M copies survive
-      #|  uncancelled, forcing cand == M at termination.
+      #|  arr), then the total non-M elements is n - count(M) < count(M).
+      #|  Even if every non-M element is paired with an M element,
+      #|  at most n - count(M) copies of M are cancelled. The remaining
+      #|  count(M) - (n - count(M)) = 2*count(M) - n >= 1 copies of M
+      #|  survive as uncancelled elements, so cand == M at termination.
     ),
   }
   cand
