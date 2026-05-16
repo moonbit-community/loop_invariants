@@ -58,30 +58,73 @@ pub fn phi(n : Int64) -> Int64 {
   if n <= 0L {
     return 0L
   }
-  let mut m = n
-  let mut result = n
-  // Strip factor 2 first to skip even candidates afterwards.
-  if m % 2L == 0L {
-    result = result - result / 2L
-    while m % 2L == 0L {
-      m = m / 2L
-    }
-  }
-  let mut p = 3L
-  while p * p <= m {
-    if m % p == 0L {
-      result = result - result / p
-      while m % p == 0L {
-        m = m / p
+  // Strip factor 2 first to skip even candidates in the trial-division loop.
+  let (m1, result1) = if n % 2L == 0L {
+    let r = n - n / 2L // phi contribution of prime 2: n * (1 - 1/2)
+    let stripped = for m = n / 2L {
+      if m % 2L == 0L {
+        continue m / 2L
+      } else {
+        break m
       }
+    } where {
+      proof_invariant: m > 0L,
+      proof_reasoning: (
+        #|INVARIANT: m = n_orig / 2^k for some k >= 1; m > 0 since n_orig > 0.
+        #|TERMINATION: m is strictly halved at each step; exits when m is odd.
+      ),
     }
-    p = p + 2L
+    (stripped, r)
+  } else {
+    (n, n)
   }
-  // Remaining prime factor (if any).
-  if m > 1L {
-    result = result - result / m
+  // Trial-division by odd primes p = 3, 5, 7, ...
+  // After each step: result = n_orig * prod_{q prime, q | n_orig, q < p} (1 - 1/q)
+  //                  m      = n_orig with all prime powers < p divided out
+  let (m_final, result_final) = for p = 3L, m = m1, result = result1 {
+    if p * p > m {
+      break (m, result)
+    } else if m % p == 0L {
+      let result_new = result - result / p
+      // Strip all powers of p from m.
+      let m_new = for mm = m / p {
+        if mm % p == 0L {
+          continue mm / p
+        } else {
+          break mm
+        }
+      } where {
+        proof_invariant: mm > 0L,
+        proof_reasoning: (
+          #|INVARIANT: mm = m_at_entry / p^k for some k >= 1; mm > 0.
+          #|TERMINATION: mm strictly decreases each step until p does not divide mm.
+        ),
+      }
+      continue p + 2L, m_new, result_new
+    } else {
+      continue p + 2L, m, result
+    }
+  } where {
+    proof_invariant: p >= 3L && p % 2L == 1L && m > 0L && result > 0L,
+    proof_reasoning: (
+      #|INVARIANT (phi trial division):
+      #|  result = n_orig * prod_{q prime, q | n_orig, q < p} (1 - 1/q)
+      #|  m      = n_orig / prod_{q prime, q | n_orig, q < p} q^v_q(n_orig)
+      #|  p is always odd (factor 2 was handled separately before this loop).
+      #|MAINTENANCE:
+      #|  When p | m, apply (1 - 1/p) to result and strip all p-powers from m;
+      #|  advance p by 2. When p ∤ m, advance p by 2 without changing result or m.
+      #|TERMINATION:
+      #|  When p^2 > m, the remaining m is either 1 or a single prime; the loop
+      #|  exits. When p | m, m strictly decreases, so total steps are bounded.
+    ),
   }
-  result
+  // Remaining prime factor larger than sqrt(n_orig), if any.
+  if m_final > 1L {
+    result_final - result_final / m_final
+  } else {
+    result_final
+  }
 }
 
 ///|
@@ -127,14 +170,41 @@ pub fn sieve(n : Int) -> Array[Int64] {
       let k = p * i
       spf[k] = p
       // Multiplicativity rule:
-      //   if p divides i, phi(k) = phi(i) * p
-      //   else            phi(k) = phi(i) * (p - 1)
+      //   if p | i: phi(p*i) = phi(i) * p   (p is spf of both i and p*i)
+      //   else:     phi(p*i) = phi(i) * (p-1) (p coprime to i; multiplicativity)
       if i % p == 0 {
         res[k] = res[i] * p.to_int64()
       } else {
         res[k] = res[i] * (p - 1).to_int64()
       }
+    } where {
+      proof_invariant: j >= 0 && j <= primes.length(),
+      proof_reasoning: (
+        #|INVARIANT (linear sieve inner):
+        #|primes[0..j) have been processed for i. For each primes[k] with k < j
+        #|where primes[k] * i <= n, spf[primes[k] * i] and res[primes[k] * i]
+        #|are correctly set.
+        #|MAINTENANCE:
+        #|Set spf[p * i] = p and compute res[p * i] via multiplicativity:
+        #|  res[p * i] = res[i] * p       if p | i
+        #|  res[p * i] = res[i] * (p - 1) otherwise
+        #|TERMINATION:
+        #|Stop when p > spf[i] (every composite is marked exactly once by its
+        #|smallest prime factor) or when p * i > n.
+      ),
     }
+  } where {
+    proof_invariant: i >= 2 && i <= n + 1,
+    proof_reasoning: (
+      #|INVARIANT (linear sieve outer):
+      #|For all integers k < i: spf[k] is correctly set, and res[k] = phi(k).
+      #|primes contains exactly the primes in [2, i).
+      #|MAINTENANCE:
+      #|If spf[i] == 0, i is prime: set spf[i] = i, push i to primes, res[i] = i-1.
+      #|Then mark all composites i * primes[k] within range.
+      #|TERMINATION:
+      #|At i = n + 1 all values through n are fully computed.
+    ),
   }
   res
 }
