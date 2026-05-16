@@ -61,12 +61,25 @@ pub fn[T : Eq] majority(arr : Array[T]) -> T? {
     return None
   }
   let cand = find_candidate(arr)
-  // Verify by counting occurrences.
+  // Verification pass: count how many times `cand` appears.
   let mut cnt = 0
   for x in arr {
     if x == cand {
       cnt = cnt + 1
     }
+  } where {
+    proof_invariant: cnt >= 0,
+    proof_reasoning: (
+      #|INVARIANT (verification pass):
+      #|  `cnt` is the number of occurrences of `cand` among the
+      #|  elements of `arr` processed so far. It is non-negative and
+      #|  never exceeds the number of elements processed.
+      #|MAINTENANCE:
+      #|  Each element either increments `cnt` by 1 (if it equals `cand`)
+      #|  or leaves `cnt` unchanged. So the invariant is preserved.
+      #|TERMINATION:
+      #|  The loop iterates exactly `arr.length()` times and halts.
+    ),
   }
   if cnt * 2 > n {
     Some(cand)
@@ -96,6 +109,32 @@ pub fn[T : Eq] find_candidate(arr : Array[T]) -> T {
     } else {
       cnt = cnt - 1
     }
+  } where {
+    proof_invariant: cnt >= 0,
+    proof_reasoning: (
+      #|INVARIANT (cancellation invariant):
+      #|  At every step, the elements processed so far can be partitioned
+      #|  into two groups:
+      #|    (a) zero or more "cancellation pairs" — each pair holds two
+      #|        elements with distinct values that cancel each other out;
+      #|    (b) exactly `cnt` copies of `cand`.
+      #|  In other words: count(cand in processed) >= cnt, and the excess
+      #|  of cand occurrences over all other occurrences combined equals cnt.
+      #|MAINTENANCE:
+      #|  - If cnt == 0: the new element x becomes the sole candidate with
+      #|    cnt := 1. The invariant is vacuously reset: x provides one
+      #|    uncancelled copy.
+      #|  - If x == cand: we gain one more uncancelled copy of cand,
+      #|    so cnt := cnt + 1.
+      #|  - If x != cand: we cancel one existing copy of cand against x,
+      #|    so cnt := cnt - 1. Since cnt > 0 before this step, cnt >= 0
+      #|    after.
+      #|CONSEQUENCE:
+      #|  If a strict majority element M exists (appears > n/2 times in
+      #|  arr), then at most n - count(M) non-M elements can participate in
+      #|  cancellations with M. Since count(M) > n/2, some M copies survive
+      #|  uncancelled, forcing cand == M at termination.
+    ),
   }
   cand
 }
