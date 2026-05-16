@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_dp/sos_dp"
+
+// Values
+pub fn mobius_subsets(Array[Int64]) -> Bool
+
+pub fn mobius_supersets(Array[Int64]) -> Bool
+
+pub fn sum_over_subsets(Array[Int64]) -> Bool
+
+pub fn sum_over_supersets(Array[Int64]) -> Bool
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
