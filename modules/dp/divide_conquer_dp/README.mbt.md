@@ -88,7 +88,9 @@ test "dc dp 1-layer cumulative sum" {
     }
     s
   }
-  let base : Array[Int64] = [0L, 4611686018427387903L, 4611686018427387903L, 4611686018427387903L]
+  let base : Array[Int64] = [
+    0L, 4611686018427387903L, 4611686018427387903L, 4611686018427387903L,
+  ]
   let dp = @divide_conquer_dp.solve(base, 1, cost)
   // dp[j] should match cost(0, j) = sum of squares of w[0..j).
   // dp[3] = 1 + 9 + 4 = 14.
