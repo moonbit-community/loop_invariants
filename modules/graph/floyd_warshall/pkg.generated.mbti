@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/floyd_warshall"
+
+// Values
+pub const INF : Int64 = 1000000000000000000
+
+pub fn apsp(Array[Array[Int64]]) -> Array[Array[Int64]]
+
+pub fn apsp_with_path(Array[Array[Int64]]) -> (Array[Array[Int64]], Array[Array[Int]])
+
+pub fn has_negative_cycle(Array[Array[Int64]]) -> Bool
+
+pub fn reconstruct(Array[Array[Int]], Int, Int) -> Array[Int]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
