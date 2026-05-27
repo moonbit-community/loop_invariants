@@ -1,0 +1,31 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/lru_cache"
+
+// Values
+pub fn new(Int) -> LruCache
+
+// Errors
+
+// Types and methods
+pub struct LruCache {
+  capacity : Int
+  slots : Array[Slot]
+  mut head : Int
+  mut tail : Int
+  mut size : Int
+  map : Map[Int64, Int]
+  free : Array[Int]
+}
+pub fn LruCache::cap(Self) -> Int
+pub fn LruCache::contains(Self, Int64) -> Bool
+pub fn LruCache::get(Self, Int64) -> Int64?
+pub fn LruCache::keys_mru(Self) -> Array[Int64]
+pub fn LruCache::length(Self) -> Int
+pub fn LruCache::put(Self, Int64, Int64) -> Unit
+
+type Slot
+
+// Type aliases
+
+// Traits
+
