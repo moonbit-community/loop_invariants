@@ -69,12 +69,9 @@ pub struct LruCache {
 /// ```
 pub fn new(capacity : Int) -> LruCache {
   let cap = if capacity < 1 { 1 } else { capacity }
-  let slots = Array::makei(cap, _ => ({
-    key: 0L,
-    value: 0L,
-    prev: -1,
-    next: -1,
-  } : Slot))
+  let slots = Array::makei(cap, _ => {
+    ({ key: 0L, value: 0L, prev: -1, next: -1 } : Slot)
+  })
   let free : Array[Int] = []
   let mut i = cap - 1
   while i >= 0 {
