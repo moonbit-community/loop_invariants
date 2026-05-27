@@ -54,15 +54,13 @@ fn ipow(p : Int, e : Int) -> Int {
 /// ```moonbit nocheck
 /// test {
 ///   // Euler totient: f(p) = p-1, f(p^k) = (p-1) * p^(k-1).
-///   let phi = @multiplicative_sieve.sieve(
-///     10,
-///     p => (p - 1).to_int64(),
-///     (p, k) => {
-///       let mut r = (p - 1).to_int64()
-///       for _ in 1..<k { r = r * p.to_int64() }
-///       r
-///     },
-///   )
+///   let phi = @multiplicative_sieve.sieve(10, p => (p - 1).to_int64(), (p, k) => {
+///     let mut r = (p - 1).to_int64()
+///     for _ in 1..<k {
+///       r = r * p.to_int64()
+///     }
+///     r
+///   })
 ///   @debug.assert_eq(phi[10], 4L)
 /// }
 /// ```
@@ -125,17 +123,13 @@ pub fn sieve(
 ///|
 /// Specialised: Euler's totient via the generic framework.
 pub fn totient(n : Int) -> Array[Int64] {
-  sieve(
-    n,
-    p => (p - 1).to_int64(),
-    (p, k) => {
-      let mut r = (p - 1).to_int64()
-      for _ in 1..<k {
-        r = r * p.to_int64()
-      }
-      r
-    },
-  )
+  sieve(n, p => (p - 1).to_int64(), (p, k) => {
+    let mut r = (p - 1).to_int64()
+    for _ in 1..<k {
+      r = r * p.to_int64()
+    }
+    r
+  })
 }
 
 ///|
