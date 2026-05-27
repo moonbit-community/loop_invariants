@@ -107,7 +107,10 @@ pub fn BinomTable::choose(self : BinomTable, n : Int, k : Int) -> Int64 {
   if n >= self.fact.length() {
     return 0L
   }
-  self.fact[n] * self.inv_fact[k] % self.modulus * self.inv_fact[n - k] %
+  self.fact[n] *
+  self.inv_fact[k] %
+  self.modulus *
+  self.inv_fact[n - k] %
   self.modulus
 }
 
