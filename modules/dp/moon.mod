@@ -1,0 +1,20 @@
+name = "bobzhang/loop_invariants_dp"
+
+version = "0.11.0"
+
+readme = "README.md"
+
+repository = "https://github.com/moonbit-community/loop_invariants"
+
+license = "Apache-2.0"
+
+keywords = [
+  "algorithms",
+  "dynamic-programming",
+  "optimization",
+  "loop-invariants",
+]
+
+description = "Dynamic programming algorithms with loop-invariant explanations"
+
+warnings = "+unnecessary_annotation"

@@ -1,0 +1,20 @@
+name = "bobzhang/loop_invariants_techniques"
+
+version = "0.14.0"
+
+readme = "README.md"
+
+repository = "https://github.com/moonbit-community/loop_invariants"
+
+license = "Apache-2.0"
+
+keywords = [
+  "algorithms",
+  "techniques",
+  "competitive-programming",
+  "loop-invariants",
+]
+
+description = "General algorithmic techniques with loop-invariant explanations"
+
+warnings = "+unnecessary_annotation"

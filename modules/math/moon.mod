@@ -1,0 +1,21 @@
+name = "bobzhang/loop_invariants_math"
+
+version = "0.13.0"
+
+readme = "README.md"
+
+repository = "https://github.com/moonbit-community/loop_invariants"
+
+license = "Apache-2.0"
+
+keywords = [
+  "algorithms",
+  "math",
+  "number-theory",
+  "linear-algebra",
+  "loop-invariants",
+]
+
+description = "Mathematical algorithms with loop-invariant explanations"
+
+warnings = "+unnecessary_annotation"

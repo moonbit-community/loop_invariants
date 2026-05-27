@@ -1,0 +1,15 @@
+name = "bobzhang/loop_invariants_data_structures"
+
+version = "0.8.0"
+
+readme = "README.md"
+
+repository = "https://github.com/moonbit-community/loop_invariants"
+
+license = "Apache-2.0"
+
+keywords = [ "algorithms", "data-structures", "loop-invariants" ]
+
+description = "Data structures with loop-invariant explanations"
+
+warnings = "+unnecessary_annotation"
