@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_dp/knuth_optimization"
+
+// Values
+pub fn solve(Int, (Int, Int) -> Int64) -> Int64
+
+pub fn solve_table(Int, (Int, Int) -> Int64) -> Array[Array[Int64]]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
