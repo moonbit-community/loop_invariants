@@ -140,7 +140,7 @@ pub fn sieve(n : Int) -> Array[Int] {
 ///|
 test "mu small values" {
   // mu(1..12) = 1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0
-  let expected = [1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0]
+  let expected : ReadOnlyArray[Int] = [1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0]
   for i in 1..<=12 {
     @debug.assert_eq(mu(i.to_int64()), expected[i - 1])
   }
@@ -254,7 +254,7 @@ test "sieve matches single" {
 test "sieve small example" {
   // mu(1..10) = 1, -1, -1, 0, -1, 1, -1, 0, 0, 1
   let m = sieve(10)
-  let expected = [0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1]
+  let expected : ReadOnlyArray[Int] = [0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1]
   for i in 0..<=10 {
     @debug.assert_eq(m[i], expected[i])
   }

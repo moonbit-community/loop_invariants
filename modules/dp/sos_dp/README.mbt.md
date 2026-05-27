@@ -95,7 +95,7 @@ test "sos subset sum" {
 ```mbt check
 ///|
 test "sos mobius is inverse" {
-  let original = [3L, 1L, 4L, 1L, 5L, 9L, 2L, 6L]
+  let original : ReadOnlyArray[Int64] = [3L, 1L, 4L, 1L, 5L, 9L, 2L, 6L]
   let f = Array::makei(original.length(), i => original[i])
   let _ = @sos_dp.sum_over_subsets(f)
   let _ = @sos_dp.mobius_subsets(f)

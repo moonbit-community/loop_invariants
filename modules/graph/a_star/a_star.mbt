@@ -338,7 +338,7 @@ test "a_star agrees with Dijkstra on random graph" {
     [{ to: 3, w: 6L }, { to: 5, w: 9L }],
     [{ to: 0, w: 14L }, { to: 2, w: 2L }, { to: 4, w: 9L }],
   ]
-  let expected = [0L, 7L, 9L, 20L, 20L, 11L]
+  let expected : ReadOnlyArray[Int64] = [0L, 7L, 9L, 20L, 20L, 11L]
   for t in 0..<6 {
     let r = a_star(6, adj, 0, t, _ => 0L)
     @debug.assert_eq(r.dist, Some(expected[t]))

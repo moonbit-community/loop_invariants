@@ -142,7 +142,7 @@ test "dq dp partition into 2" {
   //
   // For testing, we verify the value at the final position equals what
   // a brute force over real splits computes.
-  let arr = [3L, 1L, 4L, 1L, 5L]
+  let arr : ReadOnlyArray[Int64] = [3L, 1L, 4L, 1L, 5L]
   let n = arr.length()
   // Set up "j = number of elements consumed"; dp_0[0] = 0 else INF.
   let base = Array::make(n + 1, INF)
@@ -210,7 +210,7 @@ test "dq dp larger brute force" {
   let n = 8
   let base = Array::makei(n, i => if i == 0 { 0L } else { INF })
   // cost(i, j) = (sum of squares of an arbitrary fixed array slice).
-  let weights = [1L, 3L, 2L, 5L, 4L, 1L, 6L, 2L]
+  let weights : ReadOnlyArray[Int64] = [1L, 3L, 2L, 5L, 4L, 1L, 6L, 2L]
   fn cost(i : Int, j : Int) -> Int64 {
     let mut s = 0L
     let mut k = i
