@@ -35,6 +35,7 @@ enum Tree {
 }
 
 ///|
+/// A pairing min-heap of `Int64` keys (persistent / functional style).
 pub struct PairingHeap {
   root : Tree
   size : Int
@@ -142,11 +143,13 @@ pub fn PairingHeap::merge(
 }
 
 ///|
+/// Number of elements currently stored.
 pub fn PairingHeap::length(self : PairingHeap) -> Int {
   self.size
 }
 
 ///|
+/// `true` iff the heap is empty.
 pub fn PairingHeap::is_empty(self : PairingHeap) -> Bool {
   self.size == 0
 }
