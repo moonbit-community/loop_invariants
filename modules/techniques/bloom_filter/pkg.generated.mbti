@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/bloom_filter"
+
+// Values
+pub fn from_params(Int, Int) -> BloomFilter
+
+pub fn new(expected~ : Int, fp_rate~ : Double) -> BloomFilter
+
+// Errors
+
+// Types and methods
+pub struct BloomFilter {
+  bits : Array[Int64]
+  m : Int
+  k : Int
+}
+pub fn BloomFilter::bit_size(Self) -> Int
+pub fn BloomFilter::contains(Self, Int64) -> Bool
+pub fn BloomFilter::hash_count(Self) -> Int
+pub fn BloomFilter::insert(Self, Int64) -> Unit
+pub fn BloomFilter::popcount(Self) -> Int
+
+// Type aliases
+
+// Traits
+
