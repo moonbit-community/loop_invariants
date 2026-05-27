@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/pairing_heap"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct PairingHeap {
+  root : Tree
+  size : Int
+}
+pub fn PairingHeap::is_empty(Self) -> Bool
+pub fn PairingHeap::length(Self) -> Int
+pub fn PairingHeap::merge(Self, Self) -> Self
+pub fn PairingHeap::new() -> Self
+pub fn PairingHeap::peek_min(Self) -> Int64?
+pub fn PairingHeap::pop_min(Self) -> (Int64, Self)?
+pub fn PairingHeap::push(Self, Int64) -> Self
+
+type Tree
+
+// Type aliases
+
+// Traits
+
