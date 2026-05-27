@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/multiplicative_sieve"
+
+// Values
+pub fn divisor_count(Int) -> Array[Int64]
+
+pub fn mobius(Int) -> Array[Int64]
+
+pub fn sieve(Int, (Int) -> Int64, (Int, Int) -> Int64) -> Array[Int64]
+
+pub fn totient(Int) -> Array[Int64]
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
