@@ -56,7 +56,7 @@ fn build_shift(p : Array[Int]) -> Array[Int] {
 ///
 /// ```moonbit nocheck
 /// test {
-///   let arr = fn (s : String) {
+///   let arr = fn(s : String) {
 ///     let r : Array[Int] = []
 ///     for c in s {
 ///       r.push(c.to_int())
