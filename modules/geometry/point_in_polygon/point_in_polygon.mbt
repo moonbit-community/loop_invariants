@@ -41,7 +41,7 @@ pub enum Location {
 /// Renders a `Location` value as a human-readable string.
 ///
 /// Produces `"Inside"`, `"Outside"`, or `"Boundary"`.
-pub impl Show for Location with output(self, logger) {
+pub impl Show for Location with fn output(self, logger) {
   match self {
     Inside => logger.write_string("Inside")
     Outside => logger.write_string("Outside")
