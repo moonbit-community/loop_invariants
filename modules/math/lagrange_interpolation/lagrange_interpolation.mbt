@@ -104,11 +104,7 @@ fn mod_inv(a : Int64, p : Int64) -> Int64 {
 /// so `p` must be prime and not divide any `(x_i - x_j)`.
 ///
 /// Returns the value of `P(x) mod p` in `[0, p)`.
-pub fn eval_mod(
-  points : Array[(Int64, Int64)],
-  x : Int64,
-  p : Int64,
-) -> Int64 {
+pub fn eval_mod(points : Array[(Int64, Int64)], x : Int64, p : Int64) -> Int64 {
   let n = points.length()
   if n == 0 {
     return 0L
