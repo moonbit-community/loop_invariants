@@ -117,11 +117,9 @@ pub fn apsp_with_path(
 ) -> (Array[Array[Int64]], Array[Array[Int]]) {
   let n = weight.length()
   let dist = Array::makei(n, i => Array::makei(n, j => weight[i][j]))
-  let next_hop = Array::makei(n, i => Array::makei(n, j => if i == j || weight[i][j] >= INF {
-    -1
-  } else {
-    j
-  }))
+  let next_hop = Array::makei(n, i => {
+    Array::makei(n, j => if i == j || weight[i][j] >= INF { -1 } else { j })
+  })
   for k in 0..<n {
     for i in 0..<n {
       if dist[i][k] >= INF {
@@ -145,7 +143,11 @@ pub fn apsp_with_path(
 ///|
 /// Reconstruct the path from `src` to `dst` using `next_hop` produced
 /// by `apsp_with_path`. Returns an empty array if no path exists.
-pub fn reconstruct(next_hop : Array[Array[Int]], src : Int, dst : Int) -> Array[Int] {
+pub fn reconstruct(
+  next_hop : Array[Array[Int]],
+  src : Int,
+  dst : Int,
+) -> Array[Int] {
   let path : Array[Int] = []
   if src == dst {
     path.push(src)
