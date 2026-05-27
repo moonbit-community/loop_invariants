@@ -1,0 +1,20 @@
+name = "bobzhang/loop_invariants"
+
+version = "0.8.0"
+
+readme = "README.mbt.md"
+
+repository = "https://github.com/moonbit-community/loop_invariants"
+
+license = "Apache-2.0"
+
+keywords = [
+  "algorithms",
+  "data-structures",
+  "loop-invariants",
+  "competitive-programming",
+]
+
+description = "Comprehensive collection of algorithms and data structures with well-documented loop invariants for correctness reasoning"
+
+warnings = "+unnecessary_annotation"

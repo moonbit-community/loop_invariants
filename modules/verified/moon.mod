@@ -1,0 +1,15 @@
+name = "bobzhang/loop_invariants_verified"
+
+version = "0.8.0"
+
+readme = "README.md"
+
+repository = "https://github.com/moonbit-community/loop_invariants"
+
+license = "Apache-2.0"
+
+keywords = [ "algorithms", "verification", "loop-invariants" ]
+
+description = "Verified loop-invariant examples"
+
+warnings = "+unnecessary_annotation"
