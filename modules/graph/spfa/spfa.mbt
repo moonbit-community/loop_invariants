@@ -132,7 +132,11 @@ pub fn shortest_path(
 ///|
 /// Reconstruct the path from `source` to `target` using `parent`.
 /// Returns `[]` when no path exists.
-pub fn reconstruct(parent : Array[Int], source : Int, target : Int) -> Array[Int] {
+pub fn reconstruct(
+  parent : Array[Int],
+  source : Int,
+  target : Int,
+) -> Array[Int] {
   let path : Array[Int] = []
   let mut v = target
   while v != -1 && v != source {
@@ -161,12 +165,7 @@ test "spfa basic positive weights" {
   let adj : Array[Array[Edge]] = [
     [{ to: 1, w: 7L }, { to: 2, w: 9L }, { to: 5, w: 14L }],
     [{ to: 0, w: 7L }, { to: 2, w: 10L }, { to: 3, w: 15L }],
-    [
-      { to: 0, w: 9L },
-      { to: 1, w: 10L },
-      { to: 3, w: 11L },
-      { to: 5, w: 2L },
-    ],
+    [{ to: 0, w: 9L }, { to: 1, w: 10L }, { to: 3, w: 11L }, { to: 5, w: 2L }],
     [{ to: 1, w: 15L }, { to: 2, w: 11L }, { to: 4, w: 6L }],
     [{ to: 3, w: 6L }, { to: 5, w: 9L }],
     [{ to: 0, w: 14L }, { to: 2, w: 2L }, { to: 4, w: 9L }],
