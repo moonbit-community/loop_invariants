@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/bidirectional_dijkstra"
+
+// Values
+pub const INF : Int64 = 4611686018427387903
+
+pub fn shortest_path(Int, Array[Array[Edge]], Int, Int) -> Int64
+
+// Errors
+
+// Types and methods
+pub(all) struct Edge {
+  to : Int
+  w : Int64
+}
+
+// Type aliases
+
+// Traits
+
