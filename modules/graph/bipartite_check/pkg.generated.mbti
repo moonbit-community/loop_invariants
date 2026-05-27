@@ -1,0 +1,19 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/bipartite_check"
+
+// Values
+pub fn is_bipartite(Int, Array[Array[Int]]) -> BipartiteResult
+
+// Errors
+
+// Types and methods
+pub(all) struct BipartiteResult {
+  is_bipartite : Bool
+  color : Array[Int]
+  odd_cycle_edge : (Int, Int)?
+}
+
+// Type aliases
+
+// Traits
+
