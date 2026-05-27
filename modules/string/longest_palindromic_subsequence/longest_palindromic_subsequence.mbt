@@ -186,14 +186,7 @@ test "lps empty" {
 
 ///|
 test "lps reconstruction is a palindrome and subsequence" {
-  let cases = [
-    "BBABCBCAB",
-    "agbdba",
-    "character",
-    "abcdef",
-    "aaaa",
-    "racecar",
-  ]
+  let cases = ["BBABCBCAB", "agbdba", "character", "abcdef", "aaaa", "racecar"]
   for c in cases {
     let arr = s(c)
     let (len, seq) = length_and_path(arr)
