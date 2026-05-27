@@ -136,22 +136,28 @@ pub fn BloomFilter::hash_count(self : BloomFilter) -> Int {
 }
 
 ///|
+/// Logical (unsigned) right shift for Int64 -- replaces the deprecated `.lsr`.
+fn shr_logical(x : Int64, n : Int) -> Int64 {
+  (x.reinterpret_as_uint64() >> n).reinterpret_as_int64()
+}
+
+///|
 fn hash_pair(x : Int64) -> (Int64, Int64) {
   // Two reasonably independent 64-bit mixes derived from x. Variations
   // of the Murmur / Fmix64 finaliser. They are not cryptographically
   // strong, but plenty good for set membership.
   let mut h1 = x
-  h1 = h1.lxor(h1.lsr(33))
+  h1 = h1.lxor(shr_logical(h1, 33))
   h1 = h1 * 0xff51afd7ed558ccdL
-  h1 = h1.lxor(h1.lsr(33))
+  h1 = h1.lxor(shr_logical(h1, 33))
   h1 = h1 * 0xc4ceb9fe1a85ec53L
-  h1 = h1.lxor(h1.lsr(33))
+  h1 = h1.lxor(shr_logical(h1, 33))
   let mut h2 = x + 0x9e3779b97f4a7c15L
-  h2 = h2.lxor(h2.lsr(30))
+  h2 = h2.lxor(shr_logical(h2, 30))
   h2 = h2 * 0xbf58476d1ce4e5b9L
-  h2 = h2.lxor(h2.lsr(27))
+  h2 = h2.lxor(shr_logical(h2, 27))
   h2 = h2 * 0x94d049bb133111ebL
-  h2 = h2.lxor(h2.lsr(31))
+  h2 = h2.lxor(shr_logical(h2, 31))
   (h1, h2)
 }
 
