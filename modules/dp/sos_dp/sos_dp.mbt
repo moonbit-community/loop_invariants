@@ -175,7 +175,7 @@ test "sos basic 2-bit" {
 test "sos brute force 3-bit" {
   // Brute force vs SOS for n=3.
   let size = 8
-  let original = [1L, 2L, 4L, 8L, 16L, 32L, 64L, 128L]
+  let original : ReadOnlyArray[Int64] = [1L, 2L, 4L, 8L, 16L, 32L, 64L, 128L]
   let brute = Array::make(size, 0L)
   for s in 0..<size {
     for t in 0..<size {
@@ -193,7 +193,7 @@ test "sos brute force 3-bit" {
 
 ///|
 test "sos invertible by mobius" {
-  let original = [3L, 1L, 4L, 1L, 5L, 9L, 2L, 6L]
+  let original : ReadOnlyArray[Int64] = [3L, 1L, 4L, 1L, 5L, 9L, 2L, 6L]
   let f = Array::makei(original.length(), i => original[i])
   @debug.assert_eq(sum_over_subsets(f), true)
   @debug.assert_eq(mobius_subsets(f), true)
@@ -216,7 +216,7 @@ test "sos supersets sum" {
 
 ///|
 test "sos supersets invertible by mobius" {
-  let original = [3L, 1L, 4L, 1L, 5L, 9L, 2L, 6L]
+  let original : ReadOnlyArray[Int64] = [3L, 1L, 4L, 1L, 5L, 9L, 2L, 6L]
   let f = Array::makei(original.length(), i => original[i])
   @debug.assert_eq(sum_over_supersets(f), true)
   @debug.assert_eq(mobius_supersets(f), true)
@@ -250,8 +250,8 @@ test "sos subset convolution sanity" {
   // (f * g)[S] = sum_{A | B = S, A & B = 0} f[A] g[B] -- subset
   // convolution. The simpler "or-convolution" is sum_{A | B = S}, which
   // equals SOS(f) * SOS(g) pointwise then inverse-SOS.
-  let f = [0L, 1L, 0L, 0L]
-  let g = [0L, 0L, 1L, 0L]
+  let f : ReadOnlyArray[Int64] = [0L, 1L, 0L, 0L]
+  let g : ReadOnlyArray[Int64] = [0L, 0L, 1L, 0L]
   // f[01] = 1, g[10] = 1, all else 0; so or-conv should give:
   //   h[11] = 1 (01 | 10 = 11)
   //   h[other] = 0

@@ -305,7 +305,7 @@ test "sieve matches single" {
 test "sieve small example" {
   // phi(1..10) = 1, 1, 2, 2, 4, 2, 6, 4, 6, 4
   let t = sieve(10)
-  let expected = [0L, 1L, 1L, 2L, 2L, 4L, 2L, 6L, 4L, 6L, 4L]
+  let expected : ReadOnlyArray[Int64] = [0L, 1L, 1L, 2L, 2L, 4L, 2L, 6L, 4L, 6L, 4L]
   for i in 0..<=10 {
     @debug.assert_eq(t[i], expected[i])
   }
