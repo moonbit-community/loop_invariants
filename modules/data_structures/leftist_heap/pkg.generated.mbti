@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/leftist_heap"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct LeftistHeap {
+  root : Tree
+  size : Int
+}
+pub fn LeftistHeap::is_empty(Self) -> Bool
+pub fn LeftistHeap::length(Self) -> Int
+pub fn LeftistHeap::merge(Self, Self) -> Self
+pub fn LeftistHeap::new() -> Self
+pub fn LeftistHeap::peek_min(Self) -> Int64?
+pub fn LeftistHeap::pop_min(Self) -> (Int64, Self)?
+pub fn LeftistHeap::push(Self, Int64) -> Self
+
+type Tree
+
+// Type aliases
+
+// Traits
+
