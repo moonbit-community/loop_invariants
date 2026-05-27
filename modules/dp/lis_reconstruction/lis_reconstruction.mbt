@@ -76,7 +76,9 @@ pub fn length(arr : Array[Int]) -> Int {
 ///
 /// ```moonbit nocheck
 /// test {
-///   let (len, seq) = @lis_reconstruction.length_and_path([10, 9, 2, 5, 3, 7, 101, 18])
+///   let (len, seq) = @lis_reconstruction.length_and_path([
+///     10, 9, 2, 5, 3, 7, 101, 18,
+///   ])
 ///   @debug.assert_eq(len, 4)
 ///   // One valid sequence: [2, 3, 7, 18] or [2, 5, 7, 101].
 /// }
@@ -182,7 +184,7 @@ test "lis path is valid LIS" {
 
 ///|
 test "lis large" {
-  let arr = Array::makei(1000, i => (i * 7 % 23) + i / 50)
+  let arr = Array::makei(1000, i => i * 7 % 23 + i / 50)
   let len = length(arr)
   let (len2, _) = length_and_path(arr)
   @debug.assert_eq(len, len2)
