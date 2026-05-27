@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_dp/lis_reconstruction"
+
+// Values
+pub fn length(Array[Int]) -> Int
+
+pub fn length_and_path(Array[Int]) -> (Int, Array[Int])
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
