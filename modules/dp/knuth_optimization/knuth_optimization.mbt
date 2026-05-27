@@ -61,7 +61,9 @@ pub fn solve(n : Int, w : (Int, Int) -> Int64) -> Int64 {
     return 0L
   }
   let dp = Array::makei(n, _ => Array::make(n, 0L))
-  let opt = Array::makei(n, i => Array::makei(n, j => if i == j { i } else { 0 }))
+  let opt = Array::makei(n, i => {
+    Array::makei(n, j => if i == j { i } else { 0 })
+  })
   // dp[i][i] = 0 already.
   for len in 2..<=n {
     for i in 0..<=(n - len) {
@@ -94,7 +96,9 @@ pub fn solve_table(n : Int, w : (Int, Int) -> Int64) -> Array[Array[Int64]] {
     return []
   }
   let dp = Array::makei(n, _ => Array::make(n, 0L))
-  let opt = Array::makei(n, i => Array::makei(n, j => if i == j { i } else { 0 }))
+  let opt = Array::makei(n, i => {
+    Array::makei(n, j => if i == j { i } else { 0 })
+  })
   for len in 2..<=n {
     for i in 0..<=(n - len) {
       let j = i + len - 1
