@@ -1,0 +1,16 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/lagrange_interpolation"
+
+// Values
+pub fn eval_mod(Array[(Int64, Int64)], Int64, Int64) -> Int64
+
+pub fn evaluate(Array[(Double, Double)], Double) -> Double
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
