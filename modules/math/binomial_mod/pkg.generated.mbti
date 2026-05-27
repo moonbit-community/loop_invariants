@@ -1,0 +1,23 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/binomial_mod"
+
+// Values
+pub fn build(Int, Int64) -> BinomTable
+
+pub fn lucas(Int64, Int64, Int64) -> Int64
+
+// Errors
+
+// Types and methods
+pub struct BinomTable {
+  fact : Array[Int64]
+  inv_fact : Array[Int64]
+  modulus : Int64
+}
+pub fn BinomTable::choose(Self, Int, Int) -> Int64
+pub fn BinomTable::factorial(Self, Int) -> Int64
+
+// Type aliases
+
+// Traits
+
