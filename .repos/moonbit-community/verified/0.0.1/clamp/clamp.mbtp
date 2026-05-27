@@ -1,7 +1,0 @@
-predicate valid_bounds(lo : Int, hi : Int) {
-  lo <= hi
-}
-
-predicate clamped(lo : Int, hi : Int, result : Int) {
-  (result >= lo) && (result <= hi)
-}
