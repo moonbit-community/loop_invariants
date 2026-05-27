@@ -286,12 +286,7 @@ test "bidir invalid endpoints" {
 ///|
 test "bidir agrees with Dijkstra" {
   // Compare with a naive Dijkstra on a slightly bigger graph.
-  fn dijkstra(
-    n : Int,
-    adj : Array[Array[Edge]],
-    s : Int,
-    t : Int,
-  ) -> Int64 {
+  fn dijkstra(n : Int, adj : Array[Array[Edge]], s : Int, t : Int) -> Int64 {
     let dist = Array::make(n, INF)
     dist[s] = 0L
     let heap = MinHeap::new()
@@ -323,12 +318,7 @@ test "bidir agrees with Dijkstra" {
   let adj : Array[Array[Edge]] = [
     [{ to: 1, w: 7L }, { to: 2, w: 9L }, { to: 5, w: 14L }],
     [{ to: 0, w: 7L }, { to: 2, w: 10L }, { to: 3, w: 15L }],
-    [
-      { to: 0, w: 9L },
-      { to: 1, w: 10L },
-      { to: 3, w: 11L },
-      { to: 5, w: 2L },
-    ],
+    [{ to: 0, w: 9L }, { to: 1, w: 10L }, { to: 3, w: 11L }, { to: 5, w: 2L }],
     [{ to: 1, w: 15L }, { to: 2, w: 11L }, { to: 4, w: 6L }],
     [{ to: 3, w: 6L }, { to: 5, w: 9L }],
     [{ to: 0, w: 14L }, { to: 2, w: 2L }, { to: 4, w: 9L }],
