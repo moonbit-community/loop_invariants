@@ -1,0 +1,28 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/spfa"
+
+// Values
+pub const INF : Int64 = 4611686018427387903
+
+pub fn reconstruct(Array[Int], Int, Int) -> Array[Int]
+
+pub fn shortest_path(Int, Array[Array[Edge]], Int) -> SpfaResult
+
+// Errors
+
+// Types and methods
+pub(all) struct Edge {
+  to : Int
+  w : Int64
+}
+
+pub(all) struct SpfaResult {
+  dist : Array[Int64]
+  parent : Array[Int]
+  negative_cycle : Bool
+}
+
+// Type aliases
+
+// Traits
+
