@@ -84,8 +84,7 @@ fn merge_trees(t1 : Tree, t2 : Tree) -> Tree {
         make_node(k1, l1, merge_trees(r1, h2))
       } else {
         match t2 {
-          Node(_, k2_, l2, r2) =>
-            make_node(k2_, l2, merge_trees(t1, r2))
+          Node(_, k2_, l2, r2) => make_node(k2_, l2, merge_trees(t1, r2))
           Empty => t1
         }
       }
@@ -135,7 +134,10 @@ pub fn LeftistHeap::pop_min(self : LeftistHeap) -> (Int64, LeftistHeap)? {
 
 ///|
 /// Merge two heaps. Both originals are unchanged.
-pub fn LeftistHeap::merge(self : LeftistHeap, other : LeftistHeap) -> LeftistHeap {
+pub fn LeftistHeap::merge(
+  self : LeftistHeap,
+  other : LeftistHeap,
+) -> LeftistHeap {
   { root: merge_trees(self.root, other.root), size: self.size + other.size }
 }
 
@@ -246,7 +248,7 @@ test "leftist as a sort" {
 test "leftist large" {
   let mut h = LeftistHeap::new()
   for i in 0L..<1000L {
-    h = h.push((i * 31L) % 997L)
+    h = h.push(i * 31L % 997L)
   }
   @debug.assert_eq(h.length(), 1000)
   // The minimum must be 0 since 31 and 997 are coprime so the orbit
