@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/karatsuba"
+
+// Values
+pub fn add(Array[Int64], Array[Int64]) -> Array[Int64]
+
+pub fn from_string(String) -> Array[Int64]
+
+pub fn mul(Array[Int64], Array[Int64]) -> Array[Int64]
+
+pub fn mul_naive(Array[Int64], Array[Int64]) -> Array[Int64]
+
+pub fn sub(Array[Int64], Array[Int64]) -> Array[Int64]
+
+pub fn to_string(Array[Int64]) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
