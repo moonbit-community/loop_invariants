@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/welford"
+
+// Values
+pub fn new() -> Welford
+
+// Errors
+
+// Types and methods
+pub struct Welford {
+  mut count : Int64
+  mut mean : Double
+  mut m2 : Double
+}
+pub fn Welford::add(Self, Double) -> Unit
+pub fn Welford::count(Self) -> Int64
+pub fn Welford::mean(Self) -> Double
+pub fn Welford::merge_in(Self, Self) -> Unit
+pub fn Welford::std_sample(Self) -> Double
+pub fn Welford::variance_pop(Self) -> Double
+pub fn Welford::variance_sample(Self) -> Double
+
+// Type aliases
+
+// Traits
+
