@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/montgomery"
+
+// Values
+pub fn new(Int64) -> MontgomeryCtx?
+
+// Errors
+
+// Types and methods
+pub struct MontgomeryCtx {
+  n : Int64
+  r2 : Int64
+  n_inv : Int64
+}
+pub fn MontgomeryCtx::from_mont(Self, Int64) -> Int64
+pub fn MontgomeryCtx::mul_mod(Self, Int64, Int64) -> Int64
+pub fn MontgomeryCtx::mul_mont(Self, Int64, Int64) -> Int64
+pub fn MontgomeryCtx::pow_mod(Self, Int64, Int64) -> Int64
+pub fn MontgomeryCtx::to_mont(Self, Int64) -> Int64
+
+// Type aliases
+
+// Traits
+
