@@ -148,7 +148,9 @@ pub fn divisor_count(n : Int) -> Array[Int64] {
 test "sieve produces totient values" {
   let phi = totient(12)
   // phi(1..12) = 1, 1, 2, 2, 4, 2, 6, 4, 6, 4, 10, 4
-  let expected = [0L, 1L, 1L, 2L, 2L, 4L, 2L, 6L, 4L, 6L, 4L, 10L, 4L]
+  let expected : ReadOnlyArray[Int64] = [
+    0L, 1L, 1L, 2L, 2L, 4L, 2L, 6L, 4L, 6L, 4L, 10L, 4L,
+  ]
   for i in 0..<=12 {
     @debug.assert_eq(phi[i], expected[i])
   }
@@ -158,7 +160,9 @@ test "sieve produces totient values" {
 test "sieve produces mobius values" {
   let mu = mobius(12)
   // mu(1..12) = 1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0
-  let expected = [0L, 1L, -1L, -1L, 0L, -1L, 1L, -1L, 0L, 0L, 1L, -1L, 0L]
+  let expected : ReadOnlyArray[Int64] = [
+    0L, 1L, -1L, -1L, 0L, -1L, 1L, -1L, 0L, 0L, 1L, -1L, 0L,
+  ]
   for i in 0..<=12 {
     @debug.assert_eq(mu[i], expected[i])
   }
@@ -168,7 +172,9 @@ test "sieve produces mobius values" {
 test "sieve produces divisor counts" {
   let d = divisor_count(12)
   // d(1..12) = 1, 2, 2, 3, 2, 4, 2, 4, 3, 4, 2, 6
-  let expected = [0L, 1L, 2L, 2L, 3L, 2L, 4L, 2L, 4L, 3L, 4L, 2L, 6L]
+  let expected : ReadOnlyArray[Int64] = [
+    0L, 1L, 2L, 2L, 3L, 2L, 4L, 2L, 4L, 3L, 4L, 2L, 6L,
+  ]
   for i in 0..<=12 {
     @debug.assert_eq(d[i], expected[i])
   }

@@ -171,7 +171,7 @@ test "spfa basic positive weights" {
     [{ to: 0, w: 14L }, { to: 2, w: 2L }, { to: 4, w: 9L }],
   ]
   let r = shortest_path(6, adj, 0)
-  let expected = [0L, 7L, 9L, 20L, 20L, 11L]
+  let expected : ReadOnlyArray[Int64] = [0L, 7L, 9L, 20L, 20L, 11L]
   for v in 0..<6 {
     @debug.assert_eq(r.dist[v], expected[v])
   }
