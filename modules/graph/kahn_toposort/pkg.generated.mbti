@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/kahn_toposort"
+
+// Values
+pub fn lex_toposort(Int, Array[Array[Int]]) -> KahnResult
+
+pub fn toposort(Int, Array[Array[Int]]) -> KahnResult
+
+// Errors
+
+// Types and methods
+pub(all) struct KahnResult {
+  order : Array[Int]
+  has_cycle : Bool
+}
+
+// Type aliases
+
+// Traits
+
