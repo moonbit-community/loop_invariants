@@ -129,7 +129,7 @@ test "knuth matrix chain" {
   // For dims = [40, 20, 30, 10, 30]:
   //   A: 40x20, B: 20x30, C: 30x10, D: 10x30
   // Optimal parenthesisation cost (with the standard MCM recurrence) is 26000.
-  let dims = [40, 20, 30, 10, 30]
+  let dims : ReadOnlyArray[Int] = [40, 20, 30, 10, 30]
   let m = dims.length()
   // dp[i][j] = min cost to compute A_i...A_j.
   // Recurrence: dp[i][j] = min_{k in [i, j-1]} dp[i][k] + dp[k+1][j] +

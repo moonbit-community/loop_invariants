@@ -38,6 +38,7 @@
 //    sum >= mu, no shorter path exists."
 
 ///|
+/// A weighted directed edge `u -> to` with non-negative cost `w`.
 pub(all) struct Edge {
   to : Int
   w : Int64
