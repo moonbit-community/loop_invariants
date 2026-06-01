@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/binomial_heap"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct BinomialHeap {
+  trees : Array[Tree]
+  size : Int
+}
+pub fn BinomialHeap::is_empty(Self) -> Bool
+pub fn BinomialHeap::length(Self) -> Int
+pub fn BinomialHeap::merge(Self, Self) -> Self
+pub fn BinomialHeap::new() -> Self
+pub fn BinomialHeap::peek_min(Self) -> Int64?
+pub fn BinomialHeap::pop_min(Self) -> (Int64, Self)?
+pub fn BinomialHeap::push(Self, Int64) -> Self
+
+type Tree
+
+// Type aliases
+
+// Traits
+
