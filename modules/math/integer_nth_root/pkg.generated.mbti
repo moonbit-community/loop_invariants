@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/integer_nth_root"
+
+// Values
+pub fn icbrt(Int64) -> Int64
+
+pub fn is_perfect_nth_power(Int64, Int) -> Bool
+
+pub fn isqrt(Int64) -> Int64
+
+pub fn nth_root(Int64, Int) -> Int64
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
