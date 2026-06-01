@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/zobrist_hash"
+
+// Values
+pub fn with_seed(Int, Int, Int64) -> Zobrist
+
+// Errors
+
+// Types and methods
+pub struct Zobrist {
+  cells : Int
+  types : Int
+  key : Array[Int64]
+  current : Array[Int]
+  mut hash : Int64
+}
+pub fn Zobrist::full_hash(Self) -> Int64
+pub fn Zobrist::get_cell(Self, Int) -> Int
+pub fn Zobrist::hash(Self) -> Int64
+pub fn Zobrist::set_cell(Self, Int, Int) -> Int64
+
+// Type aliases
+
+// Traits
+
