@@ -1,0 +1,26 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/skew_heap"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct SkewHeap {
+  root : Tree
+  size : Int
+}
+pub fn SkewHeap::is_empty(Self) -> Bool
+pub fn SkewHeap::length(Self) -> Int
+pub fn SkewHeap::merge(Self, Self) -> Self
+pub fn SkewHeap::new() -> Self
+pub fn SkewHeap::peek_min(Self) -> Int64?
+pub fn SkewHeap::pop_min(Self) -> (Int64, Self)?
+pub fn SkewHeap::push(Self, Int64) -> Self
+
+type Tree
+
+// Type aliases
+
+// Traits
+
