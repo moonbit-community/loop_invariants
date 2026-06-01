@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_dp/coin_change_count"
+
+// Values
+pub fn count_ordered(Array[Int], Int) -> Int64
+
+pub fn count_unordered(Array[Int], Int) -> Int64
+
+pub fn min_coins(Array[Int], Int) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
