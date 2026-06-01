@@ -1,6 +1,6 @@
 name = "bobzhang/loop_invariants_data_structures"
 
-version = "0.9.0"
+version = "0.10.0"
 
 readme = "README.md"
 
