@@ -56,11 +56,26 @@ fn abs64(x : Int64) -> Int64 {
 
 ///|
 fn ext_gcd(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
-  if b == 0L {
-    return (a, 1L, 0L)
+  // Iterative extended Euclidean algorithm.  Maintains the invariant
+  //   old_r = a * old_s + b * old_t
+  //   r     = a * s     + b * t
+  // until r == 0, at which point old_r == gcd(a, b).
+  let mut old_r = a
+  let mut r = b
+  let mut old_s = 1L
+  let mut s = 0L
+  while r != 0L {
+    let q = old_r / r
+    let new_r = old_r - q * r
+    old_r = r
+    r = new_r
+    let new_s = old_s - q * s
+    old_s = s
+    s = new_s
   }
-  let (g, x1, y1) = ext_gcd(b, a % b)
-  (g, y1, x1 - a / b * y1)
+  // Recover the second Bezout coefficient from the identity.
+  let t = if b == 0L { 0L } else { (old_r - a * old_s) / b }
+  (old_r, old_s, t)
 }
 
 ///|
