@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_dp/burst_balloons"
+
+// Values
+pub fn max_coins(Array[Int64]) -> Int64
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
