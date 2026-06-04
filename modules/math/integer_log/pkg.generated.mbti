@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/integer_log"
+
+// Values
+pub fn ceil_log(Int64, Int) -> Int
+
+pub fn floor_log(Int64, Int) -> Int
+
+pub fn is_perfect_power(Int64) -> Bool
+
+pub fn is_power_of(Int64, Int) -> Bool
+
+pub fn log2_ceil(Int64) -> Int
+
+pub fn log2_floor(Int64) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
