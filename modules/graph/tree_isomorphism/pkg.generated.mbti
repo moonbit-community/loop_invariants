@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_graph/tree_isomorphism"
+
+// Values
+pub fn canonical_string(Int, Int, Array[Array[Int]]) -> String
+
+pub fn is_isomorphic(Int, Array[Array[Int]], Int, Array[Array[Int]]) -> Bool
+
+pub fn unrooted_canonical(Int, Array[Array[Int]]) -> String
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
