@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_string/repetition_count"
+
+// Values
+pub fn count_occurrences(Array[Int], Array[Int]) -> Int
+
+pub fn is_periodic(Array[Int]) -> Bool
+
+pub fn repetition_count(Array[Int]) -> Int
+
+pub fn smallest_period(Array[Int]) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
