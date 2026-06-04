@@ -1,0 +1,14 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/inversion_count"
+
+// Values
+pub fn count(Array[Int]) -> Int64
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
