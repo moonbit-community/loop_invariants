@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/min_max_heap"
+
+// Values
+
+// Errors
+
+// Types and methods
+pub struct MinMaxHeap {
+  data : Array[Int64]
+}
+pub fn MinMaxHeap::is_empty(Self) -> Bool
+pub fn MinMaxHeap::length(Self) -> Int
+pub fn MinMaxHeap::new() -> Self
+pub fn MinMaxHeap::peek_max(Self) -> Int64?
+pub fn MinMaxHeap::peek_min(Self) -> Int64?
+pub fn MinMaxHeap::pop_max(Self) -> Int64?
+pub fn MinMaxHeap::pop_min(Self) -> Int64?
+pub fn MinMaxHeap::push(Self, Int64) -> Unit
+
+// Type aliases
+
+// Traits
+
