@@ -1,0 +1,29 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_data_structures/bitset"
+
+// Values
+pub fn new(Int) -> BitSet
+
+// Errors
+
+// Types and methods
+pub struct BitSet {
+  bits : Array[Int64]
+  cap : Int
+}
+pub fn BitSet::and_in(Self, Self) -> Unit
+pub fn BitSet::capacity(Self) -> Int
+pub fn BitSet::contains(Self, Int) -> Bool
+pub fn BitSet::count_set(Self) -> Int
+pub fn BitSet::first_set(Self) -> Int
+pub fn BitSet::flip(Self, Int) -> Unit
+pub fn BitSet::next_set(Self, Int) -> Int
+pub fn BitSet::or_in(Self, Self) -> Unit
+pub fn BitSet::set(Self, Int) -> Unit
+pub fn BitSet::unset(Self, Int) -> Unit
+pub fn BitSet::xor_in(Self, Self) -> Unit
+
+// Type aliases
+
+// Traits
+
