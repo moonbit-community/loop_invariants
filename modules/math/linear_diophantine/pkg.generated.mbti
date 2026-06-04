@@ -1,0 +1,20 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_math/linear_diophantine"
+
+// Values
+pub fn solve(Int64, Int64, Int64) -> DiophantineResult
+
+pub fn solve_min_x(Int64, Int64, Int64) -> DiophantineResult
+
+// Errors
+
+// Types and methods
+pub(all) struct DiophantineResult {
+  solution : (Int64, Int64)?
+  period : (Int64, Int64)
+}
+
+// Type aliases
+
+// Traits
+
