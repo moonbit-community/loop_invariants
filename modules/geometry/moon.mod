@@ -1,6 +1,6 @@
 name = "bobzhang/loop_invariants_geometry"
 
-version = "0.12.0"
+version = "0.13.0"
 
 readme = "README.md"
 
