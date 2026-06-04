@@ -1,0 +1,18 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_geometry/winding_number"
+
+// Values
+pub fn inside_evenodd(Array[(Double, Double)], (Double, Double)) -> Bool
+
+pub fn inside_nonzero(Array[(Double, Double)], (Double, Double)) -> Bool
+
+pub fn winding_number(Array[(Double, Double)], (Double, Double)) -> Int
+
+// Errors
+
+// Types and methods
+
+// Type aliases
+
+// Traits
+
