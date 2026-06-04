@@ -111,10 +111,7 @@ test "7/3 and 22/7" {
 ```mbt check
 ///|
 test "415/93 = [4; 2, 6, 7]" {
-  debug_inspect(
-    @continued_fraction.to_cf(415L, 93L),
-    content="[4, 2, 6, 7]",
-  )
+  debug_inspect(@continued_fraction.to_cf(415L, 93L), content="[4, 2, 6, 7]")
 }
 ```
 
@@ -151,10 +148,7 @@ test "pi convergents" {
 test "negative numerator" {
   // -7/3 = -3 + 2/3 = -3 + 1/(1 + 1/2) → [-3; 1, 2]
   debug_inspect(@continued_fraction.to_cf(-7L, 3L), content="[-3, 1, 2]")
-  debug_inspect(
-    @continued_fraction.from_cf([-3L, 1L, 2L]),
-    content="(-7, 3)",
-  )
+  debug_inspect(@continued_fraction.from_cf([-3L, 1L, 2L]), content="(-7, 3)")
 }
 ```
 
