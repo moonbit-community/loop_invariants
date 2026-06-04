@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_techniques/topk_heap"
+
+// Values
+pub fn new(Int) -> TopK
+
+pub fn top_k(Array[Int64], Int) -> Array[Int64]
+
+// Errors
+
+// Types and methods
+pub struct TopK {
+  k : Int
+  data : Array[Int64]
+}
+pub fn TopK::add(Self, Int64) -> Unit
+pub fn TopK::capacity(Self) -> Int
+pub fn TopK::length(Self) -> Int
+pub fn TopK::top_k_sorted(Self) -> Array[Int64]
+
+// Type aliases
+
+// Traits
+
