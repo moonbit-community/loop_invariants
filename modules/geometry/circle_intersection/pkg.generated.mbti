@@ -1,0 +1,22 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "bobzhang/loop_invariants_geometry/circle_intersection"
+
+// Values
+pub fn circle_circle((Double, Double), Double, (Double, Double), Double) -> Intersection
+
+pub fn line_circle((Double, Double), (Double, Double), (Double, Double), Double) -> Intersection
+
+// Errors
+
+// Types and methods
+pub(all) enum Intersection {
+  Empty
+  Single((Double, Double))
+  Pair((Double, Double), (Double, Double))
+  Infinite
+}
+
+// Type aliases
+
+// Traits
+
