@@ -88,7 +88,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
   // Main insertion loop: walk down tree, matching suffix characters
   outer~: for current = 0, pos = start {
     // Base case: entire suffix has been matched (shouldn't happen with sentinel)
-    guard pos < n else { break }
+    guard pos < n else { break outer~ }
 
     // Step 1: Find edge starting with current suffix character
     // Case A: No matching edge - create new leaf
@@ -96,7 +96,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
       let leaf = nodes.length()
       nodes.push(Node())
       nodes[current].edges.push({ start: pos, end: n, child: leaf })
-      break
+      break outer~
     }
 
     // Step 2: Match suffix against edge label

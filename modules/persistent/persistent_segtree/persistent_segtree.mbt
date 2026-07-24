@@ -405,7 +405,7 @@ fn KthSmallest::KthSmallest(arr : Array[Int64]) -> KthSmallest {
 
   // Remove duplicates and build value -> index map
   let unique_vals : Array[Int64] = []
-  let val_to_idx : Map[Int64, Int] = {}
+  let val_to_idx : Map[Int64, Int] = Map([])
   for i in 0..<sorted_vals.length() {
     if i == 0 || sorted_vals[i] != sorted_vals[i - 1] {
       val_to_idx[sorted_vals[i]] = unique_vals.length()

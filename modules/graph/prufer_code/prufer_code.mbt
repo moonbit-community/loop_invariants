@@ -130,7 +130,7 @@ fn build_tree(
   }
   let adj = build_adj(n)
   let deg = Array::make(n, 0)
-  let seen : Map[Int64, Bool] = {}
+  let seen : Map[Int64, Bool] = Map([])
   let n64 = n.to_int64()
   for edge in edges {
     let (u, v) = edge
@@ -243,7 +243,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   }
   let next_idx = Array::make(n, 0)
   let code : Array[Int] = []
-  for step in 0..<(n - 2) {
+  for _step in 0..<(n - 2) {
     let leaf = match heap.pop() {
       Some(v) => v
       None => return None
@@ -267,7 +267,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
       heap.push(v)
     }
   } where {
-    proof_invariant: step >= 0 && step <= n - 2,
+    proof_invariant: _step >= 0 && _step <= n - 2,
     proof_reasoning: (
       #|INVARIANT (encode steps):
       #|After step iterations, code has length step and exactly step leaves
@@ -277,7 +277,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
       #|TERMINATION:
       #|At step = n-2, the Prufer code is complete.
     ),
-    proof_invariant: code.length() == step,
+    proof_invariant: code.length() == _step,
     proof_reasoning: (
       #|INVARIANT (code length):
       #|code length equals the number of processed leaves.

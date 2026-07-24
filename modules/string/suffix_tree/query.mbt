@@ -55,7 +55,7 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
 
   // Walk down tree matching pattern
   outer~: for node = 0, i = 0 {
-    guard i < p.length() else { break true }
+    guard i < p.length() else { break outer~ true }
 
     // Find edge starting with p[i]
     let edges = self.nodes[node].edges
@@ -160,7 +160,7 @@ pub fn SuffixTree::count_occurrences(
     return 0
   }
   outer~: for node = 0, i = 0 {
-    guard i < p.length() else { break 0 }
+    guard i < p.length() else { break outer~ 0 }
 
     // Find edge starting with p[i]
     let edges = self.nodes[node].edges
