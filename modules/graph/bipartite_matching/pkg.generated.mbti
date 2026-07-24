@@ -6,9 +6,7 @@ package "bobzhang/loop_invariants_graph/bipartite_matching"
 // Errors
 
 // Types and methods
-pub struct BipartiteGraph {
-  // private fields
-}
+type BipartiteGraph
 pub fn BipartiteGraph::BipartiteGraph(Int, Int) -> Self
 pub fn BipartiteGraph::add_edge(Self, Int, Int) -> Unit
 pub fn BipartiteGraph::hopcroft_karp(Self) -> HopcroftKarp
