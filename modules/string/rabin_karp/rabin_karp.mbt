@@ -247,7 +247,7 @@ pub fn rabin_karp_multi(
   }
 
   // Group patterns by length
-  let by_length : Map[Int, Array[(Int, Int64)]] = {} // length -> [(pattern_idx, hash)]
+  let by_length : Map[Int, Array[(Int, Int64)]] = Map([]) // length -> [(pattern_idx, hash)]
   for i, pat in patterns {
     let m = pat.length()
     if m > 0 && m <= n {

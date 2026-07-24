@@ -18,13 +18,13 @@
 //   X = excluded vertices (already considered, would yield a non-
 //       maximal output if added).
 //
-// extend(R, P, X):
+// expand(R, P, X):
 //   if P is empty and X is empty:
 //     report R as a maximal clique
 //     return
 //   pivot = the vertex in P ∪ X with the most neighbours inside P
 //   for each v in P \ N(pivot):
-//     extend(R ∪ {v},  P ∩ N(v),  X ∩ N(v))
+//     expand(R ∪ {v},  P ∩ N(v),  X ∩ N(v))
 //     P = P \ {v}
 //     X = X ∪ {v}
 //
@@ -130,13 +130,13 @@ pub fn maximal_cliques(
   }
   let r : Array[Int] = []
   let x : Array[Int] = []
-  extend(neighbours, results, r, p_init, x)
+  expand(neighbours, results, r, p_init, x)
   results
 }
 
 ///|
 /// Recursive enumeration step. `neighbours[i]` is sorted ascending.
-fn extend(
+fn expand(
   neighbours : Array[Array[Int]],
   results : Array[Array[Int]],
   r : Array[Int],
@@ -166,7 +166,7 @@ fn extend(
     let new_p = intersect_sorted(p_copy[:], nv[:])
     let new_x = intersect_sorted(x_copy[:], nv[:])
     r.push(v)
-    extend(neighbours, results, r, new_p, new_x)
+    expand(neighbours, results, r, new_p, new_x)
     let _ = r.pop()
     // Move v from P to X for the remaining iterations.
     let _ = remove_from_sorted(p_copy, v)

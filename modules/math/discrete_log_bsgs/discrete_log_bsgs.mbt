@@ -236,7 +236,7 @@ pub fn discrete_log_bsgs(a : Int64, b : Int64, p : Int64) -> Int64? {
   // is minimised for each i. We therefore only insert if the key is
   // absent OR overwrite unconditionally and rely on iterating i upward;
   // see the giant-step loop for the tie-break argument.
-  let table : Map[Int64, Int64] = {}
+  let table : Map[Int64, Int64] = Map([])
   let _ = for j = 0L, cur = b0 {
     if j >= m {
       break ()

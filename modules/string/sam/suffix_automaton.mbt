@@ -84,7 +84,7 @@ fn SAMState::copy_trans(self : SAMState) -> SAMState {
 ///
 /// A SAM is a minimal DFA that accepts every substring of the text it was
 /// built from and no other strings.  It is constructed incrementally by
-/// calling `extend` once per character (or via the convenience constructor
+/// calling `add_char` once per character (or via the convenience constructor
 /// `build`).
 ///
 /// Structural invariants maintained at all times:
@@ -138,7 +138,7 @@ fn SuffixAutomaton::SuffixAutomaton() -> SuffixAutomaton {
 /// 4. Update `last = cur`.
 ///
 /// Time per call: amortized O(1).
-fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
+fn SuffixAutomaton::add_char(self : SuffixAutomaton, c : Int) -> Unit {
   let pos = self.states[self.last].len
 
   // Create new state
@@ -219,7 +219,7 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
 ///|
 /// Build a suffix automaton for the given string.
 ///
-/// Calls `extend` once per character in left-to-right order.
+/// Calls `add_char` once per character in left-to-right order.
 /// The resulting automaton accepts every substring of `s` and no other
 /// strings.
 ///
@@ -227,7 +227,7 @@ fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
 fn SuffixAutomaton::build(s : String) -> SuffixAutomaton {
   let sam = SuffixAutomaton()
   for c in s {
-    sam.extend(c.to_int())
+    sam.add_char(c.to_int())
   }
   sam
 }

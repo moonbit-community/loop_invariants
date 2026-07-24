@@ -380,7 +380,7 @@ fn count_distinct_substrings(s : String, k : Int) -> Int {
     return 0
   }
   let hash = StringHash(s)
-  let seen : Map[Int64, Bool] = {}
+  let seen : Map[Int64, Bool] = Map([])
   let last = n - k
   for i in 0..<=last {
     let h = hash.get_hash(i, i + k)

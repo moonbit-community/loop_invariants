@@ -419,8 +419,8 @@ fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
   }
   for i in 1..<n; max_ending_here = nums[0], max_so_far = nums[0] {
     // Either start fresh at nums[i] or extend previous subarray
-    let extend = max_ending_here + nums[i]
-    let new_max_ending = if nums[i] > extend { nums[i] } else { extend }
+    let extended = max_ending_here + nums[i]
+    let new_max_ending = if nums[i] > extended { nums[i] } else { extended }
     let new_max_so_far = if new_max_ending > max_so_far {
       new_max_ending
     } else {

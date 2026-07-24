@@ -70,7 +70,7 @@ fn SAMState::SAMState() -> SAMState {
 ///
 /// ```
 /// let sam = SuffixAutomaton(max_len)
-/// sam.build(s)          // or call extend() character by character
+/// sam.build(s)          // or call add_char() character by character
 /// sam.contains(pattern) // O(|pattern|) substring test
 /// sam.count_distinct_substrings()  // O(n)
 /// sam.count_occurrences(pattern)   // O(n + |pattern|)
@@ -79,7 +79,7 @@ fn SAMState::SAMState() -> SAMState {
 /// Fields:
 /// - `states` - array of all SAM states (indices 0 .. size-1 are valid)
 /// - `last`   - index of the state that corresponds to the full string built
-///              so far (updated after every `extend` call)
+///              so far (updated after every `add_char` call)
 /// - `size`   - number of allocated states (includes initial state at index 0)
 pub struct SuffixAutomaton {
   states : Array[SAMState]
@@ -92,8 +92,8 @@ pub struct SuffixAutomaton {
 /// characters.
 ///
 /// The backing array is pre-allocated to `2 * max_len + 1` slots so that
-/// every `extend` call is O(1) amortised without further allocation.
-/// Call `build` (or repeated `extend`) to populate the automaton.
+/// every `add_char` call is O(1) amortised without further allocation.
+/// Call `build` (or repeated `add_char`) to populate the automaton.
 ///
 /// Parameters:
 /// - `max_len` - maximum number of characters that will be fed to this SAM
@@ -129,7 +129,7 @@ pub fn SuffixAutomaton::SuffixAutomaton(max_len : Int) -> SuffixAutomaton {
 /// After the call, `self.last` is updated to `cur`.
 ///
 /// Time complexity: O(1) amortised.
-pub fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
+pub fn SuffixAutomaton::add_char(self : SuffixAutomaton, c : Int) -> Unit {
   let cur = self.size
   self.size = self.size + 1
   self.states[cur].len = self.states[self.last].len + 1
@@ -174,7 +174,7 @@ pub fn SuffixAutomaton::extend(self : SuffixAutomaton, c : Int) -> Unit {
 }
 
 ///|
-/// Build the suffix automaton from string `s` by calling `extend` for every
+/// Build the suffix automaton from string `s` by calling `add_char` for every
 /// character in order.
 ///
 /// Only lowercase Latin letters ('a'-'z') are indexed; any other character is
@@ -186,7 +186,7 @@ pub fn SuffixAutomaton::build(self : SuffixAutomaton, s : String) -> Unit {
   for i in 0..<s.length() {
     let c = s[i].to_int() - 97 // 'a' = 97
     if c >= 0 && c < SAM_ALPHABET {
-      self.extend(c)
+      self.add_char(c)
     }
   }
 }
