@@ -56,7 +56,7 @@ fn Trie::Trie() -> Trie {
 fn Trie::insert(self : Trie, word : String) -> Unit {
   let chars = word.to_array()
   let n = chars.length()
-  for i = 0, node = self.root; i < n; {
+  for i in 0..<n; node = self.root {
     node.prefix_count = node.prefix_count + 1
     let c = chars[i]
     let idx = c.to_int() - 'a'.to_int()
@@ -68,7 +68,7 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
         new_node
       }
     }
-    continue i + 1, next_node
+    continue next_node
   } nobreak {
     node.prefix_count = node.prefix_count + 1
     node.is_end = true
@@ -101,11 +101,11 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
 fn Trie::search(self : Trie, word : String) -> Bool {
   let chars = word.to_array()
   let n = chars.length()
-  for i = 0, node = self.root; i < n; {
+  for i in 0..<n; node = self.root {
     let c = chars[i]
     let idx = c.to_int() - 'a'.to_int()
     match node.children[idx] {
-      Some(child) => continue i + 1, child
+      Some(child) => continue child
       None => break false
     }
   } nobreak {
@@ -135,11 +135,11 @@ fn Trie::search(self : Trie, word : String) -> Bool {
 fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
   let chars = prefix.to_array()
   let n = chars.length()
-  for i = 0, node = self.root; i < n; {
+  for i in 0..<n; node = self.root {
     let c = chars[i]
     let idx = c.to_int() - 'a'.to_int()
     match node.children[idx] {
-      Some(child) => continue i + 1, child
+      Some(child) => continue child
       None => break false
     }
   } nobreak {
@@ -169,11 +169,11 @@ fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
 fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
   let chars = prefix.to_array()
   let n = chars.length()
-  for i = 0, node = self.root; i < n; {
+  for i in 0..<n; node = self.root {
     let c = chars[i]
     let idx = c.to_int() - 'a'.to_int()
     match node.children[idx] {
-      Some(child) => continue i + 1, child
+      Some(child) => continue child
       None => break 0
     }
   } nobreak {
@@ -282,7 +282,7 @@ fn AhoCorasick::add_pattern(
 ) -> Unit {
   let chars = pattern.to_array()
   let n = chars.length()
-  for i = 0, node_idx = 0; i < n; {
+  for i in 0..<n; node_idx = 0 {
     let c = chars[i]
     let child_idx = c.to_int() - 'a'.to_int()
     let next_idx = if self.nodes[node_idx].children[child_idx] == -1 {
@@ -293,7 +293,7 @@ fn AhoCorasick::add_pattern(
     } else {
       self.nodes[node_idx].children[child_idx]
     }
-    continue i + 1, next_idx
+    continue next_idx
   } nobreak {
     // Mark pattern ending at this node
     let new_output = self.nodes[node_idx].output.copy()
@@ -329,14 +329,14 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
   // Queue for BFS
   let queue : Array[Int] = Array::make(self.node_count, 0)
   // Initialize: all depth-1 nodes have fail link to root
-  let back = for c = 0, back = 0; c < 26; c = c + 1 {
+  let back = for c in 0..<26; back = 0 {
     let child = self.nodes[0].children[c]
     if child != -1 {
       self.nodes[child].fail = 0
       queue[back] = child
-      continue c + 1, back + 1
+      continue back + 1
     }
-    continue c + 1, back
+    continue back
   } nobreak {
     back
   } where {
@@ -369,16 +369,16 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
       self.nodes[curr].suffix_output = self.nodes[fail_node].suffix_output
     }
     // Process children
-    let back = for c = 0, back = back; c < 26; c = c + 1 {
+    let back = for c in 0..<26; back = back {
       let child = self.nodes[curr].children[c]
       if child != -1 {
         // Find failure link for child
         let fail = self.find_fail_link(curr, c)
         self.nodes[child].fail = fail
         queue[back] = child
-        continue c + 1, back + 1
+        continue back + 1
       }
-      continue c + 1, back
+      continue back
     } nobreak {
       back
     } where {
@@ -472,14 +472,14 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[ACMatch] {
   let chars = text.to_array()
   let n = chars.length()
   let matches : Array[ACMatch] = []
-  for i = 0, state = 0; i < n; {
+  for i in 0..<n; state = 0 {
     let c = chars[i]
     let c_idx = c.to_int() - 'a'.to_int()
     // Follow failure links until we find a match or reach root
     let next_state = self.transition(state, c_idx)
     // Collect all matches at this state
     self.collect_matches(next_state, i + 1, matches)
-    continue i + 1, next_state
+    continue next_state
   } nobreak {
     matches
   } where {
@@ -808,7 +808,7 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
   }
   self.roots[new_version] = Some(new_root)
   // Insert word, creating new nodes only on path
-  for i = 0, node = new_root; i < n; {
+  for i in 0..<n; node = new_root {
     let c = chars[i]
     let idx = c.to_int() - 'a'.to_int()
     let next_node = match node.children[idx] {
@@ -828,7 +828,7 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
         new_child
       }
     }
-    continue i + 1, next_node
+    continue next_node
   } nobreak {
 
   } where {
@@ -879,11 +879,11 @@ fn PersistentTrie::search_version(
   match self.roots[version] {
     None => false
     Some(root) =>
-      for i = 0, node = root; i < n; {
+      for i in 0..<n; node = root {
         let c = chars[i]
         let idx = c.to_int() - 'a'.to_int()
         match node.children[idx] {
-          Some(child) => continue i + 1, child
+          Some(child) => continue child
           None => break false
         }
       } nobreak {

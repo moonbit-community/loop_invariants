@@ -32,7 +32,7 @@ pub fn max_subarray_sum(
   proof_require: nonempty(arr),
   proof_ensure: result => kadane_post(arr, result),
 } {
-  for i = 1, best_ending_here = arr[0], best_so_far = arr[0]; i < arr.length(); {
+  for i in 1..<arr.length(); best_ending_here = arr[0], best_so_far = arr[0] {
     let candidate = arr[i]
     let extended = best_ending_here + candidate
     let new_ending = if candidate > extended { candidate } else { extended }
@@ -41,7 +41,7 @@ pub fn max_subarray_sum(
     } else {
       best_so_far
     }
-    continue i + 1, new_ending, new_so_far
+    continue new_ending, new_so_far
   } nobreak {
     best_so_far
   } where {

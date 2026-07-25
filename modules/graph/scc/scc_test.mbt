@@ -145,8 +145,8 @@ test "two sat unsatisfiable" {
 test "scc sizes" {
   let adj : Array[Array[Int]] = [[1], [2], [0, 3], []]
   let result = @scc.find_sccs(4, adj)
-  let total = for i = 0, total = 0; i < result.scc_sizes.length(); {
-    continue i + 1, total + result.scc_sizes[i]
+  let total = for i in 0..<result.scc_sizes.length(); total = 0 {
+    continue total + result.scc_sizes[i]
   } nobreak {
     total
   } where {

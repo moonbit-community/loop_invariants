@@ -498,9 +498,9 @@ test "max flow min cut" {
   debug_inspect(flow, content="4")
   let cut = mf.min_cut(0)
   // Cut should have total capacity = max flow
-  let cut_capacity = for i = 0, cut_capacity = 0L; i < cut.length(); {
+  let cut_capacity = for i in 0..<cut.length(); cut_capacity = 0L {
     let (_, _, cap) = cut[i]
-    continue i + 1, cut_capacity + cap
+    continue cut_capacity + cap
   } nobreak {
     cut_capacity
   } where {

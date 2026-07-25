@@ -151,8 +151,7 @@ fn TwoSat::add_implication(
   neg_b : Bool,
 ) -> Unit {
   // a → b is equivalent to (¬a ∨ b)
-  let not_neg_a = if neg_a { false } else { true }
-  self.add_clause(var_a, not_neg_a, var_b, neg_b)
+  self.add_clause(var_a, !neg_a, var_b, neg_b)
 }
 
 ///|
@@ -165,8 +164,7 @@ fn TwoSat::add_implication(
 fn TwoSat::set_value(self : TwoSat, v : Int, value : Bool) -> Unit {
   // To force v = true: add clause (v ∨ v)
   // To force v = false: add clause (¬v ∨ ¬v)
-  let not_value = if value { false } else { true }
-  self.add_clause(v, not_value, v, not_value)
+  self.add_clause(v, !value, v, !value)
 }
 
 ///|

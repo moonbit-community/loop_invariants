@@ -97,10 +97,10 @@ fn Trie::Trie() -> Trie {
 /// Time complexity: O(m) where m = `word.length()`.
 fn Trie::insert(self : Trie, word : String) -> Unit {
   self.root.prefix_count = self.root.prefix_count + 1
-  let current = for i = 0, current = self.root; i < word.length(); {
+  let current = for i in 0..<word.length(); current = self.root {
     let c = word[i].to_int() - 'a'.to_int()
     if c < 0 || c >= 26 {
-      continue i + 1, current // Skip non-lowercase characters
+      continue current // Skip non-lowercase characters
     }
     let next = match current.children[c] {
       None => {
@@ -111,7 +111,7 @@ fn Trie::insert(self : Trie, word : String) -> Unit {
       Some(child) => child
     }
     next.prefix_count = next.prefix_count + 1
-    continue i + 1, next
+    continue next
   } nobreak {
     current
   } where {
@@ -199,14 +199,14 @@ fn Trie::count_word(self : Trie, word : String) -> Int {
 ///
 /// Time complexity: O(n) where n = `s.length()`.
 fn Trie::find_node(self : Trie, s : String) -> TrieNode? {
-  for i = 0, current = self.root; i < s.length(); {
+  for i in 0..<s.length(); current = self.root {
     let c = s[i].to_int() - 'a'.to_int()
     if c < 0 || c >= 26 {
-      continue i + 1, current
+      continue current
     }
     match current.children[c] {
       None => break None
-      Some(child) => continue i + 1, child
+      Some(child) => continue child
     }
   } nobreak {
     Some(current)
@@ -242,16 +242,16 @@ fn Trie::delete(self : Trie, word : String) -> Bool {
     return false
   }
   self.root.prefix_count = self.root.prefix_count - 1
-  let current = for i = 0, current = self.root; i < word.length(); {
+  let current = for i in 0..<word.length(); current = self.root {
     let c = word[i].to_int() - 'a'.to_int()
     if c < 0 || c >= 26 {
-      continue i + 1, current
+      continue current
     }
     match current.children[c] {
       None => break None
       Some(child) => {
         child.prefix_count = child.prefix_count - 1
-        continue i + 1, child
+        continue child
       }
     }
   } nobreak {
@@ -310,8 +310,8 @@ fn collect_words(
   result : Array[String],
 ) -> Unit {
   if node.is_end {
-    let s = for i = 0, s = ""; i < current.length(); {
-      continue i + 1, s + current[i].to_string()
+    let s = for i in 0..<current.length(); s = "" {
+      continue s + current[i].to_string()
     } nobreak {
       s
     } where {
@@ -423,15 +423,14 @@ fn Trie::autocomplete(self : Trie, prefix : String) -> Array[String] {
 ///
 /// Time complexity: O(m) where m = `word.length()`.
 fn Trie::longest_prefix(self : Trie, word : String) -> String {
-  let last_end = for i = 0, current = self.root, last_end = 0; i < word.length(); {
+  let last_end = for i in 0..<word.length(); current = self.root, last_end = 0 {
     let c = word[i].to_int() - 'a'.to_int()
     if c < 0 || c >= 26 {
       break last_end
     }
     match current.children[c] {
       None => break last_end
-      Some(child) =>
-        continue i + 1, child, if child.is_end { i + 1 } else { last_end }
+      Some(child) => continue child, if child.is_end { i + 1 } else { last_end }
     }
   } nobreak {
     last_end

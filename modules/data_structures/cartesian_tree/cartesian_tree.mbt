@@ -299,9 +299,9 @@ fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
   // Lift u to same depth as v
   // INVARIANT: After each iteration, depth difference decreases
   let diff = self.depth[u] - self.depth[v]
-  let u = for k = 0, u = u; k < self.log_n; {
+  let u = for k in 0..<self.log_n; u = u {
     let new_u = if ((diff >> k) & 1) == 1 { self.ancestors[k][u] } else { u }
-    continue k + 1, new_u
+    continue new_u
   } nobreak {
     u
   } where {

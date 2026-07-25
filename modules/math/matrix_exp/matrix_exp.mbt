@@ -137,8 +137,8 @@ fn Matrix::multiply(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix(self.rows, other.cols)
   for i in 0..<self.rows {
     for j in 0..<other.cols {
-      let sum = for k = 0, sum = 0L; k < self.cols; {
-        continue k + 1, (sum + self.data[i][k] * other.data[k][j]) % MATRIX_MOD
+      let sum = for k in 0..<self.cols; sum = 0L {
+        continue (sum + self.data[i][k] * other.data[k][j]) % MATRIX_MOD
       } nobreak {
         sum
       } where {
@@ -182,8 +182,8 @@ fn Matrix::multiply_no_mod(self : Matrix, other : Matrix) -> Matrix {
   let result = Matrix(self.rows, other.cols)
   for i in 0..<self.rows {
     for j in 0..<other.cols {
-      let sum = for k = 0, sum = 0L; k < self.cols; {
-        continue k + 1, sum + self.data[i][k] * other.data[k][j]
+      let sum = for k in 0..<self.cols; sum = 0L {
+        continue sum + self.data[i][k] * other.data[k][j]
       } nobreak {
         sum
       } where {
@@ -422,8 +422,8 @@ fn solve_recurrence(
   }
   let result = m.power(n - k.to_int64() + 1L)
   // Compute answer using fold over coefficients and initial values
-  for j = 0, ans = 0L; j < k; {
-    continue j + 1, (ans + result.data[0][j] * initial[k - 1 - j]) % MATRIX_MOD
+  for j in 0..<k; ans = 0L {
+    continue (ans + result.data[0][j] * initial[k - 1 - j]) % MATRIX_MOD
   } nobreak {
     ans
   } where {

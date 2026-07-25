@@ -209,14 +209,14 @@ pub fn convex_hull_graham(points : Array[Point]) -> Array[Point] {
 
   // Find bottom-most point (and leftmost if tied)
   let pts = points.copy()
-  let pivot_idx = for i = 1, pivot_idx = 0; i < n; {
+  let pivot_idx = for i in 1..<n; pivot_idx = 0 {
     let pivot_idx = if pts[i].y < pts[pivot_idx].y ||
       (pts[i].y == pts[pivot_idx].y && pts[i].x < pts[pivot_idx].x) {
       i
     } else {
       pivot_idx
     }
-    continue i + 1, pivot_idx
+    continue pivot_idx
   } nobreak {
     pivot_idx
   }
@@ -301,14 +301,14 @@ pub fn convex_hull_jarvis(points : Array[Point]) -> Array[Point] {
   }
 
   // Find leftmost point
-  let leftmost = for i = 1, leftmost = 0; i < n; {
+  let leftmost = for i in 1..<n; leftmost = 0 {
     let leftmost = if points[i].x < points[leftmost].x ||
       (points[i].x == points[leftmost].x && points[i].y < points[leftmost].y) {
       i
     } else {
       leftmost
     }
-    continue i + 1, leftmost
+    continue leftmost
   } nobreak {
     leftmost
   }
@@ -425,7 +425,7 @@ pub fn point_in_hull(hull : Array[Point], p : Point) -> Int {
   }
 
   // Check if point is on the same side of all edges
-  let on_boundary = for i = 0, on_boundary = false; i < n; {
+  let on_boundary = for i in 0..<n; on_boundary = false {
     let j = (i + 1) % n
     let cp = cross(hull[i], hull[j], p)
     if cp < 0L {
@@ -445,7 +445,7 @@ pub fn point_in_hull(hull : Array[Point], p : Point) -> Int {
     } else {
       on_boundary
     }
-    continue i + 1, on_boundary
+    continue on_boundary
   } nobreak {
     on_boundary
   }

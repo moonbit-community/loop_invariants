@@ -345,11 +345,11 @@ pub fn longest_palindrome_range(s : ArrayView[Char]) -> (Int, Int) {
   let p = manacher(s)
 
   // Find position with maximum radius using functional for loop
-  let (max_center, max_radius) = for i = 0, best = (0, 0); i < p.length(); {
+  let (max_center, max_radius) = for i in 0..<p.length(); best = (0, 0) {
     if p[i] > best.1 {
-      continue i + 1, (i, p[i])
+      continue (i, p[i])
     } else {
-      continue i + 1, best
+      continue best
     }
   } nobreak {
     best

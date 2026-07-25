@@ -100,11 +100,11 @@ fn Hungarian::dfs(self : Hungarian, u : Int) -> Bool {
 /// let size = matcher.max_matching() // 3
 /// ```
 pub fn Hungarian::max_matching(self : Hungarian) -> Int {
-  for u = 0, matching = 0; u < self.graph.n_left; {
+  for u in 0..<self.graph.n_left; matching = 0 {
     // Reset visited for each left vertex
     self.visited.fill(false)
     let new_matching = if self.dfs(u) { matching + 1 } else { matching }
-    continue u + 1, new_matching
+    continue new_matching
   } nobreak {
     matching
   } where {

@@ -202,7 +202,7 @@ pub fn SuffixAutomaton::build(self : SuffixAutomaton, s : String) -> Unit {
 ///
 /// Time complexity: O(|s|).
 pub fn SuffixAutomaton::contains(self : SuffixAutomaton, s : String) -> Bool {
-  let _ = for i = 0, state = 0; i < s.length(); {
+  let _ = for i in 0..<s.length(); state = 0 {
     let c = s[i].to_int() - 97
     if c < 0 || c >= SAM_ALPHABET {
       return false
@@ -211,7 +211,7 @@ pub fn SuffixAutomaton::contains(self : SuffixAutomaton, s : String) -> Bool {
     if next < 0 {
       return false
     }
-    continue i + 1, next
+    continue next
   } nobreak {
     ()
   }
@@ -234,10 +234,10 @@ pub fn SuffixAutomaton::contains(self : SuffixAutomaton, s : String) -> Bool {
 pub fn SuffixAutomaton::count_distinct_substrings(
   self : SuffixAutomaton,
 ) -> Int64 {
-  for i = 1, count = 0L; i < self.size; {
+  for i in 1..<self.size; count = 0L {
     let link = self.states[i].link
     let link_len = if link >= 0 { self.states[link].len } else { 0 }
-    continue i + 1, count + (self.states[i].len - link_len).to_int64()
+    continue count + (self.states[i].len - link_len).to_int64()
   } nobreak {
     count
   }
@@ -343,7 +343,7 @@ pub fn SuffixAutomaton::count_occurrences(
   pattern : String,
 ) -> Int {
   // First, find the state for pattern
-  let state = for i = 0, state = 0; i < pattern.length(); {
+  let state = for i in 0..<pattern.length(); state = 0 {
     let c = pattern[i].to_int() - 97
     if c < 0 || c >= SAM_ALPHABET {
       return 0
@@ -352,7 +352,7 @@ pub fn SuffixAutomaton::count_occurrences(
     if next < 0 {
       return 0
     }
-    continue i + 1, next
+    continue next
   } nobreak {
     state
   }
