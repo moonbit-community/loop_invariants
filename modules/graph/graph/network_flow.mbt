@@ -249,7 +249,7 @@ fn DinicNetwork::dfs_dinic(
   if u == sink {
     return flow_in
   }
-  for idx = self.iter[u]; idx < self.adj[u].length(); {
+  for idx in self.iter[u]..<self.adj[u].length() {
     let edge = self.adj[u][idx]
     let residual = edge.capacity - edge.flow
     if residual > 0 && self.level[edge.to] == self.level[u] + 1 {
@@ -265,7 +265,7 @@ fn DinicNetwork::dfs_dinic(
       }
     }
     self.iter[u] = idx + 1
-    continue idx + 1
+    continue
   } nobreak {
     0
   } where {

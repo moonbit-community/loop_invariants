@@ -138,7 +138,7 @@ pub fn new(width~ : Int, depth~ : Int, seed~ : Int64) -> CountMinSketch {
   // Derive 2d non-zero Int64 values for the hash family from the seed.
   let hash_a = Array::make(d, 0L)
   let hash_b = Array::make(d, 0L)
-  for r = 0, state = lcg_init(seed); r < d; {
+  for r in 0..<d; state = lcg_init(seed) {
     let a_state = lcg_next(state)
     let b_state = lcg_next(a_state)
     let a_pos = if a_state == 0L {
@@ -151,7 +151,7 @@ pub fn new(width~ : Int, depth~ : Int, seed~ : Int64) -> CountMinSketch {
     let b_pos = if b_state < 0L { -b_state } else { b_state }
     hash_a[r] = a_pos % (cms_prime - 1L) + 1L
     hash_b[r] = b_pos % cms_prime
-    continue r + 1, b_state
+    continue b_state
   } where {
     proof_invariant: r >= 0 && r <= d,
     proof_reasoning: (

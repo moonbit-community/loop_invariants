@@ -137,7 +137,7 @@ fn HLD::dfs_size(self : HLD, u : Int, p : Int, d : Int) -> Unit {
   self.parent[u] = p
   self.depth[u] = d
   self.subtree_size[u] = 1
-  for i = 0, max_child_size = 0; i < self.adj[u].length(); {
+  for i in 0..<self.adj[u].length(); max_child_size = 0 {
     let v = self.adj[u][i]
     if v != p {
       self.dfs_size(v, u, d + 1)
@@ -148,9 +148,9 @@ fn HLD::dfs_size(self : HLD, u : Int, p : Int, d : Int) -> Unit {
       } else {
         max_child_size
       }
-      continue i + 1, max_child_size
+      continue max_child_size
     }
-    continue i + 1, max_child_size
+    continue max_child_size
   }
 }
 

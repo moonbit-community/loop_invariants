@@ -306,10 +306,10 @@ pub fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
   let result : Array[Int64] = [initial_sum]
 
   // Slide window - use functional for loop to track running sum
-  for i = k, sum = initial_sum; i < n; {
+  for i in k..<n; sum = initial_sum {
     let new_sum = sum + arr[i] - arr[i - k]
     result.push(new_sum)
-    continue i + 1, new_sum
+    continue new_sum
   } nobreak {
     result
   } where {

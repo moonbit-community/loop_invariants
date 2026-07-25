@@ -26,11 +26,11 @@ pub fn count_nonneg(
 ) -> Int where {
   proof_ensure: result => count_bounded(xs, result),
 } {
-  for i = 0, count = 0; i < xs.length(); {
+  for i in 0..<xs.length(); count = 0 {
     if xs[i] >= 0 {
-      continue i + 1, count + 1
+      continue count + 1
     } else {
-      continue i + 1, count
+      continue count
     }
   } nobreak {
     count

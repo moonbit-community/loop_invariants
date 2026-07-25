@@ -779,12 +779,12 @@ fn remove_duplicates(nums : Array[Int]) -> Int {
   }
 
   // write_pos: next position to write unique element
-  for read = 1, write = 1; read < n; {
+  for read in 1..<n; write = 1 {
     if nums[read] != nums[read - 1] {
       nums[write] = nums[read]
-      continue read + 1, write + 1
+      continue write + 1
     } else {
-      continue read + 1, write
+      continue write
     }
   } nobreak {
     write
@@ -821,15 +821,15 @@ fn move_zeroes(nums : Array[Int]) -> Unit {
   let n = nums.length()
 
   // write_pos: next position to write non-zero element
-  for read = 0, write = 0; read < n; {
+  for read in 0..<n; write = 0 {
     if nums[read] != 0 {
       // Swap to move non-zero to front
       let temp = nums[write]
       nums[write] = nums[read]
       nums[read] = temp
-      continue read + 1, write + 1
+      continue write + 1
     } else {
-      continue read + 1, write
+      continue write
     }
   } where {
     proof_invariant: read >= 0 && write >= 0 && write <= read,

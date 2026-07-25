@@ -167,8 +167,8 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
   // If same block, just sum directly
   if left_block == right_block {
     // LOOP INVARIANT: sum contains sum of arr[l..i)
-    let result = for i = l, sum = 0; i <= r; i = i + 1 {
-      continue i + 1, sum + self.arr[i]
+    let result = for i in l..<=r; sum = 0 {
+      continue sum + self.arr[i]
     } nobreak {
       sum
     } where {
@@ -187,8 +187,8 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
 
   // Sum left partial block
   let left_block_end = (left_block + 1) * self.block_size - 1
-  let left_sum = for i = l, sum = 0; i <= left_block_end; i = i + 1 {
-    continue i + 1, sum + self.arr[i]
+  let left_sum = for i in l..<=left_block_end; sum = 0 {
+    continue sum + self.arr[i]
   } nobreak {
     sum
   } where {
@@ -207,8 +207,8 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
 
   // Sum complete middle blocks
   // INVARIANT: sum contains sum of all complete blocks from left_block+1 to b-1
-  let middle_sum = for b = left_block + 1, sum = 0; b < right_block; b = b + 1 {
-    continue b + 1, sum + self.blocks[b]
+  let middle_sum = for b in (left_block + 1)..<right_block; sum = 0 {
+    continue sum + self.blocks[b]
   } nobreak {
     sum
   } where {
@@ -225,8 +225,8 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
 
   // Sum right partial block
   let right_block_start = right_block * self.block_size
-  let right_sum = for i = right_block_start, sum = 0; i <= r; i = i + 1 {
-    continue i + 1, sum + self.arr[i]
+  let right_sum = for i in right_block_start..<=r; sum = 0 {
+    continue sum + self.arr[i]
   } nobreak {
     sum
   } where {
@@ -429,11 +429,11 @@ fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int) -> Unit {
   } else {
     end_val
   }
-  let min = for i = start, m = 2147483647; i < end; i = i + 1 {
+  let min = for i in start..<end; m = 2147483647 {
     if self.arr[i] < m {
-      continue i + 1, self.arr[i]
+      continue self.arr[i]
     } else {
-      continue i + 1, m
+      continue m
     }
   } nobreak {
     m
@@ -478,12 +478,12 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
   // If same block, scan directly
   if left_block == right_block {
     let pending_add = self.pending[left_block]
-    return for i = l, m = 2147483647; i <= r; i = i + 1 {
+    return for i in l..<=r; m = 2147483647 {
       let val = self.arr[i] + pending_add
       if val < m {
-        continue i + 1, val
+        continue val
       } else {
-        continue i + 1, m
+        continue m
       }
     } nobreak {
       m
@@ -504,12 +504,12 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
   // Minimum from left partial block
   let left_add = self.pending[left_block]
   let left_block_end = (left_block + 1) * self.block_size - 1
-  let left_min = for i = l, m = 2147483647; i <= left_block_end; i = i + 1 {
+  let left_min = for i in l..<=left_block_end; m = 2147483647 {
     let val = self.arr[i] + left_add
     if val < m {
-      continue i + 1, val
+      continue val
     } else {
-      continue i + 1, m
+      continue m
     }
   } nobreak {
     m
@@ -554,12 +554,12 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
   // Minimum from right partial block
   let right_add = self.pending[right_block]
   let right_block_start = right_block * self.block_size
-  let right_min = for i = right_block_start, m = 2147483647; i <= r; i = i + 1 {
+  let right_min = for i in right_block_start..<=r; m = 2147483647 {
     let val = self.arr[i] + right_add
     if val < m {
-      continue i + 1, val
+      continue val
     } else {
-      continue i + 1, m
+      continue m
     }
   } nobreak {
     m
@@ -747,11 +747,11 @@ fn MoSolver::solve_distinct(
   }
 
   // Find max element to size count array
-  let max_val = for i = 0, m = 0; i < n; i = i + 1 {
+  let max_val = for i in 0..<n; m = 0 {
     if self.arr[i] > m {
-      continue i + 1, self.arr[i]
+      continue self.arr[i]
     } else {
-      continue i + 1, m
+      continue m
     }
   } nobreak {
     m
@@ -950,14 +950,14 @@ fn IntervalTree::IntervalTree(arr : Array[Int]) -> IntervalTree {
 
   // Initially, each element is its own interval
   // We can compress consecutive equal elements
-  for i = 1, start = 0; i <= arr.length(); {
+  for i in 1..<=arr.length(); start = 0 {
     let start = if i == arr.length() || arr[i] != arr[start] {
       intervals.push({ l: start, r: i - 1, v: arr[start] })
       i
     } else {
       start
     }
-    continue i + 1, start
+    continue start
   } where {
     proof_invariant: i >= 1 && i <= arr.length() + 1,
     proof_reasoning: (
@@ -1161,16 +1161,16 @@ fn IntervalTree::query_sum(self : IntervalTree, l : Int, r : Int) -> Int {
   if l > r || self.intervals.length() == 0 {
     return 0
   }
-  let sum = for i = 0, s = 0; i < self.intervals.length(); i = i + 1 {
+  let sum = for i in 0..<self.intervals.length(); s = 0 {
     let interval = self.intervals[i]
     if interval.r < l || interval.l > r {
-      continue i + 1, s
+      continue s
     }
     // Interval overlaps [l, r]
     let left_bound = if interval.l > l { interval.l } else { l }
     let right_bound = if interval.r < r { interval.r } else { r }
     let cnt = right_bound - left_bound + 1
-    continue i + 1, s + cnt * interval.v
+    continue s + cnt * interval.v
   } nobreak {
     s
   } where {
