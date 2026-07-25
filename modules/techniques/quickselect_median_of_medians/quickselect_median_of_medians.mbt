@@ -102,7 +102,7 @@ fn select_kth_inner(a : Array[Int], k : Int) -> Int {
   // elements except possibly the last.
   let num_groups = (n + 4) / 5
   let medians = Array::make(num_groups, 0)
-  for g = 0; g < num_groups; {
+  for g in 0..<num_groups {
     let start = g * 5
     let group_end = if start + 5 < n { start + 5 } else { n }
     let group = Array::make(group_end - start, 0)
@@ -111,7 +111,7 @@ fn select_kth_inner(a : Array[Int], k : Int) -> Int {
     }
     group.sort()
     medians[g] = group[group.length() / 2]
-    continue g + 1
+    continue
   } where {
     proof_invariant: g >= 0 && g <= num_groups,
     proof_reasoning: (

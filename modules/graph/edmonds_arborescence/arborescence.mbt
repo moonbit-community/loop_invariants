@@ -156,11 +156,11 @@ pub fn min_arborescence(
 
   // Case A: No cycle - selected edges form valid arborescence
   if cycle.length() == 0 {
-    let total = for v = 0, total = 0L; v < n; {
+    let total = for v in 0..<n; total = 0L {
       if v != root {
-        continue v + 1, total + in_cost[v]
+        continue total + in_cost[v]
       }
-      continue v + 1, total
+      continue total
     } nobreak {
       total
     }
@@ -177,13 +177,13 @@ pub fn min_arborescence(
     cycle_id[v] = 0
   }
   let comp = Array::make(n, -1)
-  let new_n = for v = 0, new_index = 1; v < n; {
+  let new_n = for v in 0..<n; new_index = 1 {
     if cycle_id[v] == 0 {
       comp[v] = 0
-      continue v + 1, new_index
+      continue new_index
     }
     comp[v] = new_index
-    continue v + 1, new_index + 1
+    continue new_index + 1
   } nobreak {
     new_index
   }

@@ -179,14 +179,14 @@ fn circle_from_three(a : Point, b : Point, c : Point) -> Circle {
 /// `mec_with_two`.
 fn mec_with_one(points : ArrayView[Point], j_max : Int, p : Point) -> Circle {
   let init : Circle = { center: p, radius: 0.0 }
-  for j = 0, circle = init; j < j_max; {
+  for j in 0..<j_max; circle = init {
     let q = points[j]
     let circle = if contains_point(circle, q) {
       circle
     } else {
       mec_with_two(points, j, p, q)
     }
-    continue j + 1, circle
+    continue circle
   } nobreak {
     circle
   } where {
@@ -229,14 +229,14 @@ fn mec_with_two(
   q : Point,
 ) -> Circle {
   let init = circle_from_two(p, q)
-  for k = 0, circle = init; k < k_max; {
+  for k in 0..<k_max; circle = init {
     let r = points[k]
     let circle = if contains_point(circle, r) {
       circle
     } else {
       circle_from_three(p, q, r)
     }
-    continue k + 1, circle
+    continue circle
   } nobreak {
     circle
   } where {
@@ -311,7 +311,7 @@ pub fn smallest_enclosing_circle(points : ArrayView[Point]) -> Circle {
     return { center: { x: 0.0, y: 0.0 }, radius: 0.0 }
   }
   let init : Circle = { center: points[0], radius: 0.0 }
-  for i = 0, circle = init; i < n; {
+  for i in 0..<n; circle = init {
     let p = points[i]
     let circle = if contains_point(circle, p) {
       circle
@@ -319,7 +319,7 @@ pub fn smallest_enclosing_circle(points : ArrayView[Point]) -> Circle {
       // `p` must be on the boundary of the new optimal circle.
       mec_with_one(points, i, p)
     }
-    continue i + 1, circle
+    continue circle
   } nobreak {
     circle
   } where {
@@ -471,13 +471,13 @@ test "mec contains all points (fuzz)" {
   ]
   let c = smallest_enclosing_circle(pts[:])
   // All points must be within radius^2 + EPS of center.
-  let all_inside = for i = 0, ok = true; i < pts.length(); {
+  let all_inside = for i in 0..<pts.length(); ok = true {
     let d2 = dist_sq(c.center, pts[i])
     let inside = d2 <= c.radius * c.radius + 1.0e-8
     if inside {
-      continue i + 1, ok
+      continue ok
     } else {
-      continue i + 1, false
+      continue false
     }
   } nobreak {
     ok
@@ -485,12 +485,12 @@ test "mec contains all points (fuzz)" {
   @debug.assert_eq(all_inside, true)
   // And the circle must be `tight`: at least one point must be on the
   // boundary (within a generous tolerance for floating point).
-  let some_on_boundary = for i = 0, found = false; i < pts.length(); {
+  let some_on_boundary = for i in 0..<pts.length(); found = false {
     let d = dist_sq(c.center, pts[i]).sqrt()
     if abs_diff(d, c.radius) < 1.0e-6 {
-      continue i + 1, true
+      continue true
     } else {
-      continue i + 1, found
+      continue found
     }
   } nobreak {
     found

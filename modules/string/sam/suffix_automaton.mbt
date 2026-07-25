@@ -329,10 +329,10 @@ fn SuffixAutomaton::contains(self : SuffixAutomaton, pattern : String) -> Bool {
 ///
 /// Time: O(n) where n is the number of SAM states (at most 2|text| - 1).
 fn SuffixAutomaton::count_distinct_substrings(self : SuffixAutomaton) -> Int {
-  for i = 0, count = 0; i < self.states.length(); {
+  for i in 0..<self.states.length(); count = 0 {
     let state = self.states[i]
     let link_len = if state.link >= 0 { self.states[state.link].len } else { 0 }
-    continue i + 1, count + state.len - link_len
+    continue count + state.len - link_len
   } nobreak {
     count
   } where {
@@ -609,10 +609,10 @@ fn SuffixAutomaton::compute_path_counts(self : SuffixAutomaton) -> Array[Int64] 
     if memo[state] >= 0L {
       return memo[state]
     }
-    let cnt = for c = 0, cnt = 1L; c < alphabet_size; {
+    let cnt = for c in 0..<alphabet_size; cnt = 1L {
       let next = sam.states[state].trans[c]
       let cnt = if next >= 0 { cnt + dfs(sam, next, memo) } else { cnt }
-      continue c + 1, cnt
+      continue cnt
     } nobreak {
       cnt
     } where {
@@ -652,16 +652,16 @@ fn find_next_transition(
   remaining : Int64,
   path_cnt : Array[Int64],
 ) -> (Int, Int64, Int)? {
-  for c = 0, rem = remaining - 1L; c < alphabet_size; {
+  for c in 0..<alphabet_size; rem = remaining - 1L {
     let next = sam.states[state].trans[c]
     if next >= 0 {
       let cnt = path_cnt[next]
       if rem <= cnt {
         break Some((next, rem, c))
       }
-      continue c + 1, rem - cnt
+      continue rem - cnt
     }
-    continue c + 1, rem
+    continue rem
   } nobreak {
     None
   } where {

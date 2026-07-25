@@ -279,11 +279,11 @@ fn ManacherResult::longest_palindrome(self : ManacherResult) -> String {
     return ""
   }
   // Find max radius and its center using functional for loop
-  let (max_center, max_len) = for i = 0, best = (0, 0); i < self.radii.length(); {
+  let (max_center, max_len) = for i in 0..<self.radii.length(); best = (0, 0) {
     if self.radii[i] > best.1 {
-      continue i + 1, (i, self.radii[i])
+      continue (i, self.radii[i])
     } else {
-      continue i + 1, best
+      continue best
     }
   } nobreak {
     best
@@ -443,12 +443,12 @@ pub fn longest_palindrome(s : String) -> String {
 pub fn longest_palindrome_len(s : String) -> Int {
   let (d1, d2) = manacher_radii(s)
   // Find max length by comparing odd and even palindromes at each center
-  for i = 0, best = 0; i < d1.length(); {
+  for i in 0..<d1.length(); best = 0 {
     let odd = d1[i] * 2 - 1
     let even = d2[i] * 2
     let max_at_i = if odd > even { odd } else { even }
     let new_best = if max_at_i > best { max_at_i } else { best }
-    continue i + 1, new_best
+    continue new_best
   } nobreak {
     best
   } where {

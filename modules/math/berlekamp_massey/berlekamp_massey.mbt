@@ -163,8 +163,8 @@ pub fn berlekamp_massey(seq : ArrayView[Int64], m : Int64) -> Array[Int64] {
   let (c, l) = for i = 0, c = init_c, b = init_b, l = 0, m_steps = 1, last_disc = 1L; i <
                   n; {
     let max_j = if l < i { l } else { i }
-    let d = for j = 0, d = 0L; j < max_j + 1; {
-      continue j + 1, mod_add(d, mod_mul(c[j], seq[i - j], m), m)
+    let d = for j in 0..<(max_j + 1); d = 0L {
+      continue mod_add(d, mod_mul(c[j], seq[i - j], m), m)
     } nobreak {
       d
     }

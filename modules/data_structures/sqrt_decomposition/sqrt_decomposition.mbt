@@ -139,8 +139,8 @@ pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
   let block_r = r / self.block_size
   let sum = if block_l == block_r {
     // Same block: iterate directly
-    for i = l, sum = 0L; i <= r; {
-      continue i + 1, sum + self.arr[i]
+    for i in l..<=r; sum = 0L {
+      continue sum + self.arr[i]
     } nobreak {
       sum
     } where {
@@ -157,8 +157,8 @@ pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
     }
   } else {
     // Left partial block
-    let left_sum = for i = l, sum = 0L; i < (block_l + 1) * self.block_size; {
-      continue i + 1, sum + self.arr[i]
+    let left_sum = for i in l..<((block_l + 1) * self.block_size); sum = 0L {
+      continue sum + self.arr[i]
     } nobreak {
       sum
     } where {
@@ -175,8 +175,8 @@ pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
       ),
     }
     // Complete blocks
-    let block_sum = for b = block_l + 1, sum = 0L; b < block_r; {
-      continue b + 1, sum + self.blocks[b]
+    let block_sum = for b in (block_l + 1)..<block_r; sum = 0L {
+      continue sum + self.blocks[b]
     } nobreak {
       sum
     } where {
@@ -192,8 +192,8 @@ pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
       ),
     }
     // Right partial block
-    let right_sum = for i = block_r * self.block_size, sum = 0L; i <= r; {
-      continue i + 1, sum + self.arr[i]
+    let right_sum = for i in (block_r * self.block_size)..<=r; sum = 0L {
+      continue sum + self.arr[i]
     } nobreak {
       sum
     } where {
@@ -314,9 +314,9 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
   let block_l = l / self.block_size
   let block_r = r / self.block_size
   let result = if block_l == block_r {
-    for i = l, result = SQRT_INF; i <= r; {
+    for i in l..<=r; result = SQRT_INF {
       let result = if self.arr[i] < result { self.arr[i] } else { result }
-      continue i + 1, result
+      continue result
     } nobreak {
       result
     } where {
@@ -350,9 +350,9 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
         #|At i = (block_l + 1) * block_size, the left partial min is complete.
       ),
     }
-    let block_result = for b = block_l + 1, result = left_result; b < block_r; {
+    let block_result = for b in (block_l + 1)..<block_r; result = left_result {
       let result = if self.blocks[b] < result { self.blocks[b] } else { result }
-      continue b + 1, result
+      continue result
     } nobreak {
       result
     } where {
@@ -367,9 +367,9 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
         #|At b = block_r, all middle blocks are considered.
       ),
     }
-    for i = block_r * self.block_size, result = block_result; i <= r; {
+    for i in (block_r * self.block_size)..<=r; result = block_result {
       let result = if self.arr[i] < result { self.arr[i] } else { result }
-      continue i + 1, result
+      continue result
     } nobreak {
       result
     } where {
@@ -486,7 +486,7 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
   let block_r = r / self.block_size
   if block_l == block_r {
     // Same block: update elements directly
-    for i = l; i <= r; i = i + 1 {
+    for i in l..<=r {
       self.arr[i] = self.arr[i] + val
       self.blocks[block_l] = self.blocks[block_l] + val
     } where {
@@ -505,7 +505,7 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
   } else {
     // Left partial block
     self.push(block_l)
-    for i = l; i < (block_l + 1) * self.block_size; i = i + 1 {
+    for i in l..<((block_l + 1) * self.block_size) {
       self.arr[i] = self.arr[i] + val
       self.blocks[block_l] = self.blocks[block_l] + val
     } where {
@@ -522,7 +522,7 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
     }
 
     // Complete blocks: use lazy
-    for b = block_l + 1; b < block_r; b = b + 1 {
+    for b in (block_l + 1)..<block_r {
       self.lazy_add[b] = self.lazy_add[b] + val
       let block_len = if (b + 1) * self.block_size < self.n {
         self.block_size
@@ -546,7 +546,7 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
 
     // Right partial block
     self.push(block_r)
-    for i = block_r * self.block_size; i <= r; i = i + 1 {
+    for i in (block_r * self.block_size)..<=r {
       self.arr[i] = self.arr[i] + val
       self.blocks[block_r] = self.blocks[block_r] + val
     } where {
@@ -581,8 +581,8 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
   let block_l = l / self.block_size
   let block_r = r / self.block_size
   let sum = if block_l == block_r {
-    for i = l, sum = 0L; i <= r; {
-      continue i + 1, sum + self.arr[i] + self.lazy_add[block_l]
+    for i in l..<=r; sum = 0L {
+      continue sum + self.arr[i] + self.lazy_add[block_l]
     } nobreak {
       sum
     } where {
@@ -598,8 +598,8 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
       ),
     }
   } else {
-    let left_sum = for i = l, sum = 0L; i < (block_l + 1) * self.block_size; {
-      continue i + 1, sum + self.arr[i] + self.lazy_add[block_l]
+    let left_sum = for i in l..<((block_l + 1) * self.block_size); sum = 0L {
+      continue sum + self.arr[i] + self.lazy_add[block_l]
     } nobreak {
       sum
     } where {
@@ -614,8 +614,8 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
         #|At i = (block_l + 1) * block_size, the left boundary is done.
       ),
     }
-    let block_sum = for b = block_l + 1, sum = left_sum; b < block_r; {
-      continue b + 1, sum + self.blocks[b]
+    let block_sum = for b in (block_l + 1)..<block_r; sum = left_sum {
+      continue sum + self.blocks[b]
     } nobreak {
       sum
     } where {
@@ -631,8 +631,8 @@ fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
         #|At b = block_r, all middle blocks are included.
       ),
     }
-    let right_sum = for i = block_r * self.block_size, sum = 0L; i <= r; {
-      continue i + 1, sum + self.arr[i] + self.lazy_add[block_r]
+    let right_sum = for i in (block_r * self.block_size)..<=r; sum = 0L {
+      continue sum + self.arr[i] + self.lazy_add[block_r]
     } nobreak {
       sum
     } where {

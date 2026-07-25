@@ -310,11 +310,11 @@ fn gauss_eliminate(a : Array[Array[Double]], b : Array[Double]) -> GaussResult {
   }
 
   // Check for inconsistency (0 = non-zero)
-  let has_solution = for i = rank; i < n; {
+  let has_solution = for i in rank..<n {
     if abs(aug[i][m]) > GAUSS_EPS {
       break false
     }
-    continue i + 1
+    continue
   } nobreak {
     true
   } where {
@@ -430,11 +430,11 @@ fn gauss_mod(
   // Forward elimination
   let row = for col = 0, row = 0; col < m && row < n; {
     // Find pivot
-    let pivot_row = for i = row; i < n; {
+    let pivot_row = for i in row..<n {
       if aug[i][col] != 0L {
         break i
       }
-      continue i + 1
+      continue
     } nobreak {
       -1
     } where {
@@ -604,11 +604,11 @@ fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
   ]
   let row = for col = 0, row = 0; col < m && row < n; {
     // Find pivot
-    let pivot_row = for i = row; i < n; {
+    let pivot_row = for i in row..<n {
       if aug[i][col] == 1 {
         break i
       }
-      continue i + 1
+      continue
     } nobreak {
       -1
     } where {

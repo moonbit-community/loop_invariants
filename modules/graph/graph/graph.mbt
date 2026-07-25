@@ -388,7 +388,7 @@ fn bellman_ford(
   dist[source] = 0
 
   // Relax all edges n-1 times
-  for i in 0..<(n - 1) {
+  for _ in 0..<(n - 1) {
     let changed = for edge in edges; changed = false {
       let (u, v, w) = edge
       if dist[u] != inf && dist[u] + w < dist[v] {
@@ -403,7 +403,6 @@ fn bellman_ford(
       break // Early termination if no changes
     }
   } where {
-    proof_invariant: i >= 0 && i <= n - 1,
     proof_reasoning: (
       #|INVARIANT (Bellman-Ford correctness):
       #|After i iterations, dist[v] ≤ shortest path using ≤ i edges.

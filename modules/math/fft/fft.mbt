@@ -197,13 +197,13 @@ fn NTT::transform(self : NTT, a : Array[Int64], inverse : Bool) -> Unit {
     let w_base = if inverse { self.root_inv } else { self.root }
     let w = mod_pow(w_base, (n / len).to_int64(), self.mod_val)
     for i = 0; i < n; i = i + len {
-      let _ = for j = 0, wn = 1L; j < len / 2; {
+      let _ = for j in 0..<(len / 2); wn = 1L {
         let u = a[i + j]
         let v = a[i + j + len / 2] * wn % self.mod_val
         a[i + j] = (u + v) % self.mod_val
         a[i + j + len / 2] = ((u - v) % self.mod_val + self.mod_val) %
           self.mod_val
-        continue j + 1, wn * w % self.mod_val
+        continue wn * w % self.mod_val
       } where {
         proof_invariant: j >= 0 && j <= len / 2,
         proof_reasoning: (
