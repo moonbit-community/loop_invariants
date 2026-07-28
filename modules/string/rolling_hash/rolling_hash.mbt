@@ -645,13 +645,13 @@ fn count_distinct_substrings(s : String) -> Int {
   if seen.length() == 0 {
     return 0
   }
-  for i = 1, count = 1; i < seen.length(); i = i + 1 {
+  for i in 1..<seen.length(); count = 1 {
     let (prev1, prev2) = seen[i - 1]
     let (curr1, curr2) = seen[i]
     if prev1 != curr1 || prev2 != curr2 {
-      continue i + 1, count + 1
+      continue count + 1
     } else {
-      continue i + 1, count
+      continue count
     }
   } nobreak {
     count

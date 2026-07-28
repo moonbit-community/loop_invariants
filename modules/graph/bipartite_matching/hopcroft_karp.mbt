@@ -176,13 +176,13 @@ fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int) -> Bool {
 pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
   // Keep finding augmenting paths until none exist
   for matching = 0; self.bfs(); {
-    let phase_matches = for u = 0, count = 0; u < self.graph.n_left; {
+    let phase_matches = for u in 0..<self.graph.n_left; count = 0 {
       let new_count = if self.match_left[u] < 0 && self.dfs(u) {
         count + 1
       } else {
         count
       }
-      continue u + 1, new_count
+      continue new_count
     } nobreak {
       count
     } where {

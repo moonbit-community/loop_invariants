@@ -135,14 +135,14 @@ fn[K, V] SkipList::SkipList() -> SkipList[K, V] {
 fn[K, V] SkipList::random_level(self : SkipList[K, V]) -> Int {
   // Loop invariant: lvl represents the current level being considered
   // We flip coins until we get "heads" (random not divisible by p)
-  for lvl = 0; lvl < max_level - 1; {
+  for lvl in 0..<(max_level - 1) {
     // Simple LCG for random number generation
     self.rand_state = (self.rand_state * 1103 + 12345) % 65536
     let r = if self.rand_state < 0 { -self.rand_state } else { self.rand_state }
 
     // Promote with probability 1/promotion_probability
     if r % promotion_probability == 0 {
-      continue lvl + 1
+      continue
     } else {
       break lvl
     }
@@ -1026,11 +1026,11 @@ fn[K, V] MultiSkipList::MultiSkipList() -> MultiSkipList[K, V] {
 /// Generate a random height for a newly inserted node using the same LCG
 /// and geometric distribution as `SkipList::random_level`.
 fn[K, V] MultiSkipList::random_level(self : MultiSkipList[K, V]) -> Int {
-  for lvl = 0; lvl < max_level - 1; {
+  for lvl in 0..<(max_level - 1) {
     self.rand_state = (self.rand_state * 1103 + 12345) % 65536
     let r = if self.rand_state < 0 { -self.rand_state } else { self.rand_state }
     if r % promotion_probability == 0 {
-      continue lvl + 1
+      continue
     } else {
       break lvl
     }

@@ -128,7 +128,7 @@ pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
   }
   let pattern_hash = compute_hash(pattern, 0, m)
   let base_pow = pow_mod(RK_BASE, m - 1, RK_MOD) // base^(m-1)
-  for i = 0, text_hash = compute_hash(text, 0, m); i <= n - m; {
+  for i in 0..<=(n - m); text_hash = compute_hash(text, 0, m) {
     if text_hash == pattern_hash {
       // Verify match to handle collisions
       let match_found = for j in 0..<m {
@@ -152,7 +152,7 @@ pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
     } else {
       text_hash
     }
-    continue i + 1, next_hash
+    continue next_hash
   } where {
     proof_invariant: i >= 0 && i <= n - m + 1,
     proof_reasoning: (
@@ -262,7 +262,7 @@ pub fn rabin_karp_multi(
   // For each pattern length, do rolling hash
   for len, pattern_list in by_length {
     let base_pow = pow_mod(RK_BASE, len - 1, RK_MOD)
-    for i = 0, text_hash = compute_hash(text, 0, len); i <= n - len; {
+    for i in 0..<=(n - len); text_hash = compute_hash(text, 0, len) {
       // Check against all patterns of this length
       for j in 0..<pattern_list.length() {
         let (pat_idx, pat_hash) = pattern_list[j]
@@ -304,7 +304,7 @@ pub fn rabin_karp_multi(
       } else {
         text_hash
       }
-      continue i + 1, next_hash
+      continue next_hash
     } where {
       proof_invariant: i >= 0 && i <= n - len + 1,
       proof_reasoning: (

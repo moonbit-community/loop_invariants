@@ -280,10 +280,10 @@ fn count_distinct_substrings(s : String) -> Int {
   let lcp = build_lcp_array(s, sa)
 
   // Total substrings from each suffix, minus duplicates
-  for i = 0, total = 0; i < n; i = i + 1 {
+  for i in 0..<n; total = 0 {
     let suffix_len = n - sa[i]
     let duplicates = lcp[i]
-    continue i + 1, total + suffix_len - duplicates
+    continue total + suffix_len - duplicates
   } nobreak {
     total
   } where {
@@ -344,11 +344,11 @@ fn longest_repeated_substring(s : String) -> String {
   let lcp = build_lcp_array(s, sa)
 
   // Find maximum LCP
-  for i = 1, max_lcp = 0, max_idx = 0; i < n; i = i + 1 {
+  for i in 1..<n; max_lcp = 0, max_idx = 0 {
     if lcp[i] > max_lcp {
-      continue i + 1, lcp[i], i
+      continue lcp[i], i
     } else {
-      continue i + 1, max_lcp, max_idx
+      continue max_lcp, max_idx
     }
   } nobreak {
     if max_lcp == 0 {
@@ -587,15 +587,15 @@ fn longest_common_substring_sa(s1 : String, s2 : String) -> String {
   let lcp = build_lcp_array(combined_str, sa)
 
   // Find max LCP where adjacent suffixes are from different strings
-  for i = 1, max_lcp = 0, max_idx = 0; i < n; i = i + 1 {
+  for i in 1..<n; max_lcp = 0, max_idx = 0 {
     let from_s1_curr = sa[i] < n1
     let from_s1_prev = sa[i - 1] < n1
 
     // Must be from different original strings
     if from_s1_curr != from_s1_prev && lcp[i] > max_lcp {
-      continue i + 1, lcp[i], i
+      continue lcp[i], i
     } else {
-      continue i + 1, max_lcp, max_idx
+      continue max_lcp, max_idx
     }
   } nobreak {
     if max_lcp == 0 {

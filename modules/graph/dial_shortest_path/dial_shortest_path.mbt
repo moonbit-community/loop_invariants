@@ -190,6 +190,10 @@ pub fn dial_shortest_paths(graph : Graph, source : Int) -> Array[Int] {
   dist[source] = 0
   buckets[0].push(source)
   for d in 0..<(max_dist + 1) {
+    // NOTE: this stays a C-style loop on purpose. A zero-weight edge yields
+    // `nd == d`, so `buckets[d]` can grow while we scan it; the bound must be
+    // re-read every iteration. `for idx in 0..<buckets[d].length()` would
+    // snapshot the length once and skip those late arrivals.
     let _ = for idx = 0; idx < buckets[d].length(); {
       let u = buckets[d][idx]
       if dist[u] != d {

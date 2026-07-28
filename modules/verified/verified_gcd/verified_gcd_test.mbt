@@ -16,8 +16,8 @@ test "verified_gcd_small_cases" {
 test "verified_gcd_euclid_and_binary_agree" {
   // Sweep all pairs in [0, 30] x [0, 30] and check that the two
   // implementations agree everywhere.
-  for a = 0; a <= 30; a = a + 1 {
-    for b = 0; b <= 30; b = b + 1 {
+  for a in 0..<=30 {
+    for b in 0..<=30 {
       let e = @verified_gcd.gcd_euclid(a, b)
       let s = @verified_gcd.gcd_binary(a, b)
       @debug.assert_eq(e, s)
