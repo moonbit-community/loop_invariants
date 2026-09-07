@@ -39,6 +39,16 @@
 /// Concatenate `pattern + '$' + text` and compute the Z-array.
 /// Every position `i > m` with `Z[i] >= m` is a match of `pattern` in
 /// `text`, giving O(n + m) pattern matching.
+///
+/// # Known issue
+/// The "case 2b" branch below (the one that extends past the Z-box) compares
+/// `s[r - i + len]` with `s[i + len]` instead of the textbook `s[len]` with
+/// `s[i + len]`, so it can under-report `Z[i]`.  For example the input
+/// `"aabaaaba"` yields `[8, 1, 0, 2, 1, 1, 0, 1]` where the correct Z-array is
+/// `[8, 1, 0, 2, 4, 1, 0, 1]`.  This function is private and currently only
+/// exercised by the `z_algorithm` test in this file; the standalone package
+/// `bobzhang/loop_invariants_string/z_algorithm` is unaffected.  Left as-is
+/// here because fixing it is a behaviour change, not a lint fix.
 #warnings("+missing_invariant+missing_reasoning")
 fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
   let n = s.length()
@@ -56,6 +66,39 @@ fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
         continue len + 1
       } nobreak {
         len
+      } where {
+        proof_invariant: len >= 0,
+        proof_invariant: i + len <= n,
+        proof_invariant: len == 0 || s[len - 1] == s[i + len - 1],
+        proof_reasoning: (
+          #|INVARIANT 1/2 (Bounds): len starts at 0 and grows by one only
+          #|after the guard has established i + len < n, so len stays
+          #|non-negative and i + len never exceeds n. Both `s[len]` and
+          #|`s[i + len]` are therefore in range whenever they are read
+          #|(len <= i + len < n because i >= 1).
+          #|
+          #|INVARIANT 3 (Boundary witness): the last character pair that was
+          #|compared matched. Since the comparison walks the two positions
+          #|forward in lockstep one step at a time, this single witness
+          #|stands for the whole range: s[0..len) == s[i..i+len).
+          #|
+          #|MAINTENANCE:
+          #|`continue len + 1` is reached only when s[len] == s[i + len], so
+          #|the new len satisfies invariant 3, and the guard i + len < n
+          #|gives invariant 2 for the new value.
+          #|
+          #|TERMINATION:
+          #|len strictly increases and i + len is capped at n, so the loop
+          #|runs at most n - i times. This branch is only taken when i >= r,
+          #|and each matched character pushes the Z-box boundary r strictly
+          #|to the right, which is what keeps the whole algorithm linear.
+          #|
+          #|CORRECTNESS AT EXIT:
+          #|Either i + len == n (the suffix ran out) or
+          #|s[len] != s[i + len]. Combined with invariant 3, len is exactly
+          #|the length of the longest common prefix of s and s[i..], i.e.
+          #|Z[i].
+        ),
       }
       z[i] = len
       if len > 0 {
@@ -81,6 +124,49 @@ fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
           continue len + 1
         } nobreak {
           len
+        } where {
+          proof_invariant: len >= remaining,
+          proof_invariant: i + len <= n,
+          proof_invariant: len == remaining ||
+          s[r - i + len - 1] == s[i + len - 1],
+          proof_reasoning: (
+            #|INVARIANT 1 (Seeded lower bound): len starts at
+            #|`remaining = r - i`, the part of the Z-box that is already
+            #|known to match, and only ever increases by one.
+            #|
+            #|INVARIANT 2 (Bounds): the guard tests `i + len < n` before each
+            #|increment, so i + len <= n throughout. At entry
+            #|i + len == i + (r - i) == r, and the enclosing loop's invariant
+            #|gives r <= n. The other guard conjunct, `r + len - i < n`,
+            #|likewise keeps the left-hand index `r - i + len` in range.
+            #|
+            #|INVARIANT 3 (Boundary witness): every increment is guarded by a
+            #|successful character comparison, so the pair examined just
+            #|before the current len matched. Because the two cursors advance
+            #|in lockstep, that witness covers the whole extended range
+            #|s[r-i+remaining .. r-i+len) == s[i+remaining .. i+len).
+            #|
+            #|MAINTENANCE:
+            #|`continue len + 1` runs only under the full guard, which is
+            #|exactly invariants 2 and 3 restated for the new len.
+            #|
+            #|TERMINATION:
+            #|len strictly increases while both `i + len` and `r - i + len`
+            #|stay below n, so the loop performs at most n - r steps.
+            #|
+            #|CORRECTNESS AT EXIT:
+            #|The guard is false, so the extension stopped either at the end
+            #|of the string or at the first mismatching pair, and len is the
+            #|largest value for which the compared ranges agree.
+            #|
+            #|CAVEAT: the two cursors here are `r - i + len` and `i + len`.
+            #|Textbook Z-algorithm compares `s[len]` against `s[i + len]`
+            #|when extending past the Z-box, so this loop matches the suffix
+            #|at i against the text starting at `r - i` rather than against
+            #|the prefix of s. The invariants above are stated for the code
+            #|as written and do not claim that the resulting `len` equals
+            #|Z[i]; see the note above `z_algorithm`.
+          ),
         }
         z[i] = len
         continue i + 1, i, i + len
@@ -232,6 +318,54 @@ fn manacher(s : ArrayView[Char]) -> Array[Int] {
         continue left - 1, right + 1, radius + 1
       } nobreak {
         radius
+      } where {
+        proof_invariant: radius >= p[i],
+        proof_invariant: left == i - radius - 1,
+        proof_invariant: right == i + radius + 1,
+        proof_invariant: radius == p[i] ||
+        (
+          left >= -1 &&
+          right <= t_len &&
+          get_char(left + 1) == get_char(right - 1)
+        ),
+        proof_reasoning: (
+          #|INVARIANT 1 (Seeded lower bound): radius starts at the mirror
+          #|estimate p[i] and only grows, so the free information taken from
+          #|the mirror position is never thrown away.
+          #|
+          #|INVARIANT 2/3 (Cursor coupling): left and right are not
+          #|independent state -- they are always exactly one step outside the
+          #|palindrome of radius `radius` centred at i. They start at
+          #|i - p[i] - 1 and i + p[i] + 1 and move by -1 / +1 in lockstep
+          #|with radius, so the two equalities are preserved by construction.
+          #|This is what lets the exit value `radius` be used directly as
+          #|p[i].
+          #|
+          #|INVARIANT 4 (Boundary witness): once the loop has expanded at
+          #|least once, the pair it last compared -- (left + 1, right - 1) --
+          #|was in range and matched. Together with symmetry of the seed,
+          #|this witness stands for the whole palindrome
+          #|t[i-radius .. i+radius].
+          #|
+          #|MAINTENANCE:
+          #|`continue left - 1, right + 1, radius + 1` runs only when the
+          #|guard held, which is precisely invariant 4 restated for the new
+          #|cursors; invariants 2 and 3 are preserved because all three
+          #|values move together.
+          #|
+          #|TERMINATION:
+          #|radius strictly increases while `left >= 0` and
+          #|`right < t_len` bound it by t_len, so the loop runs at most
+          #|t_len times. Amortised, every successful expansion pushes the
+          #|right boundary r of the outer loop strictly to the right, and r
+          #|only moves forward, giving Manacher's O(n) total.
+          #|
+          #|CORRECTNESS AT EXIT:
+          #|The guard is false, so the expansion stopped at the string border
+          #|or at the first mismatching pair. Hence radius is the largest
+          #|value with t[i-radius .. i+radius] a palindrome, i.e. exactly
+          #|p[i] for the transformed string.
+        ),
       }
       p[i] = radius
 

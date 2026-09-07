@@ -65,7 +65,7 @@ fn canon(v : Int, parent : Int, adj : Array[Array[Int]]) -> String {
     }
   }
   sort_strings(kids)
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   buf.write_char('(')
   for s in kids {
     buf.write_string(s)

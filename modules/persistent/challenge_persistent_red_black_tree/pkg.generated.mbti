@@ -25,6 +25,7 @@ pub enum Color {
   Red
   Black
 } derive(Eq, @debug.Debug)
+pub fn Color::equal(Self, Self) -> Bool
 
 pub enum RB[T] {
   Empty
@@ -34,4 +35,3 @@ pub enum RB[T] {
 // Type aliases
 
 // Traits
-

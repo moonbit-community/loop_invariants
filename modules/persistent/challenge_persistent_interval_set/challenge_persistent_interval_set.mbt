@@ -59,7 +59,7 @@ fn insert_sorted(
   let (s0, e0) = interval
   let s = if s0 <= e0 { s0 } else { e0 }
   let e = if s0 <= e0 { e0 } else { s0 }
-  let out = Array::new()
+  let out = Array()
   let inserted = for pair in arr; inserted = false {
     let (s1, e1) = pair
     if !inserted && s < s1 {
@@ -80,7 +80,7 @@ fn insert_sorted(
 
 ///|
 fn merge_sorted(arr : ArrayView[(Int, Int)]) -> Array[(Int, Int)] {
-  let out = Array::new()
+  let out = Array()
   for pair in arr {
     let (s, e) = pair
     if out.length() == 0 {

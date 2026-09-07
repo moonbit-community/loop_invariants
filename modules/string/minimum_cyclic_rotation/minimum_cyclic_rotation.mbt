@@ -18,7 +18,7 @@
 
 ///|
 fn slice_rotation(s : String, start : Int, len : Int) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for offset in 0..<len {
     let ch = s[start + offset].to_int()
     sb.write_char(ch.unsafe_to_char())

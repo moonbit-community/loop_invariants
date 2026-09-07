@@ -14,8 +14,8 @@ pub enum Edit {
   Insert(Int)
   Delete(Int)
 } derive(Eq)
+pub fn Edit::equal(Self, Self) -> Bool
 
 // Type aliases
 
 // Traits
-

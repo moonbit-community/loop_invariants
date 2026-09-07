@@ -82,7 +82,7 @@ pub fn[T] from_array(arr : ArrayView[T]) -> Stack[T] {
 ///|
 /// Convert a stack to an array in top-to-bottom order.
 pub fn[T] to_array(s : Stack[T]) -> Array[T] {
-  let out = Array::new()
+  let out = Array()
   fill_to_array(s, out)
   out
 }

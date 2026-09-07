@@ -273,6 +273,40 @@ fn FenwickTree::find_kth(self : FenwickTree, k : Int) -> Int {
     } else {
       break max_bit
     }
+  } where {
+    proof_invariant: max_bit >= 1,
+    proof_invariant: (max_bit & (max_bit - 1)) == 0,
+    proof_invariant: max_bit == 1 || max_bit <= self.n,
+    proof_reasoning: (
+      #|INVARIANT 1 (Positivity): max_bit starts at 1 and is only ever
+      #|doubled, so it stays >= 1 and the `break` returns a usable stride.
+      #|
+      #|INVARIANT 2 (Power of two): 1 is a power of two and doubling a power
+      #|of two yields a power of two, so `max_bit & (max_bit - 1) == 0`
+      #|throughout. This is what makes the caller's descent
+      #|`bit -> bit / 2 -> ... -> 0` visit every bit position exactly once.
+      #|
+      #|INVARIANT 3 (Upper bound): max_bit is only doubled when the doubled
+      #|value is still <= self.n, so every value after the first is <= n.
+      #|The `max_bit == 1` disjunct covers the degenerate empty tree
+      #|(self.n == 0 or 1), where the loop breaks immediately.
+      #|
+      #|MAINTENANCE:
+      #|`continue max_bit * 2` is taken only under the test
+      #|`max_bit * 2 <= self.n`, which is exactly invariant 3 for the new
+      #|value; invariants 1 and 2 are preserved by doubling.
+      #|
+      #|TERMINATION:
+      #|max_bit at least doubles each iteration while staying <= self.n, so
+      #|the loop runs at most floor(log2(n)) + 1 times before the test fails.
+      #|
+      #|CORRECTNESS AT EXIT:
+      #|The break happens when `max_bit * 2 > self.n`, so max_bit is the
+      #|largest power of two that is <= self.n (or 1 when n < 1). That is the
+      #|right starting stride for binary lifting: pos + max_bit is the first
+      #|candidate index and every Fenwick node can be reached by adding a
+      #|subset of the descending powers of two.
+    ),
   }
   for pos = 0, remaining = k, bit = max_bit {
     if bit == 0 {

@@ -580,7 +580,7 @@ fn SuffixAutomaton::longest_common_substring(
   if best_len == 0 {
     ""
   } else {
-    let sb = StringBuilder::new()
+    let sb = StringBuilder()
     for j in (best_end - best_len)..<best_end {
       let ch = other[j].to_int()
       sb.write_char(ch.unsafe_to_char())
@@ -701,7 +701,7 @@ fn SuffixAutomaton::kth_substring(self : SuffixAutomaton, k : Int64) -> String? 
   if k > total {
     return None
   }
-  let result = StringBuilder::new()
+  let result = StringBuilder()
 
   // Navigate from initial state
   for state = 0, remaining = k; remaining > 0L; {
@@ -867,7 +867,7 @@ fn SuffixAutomaton::all_substrings(self : SuffixAutomaton) -> Array[String] {
     }
   }
 
-  dfs(self, 0, StringBuilder::new(), result)
+  dfs(self, 0, StringBuilder(), result)
   result.sort_by((a, b) => a.compare(b))
   result
 }

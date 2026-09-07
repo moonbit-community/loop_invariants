@@ -221,7 +221,7 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
     if node >= 2 {
       // Build palindrome string
       let len = tree.nodes[node].len
-      let sb = StringBuilder::new()
+      let sb = StringBuilder()
       // current holds characters from center outward.
       // Left half is reverse(current); right half is current (skip center if odd).
       let last = current.length() - 1
@@ -347,7 +347,7 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
 
   // Build palindrome string
   let len = self.nodes[node_idx].len
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let last = path.length() - 1
   for i in last>=..0 {
     sb.write_char(Int::unsafe_to_char(path[i]))

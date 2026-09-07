@@ -67,7 +67,7 @@ fn[T] tree_size(t : Tree[T]) -> Int {
 
 ///|
 fn[T] insert_key(keys : Array[T], pos : Int, key : T) -> Array[T] {
-  let out = Array::new()
+  let out = Array()
   for i, item in keys {
     if i == pos {
       out.push(key)
@@ -87,7 +87,7 @@ fn[T] insert_children(
   left : BNode[T],
   right : BNode[T],
 ) -> Array[BNode[T]] {
-  let out = Array::new()
+  let out = Array()
   for i, child in children {
     if i == pos {
       out.push(left)

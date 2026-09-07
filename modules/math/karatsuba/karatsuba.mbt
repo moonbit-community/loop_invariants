@@ -220,7 +220,7 @@ pub fn to_string(x : Array[Int64]) -> String {
   if n == 0 || (n == 1 && x[0] == 0L) {
     return "0"
   }
-  let buf = StringBuilder::new()
+  let buf = StringBuilder()
   buf.write_string(x[n - 1].to_string())
   let mut i = n - 2
   while i >= 0 {

@@ -25,6 +25,39 @@ fn next_greater_element(arr : ArrayView[Int]) -> Array[Int] {
         None => break
       }
       continue stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]
+    } where {
+      proof_invariant: pop_next ==
+      (stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]),
+      proof_invariant: stack.length() <= i,
+      proof_reasoning: (
+        #|INVARIANT 1 (Faithful guard):
+        #|`pop_next` always equals the pop test for the current stack, so the
+        #|loop pops exactly while the stack top is dominated by arr[i]. The
+        #|`&&` short-circuits, so the index `stack.length() - 1` is only read
+        #|when the stack is non-empty.
+        #|
+        #|INVARIANT 2 (Size bound): the outer loop has pushed exactly `i`
+        #|indices before reaching iteration i, and this loop only pops, so
+        #|`stack.length() <= i`. In particular the stack holds indices < i,
+        #|which is why `result[top] = i` records a strictly later position.
+        #|
+        #|MAINTENANCE:
+        #|Each iteration pops one index and recomputes `pop_next` from the
+        #|new stack top, re-establishing both invariants.
+        #|
+        #|TERMINATION:
+        #|`stack.length()` strictly decreases on every iteration and is
+        #|bounded below by 0, so the loop runs at most `stack.length()`
+        #|times. Amortised over the outer loop each index is pushed once and
+        #|popped once, giving the O(n) bound.
+        #|
+        #|CORRECTNESS AT EXIT:
+        #|`pop_next` is false, so either the stack is empty or its top holds
+        #|an index whose value is >= arr[i]; every index popped here had
+        #|arr[top] < arr[i] and no index between top and i can be greater
+        #|(it would have popped top earlier), so i is exactly its next
+        #|greater element.
+      ),
     }
     stack.push(i)
   }
@@ -62,12 +95,70 @@ fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
     for pop_front = deque.front() is Some(front) && front <= i - k; pop_front; {
       let _ = deque.pop_front()
       continue deque.front() is Some(front) && front <= i - k
+    } where {
+      proof_invariant: pop_front ==
+      (deque.front() is Some(front) && front <= i - k),
+      proof_invariant: deque.length() <= i,
+      proof_reasoning: (
+        #|INVARIANT 1 (Faithful guard):
+        #|`pop_front` equals "the deque is non-empty and its front index has
+        #|fallen out of the window [i-k+1, i]". It is recomputed from the new
+        #|front after every pop, so the loop stops exactly when the front is
+        #|inside the window again.
+        #|
+        #|INVARIANT 2 (Size bound): the outer loop pushes one index per
+        #|iteration, so at most `i` indices have entered the deque before
+        #|iteration i; this loop only removes, hence `deque.length() <= i`.
+        #|
+        #|MAINTENANCE:
+        #|Each iteration removes the single stale front index and re-evaluates
+        #|the guard against the new front, so both invariants still hold.
+        #|
+        #|TERMINATION:
+        #|`deque.length()` strictly decreases each iteration and is bounded
+        #|below by 0. In fact at most one index can be stale per outer step
+        #|(indices enter in increasing order), so the loop runs at most once.
+        #|
+        #|CORRECTNESS AT EXIT:
+        #|Either the deque is empty or `front > i - k`, i.e. every index left
+        #|in the deque belongs to the current window, which is what makes
+        #|`arr[front]` a valid candidate for the window maximum.
+      ),
     }
 
     // Remove elements smaller than current from back (they can't be max)
     for pop_back = deque.back() is Some(back) && arr[back] < arr[i]; pop_back; {
       let _ = deque.pop_back()
       continue deque.back() is Some(back) && arr[back] < arr[i]
+    } where {
+      proof_invariant: pop_back ==
+      (deque.back() is Some(back) && arr[back] < arr[i]),
+      proof_invariant: deque.length() <= i,
+      proof_reasoning: (
+        #|INVARIANT 1 (Faithful guard):
+        #|`pop_back` equals "the deque is non-empty and its back value is
+        #|strictly smaller than arr[i]". Recomputing it after each pop keeps
+        #|the loop popping exactly the indices that can never again be a
+        #|window maximum: they are older than i and hold a smaller value.
+        #|
+        #|INVARIANT 2 (Size bound): as above, at most `i` indices have been
+        #|pushed before iteration i and this loop only removes.
+        #|
+        #|MAINTENANCE:
+        #|One pop per iteration, then the guard is recomputed from the new
+        #|back, so both invariants are re-established.
+        #|
+        #|TERMINATION:
+        #|`deque.length()` strictly decreases and is bounded below by 0.
+        #|Amortised over the outer loop, each index is pushed once and popped
+        #|at most once, so the whole algorithm is O(n).
+        #|
+        #|CORRECTNESS AT EXIT:
+        #|Either the deque is empty or `arr[back] >= arr[i]`, so after
+        #|`push_back(i)` the values along the deque are non-increasing while
+        #|the indices are increasing. That is the monotone-deque property the
+        #|outer loop relies on when it reads `arr[front]` as the maximum.
+      ),
     }
 
     // Add current element
@@ -130,6 +221,46 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
       }
     } nobreak {
       max_area
+    } where {
+      proof_invariant: max_area >= 0,
+      proof_invariant: stack.length() <= i,
+      proof_invariant: stack.length() == 0 || stack[stack.length() - 1] < i,
+      proof_reasoning: (
+        #|INVARIANT 1 (Running maximum): `max_area` starts at the outer
+        #|loop's accumulator (>= 0) and is only ever replaced by a strictly
+        #|larger `area`, and `area = height * width` with `height >= 0`
+        #|(a histogram bar) and `width >= 0`, so it stays non-negative and
+        #|never decreases.
+        #|
+        #|INVARIANT 2 (Size bound): the outer loop pushes exactly one index
+        #|per step, so before step i at most `i` indices are on the stack and
+        #|this loop only pops.
+        #|
+        #|INVARIANT 3 (Indices are in the past): every index on the stack was
+        #|pushed by an earlier outer step, so the top index is < i. That is
+        #|what makes `width = i - stack.top - 1` (or `i` when the stack is
+        #|empty) a non-negative count of bars.
+        #|
+        #|MAINTENANCE:
+        #|Each iteration pops exactly one index, computes the area of the
+        #|maximal rectangle whose height is that bar, and folds it into
+        #|`max_area`. Popping preserves invariants 2 and 3; `max_area` only
+        #|grows, preserving invariant 1.
+        #|
+        #|TERMINATION:
+        #|`stack.length()` strictly decreases each iteration (the guard
+        #|already established it is > 0, so `pop` returns `Some` and the
+        #|`None` branch is unreachable) and is bounded below by 0.
+        #|
+        #|CORRECTNESS AT EXIT:
+        #|The guard is false, so the stack is empty or its top bar is no
+        #|taller than `curr_height`; pushing i then keeps the stack heights
+        #|non-decreasing. Every bar popped here has `curr_height` as its
+        #|first strictly-shorter bar on the right and the new stack top as
+        #|its first strictly-shorter bar on the left, so `height * width` is
+        #|exactly the largest rectangle containing that bar. The sentinel
+        #|step i == n uses height 0 and therefore flushes the whole stack.
+      ),
     }
     stack.push(i)
     continue max_area
@@ -330,6 +461,41 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
           arr[stack[stack.length() - 1]] >= arr[i]; pop_next; {
       let _ = stack.pop()
       continue stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i]
+    } where {
+      proof_invariant: pop_next ==
+      (stack.length() > 0 && arr[stack[stack.length() - 1]] >= arr[i]),
+      proof_invariant: stack.length() <= i,
+      proof_invariant: stack.length() == 0 || stack[stack.length() - 1] < i,
+      proof_reasoning: (
+        #|INVARIANT 1 (Faithful guard):
+        #|`pop_next` equals "the stack is non-empty and its top value is >=
+        #|arr[i]". Recomputing it after each pop means the loop discards
+        #|exactly the candidates that cannot be the *previous strictly
+        #|smaller* element of i. The `>=` (rather than `>`) is deliberate:
+        #|equal values are popped on the left pass so that, among equal
+        #|minima, only the leftmost one owns a subarray (the right pass uses
+        #|a strict `>` for the mirror reason).
+        #|
+        #|INVARIANT 2 (Size bound) and INVARIANT 3 (Past indices):
+        #|the outer loop pushes one index per step and this loop only pops,
+        #|so at most `i` indices are present and the top index is < i. That
+        #|is what makes `left[i] = i - stack.top` a positive distance.
+        #|
+        #|MAINTENANCE:
+        #|One pop per iteration, then the guard is recomputed from the new
+        #|top, re-establishing all three invariants.
+        #|
+        #|TERMINATION:
+        #|`stack.length()` strictly decreases and is bounded below by 0.
+        #|Amortised, each index is pushed once and popped once: O(n).
+        #|
+        #|CORRECTNESS AT EXIT:
+        #|The stack is empty (no smaller element to the left, so arr[i] can
+        #|extend to index 0 and `left[i] = i + 1`) or its top is the nearest
+        #|index j < i with arr[j] < arr[i], giving `left[i] = i - j`, the
+        #|number of choices for the left endpoint of a subarray minimised
+        #|at i.
+      ),
     }
     left[i] = if stack.length() == 0 {
       i + 1
@@ -345,6 +511,40 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
     for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]; pop_next; {
       let _ = stack.pop()
       continue stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]
+    } where {
+      proof_invariant: pop_next ==
+      (stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]),
+      proof_invariant: stack.length() <= n - 1 - i,
+      proof_invariant: stack.length() == 0 || stack[stack.length() - 1] > i,
+      proof_reasoning: (
+        #|INVARIANT 1 (Faithful guard):
+        #|`pop_next` equals "the stack is non-empty and its top value is
+        #|strictly greater than arr[i]". The comparison is strict here while
+        #|the left pass used `>=`; that asymmetry is what stops a run of
+        #|equal minima from being counted more than once.
+        #|
+        #|INVARIANT 2 (Size bound): this pass walks i = n-1 down to 0 and
+        #|pushes one index per step, so exactly `n - 1 - i` indices have been
+        #|pushed before step i and this loop only pops.
+        #|
+        #|INVARIANT 3 (Future indices): every index on the stack was pushed
+        #|by an earlier (larger) i, so the top index is > i, which makes
+        #|`right[i] = stack.top - i` a positive distance.
+        #|
+        #|MAINTENANCE:
+        #|One pop per iteration followed by recomputing the guard from the
+        #|new top re-establishes all three invariants.
+        #|
+        #|TERMINATION:
+        #|`stack.length()` strictly decreases and is bounded below by 0;
+        #|amortised over the pass each index is pushed and popped once.
+        #|
+        #|CORRECTNESS AT EXIT:
+        #|The stack is empty (arr[i] extends to the end, `right[i] = n - i`)
+        #|or its top is the nearest index j > i with arr[j] <= arr[i], giving
+        #|`right[i] = j - i`, the number of choices for the right endpoint of
+        #|a subarray minimised at i.
+      ),
     }
     right[i] = if stack.length() == 0 {
       n - i
@@ -427,6 +627,40 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
       let _ = stack.pop()
       continue stack.length() > 0 &&
         prices[stack[stack.length() - 1]] <= prices[i]
+    } where {
+      proof_invariant: pop_next ==
+      (stack.length() > 0 && prices[stack[stack.length() - 1]] <= prices[i]),
+      proof_invariant: stack.length() <= i,
+      proof_invariant: stack.length() == 0 || stack[stack.length() - 1] < i,
+      proof_reasoning: (
+        #|INVARIANT 1 (Faithful guard):
+        #|`pop_next` equals "the stack is non-empty and its top price is <=
+        #|today's price". Recomputing it after each pop drops exactly the
+        #|days that today dominates; they can never again bound anyone's
+        #|span, because any later day that is stopped by one of them would
+        #|be stopped by today first.
+        #|
+        #|INVARIANT 2 (Size bound) and INVARIANT 3 (Past indices):
+        #|the outer loop pushes one index per day and this loop only pops,
+        #|so at most `i` indices remain and the top index is < i. That makes
+        #|`spans[i] = i - stack.top` a positive number of days.
+        #|
+        #|MAINTENANCE:
+        #|One pop per iteration, then the guard is recomputed from the new
+        #|top, re-establishing all three invariants.
+        #|
+        #|TERMINATION:
+        #|`stack.length()` strictly decreases and is bounded below by 0;
+        #|amortised over the whole scan each day is pushed once and popped
+        #|at most once, so the algorithm is O(n) despite the nested loop.
+        #|
+        #|CORRECTNESS AT EXIT:
+        #|The stack is empty (no earlier day had a strictly higher price, so
+        #|the span reaches back to day 0 and `spans[i] = i + 1`) or its top
+        #|is the most recent day j with prices[j] > prices[i], giving
+        #|`spans[i] = i - j`. Pushing i afterwards keeps stack prices
+        #|strictly decreasing from bottom to top.
+      ),
     }
 
     // Span extends back to previous larger price (or to start)

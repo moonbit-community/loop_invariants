@@ -613,6 +613,52 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
           points[i],
         ) <=
         0
+    } where {
+      proof_invariant: pop_next ==
+      (
+        hull.length() >= 2 &&
+        cross_product(
+          hull[hull.length() - 2],
+          hull[hull.length() - 1],
+          points[i],
+        ) <=
+        0
+      ),
+      proof_invariant: hull.length() <= i,
+      proof_reasoning: (
+        #|INVARIANT 1 (Faithful guard):
+        #|`pop_next` always equals "the hull has at least two vertices and
+        #|the last two together with points[i] do not make a strict
+        #|counter-clockwise turn". The `&&` short-circuits, so the reads at
+        #|`hull.length() - 2` and `hull.length() - 1` only happen once at
+        #|least two vertices exist.
+        #|
+        #|INVARIANT 2 (Size bound): the outer loop pushes exactly one point
+        #|per step, so before step i the hull holds at most `i` vertices and
+        #|this loop only pops. Together with invariant 1 it guarantees the
+        #|loop can never pop below one vertex, so the leftmost point (pushed
+        #|first, and a genuine hull vertex because the input is sorted
+        #|lexicographically) is never removed.
+        #|
+        #|MAINTENANCE:
+        #|Each iteration pops the offending last vertex and recomputes the
+        #|guard against the new last two vertices, re-establishing both
+        #|invariants.
+        #|
+        #|TERMINATION:
+        #|`hull.length()` strictly decreases each iteration and invariant 1
+        #|forces the loop to stop at length 1, so it runs at most
+        #|`hull.length() - 1` times. Amortised over the outer loop each point
+        #|is pushed once and popped at most once, giving the O(n) chain
+        #|construction (the O(n log n) cost is the initial sort).
+        #|
+        #|CORRECTNESS AT EXIT:
+        #|`pop_next` is false, so after `hull.push(points[i])` every
+        #|consecutive triple in the hull makes a strict counter-clockwise
+        #|turn -- exactly the convexity condition for the lower chain.
+        #|Collinear triples have cross product 0 and are popped as well, so
+        #|the result keeps only true corners.
+      ),
     }
     hull.push(points[i])
   }
@@ -635,6 +681,53 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
           points[i],
         ) <=
         0
+    } where {
+      proof_invariant: pop_next ==
+      (
+        hull.length() > lower_size &&
+        cross_product(
+          hull[hull.length() - 2],
+          hull[hull.length() - 1],
+          points[i],
+        ) <=
+        0
+      ),
+      proof_invariant: hull.length() >= lower_size,
+      proof_invariant: hull.length() <= lower_size + (points.length() - 2 - i),
+      proof_reasoning: (
+        #|INVARIANT 1 (Faithful guard):
+        #|`pop_next` equals "the upper chain has grown past the finished
+        #|lower chain and the last two vertices together with points[i] do
+        #|not turn strictly counter-clockwise".
+        #|
+        #|INVARIANT 2 (The lower chain is frozen): the guard compares against
+        #|`lower_size`, not against 2, so this loop can never pop a vertex
+        #|belonging to the lower hull. `lower_size >= 2` because the lower
+        #|pass pushed at least the leftmost and rightmost points, so
+        #|`hull.length() > lower_size` implies `hull.length() >= 3` and the
+        #|reads at `hull.length() - 2` are in range.
+        #|
+        #|INVARIANT 3 (Size bound): this pass walks i from
+        #|`points.length() - 2` down to 0 and pushes one point per step, so
+        #|at most `points.length() - 2 - i` vertices sit above `lower_size`.
+        #|
+        #|MAINTENANCE:
+        #|Each iteration pops one upper-chain vertex and recomputes the guard
+        #|from the new top two, re-establishing all three invariants.
+        #|
+        #|TERMINATION:
+        #|`hull.length()` strictly decreases each iteration and invariant 1
+        #|stops the loop at `lower_size`, so it runs at most
+        #|`hull.length() - lower_size` times; amortised, each point is pushed
+        #|once and popped at most once.
+        #|
+        #|CORRECTNESS AT EXIT:
+        #|`pop_next` is false, so after pushing points[i] every consecutive
+        #|triple of the upper chain turns strictly counter-clockwise. Walking
+        #|the points right-to-left makes this chain the upper hull; appended
+        #|to the lower chain it closes the full hull in counter-clockwise
+        #|order.
+      ),
     }
     hull.push(points[i])
   }
