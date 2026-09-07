@@ -13,8 +13,8 @@ pub struct Point {
   x : Double
   y : Double
 } derive(Eq)
+pub fn Point::equal(Self, Self) -> Bool
 
 // Type aliases
 
 // Traits
-

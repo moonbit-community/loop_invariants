@@ -173,10 +173,10 @@ pub(all) struct LinkCutTree {
 /// Time: O(n).
 pub fn LinkCutTree::LinkCutTree(n : Int) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
-  for i in 0..<n {
+  for _i in 0..<n {
     nodes.push(LCTNode(0))
   } where {
-    proof_invariant: i >= 0 && i <= n,
+    proof_invariant: _i >= 0 && _i <= n,
     proof_reasoning: (
       #|INVARIANT (init nodes):
       #|  nodes[0..i) are initialized as isolated tree roots.

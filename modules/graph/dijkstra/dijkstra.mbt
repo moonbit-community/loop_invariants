@@ -282,7 +282,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
     return dist
   }
   dist[src] = 0
-  for iter in 0..<n {
+  for _iter in 0..<n {
     let u = for i in 0..<n; u = -1, best = DIJK_INF_INT {
       if !used[i] && dist[i] < best {
         continue i, dist[i]
@@ -324,7 +324,7 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
       ),
     }
   } where {
-    proof_invariant: iter >= 0 && iter <= n,
+    proof_invariant: _iter >= 0 && _iter <= n,
     proof_invariant: dist.length() == n && used.length() == n,
     proof_reasoning: (
       #|INVARIANT (dense Dijkstra frontier):

@@ -13,8 +13,8 @@ pub struct JmPoint {
   x : Double
   y : Double
 } derive(Eq)
+pub fn JmPoint::equal(Self, Self) -> Bool
 
 // Type aliases
 
 // Traits
-

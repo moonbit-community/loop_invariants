@@ -15,7 +15,7 @@
 
 ///|
 fn slice_string(s : String, start : Int, end : Int) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for idx in start..<end {
     let ch = s[idx].to_int()
     sb.write_char(ch.unsafe_to_char())

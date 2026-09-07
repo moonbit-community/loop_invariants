@@ -180,7 +180,7 @@ pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
 
   // Build concatenated string: pattern + "$" + text
   // The "$" is a separator that won't match anything
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_string(pattern)
   sb.write_char('$')
   sb.write_string(text)

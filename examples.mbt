@@ -1005,6 +1005,45 @@ fn sieve(n : Int) -> Array[Int] {
       // Mark all multiples of i as composite
       for j = i * i; j <= n; j = j + i {
         is_prime[j] = false
+      } where {
+        proof_invariant: j >= i * i,
+        proof_invariant: (j - i * i) % i == 0,
+        proof_invariant: j == i * i || is_prime[j - i] == false,
+        proof_reasoning: (
+          #|INVARIANT 1 (Lower bound): j starts at i*i and only grows by i,
+          #|so it never drops below i*i. Multiples of i smaller than i*i
+          #|already have a prime factor smaller than i and were crossed out
+          #|by an earlier outer iteration, which is why starting at i*i (and
+          #|not at 2*i) is enough.
+          #|
+          #|INVARIANT 2 (Stride): every value of j is congruent to i*i modulo
+          #|i, i.e. j is a multiple of i. i >= 2 here, so the modulus is well
+          #|defined and the loop only ever writes to multiples of i.
+          #|
+          #|INVARIANT 3 (Boundary witness): apart from the very first value,
+          #|the previous multiple j - i has already been marked composite.
+          #|Since the step is constant, this single witness stands for the
+          #|full range: every multiple of i in [i*i, j) is false. The index
+          #|j - i is in bounds because the previous iteration passed the test
+          #|j - i <= n.
+          #|
+          #|MAINTENANCE:
+          #|The body sets is_prime[j] = false and then j becomes j + i, so
+          #|invariant 3 holds for the new j, and invariants 1 and 2 are
+          #|preserved by adding the stride i.
+          #|
+          #|TERMINATION:
+          #|j increases by i >= 2 every iteration and the loop runs only
+          #|while j <= n, so it performs about (n - i*i)/i steps and stops.
+          #|Summed over all primes i <= sqrt(n) this is the O(n log log n)
+          #|bound of the sieve.
+          #|
+          #|CORRECTNESS AT EXIT:
+          #|j > n and, by invariants 1-3, every multiple of i in [i*i, n] has
+          #|been marked composite. No prime is ever marked: the only entries
+          #|written are proper multiples k*i with k >= i >= 2, which are
+          #|composite by construction.
+        ),
       }
       continue i + 1
     } else {
