@@ -192,10 +192,10 @@ Diameter^2 = 8, achieved by the diagonal (corner 0 to corner 2, or 1 to 3).
 ///|
 test "diameter square" {
   let points : Array[@rotating_calipers_diameter.Point] = [
-    { x: 0L, y: 0L },
-    { x: 2L, y: 0L },
-    { x: 2L, y: 2L },
-    { x: 0L, y: 2L },
+    { x: 0L, y: 0L, },
+    { x: 2L, y: 0L, },
+    { x: 2L, y: 2L, },
+    { x: 0L, y: 2L, },
   ]
   let result = @rotating_calipers_diameter.convex_diameter(points).unwrap()
   debug_inspect(result.dist2, content="8")
@@ -219,9 +219,9 @@ Longest pair: 0 <-> 1, dist2 = 4^2 + 0^2 = 16
 ///|
 test "diameter triangle" {
   let points : Array[@rotating_calipers_diameter.Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 2L, y: 3L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 2L, y: 3L, },
   ]
   let result = @rotating_calipers_diameter.convex_diameter(points).unwrap()
   debug_inspect(result.dist2, content="16")
@@ -244,10 +244,10 @@ Diagonal: dist2 = 3^2 + 1^2 = 10
 ///|
 test "diameter rectangle" {
   let points : Array[@rotating_calipers_diameter.Point] = [
-    { x: 0L, y: 0L },
-    { x: 3L, y: 0L },
-    { x: 3L, y: 1L },
-    { x: 0L, y: 1L },
+    { x: 0L, y: 0L, },
+    { x: 3L, y: 0L, },
+    { x: 3L, y: 1L, },
+    { x: 0L, y: 1L, },
   ]
   let result = @rotating_calipers_diameter.convex_diameter(points).unwrap()
   debug_inspect(result.dist2, content="10")

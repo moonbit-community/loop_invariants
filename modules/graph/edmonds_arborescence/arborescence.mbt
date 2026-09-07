@@ -164,7 +164,7 @@ pub fn min_arborescence(
     } nobreak {
       total
     }
-    return Some({ cost: total, parent })
+    return Some({ cost: total, parent, })
   }
 
   // Case B: Cycle found - must contract and recurse
@@ -205,7 +205,7 @@ pub fn min_arborescence(
     } else {
       e.weight
     }
-    contracted_edges.push({ from: a, to: b, weight: w })
+    contracted_edges.push({ from: a, to: b, weight: w, })
   }
 
   // Step 5: Recurse on contracted graph
@@ -231,7 +231,7 @@ pub fn min_arborescence(
           // No edge enters cycle in contracted solution
           // This can happen if cycle is entirely within the arborescence
           let total = sub_tree.cost + cycle_cost(in_cost, cycle)
-          Some({ cost: total, parent: final_parent })
+          Some({ cost: total, parent: final_parent, })
         }
         Some(edge_in) => {
           // Find original edge corresponding to contracted edge
@@ -247,7 +247,7 @@ pub fn min_arborescence(
             }
           }
           let total = sub_tree.cost + cycle_cost(in_cost, cycle)
-          Some({ cost: total, parent: final_parent })
+          Some({ cost: total, parent: final_parent, })
         }
       }
     }

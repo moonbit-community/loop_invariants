@@ -39,12 +39,12 @@ priv struct PSTNode {
 
 ///|
 fn PSTNode::leaf(value : Int64) -> PSTNode {
-  { left: -1, right: -1, sum: value }
+  { left: -1, right: -1, sum: value, }
 }
 
 ///|
 fn PSTNode::internal(left : Int, right : Int, sum : Int64) -> PSTNode {
-  { left, right, sum }
+  { left, right, sum, }
 }
 
 ///|
@@ -60,7 +60,7 @@ priv struct PersistentSegTree {
 fn PersistentSegTree::build(arr : Array[Int64]) -> PersistentSegTree {
   let n = arr.length()
   if n == 0 {
-    return { nodes: [], roots: [], n: 0 }
+    return { nodes: [], roots: [], n: 0, }
   }
   let nodes : Array[PSTNode] = []
 
@@ -88,14 +88,14 @@ fn PersistentSegTree::build(arr : Array[Int64]) -> PersistentSegTree {
   }
 
   let root = build_rec(arr, nodes, 0, n - 1)
-  { nodes, roots: [root], n }
+  { nodes, roots: [root], n, }
 }
 
 ///|
 /// Create empty persistent segment tree of given size
 fn PersistentSegTree::PersistentSegTree(n : Int) -> PersistentSegTree {
   if n == 0 {
-    return { nodes: [], roots: [], n: 0 }
+    return { nodes: [], roots: [], n: 0, }
   }
   let arr : Array[Int64] = Array::make(n, 0L)
   PersistentSegTree::build(arr)
@@ -353,7 +353,7 @@ priv struct KthSmallestTree {
 /// Each position i creates version i with values [0..i] inserted
 fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
   if arr.length() == 0 {
-    return { pst: PersistentSegTree(0), sorted_values: [], n: 0 }
+    return { pst: PersistentSegTree(0), sorted_values: [], n: 0, }
   }
 
   // Coordinate compression
@@ -382,7 +382,7 @@ fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
     let old_val = pst.get(prev_ver, rank)
     let _ = pst.update(prev_ver, rank, old_val + 1L)
   }
-  { pst, sorted_values: unique, n: arr.length() }
+  { pst, sorted_values: unique, n: arr.length(), }
 }
 
 ///|
@@ -520,12 +520,12 @@ fn PersistentArray::PersistentArray(
   default_value : Int64,
 ) -> PersistentArray {
   let arr : Array[Int64] = Array::make(n, default_value)
-  { pst: PersistentSegTree::build(arr) }
+  { pst: PersistentSegTree::build(arr), }
 }
 
 ///|
 fn PersistentArray::from_array(arr : Array[Int64]) -> PersistentArray {
-  { pst: PersistentSegTree::build(arr) }
+  { pst: PersistentSegTree::build(arr), }
 }
 
 ///|

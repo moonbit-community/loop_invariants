@@ -147,8 +147,8 @@ pub fn subtree_color_mode_sum(
   // max_freq : maximum frequency seen so far
   // sum_ref  : sum of all colors achieving max_freq
   let counts : Map[Int, Int] = Map([])
-  let max_freq : Ref[Int] = { val: 0 }
-  let sum_ref : Ref[Int64] = { val: 0L }
+  let max_freq : Ref[Int] = { val: 0, }
+  let sum_ref : Ref[Int64] = { val: 0L, }
   let result : Array[Int64] = Array::make(n, 0L)
   // Insert a single color into the global data structure, updating max_freq
   // and sum_ref as needed.

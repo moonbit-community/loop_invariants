@@ -57,7 +57,7 @@ pub fn find(n : Int, adj : Array[Array[Int]]) -> Array[Int] {
   let low = Array::make(n, 0)
   let parent = Array::make(n, -1)
   let is_ap = Array::make(n, false)
-  let timer = { val: 0 }
+  let timer = { val: 0, }
   for start in 0..<n {
     if disc[start] == -1 {
       dfs(start, adj, disc, low, parent, is_ap, timer)

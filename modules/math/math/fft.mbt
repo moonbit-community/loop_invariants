@@ -13,22 +13,22 @@ priv struct Complex {
 
 ///|
 fn Complex::Complex(re : Double, im : Double) -> Complex {
-  { re, im }
+  { re, im, }
 }
 
 ///|
 fn Complex::from_real(x : Double) -> Complex {
-  { re: x, im: 0.0 }
+  { re: x, im: 0.0, }
 }
 
 ///|
 fn Complex::add(self : Complex, other : Complex) -> Complex {
-  { re: self.re + other.re, im: self.im + other.im }
+  { re: self.re + other.re, im: self.im + other.im, }
 }
 
 ///|
 fn Complex::sub(self : Complex, other : Complex) -> Complex {
-  { re: self.re - other.re, im: self.im - other.im }
+  { re: self.re - other.re, im: self.im - other.im, }
 }
 
 ///|

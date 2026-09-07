@@ -336,10 +336,12 @@ fn prim(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
   pq.push((0, 0))
   let total = for _ in 0..<n; total = 0 {
     let (w, v) = pq.pop_min()
-    if in_tree[v] { continue total }
+    if in_tree[v] {
+      continue total
+    }
     in_tree[v] = true
     for (to, w2) in adj[v] {
-      if !(in_tree[to]) {
+      if !in_tree[to] {
         pq.push((w2, to))
       }
     }

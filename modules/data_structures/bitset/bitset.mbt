@@ -43,7 +43,7 @@ pub struct BitSet {
 pub fn new(capacity : Int) -> BitSet {
   let cap = if capacity < 0 { 0 } else { capacity }
   let words = (cap + 63) / 64
-  { bits: Array::make(words, 0L), cap }
+  { bits: Array::make(words, 0L), cap, }
 }
 
 ///|

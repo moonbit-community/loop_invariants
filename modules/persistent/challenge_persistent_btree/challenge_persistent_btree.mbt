@@ -146,8 +146,8 @@ fn[T] split_node(
   } else {
     children[3:5].to_owned()
   }
-  let left = { keys: left_keys, children: left_children }
-  let right = { keys: right_keys, children: right_children }
+  let left = { keys: left_keys, children: left_children, }
+  let right = { keys: right_keys, children: right_children, }
   (promote, left, right)
 }
 
@@ -159,7 +159,7 @@ fn[T : Compare] insert_node(node : BNode[T], key : T) -> InsertResult[T] {
   } else if is_leaf(node) {
     let new_keys = insert_key(node.keys, pos, key)
     if new_keys.length() <= 3 {
-      Done(node={ keys: new_keys, children: [] })
+      Done(node={ keys: new_keys, children: [], })
     } else {
       let (promote, left, right) = split_node(new_keys, [])
       Split(key=promote, left~, right~)
@@ -170,13 +170,13 @@ fn[T : Compare] insert_node(node : BNode[T], key : T) -> InsertResult[T] {
       Done(node=updated_child) => {
         let new_children = node.children.copy()
         new_children[pos] = updated_child
-        Done(node={ keys: node.keys, children: new_children })
+        Done(node={ keys: node.keys, children: new_children, })
       }
       Split(key=pk, left=pl, right=pr) => {
         let new_keys = insert_key(node.keys, pos, pk)
         let new_children = insert_children(node.children, pos, pl, pr)
         if new_keys.length() <= 3 {
-          Done(node={ keys: new_keys, children: new_children })
+          Done(node={ keys: new_keys, children: new_children, })
         } else {
           let (promote, left, right) = split_node(new_keys, new_children)
           Split(key=promote, left~, right~)
@@ -202,12 +202,12 @@ pub fn[T] size(t : Tree[T]) -> Int {
 /// Insert key and return the new tree.
 pub fn[T : Compare] insert(t : Tree[T], key : T) -> Tree[T] {
   match t {
-    Empty => Node(node={ keys: [key], children: [] })
+    Empty => Node(node={ keys: [key], children: [], })
     Node(node=n) =>
       match insert_node(n, key) {
         Done(node=done) => Node(node=done)
         Split(key=pk, left=pl, right=pr) =>
-          Node(node={ keys: [pk], children: [pl, pr] })
+          Node(node={ keys: [pk], children: [pl, pr], })
       }
   }
 }

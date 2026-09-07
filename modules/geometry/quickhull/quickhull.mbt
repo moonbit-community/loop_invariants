@@ -53,7 +53,7 @@ pub struct Point {
 ///|
 /// Construct a point.
 pub fn point(x : Double, y : Double) -> Point {
-  { x, y }
+  { x, y, }
 }
 
 ///|

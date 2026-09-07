@@ -73,7 +73,7 @@ pub fn longest_common_substring(a : String, b : String) -> LCSResult {
   let n = a.length()
   let m = b.length()
   if n == 0 || m == 0 {
-    return { substring: "", length: 0 }
+    return { substring: "", length: 0, }
   }
   let init_prev = Array::make(m + 1, 0)
   let init_curr = Array::make(m + 1, 0)
@@ -103,10 +103,10 @@ pub fn longest_common_substring(a : String, b : String) -> LCSResult {
     (best_len, best_end)
   }
   if best_len == 0 {
-    { substring: "", length: 0 }
+    { substring: "", length: 0, }
   } else {
     let start = best_end - best_len
-    { substring: slice_string(a, start, best_end), length: best_len }
+    { substring: slice_string(a, start, best_end), length: best_len, }
   }
 }
 

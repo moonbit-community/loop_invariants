@@ -97,7 +97,7 @@ pub fn toposort(n : Int, adj : Array[Array[Int]]) -> KahnResult {
       }
     }
   }
-  { order, has_cycle: order.length() != n }
+  { order, has_cycle: order.length() != n, }
 }
 
 ///|
@@ -134,7 +134,7 @@ pub fn lex_toposort(n : Int, adj : Array[Array[Int]]) -> KahnResult {
       }
     }
   }
-  { order, has_cycle: order.length() != n }
+  { order, has_cycle: order.length() != n, }
 }
 
 ///|
@@ -144,7 +144,7 @@ priv struct HeapInt {
 
 ///|
 fn HeapInt::new() -> HeapInt {
-  { data: [] }
+  { data: [], }
 }
 
 ///|

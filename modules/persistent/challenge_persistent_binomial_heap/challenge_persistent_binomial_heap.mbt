@@ -43,9 +43,9 @@ fn[T] tree_rank(t : Tree[T]) -> Int {
 ///|
 fn[T : Compare] link(a : Tree[T], b : Tree[T]) -> Tree[T] {
   if a.value <= b.value {
-    { value: a.value, rank: a.rank + 1, children: a.children + [b] }
+    { value: a.value, rank: a.rank + 1, children: a.children + [b], }
   } else {
-    { value: b.value, rank: b.rank + 1, children: b.children + [a] }
+    { value: b.value, rank: b.rank + 1, children: b.children + [a], }
   }
 }
 
@@ -119,13 +119,13 @@ fn[T : Compare] merge_heaps(a : Heap[T], b : Heap[T]) -> Heap[T] {
       #|After len steps, all ranks are resolved and carry is placed if needed.
     ),
   }
-  { trees: out }
+  { trees: out, }
 }
 
 ///|
 /// Create an empty binomial heap.
 pub fn[T] empty() -> Heap[T] {
-  { trees: [] }
+  { trees: [], }
 }
 
 ///|
@@ -145,8 +145,8 @@ fn max2(a : Int, b : Int) -> Int {
 
 ///|
 fn[T] singleton(value : T) -> Heap[T] {
-  let tree = { value, rank: 0, children: [] }
-  { trees: [Some(tree)] }
+  let tree = { value, rank: 0, children: [], }
+  { trees: [Some(tree)], }
 }
 
 ///|
@@ -180,7 +180,7 @@ fn[T] heap_from_children(children : Array[Tree[T]], rank : Int) -> Heap[T] {
   for child in children {
     out[child.rank] = Some(child)
   }
-  { trees: out }
+  { trees: out, }
 }
 
 ///|
@@ -207,7 +207,7 @@ pub fn[T : Compare] delete_min(h : Heap[T]) -> Heap[T]? {
         Some(tree) => {
           let base : Array[Tree[T]?] = h.trees.copy()
           base[idx] = None
-          let heap1 = { trees: base }
+          let heap1 = { trees: base, }
           let heap2 = heap_from_children(tree.children, tree.rank)
           Some(merge_heaps(heap1, heap2))
         }

@@ -67,7 +67,7 @@ pub struct Lca {
 /// Precompute binary lifting tables for LCA queries.
 pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
   if n == 0 {
-    return { up: [], depth: [] }
+    return { up: [], depth: [], }
   }
   let log = highest_bit(n) + 1
   let up = [ for _ in 0..<log => Array::make(n, -1) ]
@@ -109,7 +109,7 @@ pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
       up[k][v] = if mid >= 0 { up[k - 1][mid] } else { -1 }
     }
   }
-  { up, depth }
+  { up, depth, }
 }
 
 ///|

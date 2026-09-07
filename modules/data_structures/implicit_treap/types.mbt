@@ -160,7 +160,7 @@ pub(all) struct ImplicitTreap {
 /// debug_inspect(treap.size(), content="1")
 /// ```
 pub fn ImplicitTreap::ImplicitTreap() -> ImplicitTreap {
-  { nodes: [], root: -1, rand_state: 12345, free_list: [] }
+  { nodes: [], root: -1, rand_state: 12345, free_list: [], }
 }
 
 ///|

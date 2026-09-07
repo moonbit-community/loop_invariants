@@ -82,7 +82,7 @@ pub fn new(expected~ : Int, fp_rate~ : Double) -> BloomFilter {
   let k_raw = (m.to_double() / n.to_double() * ln2).to_int() // round-toward-0
   let k = if k_raw < 1 { 1 } else { k_raw }
   let words = m / 64
-  { bits: Array::make(words, 0L), m, k }
+  { bits: Array::make(words, 0L), m, k, }
 }
 
 ///|
@@ -91,7 +91,7 @@ pub fn new(expected~ : Int, fp_rate~ : Double) -> BloomFilter {
 pub fn from_params(m : Int, k : Int) -> BloomFilter {
   let m1 = round_up_64(if m < 64 { 64 } else { m })
   let kk = if k < 1 { 1 } else { k }
-  { bits: Array::make(m1 / 64, 0L), m: m1, k: kk }
+  { bits: Array::make(m1 / 64, 0L), m: m1, k: kk, }
 }
 
 ///|

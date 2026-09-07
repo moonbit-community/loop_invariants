@@ -261,6 +261,6 @@ pub fn stoer_wagner_min_cut(
   if best_weight == INF64 {
     None
   } else {
-    Some({ weight: best_weight, cut: best_cut })
+    Some({ weight: best_weight, cut: best_cut, })
   }
 }

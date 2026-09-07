@@ -68,7 +68,7 @@ pub fn gomory_hu_tree(
   edges : ArrayView[(Int, Int, Int64)],
 ) -> GomoryHuTree {
   if n <= 0 {
-    return { n: 0, parent: [], value: [], adj: [] }
+    return { n: 0, parent: [], value: [], adj: [], }
   }
   let parent = Array::make(n, 0)
   parent[0] = -1
@@ -114,7 +114,7 @@ pub fn gomory_hu_tree(
       adj[p].push((i, w))
     }
   }
-  { n, parent, value, adj }
+  { n, parent, value, adj, }
 }
 
 ///|

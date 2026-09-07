@@ -152,13 +152,13 @@ fn quad_mul(x : Quad, y : Quad, w : Int64, p : Int64) -> Quad {
     p,
   )
   let im = add_mod(mul_mod(x.re, y.im, p), mul_mod(x.im, y.re, p), p)
-  { re, im }
+  { re, im, }
 }
 
 ///|
 /// `base^exp` in F_p[omega] via binary exponentiation.
 fn quad_pow(base : Quad, exp : Int64, w : Int64, p : Int64) -> Quad {
-  for result = ({ re: 1L, im: 0L } : Quad), b = base, e = exp {
+  for result = ({ re: 1L, im: 0L, } : Quad), b = base, e = exp {
     if e == 0L {
       break result
     } else {
@@ -259,7 +259,7 @@ pub fn cipolla_sqrt(n : Int64, p : Int64) -> Int64? {
   // Raise (a + omega) to the (p+1)/2 power in F_p[omega] where
   // omega^2 = w_raw. The result has zero omega-component and its
   // real part is the requested sqrt.
-  let res = quad_pow({ re: a, im: 1L }, (p + 1L) / 2L, w_raw, p)
+  let res = quad_pow({ re: a, im: 1L, }, (p + 1L) / 2L, w_raw, p)
   // res.im should be zero up to mod p.
   if res.im == 0L {
     Some(res.re)

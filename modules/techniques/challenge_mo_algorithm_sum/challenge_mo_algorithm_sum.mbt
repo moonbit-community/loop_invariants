@@ -49,7 +49,7 @@ pub fn mo_range_sum(
   let qs = [
     for i in 0..<q => {
       let (l, r) = queries[i]
-      { l, r, idx: i }
+      { l, r, idx: i, }
     }
   ]
   qs.sort_by((a, b) => {

@@ -96,12 +96,12 @@ pub struct LazySegTreeSum {
 pub fn LazySegTreeSum::LazySegTreeSum(arr : Array[Int64]) -> LazySegTreeSum {
   let n = arr.length()
   if n == 0 {
-    return { n: 0, tree: [], pending: [] }
+    return { n: 0, tree: [], pending: [], }
   }
   let tree = Array::make(4 * n, 0L)
   let pending = Array::make(4 * n, 0L)
   build(arr, tree, 1, 0, n - 1)
-  { n, tree, pending }
+  { n, tree, pending, }
 }
 
 ///|
@@ -373,13 +373,13 @@ fn LazySegTreeSetSum::LazySegTreeSetSum(
 ) -> LazySegTreeSetSum {
   let n = arr.length()
   if n == 0 {
-    return { n: 0, tree: [], pending: [], has_pending: [] }
+    return { n: 0, tree: [], pending: [], has_pending: [], }
   }
   let tree = Array::make(4 * n, 0L)
   let pending = Array::make(4 * n, 0L)
   let has_pending = Array::make(4 * n, false)
   build_set(arr, tree, 1, 0, n - 1)
-  { n, tree, pending, has_pending }
+  { n, tree, pending, has_pending, }
 }
 
 ///|
@@ -620,12 +620,12 @@ const INT64_MAX : Int64 = 9223372036854775807L
 fn LazySegTreeMin::LazySegTreeMin(arr : Array[Int64]) -> LazySegTreeMin {
   let n = arr.length()
   if n == 0 {
-    return { n: 0, tree: [], pending: [] }
+    return { n: 0, tree: [], pending: [], }
   }
   let tree = Array::make(4 * n, INT64_MAX)
   let pending = Array::make(4 * n, 0L)
   build_min(arr, tree, 1, 0, n - 1)
-  { n, tree, pending }
+  { n, tree, pending, }
 }
 
 ///|

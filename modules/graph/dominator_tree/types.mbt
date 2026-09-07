@@ -74,7 +74,7 @@ fn DominatorWork::DominatorWork(n : Int) -> DominatorWork {
     dsu: Array::make(n + 1, 0),
     label: Array::make(n + 1, 0),
     bucket: build_adj_lists(n + 1),
-    time: { val: 0 },
+    time: { val: 0, },
   }
 }
 

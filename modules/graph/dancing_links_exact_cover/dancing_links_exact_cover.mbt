@@ -101,18 +101,18 @@ pub struct DLX {
 /// A `DLX` ready for `solve` calls.
 pub fn new(num_rows : Int, num_cols : Int, ones : ArrayView[(Int, Int)]) -> DLX {
   if num_cols < 0 {
-    return { nodes: [], column_ids: [] }
+    return { nodes: [], column_ids: [], }
   }
   // Allocate: 1 root + num_cols column headers + len(ones) data nodes.
   // The arena is grown as we go; reserve roughly the right size.
   let arena : Array[Node] = []
   // Root node (index 0).
-  arena.push({ left: 0, right: 0, up: 0, down: 0, column: 0, data: 0 })
+  arena.push({ left: 0, right: 0, up: 0, down: 0, column: 0, data: 0, })
   // Column headers: indices 1..=num_cols.
   let column_ids = Array::make(num_cols + 1, 0)
   for c in 0..<num_cols {
     let idx = arena.length()
-    arena.push({ left: 0, right: 0, up: idx, down: idx, column: idx, data: 0 })
+    arena.push({ left: 0, right: 0, up: idx, down: idx, column: idx, data: 0, })
     column_ids[idx] = c
     // Splice into the header doubly-linked list (between root.left and root).
     let prev = arena[0].left
@@ -181,7 +181,7 @@ pub fn new(num_rows : Int, num_cols : Int, ones : ArrayView[(Int, Int)]) -> DLX 
       prev_in_row = idx
     }
   }
-  { nodes: arena, column_ids }
+  { nodes: arena, column_ids, }
 }
 
 ///|

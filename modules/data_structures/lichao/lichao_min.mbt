@@ -68,8 +68,8 @@ pub(all) struct LiChaoTreeMin {
 /// - `hi`: largest x value that will ever be queried.
 pub fn LiChaoTreeMin::LiChaoTreeMin(lo : Int64, hi : Int64) -> LiChaoTreeMin {
   let nodes : Array[LCNode] = []
-  nodes.push({ line: undefined_line_min(), left: -1, right: -1 })
-  { nodes, lo, hi }
+  nodes.push({ line: undefined_line_min(), left: -1, right: -1, })
+  { nodes, lo, hi, }
 }
 
 ///|
@@ -80,7 +80,7 @@ pub fn LiChaoTreeMin::LiChaoTreeMin(lo : Int64, hi : Int64) -> LiChaoTreeMin {
 /// has not yet been allocated.
 fn LiChaoTreeMin::new_node(self : LiChaoTreeMin) -> Int {
   let idx = self.nodes.length()
-  self.nodes.push({ line: undefined_line_min(), left: -1, right: -1 })
+  self.nodes.push({ line: undefined_line_min(), left: -1, right: -1, })
   idx
 }
 
@@ -105,7 +105,7 @@ pub fn LiChaoTreeMin::insert(
   m : Int64,
   b : Int64,
 ) -> Unit {
-  let line : Line = { m, b }
+  let line : Line = { m, b, }
   insert_line_min(self, 0, self.lo, self.hi, line)
 }
 

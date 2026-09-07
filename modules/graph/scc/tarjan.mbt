@@ -94,7 +94,7 @@
 /// ```
 pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   if n == 0 {
-    return { num_sccs: 0, component: [], scc_sizes: [], scc_adj: [] }
+    return { num_sccs: 0, component: [], scc_sizes: [], scc_adj: [], }
   }
 
   // Working arrays
@@ -103,8 +103,8 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   let on_stack = Array::make(n, false) // Is vertex currently on stack?
   let component = Array::make(n, -1) // SCC assignment
   let stack : Array[Int] = [] // DFS stack
-  let timer : Counter = { val: 0 } // Discovery time counter
-  let scc_count : Counter = { val: 0 } // SCC ID counter
+  let timer : Counter = { val: 0, } // Discovery time counter
+  let scc_count : Counter = { val: 0, } // SCC ID counter
   let scc_sizes : Array[Int] = []
 
   // Run DFS from each unvisited vertex
@@ -178,7 +178,7 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       #|  At u = n, condensation graph complete.
     ),
   }
-  { num_sccs, component, scc_sizes, scc_adj }
+  { num_sccs, component, scc_sizes, scc_adj, }
 }
 
 ///|

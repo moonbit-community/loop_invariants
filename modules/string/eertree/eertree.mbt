@@ -102,7 +102,7 @@ fn Eertree::Eertree() -> Eertree {
   // Suffix links: both roots point to odd root
   nodes[0].suffix_link = 0 // Odd root to itself
   nodes[1].suffix_link = 0 // Even root to odd root
-  { nodes, text: [], last: 1, size: 0 }
+  { nodes, text: [], last: 1, size: 0, }
 }
 
 ///|

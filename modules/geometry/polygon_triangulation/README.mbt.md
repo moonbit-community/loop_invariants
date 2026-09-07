@@ -277,10 +277,10 @@ graph LR
 ///|
 test "triangulation square" {
   let points : Array[@polygon_triangulation.Point] = [
-    { x: 0L, y: 0L },
-    { x: 1L, y: 0L },
-    { x: 1L, y: 1L },
-    { x: 0L, y: 1L },
+    { x: 0L, y: 0L, },
+    { x: 1L, y: 0L, },
+    { x: 1L, y: 1L, },
+    { x: 0L, y: 1L, },
   ]
   debug_inspect(
     @polygon_triangulation.min_weight_triangulation(points).unwrap(),
@@ -299,9 +299,9 @@ test "triangulation triangle" {
   // Right triangle with legs of squared length 1 and hypotenuse squared 2.
   // cost = 1 + 1 + 2 = 4
   let points : Array[@polygon_triangulation.Point] = [
-    { x: 0L, y: 0L },
-    { x: 1L, y: 0L },
-    { x: 0L, y: 1L },
+    { x: 0L, y: 0L, },
+    { x: 1L, y: 0L, },
+    { x: 0L, y: 1L, },
   ]
   debug_inspect(
     @polygon_triangulation.min_weight_triangulation(points).unwrap(),
@@ -316,8 +316,8 @@ test "triangulation triangle" {
 ///|
 test "triangulation too few points" {
   let two_pts : Array[@polygon_triangulation.Point] = [
-    { x: 0L, y: 0L },
-    { x: 1L, y: 0L },
+    { x: 0L, y: 0L, },
+    { x: 1L, y: 0L, },
   ]
   // A line segment cannot be triangulated.
   debug_inspect(
@@ -335,11 +335,11 @@ test "triangulation too few points" {
 ///|
 test "triangulation pentagon" {
   let points : Array[@polygon_triangulation.Point] = [
-    { x: 0L, y: 0L },
-    { x: 2L, y: 0L },
-    { x: 3L, y: 1L },
-    { x: 1L, y: 3L },
-    { x: -1L, y: 1L },
+    { x: 0L, y: 0L, },
+    { x: 2L, y: 0L, },
+    { x: 3L, y: 1L, },
+    { x: 1L, y: 3L, },
+    { x: -1L, y: 1L, },
   ]
   // We just check it returns Some(...) and is deterministic.
   let ans = @polygon_triangulation.min_weight_triangulation(points)

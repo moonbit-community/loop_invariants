@@ -54,7 +54,7 @@ pub struct TopK {
 /// ```
 pub fn new(k : Int) -> TopK {
   let kk = if k < 0 { 0 } else { k }
-  { k: kk, data: [] }
+  { k: kk, data: [], }
 }
 
 ///|

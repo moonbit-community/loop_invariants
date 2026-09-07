@@ -544,11 +544,11 @@ pub fn hull_diameter_squared(hull : Array[Point]) -> Int64 {
 ///|
 test "monotone chain basic" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
-    { x: 2L, y: 2L }, // Interior point
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
+    { x: 2L, y: 2L, }, // Interior point
   ]
   let hull = convex_hull_monotone(points)
   debug_inspect(hull.length(), content="4")
@@ -557,9 +557,9 @@ test "monotone chain basic" {
 ///|
 test "monotone chain triangle" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 2L, y: 3L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 2L, y: 3L, },
   ]
   let hull = convex_hull_monotone(points)
   debug_inspect(hull.length(), content="3")
@@ -568,11 +568,11 @@ test "monotone chain triangle" {
 ///|
 test "graham scan basic" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
-    { x: 2L, y: 2L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
+    { x: 2L, y: 2L, },
   ]
   let hull = convex_hull_graham(points)
   debug_inspect(hull.length(), content="4")
@@ -581,11 +581,11 @@ test "graham scan basic" {
 ///|
 test "jarvis march basic" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
-    { x: 2L, y: 2L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
+    { x: 2L, y: 2L, },
   ]
   let hull = convex_hull_jarvis(points)
   debug_inspect(hull.length(), content="4")
@@ -594,10 +594,10 @@ test "jarvis march basic" {
 ///|
 test "convex hull collinear points" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 1L, y: 0L },
-    { x: 2L, y: 0L },
-    { x: 3L, y: 0L },
+    { x: 0L, y: 0L, },
+    { x: 1L, y: 0L, },
+    { x: 2L, y: 0L, },
+    { x: 3L, y: 0L, },
   ]
 
   // Collinear points form a degenerate hull (line segment)
@@ -608,11 +608,11 @@ test "convex hull collinear points" {
 ///|
 test "convex hull alias" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 2L, y: 0L },
-    { x: 2L, y: 2L },
-    { x: 0L, y: 2L },
-    { x: 1L, y: 1L },
+    { x: 0L, y: 0L, },
+    { x: 2L, y: 0L, },
+    { x: 2L, y: 2L, },
+    { x: 0L, y: 2L, },
+    { x: 1L, y: 1L, },
   ]
   let hull = convex_hull(points)
   debug_inspect(hull.length(), content="4")
@@ -620,14 +620,14 @@ test "convex hull alias" {
 
 ///|
 test "convex hull single point" {
-  let points : Array[Point] = [{ x: 5L, y: 5L }]
+  let points : Array[Point] = [{ x: 5L, y: 5L, }]
   let hull = convex_hull_monotone(points)
   debug_inspect(hull.length(), content="1")
 }
 
 ///|
 test "convex hull two points" {
-  let points : Array[Point] = [{ x: 0L, y: 0L }, { x: 5L, y: 5L }]
+  let points : Array[Point] = [{ x: 0L, y: 0L, }, { x: 5L, y: 5L, }]
   let hull = convex_hull_monotone(points)
   debug_inspect(hull.length(), content="2")
 }
@@ -636,19 +636,19 @@ test "convex hull two points" {
 test "polygon area" {
   // Square with side 4
   let square : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
   ]
   // Area = 16, so 2x = 32
   debug_inspect(polygon_area_2x(square), content="32")
 
   // Triangle with base 4, height 3
   let triangle : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 2L, y: 3L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 2L, y: 3L, },
   ]
   // Area = 6, so 2x = 12
   debug_inspect(polygon_area_2x(triangle), content="12")
@@ -657,33 +657,33 @@ test "polygon area" {
 ///|
 test "point in hull" {
   let square : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
   ]
 
   // Inside
-  debug_inspect(point_in_hull(square, { x: 2L, y: 2L }), content="1")
+  debug_inspect(point_in_hull(square, { x: 2L, y: 2L, }), content="1")
 
   // On boundary
-  debug_inspect(point_in_hull(square, { x: 2L, y: 0L }), content="0")
+  debug_inspect(point_in_hull(square, { x: 2L, y: 0L, }), content="0")
 
   // On corner
-  debug_inspect(point_in_hull(square, { x: 0L, y: 0L }), content="0")
+  debug_inspect(point_in_hull(square, { x: 0L, y: 0L, }), content="0")
 
   // Outside
-  debug_inspect(point_in_hull(square, { x: 5L, y: 5L }), content="-1")
+  debug_inspect(point_in_hull(square, { x: 5L, y: 5L, }), content="-1")
 }
 
 ///|
 test "hull diameter" {
   // Square with side 4, diameter is diagonal = sqrt(32)
   let square : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
   ]
   // Diameter squared = 32
   debug_inspect(hull_diameter_squared(square), content="32")
@@ -693,15 +693,15 @@ test "hull diameter" {
 test "convex hull complex" {
   // More complex shape with many interior points
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 10L, y: 0L },
-    { x: 10L, y: 10L },
-    { x: 0L, y: 10L },
-    { x: 5L, y: 5L },
-    { x: 3L, y: 3L },
-    { x: 7L, y: 7L },
-    { x: 2L, y: 8L },
-    { x: 8L, y: 2L },
+    { x: 0L, y: 0L, },
+    { x: 10L, y: 0L, },
+    { x: 10L, y: 10L, },
+    { x: 0L, y: 10L, },
+    { x: 5L, y: 5L, },
+    { x: 3L, y: 3L, },
+    { x: 7L, y: 7L, },
+    { x: 2L, y: 8L, },
+    { x: 8L, y: 2L, },
   ]
   let hull = convex_hull_monotone(points)
   debug_inspect(hull.length(), content="4")
@@ -713,12 +713,12 @@ test "convex hull complex" {
 ///|
 test "all algorithms agree" {
   let points : Array[Point] = [
-    { x: 1L, y: 2L },
-    { x: 5L, y: 1L },
-    { x: 8L, y: 4L },
-    { x: 6L, y: 8L },
-    { x: 2L, y: 7L },
-    { x: 4L, y: 4L },
+    { x: 1L, y: 2L, },
+    { x: 5L, y: 1L, },
+    { x: 8L, y: 4L, },
+    { x: 6L, y: 8L, },
+    { x: 2L, y: 7L, },
+    { x: 4L, y: 4L, },
   ]
   let hull1 = convex_hull_monotone(points)
   let hull2 = convex_hull_graham(points)
@@ -734,9 +734,9 @@ test "all algorithms agree" {
 
 ///|
 test "cross product" {
-  let o = { x: 0L, y: 0L }
-  let a = { x: 1L, y: 0L }
-  let b = { x: 0L, y: 1L }
+  let o = { x: 0L, y: 0L, }
+  let a = { x: 1L, y: 0L, }
+  let b = { x: 0L, y: 1L, }
 
   // Counterclockwise
   debug_inspect(cross(o, a, b) > 0L, content="true")
@@ -745,7 +745,7 @@ test "cross product" {
   debug_inspect(cross(o, b, a) < 0L, content="true")
 
   // Collinear
-  let c = { x: 2L, y: 0L }
+  let c = { x: 2L, y: 0L, }
   debug_inspect(cross(o, a, c), content="0")
 }
 
@@ -759,9 +759,9 @@ test "convex hull empty" {
 ///|
 test "convex hull all same point" {
   let points : Array[Point] = [
-    { x: 5L, y: 5L },
-    { x: 5L, y: 5L },
-    { x: 5L, y: 5L },
+    { x: 5L, y: 5L, },
+    { x: 5L, y: 5L, },
+    { x: 5L, y: 5L, },
   ]
   let hull = convex_hull_monotone(points)
   // After sorting and processing, should have 1 unique point
@@ -770,7 +770,7 @@ test "convex hull all same point" {
 
 ///|
 test "hull diameter line" {
-  let points : Array[Point] = [{ x: 0L, y: 0L }, { x: 10L, y: 0L }]
+  let points : Array[Point] = [{ x: 0L, y: 0L, }, { x: 10L, y: 0L, }]
   // Diameter = 10, squared = 100
   debug_inspect(hull_diameter_squared(points), content="100")
 }
@@ -778,14 +778,14 @@ test "hull diameter line" {
 ///|
 test "point in hull triangle" {
   let triangle : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 6L, y: 0L },
-    { x: 3L, y: 6L },
+    { x: 0L, y: 0L, },
+    { x: 6L, y: 0L, },
+    { x: 3L, y: 6L, },
   ]
 
   // Center of triangle (centroid)
-  debug_inspect(point_in_hull(triangle, { x: 3L, y: 2L }), content="1")
+  debug_inspect(point_in_hull(triangle, { x: 3L, y: 2L, }), content="1")
 
   // Outside
-  debug_inspect(point_in_hull(triangle, { x: 0L, y: 6L }), content="-1")
+  debug_inspect(point_in_hull(triangle, { x: 0L, y: 6L, }), content="-1")
 }

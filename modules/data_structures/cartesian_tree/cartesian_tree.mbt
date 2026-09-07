@@ -133,7 +133,7 @@ fn CartesianTree::CartesianTree(arr : Array[Int64]) -> CartesianTree {
   // Create nodes
   let nodes = [
     for i in 0..<n => {
-      { value: arr[i], index: i, left: -1, right: -1, parent: -1 }
+      { value: arr[i], index: i, left: -1, right: -1, parent: -1, }
     }
   ]
 
@@ -244,7 +244,7 @@ fn CartesianTree::CartesianTree(arr : Array[Int64]) -> CartesianTree {
       }
     }
   }
-  { nodes, root, index_to_node, depth, ancestors, n, log_n }
+  { nodes, root, index_to_node, depth, ancestors, n, log_n, }
 }
 
 ///|

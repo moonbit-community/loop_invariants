@@ -232,7 +232,7 @@ pub fn build_dominator_tree(
       #|  At v = n, dominator tree is complete.
     ),
   }
-  Some({ root, idom: idom_vertex, tree })
+  Some({ root, idom: idom_vertex, tree, })
 }
 
 ///|

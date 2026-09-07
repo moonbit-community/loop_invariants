@@ -121,7 +121,7 @@ priv struct SqrtSum {
 fn SqrtSum::build(arr : Array[Int]) -> SqrtSum {
   let n = arr.length()
   if n == 0 {
-    return { arr: [], blocks: [], block_size: 1 }
+    return { arr: [], blocks: [], block_size: 1, }
   }
   let block_size = isqrt_ceil(n)
   let num_blocks = (n + block_size - 1) / block_size
@@ -133,7 +133,7 @@ fn SqrtSum::build(arr : Array[Int]) -> SqrtSum {
     let block_idx = i / block_size
     blocks[block_idx] = blocks[block_idx] + arr[i]
   }
-  { arr: arr.copy(), blocks, block_size }
+  { arr: arr.copy(), blocks, block_size, }
 }
 
 ///|
@@ -344,7 +344,7 @@ priv struct SqrtMin {
 fn SqrtMin::build(arr : Array[Int]) -> SqrtMin {
   let n = arr.length()
   if n == 0 {
-    return { arr: [], blocks: [], pending: [], block_size: 1 }
+    return { arr: [], blocks: [], pending: [], block_size: 1, }
   }
   let block_size = isqrt_ceil(n)
   let num_blocks = (n + block_size - 1) / block_size
@@ -358,7 +358,7 @@ fn SqrtMin::build(arr : Array[Int]) -> SqrtMin {
       blocks[block_idx] = arr[i]
     }
   }
-  { arr: arr.copy(), blocks, pending, block_size }
+  { arr: arr.copy(), blocks, pending, block_size, }
 }
 
 ///|
@@ -711,7 +711,7 @@ priv struct MoSolver {
 fn MoSolver::MoSolver(arr : Array[Int]) -> MoSolver {
   let n = arr.length()
   let block_size = if n > 0 { isqrt_ceil(n) } else { 1 }
-  { arr, block_size }
+  { arr, block_size, }
 }
 
 ///|
@@ -771,7 +771,7 @@ fn MoSolver::solve_distinct(
   let mo_queries = [
     for i in 0..<q => {
       let (l, r) = queries[i]
-      { l, r, idx: i }
+      { l, r, idx: i, }
     }
   ]
 
@@ -952,7 +952,7 @@ fn IntervalTree::IntervalTree(arr : Array[Int]) -> IntervalTree {
   // We can compress consecutive equal elements
   for i in 1..<=arr.length(); start = 0 {
     let start = if i == arr.length() || arr[i] != arr[start] {
-      intervals.push({ l: start, r: i - 1, v: arr[start] })
+      intervals.push({ l: start, r: i - 1, v: arr[start], })
       i
     } else {
       start
@@ -1070,7 +1070,7 @@ fn IntervalTree::split_at(self : IntervalTree, pos : Int) -> Int {
         idx
       } else {
         // Split: [l, r] -> [l, pos-1], [pos, r]
-        let new_interval : Interval = { l: pos, r: interval.r, v: interval.v }
+        let new_interval : Interval = { l: pos, r: interval.r, v: interval.v, }
         self.intervals[idx].r = pos - 1
         // Insert new interval after idx
         self.intervals.insert(idx + 1, new_interval)
@@ -1136,7 +1136,7 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
     for _ in 0..<num_to_remove {
       let _ = self.intervals.remove(left_idx)
     }
-    self.intervals.insert(left_idx, { l, r, v })
+    self.intervals.insert(left_idx, { l, r, v, })
   }
 }
 

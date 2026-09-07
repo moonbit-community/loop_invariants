@@ -190,11 +190,11 @@ edmonds(n, edges, root):
 ///|
 test "arborescence example" {
   let edges : Array[@edmonds_arborescence.Edge] = [
-    { from: 0, to: 1, weight: 1 },
-    { from: 0, to: 2, weight: 5 },
-    { from: 1, to: 2, weight: 1 },
-    { from: 1, to: 3, weight: 2 },
-    { from: 2, to: 3, weight: 1 },
+    { from: 0, to: 1, weight: 1, },
+    { from: 0, to: 2, weight: 5, },
+    { from: 1, to: 2, weight: 1, },
+    { from: 1, to: 3, weight: 2, },
+    { from: 2, to: 3, weight: 1, },
   ]
   let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
   debug_inspect(res.cost, content="3")
@@ -205,10 +205,10 @@ test "arborescence example" {
 ///|
 test "arborescence with cycle resolution" {
   let edges : Array[@edmonds_arborescence.Edge] = [
-    { from: 0, to: 1, weight: 10 },
-    { from: 1, to: 2, weight: 1 },
-    { from: 2, to: 1, weight: 1 },
-    { from: 2, to: 3, weight: 5 },
+    { from: 0, to: 1, weight: 10, },
+    { from: 1, to: 2, weight: 1, },
+    { from: 2, to: 1, weight: 1, },
+    { from: 2, to: 3, weight: 5, },
   ]
   let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
   // Must break the 1↔2 cycle by using 0→1
@@ -222,8 +222,8 @@ test "arborescence with cycle resolution" {
 ///|
 test "arborescence unreachable" {
   let edges : Array[@edmonds_arborescence.Edge] = [
-    { from: 0, to: 1, weight: 1 },
-    { from: 2, to: 3, weight: 1 },
+    { from: 0, to: 1, weight: 1, },
+    { from: 2, to: 3, weight: 1, },
   ]
   let res = @edmonds_arborescence.min_arborescence(4, edges, 0)
   debug_inspect(res is None, content="true")
@@ -234,9 +234,9 @@ test "arborescence unreachable" {
 ///|
 test "arborescence direct vs indirect" {
   let edges : Array[@edmonds_arborescence.Edge] = [
-    { from: 0, to: 1, weight: 1 },
-    { from: 0, to: 2, weight: 2 },
-    { from: 1, to: 2, weight: 3 },
+    { from: 0, to: 1, weight: 1, },
+    { from: 0, to: 2, weight: 2, },
+    { from: 1, to: 2, weight: 3, },
   ]
   let res = @edmonds_arborescence.min_arborescence(3, edges, 0).unwrap()
   // Picks 0→1 and 0→2 instead of 0→1→2

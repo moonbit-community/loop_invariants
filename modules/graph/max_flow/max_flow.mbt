@@ -88,7 +88,7 @@ priv struct MaxFlow {
 /// pre-allocated but their initial values are overwritten before each use.
 fn MaxFlow::MaxFlow(n : Int) -> MaxFlow {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
-  { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0) }
+  { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0), }
 }
 
 ///|
@@ -111,9 +111,9 @@ fn MaxFlow::add_edge(
   let to_idx = self.adj[to].length()
 
   // Forward edge
-  self.adj[from].push({ to, capacity, flow: 0L, rev_idx: to_idx })
+  self.adj[from].push({ to, capacity, flow: 0L, rev_idx: to_idx, })
   // Reverse edge (for flow cancellation)
-  self.adj[to].push({ to: from, capacity: 0L, flow: 0L, rev_idx: from_idx })
+  self.adj[to].push({ to: from, capacity: 0L, flow: 0L, rev_idx: from_idx, })
 }
 
 ///|
@@ -137,8 +137,8 @@ fn MaxFlow::add_undirected_edge(
 ) -> Unit {
   let u_idx = self.adj[u].length()
   let v_idx = self.adj[v].length()
-  self.adj[u].push({ to: v, capacity, flow: 0L, rev_idx: v_idx })
-  self.adj[v].push({ to: u, capacity, flow: 0L, rev_idx: u_idx })
+  self.adj[u].push({ to: v, capacity, flow: 0L, rev_idx: v_idx, })
+  self.adj[v].push({ to: u, capacity, flow: 0L, rev_idx: u_idx, })
 }
 
 ///|

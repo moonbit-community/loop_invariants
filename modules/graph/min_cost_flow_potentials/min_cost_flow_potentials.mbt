@@ -97,7 +97,7 @@ priv struct MinHeap {
 
 ///|
 fn MinHeap::MinHeap() -> MinHeap {
-  { data: [] }
+  { data: [], }
 }
 
 ///|
@@ -211,8 +211,8 @@ pub fn MinCostFlowPotentials::add_edge(
 ) -> Unit {
   let rev_u = self.adj[v].length()
   let rev_v = self.adj[u].length()
-  self.adj[u].push({ to: v, cap, cost, flow: 0L, rev: rev_u })
-  self.adj[v].push({ to: u, cap: 0L, cost: -cost, flow: 0L, rev: rev_v })
+  self.adj[u].push({ to: v, cap, cost, flow: 0L, rev: rev_u, })
+  self.adj[v].push({ to: u, cap: 0L, cost: -cost, flow: 0L, rev: rev_v, })
 }
 
 ///|
@@ -229,7 +229,7 @@ fn MinCostFlowPotentials::dijkstra(
   }
   let heap = MinHeap()
   self.dist[source] = 0L
-  heap.push({ dist: 0L, vertex: source })
+  heap.push({ dist: 0L, vertex: source, })
   let _ = for popped = heap.pop() {
     match popped {
       None => break ()
@@ -250,7 +250,7 @@ fn MinCostFlowPotentials::dijkstra(
               self.dist[e.to] = nd
               self.prev_v[e.to] = u
               self.prev_e[e.to] = i
-              heap.push({ dist: nd, vertex: e.to })
+              heap.push({ dist: nd, vertex: e.to, })
             }
           }
         }

@@ -26,11 +26,11 @@
 /// ```
 test "arborescence basic" {
   let edges : Array[@edmonds_arborescence.Edge] = [
-    { from: 0, to: 1, weight: 1L },
-    { from: 0, to: 2, weight: 5L },
-    { from: 1, to: 2, weight: 1L },
-    { from: 1, to: 3, weight: 2L },
-    { from: 2, to: 3, weight: 1L },
+    { from: 0, to: 1, weight: 1L, },
+    { from: 0, to: 2, weight: 5L, },
+    { from: 1, to: 2, weight: 1L, },
+    { from: 1, to: 3, weight: 2L, },
+    { from: 2, to: 3, weight: 1L, },
   ]
   let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
   debug_inspect(res.cost, content="3")
@@ -71,11 +71,11 @@ test "arborescence basic" {
 /// ```
 test "arborescence cycle" {
   let edges : Array[@edmonds_arborescence.Edge] = [
-    { from: 0, to: 1, weight: 1L },
-    { from: 1, to: 2, weight: 1L },
-    { from: 2, to: 1, weight: 1L },
-    { from: 2, to: 3, weight: 1L },
-    { from: 0, to: 3, weight: 5L },
+    { from: 0, to: 1, weight: 1L, },
+    { from: 1, to: 2, weight: 1L, },
+    { from: 2, to: 1, weight: 1L, },
+    { from: 2, to: 3, weight: 1L, },
+    { from: 0, to: 3, weight: 5L, },
   ]
   let res = @edmonds_arborescence.min_arborescence(4, edges, 0).unwrap()
 
@@ -95,8 +95,8 @@ test "arborescence cycle" {
 /// ```
 test "arborescence unreachable" {
   let edges : Array[@edmonds_arborescence.Edge] = [
-    { from: 0, to: 1, weight: 1L },
-    { from: 2, to: 3, weight: 1L },
+    { from: 0, to: 1, weight: 1L, },
+    { from: 2, to: 3, weight: 1L, },
   ]
   let res = @edmonds_arborescence.min_arborescence(4, edges, 0)
   debug_inspect(res is None, content="true")
@@ -115,7 +115,7 @@ test "arborescence single vertex" {
 /// Test with invalid inputs.
 test "arborescence invalid" {
   let edges : Array[@edmonds_arborescence.Edge] = [
-    { from: 0, to: 1, weight: 1L },
+    { from: 0, to: 1, weight: 1L, },
   ]
 
   // Invalid root
@@ -159,9 +159,9 @@ test "arborescence invalid" {
 /// Should pick direct path 0→2 (cost 2) over 0→1→2 (cost 1+3=4)
 test "arborescence path choice" {
   let edges : Array[@edmonds_arborescence.Edge] = [
-    { from: 0, to: 1, weight: 1L },
-    { from: 0, to: 2, weight: 2L },
-    { from: 1, to: 2, weight: 3L },
+    { from: 0, to: 1, weight: 1L, },
+    { from: 0, to: 2, weight: 2L, },
+    { from: 1, to: 2, weight: 3L, },
   ]
   let res = @edmonds_arborescence.min_arborescence(3, edges, 0).unwrap()
   debug_inspect(res.cost, content="3") // 1 + 2 = 3

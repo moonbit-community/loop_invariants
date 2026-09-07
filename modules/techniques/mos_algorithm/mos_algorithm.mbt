@@ -103,7 +103,7 @@ priv struct MoDistinct {
 fn MoDistinct::MoDistinct(arr : Array[Int]) -> MoDistinct {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) + 1 } else { 1 }
-  { arr, n, block_size }
+  { arr, n, block_size, }
 }
 
 ///|
@@ -122,7 +122,7 @@ fn MoDistinct::answer_queries(
   let mo_queries = [
     for i in 0..<q => {
       let (l, r) = queries[i]
-      { left: l, right: r, index: i }
+      { left: l, right: r, index: i, }
     }
   ]
 
@@ -278,7 +278,7 @@ priv struct MoSum {
 fn MoSum::MoSum(arr : Array[Int64]) -> MoSum {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) + 1 } else { 1 }
-  { arr, n, block_size }
+  { arr, n, block_size, }
 }
 
 ///|
@@ -293,7 +293,7 @@ fn MoSum::answer_queries(
   let mo_queries = [
     for i in 0..<q => {
       let (l, r) = queries[i]
-      { left: l, right: r, index: i }
+      { left: l, right: r, index: i, }
     }
   ]
   mo_queries.sort_by((a, b) => {
@@ -427,7 +427,7 @@ priv struct MoRangeCount {
 fn MoRangeCount::MoRangeCount(arr : Array[Int]) -> MoRangeCount {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) + 1 } else { 1 }
-  { arr, n, block_size }
+  { arr, n, block_size, }
 }
 
 ///|
@@ -449,7 +449,7 @@ fn MoRangeCount::answer_queries(
   let mo_queries = [
     for i in 0..<q => {
       let (l, r, lo, hi) = queries[i]
-      ({ left: l, right: r, index: i }, lo, hi)
+      ({ left: l, right: r, index: i, }, lo, hi)
     }
   ]
 
@@ -582,7 +582,7 @@ priv struct MoMode {
 fn MoMode::MoMode(arr : Array[Int]) -> MoMode {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) + 1 } else { 1 }
-  { arr, n, block_size }
+  { arr, n, block_size, }
 }
 
 ///|
@@ -600,7 +600,7 @@ fn MoMode::answer_queries(
   let mo_queries = [
     for i in 0..<q => {
       let (l, r) = queries[i]
-      { left: l, right: r, index: i }
+      { left: l, right: r, index: i, }
     }
   ]
   mo_queries.sort_by((a, b) => {

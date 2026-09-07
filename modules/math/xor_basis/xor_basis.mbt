@@ -82,7 +82,7 @@ pub struct XorBasis {
 /// assert_eq!(b.rank(), 0)
 /// ```
 pub fn XorBasis::XorBasis() -> XorBasis {
-  { basis: Array::make(MAX_BITS + 1, 0L), size: 0 }
+  { basis: Array::make(MAX_BITS + 1, 0L), size: 0, }
 }
 
 ///|
@@ -265,7 +265,7 @@ test "xor basis copy insert" {
   let b = XorBasis()
   let _ = b.insert(5L)
   let _ = b.insert(6L)
-  let copy = { basis: b.basis.copy(), size: b.size }
+  let copy = { basis: b.basis.copy(), size: b.size, }
   debug_inspect(copy.basis[2], content="5")
   debug_inspect(copy.insert(3L), content="false")
 }

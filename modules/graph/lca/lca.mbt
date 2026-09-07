@@ -97,7 +97,7 @@ fn compute_log(n : Int) -> Int {
 /// ```
 pub fn LCA::LCA(n : Int, edges : Array[(Int, Int)]) -> LCA {
   if n == 0 {
-    return { n: 0, log_n: 0, up: [], depth: [] }
+    return { n: 0, log_n: 0, up: [], depth: [], }
   }
   let log_n = compute_log(n)
   // Use makei to create adjacency list - each element is an independent empty array
@@ -155,7 +155,7 @@ pub fn LCA::LCA(n : Int, edges : Array[(Int, Int)]) -> LCA {
       #|At k == log_n, all powers of two needed for queries are built.
     ),
   }
-  { n, log_n, up, depth }
+  { n, log_n, up, depth, }
 }
 
 ///|
@@ -423,7 +423,7 @@ fn WeightedLCA::WeightedLCA(
   edges : Array[(Int, Int, Int64)],
 ) -> WeightedLCA {
   if n == 0 {
-    return { lca: LCA(0, []), dist_to_root: [] }
+    return { lca: LCA(0, []), dist_to_root: [], }
   }
 
   // Convert weighted edges to unweighted for LCA structure using map
@@ -444,7 +444,7 @@ fn WeightedLCA::WeightedLCA(
   let dist_to_root = Array::make(n, 0L)
   let visited = Array::make(n, false)
   dfs_dist(0, 0L, wadj, dist_to_root, visited)
-  { lca, dist_to_root }
+  { lca, dist_to_root, }
 }
 
 ///|

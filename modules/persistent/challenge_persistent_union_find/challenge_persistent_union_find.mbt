@@ -91,7 +91,7 @@ fn set(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
 ///|
 fn make_array(arr : ArrayView[Int]) -> PArray {
   let n = arr.length()
-  { root: build(arr, 0, n), n }
+  { root: build(arr, 0, n), n, }
 }
 
 ///|
@@ -101,7 +101,7 @@ fn array_get(arr : PArray, idx : Int) -> Int {
 
 ///|
 fn array_set(arr : PArray, idx : Int, value : Int) -> PArray {
-  { root: set(arr.root, 0, arr.n, idx, value), n: arr.n }
+  { root: set(arr.root, 0, arr.n, idx, value), n: arr.n, }
 }
 
 ///|
@@ -109,7 +109,7 @@ fn array_set(arr : PArray, idx : Int, value : Int) -> PArray {
 pub fn make(n : Int) -> DSU {
   let parents = [ for i in 0..<n => i ]
   let sizes = Array::make(n, 1)
-  { parent: make_array(parents), size: make_array(sizes) }
+  { parent: make_array(parents), size: make_array(sizes), }
 }
 
 ///|
@@ -136,11 +136,11 @@ pub fn union(dsu : DSU, a : Int, b : Int) -> DSU {
     if sa < sb {
       let parent2 = array_set(dsu.parent, ra, rb)
       let size2 = array_set(dsu.size, rb, sa + sb)
-      { parent: parent2, size: size2 }
+      { parent: parent2, size: size2, }
     } else {
       let parent2 = array_set(dsu.parent, rb, ra)
       let size2 = array_set(dsu.size, ra, sa + sb)
-      { parent: parent2, size: size2 }
+      { parent: parent2, size: size2, }
     }
   }
 }

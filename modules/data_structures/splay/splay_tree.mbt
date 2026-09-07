@@ -37,7 +37,7 @@ priv struct SplayNode[T] {
 
 ///|
 fn[T] SplayNode::SplayNode(key : T) -> SplayNode[T] {
-  { key, left: -1, right: -1, parent: -1, size: 1 }
+  { key, left: -1, right: -1, parent: -1, size: 1, }
 }
 
 ///|
@@ -51,7 +51,7 @@ priv struct SplayTree[T] {
 
 ///|
 fn[T] SplayTree::SplayTree() -> SplayTree[T] {
-  { nodes: [], root: -1, free_list: [] }
+  { nodes: [], root: -1, free_list: [], }
 }
 
 // ============================================================================

@@ -59,7 +59,7 @@ priv struct ManacherResult {
 fn manacher(s : String) -> ManacherResult {
   let n = s.length()
   if n == 0 {
-    return { radii: [], original: s }
+    return { radii: [], original: s, }
   }
 
   // Transform string: "abc" -> "#a#b#c#"
@@ -117,7 +117,7 @@ fn manacher(s : String) -> ManacherResult {
       #|so total comparisons are linear.
     ),
   }
-  { radii: p, original: s }
+  { radii: p, original: s, }
 }
 
 ///|

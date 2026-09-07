@@ -18,7 +18,7 @@
 /// # Example
 ///
 /// ```moonbit nocheck
-/// let p : @point_in_polygon.Point = { x: 3L, y: 7L }
+/// let p : @point_in_polygon.Point = { x: 3L, y: 7L, }
 /// ```
 pub(all) struct Point {
   x : Int64
@@ -115,19 +115,19 @@ fn on_segment(a : Point, b : Point, p : Point) -> Bool {
 ///
 /// ```moonbit nocheck
 /// let square : Array[@point_in_polygon.Point] = [
-///   { x: 0L, y: 0L },
-///   { x: 4L, y: 0L },
-///   { x: 4L, y: 4L },
-///   { x: 0L, y: 4L },
+///   { x: 0L, y: 0L, },
+///   { x: 4L, y: 0L, },
+///   { x: 4L, y: 4L, },
+///   { x: 0L, y: 4L, },
 /// ]
 ///
-/// let r1 = @point_in_polygon.point_in_polygon(square, { x: 2L, y: 2L })
+/// let r1 = @point_in_polygon.point_in_polygon(square, { x: 2L, y: 2L, })
 /// // r1 is Inside
 ///
-/// let r2 = @point_in_polygon.point_in_polygon(square, { x: 5L, y: 2L })
+/// let r2 = @point_in_polygon.point_in_polygon(square, { x: 5L, y: 2L, })
 /// // r2 is Outside
 ///
-/// let r3 = @point_in_polygon.point_in_polygon(square, { x: 4L, y: 2L })
+/// let r3 = @point_in_polygon.point_in_polygon(square, { x: 4L, y: 2L, })
 /// // r3 is Boundary
 /// ```
 pub fn point_in_polygon(poly : Array[Point], p : Point) -> Location {
@@ -171,12 +171,12 @@ pub fn point_in_polygon(poly : Array[Point], p : Point) -> Location {
 ///|
 test "point in polygon square" {
   let poly : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
   ]
-  debug_inspect(point_in_polygon(poly, { x: 2L, y: 2L }), content="Inside")
-  debug_inspect(point_in_polygon(poly, { x: 5L, y: 2L }), content="Outside")
-  debug_inspect(point_in_polygon(poly, { x: 4L, y: 2L }), content="Boundary")
+  debug_inspect(point_in_polygon(poly, { x: 2L, y: 2L, }), content="Inside")
+  debug_inspect(point_in_polygon(poly, { x: 5L, y: 2L, }), content="Outside")
+  debug_inspect(point_in_polygon(poly, { x: 4L, y: 2L, }), content="Boundary")
 }

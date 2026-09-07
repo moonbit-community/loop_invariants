@@ -781,7 +781,7 @@ fn TopologicalSort::TopologicalSort(
   graph : Array[Array[Int]],
 ) -> TopologicalSort {
   let n = graph.length()
-  { graph, n, state: Array::make(n, 0), result: [], has_cycle: false }
+  { graph, n, state: Array::make(n, 0), result: [], has_cycle: false, }
 }
 
 ///|

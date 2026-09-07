@@ -98,7 +98,7 @@ pub fn build_block_cut_tree(
   edges : ArrayView[(Int, Int)],
 ) -> BlockCutTree {
   if n <= 0 {
-    return { original_vertices: 0, component_count: 0, adj: [] }
+    return { original_vertices: 0, component_count: 0, adj: [], }
   }
   let result = @biconnected_components.biconnected_components(n, edges)
   let comps = result.components
@@ -126,5 +126,5 @@ pub fn build_block_cut_tree(
       adj[v].push(comp_node)
     }
   }
-  { original_vertices: n, component_count: c, adj }
+  { original_vertices: n, component_count: c, adj, }
 }

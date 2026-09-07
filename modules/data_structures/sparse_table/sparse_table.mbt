@@ -59,7 +59,7 @@ pub struct SparseTableMin {
 pub fn SparseTableMin::SparseTableMin(arr : Array[Int64]) -> SparseTableMin {
   let n = arr.length()
   if n == 0 {
-    return { table: [], log_table: [], n: 0 }
+    return { table: [], log_table: [], n: 0, }
   }
 
   // Precompute log values
@@ -85,7 +85,7 @@ pub fn SparseTableMin::SparseTableMin(arr : Array[Int64]) -> SparseTableMin {
       table[i][j] = if left < right { left } else { right }
     }
   }
-  { table, log_table, n }
+  { table, log_table, n, }
 }
 
 ///|
@@ -153,7 +153,7 @@ priv struct SparseTableMax {
 fn SparseTableMax::SparseTableMax(arr : Array[Int64]) -> SparseTableMax {
   let n = arr.length()
   if n == 0 {
-    return { table: [], log_table: [], n: 0 }
+    return { table: [], log_table: [], n: 0, }
   }
   let log_table = Array::make(n + 1, 0)
   for i in 2..<=n {
@@ -175,7 +175,7 @@ fn SparseTableMax::SparseTableMax(arr : Array[Int64]) -> SparseTableMax {
       table[i][j] = if left > right { left } else { right }
     }
   }
-  { table, log_table, n }
+  { table, log_table, n, }
 }
 
 ///|
@@ -260,7 +260,7 @@ priv struct SparseTableGCD {
 fn SparseTableGCD::SparseTableGCD(arr : Array[Int64]) -> SparseTableGCD {
   let n = arr.length()
   if n == 0 {
-    return { table: [], log_table: [], n: 0 }
+    return { table: [], log_table: [], n: 0, }
   }
   let log_table = Array::make(n + 1, 0)
   for i in 2..<=n {
@@ -280,7 +280,7 @@ fn SparseTableGCD::SparseTableGCD(arr : Array[Int64]) -> SparseTableGCD {
       table[i][j] = gcd(table[i][j - 1], table[i + (1 << (j - 1))][j - 1])
     }
   }
-  { table, log_table, n }
+  { table, log_table, n, }
 }
 
 ///|

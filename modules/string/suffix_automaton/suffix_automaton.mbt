@@ -56,7 +56,7 @@ pub struct SAMState {
 
 ///|
 fn SAMState::SAMState() -> SAMState {
-  { len: 0, link: -1, next: Array::make(SAM_ALPHABET, -1), first_pos: -1 }
+  { len: 0, link: -1, next: Array::make(SAM_ALPHABET, -1), first_pos: -1, }
 }
 
 ///|
@@ -111,7 +111,7 @@ pub fn SuffixAutomaton::SuffixAutomaton(max_len : Int) -> SuffixAutomaton {
 
   // Reserve space for states
   states.append([ for _ in 0..<(2 * max_len) => SAMState() ])
-  { states, last: 0, size: 1 }
+  { states, last: 0, size: 1, }
 }
 
 ///|

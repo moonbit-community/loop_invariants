@@ -111,7 +111,7 @@ pub fn new(precision : Int) -> HyperLogLog {
   }
   let m = 1 << p
   let registers = Array::make(m, 0)
-  { precision: p, m, registers }
+  { precision: p, m, registers, }
 }
 
 ///|

@@ -115,7 +115,7 @@ fn SuffixAutomaton::SuffixAutomaton() -> SuffixAutomaton {
   let initial = SAMState()
   initial.len = 0
   initial.link = -1
-  { states: [initial], last: 0 }
+  { states: [initial], last: 0, }
 }
 
 ///|

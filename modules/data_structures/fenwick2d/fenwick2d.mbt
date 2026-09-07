@@ -56,7 +56,7 @@ pub fn Fenwick2D::Fenwick2D(rows : Int, cols : Int) -> Fenwick2D {
   let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
   ]
-  { tree, rows, cols }
+  { tree, rows, cols, }
 }
 
 ///|
@@ -293,7 +293,7 @@ fn Fenwick2DRange::Fenwick2DRange(rows : Int, cols : Int) -> Fenwick2DRange {
   let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
   ]
-  { tree, rows, cols }
+  { tree, rows, cols, }
 }
 
 ///|

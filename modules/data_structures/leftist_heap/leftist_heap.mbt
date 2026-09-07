@@ -94,7 +94,7 @@ fn merge_trees(t1 : Tree, t2 : Tree) -> Tree {
 ///|
 /// Empty heap.
 pub fn LeftistHeap::new() -> LeftistHeap {
-  { root: Empty, size: 0 }
+  { root: Empty, size: 0, }
 }
 
 ///|
@@ -110,7 +110,7 @@ pub fn LeftistHeap::new() -> LeftistHeap {
 /// ```
 pub fn LeftistHeap::push(self : LeftistHeap, key : Int64) -> LeftistHeap {
   let leaf : Tree = Node(1, key, Empty, Empty)
-  { root: merge_trees(self.root, leaf), size: self.size + 1 }
+  { root: merge_trees(self.root, leaf), size: self.size + 1, }
 }
 
 ///|
@@ -128,7 +128,7 @@ pub fn LeftistHeap::pop_min(self : LeftistHeap) -> (Int64, LeftistHeap)? {
   match self.root {
     Empty => None
     Node(_, k, l, r) =>
-      Some((k, { root: merge_trees(l, r), size: self.size - 1 }))
+      Some((k, { root: merge_trees(l, r), size: self.size - 1, }))
   }
 }
 
@@ -138,7 +138,7 @@ pub fn LeftistHeap::merge(
   self : LeftistHeap,
   other : LeftistHeap,
 ) -> LeftistHeap {
-  { root: merge_trees(self.root, other.root), size: self.size + other.size }
+  { root: merge_trees(self.root, other.root), size: self.size + other.size, }
 }
 
 ///|

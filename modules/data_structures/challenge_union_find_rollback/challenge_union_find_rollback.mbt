@@ -41,7 +41,7 @@ pub fn RollbackDSU::RollbackDSU(n : Int) -> RollbackDSU {
   for i in 0..<n {
     parent[i] = i
   }
-  { parent, size, history: [] }
+  { parent, size, history: [], }
 }
 
 ///|

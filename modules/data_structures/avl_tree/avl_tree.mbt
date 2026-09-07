@@ -44,7 +44,7 @@ priv struct AVLNode[T] {
 /// Creates a fresh leaf node with the given key.
 /// The new node has height 1 and no children.
 fn[T] AVLNode::AVLNode(key : T) -> AVLNode[T] {
-  { key, height: 1, left: -1, right: -1 }
+  { key, height: 1, left: -1, right: -1, }
 }
 
 ///|
@@ -70,7 +70,7 @@ priv struct AVLTree[T] {
 ///|
 /// Creates an empty AVL tree with no nodes allocated.
 fn[T] AVLTree::AVLTree() -> AVLTree[T] {
-  { nodes: [], root: -1, free_list: -1 }
+  { nodes: [], root: -1, free_list: -1, }
 }
 
 ///|

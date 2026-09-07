@@ -43,7 +43,7 @@ priv struct MaxHeap {
 
 ///|
 fn MaxHeap::new() -> MaxHeap {
-  { data: [] }
+  { data: [], }
 }
 
 ///|
@@ -147,7 +147,7 @@ pub fn compute(
     while i < events.length() && events[i].0 == x {
       let ev = events[i]
       if ev.1 == 0 {
-        heap.push({ height: ev.2, expires_at: ev.3 })
+        heap.push({ height: ev.2, expires_at: ev.3, })
       }
       i = i + 1
     }

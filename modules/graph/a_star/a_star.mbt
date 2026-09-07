@@ -59,7 +59,7 @@ priv struct MinHeap {
 
 ///|
 fn MinHeap::new() -> MinHeap {
-  { data: [] }
+  { data: [], }
 }
 
 ///|
@@ -148,7 +148,7 @@ pub(all) struct AStarResult {
 ///
 /// ```moonbit nocheck
 /// test {
-///   let edges = [[{ to: 1, w: 1L }, { to: 2, w: 4L }], [{ to: 2, w: 2L }], []]
+///   let edges = [[{ to: 1, w: 1L, }, { to: 2, w: 4L, }], [{ to: 2, w: 2L, }], []]
 ///   let r = @a_star.a_star(3, edges, 0, 2, _ => 0L)
 ///   @debug.assert_eq(r.dist, Some(3L))
 /// }
@@ -165,11 +165,11 @@ pub fn a_star(
   let parent = Array::make(n, -1)
   let closed = Array::make(n, false)
   if source < 0 || source >= n || target < 0 || target >= n {
-    return { dist: None, path: [], expanded: 0 }
+    return { dist: None, path: [], expanded: 0, }
   }
   g[source] = 0L
   let open_set = MinHeap::new()
-  open_set.push({ f: heuristic(source), g: 0L, v: source })
+  open_set.push({ f: heuristic(source), g: 0L, v: source, })
   let mut expanded = 0
   while true {
     let top = open_set.pop()
@@ -195,7 +195,7 @@ pub fn a_star(
             if ng < g[next.to] {
               g[next.to] = ng
               parent[next.to] = e.v
-              open_set.push({ f: ng + heuristic(next.to), g: ng, v: next.to })
+              open_set.push({ f: ng + heuristic(next.to), g: ng, v: next.to, })
             }
           }
         }
@@ -203,9 +203,9 @@ pub fn a_star(
   }
   if not_reached(g[target], inf) {
     let path = reconstruct(parent, source, target)
-    { dist: Some(g[target]), path, expanded }
+    { dist: Some(g[target]), path, expanded, }
   } else {
-    { dist: None, path: [], expanded }
+    { dist: None, path: [], expanded, }
   }
 }
 
@@ -244,8 +244,8 @@ fn reconstruct(parent : Array[Int], source : Int, target : Int) -> Array[Int] {
 test "a_star dijkstra equivalence on small graph" {
   // Triangle 0 -1 -2 with shortcut 0 -2.
   let adj : Array[Array[Edge]] = [
-    [{ to: 1, w: 1L }, { to: 2, w: 4L }],
-    [{ to: 2, w: 2L }],
+    [{ to: 1, w: 1L, }, { to: 2, w: 4L, }],
+    [{ to: 2, w: 2L, }],
     [],
   ]
   let r = a_star(3, adj, 0, 2, _ => 0L)
@@ -256,7 +256,7 @@ test "a_star dijkstra equivalence on small graph" {
 ///|
 test "a_star unreachable" {
   // 0 -> 1, but 2 is isolated.
-  let adj : Array[Array[Edge]] = [[{ to: 1, w: 1L }], [], []]
+  let adj : Array[Array[Edge]] = [[{ to: 1, w: 1L, }], [], []]
   let r = a_star(3, adj, 0, 2, _ => 0L)
   @debug.assert_eq(r.dist, None)
   @debug.assert_eq(r.path, [])
@@ -304,7 +304,7 @@ test "a_star grid with manhattan heuristic" {
         let nr = r + d.0
         let nc = c + d.1
         if nr >= 0 && nr < 5 && nc >= 0 && nc < cols && !is_wall[id(nr, nc)] {
-          edges.push({ to: id(nr, nc), w: 1L })
+          edges.push({ to: id(nr, nc), w: 1L, })
         }
       }
       adj[id(r, c)] = edges
@@ -331,12 +331,17 @@ test "a_star agrees with Dijkstra on random graph" {
   // Build a small deterministic graph and confirm a_star (with h=0)
   // returns the same distance as a brute-force shortest path search.
   let adj : Array[Array[Edge]] = [
-    [{ to: 1, w: 7L }, { to: 2, w: 9L }, { to: 5, w: 14L }],
-    [{ to: 0, w: 7L }, { to: 2, w: 10L }, { to: 3, w: 15L }],
-    [{ to: 0, w: 9L }, { to: 1, w: 10L }, { to: 3, w: 11L }, { to: 5, w: 2L }],
-    [{ to: 1, w: 15L }, { to: 2, w: 11L }, { to: 4, w: 6L }],
-    [{ to: 3, w: 6L }, { to: 5, w: 9L }],
-    [{ to: 0, w: 14L }, { to: 2, w: 2L }, { to: 4, w: 9L }],
+    [{ to: 1, w: 7L, }, { to: 2, w: 9L, }, { to: 5, w: 14L, }],
+    [{ to: 0, w: 7L, }, { to: 2, w: 10L, }, { to: 3, w: 15L, }],
+    [
+      { to: 0, w: 9L, },
+      { to: 1, w: 10L, },
+      { to: 3, w: 11L, },
+      { to: 5, w: 2L, },
+    ],
+    [{ to: 1, w: 15L, }, { to: 2, w: 11L, }, { to: 4, w: 6L, }],
+    [{ to: 3, w: 6L, }, { to: 5, w: 9L, }],
+    [{ to: 0, w: 14L, }, { to: 2, w: 2L, }, { to: 4, w: 9L, }],
   ]
   let expected : ReadOnlyArray[Int64] = [0L, 7L, 9L, 20L, 20L, 11L]
   for t in 0..<6 {
@@ -349,9 +354,9 @@ test "a_star agrees with Dijkstra on random graph" {
 test "a_star returns valid path" {
   // The path is consecutive edges and the costs sum to the reported distance.
   let adj : Array[Array[Edge]] = [
-    [{ to: 1, w: 1L }, { to: 2, w: 10L }],
-    [{ to: 3, w: 2L }],
-    [{ to: 3, w: 1L }],
+    [{ to: 1, w: 1L, }, { to: 2, w: 10L, }],
+    [{ to: 3, w: 2L, }],
+    [{ to: 3, w: 1L, }],
     [],
   ]
   let r = a_star(4, adj, 0, 3, _ => 0L)

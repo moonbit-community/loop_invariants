@@ -68,7 +68,7 @@ priv struct MinHeap {
 ///
 /// Time complexity: O(1).
 fn MinHeap::MinHeap() -> MinHeap {
-  { data: [] }
+  { data: [], }
 }
 
 ///|
@@ -196,7 +196,7 @@ fn dijkstra(
   let dist = Array::make(n, INF64)
   dist[src] = 0L
   let heap = MinHeap()
-  heap.push({ dist: 0L, node: src })
+  heap.push({ dist: 0L, node: src, })
   for ;; {
     match heap.pop() {
       None => break
@@ -214,7 +214,7 @@ fn dijkstra(
           let nd = d + w
           if nd < dist[v] {
             dist[v] = nd
-            heap.push({ dist: nd, node: v })
+            heap.push({ dist: nd, node: v, })
           }
         }
       }

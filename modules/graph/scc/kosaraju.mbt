@@ -76,7 +76,7 @@
 /// Time: `O(V + E)`. Space: `O(V + E)` (transpose graph uses extra space).
 pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   if n == 0 {
-    return { num_sccs: 0, component: [], scc_sizes: [], scc_adj: [] }
+    return { num_sccs: 0, component: [], scc_sizes: [], scc_adj: [], }
   }
 
   // =========================================================================
@@ -150,7 +150,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   let scc_count = for i in n>..0; scc_count = 0 {
     let v = order[i]
     if component[v] == -1 {
-      let size : Counter = { val: 0 }
+      let size : Counter = { val: 0, }
       dfs_assign(v, radj, component, scc_count, size)
       scc_sizes.push(size.val)
       continue scc_count + 1
@@ -201,7 +201,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
       #|  At u = n, condensation complete.
     ),
   }
-  { num_sccs: scc_count, component, scc_sizes, scc_adj }
+  { num_sccs: scc_count, component, scc_sizes, scc_adj, }
 }
 
 ///|

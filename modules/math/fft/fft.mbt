@@ -145,7 +145,7 @@ fn NTT::NTT(size : Int) -> NTT {
   }
   let root = mod_pow(NTT_ROOT, (NTT_MOD - 1L) / n.to_int64(), NTT_MOD)
   let root_inv = mod_pow(root, NTT_MOD - 2L, NTT_MOD)
-  { n, log_n, root, root_inv, mod_val: NTT_MOD }
+  { n, log_n, root, root_inv, mod_val: NTT_MOD, }
 }
 
 ///|

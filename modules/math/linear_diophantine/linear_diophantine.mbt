@@ -96,26 +96,26 @@ fn ext_gcd(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
 pub fn solve(a : Int64, b : Int64, c : Int64) -> DiophantineResult {
   if a == 0L && b == 0L {
     if c == 0L {
-      return { solution: Some((0L, 0L)), period: (0L, 0L) }
+      return { solution: Some((0L, 0L)), period: (0L, 0L), }
     }
-    return { solution: None, period: (0L, 0L) }
+    return { solution: None, period: (0L, 0L), }
   }
   if a == 0L {
     // b y = c
     if c % b != 0L {
-      return { solution: None, period: (0L, 0L) }
+      return { solution: None, period: (0L, 0L), }
     }
-    return { solution: Some((0L, c / b)), period: (1L, 0L) }
+    return { solution: Some((0L, c / b)), period: (1L, 0L), }
   }
   if b == 0L {
     if c % a != 0L {
-      return { solution: None, period: (0L, 0L) }
+      return { solution: None, period: (0L, 0L), }
     }
-    return { solution: Some((c / a, 0L)), period: (0L, 1L) }
+    return { solution: Some((c / a, 0L)), period: (0L, 1L), }
   }
   let (g0, x0, y0) = ext_gcd(abs64(a), abs64(b))
   if c % g0 != 0L {
-    return { solution: None, period: (0L, 0L) }
+    return { solution: None, period: (0L, 0L), }
   }
   // Correct signs from absolute values.
   let mut xs = x0
@@ -131,7 +131,7 @@ pub fn solve(a : Int64, b : Int64, c : Int64) -> DiophantineResult {
   let y = ys * scale
   let period_dx = b / g0
   let period_dy = -(a / g0)
-  { solution: Some((x, y)), period: (period_dx, period_dy) }
+  { solution: Some((x, y)), period: (period_dx, period_dy), }
 }
 
 ///|
@@ -153,7 +153,7 @@ pub fn solve_min_x(a : Int64, b : Int64, c : Int64) -> DiophantineResult {
       }
       let t = (x - nx) / dx
       let ny = y - t * dy
-      { solution: Some((nx, ny)), period: (dx, dy) }
+      { solution: Some((nx, ny)), period: (dx, dy), }
     }
   }
 }

@@ -15,8 +15,8 @@ pub fn max_overlap(intervals : ArrayView[(Int, Int)]) -> Int {
   for interval in intervals {
     let (l, r) = interval
     if l <= r {
-      events.push({ pos: l, delta: 1 })
-      events.push({ pos: r + 1, delta: -1 })
+      events.push({ pos: l, delta: 1, })
+      events.push({ pos: r + 1, delta: -1, })
     }
   }
   events.sort_by((a, b) => {

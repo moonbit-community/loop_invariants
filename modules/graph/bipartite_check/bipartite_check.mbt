@@ -80,12 +80,12 @@ pub fn is_bipartite(n : Int, adj : Array[Array[Int]]) -> BipartiteResult {
           queue.push(v)
         } else if color[v] == color[u] {
           witness = Some((u, v))
-          return { is_bipartite: false, color, odd_cycle_edge: witness }
+          return { is_bipartite: false, color, odd_cycle_edge: witness, }
         }
       }
     }
   }
-  { is_bipartite: true, color, odd_cycle_edge: None }
+  { is_bipartite: true, color, odd_cycle_edge: None, }
 }
 
 ///|

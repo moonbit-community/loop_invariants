@@ -66,7 +66,7 @@ fn merge_trees(t1 : Tree, t2 : Tree) -> Tree {
 ///|
 /// Empty heap.
 pub fn SkewHeap::new() -> SkewHeap {
-  { root: Empty, size: 0 }
+  { root: Empty, size: 0, }
 }
 
 ///|
@@ -82,7 +82,7 @@ pub fn SkewHeap::new() -> SkewHeap {
 /// ```
 pub fn SkewHeap::push(self : SkewHeap, key : Int64) -> SkewHeap {
   let leaf : Tree = Node(key, Empty, Empty)
-  { root: merge_trees(self.root, leaf), size: self.size + 1 }
+  { root: merge_trees(self.root, leaf), size: self.size + 1, }
 }
 
 ///|
@@ -99,14 +99,15 @@ pub fn SkewHeap::peek_min(self : SkewHeap) -> Int64? {
 pub fn SkewHeap::pop_min(self : SkewHeap) -> (Int64, SkewHeap)? {
   match self.root {
     Empty => None
-    Node(k, l, r) => Some((k, { root: merge_trees(l, r), size: self.size - 1 }))
+    Node(k, l, r) =>
+      Some((k, { root: merge_trees(l, r), size: self.size - 1, }))
   }
 }
 
 ///|
 /// Merge two heaps. Both originals are unchanged.
 pub fn SkewHeap::merge(self : SkewHeap, other : SkewHeap) -> SkewHeap {
-  { root: merge_trees(self.root, other.root), size: self.size + other.size }
+  { root: merge_trees(self.root, other.root), size: self.size + other.size, }
 }
 
 ///|

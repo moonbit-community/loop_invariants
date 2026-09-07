@@ -93,7 +93,7 @@ pub fn with_seed(cells : Int, types : Int, seed : Int64) -> Zobrist {
       key[c * types + v] = s
     }
   }
-  { cells, types, key, current: Array::make(cells, 0), hash: 0L }
+  { cells, types, key, current: Array::make(cells, 0), hash: 0L, }
 }
 
 ///|

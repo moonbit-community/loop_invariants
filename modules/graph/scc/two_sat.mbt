@@ -93,7 +93,7 @@ pub(all) struct TwoSAT {
 pub fn TwoSAT::TwoSAT(n : Int) -> TwoSAT {
   // Use makei to create 2n adjacency lists (n vars + n negated vars)
   let adj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
-  { n, adj }
+  { n, adj, }
 }
 
 ///|

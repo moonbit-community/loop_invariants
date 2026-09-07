@@ -128,7 +128,7 @@ pub fn new(k~ : Int, seed~ : Int64) -> MinHash {
     ),
   }
   let signatures = Array::make(k_clamped, @int64.MAX_VALUE)
-  { k: k_clamped, salts, signatures }
+  { k: k_clamped, salts, signatures, }
 }
 
 ///|

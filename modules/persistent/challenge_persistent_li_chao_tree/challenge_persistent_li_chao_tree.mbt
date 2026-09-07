@@ -14,7 +14,7 @@
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let line : @challenge_persistent_li_chao_tree.Line = { m: 2, b: -5 }
+///   let line : @challenge_persistent_li_chao_tree.Line = { m: 2, b: -5, }
 ///   let t = @challenge_persistent_li_chao_tree.insert(
 ///     @challenge_persistent_li_chao_tree.empty(),
 ///     line,
@@ -45,9 +45,9 @@ pub(all) struct Line {
 /// ```moonbit nocheck
 /// test {
 ///   let lines : Array[@challenge_persistent_li_chao_tree.Line] = [
-///     { m: 1, b: 0 },
-///     { m: -1, b: 10 },
-///     { m: 2, b: -5 },
+///     { m: 1, b: 0, },
+///     { m: -1, b: 10, },
+///     { m: 2, b: -5, },
 ///   ]
 ///   let t = @challenge_persistent_li_chao_tree.from_array(lines, 0, 10)
 ///   @debug.assert_eq(@challenge_persistent_li_chao_tree.query(t, 5, 0, 10), 5)
@@ -154,9 +154,9 @@ pub fn from_array(lines : ArrayView[Line], l : Int, r : Int) -> Node {
 ///|
 test "persistent_li_chao_tree" {
   let lines : ReadOnlyArray[Line] = [
-    { m: 1, b: 0 },
-    { m: -1, b: 10 },
-    { m: 2, b: -5 },
+    { m: 1, b: 0, },
+    { m: -1, b: 10, },
+    { m: 2, b: -5, },
   ]
   let tree = from_array(lines, 0, 10)
   @debug.assert_eq(query(tree, 0, 0, 10), -5)

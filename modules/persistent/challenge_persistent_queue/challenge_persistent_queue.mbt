@@ -41,7 +41,7 @@ pub struct Queue[T] {
 ///|
 /// Create an empty persistent queue.
 pub fn[T] empty() -> Queue[T] {
-  { front: Nil, back: Nil }
+  { front: Nil, back: Nil, }
 }
 
 ///|
@@ -74,7 +74,7 @@ fn[T] reverse_stack(s : Stack[T]) -> Stack[T] {
 ///|
 fn[T] normalize(q : Queue[T]) -> Queue[T] {
   match q.front {
-    Nil => { front: reverse_stack(q.back), back: Nil }
+    Nil => { front: reverse_stack(q.back), back: Nil, }
     _ => q
   }
 }
@@ -82,7 +82,7 @@ fn[T] normalize(q : Queue[T]) -> Queue[T] {
 ///|
 /// Enqueue a value and return the new queue.
 pub fn[T] enqueue(q : Queue[T], value : T) -> Queue[T] {
-  { front: q.front, back: Cons(head=value, tail=q.back) }
+  { front: q.front, back: Cons(head=value, tail=q.back), }
 }
 
 ///|
@@ -101,6 +101,6 @@ pub fn[T] dequeue(q : Queue[T]) -> (T, Queue[T])? {
   let norm = normalize(q)
   match norm.front {
     Nil => None
-    Cons(head~, tail~) => Some((head, { front: tail, back: norm.back }))
+    Cons(head~, tail~) => Some((head, { front: tail, back: norm.back, }))
   }
 }

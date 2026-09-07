@@ -72,11 +72,11 @@ pub struct SegmentTree {
 pub fn SegmentTree::SegmentTree(arr : Array[Int64]) -> SegmentTree {
   let n = arr.length()
   if n == 0 {
-    return { n: 0, tree: [] }
+    return { n: 0, tree: [], }
   }
   let tree = Array::make(4 * n, 0L)
   build_tree(arr, tree, 1, 0, n - 1)
-  { n, tree }
+  { n, tree, }
 }
 
 ///|
@@ -233,11 +233,11 @@ const ST_INF : Int64 = 9223372036854775807L
 fn SegmentTreeMin::SegmentTreeMin(arr : Array[Int64]) -> SegmentTreeMin {
   let n = arr.length()
   if n == 0 {
-    return { n: 0, tree: [] }
+    return { n: 0, tree: [], }
   }
   let tree = Array::make(4 * n, ST_INF)
   build_min_tree(arr, tree, 1, 0, n - 1)
-  { n, tree }
+  { n, tree, }
 }
 
 ///|
@@ -370,7 +370,7 @@ priv struct IterativeSegTree {
 fn IterativeSegTree::IterativeSegTree(arr : Array[Int64]) -> IterativeSegTree {
   let n = arr.length()
   if n == 0 {
-    return { n: 0, tree: [] }
+    return { n: 0, tree: [], }
   }
   let tree = Array::make(2 * n, 0L)
 
@@ -383,7 +383,7 @@ fn IterativeSegTree::IterativeSegTree(arr : Array[Int64]) -> IterativeSegTree {
   for i in n>..1 {
     tree[i] = tree[2 * i] + tree[2 * i + 1]
   }
-  { n, tree }
+  { n, tree, }
 }
 
 ///|

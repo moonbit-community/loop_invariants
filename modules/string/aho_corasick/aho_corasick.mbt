@@ -74,7 +74,7 @@ priv struct ACState {
 /// set to -1 (used as a sentinel meaning "not yet computed"), and the output
 /// list is empty.
 fn ACState::ACState() -> ACState {
-  { children: Array::make(AC_ALPHABET, -1), failure: -1, output: [] }
+  { children: Array::make(AC_ALPHABET, -1), failure: -1, output: [], }
 }
 
 ///|
@@ -99,7 +99,7 @@ priv struct AhoCorasick {
 fn AhoCorasick::AhoCorasick() -> AhoCorasick {
   // Initialize with root state
   let states : Array[ACState] = [ACState()]
-  { states, patterns: [] }
+  { states, patterns: [], }
 }
 
 ///|

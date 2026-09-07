@@ -95,7 +95,7 @@ fn merge_pairs(children : Array[Tree]) -> Tree {
 ///|
 /// Empty pairing heap.
 pub fn PairingHeap::new() -> PairingHeap {
-  { root: Empty, size: 0 }
+  { root: Empty, size: 0, }
 }
 
 ///|
@@ -111,7 +111,7 @@ pub fn PairingHeap::new() -> PairingHeap {
 /// ```
 pub fn PairingHeap::push(self : PairingHeap, key : Int64) -> PairingHeap {
   let leaf : Tree = Node(key, [])
-  { root: merge_trees(self.root, leaf), size: self.size + 1 }
+  { root: merge_trees(self.root, leaf), size: self.size + 1, }
 }
 
 ///|
@@ -129,7 +129,7 @@ pub fn PairingHeap::pop_min(self : PairingHeap) -> (Int64, PairingHeap)? {
   match self.root {
     Empty => None
     Node(k, children) =>
-      Some((k, { root: merge_pairs(children), size: self.size - 1 }))
+      Some((k, { root: merge_pairs(children), size: self.size - 1, }))
   }
 }
 
@@ -139,7 +139,7 @@ pub fn PairingHeap::merge(
   self : PairingHeap,
   other : PairingHeap,
 ) -> PairingHeap {
-  { root: merge_trees(self.root, other.root), size: self.size + other.size }
+  { root: merge_trees(self.root, other.root), size: self.size + other.size, }
 }
 
 ///|

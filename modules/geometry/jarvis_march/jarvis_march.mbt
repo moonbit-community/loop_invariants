@@ -51,7 +51,7 @@ pub struct JmPoint {
 ///|
 /// Construct a point.
 pub fn jm_point(x : Double, y : Double) -> JmPoint {
-  { x, y }
+  { x, y, }
 }
 
 ///|

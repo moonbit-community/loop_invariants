@@ -369,7 +369,7 @@ fn HashArray::HashArray(s : String) -> HashArray {
     prefix_hash[i + 1] = (prefix_hash[i] * RK_BASE + c) % RK_MOD
     powers[i + 1] = powers[i] * RK_BASE % RK_MOD
   }
-  { prefix_hash, powers, n }
+  { prefix_hash, powers, n, }
 }
 
 ///|

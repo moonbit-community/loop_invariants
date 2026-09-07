@@ -114,7 +114,7 @@ fn circle_from_two(p : Point, q : Point) -> Circle {
   let dx = p.x - q.x
   let dy = p.y - q.y
   let r = (dx * dx + dy * dy).sqrt() * 0.5
-  { center: { x: cx, y: cy }, radius: r }
+  { center: { x: cx, y: cy, }, radius: r, }
 }
 
 ///|
@@ -161,9 +161,9 @@ fn circle_from_three(a : Point, b : Point, c : Point) -> Circle {
     let c2 = cx * cx + cy * cy
     let ux = (cy * b2 - by * c2) / d
     let uy = (bx * c2 - cx * b2) / d
-    let center = { x: a.x + ux, y: a.y + uy }
+    let center = { x: a.x + ux, y: a.y + uy, }
     let r = (ux * ux + uy * uy).sqrt()
-    { center, radius: r }
+    { center, radius: r, }
   }
 }
 
@@ -178,7 +178,7 @@ fn circle_from_three(a : Point, b : Point, c : Point) -> Circle {
 /// the diameter circle on `(p, q)` and run the third loop in
 /// `mec_with_two`.
 fn mec_with_one(points : ArrayView[Point], j_max : Int, p : Point) -> Circle {
-  let init : Circle = { center: p, radius: 0.0 }
+  let init : Circle = { center: p, radius: 0.0, }
   for j in 0..<j_max; circle = init {
     let q = points[j]
     let circle = if contains_point(circle, q) {
@@ -297,9 +297,9 @@ fn mec_with_two(
 /// ```moonbit nocheck
 /// test {
 ///   let pts : Array[@welzl_smallest_enclosing_circle.Point] = [
-///     { x: 0.0, y: 0.0 },
-///     { x: 4.0, y: 0.0 },
-///     { x: 2.0, y: 3.0 },
+///     { x: 0.0, y: 0.0, },
+///     { x: 4.0, y: 0.0, },
+///     { x: 2.0, y: 3.0, },
 ///   ]
 ///   let c = @welzl_smallest_enclosing_circle.smallest_enclosing_circle(pts[:])
 ///   // c.center is the circumcenter of the triangle.
@@ -308,9 +308,9 @@ fn mec_with_two(
 pub fn smallest_enclosing_circle(points : ArrayView[Point]) -> Circle {
   let n = points.length()
   if n == 0 {
-    return { center: { x: 0.0, y: 0.0 }, radius: 0.0 }
+    return { center: { x: 0.0, y: 0.0, }, radius: 0.0, }
   }
-  let init : Circle = { center: points[0], radius: 0.0 }
+  let init : Circle = { center: points[0], radius: 0.0, }
   for i in 0..<n; circle = init {
     let p = points[i]
     let circle = if contains_point(circle, p) {
@@ -385,7 +385,7 @@ test "mec empty input" {
 
 ///|
 test "mec single point" {
-  let pts : Array[Point] = [{ x: 3.0, y: -2.0 }]
+  let pts : Array[Point] = [{ x: 3.0, y: -2.0, }]
   let c = smallest_enclosing_circle(pts[:])
   @debug.assert_eq(c.radius, 0.0)
   @debug.assert_eq(c.center.x, 3.0)
@@ -394,7 +394,7 @@ test "mec single point" {
 
 ///|
 test "mec two points yields diameter circle" {
-  let pts : Array[Point] = [{ x: 0.0, y: 0.0 }, { x: 6.0, y: 8.0 }]
+  let pts : Array[Point] = [{ x: 0.0, y: 0.0, }, { x: 6.0, y: 8.0, }]
   let c = smallest_enclosing_circle(pts[:])
   // Diameter = 10, radius = 5, center = (3, 4).
   @debug.assert_eq(abs_diff(c.radius, 5.0) < 1.0e-9, true)
@@ -406,9 +406,9 @@ test "mec two points yields diameter circle" {
 test "mec three points circumcircle" {
   // Right triangle with legs 3 and 4; hypotenuse is the diameter (5).
   let pts : Array[Point] = [
-    { x: 0.0, y: 0.0 },
-    { x: 3.0, y: 0.0 },
-    { x: 0.0, y: 4.0 },
+    { x: 0.0, y: 0.0, },
+    { x: 3.0, y: 0.0, },
+    { x: 0.0, y: 4.0, },
   ]
   let c = smallest_enclosing_circle(pts[:])
   // The MEC of a right triangle is the diameter on its hypotenuse:
@@ -424,9 +424,9 @@ test "mec equilateral triangle" {
   // Circumradius is side / sqrt(3) = 2/sqrt(3) ≈ 1.1547005.
   let h = (3.0 : Double).sqrt()
   let pts : Array[Point] = [
-    { x: 0.0, y: 0.0 },
-    { x: 2.0, y: 0.0 },
-    { x: 1.0, y: h },
+    { x: 0.0, y: 0.0, },
+    { x: 2.0, y: 0.0, },
+    { x: 1.0, y: h, },
   ]
   let c = smallest_enclosing_circle(pts[:])
   let expected_r = 2.0 / h
@@ -439,10 +439,10 @@ test "mec equilateral triangle" {
 ///|
 test "mec square corners diagonal radius" {
   let pts : Array[Point] = [
-    { x: 0.0, y: 0.0 },
-    { x: 2.0, y: 0.0 },
-    { x: 2.0, y: 2.0 },
-    { x: 0.0, y: 2.0 },
+    { x: 0.0, y: 0.0, },
+    { x: 2.0, y: 0.0, },
+    { x: 2.0, y: 2.0, },
+    { x: 0.0, y: 2.0, },
   ]
   let c = smallest_enclosing_circle(pts[:])
   // Diagonal length = 2*sqrt(2); radius = sqrt(2); center = (1, 1).
@@ -456,18 +456,18 @@ test "mec square corners diagonal radius" {
 test "mec contains all points (fuzz)" {
   // Hand-built spread of 12 points; verify each lies within radius + EPS.
   let pts : Array[Point] = [
-    { x: 1.2, y: 3.4 },
-    { x: -2.5, y: 0.1 },
-    { x: 0.0, y: -1.7 },
-    { x: 5.0, y: 2.3 },
-    { x: 4.1, y: -3.0 },
-    { x: -1.0, y: 4.4 },
-    { x: 2.7, y: 1.9 },
-    { x: -3.3, y: -2.2 },
-    { x: 0.5, y: 0.5 },
-    { x: 3.6, y: 4.6 },
-    { x: -0.7, y: 2.1 },
-    { x: 2.0, y: -2.0 },
+    { x: 1.2, y: 3.4, },
+    { x: -2.5, y: 0.1, },
+    { x: 0.0, y: -1.7, },
+    { x: 5.0, y: 2.3, },
+    { x: 4.1, y: -3.0, },
+    { x: -1.0, y: 4.4, },
+    { x: 2.7, y: 1.9, },
+    { x: -3.3, y: -2.2, },
+    { x: 0.5, y: 0.5, },
+    { x: 3.6, y: 4.6, },
+    { x: -0.7, y: 2.1, },
+    { x: 2.0, y: -2.0, },
   ]
   let c = smallest_enclosing_circle(pts[:])
   // All points must be within radius^2 + EPS of center.
@@ -503,14 +503,14 @@ test "mec interior points do not change result" {
   // Surround the unit disk's corners with several `inside` points; the
   // MEC must still be determined by the four square corners.
   let pts : Array[Point] = [
-    { x: -1.0, y: -1.0 },
-    { x: 1.0, y: -1.0 },
-    { x: 1.0, y: 1.0 },
-    { x: -1.0, y: 1.0 },
-    { x: 0.0, y: 0.0 },
-    { x: 0.3, y: -0.4 },
-    { x: -0.5, y: 0.5 },
-    { x: 0.7, y: 0.2 },
+    { x: -1.0, y: -1.0, },
+    { x: 1.0, y: -1.0, },
+    { x: 1.0, y: 1.0, },
+    { x: -1.0, y: 1.0, },
+    { x: 0.0, y: 0.0, },
+    { x: 0.3, y: -0.4, },
+    { x: -0.5, y: 0.5, },
+    { x: 0.7, y: 0.2, },
   ]
   let c = smallest_enclosing_circle(pts[:])
   let expected_r = (2.0 : Double).sqrt()
@@ -524,9 +524,9 @@ test "mec collinear three points" {
   // Three collinear points; the circumcircle helper should fall back to
   // the diameter circle of the farthest pair.
   let pts : Array[Point] = [
-    { x: 0.0, y: 0.0 },
-    { x: 5.0, y: 0.0 },
-    { x: 10.0, y: 0.0 },
+    { x: 0.0, y: 0.0, },
+    { x: 5.0, y: 0.0, },
+    { x: 10.0, y: 0.0, },
   ]
   let c = smallest_enclosing_circle(pts[:])
   // MEC is the diameter on (0,0)-(10,0): center (5,0), radius 5.
@@ -540,11 +540,11 @@ test "mec duplicate points" {
   // Duplicates should not break the algorithm; a duplicate is `inside`
   // any circle that already contains the original.
   let pts : Array[Point] = [
-    { x: 0.0, y: 0.0 },
-    { x: 0.0, y: 0.0 },
-    { x: 4.0, y: 0.0 },
-    { x: 4.0, y: 0.0 },
-    { x: 4.0, y: 3.0 },
+    { x: 0.0, y: 0.0, },
+    { x: 0.0, y: 0.0, },
+    { x: 4.0, y: 0.0, },
+    { x: 4.0, y: 0.0, },
+    { x: 4.0, y: 3.0, },
   ]
   let c = smallest_enclosing_circle(pts[:])
   // Hypotenuse-as-diameter: 5/2 radius around (2, 1.5).
@@ -556,21 +556,21 @@ test "mec duplicate points" {
 ///|
 test "contains_point boundary slack" {
   // A point exactly on the boundary should count as contained.
-  let c : Circle = { center: { x: 0.0, y: 0.0 }, radius: 5.0 }
-  @debug.assert_eq(contains_point(c, { x: 5.0, y: 0.0 }), true)
-  @debug.assert_eq(contains_point(c, { x: 0.0, y: 5.0 }), true)
-  @debug.assert_eq(contains_point(c, { x: 3.0, y: 4.0 }), true)
+  let c : Circle = { center: { x: 0.0, y: 0.0, }, radius: 5.0, }
+  @debug.assert_eq(contains_point(c, { x: 5.0, y: 0.0, }), true)
+  @debug.assert_eq(contains_point(c, { x: 0.0, y: 5.0, }), true)
+  @debug.assert_eq(contains_point(c, { x: 3.0, y: 4.0, }), true)
   // A point a hair outside should not.
-  @debug.assert_eq(contains_point(c, { x: 5.001, y: 0.0 }), false)
+  @debug.assert_eq(contains_point(c, { x: 5.001, y: 0.0, }), false)
 }
 
 ///|
 test "circle_from_three matches circle_from_two for right triangle" {
   // The circumcircle of a right triangle equals the diameter circle on
   // its hypotenuse. Sanity-check that both helpers agree.
-  let p : Point = { x: 0.0, y: 0.0 }
-  let q : Point = { x: 6.0, y: 0.0 }
-  let r : Point = { x: 0.0, y: 8.0 }
+  let p : Point = { x: 0.0, y: 0.0, }
+  let q : Point = { x: 6.0, y: 0.0, }
+  let r : Point = { x: 0.0, y: 8.0, }
   let c1 = circle_from_three(p, q, r)
   let c2 = circle_from_two(q, r) // hypotenuse
   @debug.assert_eq(abs_diff(c1.radius, c2.radius) < 1.0e-9, true)

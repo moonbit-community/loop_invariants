@@ -48,7 +48,7 @@ priv struct MinHeap {
 
 ///|
 fn MinHeap::MinHeap() -> MinHeap {
-  { data: [] }
+  { data: [], }
 }
 
 /// Inserts `entry` into the heap and restores the heap property by sifting up.
@@ -155,7 +155,7 @@ fn dijkstra_original(
   let prev_edge = Array::make(n, -1)
   dist[source] = 0L
   let heap = MinHeap()
-  heap.push({ dist: 0L, vertex: source })
+  heap.push({ dist: 0L, vertex: source, })
   let _ = for popped = heap.pop() {
     match popped {
       None => break ()
@@ -174,7 +174,7 @@ fn dijkstra_original(
           if nd < dist[v] {
             dist[v] = nd
             prev_edge[v] = edge_id
-            heap.push({ dist: nd, vertex: v })
+            heap.push({ dist: nd, vertex: v, })
           }
         } where {
           proof_invariant: i >= 0 && i <= adj[u].length(),
@@ -247,7 +247,7 @@ fn dijkstra_modified(
   let prev_e = Array::make(n, -1)
   dist[source] = 0L
   let heap = MinHeap()
-  heap.push({ dist: 0L, vertex: source })
+  heap.push({ dist: 0L, vertex: source, })
   let _ = for popped = heap.pop() {
     match popped {
       None => break ()
@@ -266,7 +266,7 @@ fn dijkstra_modified(
             dist[e.to] = nd
             prev_v[e.to] = u
             prev_e[e.to] = i
-            heap.push({ dist: nd, vertex: e.to })
+            heap.push({ dist: nd, vertex: e.to, })
           }
         } where {
           proof_invariant: i >= 0 && i <= adj[u].length(),
@@ -503,9 +503,9 @@ pub fn suurballe_disjoint_paths(
     let u = from[i]
     let v2 = to[i]
     if on_path[i] {
-      adj2[v2].push({ to: u, weight: 0L, orig_id: i, reversed: true })
+      adj2[v2].push({ to: u, weight: 0L, orig_id: i, reversed: true, })
     } else {
-      adj2[u].push({ to: v2, weight: reduced[i], orig_id: i, reversed: false })
+      adj2[u].push({ to: v2, weight: reduced[i], orig_id: i, reversed: false, })
     }
   } where {
     proof_invariant: i >= 0 && i <= m,

@@ -396,19 +396,19 @@ of the boundary line directions.
 ///|
 test "halfplane square" {
   let planes : Array[@halfplane_intersection.HalfPlane] = [
-    @halfplane_intersection.HalfPlane::from_points({ x: 0.0, y: 0.0 }, {
+    @halfplane_intersection.HalfPlane::from_points({ x: 0.0, y: 0.0, }, {
       x: 1.0,
       y: 0.0,
     }),
-    @halfplane_intersection.HalfPlane::from_points({ x: 1.0, y: 0.0 }, {
+    @halfplane_intersection.HalfPlane::from_points({ x: 1.0, y: 0.0, }, {
       x: 1.0,
       y: 1.0,
     }),
-    @halfplane_intersection.HalfPlane::from_points({ x: 1.0, y: 1.0 }, {
+    @halfplane_intersection.HalfPlane::from_points({ x: 1.0, y: 1.0, }, {
       x: 0.0,
       y: 1.0,
     }),
-    @halfplane_intersection.HalfPlane::from_points({ x: 0.0, y: 1.0 }, {
+    @halfplane_intersection.HalfPlane::from_points({ x: 0.0, y: 1.0, }, {
       x: 0.0,
       y: 0.0,
     }),
@@ -422,15 +422,15 @@ test "halfplane square" {
 ///|
 test "halfplane triangle" {
   let planes : Array[@halfplane_intersection.HalfPlane] = [
-    @halfplane_intersection.HalfPlane::from_points({ x: 0.0, y: 0.0 }, {
+    @halfplane_intersection.HalfPlane::from_points({ x: 0.0, y: 0.0, }, {
       x: 2.0,
       y: 0.0,
     }),
-    @halfplane_intersection.HalfPlane::from_points({ x: 2.0, y: 0.0 }, {
+    @halfplane_intersection.HalfPlane::from_points({ x: 2.0, y: 0.0, }, {
       x: 1.0,
       y: 2.0,
     }),
-    @halfplane_intersection.HalfPlane::from_points({ x: 1.0, y: 2.0 }, {
+    @halfplane_intersection.HalfPlane::from_points({ x: 1.0, y: 2.0, }, {
       x: 0.0,
       y: 0.0,
     }),
