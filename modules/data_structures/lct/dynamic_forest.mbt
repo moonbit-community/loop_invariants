@@ -36,7 +36,7 @@ pub(all) struct DynamicForest {
 ///|
 /// Create a new dynamic forest with n isolated nodes.
 pub fn DynamicForest::DynamicForest(n : Int) -> DynamicForest {
-  { lct: LinkCutTree(n) }
+  { lct: LinkCutTree(n), }
 }
 
 ///|

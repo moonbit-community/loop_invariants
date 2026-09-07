@@ -40,7 +40,7 @@ pub struct MinQueue[T] {
 ///|
 /// Create an empty min-queue.
 pub fn[T] empty() -> MinQueue[T] {
-  { front: Nil, back: Nil }
+  { front: Nil, back: Nil, }
 }
 
 ///|
@@ -95,7 +95,7 @@ fn[T : Compare] reverse_stack(s : MinStack[T]) -> MinStack[T] {
 ///|
 fn[T : Compare] normalize(q : MinQueue[T]) -> MinQueue[T] {
   match q.front {
-    Nil => { front: reverse_stack(q.back), back: Nil }
+    Nil => { front: reverse_stack(q.back), back: Nil, }
     _ => q
   }
 }
@@ -103,7 +103,7 @@ fn[T : Compare] normalize(q : MinQueue[T]) -> MinQueue[T] {
 ///|
 /// Enqueue a value and return the new queue.
 pub fn[T : Compare] enqueue(q : MinQueue[T], value : T) -> MinQueue[T] {
-  { front: q.front, back: push(q.back, value) }
+  { front: q.front, back: push(q.back, value), }
 }
 
 ///|
@@ -123,7 +123,7 @@ pub fn[T : Compare] dequeue(q : MinQueue[T]) -> (T, MinQueue[T])? {
   match norm.front {
     Nil => None
     Cons(value~, min=_, tail~) =>
-      Some((value, { front: tail, back: norm.back }))
+      Some((value, { front: tail, back: norm.back, }))
   }
 }
 

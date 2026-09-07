@@ -91,7 +91,7 @@ fn sh_mix(x : Int64) -> Int64 {
 /// }
 /// ```
 pub fn new() -> SimHash {
-  { counters: Array::make(64, 0) }
+  { counters: Array::make(64, 0), }
 }
 
 ///|

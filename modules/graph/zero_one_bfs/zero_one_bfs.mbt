@@ -54,7 +54,7 @@ pub struct Graph {
 /// ```
 pub fn Graph::Graph(n : Int) -> Graph {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
-  { n, adj }
+  { n, adj, }
 }
 
 ///|
@@ -77,7 +77,7 @@ pub fn Graph::Graph(n : Int) -> Graph {
 /// g.add_edge(1, 2, 1)   // unit-cost edge
 /// ```
 pub fn Graph::add_edge(self : Graph, u : Int, v : Int, weight : Int) -> Unit {
-  self.adj[u].push({ to: v, weight })
+  self.adj[u].push({ to: v, weight, })
 }
 
 ///|

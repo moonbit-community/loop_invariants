@@ -295,7 +295,7 @@ priv struct MorrisCounter {
 
 ///|
 fn make_morris_counter(rng : RNG) -> MorrisCounter {
-  { exponent: 0, rng }
+  { exponent: 0, rng, }
 }
 
 ///|
@@ -372,7 +372,7 @@ priv struct BloomFilter {
 
 ///|
 fn make_bloom_filter(size : Int) -> BloomFilter {
-  { bits: Array::make(size, false), size }
+  { bits: Array::make(size, false), size, }
 }
 
 ///|
@@ -457,7 +457,7 @@ priv struct SimpleHLL {
 
 ///|
 fn make_simple_hll() -> SimpleHLL {
-  { max_zeros: 0 }
+  { max_zeros: 0, }
 }
 
 ///|
@@ -597,13 +597,13 @@ fn skip_list_search(list : SkipList, target : Int) -> Int {
 test "skip_list_search" {
   // Simple skip list: 1 -> 3 -> 5 -> 7
   let nodes : Array[SkipNode] = [
-    { value: -1, forward: [1, 1] }, // Sentinel head
-    { value: 1, forward: [2, 3] }, // 1 points to 3 at level 0, skips to 5 at level 1
-    { value: 3, forward: [3, -1] }, // 3 points to 5
-    { value: 5, forward: [4, -1] }, // 5 points to 7
-    { value: 7, forward: [-1, -1] }, // 7 is last
+    { value: -1, forward: [1, 1], }, // Sentinel head
+    { value: 1, forward: [2, 3], }, // 1 points to 3 at level 0, skips to 5 at level 1
+    { value: 3, forward: [3, -1], }, // 3 points to 5
+    { value: 5, forward: [4, -1], }, // 5 points to 7
+    { value: 7, forward: [-1, -1], }, // 7 is last
   ]
-  let list : SkipList = { nodes, head: 0, max_level: 2 }
+  let list : SkipList = { nodes, head: 0, max_level: 2, }
   @debug.assert_eq(skip_list_search(list, 5), 3)
   @debug.assert_eq(skip_list_search(list, 1), 1)
   @debug.assert_eq(skip_list_search(list, 10), -1)

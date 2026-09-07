@@ -52,7 +52,7 @@ fn link(a : Tree, b : Tree) -> Tree {
         a.children[i - 1]
       }
     })
-    { key: a.key, order: a.order + 1, children: kids }
+    { key: a.key, order: a.order + 1, children: kids, }
   } else {
     let kids = Array::makei(b.children.length() + 1, i => {
       if i == 0 {
@@ -61,7 +61,7 @@ fn link(a : Tree, b : Tree) -> Tree {
         b.children[i - 1]
       }
     })
-    { key: b.key, order: b.order + 1, children: kids }
+    { key: b.key, order: b.order + 1, children: kids, }
   }
 }
 
@@ -116,7 +116,7 @@ fn merge_root_lists(la : Array[Tree], lb : Array[Tree]) -> Array[Tree] {
 ///|
 /// Empty binomial heap.
 pub fn BinomialHeap::new() -> BinomialHeap {
-  { trees: [], size: 0 }
+  { trees: [], size: 0, }
 }
 
 ///|
@@ -131,9 +131,9 @@ pub fn BinomialHeap::new() -> BinomialHeap {
 /// }
 /// ```
 pub fn BinomialHeap::push(self : BinomialHeap, key : Int64) -> BinomialHeap {
-  let leaf : Tree = { key, order: 0, children: [] }
+  let leaf : Tree = { key, order: 0, children: [], }
   let new_trees = merge_root_lists(self.trees, [leaf])
-  { trees: new_trees, size: self.size + 1 }
+  { trees: new_trees, size: self.size + 1, }
 }
 
 ///|
@@ -176,7 +176,7 @@ pub fn BinomialHeap::pop_min(self : BinomialHeap) -> (Int64, BinomialHeap)? {
     i => best_tree.children[best_tree.children.length() - 1 - i],
   )
   let merged = merge_root_lists(rest, kids_increasing)
-  Some((best_tree.key, { trees: merged, size: self.size - 1 }))
+  Some((best_tree.key, { trees: merged, size: self.size - 1, }))
 }
 
 ///|

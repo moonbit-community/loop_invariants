@@ -59,7 +59,7 @@ pub struct Welford {
 /// }
 /// ```
 pub fn new() -> Welford {
-  { count: 0L, mean: 0.0, m2: 0.0 }
+  { count: 0L, mean: 0.0, m2: 0.0, }
 }
 
 ///|

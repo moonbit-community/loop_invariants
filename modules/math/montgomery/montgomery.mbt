@@ -85,7 +85,7 @@ pub fn new(n : Int64) -> MontgomeryCtx? {
   // R^2 mod n.
   let r_mod = (1L << R_BITS) % n
   let r2 = r_mod * r_mod % n
-  Some({ n, r2, n_inv })
+  Some({ n, r2, n_inv, })
 }
 
 ///|

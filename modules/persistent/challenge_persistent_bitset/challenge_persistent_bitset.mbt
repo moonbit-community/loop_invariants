@@ -119,7 +119,7 @@ fn count_range_node(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 ///|
 /// Create a bitset of length n initialized to zeros.
 pub fn make(n : Int) -> Bitset {
-  { root: build_zero(0, n), n }
+  { root: build_zero(0, n), n, }
 }
 
 ///|
@@ -128,7 +128,7 @@ pub fn set(bs : Bitset, idx : Int, value : Int) -> Bitset {
   if idx < 0 || idx >= bs.n {
     bs
   } else {
-    { root: set_bit(bs.root, 0, bs.n, idx, value), n: bs.n }
+    { root: set_bit(bs.root, 0, bs.n, idx, value), n: bs.n, }
   }
 }
 

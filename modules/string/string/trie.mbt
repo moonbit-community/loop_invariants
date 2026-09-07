@@ -22,7 +22,7 @@ priv struct TrieNode {
 ///|
 /// Create a fresh `TrieNode` with no children and zero counts.
 fn TrieNode::TrieNode() -> TrieNode {
-  { children: Array::make(26, None), is_end: false, count: 0, prefix_count: 0 }
+  { children: Array::make(26, None), is_end: false, count: 0, prefix_count: 0, }
 }
 
 ///|
@@ -38,7 +38,7 @@ priv struct Trie {
 ///|
 /// Create an empty `Trie`.
 fn Trie::Trie() -> Trie {
-  { root: TrieNode() }
+  { root: TrieNode(), }
 }
 
 ///|
@@ -217,7 +217,7 @@ priv struct ACNode {
 /// Create a fresh `ACNode` with no children, failure link pointing to root,
 /// no output, and no suffix-output link.
 fn ACNode::ACNode() -> ACNode {
-  { children: Array::make(26, -1), fail: 0, output: [], suffix_output: -1 }
+  { children: Array::make(26, -1), fail: 0, output: [], suffix_output: -1, }
 }
 
 ///|
@@ -258,7 +258,7 @@ priv struct AhoCorasick {
 fn AhoCorasick::AhoCorasick(patterns : Array[String]) -> AhoCorasick {
   let max_nodes = 1 + patterns.fold(init=0, (acc, p) => acc + p.length())
   let nodes : Array[ACNode] = [ for _ in 0..<max_nodes => ACNode() ]
-  let ac : AhoCorasick = { nodes, node_count: 1 }
+  let ac : AhoCorasick = { nodes, node_count: 1, }
   // Build trie
   for pattern_idx, pattern in patterns {
     ac.add_pattern(pattern, pattern_idx)
@@ -552,12 +552,12 @@ fn AhoCorasick::collect_matches(
 ) -> Unit {
   // Collect direct outputs
   for pat_idx in self.nodes[state].output {
-    matches.push({ position: end_pos, pattern_idx: pat_idx })
+    matches.push({ position: end_pos, pattern_idx: pat_idx, })
   }
   // Follow suffix_output links
   for suf = self.nodes[state].suffix_output; suf != -1; {
     for pat_idx in self.nodes[suf].output {
-      matches.push({ position: end_pos, pattern_idx: pat_idx })
+      matches.push({ position: end_pos, pattern_idx: pat_idx, })
     }
     continue self.nodes[suf].suffix_output
   } where {
@@ -592,7 +592,7 @@ priv struct XORTrieNode {
 ///|
 /// Create a fresh `XORTrieNode` with no children and count 0.
 fn XORTrieNode::XORTrieNode() -> XORTrieNode {
-  { children: (None, None), count: 0 }
+  { children: (None, None), count: 0, }
 }
 
 ///|
@@ -613,7 +613,7 @@ priv struct XORTrie {
 /// Create an empty `XORTrie` that considers the `max_bits` most-significant
 /// bits of each inserted integer (bit `max_bits - 1` down to bit `0`).
 fn XORTrie::XORTrie(max_bits : Int) -> XORTrie {
-  { root: XORTrieNode(), bits: max_bits }
+  { root: XORTrieNode(), bits: max_bits, }
 }
 
 ///|
@@ -751,7 +751,7 @@ priv struct PersistentTrieNode {
 /// Create a fresh `PersistentTrieNode` for `version` with no children and
 /// `is_end = false`.
 fn PersistentTrieNode::PersistentTrieNode(version : Int) -> PersistentTrieNode {
-  { children: Array::make(26, None), is_end: false, version }
+  { children: Array::make(26, None), is_end: false, version, }
 }
 
 ///|
@@ -779,7 +779,7 @@ priv struct PersistentTrie {
 fn PersistentTrie::PersistentTrie(max_versions : Int) -> PersistentTrie {
   let roots : Array[PersistentTrieNode?] = Array::make(max_versions, None)
   roots[0] = Some(PersistentTrieNode(0))
-  { roots, version: 0 }
+  { roots, version: 0, }
 }
 
 ///|
@@ -924,7 +924,7 @@ priv struct RadixNode {
 /// Create a fresh `RadixNode` with edge label `label`, no children, and
 /// `is_end = false`.
 fn RadixNode::RadixNode(label : String) -> RadixNode {
-  { edge_label: label, children: [], is_end: false }
+  { edge_label: label, children: [], is_end: false, }
 }
 
 ///|
@@ -944,7 +944,7 @@ priv struct RadixTree {
 ///|
 /// Create an empty `RadixTree` with a root node carrying the empty label.
 fn RadixTree::RadixTree() -> RadixTree {
-  { root: RadixNode("") }
+  { root: RadixNode(""), }
 }
 
 ///|

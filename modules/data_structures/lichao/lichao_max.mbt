@@ -77,8 +77,8 @@ pub(all) struct LiChaoTree {
 pub fn LiChaoTree::LiChaoTree(lo : Int64, hi : Int64) -> LiChaoTree {
   let nodes : Array[LCNode] = []
   // Create root node with undefined line
-  nodes.push({ line: undefined_line(), left: -1, right: -1 })
-  { nodes, lo, hi }
+  nodes.push({ line: undefined_line(), left: -1, right: -1, })
+  { nodes, lo, hi, }
 }
 
 ///|
@@ -89,7 +89,7 @@ pub fn LiChaoTree::LiChaoTree(lo : Int64, hi : Int64) -> LiChaoTree {
 /// that does not yet exist.
 fn LiChaoTree::new_node(self : LiChaoTree) -> Int {
   let idx = self.nodes.length()
-  self.nodes.push({ line: undefined_line(), left: -1, right: -1 })
+  self.nodes.push({ line: undefined_line(), left: -1, right: -1, })
   idx
 }
 
@@ -111,7 +111,7 @@ fn LiChaoTree::new_node(self : LiChaoTree) -> Int {
 ///
 /// Time complexity: O(log(hi - lo)).
 pub fn LiChaoTree::insert(self : LiChaoTree, m : Int64, b : Int64) -> Unit {
-  let line : Line = { m, b }
+  let line : Line = { m, b, }
   insert_line_max(self, 0, self.lo, self.hi, line)
 }
 

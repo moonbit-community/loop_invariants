@@ -77,7 +77,7 @@ fn StringHash::StringHash(s : String) -> StringHash {
     prefix[i + 1] = (prefix[i] * HASH_BASE + c) % HASH_MOD
     powers[i + 1] = powers[i] * HASH_BASE % HASH_MOD
   }
-  { prefix, powers, n }
+  { prefix, powers, n, }
 }
 
 ///|
@@ -207,7 +207,7 @@ fn DoubleHash::DoubleHash(s : String) -> DoubleHash {
     powers1[i + 1] = powers1[i] * HASH_BASE % HASH_MOD
     powers2[i + 1] = powers2[i] * HASH_BASE2 % HASH_MOD2
   }
-  { prefix1, prefix2, powers1, powers2, n }
+  { prefix1, prefix2, powers1, powers2, n, }
 }
 
 ///|

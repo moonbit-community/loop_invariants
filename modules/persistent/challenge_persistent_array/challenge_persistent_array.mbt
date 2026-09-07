@@ -87,7 +87,7 @@ fn[T] set_node(
 /// Build a persistent array from a mutable array view.
 pub fn[T] from_array(arr : ArrayView[T]) -> PArray[T] {
   let n = arr.length()
-  { root: build(arr, 0, n), n }
+  { root: build(arr, 0, n), n, }
 }
 
 ///|
@@ -112,7 +112,7 @@ pub fn[T] set_at(arr : PArray[T], idx : Int, value : T) -> PArray[T] {
   if idx < 0 || idx >= arr.n {
     arr
   } else {
-    { root: set_node(arr.root, 0, arr.n, idx, value), n: arr.n }
+    { root: set_node(arr.root, 0, arr.n, idx, value), n: arr.n, }
   }
 }
 

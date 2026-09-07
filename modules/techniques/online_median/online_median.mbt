@@ -60,7 +60,7 @@ pub struct OnlineMedian {
 /// }
 /// ```
 pub fn new() -> OnlineMedian {
-  { lo: PriorityQueue([]), hi: PriorityQueue([]) }
+  { lo: PriorityQueue([]), hi: PriorityQueue([]), }
 }
 
 ///|

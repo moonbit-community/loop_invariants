@@ -74,7 +74,7 @@ pub fn FenwickRangeAddRangeSum::FenwickRangeAddRangeSum(
 ) -> FenwickRangeAddRangeSum {
   let n0 = if n < 0 { 0 } else { n }
   let size = n0 + 2
-  { n: n0, bit1: Array::make(size, 0L), bit2: Array::make(size, 0L) }
+  { n: n0, bit1: Array::make(size, 0L), bit2: Array::make(size, 0L), }
 }
 
 ///|

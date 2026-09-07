@@ -87,7 +87,7 @@ pub struct SqrtSum {
 pub fn SqrtSum::SqrtSum(arr : Array[Int64]) -> SqrtSum {
   let n = arr.length()
   if n == 0 {
-    return { arr: [], blocks: [], block_size: 1, n: 0 }
+    return { arr: [], blocks: [], block_size: 1, n: 0, }
   }
   let block_size = if isqrt(n) > 0 { isqrt(n) } else { 1 }
   let num_blocks = (n + block_size - 1) / block_size
@@ -97,7 +97,7 @@ pub fn SqrtSum::SqrtSum(arr : Array[Int64]) -> SqrtSum {
   for i in 0..<n {
     blocks[i / block_size] = blocks[i / block_size] + arr[i]
   }
-  { arr: arr.copy(), blocks, block_size, n }
+  { arr: arr.copy(), blocks, block_size, n, }
 }
 
 ///|
@@ -252,7 +252,7 @@ priv struct SqrtMin {
 fn SqrtMin::SqrtMin(arr : Array[Int64]) -> SqrtMin {
   let n = arr.length()
   if n == 0 {
-    return { arr: [], blocks: [], block_size: 1, n: 0 }
+    return { arr: [], blocks: [], block_size: 1, n: 0, }
   }
   let block_size = if isqrt(n) > 0 { isqrt(n) } else { 1 }
   let num_blocks = (n + block_size - 1) / block_size
@@ -263,7 +263,7 @@ fn SqrtMin::SqrtMin(arr : Array[Int64]) -> SqrtMin {
       blocks[b] = arr[i]
     }
   }
-  { arr: arr.copy(), blocks, block_size, n }
+  { arr: arr.copy(), blocks, block_size, n, }
 }
 
 ///|
@@ -430,7 +430,7 @@ priv struct SqrtLazy {
 fn SqrtLazy::SqrtLazy(arr : Array[Int64]) -> SqrtLazy {
   let n = arr.length()
   if n == 0 {
-    return { arr: [], blocks: [], lazy_add: [], block_size: 1, n: 0 }
+    return { arr: [], blocks: [], lazy_add: [], block_size: 1, n: 0, }
   }
   let block_size = if isqrt(n) > 0 { isqrt(n) } else { 1 }
   let num_blocks = (n + block_size - 1) / block_size
@@ -439,7 +439,7 @@ fn SqrtLazy::SqrtLazy(arr : Array[Int64]) -> SqrtLazy {
   for i in 0..<n {
     blocks[i / block_size] = blocks[i / block_size] + arr[i]
   }
-  { arr: arr.copy(), blocks, lazy_add, block_size, n }
+  { arr: arr.copy(), blocks, lazy_add, block_size, n, }
 }
 
 ///|

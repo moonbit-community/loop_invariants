@@ -176,7 +176,7 @@ pub fn build_virtual_tree(
   let n = adj.length()
   let vt_adj = make_adj(n)
   if important.length() == 0 {
-    return { nodes: [], adj: vt_adj }
+    return { nodes: [], adj: vt_adj, }
   }
   let (up, depth, tin, _tout) = build_lca(adj, root)
   let ordered = important.copy()
@@ -240,7 +240,7 @@ pub fn build_virtual_tree(
       #|When one node remains, all edges have been emitted.
     ),
   }
-  { nodes: uniq, adj: vt_adj }
+  { nodes: uniq, adj: vt_adj, }
 }
 
 // ============================================================================

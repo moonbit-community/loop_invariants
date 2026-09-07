@@ -81,17 +81,17 @@ fn abs(x : Double) -> Double {
 
 ///|
 fn sub(a : Point, b : Point) -> Point {
-  { x: a.x - b.x, y: a.y - b.y }
+  { x: a.x - b.x, y: a.y - b.y, }
 }
 
 ///|
 fn add(a : Point, b : Point) -> Point {
-  { x: a.x + b.x, y: a.y + b.y }
+  { x: a.x + b.x, y: a.y + b.y, }
 }
 
 ///|
 fn mul(a : Point, k : Double) -> Point {
-  { x: a.x * k, y: a.y * k }
+  { x: a.x * k, y: a.y * k, }
 }
 
 ///|
@@ -159,7 +159,7 @@ fn same_angle(a : HalfPlane, b : HalfPlane) -> Bool {
 /// let h = HalfPlane::from_points({ x: 0.0, y: 0.0 }, { x: 1.0, y: 0.0 })
 /// ```
 pub fn HalfPlane::from_points(a : Point, b : Point) -> HalfPlane {
-  { p: a, v: sub(b, a) }
+  { p: a, v: sub(b, a), }
 }
 
 ///|
@@ -386,10 +386,10 @@ fn approx(a : Double, b : Double) -> Bool {
 ///|
 test "halfplane square" {
   let planes : Array[HalfPlane] = [
-    HalfPlane::from_points({ x: 0.0, y: 0.0 }, { x: 1.0, y: 0.0 }),
-    HalfPlane::from_points({ x: 1.0, y: 0.0 }, { x: 1.0, y: 1.0 }),
-    HalfPlane::from_points({ x: 1.0, y: 1.0 }, { x: 0.0, y: 1.0 }),
-    HalfPlane::from_points({ x: 0.0, y: 1.0 }, { x: 0.0, y: 0.0 }),
+    HalfPlane::from_points({ x: 0.0, y: 0.0, }, { x: 1.0, y: 0.0, }),
+    HalfPlane::from_points({ x: 1.0, y: 0.0, }, { x: 1.0, y: 1.0, }),
+    HalfPlane::from_points({ x: 1.0, y: 1.0, }, { x: 0.0, y: 1.0, }),
+    HalfPlane::from_points({ x: 0.0, y: 1.0, }, { x: 0.0, y: 0.0, }),
   ]
   let poly = halfplane_intersection(planes).unwrap()
   debug_inspect(poly.length(), content="4")
@@ -404,8 +404,8 @@ test "halfplane square" {
 ///|
 test "halfplane empty" {
   let planes : Array[HalfPlane] = [
-    HalfPlane::from_points({ x: 0.0, y: 0.0 }, { x: 1.0, y: 0.0 }),
-    HalfPlane::from_points({ x: 0.0, y: 1.0 }, { x: 1.0, y: 1.0 }),
+    HalfPlane::from_points({ x: 0.0, y: 0.0, }, { x: 1.0, y: 0.0, }),
+    HalfPlane::from_points({ x: 0.0, y: 1.0, }, { x: 1.0, y: 1.0, }),
   ]
   guard halfplane_intersection(planes) is None else { fail("expected None") }
 }
@@ -413,11 +413,11 @@ test "halfplane empty" {
 ///|
 test "halfplane keeps most restrictive parallel line" {
   let planes : Array[HalfPlane] = [
-    HalfPlane::from_points({ x: 0.0, y: 2.0 }, { x: 0.0, y: 0.0 }),
-    HalfPlane::from_points({ x: 1.0, y: 2.0 }, { x: 1.0, y: 0.0 }),
-    HalfPlane::from_points({ x: 3.0, y: 0.0 }, { x: 3.0, y: 2.0 }),
-    HalfPlane::from_points({ x: 0.0, y: 0.0 }, { x: 1.0, y: 0.0 }),
-    HalfPlane::from_points({ x: 3.0, y: 2.0 }, { x: 0.0, y: 2.0 }),
+    HalfPlane::from_points({ x: 0.0, y: 2.0, }, { x: 0.0, y: 0.0, }),
+    HalfPlane::from_points({ x: 1.0, y: 2.0, }, { x: 1.0, y: 0.0, }),
+    HalfPlane::from_points({ x: 3.0, y: 0.0, }, { x: 3.0, y: 2.0, }),
+    HalfPlane::from_points({ x: 0.0, y: 0.0, }, { x: 1.0, y: 0.0, }),
+    HalfPlane::from_points({ x: 3.0, y: 2.0, }, { x: 0.0, y: 2.0, }),
   ]
   let poly = halfplane_intersection(planes).unwrap()
   let min_x = poly[:].iter().map(p => p.x).minimum().unwrap()

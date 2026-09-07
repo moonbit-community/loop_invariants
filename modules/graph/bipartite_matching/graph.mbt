@@ -49,7 +49,7 @@ pub fn BipartiteGraph::BipartiteGraph(
   n_right : Int,
 ) -> BipartiteGraph {
   let adj : Array[Array[Int]] = [ for _ in 0..<n_left => [] ]
-  { n_left, n_right, adj }
+  { n_left, n_right, adj, }
 }
 
 ///|

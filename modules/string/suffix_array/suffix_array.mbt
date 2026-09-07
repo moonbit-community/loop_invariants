@@ -54,7 +54,7 @@ pub struct SuffixArray {
 pub fn SuffixArray::SuffixArray(text : String) -> SuffixArray {
   let n = text.length()
   if n == 0 {
-    return { sa: [], lcp: [], text }
+    return { sa: [], lcp: [], text, }
   }
   let sa = Array::make(n, 0)
   let rank = Array::make(n, 0)
@@ -149,7 +149,7 @@ pub fn SuffixArray::SuffixArray(text : String) -> SuffixArray {
       #|At i = n, all LCP values are computed in total O(n) comparisons.
     ),
   }
-  { sa, lcp, text }
+  { sa, lcp, text, }
 }
 
 ///|

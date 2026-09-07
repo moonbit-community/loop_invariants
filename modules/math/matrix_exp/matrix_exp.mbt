@@ -50,7 +50,7 @@ priv struct Matrix {
 ///|
 fn Matrix::Matrix(rows : Int, cols : Int) -> Matrix {
   let data = [ for _ in 0..<rows => Array::make(cols, 0L) ]
-  { data, rows, cols }
+  { data, rows, cols, }
 }
 
 /// Returns the `n x n` identity matrix.
@@ -98,7 +98,7 @@ fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
   }
   let cols = arr[0].length()
   let data = [ for i in 0..<rows => arr[i].copy() ]
-  { data, rows, cols }
+  { data, rows, cols, }
 }
 
 /// Returns the element at row `i`, column `j`.

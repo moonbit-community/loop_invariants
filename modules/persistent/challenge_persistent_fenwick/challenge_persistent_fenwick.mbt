@@ -98,7 +98,7 @@ fn tree_shape(node : Node, len : Int) -> Bool {
 /// Create a persistent Fenwick tree with n zeroed elements.
 pub fn make(n : Int) -> Fenwick {
   let size = n + 1
-  { root: build_zero(0, size), n }
+  { root: build_zero(0, size), n, }
 }
 
 ///|
@@ -116,7 +116,7 @@ pub fn add(fw : Fenwick, idx : Int, delta : Int) -> Fenwick {
   let size = fw.n + 1
   for i = idx + 1, tree = fw.root {
     if i >= size {
-      break { root: tree, n: fw.n }
+      break { root: tree, n: fw.n, }
     } else {
       let current = array_get(tree, 0, size, i)
       let updated = array_set(tree, 0, size, i, current + delta)

@@ -94,7 +94,7 @@ pub fn build(n : Int, p : Int64) -> BinomTable {
     inv_fact[i] = inv_fact[i + 1] * (i + 1).to_int64() % p
     i = i - 1
   }
-  { fact, inv_fact, modulus: p }
+  { fact, inv_fact, modulus: p, }
 }
 
 ///|

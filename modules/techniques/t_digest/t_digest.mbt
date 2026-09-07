@@ -59,7 +59,7 @@ pub struct TDigest {
 /// Common values: 50-1000.
 pub fn new(compression~ : Double) -> TDigest {
   let c = if compression < 20.0 { 20.0 } else { compression }
-  { compression: c, means: [], weights: [], total_weight: 0.0 }
+  { compression: c, means: [], weights: [], total_weight: 0.0, }
 }
 
 ///|

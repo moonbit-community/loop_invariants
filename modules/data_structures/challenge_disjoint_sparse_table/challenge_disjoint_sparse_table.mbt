@@ -63,7 +63,7 @@ pub struct DisjointSparseTable {
 pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable {
   let n = arr.length()
   if n == 0 {
-    return { n: 0, table: [] }
+    return { n: 0, table: [], }
   }
   let levels = highest_bit(n - 1) + 1
   let table = [ for _ in 0..<levels => Array::make(n, 0) ]
@@ -127,7 +127,7 @@ pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable 
       #|At k = levels, the table is ready for O(1) queries.
     ),
   }
-  { n, table }
+  { n, table, }
 }
 
 ///|

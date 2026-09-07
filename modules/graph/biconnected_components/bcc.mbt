@@ -56,7 +56,7 @@ pub fn biconnected_components(
   edges : ArrayView[(Int, Int)],
 ) -> BiconnectedResult {
   if n <= 0 {
-    return { components: [], articulation_points: [] }
+    return { components: [], articulation_points: [], }
   }
   let finder = BiconnectedFinder(n)
 
@@ -72,5 +72,5 @@ pub fn biconnected_components(
 
   // Collect results
   let points = finder.collect_articulation_points()
-  { components: finder.components, articulation_points: points }
+  { components: finder.components, articulation_points: points, }
 }

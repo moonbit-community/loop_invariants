@@ -93,14 +93,14 @@ fn array_set(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
 
 ///|
 fn make_bit(n : Int) -> Fenwick {
-  { root: build_zero(0, n), n }
+  { root: build_zero(0, n), n, }
 }
 
 ///|
 fn add_point(bit : Fenwick, idx : Int, delta : Int) -> Fenwick {
   for i = idx, tree = bit.root {
     if i >= bit.n {
-      break { root: tree, n: bit.n }
+      break { root: tree, n: bit.n, }
     } else {
       let current = array_get(tree, 0, bit.n, i)
       let updated = array_set(tree, 0, bit.n, i, current + delta)
@@ -145,7 +145,7 @@ fn prefix_sum(bit : Fenwick, idx : Int) -> Int {
 /// Create a range-update Fenwick structure with n elements.
 pub fn make(n : Int) -> RangeFenwick {
   let size = n + 2
-  { bit1: make_bit(size), bit2: make_bit(size), n }
+  { bit1: make_bit(size), bit2: make_bit(size), n, }
 }
 
 ///|
@@ -171,7 +171,7 @@ pub fn range_add(
     let bit1b = add_point(bit1a, r1 + 1, -delta)
     let bit2a = add_point(rf.bit2, l1, delta * (l1 - 1))
     let bit2b = add_point(bit2a, r1 + 1, -delta * r1)
-    { bit1: bit1b, bit2: bit2b, n: rf.n }
+    { bit1: bit1b, bit2: bit2b, n: rf.n, }
   }
 }
 

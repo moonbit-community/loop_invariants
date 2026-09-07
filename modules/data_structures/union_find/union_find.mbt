@@ -64,7 +64,7 @@ pub fn UnionFind::UnionFind(n : Int) -> UnionFind {
   // Each element is its own parent (self-loop = root)
   let parent = [ for i in 0..<n => i ]
   let rank = Array::make(n, 0)
-  { parent, rank, num_sets: n }
+  { parent, rank, num_sets: n, }
 }
 
 ///|
@@ -245,7 +245,7 @@ fn WeightedUnionFind::WeightedUnionFind(n : Int) -> WeightedUnionFind {
   let parent = [ for i in 0..<n => i ]
   let rank = Array::make(n, 0)
   let weight = Array::make(n, 0L)
-  { parent, rank, weight }
+  { parent, rank, weight, }
 }
 
 ///|

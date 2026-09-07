@@ -125,7 +125,7 @@ fn RollingHash::RollingHash(s : String) -> RollingHash {
       #|At i = n, prefix_hash holds hashes for every prefix length 0..n.
     ),
   }
-  { n, prefix_hash, pow_base }
+  { n, prefix_hash, pow_base, }
 }
 
 ///|
@@ -263,7 +263,7 @@ fn DoubleRollingHash::DoubleRollingHash(s : String) -> DoubleRollingHash {
       #|At i = n, both prefix hash arrays cover every prefix length 0..n.
     ),
   }
-  { n, prefix_hash1, prefix_hash2, pow_base1, pow_base2 }
+  { n, prefix_hash1, prefix_hash2, pow_base1, pow_base2, }
 }
 
 ///|

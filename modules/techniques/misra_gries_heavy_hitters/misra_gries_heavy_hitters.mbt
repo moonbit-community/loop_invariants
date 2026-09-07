@@ -76,7 +76,7 @@ pub struct MisraGries[K] {
 /// ```
 pub fn[K : Hash + Eq] new(capacity~ : Int) -> MisraGries[K] {
   let cap = if capacity < 1 { 1 } else { capacity }
-  { capacity: cap, counts: Map([], capacity=cap) }
+  { capacity: cap, counts: Map([], capacity=cap), }
 }
 
 ///|

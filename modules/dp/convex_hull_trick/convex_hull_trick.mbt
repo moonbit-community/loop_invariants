@@ -118,7 +118,7 @@ pub struct ConvexHullTrick {
 /// let cht = ConvexHullTrick()
 /// ```
 pub fn ConvexHullTrick::ConvexHullTrick() -> ConvexHullTrick {
-  { lines: [], head: 0 }
+  { lines: [], head: 0, }
 }
 
 ///|
@@ -145,7 +145,7 @@ pub fn ConvexHullTrick::add_line(
   m : Int64,
   b : Int64,
 ) -> Unit {
-  let line = { m, b }
+  let line = { m, b, }
   for prune_next = self.lines.length() - self.head >= 2; prune_next; {
     let l1 = self.lines[self.lines.length() - 2]
     let l2 = self.lines[self.lines.length() - 1]

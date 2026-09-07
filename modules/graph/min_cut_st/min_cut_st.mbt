@@ -67,7 +67,7 @@ priv struct FlowGraph {
 /// Create a new flow graph with `n` vertices and no edges.
 fn FlowGraph::FlowGraph(n : Int) -> FlowGraph {
   let adj = [ for _ in 0..<n => [] ]
-  { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0) }
+  { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0), }
 }
 
 ///|
@@ -84,8 +84,8 @@ fn FlowGraph::add_edge(
 ) -> Unit {
   let rev_from = self.adj[to].length()
   let rev_to = self.adj[from].length()
-  self.adj[from].push({ to, cap, flow: 0L, rev: rev_from })
-  self.adj[to].push({ to: from, cap: 0L, flow: 0L, rev: rev_to })
+  self.adj[from].push({ to, cap, flow: 0L, rev: rev_from, })
+  self.adj[to].push({ to: from, cap: 0L, flow: 0L, rev: rev_to, })
 }
 
 ///|
@@ -338,7 +338,7 @@ pub fn min_cut_st(
   }
   let value = flow.max_flow(source, sink)
   let source_side = flow.min_cut_source_side(source)
-  Some({ value, source_side })
+  Some({ value, source_side, })
 }
 
 // ============================================================================

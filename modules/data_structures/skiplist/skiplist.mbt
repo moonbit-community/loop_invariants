@@ -73,7 +73,7 @@ fn[K, V] SkipNode::SkipNode(
   value : V?,
   level : Int,
 ) -> SkipNode[K, V] {
-  { key, value, forward: Array::make(level, None) }
+  { key, value, forward: Array::make(level, None), }
 }
 
 ///|
@@ -988,7 +988,7 @@ fn[K, V] MultiSkipNode::MultiSkipNode(
   values : Array[V],
   level : Int,
 ) -> MultiSkipNode[K, V] {
-  { key, values, forward: Array::make(level, None) }
+  { key, values, forward: Array::make(level, None), }
 }
 
 ///|

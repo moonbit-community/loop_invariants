@@ -50,7 +50,7 @@ priv struct MinHeap {
 
 ///|
 fn MinHeap::MinHeap() -> MinHeap {
-  { data: [] }
+  { data: [], }
 }
 
 ///|
@@ -147,7 +147,7 @@ pub(all) struct Graph {
 /// Create a new graph with n vertices
 pub fn Graph::Graph(n : Int) -> Graph {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
-  { n, adj }
+  { n, adj, }
 }
 
 ///|
@@ -159,7 +159,7 @@ pub fn Graph::add_edge(
   weight : Int64,
 ) -> Unit {
   if from >= 0 && from < self.n && to >= 0 && to < self.n {
-    self.adj[from].push({ to, weight })
+    self.adj[from].push({ to, weight, })
   }
 }
 
@@ -205,11 +205,11 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
   let parent = Array::make(n, -1)
   let visited = Array::make(n, false)
   if source < 0 || source >= n {
-    return { dist, parent }
+    return { dist, parent, }
   }
   dist[source] = 0L
   let pq = MinHeap()
-  pq.push({ dist: 0L, vertex: source })
+  pq.push({ dist: 0L, vertex: source, })
 
   // Main Dijkstra loop - process vertices in order of increasing distance
   for ;; {
@@ -232,7 +232,7 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
           if new_dist < dist[v] {
             dist[v] = new_dist
             parent[v] = u
-            pq.push({ dist: new_dist, vertex: v })
+            pq.push({ dist: new_dist, vertex: v, })
           }
         } where {
           proof_invariant: i >= 0 && i <= graph.adj[u].length(),
@@ -269,7 +269,7 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
       #|When the priority queue is empty, all reachable vertices are finalized.
     ),
   }
-  { dist, parent }
+  { dist, parent, }
 }
 
 ///|
@@ -407,8 +407,8 @@ pub fn bidirectional_dijkstra(
   dist_backward[target] = 0L
   let pq_forward = MinHeap()
   let pq_backward = MinHeap()
-  pq_forward.push({ dist: 0L, vertex: source })
-  pq_backward.push({ dist: 0L, vertex: target })
+  pq_forward.push({ dist: 0L, vertex: source, })
+  pq_backward.push({ dist: 0L, vertex: target, })
 
   // INVARIANT: best_dist is the shortest known path through a vertex
   // visited by both searches
@@ -447,7 +447,7 @@ pub fn bidirectional_dijkstra(
                 let new_dist = dist_forward[u] + edge.weight
                 if new_dist < dist_forward[v] {
                   dist_forward[v] = new_dist
-                  pq_forward.push({ dist: new_dist, vertex: v })
+                  pq_forward.push({ dist: new_dist, vertex: v, })
                 }
               } where {
                 proof_invariant: i >= 0 && i <= graph.adj[u].length(),
@@ -502,7 +502,7 @@ pub fn bidirectional_dijkstra(
                 let new_dist = dist_backward[u] + edge.weight
                 if new_dist < dist_backward[v] {
                   dist_backward[v] = new_dist
-                  pq_backward.push({ dist: new_dist, vertex: v })
+                  pq_backward.push({ dist: new_dist, vertex: v, })
                 }
               } where {
                 proof_invariant: i >= 0 && i <= reverse_graph.adj[u].length(),
@@ -678,10 +678,10 @@ test "dijkstra complex graph" {
 ///|
 test "min heap basic" {
   let heap = MinHeap()
-  heap.push({ dist: 5L, vertex: 0 })
-  heap.push({ dist: 2L, vertex: 1 })
-  heap.push({ dist: 8L, vertex: 2 })
-  heap.push({ dist: 1L, vertex: 3 })
+  heap.push({ dist: 5L, vertex: 0, })
+  heap.push({ dist: 2L, vertex: 1, })
+  heap.push({ dist: 8L, vertex: 2, })
+  heap.push({ dist: 1L, vertex: 3, })
 
   // Should come out in order: 1, 2, 5, 8
   match heap.pop() {

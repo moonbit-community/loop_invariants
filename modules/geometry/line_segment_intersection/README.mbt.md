@@ -287,10 +287,10 @@ General-case check also fails (signs are equal, not opposite): **false**.
 ```mbt check
 ///|
 test "segment intersection crossing" {
-  let a = @line_segment_intersection.Point::{ x: 0L, y: 0L }
-  let b = @line_segment_intersection.Point::{ x: 4L, y: 4L }
-  let c = @line_segment_intersection.Point::{ x: 0L, y: 4L }
-  let d = @line_segment_intersection.Point::{ x: 4L, y: 0L }
+  let a = @line_segment_intersection.Point::{ x: 0L, y: 0L, }
+  let b = @line_segment_intersection.Point::{ x: 4L, y: 4L, }
+  let c = @line_segment_intersection.Point::{ x: 0L, y: 4L, }
+  let d = @line_segment_intersection.Point::{ x: 4L, y: 0L, }
   debug_inspect(
     @line_segment_intersection.segments_intersect(a, b, c, d),
     content="true",
@@ -301,10 +301,10 @@ test "segment intersection crossing" {
 ```mbt check
 ///|
 test "segment intersection touch" {
-  let a = @line_segment_intersection.Point::{ x: 0L, y: 0L }
-  let b = @line_segment_intersection.Point::{ x: 2L, y: 2L }
-  let c = @line_segment_intersection.Point::{ x: 2L, y: 2L }
-  let d = @line_segment_intersection.Point::{ x: 3L, y: 0L }
+  let a = @line_segment_intersection.Point::{ x: 0L, y: 0L, }
+  let b = @line_segment_intersection.Point::{ x: 2L, y: 2L, }
+  let c = @line_segment_intersection.Point::{ x: 2L, y: 2L, }
+  let d = @line_segment_intersection.Point::{ x: 3L, y: 0L, }
   debug_inspect(
     @line_segment_intersection.segments_intersect(a, b, c, d),
     content="true",
@@ -315,10 +315,10 @@ test "segment intersection touch" {
 ```mbt check
 ///|
 test "segment intersection disjoint" {
-  let a = @line_segment_intersection.Point::{ x: 0L, y: 0L }
-  let b = @line_segment_intersection.Point::{ x: 1L, y: 1L }
-  let c = @line_segment_intersection.Point::{ x: 2L, y: 2L }
-  let d = @line_segment_intersection.Point::{ x: 3L, y: 3L }
+  let a = @line_segment_intersection.Point::{ x: 0L, y: 0L, }
+  let b = @line_segment_intersection.Point::{ x: 1L, y: 1L, }
+  let c = @line_segment_intersection.Point::{ x: 2L, y: 2L, }
+  let d = @line_segment_intersection.Point::{ x: 3L, y: 3L, }
   debug_inspect(
     @line_segment_intersection.segments_intersect(a, b, c, d),
     content="false",

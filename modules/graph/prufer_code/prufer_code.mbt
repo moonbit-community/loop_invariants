@@ -30,7 +30,7 @@ priv struct MinHeap {
 
 ///|
 fn MinHeap::MinHeap() -> MinHeap {
-  { data: [] }
+  { data: [], }
 }
 
 ///|

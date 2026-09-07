@@ -81,7 +81,7 @@ pub fn SegmentTreeBeats::SegmentTreeBeats(
   let second_max = Array::make(size, NEG_INF)
   let count_max = Array::make(size, 0)
   let sum = Array::make(size, 0L)
-  let st : SegmentTreeBeats = { n, max, second_max, count_max, sum }
+  let st : SegmentTreeBeats = { n, max, second_max, count_max, sum, }
   if n > 0 {
     st.build(1, 0, n, values)
   }

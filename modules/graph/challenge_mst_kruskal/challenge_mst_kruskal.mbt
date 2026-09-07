@@ -12,7 +12,7 @@ struct DSU {
 fn dsu_make(n : Int) -> DSU {
   let parent = [ for i in 0..<n => i ]
   let size = Array::make(n, 1)
-  { parent, size }
+  { parent, size, }
 }
 
 ///|

@@ -128,8 +128,8 @@ pub fn PushRelabel::add_edge(
 ) -> Unit {
   let rev_u = self.adj[v].length()
   let rev_v = self.adj[u].length()
-  self.adj[u].push({ to: v, cap, flow: 0L, rev: rev_u })
-  self.adj[v].push({ to: u, cap: 0L, flow: 0L, rev: rev_v })
+  self.adj[u].push({ to: v, cap, flow: 0L, rev: rev_u, })
+  self.adj[v].push({ to: u, cap: 0L, flow: 0L, rev: rev_v, })
 }
 
 ///|
@@ -165,8 +165,8 @@ pub fn PushRelabel::add_undirected_edge(
 ) -> Unit {
   let rev_u = self.adj[v].length()
   let rev_v = self.adj[u].length()
-  self.adj[u].push({ to: v, cap, flow: 0L, rev: rev_u })
-  self.adj[v].push({ to: u, cap, flow: 0L, rev: rev_v })
+  self.adj[u].push({ to: v, cap, flow: 0L, rev: rev_u, })
+  self.adj[v].push({ to: u, cap, flow: 0L, rev: rev_v, })
 }
 
 ///|

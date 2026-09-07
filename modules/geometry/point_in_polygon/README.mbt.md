@@ -210,21 +210,21 @@ Crossings = 1 -> Inside.
 ///|
 test "point in polygon square" {
   let poly : Array[@point_in_polygon.Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
   ]
   debug_inspect(
-    @point_in_polygon.point_in_polygon(poly, { x: 2L, y: 2L }),
+    @point_in_polygon.point_in_polygon(poly, { x: 2L, y: 2L, }),
     content="Inside",
   )
   debug_inspect(
-    @point_in_polygon.point_in_polygon(poly, { x: 5L, y: 2L }),
+    @point_in_polygon.point_in_polygon(poly, { x: 5L, y: 2L, }),
     content="Outside",
   )
   debug_inspect(
-    @point_in_polygon.point_in_polygon(poly, { x: 4L, y: 2L }),
+    @point_in_polygon.point_in_polygon(poly, { x: 4L, y: 2L, }),
     content="Boundary",
   )
 }
@@ -267,22 +267,22 @@ R = (3,4)  -> Outside (above the dent, outside the polygon)
 ///|
 test "point in concave polygon" {
   let poly : Array[@point_in_polygon.Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 2L, y: 2L },
-    { x: 0L, y: 4L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 2L, y: 2L, },
+    { x: 0L, y: 4L, },
   ]
   debug_inspect(
-    @point_in_polygon.point_in_polygon(poly, { x: 1L, y: 1L }),
+    @point_in_polygon.point_in_polygon(poly, { x: 1L, y: 1L, }),
     content="Inside",
   )
   debug_inspect(
-    @point_in_polygon.point_in_polygon(poly, { x: 3L, y: 3L }),
+    @point_in_polygon.point_in_polygon(poly, { x: 3L, y: 3L, }),
     content="Boundary",
   )
   debug_inspect(
-    @point_in_polygon.point_in_polygon(poly, { x: 3L, y: 4L }),
+    @point_in_polygon.point_in_polygon(poly, { x: 3L, y: 4L, }),
     content="Outside",
   )
 }
@@ -307,12 +307,12 @@ Triangle:          Ray from vertex (0,0):
 ///|
 test "point on vertex" {
   let tri : Array[@point_in_polygon.Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 0L, y: 3L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 0L, y: 3L, },
   ]
   debug_inspect(
-    @point_in_polygon.point_in_polygon(tri, { x: 0L, y: 0L }),
+    @point_in_polygon.point_in_polygon(tri, { x: 0L, y: 0L, }),
     content="Boundary",
   )
 }

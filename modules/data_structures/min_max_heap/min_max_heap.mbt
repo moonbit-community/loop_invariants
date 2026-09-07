@@ -39,7 +39,7 @@ pub struct MinMaxHeap {
 ///|
 /// Empty heap.
 pub fn MinMaxHeap::new() -> MinMaxHeap {
-  { data: [] }
+  { data: [], }
 }
 
 ///|

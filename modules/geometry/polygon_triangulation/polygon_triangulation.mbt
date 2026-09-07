@@ -159,9 +159,9 @@ pub fn min_weight_triangulation(points : Array[Point]) -> Int64? {
 ///|
 test "triangulation triangle" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 1L, y: 0L },
-    { x: 0L, y: 1L },
+    { x: 0L, y: 0L, },
+    { x: 1L, y: 0L, },
+    { x: 0L, y: 1L, },
   ]
   debug_inspect(min_weight_triangulation(points).unwrap(), content="4")
 }
@@ -169,16 +169,16 @@ test "triangulation triangle" {
 ///|
 test "triangulation square" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 1L, y: 0L },
-    { x: 1L, y: 1L },
-    { x: 0L, y: 1L },
+    { x: 0L, y: 0L, },
+    { x: 1L, y: 0L, },
+    { x: 1L, y: 1L, },
+    { x: 0L, y: 1L, },
   ]
   debug_inspect(min_weight_triangulation(points).unwrap(), content="8")
 }
 
 ///|
 test "triangulation invalid" {
-  let points : Array[Point] = [{ x: 0L, y: 0L }, { x: 1L, y: 0L }]
+  let points : Array[Point] = [{ x: 0L, y: 0L, }, { x: 1L, y: 0L, }]
   guard min_weight_triangulation(points) is None else { fail("expected None") }
 }

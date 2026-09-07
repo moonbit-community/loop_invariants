@@ -95,7 +95,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
     guard find_edge(nodes, text, current, text[pos]) is Some(edge_idx) else {
       let leaf = nodes.length()
       nodes.push(Node())
-      nodes[current].edges.push({ start: pos, end: n, child: leaf })
+      nodes[current].edges.push({ start: pos, end: n, child: leaf, })
       break outer~
     }
 
@@ -125,9 +125,9 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
         nodes.push(Node())
 
         // Wire up the split: original subtree becomes child of split
-        nodes[split].edges.push({ start: k, end: edge.end, child: edge.child })
+        nodes[split].edges.push({ start: k, end: edge.end, child: edge.child, })
         // New leaf for remaining suffix
-        nodes[split].edges.push({ start: j, end: n, child: leaf })
+        nodes[split].edges.push({ start: j, end: n, child: leaf, })
         // Update original edge to point to split (shortened label)
         nodes[current].edges[edge_idx] = {
           start: edge.start,
@@ -254,5 +254,5 @@ pub fn SuffixTree::SuffixTree(s : String) -> SuffixTree {
 
   // Compute leaf counts for occurrence queries
   let _ = compute_leaf_counts(nodes, 0)
-  { text, nodes }
+  { text, nodes, }
 }

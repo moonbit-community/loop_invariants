@@ -100,7 +100,7 @@ pub fn new(base~ : Double, seed~ : Int64) -> MorrisCounter {
   // Initial RNG mix so two seeds that differ by 1 don't produce the
   // same first sample.
   let s = morris_lcg_next(seed)
-  { c: 0, base: b, rng_state: s }
+  { c: 0, base: b, rng_state: s, }
 }
 
 ///|

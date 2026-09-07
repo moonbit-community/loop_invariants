@@ -161,11 +161,11 @@ fn floyd_cycle_detect(nodes : ArrayView[ListNode], head : Int) -> (Bool, Int) {
 test "floyd_cycle_detect" {
   // Create a list with cycle: 0 -> 1 -> 2 -> 3 -> 4 -> 2 (cycle back to 2)
   let nodes_with_cycle : Array[ListNode] = [
-    { next: 1 },
-    { next: 2 },
-    { next: 3 }, // cycle starts here
-    { next: 4 },
-    { next: 2 }, // points back to index 2
+    { next: 1, },
+    { next: 2, },
+    { next: 3, }, // cycle starts here
+    { next: 4, },
+    { next: 2, }, // points back to index 2
   ]
   let (has_cycle, start) = floyd_cycle_detect(nodes_with_cycle, 0)
   assert_true(has_cycle)
@@ -173,10 +173,10 @@ test "floyd_cycle_detect" {
 
   // Create a list without cycle: 0 -> 1 -> 2 -> 3 -> end
   let nodes_no_cycle : Array[ListNode] = [
-    { next: 1 },
-    { next: 2 },
-    { next: 3 },
-    { next: -1 }, // end
+    { next: 1, },
+    { next: 2, },
+    { next: 3, },
+    { next: -1, }, // end
   ]
   let (has_cycle2, _) = floyd_cycle_detect(nodes_no_cycle, 0)
   assert_true(!has_cycle2)
@@ -740,12 +740,12 @@ fn convex_hull(points : Array[Point]) -> Array[Point] {
 ///|
 test "convex_hull" {
   let points : Array[Point] = [
-    { x: 0, y: 0 },
-    { x: 1, y: 1 },
-    { x: 2, y: 2 },
-    { x: 0, y: 2 },
-    { x: 2, y: 0 },
-    { x: 1, y: 0 },
+    { x: 0, y: 0, },
+    { x: 1, y: 1, },
+    { x: 2, y: 2, },
+    { x: 0, y: 2, },
+    { x: 2, y: 0, },
+    { x: 1, y: 0, },
   ]
   let hull = convex_hull(points)
   // Hull should be: (0,0), (2,0), (2,2), (0,2) in CCW order

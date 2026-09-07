@@ -246,11 +246,11 @@ points on the hull), it is O(n^2).
 ///|
 test "convex hull example" {
   let pts : Array[@convex_hull.Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
-    { x: 2L, y: 2L }, // Interior point - will be excluded
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
+    { x: 2L, y: 2L, }, // Interior point - will be excluded
   ]
   let hull = @convex_hull.convex_hull(pts)
   debug_inspect(hull.length(), content="4") // Square has 4 corners
@@ -278,10 +278,10 @@ For square (0,0)-(4,0)-(4,4)-(0,4):
 ///|
 test "area example" {
   let square : Array[@convex_hull.Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
   ]
   // Area = 16, so 2 * area = 32
   debug_inspect(@convex_hull.polygon_area_2x(square), content="32")
@@ -305,21 +305,21 @@ Returns `1` (inside), `0` (on boundary), or `-1` (outside).
 ///|
 test "point in hull example" {
   let square : Array[@convex_hull.Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
   ]
   debug_inspect(
-    @convex_hull.point_in_hull(square, { x: 2L, y: 2L }),
+    @convex_hull.point_in_hull(square, { x: 2L, y: 2L, }),
     content="1",
   )
   debug_inspect(
-    @convex_hull.point_in_hull(square, { x: 2L, y: 0L }),
+    @convex_hull.point_in_hull(square, { x: 2L, y: 0L, }),
     content="0",
   )
   debug_inspect(
-    @convex_hull.point_in_hull(square, { x: 5L, y: 5L }),
+    @convex_hull.point_in_hull(square, { x: 5L, y: 5L, }),
     content="-1",
   )
 }
@@ -350,10 +350,10 @@ giving O(n) total work.
 ///|
 test "diameter example" {
   let square : Array[@convex_hull.Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 4L, y: 4L },
-    { x: 0L, y: 4L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 4L, y: 4L, },
+    { x: 0L, y: 4L, },
   ]
   // Diagonal = sqrt(32), so diameter^2 = 32
   debug_inspect(@convex_hull.hull_diameter_squared(square), content="32")
@@ -385,12 +385,12 @@ returns just the two endpoints.
 ///|
 test "all algorithms same result" {
   let pts : Array[@convex_hull.Point] = [
-    { x: 1L, y: 2L },
-    { x: 5L, y: 1L },
-    { x: 8L, y: 4L },
-    { x: 6L, y: 8L },
-    { x: 2L, y: 7L },
-    { x: 4L, y: 4L }, // Interior
+    { x: 1L, y: 2L, },
+    { x: 5L, y: 1L, },
+    { x: 8L, y: 4L, },
+    { x: 6L, y: 8L, },
+    { x: 2L, y: 7L, },
+    { x: 4L, y: 4L, }, // Interior
   ]
   let h1 = @convex_hull.convex_hull_monotone(pts)
   let h2 = @convex_hull.convex_hull_graham(pts)

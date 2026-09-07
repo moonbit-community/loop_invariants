@@ -57,8 +57,8 @@ pub struct BinaryTrie {
 /// - values up to ~1e9     -> `max_bits = 29`
 /// - full non-negative Int64 -> `max_bits = 62`
 pub fn BinaryTrie::BinaryTrie(max_bits : Int) -> BinaryTrie {
-  let root : Node = { next0: -1, next1: -1, count: 0 }
-  { max_bits, nodes: [root] }
+  let root : Node = { next0: -1, next1: -1, count: 0, }
+  { max_bits, nodes: [root], }
 }
 
 ///|
@@ -87,7 +87,7 @@ pub fn BinaryTrie::insert(self : BinaryTrie, x : Int64) -> Unit {
       self.nodes[node].next1
     }
     let child = if next == -1 {
-      let new_node : Node = { next0: -1, next1: -1, count: 0 }
+      let new_node : Node = { next0: -1, next1: -1, count: 0, }
       self.nodes.push(new_node)
       let idx = self.nodes.length() - 1
       if b == 0 {

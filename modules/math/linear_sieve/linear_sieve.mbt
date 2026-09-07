@@ -58,7 +58,7 @@ pub struct LinearSieve {
 /// ```
 pub fn LinearSieve::LinearSieve(n : Int) -> LinearSieve {
   if n < 0 {
-    return { n: 0, primes: [], spf: [], phi: [], mu: [] }
+    return { n: 0, primes: [], spf: [], phi: [], mu: [], }
   }
   let size = n + 1
   let spf = Array::make(size, 0)
@@ -115,7 +115,7 @@ pub fn LinearSieve::LinearSieve(n : Int) -> LinearSieve {
       #|At i = n+1, all values up to n are computed.
     ),
   }
-  { n, primes, spf, phi, mu }
+  { n, primes, spf, phi, mu, }
 }
 
 ///|

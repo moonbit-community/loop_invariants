@@ -85,7 +85,7 @@ priv struct PersistentSegTree {
 /// for the lifetime of the tree because `nodes` is append-only.
 fn push_node(nodes : Array[PNode], sum : Int64, left : Int, right : Int) -> Int {
   let idx = nodes.length()
-  nodes.push({ sum, left, right })
+  nodes.push({ sum, left, right, })
   idx
 }
 
@@ -101,7 +101,7 @@ fn PersistentSegTree::PersistentSegTree(
 ) -> PersistentSegTree {
   let n = arr.length()
   if n == 0 {
-    return { nodes: [], roots: [], n: 0 }
+    return { nodes: [], roots: [], n: 0, }
   }
   let nodes : Array[PNode] = []
   let roots : Array[Int] = []
@@ -109,7 +109,7 @@ fn PersistentSegTree::PersistentSegTree(
   // Build initial tree recursively
   let root = build_tree(nodes, arr, 0, n - 1)
   roots.push(root)
-  { nodes, roots, n }
+  { nodes, roots, n, }
 }
 
 ///|
@@ -383,7 +383,7 @@ priv struct KthSmallest {
 fn KthSmallest::KthSmallest(arr : Array[Int64]) -> KthSmallest {
   let n = arr.length()
   if n == 0 {
-    return { nodes: [], roots: [], sorted_vals: [] }
+    return { nodes: [], roots: [], sorted_vals: [], }
   }
 
   // Coordinate compression
@@ -453,7 +453,7 @@ fn KthSmallest::KthSmallest(arr : Array[Int64]) -> KthSmallest {
       #|At i = n, roots has n+1 versions for all prefixes.
     ),
   }
-  { nodes, roots, sorted_vals: unique_vals }
+  { nodes, roots, sorted_vals: unique_vals, }
 }
 
 ///|

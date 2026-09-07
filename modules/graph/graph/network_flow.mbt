@@ -21,7 +21,7 @@ priv struct FlowNetwork {
 fn FlowNetwork::FlowNetwork(n : Int) -> FlowNetwork {
   // Use makei to create adjacency list with independent empty arrays
   let adj : Array[Array[FlowEdge]] = [ for _ in 0..<n => [] ]
-  { adj, n }
+  { adj, n, }
 }
 
 ///|
@@ -35,10 +35,10 @@ fn FlowNetwork::add_edge(
   let backward_idx = self.adj[to].length()
 
   // Forward edge
-  self.adj[from].push({ to, capacity, flow: 0, rev_idx: backward_idx })
+  self.adj[from].push({ to, capacity, flow: 0, rev_idx: backward_idx, })
 
   // Backward edge (for residual graph)
-  self.adj[to].push({ to: from, capacity: 0, flow: 0, rev_idx: forward_idx })
+  self.adj[to].push({ to: from, capacity: 0, flow: 0, rev_idx: forward_idx, })
 }
 
 ///|
@@ -195,7 +195,7 @@ priv struct DinicNetwork {
 fn DinicNetwork::DinicNetwork(n : Int) -> DinicNetwork {
   // Use makei to create adjacency list with independent empty arrays
   let adj : Array[Array[FlowEdge]] = [ for _ in 0..<n => [] ]
-  { adj, level: Array::make(n, -1), iter: Array::make(n, 0), n }
+  { adj, level: Array::make(n, -1), iter: Array::make(n, 0), n, }
 }
 
 ///|
@@ -207,8 +207,8 @@ fn DinicNetwork::add_edge_dinic(
 ) -> Unit {
   let forward_idx = self.adj[from].length()
   let backward_idx = self.adj[to].length()
-  self.adj[from].push({ to, capacity, flow: 0, rev_idx: backward_idx })
-  self.adj[to].push({ to: from, capacity: 0, flow: 0, rev_idx: forward_idx })
+  self.adj[from].push({ to, capacity, flow: 0, rev_idx: backward_idx, })
+  self.adj[to].push({ to: from, capacity: 0, flow: 0, rev_idx: forward_idx, })
 }
 
 ///|
@@ -365,7 +365,7 @@ priv struct MCMFNetwork {
 fn MCMFNetwork::MCMFNetwork(n : Int) -> MCMFNetwork {
   // Use makei to create adjacency list with independent empty arrays
   let adj : Array[Array[MCMFEdge]] = [ for _ in 0..<n => [] ]
-  { adj, n }
+  { adj, n, }
 }
 
 ///|
@@ -378,7 +378,7 @@ fn MCMFNetwork::add_edge_mcmf(
 ) -> Unit {
   let forward_idx = self.adj[from].length()
   let backward_idx = self.adj[to].length()
-  self.adj[from].push({ to, capacity, cost, flow: 0, rev_idx: backward_idx })
+  self.adj[from].push({ to, capacity, cost, flow: 0, rev_idx: backward_idx, })
   self.adj[to].push({
     to: from,
     capacity: 0,

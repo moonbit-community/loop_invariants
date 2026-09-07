@@ -59,7 +59,7 @@ priv struct MST {
 /// let g = MST(5)
 /// ```
 fn MST::MST(n : Int) -> MST {
-  { n, edges: [] }
+  { n, edges: [], }
 }
 
 ///|
@@ -72,7 +72,7 @@ fn MST::MST(n : Int) -> MST {
 /// - `u`, `v`: Endpoint vertex indices (0-based).
 /// - `weight`: Edge cost (`Int64`).
 fn MST::add_edge(self : MST, u : Int, v : Int, weight : Int64) -> Unit {
-  self.edges.push({ u, v, weight })
+  self.edges.push({ u, v, weight, })
 }
 
 ///|
@@ -111,7 +111,7 @@ fn UF::UF(n : Int) -> UF {
       #|At i = n, all vertices are separate sets.
     ),
   }
-  { parent, rank }
+  { parent, rank, }
 }
 
 ///|
@@ -263,7 +263,7 @@ priv struct PrimMST {
 /// - `n`: Number of vertices. Vertices are labelled `0` to `n-1`.
 fn PrimMST::PrimMST(n : Int) -> PrimMST {
   let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
-  { n, adj }
+  { n, adj, }
 }
 
 ///|

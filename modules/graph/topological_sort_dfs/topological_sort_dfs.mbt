@@ -44,7 +44,7 @@ priv struct TopoSorter {
 /// The finish list starts empty.
 fn TopoSorter::TopoSorter(n : Int) -> TopoSorter {
   let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
-  { n, adj, state: Array::make(n, 0), order: [] }
+  { n, adj, state: Array::make(n, 0), order: [], }
 }
 
 ///|

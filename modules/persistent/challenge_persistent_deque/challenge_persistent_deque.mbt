@@ -67,7 +67,7 @@ fn[T] reverse_stack(s : Stack[T]) -> Stack[T] {
 ///|
 fn[T] normalize_front(d : Deque[T]) -> Deque[T] {
   match d.front {
-    Nil => { front: reverse_stack(d.back), back: Nil }
+    Nil => { front: reverse_stack(d.back), back: Nil, }
     _ => d
   }
 }
@@ -75,7 +75,7 @@ fn[T] normalize_front(d : Deque[T]) -> Deque[T] {
 ///|
 fn[T] normalize_back(d : Deque[T]) -> Deque[T] {
   match d.back {
-    Nil => { front: Nil, back: reverse_stack(d.front) }
+    Nil => { front: Nil, back: reverse_stack(d.front), }
     _ => d
   }
 }
@@ -83,19 +83,19 @@ fn[T] normalize_back(d : Deque[T]) -> Deque[T] {
 ///|
 /// Create an empty persistent deque.
 pub fn[T] empty() -> Deque[T] {
-  { front: Nil, back: Nil }
+  { front: Nil, back: Nil, }
 }
 
 ///|
 /// Push a value to the front and return the new deque.
 pub fn[T] push_front(d : Deque[T], value : T) -> Deque[T] {
-  { front: Cons(head=value, tail=d.front), back: d.back }
+  { front: Cons(head=value, tail=d.front), back: d.back, }
 }
 
 ///|
 /// Push a value to the back and return the new deque.
 pub fn[T] push_back(d : Deque[T], value : T) -> Deque[T] {
-  { front: d.front, back: Cons(head=value, tail=d.back) }
+  { front: d.front, back: Cons(head=value, tail=d.back), }
 }
 
 ///|
@@ -124,7 +124,7 @@ pub fn[T] pop_front(d : Deque[T]) -> (T, Deque[T])? {
   let norm = normalize_front(d)
   match norm.front {
     Nil => None
-    Cons(head~, tail~) => Some((head, { front: tail, back: norm.back }))
+    Cons(head~, tail~) => Some((head, { front: tail, back: norm.back, }))
   }
 }
 
@@ -134,6 +134,6 @@ pub fn[T] pop_back(d : Deque[T]) -> (T, Deque[T])? {
   let norm = normalize_back(d)
   match norm.back {
     Nil => None
-    Cons(head~, tail~) => Some((head, { front: norm.front, back: tail }))
+    Cons(head~, tail~) => Some((head, { front: norm.front, back: tail, }))
   }
 }

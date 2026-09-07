@@ -15,7 +15,7 @@
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let p : @challenge_persistent_kd_tree.Point = { x: 1, y: 2 }
+///   let p : @challenge_persistent_kd_tree.Point = { x: 1, y: 2, }
 ///   let t = @challenge_persistent_kd_tree.insert(
 ///     @challenge_persistent_kd_tree.empty(),
 ///     p,
@@ -42,12 +42,12 @@ pub(all) struct Point {
 /// ```moonbit nocheck
 /// test {
 ///   let t = @challenge_persistent_kd_tree.from_array([
-///     ({ x: 1, y: 2 } : @challenge_persistent_kd_tree.Point),
-///     { x: 3, y: 4 },
+///     ({ x: 1, y: 2, } : @challenge_persistent_kd_tree.Point),
+///     { x: 3, y: 4, },
 ///   ])
 ///   @debug.assert_eq(@challenge_persistent_kd_tree.size(t), 2)
 ///   @debug.assert_eq(
-///     @challenge_persistent_kd_tree.contains(t, { x: 3, y: 4 }),
+///     @challenge_persistent_kd_tree.contains(t, { x: 3, y: 4, }),
 ///     true,
 ///   )
 /// }
@@ -149,13 +149,13 @@ test "persistent_kd_tree_from_array" {
   let empty_tree = from_array([])
   @debug.assert_eq(size(empty_tree), 0)
   let points : ReadOnlyArray[Point] = [
-    { x: 1, y: 2 },
-    { x: 3, y: 4 },
-    { x: 1, y: 2 },
+    { x: 1, y: 2, },
+    { x: 3, y: 4, },
+    { x: 1, y: 2, },
   ]
   let tree = from_array(points)
   @debug.assert_eq(size(tree), 2)
-  @debug.assert_eq(contains(tree, { x: 1, y: 2 }), true)
-  @debug.assert_eq(contains(tree, { x: 3, y: 4 }), true)
-  @debug.assert_eq(contains(tree, { x: 5, y: 6 }), false)
+  @debug.assert_eq(contains(tree, { x: 1, y: 2, }), true)
+  @debug.assert_eq(contains(tree, { x: 3, y: 4, }), true)
+  @debug.assert_eq(contains(tree, { x: 5, y: 6, }), false)
 }

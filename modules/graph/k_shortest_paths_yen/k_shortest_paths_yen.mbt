@@ -253,7 +253,7 @@ fn shortest_path_filtered(
     return None
   }
   if source == target {
-    return Some({ nodes: [source], cost: 0L })
+    return Some({ nodes: [source], cost: 0L, })
   }
   let graph = @dijkstra.Graph(n)
   for edge in edges {
@@ -274,7 +274,7 @@ fn shortest_path_filtered(
   if nodes.length() == 0 {
     None
   } else {
-    Some({ nodes, cost: result.dist[target] })
+    Some({ nodes, cost: result.dist[target], })
   }
 }
 
@@ -348,7 +348,7 @@ pub fn yen_k_shortest_paths(
     return []
   }
   if source == target {
-    return [{ nodes: [source], cost: 0L }]
+    return [{ nodes: [source], cost: 0L, }]
   }
   let adj = match build_adj(n, edges) {
     None => return []
@@ -393,7 +393,10 @@ pub fn yen_k_shortest_paths(
       )
       if spur is Some(spur_path) {
         let total_nodes = combine_paths(root, spur_path.nodes)
-        let candidate = { nodes: total_nodes, cost: root_cost + spur_path.cost }
+        let candidate = {
+          nodes: total_nodes,
+          cost: root_cost + spur_path.cost,
+        }
         if !path_in_list(b_candidates, candidate.nodes) &&
           !path_in_list(a_paths, candidate.nodes) {
           b_candidates.push(candidate)

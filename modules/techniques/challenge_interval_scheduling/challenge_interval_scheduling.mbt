@@ -33,7 +33,7 @@ pub fn max_non_overlapping_pairs(intervals : ArrayView[(Int, Int)]) -> Int {
   let arr : Array[Interval] = []
   for pair in intervals {
     let (start, end) = pair
-    arr.push({ start, end })
+    arr.push({ start, end, })
   }
   max_non_overlapping(arr)
 }
@@ -41,12 +41,12 @@ pub fn max_non_overlapping_pairs(intervals : ArrayView[(Int, Int)]) -> Int {
 ///|
 test "interval_scheduling" {
   let intervals : Array[Interval] = [
-    { start: 1, end: 3 },
-    { start: 2, end: 4 },
-    { start: 3, end: 5 },
-    { start: 0, end: 7 },
-    { start: 5, end: 9 },
-    { start: 8, end: 9 },
+    { start: 1, end: 3, },
+    { start: 2, end: 4, },
+    { start: 3, end: 5, },
+    { start: 0, end: 7, },
+    { start: 5, end: 9, },
+    { start: 8, end: 9, },
   ]
   @debug.assert_eq(max_non_overlapping(intervals), 3)
 }

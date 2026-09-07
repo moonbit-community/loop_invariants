@@ -166,7 +166,7 @@ pub fn build_euler_tour(
   root : Int,
 ) -> EulerTourInfo {
   if n <= 0 {
-    return { entry: [], exit: [], tour: [], depth: [], parent: [] }
+    return { entry: [], exit: [], tour: [], depth: [], parent: [], }
   }
   let tree = EulerTour(n)
   for edge in edges {

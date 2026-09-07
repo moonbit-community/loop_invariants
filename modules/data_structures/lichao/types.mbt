@@ -90,7 +90,7 @@ pub fn Line::eval(self : Line, x : Int64) -> Int64 {
 ///
 /// Use `Line::is_undefined` to test whether a line is this sentinel.
 pub fn undefined_line() -> Line {
-  { m: 0L, b: -9223372036854775807L } // MIN_INT64 + 1
+  { m: 0L, b: -9223372036854775807L, } // MIN_INT64 + 1
 }
 
 ///|
@@ -113,7 +113,7 @@ pub fn Line::is_undefined(self : Line) -> Bool {
 ///
 /// Use `Line::is_undefined_min` to test whether a line is this sentinel.
 pub fn undefined_line_min() -> Line {
-  { m: 0L, b: 9223372036854775806L } // MAX_INT64 - 1
+  { m: 0L, b: 9223372036854775806L, } // MAX_INT64 - 1
 }
 
 ///|

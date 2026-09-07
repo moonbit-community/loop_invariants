@@ -189,7 +189,7 @@ priv struct SqrtDecomposition {
 fn SqrtDecomposition::SqrtDecomposition(arr : Array[Int]) -> SqrtDecomposition {
   let n = arr.length()
   if n == 0 {
-    return { arr, block_mins: [], block_size: 1 }
+    return { arr, block_mins: [], block_size: 1, }
   }
   let block_size = mo_isqrt(n)
   let num_blocks = (n + block_size - 1) / block_size
@@ -200,7 +200,7 @@ fn SqrtDecomposition::SqrtDecomposition(arr : Array[Int]) -> SqrtDecomposition {
       block_mins[block_idx] = arr[i]
     }
   }
-  { arr, block_mins, block_size }
+  { arr, block_mins, block_size, }
 }
 
 ///|
@@ -352,7 +352,7 @@ priv struct BlockSum {
 fn BlockSum::BlockSum(arr : Array[Int]) -> BlockSum {
   let n = arr.length()
   if n == 0 {
-    return { arr, block_sums: [], block_size: 1 }
+    return { arr, block_sums: [], block_size: 1, }
   }
   let block_size = mo_isqrt(n)
   let num_blocks = (n + block_size - 1) / block_size
@@ -360,7 +360,7 @@ fn BlockSum::BlockSum(arr : Array[Int]) -> BlockSum {
   for i in 0..<n {
     block_sums[i / block_size] = block_sums[i / block_size] + arr[i]
   }
-  { arr, block_sums, block_size }
+  { arr, block_sums, block_size, }
 }
 
 ///|
@@ -432,7 +432,7 @@ priv struct MoUnionFind {
 fn MoUnionFind::MoUnionFind(n : Int) -> MoUnionFind {
   let parent = [ for i in 0..<n => i ]
   let rank : Array[Int] = Array::make(n, 0)
-  { parent, rank }
+  { parent, rank, }
 }
 
 ///|
@@ -674,7 +674,7 @@ fn build_euler_tour(adj : Array[Array[Int]], root : Int) -> EulerTour {
       }
     }
   }
-  { enter, exit, tour }
+  { enter, exit, tour, }
 }
 
 ///|
@@ -731,7 +731,7 @@ fn build_binary_lifting(adj : Array[Array[Int]], root : Int) -> BinaryLifting {
       }
     }
   }
-  { up, depth, log_n }
+  { up, depth, log_n, }
 }
 
 ///|

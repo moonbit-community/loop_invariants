@@ -87,10 +87,10 @@ fn dist2(a : Point, b : Point) -> Int64 {
 ///
 /// ```moonbit nocheck
 /// let square : Array[Point] = [
-///   { x: 0L, y: 0L },
-///   { x: 2L, y: 0L },
-///   { x: 2L, y: 2L },
-///   { x: 0L, y: 2L },
+///   { x: 0L, y: 0L, },
+///   { x: 2L, y: 0L, },
+///   { x: 2L, y: 2L, },
+///   { x: 0L, y: 2L, },
 /// ]
 ///
 /// let r = convex_diameter(square).unwrap()
@@ -102,10 +102,10 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
     return None
   }
   if n == 1 {
-    return Some({ i: 0, j: 0, dist2: 0L })
+    return Some({ i: 0, j: 0, dist2: 0L, })
   }
   if n == 2 {
-    return Some({ i: 0, j: 1, dist2: dist2(points[0], points[1]) })
+    return Some({ i: 0, j: 1, dist2: dist2(points[0], points[1]), })
   }
   let (best_i, best_j, best) = for i = 0, j = 1, best_i = 0, best_j = 1, best = dist2(
                                        points[0],
@@ -157,7 +157,7 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
       #|At i = n, all edges are processed and best is the diameter.
     ),
   }
-  Some({ i: best_i, j: best_j, dist2: best })
+  Some({ i: best_i, j: best_j, dist2: best, })
 }
 
 // ============================================================================
@@ -167,10 +167,10 @@ pub fn convex_diameter(points : Array[Point]) -> DiameterResult? {
 ///|
 test "diameter square" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 2L, y: 0L },
-    { x: 2L, y: 2L },
-    { x: 0L, y: 2L },
+    { x: 0L, y: 0L, },
+    { x: 2L, y: 0L, },
+    { x: 2L, y: 2L, },
+    { x: 0L, y: 2L, },
   ]
   let result = convex_diameter(points).unwrap()
   debug_inspect(result.dist2, content="8")
@@ -179,9 +179,9 @@ test "diameter square" {
 ///|
 test "diameter triangle" {
   let points : Array[Point] = [
-    { x: 0L, y: 0L },
-    { x: 4L, y: 0L },
-    { x: 0L, y: 3L },
+    { x: 0L, y: 0L, },
+    { x: 4L, y: 0L, },
+    { x: 0L, y: 3L, },
   ]
   let result = convex_diameter(points).unwrap()
   debug_inspect(result.dist2, content="25")
@@ -189,7 +189,7 @@ test "diameter triangle" {
 
 ///|
 test "diameter two points" {
-  let points : Array[Point] = [{ x: -1L, y: 0L }, { x: 2L, y: 0L }]
+  let points : Array[Point] = [{ x: -1L, y: 0L, }, { x: 2L, y: 0L, }]
   let result = convex_diameter(points).unwrap()
   debug_inspect(result.dist2, content="9")
 }
@@ -197,12 +197,12 @@ test "diameter two points" {
 ///|
 test "diameter hexagon advances antipodal pointer multiple times" {
   let points : Array[Point] = [
-    { x: 1L, y: 0L },
-    { x: 2L, y: 1L },
-    { x: 1L, y: 2L },
-    { x: 0L, y: 2L },
-    { x: -1L, y: 1L },
-    { x: 0L, y: 0L },
+    { x: 1L, y: 0L, },
+    { x: 2L, y: 1L, },
+    { x: 1L, y: 2L, },
+    { x: 0L, y: 2L, },
+    { x: -1L, y: 1L, },
+    { x: 0L, y: 0L, },
   ]
   let result = convex_diameter(points).unwrap()
   debug_inspect(result.dist2, content="9")
@@ -211,11 +211,11 @@ test "diameter hexagon advances antipodal pointer multiple times" {
 ///|
 test "diameter keeps antipodal state across outer iterations" {
   let points : Array[Point] = [
-    { x: -22L, y: 6L },
-    { x: -14L, y: -23L },
-    { x: 18L, y: -26L },
-    { x: 24L, y: 21L },
-    { x: 1L, y: 18L },
+    { x: -22L, y: 6L, },
+    { x: -14L, y: -23L, },
+    { x: 18L, y: -26L, },
+    { x: 24L, y: 21L, },
+    { x: 1L, y: 18L, },
   ]
   let result = convex_diameter(points).unwrap()
   debug_inspect(result.dist2, content="3380")

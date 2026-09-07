@@ -128,7 +128,7 @@ pub(all) struct Dinic {
 /// `add_edge` to build the network before calling `max_flow`.
 pub fn Dinic::Dinic(n : Int) -> Dinic {
   let adj = [ for _ in 0..<n => [] ]
-  { n, adj, level: Array::make(n, 0), iter: Array::make(n, 0) }
+  { n, adj, level: Array::make(n, 0), iter: Array::make(n, 0), }
 }
 
 ///|
@@ -150,6 +150,6 @@ pub fn Dinic::Dinic(n : Int) -> Dinic {
 pub fn Dinic::add_edge(self : Dinic, from : Int, to : Int, cap : Int64) -> Unit {
   let rev_from = self.adj[to].length()
   let rev_to = self.adj[from].length()
-  self.adj[from].push({ to, cap, flow: 0L, rev: rev_from })
-  self.adj[to].push({ to: from, cap: 0L, flow: 0L, rev: rev_to })
+  self.adj[from].push({ to, cap, flow: 0L, rev: rev_from, })
+  self.adj[to].push({ to: from, cap: 0L, flow: 0L, rev: rev_to, })
 }

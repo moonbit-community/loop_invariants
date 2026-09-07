@@ -165,7 +165,7 @@ pub fn new(width~ : Int, depth~ : Int, seed~ : Int64) -> CountMinSketch {
       #|At r = d both arrays are fully populated.
     ),
   }
-  { width: w, depth: d, counts, hash_a, hash_b }
+  { width: w, depth: d, counts, hash_a, hash_b, }
 }
 
 ///|

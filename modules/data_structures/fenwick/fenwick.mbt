@@ -71,7 +71,7 @@ pub struct FenwickTree {
 /// ```
 pub fn FenwickTree::FenwickTree(n : Int) -> FenwickTree {
   // 1-indexed, so we need n+1 elements
-  { n, tree: Array::make(n + 1, 0L) }
+  { n, tree: Array::make(n + 1, 0L), }
 }
 
 ///|
@@ -115,7 +115,7 @@ pub fn FenwickTree::from_array(arr : Array[Int64]) -> FenwickTree {
       tree[parent] = tree[parent] + tree[i]
     }
   }
-  { n, tree }
+  { n, tree, }
 }
 
 ///|
@@ -335,7 +335,7 @@ fn FenwickTree2D::FenwickTree2D(rows : Int, cols : Int) -> FenwickTree2D {
   let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
   ]
-  { rows, cols, tree }
+  { rows, cols, tree, }
 }
 
 ///|
@@ -474,7 +474,7 @@ priv struct FenwickTreeRangeUpdate {
 fn FenwickTreeRangeUpdate::FenwickTreeRangeUpdate(
   n : Int,
 ) -> FenwickTreeRangeUpdate {
-  { n, tree: Array::make(n + 1, 0L) }
+  { n, tree: Array::make(n + 1, 0L), }
 }
 
 ///|
@@ -598,7 +598,7 @@ priv struct FenwickTreeRangeRange {
 fn FenwickTreeRangeRange::FenwickTreeRangeRange(
   n : Int,
 ) -> FenwickTreeRangeRange {
-  { n, bit1: Array::make(n + 1, 0L), bit2: Array::make(n + 1, 0L) }
+  { n, bit1: Array::make(n + 1, 0L), bit2: Array::make(n + 1, 0L), }
 }
 
 ///|

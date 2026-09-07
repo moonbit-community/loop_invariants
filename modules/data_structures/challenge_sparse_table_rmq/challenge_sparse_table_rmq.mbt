@@ -42,7 +42,7 @@ pub struct SparseTable {
 pub fn build_sparse_table(arr : ArrayView[Int]) -> SparseTable {
   let n = arr.length()
   if n == 0 {
-    return { log: [0], table: [] }
+    return { log: [0], table: [], }
   }
   let log = Array::make(n + 1, 0)
   for i in 2..<(n + 1) {
@@ -60,7 +60,7 @@ pub fn build_sparse_table(arr : ArrayView[Int]) -> SparseTable {
       table[k][i] = min(table[k - 1][i], table[k - 1][i + half])
     }
   }
-  { log, table }
+  { log, table, }
 }
 
 ///|

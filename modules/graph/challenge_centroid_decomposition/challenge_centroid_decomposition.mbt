@@ -111,5 +111,5 @@ pub fn build_centroid(n : Int, edges : ArrayView[(Int, Int)]) -> CentroidDecomp 
   if n > 0 {
     decompose(0, -1, 0, adj, removed, sub, parent, level)
   }
-  { parent, level }
+  { parent, level, }
 }

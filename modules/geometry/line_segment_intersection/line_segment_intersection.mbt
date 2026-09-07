@@ -33,7 +33,7 @@
 /// # Example
 ///
 /// ```moonbit nocheck
-/// let p : Point = { x: 3L, y: 4L }
+/// let p : Point = { x: 3L, y: 4L, }
 /// ```
 pub(all) struct Point {
   x : Int64

@@ -57,7 +57,7 @@ pub fn build_sqrt_decomp(arr : ArrayView[Int]) -> SqrtDecomp {
   for i in 0..<n {
     block_sum[i / block_size] = block_sum[i / block_size] + data[i]
   }
-  { n, block_size, arr: data, block_sum }
+  { n, block_size, arr: data, block_sum, }
 }
 
 ///|

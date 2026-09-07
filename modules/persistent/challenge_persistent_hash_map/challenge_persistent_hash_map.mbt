@@ -42,7 +42,7 @@ pub struct HashMap[K, V] {
 /// Create an empty hash map with the given capacity (min 1).
 pub fn[K, V] make(capacity : Int) -> HashMap[K, V] {
   let cap = if capacity <= 0 { 1 } else { capacity }
-  { buckets: Array::make(cap, Nil), size: 0 }
+  { buckets: Array::make(cap, Nil), size: 0, }
 }
 
 ///|
@@ -118,5 +118,5 @@ pub fn[K : Hash + Eq, V] put(
   let new_buckets = map.buckets.copy()
   new_buckets[idx] = new_bucket
   let new_size = if added { map.size + 1 } else { map.size }
-  { buckets: new_buckets, size: new_size }
+  { buckets: new_buckets, size: new_size, }
 }

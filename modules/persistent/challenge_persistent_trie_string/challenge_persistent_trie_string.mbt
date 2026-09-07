@@ -33,7 +33,7 @@ pub struct Node {
 ///|
 /// Create an empty persistent trie.
 pub fn empty() -> Node {
-  { end: false, children: Array::make(26, None) }
+  { end: false, children: Array::make(26, None), }
 }
 
 ///|
@@ -44,7 +44,7 @@ fn char_index(ch : Char) -> Int {
 ///|
 fn insert(node : Node, s : StringView, idx : Int) -> Node {
   if idx >= s.length() {
-    { end: true, children: node.children }
+    { end: true, children: node.children, }
   } else {
     match s.get_char(idx) {
       None => node
@@ -57,7 +57,7 @@ fn insert(node : Node, s : StringView, idx : Int) -> Node {
         let updated = insert(child, s, idx + 1)
         let new_children = node.children.copy()
         new_children[i] = Some(updated)
-        { end: node.end, children: new_children }
+        { end: node.end, children: new_children, }
       }
     }
   }

@@ -110,7 +110,7 @@ pub fn DisjointSparseSum::DisjointSparseSum(
 ) -> DisjointSparseSum {
   let n = arr.length()
   if n == 0 {
-    return { table: [], arr: [], n: 0 }
+    return { table: [], arr: [], n: 0, }
   }
 
   // Compute ceil(log2(n))
@@ -184,7 +184,7 @@ pub fn DisjointSparseSum::DisjointSparseSum(
       #|At k = log_n, all levels are constructed.
     ),
   }
-  { table, arr, n }
+  { table, arr, n, }
 }
 
 ///|
@@ -255,7 +255,7 @@ fn DisjointSparseXor::DisjointSparseXor(
 ) -> DisjointSparseXor {
   let n = arr.length()
   if n == 0 {
-    return { table: [], arr: [], n: 0 }
+    return { table: [], arr: [], n: 0, }
   }
   let log_n = highest_bit(n - 1) + 1
   let table : Array[Array[Int64]] = []
@@ -319,7 +319,7 @@ fn DisjointSparseXor::DisjointSparseXor(
       #|At k = log_n, all levels are constructed.
     ),
   }
-  { table, arr, n }
+  { table, arr, n, }
 }
 
 ///|
@@ -384,7 +384,7 @@ fn DisjointSparseProd::DisjointSparseProd(
 ) -> DisjointSparseProd {
   let n = arr.length()
   if n == 0 {
-    return { table: [], arr: [], n: 0, modulo }
+    return { table: [], arr: [], n: 0, modulo, }
   }
   let log_n = highest_bit(n - 1) + 1
   let table : Array[Array[Int64]] = []
@@ -448,7 +448,7 @@ fn DisjointSparseProd::DisjointSparseProd(
       #|At k = log_n, all levels are constructed.
     ),
   }
-  { table, arr, n, modulo }
+  { table, arr, n, modulo, }
 }
 
 ///|

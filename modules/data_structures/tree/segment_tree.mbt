@@ -31,7 +31,7 @@ fn LazySegmentTree::LazySegmentTree(arr : ArrayView[Int]) -> LazySegmentTree {
   let n = arr.length()
   let tree = Array::make(4 * n, 0L)
   let lazy_add = Array::make(4 * n, 0L)
-  let st : LazySegmentTree = { n, tree, lazy_add }
+  let st : LazySegmentTree = { n, tree, lazy_add, }
   if n > 0 {
     st.build(arr, 1, 0, n)
   }
@@ -212,7 +212,7 @@ fn SetSegmentTree::SetSegmentTree(arr : ArrayView[Int]) -> SetSegmentTree {
   let n = arr.length()
   let tree = Array::make(4 * n, 0L)
   let lazy_set = Array::make(4 * n, set_sentinel)
-  let st : SetSegmentTree = { n, tree, lazy_set }
+  let st : SetSegmentTree = { n, tree, lazy_set, }
   if n > 0 {
     st.build(arr, 1, 0, n)
   }
@@ -362,7 +362,7 @@ fn RMQSegmentTree::RMQSegmentTree(arr : ArrayView[Int]) -> RMQSegmentTree {
   let n = arr.length()
   let tree = Array::make(4 * n, 0L)
   let lazy_add = Array::make(4 * n, 0L)
-  let st : RMQSegmentTree = { n, tree, lazy_add }
+  let st : RMQSegmentTree = { n, tree, lazy_add, }
   if n > 0 {
     st.build(arr, 1, 0, n)
   }
@@ -526,9 +526,9 @@ fn PersistentSegmentTree::PersistentSegmentTree(
 ) -> PersistentSegmentTree {
   // Pre-allocate space for nodes (initial tree + updates)
   let max_nodes = 4 * n + 1
-  let nodes = Array::make(max_nodes, { sum: 0L, left: 0, right: 0 })
+  let nodes = Array::make(max_nodes, { sum: 0L, left: 0, right: 0, })
   let roots = Array::make(n + 1, 0)
-  let pst = { n, nodes, roots, node_count: 1 }
+  let pst = { n, nodes, roots, node_count: 1, }
   // Build initial empty tree
   roots[0] = pst.build_empty(0, n)
   pst
@@ -543,7 +543,7 @@ fn PersistentSegmentTree::alloc_node(
 ) -> Int {
   let idx = self.node_count
   self.node_count = self.node_count + 1
-  self.nodes[idx] = { sum, left, right }
+  self.nodes[idx] = { sum, left, right, }
   idx
 }
 
@@ -694,7 +694,7 @@ fn iterative_segment_tree_build(arr : ArrayView[Int]) -> IterativeSegmentTree {
   for i in n>..1 {
     tree[i] = tree[2 * i] + tree[2 * i + 1]
   }
-  { n, tree }
+  { n, tree, }
 }
 
 ///|
@@ -822,7 +822,7 @@ fn max_count_combine(a : MaxCountNode, b : MaxCountNode) -> MaxCountNode {
     b
   } else {
     // Equal maxima - combine counts
-    { max_val: a.max_val, count: a.count + b.count }
+    { max_val: a.max_val, count: a.count + b.count, }
   }
 }
 
@@ -835,18 +835,18 @@ priv struct MaxCountSegmentTree {
 ///|
 fn max_count_segment_tree_build(arr : ArrayView[Int]) -> MaxCountSegmentTree {
   let n = arr.length()
-  let tree = Array::make(2 * n, { max_val: -9223372036854775808L, count: 0 })
+  let tree = Array::make(2 * n, { max_val: -9223372036854775808L, count: 0, })
 
   // Copy leaves
   for i in 0..<n {
-    tree[n + i] = { max_val: arr[i].to_int64(), count: 1 }
+    tree[n + i] = { max_val: arr[i].to_int64(), count: 1, }
   }
 
   // Build internal nodes
   for i in n>..1 {
     tree[i] = max_count_combine(tree[2 * i], tree[2 * i + 1])
   }
-  { n, tree }
+  { n, tree, }
 }
 
 ///|
@@ -855,7 +855,7 @@ fn MaxCountSegmentTree::range_query(
   ql : Int,
   qr : Int,
 ) -> MaxCountNode {
-  let init_result : MaxCountNode = { max_val: -9223372036854775808L, count: 0 }
+  let init_result : MaxCountNode = { max_val: -9223372036854775808L, count: 0, }
   for l = ql + self.n, r = qr + self.n, result = init_result; l < r; {
     // Handle left boundary
     let (l2, result2) = if l % 2 == 1 {
@@ -926,7 +926,7 @@ priv struct SegmentTree2D {
 fn SegmentTree2D::SegmentTree2D(matrix : Array[Array[Int]]) -> SegmentTree2D {
   let rows = matrix.length()
   if rows == 0 {
-    return { rows: 0, cols: 0, tree: [] }
+    return { rows: 0, cols: 0, tree: [], }
   }
   let cols = matrix[0].length()
   let tree = Array::make(2 * rows, Array::make(2 * cols, 0L))
@@ -934,7 +934,7 @@ fn SegmentTree2D::SegmentTree2D(matrix : Array[Array[Int]]) -> SegmentTree2D {
   for i in 0..<(2 * rows) {
     tree[i] = Array::make(2 * cols, 0L)
   }
-  let st = { rows, cols, tree }
+  let st = { rows, cols, tree, }
 
   // Build leaf rows
   for i in 0..<rows {

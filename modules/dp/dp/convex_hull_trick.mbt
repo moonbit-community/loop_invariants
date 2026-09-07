@@ -20,7 +20,7 @@ priv struct ConvexHullTrick {
 ///|
 /// Create an empty `ConvexHullTrick` instance with no lines.
 fn ConvexHullTrick::ConvexHullTrick() -> ConvexHullTrick {
-  { lines: [] }
+  { lines: [], }
 }
 
 ///|
@@ -133,7 +133,7 @@ priv struct MonotonicCHT {
 ///|
 /// Create an empty `MonotonicCHT` instance with no lines and a fresh pointer.
 fn MonotonicCHT::MonotonicCHT() -> MonotonicCHT {
-  { lines: [], ptr: [0] }
+  { lines: [], ptr: [0], }
 }
 
 ///|
@@ -232,7 +232,7 @@ priv struct LiChaoTree {
 /// - `lo` : Inclusive lower bound of the query domain.
 /// - `hi` : Inclusive upper bound of the query domain.
 fn LiChaoTree::LiChaoTree(lo : Int64, hi : Int64) -> LiChaoTree {
-  { root: None, lo, hi }
+  { root: None, lo, hi, }
 }
 
 ///|
@@ -253,11 +253,11 @@ fn add_line_li_chao_node(
   line : (Int64, Int64),
 ) -> LiChaoNode {
   match node {
-    None => { line: Some(line), left: None, right: None }
+    None => { line: Some(line), left: None, right: None, }
     Some(n) => {
       let mid = (lo + hi) / 2
       match n.line {
-        None => { line: Some(line), left: n.left, right: n.right }
+        None => { line: Some(line), left: n.left, right: n.right, }
         Some(cur) => {
           let cur_at_mid = eval_line(cur, mid)
           let new_at_mid = eval_line(line, mid)
@@ -275,7 +275,7 @@ fn add_line_li_chao_node(
             } else {
               Some(add_line_li_chao_node(n.right, mid + 1L, hi, cur))
             }
-            { line: Some(line), left: new_left, right: new_right }
+            { line: Some(line), left: new_left, right: new_right, }
           } else {
             // Current line is better at midpoint
             let new_left = if eval_line(cur, lo) < eval_line(line, lo) {
@@ -288,7 +288,7 @@ fn add_line_li_chao_node(
             } else {
               Some(add_line_li_chao_node(n.right, mid + 1L, hi, line))
             }
-            { line: Some(cur), left: new_left, right: new_right }
+            { line: Some(cur), left: new_left, right: new_right, }
           }
         }
       }
@@ -675,7 +675,7 @@ priv struct SlopeTrick {
 
 ///|
 fn SlopeTrick::SlopeTrick() -> SlopeTrick {
-  { left_slopes: [], right_slopes: [], base_cost: 0L }
+  { left_slopes: [], right_slopes: [], base_cost: 0L, }
 }
 
 ///|

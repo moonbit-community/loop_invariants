@@ -97,7 +97,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
   let nodes : Array[WaveletNode] = []
   let n = arr.length()
   if n == 0 {
-    return { nodes, root: -1, n: 0, sigma }
+    return { nodes, root: -1, n: 0, sigma, }
   }
 
   // Build tree recursively
@@ -112,7 +112,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
     // BASE CASE: single value or empty range
     if lo + 1 >= hi || elements.length() == 0 {
       let node_idx = nodes.length()
-      nodes.push({ lo, hi, bits: [], rank: [0], left: -1, right: -1 })
+      nodes.push({ lo, hi, bits: [], rank: [0], left: -1, right: -1, })
       return node_idx
     }
 
@@ -165,7 +165,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
 
     // Create this node first (to get index)
     let node_idx = nodes.length()
-    nodes.push({ lo, hi, bits, rank, left: -1, right: -1 })
+    nodes.push({ lo, hi, bits, rank, left: -1, right: -1, })
 
     // Recursively build children
     let left_child = build_node(nodes, left_elems, left_indices, lo, mid)
@@ -183,7 +183,7 @@ fn WaveletTree::build(arr : Array[Int], sigma : Int) -> WaveletTree {
   // Create initial index array
   let indices = [ for i in 0..<n => i ]
   let root = build_node(nodes, arr.copy(), indices, 0, sigma)
-  { nodes, root, n, sigma }
+  { nodes, root, n, sigma, }
 }
 
 // ============================================================================
@@ -625,8 +625,8 @@ fn WaveletTree::mode(self : WaveletTree, l : Int, r : Int) -> (Int, Int)? {
     }
   }
 
-  let best_val_ref : Ref[Int] = { val: best_val }
-  let best_count_ref : Ref[Int] = { val: best_count }
+  let best_val_ref : Ref[Int] = { val: best_val, }
+  let best_count_ref : Ref[Int] = { val: best_count, }
   find_mode(self, self.root, l, r, best_val_ref, best_count_ref)
   if best_count_ref.val > 0 {
     Some((best_val_ref.val, best_count_ref.val))

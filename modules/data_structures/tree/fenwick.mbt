@@ -47,7 +47,7 @@ priv struct FenwickTree {
 ///|
 /// Create a new Fenwick tree of size n+1 (1-indexed).
 fn FenwickTree::FenwickTree(n : Int) -> FenwickTree {
-  { tree: Array::make(n + 1, 0), n }
+  { tree: Array::make(n + 1, 0), n, }
 }
 
 ///|
@@ -235,7 +235,7 @@ fn FenwickTree::from_array(arr : ArrayView[Int]) -> FenwickTree {
       #|At i == n + 1, all parent aggregates are complete.
     ),
   }
-  { tree, n }
+  { tree, n, }
 }
 
 ///|
@@ -400,7 +400,7 @@ priv struct FenwickTree2D {
 
 ///|
 fn FenwickTree2D::FenwickTree2D(n : Int, m : Int) -> FenwickTree2D {
-  { tree: Array::make((n + 1) * (m + 1), 0), n, m }
+  { tree: Array::make((n + 1) * (m + 1), 0), n, m, }
 }
 
 ///|
@@ -574,7 +574,7 @@ priv struct FenwickTreeRangeUpdate {
 fn FenwickTreeRangeUpdate::FenwickTreeRangeUpdate(
   n : Int,
 ) -> FenwickTreeRangeUpdate {
-  { diff: FenwickTree(n) }
+  { diff: FenwickTree(n), }
 }
 
 ///|
@@ -655,7 +655,7 @@ priv struct FenwickTreeRangeRange {
 fn FenwickTreeRangeRange::FenwickTreeRangeRange(
   n : Int,
 ) -> FenwickTreeRangeRange {
-  { tree1: FenwickTree(n), tree2: FenwickTree(n), n }
+  { tree1: FenwickTree(n), tree2: FenwickTree(n), n, }
 }
 
 ///|

@@ -68,7 +68,7 @@ priv struct TwoSat {
 fn TwoSat::TwoSat(n : Int) -> TwoSat {
   let adj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
   let radj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
-  { n, adj, radj }
+  { n, adj, radj, }
 }
 
 ///|

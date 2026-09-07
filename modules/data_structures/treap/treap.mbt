@@ -60,7 +60,7 @@ pub struct TreapNode[T] {
 /// Allocates a new leaf node with the given key and priority.
 /// Both children are absent and the subtree size is 1.
 fn[T] TreapNode::TreapNode(key : T, priority : Int) -> TreapNode[T] {
-  { key, priority, left: None, right: None, size: 1 }
+  { key, priority, left: None, right: None, size: 1, }
 }
 
 ///|
@@ -128,7 +128,7 @@ fn next_random(state : Int) -> (Int, Int) {
 /// // t is empty
 /// ```
 pub fn[T] Treap::Treap() -> Treap[T] {
-  { root: None, rng_state: 42 }
+  { root: None, rng_state: 42, }
 }
 
 ///|

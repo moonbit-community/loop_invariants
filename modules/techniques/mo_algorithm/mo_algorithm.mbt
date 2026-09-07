@@ -141,7 +141,7 @@ fn MoDistinct::process_queries(
   let mo_queries : Array[MoQuery] = []
   for i in 0..<q {
     let (l, r) = queries[i]
-    mo_queries.push({ l, r, idx: i })
+    mo_queries.push({ l, r, idx: i, })
   } where {
     proof_invariant: i >= 0 && i <= q,
     proof_reasoning: (
@@ -233,7 +233,7 @@ priv struct MoSum {
 fn MoSum::MoSum(arr : Array[Int64]) -> MoSum {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) } else { 1 }
-  { arr, block_size, curr_l: 0, curr_r: -1, sum: 0L }
+  { arr, block_size, curr_l: 0, curr_r: -1, sum: 0L, }
 }
 
 ///|
@@ -258,7 +258,7 @@ fn MoSum::process_queries(
   let mo_queries : Array[MoQuery] = []
   for i in 0..<q {
     let (l, r) = queries[i]
-    mo_queries.push({ l, r, idx: i })
+    mo_queries.push({ l, r, idx: i, })
   } where {
     proof_invariant: i >= 0 && i <= q,
     proof_reasoning: (

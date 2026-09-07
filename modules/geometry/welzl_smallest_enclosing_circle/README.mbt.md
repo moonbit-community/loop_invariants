@@ -208,7 +208,7 @@ pub fn smallest_enclosing_circle(points : ArrayView[Point]) -> Circle
 ///|
 test "welzl single point" {
   let pts : Array[@welzl_smallest_enclosing_circle.Point] = [
-    { x: 7.0, y: -3.0 },
+    { x: 7.0, y: -3.0, },
   ]
   let c = @welzl_smallest_enclosing_circle.smallest_enclosing_circle(pts[:])
   debug_inspect(c.radius, content="0")
@@ -223,8 +223,8 @@ test "welzl single point" {
 ///|
 test "welzl two points" {
   let pts : Array[@welzl_smallest_enclosing_circle.Point] = [
-    { x: 0.0, y: 0.0 },
-    { x: 6.0, y: 8.0 },
+    { x: 0.0, y: 0.0, },
+    { x: 6.0, y: 8.0, },
   ]
   let c = @welzl_smallest_enclosing_circle.smallest_enclosing_circle(pts[:])
   // |(0,0) - (6,8)| = 10, so radius = 5; center = (3, 4).
@@ -240,9 +240,9 @@ test "welzl two points" {
 ///|
 test "welzl right triangle" {
   let pts : Array[@welzl_smallest_enclosing_circle.Point] = [
-    { x: 0.0, y: 0.0 },
-    { x: 3.0, y: 0.0 },
-    { x: 0.0, y: 4.0 },
+    { x: 0.0, y: 0.0, },
+    { x: 3.0, y: 0.0, },
+    { x: 0.0, y: 4.0, },
   ]
   let c = @welzl_smallest_enclosing_circle.smallest_enclosing_circle(pts[:])
   // Hypotenuse from (3,0) to (0,4) has length 5; MEC center (1.5, 2),
@@ -259,12 +259,12 @@ test "welzl right triangle" {
 ///|
 test "welzl interior points do not matter" {
   let pts : Array[@welzl_smallest_enclosing_circle.Point] = [
-    { x: -1.0, y: -1.0 },
-    { x: 1.0, y: -1.0 },
-    { x: 1.0, y: 1.0 },
-    { x: -1.0, y: 1.0 },
-    { x: 0.0, y: 0.0 },
-    { x: 0.5, y: -0.2 },
+    { x: -1.0, y: -1.0, },
+    { x: 1.0, y: -1.0, },
+    { x: 1.0, y: 1.0, },
+    { x: -1.0, y: 1.0, },
+    { x: 0.0, y: 0.0, },
+    { x: 0.5, y: -0.2, },
   ]
   let c = @welzl_smallest_enclosing_circle.smallest_enclosing_circle(pts[:])
   // The MEC is still pinned by the 4 corners; center (0,0).

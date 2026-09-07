@@ -59,7 +59,7 @@ priv struct TrieNode {
 ///|
 /// Create a new trie node with empty children and zero counts.
 fn TrieNode::TrieNode() -> TrieNode {
-  { children: Array::make(26, None), is_end: false, count: 0, prefix_count: 0 }
+  { children: Array::make(26, None), is_end: false, count: 0, prefix_count: 0, }
 }
 
 ///|
@@ -80,7 +80,7 @@ priv struct Trie {
 ///|
 /// Create a new, empty trie.
 fn Trie::Trie() -> Trie {
-  { root: TrieNode() }
+  { root: TrieNode(), }
 }
 
 ///|
@@ -474,7 +474,7 @@ priv struct CompressedTrieNode {
 ///|
 /// Create a new compressed trie node with no children and `is_end = false`.
 fn CompressedTrieNode::CompressedTrieNode() -> CompressedTrieNode {
-  { children: Array::make(26, None), is_end: false }
+  { children: Array::make(26, None), is_end: false, }
 }
 
 ///|
@@ -494,7 +494,7 @@ priv struct CompressedTrie {
 ///|
 /// Create a new, empty compressed trie.
 fn CompressedTrie::CompressedTrie() -> CompressedTrie {
-  { root: CompressedTrieNode() }
+  { root: CompressedTrieNode(), }
 }
 
 ///|

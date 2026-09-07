@@ -57,7 +57,7 @@ priv struct MinHeap {
 
 ///|
 fn MinHeap::new() -> MinHeap {
-  { data: [] }
+  { data: [], }
 }
 
 ///|
@@ -132,7 +132,7 @@ fn reverse_adj(n : Int, adj : Array[Array[Edge]]) -> Array[Array[Edge]] {
   for u in 0..<n {
     for e in adj[u] {
       if e.to >= 0 && e.to < n {
-        rev[e.to].push({ to: u, w: e.w })
+        rev[e.to].push({ to: u, w: e.w, })
       }
     }
   }
@@ -151,8 +151,8 @@ fn reverse_adj(n : Int, adj : Array[Array[Edge]]) -> Array[Array[Edge]] {
 /// ```moonbit nocheck
 /// test {
 ///   let adj : Array[Array[@bidirectional_dijkstra.Edge]] = [
-///     [{ to: 1, w: 1L }, { to: 2, w: 4L }],
-///     [{ to: 2, w: 2L }],
+///     [{ to: 1, w: 1L, }, { to: 2, w: 4L, }],
+///     [{ to: 2, w: 2L, }],
 ///     [],
 ///   ]
 ///   @debug.assert_eq(@bidirectional_dijkstra.shortest_path(3, adj, 0, 2), 3L)
@@ -179,8 +179,8 @@ pub fn shortest_path(
   dist_bwd[target] = 0L
   let hf = MinHeap::new()
   let hb = MinHeap::new()
-  hf.push({ d: 0L, v: source })
-  hb.push({ d: 0L, v: target })
+  hf.push({ d: 0L, v: source, })
+  hb.push({ d: 0L, v: target, })
   let mut mu = INF
   while true {
     let tf = hf.top_priority()
@@ -214,7 +214,7 @@ pub fn shortest_path(
               let nd = e.d + ed.w
               if nd < dist_fwd[ed.to] {
                 dist_fwd[ed.to] = nd
-                hf.push({ d: nd, v: ed.to })
+                hf.push({ d: nd, v: ed.to, })
               }
               if dist_bwd[ed.to] < INF {
                 let total = nd + dist_bwd[ed.to]
@@ -239,7 +239,7 @@ pub fn shortest_path(
               let nd = e.d + ed.w
               if nd < dist_bwd[ed.to] {
                 dist_bwd[ed.to] = nd
-                hb.push({ d: nd, v: ed.to })
+                hb.push({ d: nd, v: ed.to, })
               }
               if dist_fwd[ed.to] < INF {
                 let total = nd + dist_fwd[ed.to]
@@ -258,8 +258,8 @@ pub fn shortest_path(
 ///|
 test "bidir small graph" {
   let adj : Array[Array[Edge]] = [
-    [{ to: 1, w: 1L }, { to: 2, w: 4L }],
-    [{ to: 2, w: 2L }],
+    [{ to: 1, w: 1L, }, { to: 2, w: 4L, }],
+    [{ to: 2, w: 2L, }],
     [],
   ]
   @debug.assert_eq(shortest_path(3, adj, 0, 2), 3L)
@@ -273,7 +273,7 @@ test "bidir self-source" {
 
 ///|
 test "bidir unreachable" {
-  let adj : Array[Array[Edge]] = [[{ to: 1, w: 1L }], [], []]
+  let adj : Array[Array[Edge]] = [[{ to: 1, w: 1L, }], [], []]
   @debug.assert_eq(shortest_path(3, adj, 0, 2), INF)
 }
 
@@ -291,7 +291,7 @@ test "bidir agrees with Dijkstra" {
     let dist = Array::make(n, INF)
     dist[s] = 0L
     let heap = MinHeap::new()
-    heap.push({ d: 0L, v: s })
+    heap.push({ d: 0L, v: s, })
     while true {
       let top = heap.pop()
       match top {
@@ -307,7 +307,7 @@ test "bidir agrees with Dijkstra" {
             let nd = e.d + ed.w
             if nd < dist[ed.to] {
               dist[ed.to] = nd
-              heap.push({ d: nd, v: ed.to })
+              heap.push({ d: nd, v: ed.to, })
             }
           }
         }
@@ -317,12 +317,17 @@ test "bidir agrees with Dijkstra" {
   }
 
   let adj : Array[Array[Edge]] = [
-    [{ to: 1, w: 7L }, { to: 2, w: 9L }, { to: 5, w: 14L }],
-    [{ to: 0, w: 7L }, { to: 2, w: 10L }, { to: 3, w: 15L }],
-    [{ to: 0, w: 9L }, { to: 1, w: 10L }, { to: 3, w: 11L }, { to: 5, w: 2L }],
-    [{ to: 1, w: 15L }, { to: 2, w: 11L }, { to: 4, w: 6L }],
-    [{ to: 3, w: 6L }, { to: 5, w: 9L }],
-    [{ to: 0, w: 14L }, { to: 2, w: 2L }, { to: 4, w: 9L }],
+    [{ to: 1, w: 7L, }, { to: 2, w: 9L, }, { to: 5, w: 14L, }],
+    [{ to: 0, w: 7L, }, { to: 2, w: 10L, }, { to: 3, w: 15L, }],
+    [
+      { to: 0, w: 9L, },
+      { to: 1, w: 10L, },
+      { to: 3, w: 11L, },
+      { to: 5, w: 2L, },
+    ],
+    [{ to: 1, w: 15L, }, { to: 2, w: 11L, }, { to: 4, w: 6L, }],
+    [{ to: 3, w: 6L, }, { to: 5, w: 9L, }],
+    [{ to: 0, w: 14L, }, { to: 2, w: 2L, }, { to: 4, w: 9L, }],
   ]
   for s in 0..<6 {
     for t in 0..<6 {

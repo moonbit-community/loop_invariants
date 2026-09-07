@@ -210,7 +210,7 @@ pub fn build_centroid(n : Int, edges : ArrayView[(Int, Int)]) -> CentroidDecomp 
     }
   }
   tree.build()
-  { parent: tree.centroid_parent, depth: tree.centroid_depth }
+  { parent: tree.centroid_parent, depth: tree.centroid_depth, }
 }
 
 ///|

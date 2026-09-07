@@ -67,8 +67,8 @@ pub(all) struct SpfaResult {
 /// ```moonbit nocheck
 /// test {
 ///   let adj : Array[Array[@spfa.Edge]] = [
-///     [{ to: 1, w: 4L }, { to: 2, w: 5L }],
-///     [{ to: 2, w: -3L }],
+///     [{ to: 1, w: 4L, }, { to: 2, w: 5L, }],
+///     [{ to: 2, w: -3L, }],
 ///     [],
 ///   ]
 ///   let r = @spfa.shortest_path(3, adj, 0)
@@ -83,7 +83,7 @@ pub fn shortest_path(
   let dist = Array::make(n, INF)
   let parent = Array::make(n, -1)
   if source < 0 || source >= n {
-    return { dist, parent, negative_cycle: false }
+    return { dist, parent, negative_cycle: false, }
   }
   dist[source] = 0L
   // SLF-like queue using a circular buffer; we use a plain queue plus
@@ -126,7 +126,7 @@ pub fn shortest_path(
       break
     }
   }
-  { dist, parent, negative_cycle: neg_cycle }
+  { dist, parent, negative_cycle: neg_cycle, }
 }
 
 ///|
@@ -163,12 +163,17 @@ pub fn reconstruct(
 ///|
 test "spfa basic positive weights" {
   let adj : Array[Array[Edge]] = [
-    [{ to: 1, w: 7L }, { to: 2, w: 9L }, { to: 5, w: 14L }],
-    [{ to: 0, w: 7L }, { to: 2, w: 10L }, { to: 3, w: 15L }],
-    [{ to: 0, w: 9L }, { to: 1, w: 10L }, { to: 3, w: 11L }, { to: 5, w: 2L }],
-    [{ to: 1, w: 15L }, { to: 2, w: 11L }, { to: 4, w: 6L }],
-    [{ to: 3, w: 6L }, { to: 5, w: 9L }],
-    [{ to: 0, w: 14L }, { to: 2, w: 2L }, { to: 4, w: 9L }],
+    [{ to: 1, w: 7L, }, { to: 2, w: 9L, }, { to: 5, w: 14L, }],
+    [{ to: 0, w: 7L, }, { to: 2, w: 10L, }, { to: 3, w: 15L, }],
+    [
+      { to: 0, w: 9L, },
+      { to: 1, w: 10L, },
+      { to: 3, w: 11L, },
+      { to: 5, w: 2L, },
+    ],
+    [{ to: 1, w: 15L, }, { to: 2, w: 11L, }, { to: 4, w: 6L, }],
+    [{ to: 3, w: 6L, }, { to: 5, w: 9L, }],
+    [{ to: 0, w: 14L, }, { to: 2, w: 2L, }, { to: 4, w: 9L, }],
   ]
   let r = shortest_path(6, adj, 0)
   let expected : ReadOnlyArray[Int64] = [0L, 7L, 9L, 20L, 20L, 11L]
@@ -181,8 +186,8 @@ test "spfa basic positive weights" {
 ///|
 test "spfa with negative edge no cycle" {
   let adj : Array[Array[Edge]] = [
-    [{ to: 1, w: 4L }, { to: 2, w: 5L }],
-    [{ to: 2, w: -3L }],
+    [{ to: 1, w: 4L, }, { to: 2, w: 5L, }],
+    [{ to: 2, w: -3L, }],
     [],
   ]
   let r = shortest_path(3, adj, 0)
@@ -194,9 +199,9 @@ test "spfa with negative edge no cycle" {
 test "spfa negative cycle detected" {
   // 0 -> 1 (1), 1 -> 2 (1), 2 -> 1 (-3): cycle 1 - 2 - 1 of total -2.
   let adj : Array[Array[Edge]] = [
-    [{ to: 1, w: 1L }],
-    [{ to: 2, w: 1L }],
-    [{ to: 1, w: -3L }],
+    [{ to: 1, w: 1L, }],
+    [{ to: 2, w: 1L, }],
+    [{ to: 1, w: -3L, }],
   ]
   let r = shortest_path(3, adj, 0)
   @debug.assert_eq(r.negative_cycle, true)
@@ -204,7 +209,7 @@ test "spfa negative cycle detected" {
 
 ///|
 test "spfa unreachable" {
-  let adj : Array[Array[Edge]] = [[{ to: 1, w: 1L }], [], []]
+  let adj : Array[Array[Edge]] = [[{ to: 1, w: 1L, }], [], []]
   let r = shortest_path(3, adj, 0)
   @debug.assert_eq(r.dist[2], INF)
 }
@@ -225,9 +230,9 @@ test "spfa source out of range" {
 ///|
 test "spfa path reconstruction" {
   let adj : Array[Array[Edge]] = [
-    [{ to: 1, w: 1L }, { to: 2, w: 10L }],
-    [{ to: 3, w: 2L }],
-    [{ to: 3, w: 1L }],
+    [{ to: 1, w: 1L, }, { to: 2, w: 10L, }],
+    [{ to: 3, w: 2L, }],
+    [{ to: 3, w: 1L, }],
     [],
   ]
   let r = shortest_path(4, adj, 0)
