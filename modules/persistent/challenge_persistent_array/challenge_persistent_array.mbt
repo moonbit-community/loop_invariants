@@ -119,7 +119,7 @@ pub fn[T] set_at(arr : PArray[T], idx : Int, value : T) -> PArray[T] {
 ///|
 /// Materialize the persistent array to a mutable array.
 pub fn[T] to_array(arr : PArray[T]) -> Array[T] {
-  let out = Array()
+  let out = []
   for i in 0..<arr.n {
     out.push(get_node(arr.root, 0, arr.n, i))
   }
