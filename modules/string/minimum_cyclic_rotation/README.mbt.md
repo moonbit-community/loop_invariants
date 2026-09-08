@@ -319,7 +319,7 @@ Sometimes you want the **index** so you can rotate other arrays the same way.
 fn[T] rotate_array(xs : ArrayView[T], start : Int) -> Array[T] {
   let n = xs.length()
   if n == 0 {
-    Array()
+    []
   } else {
     let shift = start % n
     [
