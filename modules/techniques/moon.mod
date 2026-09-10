@@ -1,6 +1,6 @@
 name = "bobzhang/loop_invariants_techniques"
 
-version = "0.17.0"
+version = "0.17.1"
 
 readme = "README.md"
 
