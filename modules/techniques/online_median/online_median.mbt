@@ -16,8 +16,10 @@
 //   hi : a min-heap holding the larger half
 //
 // We use two `@priority_queue.PriorityQueue` instances (which are
-// max-heaps). For `hi`, we store *negated* values so the maximum of the
-// negated set is the minimum of the original.
+// max-heaps). For `hi`, we store the *bitwise complement* `x.lnot()`
+// (= -x - 1) of each value, so the maximum of the complemented set is the
+// minimum of the original. Unlike plain negation, `lnot` is an
+// order-reversing bijection on all of `Int` (`-Int::MIN_VALUE` overflows).
 //
 // INVARIANTS (maintained between `add` calls):
 //
@@ -36,7 +38,7 @@
 ///|
 /// An online-median tracker for an Int stream.
 ///
-/// `lo` is the max-heap of the smaller half; `hi` stores the *negated*
+/// `lo` is the max-heap of the smaller half; `hi` stores the *complemented*
 /// values of the larger half, so its max-heap peek gives the min of the
 /// larger half.
 pub struct OnlineMedian {
@@ -76,21 +78,26 @@ pub fn OnlineMedian::add(self : OnlineMedian, x : Int) -> Unit {
   // Step 1: route x to the heap it belongs to.
   match self.lo.peek() {
     None => self.lo.push(x)
-    Some(top_lo) => if x <= top_lo { self.lo.push(x) } else { self.hi.push(-x) }
+    Some(top_lo) =>
+      if x <= top_lo {
+        self.lo.push(x)
+      } else {
+        self.hi.push(x.lnot())
+      }
   }
   // Step 2: rebalance. After step 1 the two heaps differ in size by
   // at most 2. A single transfer restores the (|lo - hi| <= 1, lo >=
   // hi) invariant.
   if self.lo.length() > self.hi.length() + 1 {
-    // lo is too heavy; move max(lo) to hi (negated).
+    // lo is too heavy; move max(lo) to hi (complemented).
     match self.lo.pop() {
-      Some(top) => self.hi.push(-top)
+      Some(top) => self.hi.push(top.lnot())
       None => ()
     }
   } else if self.hi.length() > self.lo.length() {
-    // hi is heavier; move min(hi) to lo (un-negated).
+    // hi is heavier; move min(hi) to lo (un-complemented).
     match self.hi.pop() {
-      Some(neg_top) => self.lo.push(-neg_top)
+      Some(neg_top) => self.lo.push(neg_top.lnot())
       None => ()
     }
   }
@@ -125,7 +132,7 @@ pub fn OnlineMedian::upper_median(self : OnlineMedian) -> Int? {
     None
   } else {
     match self.hi.peek() {
-      Some(neg_top) => Some(-neg_top)
+      Some(neg_top) => Some(neg_top.lnot())
       None => None
     }
   }
@@ -151,7 +158,7 @@ pub fn OnlineMedian::median(self : OnlineMedian) -> Double? {
     let hi_top = self.hi.peek()
     match (lo_top, hi_top) {
       (Some(a), Some(neg_b)) =>
-        Some((a.to_double() + (-neg_b).to_double()) / 2.0)
+        Some((a.to_double() + neg_b.lnot().to_double()) / 2.0)
       _ => None
     }
   }
