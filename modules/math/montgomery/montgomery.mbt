@@ -92,7 +92,10 @@ pub fn new(n : Int64) -> MontgomeryCtx? {
 /// Montgomery reduction: given `x < n * 2^32`, returns `x * R^{-1} mod n`.
 fn MontgomeryCtx::redc(self : MontgomeryCtx, x : Int64) -> Int64 {
   let m = ((x & R_MASK) * self.n_inv) & R_MASK
-  let mut t = (x + m * self.n) >> R_BITS
+  // x < n * 2^32 <= 2^63 and m * n < 2^32 * n <= 2^63, so x + m * n can
+  // exceed Int64::MAX (but never 2^64): add and shift as unsigned.
+  let sum = x.reinterpret_as_uint64() + (m * self.n).reinterpret_as_uint64()
+  let mut t = (sum >> R_BITS).reinterpret_as_int64()
   if t >= self.n {
     t = t - self.n
   }
