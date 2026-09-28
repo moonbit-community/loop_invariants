@@ -309,10 +309,9 @@ test "star graph" {
   exactly `n-1` bridges.
 - A vertex of degree 1 (a leaf) is never an articulation point: removing it
   cannot disconnect the rest of the graph.
-- Multi-edges (parallel edges between the same pair of vertices) are handled
-  by tracking the parent vertex rather than the parent edge index.  If your
-  graph has true multi-edges you may need an edge-index variant to avoid
-  treating the second copy of an edge as a back edge.
+- Multi-edges (parallel edges between the same pair of vertices) are handled:
+  the DFS skips the edge back to its parent vertex only once, so a second
+  copy of that edge is treated as a back edge and is never a bridge.
 - The returned arrays are in DFS discovery order; sort them if you need
   deterministic output independent of the adjacency-list ordering.
 
