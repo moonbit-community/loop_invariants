@@ -1116,13 +1116,21 @@ test "sieve" {
 #warnings("+missing_invariant+missing_reasoning")
 fn mod_pow(base : Int, exp : Int, m : Int) -> Int {
   guard m > 1 else { return 0 }
-  for b = base % m, e = exp, acc = 1 {
+  // Normalize the base into [0, m) (base % m is negative for negative base),
+  // and multiply in Int64 so that b * b cannot overflow for m > 46341.
+  let r = base % m
+  let m64 = m.to_int64()
+  fn mul_mod(x : Int, y : Int) -> Int {
+    (x.to_int64() * y.to_int64() % m64).to_int()
+  }
+
+  for b = (if r < 0 { r + m } else { r }), e = exp, acc = 1 {
     if e == 0 {
       break acc
     } else if e % 2 == 0 {
-      continue b * b % m, e / 2, acc
+      continue mul_mod(b, b), e / 2, acc
     } else {
-      continue b, e - 1, acc * b % m
+      continue b, e - 1, mul_mod(acc, b)
     }
   } where {
     proof_invariant: e >= 0 && acc >= 0 && acc < m && b >= 0 && b < m,
