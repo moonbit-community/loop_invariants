@@ -42,6 +42,14 @@
 //    result equals n_original * prod_{p_i seen so far} (1 - 1/p_i)."
 
 ///|
+/// `p * p > m` for `p >= 1`, `m >= 0`, without forming `p * p`: that
+/// product wraps negative once `p > 3037000499`, which kept trial division
+/// running forever for primes in (3037000499^2, Int64::MAX].
+fn square_exceeds(p : Int64, m : Int64) -> Bool {
+  p > m / p
+}
+
+///|
 /// Euler's totient phi(n) for a single positive integer `n`.
 /// Runs in `O(sqrt(n))` by trial division.
 ///
@@ -82,7 +90,7 @@ pub fn phi(n : Int64) -> Int64 {
   // After each step: result = n_orig * prod_{q prime, q | n_orig, q < p} (1 - 1/q)
   //                  m      = n_orig with all prime powers < p divided out
   let (m_final, result_final) = for p = 3L, m = m1, result = result1 {
-    if p * p > m {
+    if square_exceeds(p, m) {
       break (m, result)
     } else if m % p == 0L {
       let result_new = result - result / p
