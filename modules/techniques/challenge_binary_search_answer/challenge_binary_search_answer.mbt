@@ -66,11 +66,17 @@ pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
 }
 
 ///|
+const INT_MAX : Int = 2147483647
+
+///|
 /// Minimum capacity to ship all weights within the given days.
 pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
   let (lo, hi) = for w in weights; lo = 0, hi = 0 {
     let new_lo = if w > lo { w } else { lo }
-    continue new_lo, hi + w
+    // Saturate the upper bound at `Int::MAX_VALUE`: the plain sum of the
+    // weights can overflow even when the answer itself fits in an `Int`.
+    let new_hi = if w > INT_MAX - hi { INT_MAX } else { hi + w }
+    continue new_lo, new_hi
   } nobreak {
     (lo, hi)
   }
