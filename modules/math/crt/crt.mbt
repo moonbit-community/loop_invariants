@@ -86,6 +86,9 @@ fn ext_gcd(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
 /// ```
 pub fn merge(r1 : Int64, m1 : Int64, r2 : Int64, m2 : Int64) -> (Int64, Int64)? {
   let (g, p, _) = ext_gcd(m1, m2)
+  // Normalise the residues first so that `r2 - r1` cannot overflow.
+  let r1 = safe_mod(r1, m1)
+  let r2 = safe_mod(r2, m2)
   let diff = r2 - r1
   if diff % g != 0L {
     return None
