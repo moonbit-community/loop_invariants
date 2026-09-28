@@ -322,23 +322,26 @@ test "reverse" {
 ///|
 #warnings("+missing_invariant+missing_reasoning")
 fn isqrt(n : Int) -> Int {
-  // Returns floor(sqrt(n)) using binary search
-  for lo = 0, hi = n + 1 {
-    if lo + 1 >= hi {
-      break lo
+  // Returns floor(sqrt(n)) using binary search.
+  // The search runs over Int64 so that `n + 1` and `mid * mid` cannot
+  // overflow for large n (e.g. n = 100000 or n = Int max).
+  let n64 = n.to_int64()
+  for lo = 0L, hi = n64 + 1L {
+    if lo + 1L >= hi {
+      break lo.to_int()
     } else {
-      let mid = lo + (hi - lo) / 2
-      if mid * mid <= n {
+      let mid = lo + (hi - lo) / 2L
+      if mid * mid <= n64 {
         continue mid, hi
       } else {
         continue lo, mid
       }
     }
   } where {
-    proof_invariant: lo >= 0 &&
+    proof_invariant: lo >= 0L &&
     lo < hi &&
-    lo * lo <= n &&
-    (hi > n || hi * hi > n),
+    lo * lo <= n64 &&
+    (hi > n64 || hi * hi > n64),
     proof_reasoning: (
       #|The invariant maintains: lo² ≤ n < hi² (answer is in [lo, hi)).
       #|
