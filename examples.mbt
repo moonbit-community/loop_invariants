@@ -322,23 +322,26 @@ test "reverse" {
 ///|
 #warnings("+missing_invariant+missing_reasoning")
 fn isqrt(n : Int) -> Int {
-  // Returns floor(sqrt(n)) using binary search
-  for lo = 0, hi = n + 1 {
-    if lo + 1 >= hi {
-      break lo
+  // Returns floor(sqrt(n)) using binary search.
+  // The search runs over Int64 so that `n + 1` and `mid * mid` cannot
+  // overflow for large n (e.g. n = 100000 or n = Int max).
+  let n64 = n.to_int64()
+  for lo = 0L, hi = n64 + 1L {
+    if lo + 1L >= hi {
+      break lo.to_int()
     } else {
-      let mid = lo + (hi - lo) / 2
-      if mid * mid <= n {
+      let mid = lo + (hi - lo) / 2L
+      if mid * mid <= n64 {
         continue mid, hi
       } else {
         continue lo, mid
       }
     }
   } where {
-    proof_invariant: lo >= 0 &&
+    proof_invariant: lo >= 0L &&
     lo < hi &&
-    lo * lo <= n &&
-    (hi > n || hi * hi > n),
+    lo * lo <= n64 &&
+    (hi > n64 || hi * hi > n64),
     proof_reasoning: (
       #|The invariant maintains: lo² ≤ n < hi² (answer is in [lo, hi)).
       #|
@@ -602,10 +605,12 @@ fn two_sum_sorted(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
     if lo >= hi {
       break None
     } else {
-      let sum = arr[lo] + arr[hi]
-      if sum == target {
+      // Sum in Int64: an overflowing Int sum would wrap around and send the
+      // pointers the wrong way (e.g. [1, 2, Int max] with target 3).
+      let sum = arr[lo].to_int64() + arr[hi].to_int64()
+      if sum == target.to_int64() {
         break Some((lo, hi))
-      } else if sum < target {
+      } else if sum < target.to_int64() {
         continue lo + 1, hi
       } else {
         continue lo, hi - 1
@@ -921,7 +926,10 @@ fn isqrt_newton(n : Int) -> Int {
   guard n > 0 else { return 0 }
   // Start with initial guess (n itself, or better heuristic)
   for x = n {
-    let x_next = (x + n / x) / 2
+    // x_next = (x + n / x) / 2, written as q + (x - q) / 2 so that the sum
+    // cannot overflow (x >= q holds because x * x >= n).
+    let q = n / x
+    let x_next = q + (x - q) / 2
     if x_next >= x {
       break x // Converged
     } else {
@@ -1110,13 +1118,21 @@ test "sieve" {
 #warnings("+missing_invariant+missing_reasoning")
 fn mod_pow(base : Int, exp : Int, m : Int) -> Int {
   guard m > 1 else { return 0 }
-  for b = base % m, e = exp, acc = 1 {
+  // Normalize the base into [0, m) (base % m is negative for negative base),
+  // and multiply in Int64 so that b * b cannot overflow for m > 46341.
+  let r = base % m
+  let m64 = m.to_int64()
+  fn mul_mod(x : Int, y : Int) -> Int {
+    (x.to_int64() * y.to_int64() % m64).to_int()
+  }
+
+  for b = (if r < 0 { r + m } else { r }), e = exp, acc = 1 {
     if e == 0 {
       break acc
     } else if e % 2 == 0 {
-      continue b * b % m, e / 2, acc
+      continue mul_mod(b, b), e / 2, acc
     } else {
-      continue b, e - 1, acc * b % m
+      continue b, e - 1, mul_mod(acc, b)
     }
   } where {
     proof_invariant: e >= 0 && acc >= 0 && acc < m && b >= 0 && b < m,

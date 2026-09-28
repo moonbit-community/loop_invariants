@@ -1,3 +1,7 @@
 import {
   "moonbitlang/core/queue",
 }
+
+import {
+  "moonbitlang/core/quickcheck",
+} for "test"

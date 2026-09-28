@@ -114,7 +114,7 @@ fn ImplicitTreap::get_min(self : ImplicitTreap, node : Int) -> Int64 {
 /// Get maximum value in subtree (returns MIN_INT64 for null).
 fn ImplicitTreap::get_max(self : ImplicitTreap, node : Int) -> Int64 {
   if node < 0 {
-    -9223372036854775807L // Int64 min (approximately)
+    -9223372036854775808L // Int64 min
   } else {
     self.nodes[node].max_val
   }

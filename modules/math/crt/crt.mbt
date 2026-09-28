@@ -86,6 +86,9 @@ fn ext_gcd(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
 /// ```
 pub fn merge(r1 : Int64, m1 : Int64, r2 : Int64, m2 : Int64) -> (Int64, Int64)? {
   let (g, p, _) = ext_gcd(m1, m2)
+  // Normalise the residues first so that `r2 - r1` cannot overflow.
+  let r1 = safe_mod(r1, m1)
+  let r2 = safe_mod(r2, m2)
   let diff = r2 - r1
   if diff % g != 0L {
     return None
@@ -93,13 +96,29 @@ pub fn merge(r1 : Int64, m1 : Int64, r2 : Int64, m2 : Int64) -> (Int64, Int64)? 
   let lcm = m1 / g * m2
   // x = r1 + m1 * ((diff / g) * p mod (m2 / g))
   let m2g = m2 / g
-  // Reduce diff/g modulo m2g before multiplying by p to avoid Int64 overflow
-  // when diff/g is large (e.g. from accumulated LCMs or large raw residues).
-  // safe_mod(diff/g, m2g) ∈ [0, m2g) and |p| ≤ m2g/2, so the product fits
-  // in Int64 whenever m2g ≤ 2^32.
-  let k = safe_mod(safe_mod(diff / g, m2g) * p, m2g)
+  // Both factors are reduced into [0, m2g) and multiplied with the
+  // overflow-safe `mul_mod` (a plain product overflows once m2g > 2^32).
+  // Then k < m2g, so r1 + m1 * k < m1 * m2g = lcm fits whenever lcm does.
+  let k = mul_mod(safe_mod(diff / g, m2g), safe_mod(p, m2g), m2g)
   let r = safe_mod(r1 + m1 * k, lcm)
   Some((r, lcm))
+}
+
+///|
+/// `(a * b) mod m` for `0 <= a, b < m` without overflowing Int64
+/// (binary "Russian peasant" multiplication with guarded additions).
+fn mul_mod(a : Int64, b : Int64, m : Int64) -> Int64 {
+  let mut x = a
+  let mut y = b
+  let mut acc = 0L
+  while y > 0L {
+    if (y & 1L) == 1L {
+      acc = if acc >= m - x { acc - (m - x) } else { acc + x }
+    }
+    x = if x >= m - x { x - (m - x) } else { x + x }
+    y = y >> 1
+  }
+  acc
 }
 
 ///|

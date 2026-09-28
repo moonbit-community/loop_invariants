@@ -188,8 +188,14 @@ fn nth_root_floor(x : Int64, n : Int) -> Int64 {
   if n == 1 || x == 1L {
     return x
   }
+  // 2^63 > x, so for n >= 63 the root of any x >= 2 is 1.
+  if n >= 63 {
+    return 1L
+  }
+  // Double r until r^n > x so Newton starts above the root (the old cap
+  // at 2^30 left r below sqrt(x) for x > 2^62 and forced a long walk up).
   let mut r = 1L
-  while ipow_safe(r, n) < x && r <= 1073741824L {
+  while pow_le(r, n, x) {
     r = r * 2L
   }
   // Newton.
@@ -210,13 +216,31 @@ fn nth_root_floor(x : Int64, n : Int) -> Int64 {
     iter = iter + 1
   }
   let _ = prev
-  while r > 0L && ipow_safe(r, n) > x {
+  // Exact comparisons: a saturated `ipow_safe` equals `x == Int64::MAX`,
+  // which made the upward walk below run forever.
+  while r > 0L && !pow_le(r, n, x) {
     r = r - 1L
   }
-  while ipow_safe(r + 1L, n) <= x {
+  while pow_le(r + 1L, n, x) {
     r = r + 1L
   }
   r
+}
+
+///|
+/// `b^e <= x` for `b >= 0`, `e >= 1`, `x >= 0`, computed without overflow.
+fn pow_le(b : Int64, e : Int, x : Int64) -> Bool {
+  if b <= 1L {
+    return b <= x
+  }
+  let mut acc = 1L
+  for _ in 0..<e {
+    if acc > x / b {
+      return false
+    }
+    acc = acc * b
+  }
+  true
 }
 
 ///|

@@ -144,8 +144,14 @@ fn AhoCorasick::add_pattern(self : AhoCorasick, pattern : String) -> Unit {
     ),
   }
 
-  // Mark this state as accepting for this pattern
-  self.states[state].output.push(pattern_idx)
+  // Mark this state as accepting for this pattern.  An empty pattern would
+  // make the root accepting, but the root's output is only consulted when
+  // the search falls back to it and is never inherited by depth-1 states,
+  // so its matches depended on the other patterns.  Like the other searchers
+  // in this module, an empty pattern matches nowhere.
+  if pattern.length() > 0 {
+    self.states[state].output.push(pattern_idx)
+  }
 }
 
 ///|
@@ -431,7 +437,8 @@ fn AhoCorasick::find_all(
 /// the matched pattern string.
 ///
 /// Overlapping matches are included.  Patterns that are suffixes of other
-/// patterns (e.g. `"he"` inside `"she"`) are reported separately.
+/// patterns (e.g. `"he"` inside `"she"`) are reported separately.  Empty
+/// patterns never match.
 ///
 /// Example:
 /// ```

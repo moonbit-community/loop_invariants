@@ -32,8 +32,12 @@ hi  =  min-heap of the larger half
 ```
 
 We use `@priority_queue.PriorityQueue` from the standard library, which
-is a max-heap. For the `hi` side we store the **negated** values so
-that the max-heap's peek gives the minimum of the original numbers.
+is a max-heap. For the `hi` side we store the **bitwise complement**
+`x.lnot()` (that is, `-x - 1`) of each value so that the max-heap's peek
+gives the minimum of the original numbers. Plain negation would overflow
+for `Int::MIN_VALUE`; the complement reverses the order of every `Int`.
+(Earlier versions stored `-x`; this representation change is breaking for
+code that reads the public `hi` field directly.)
 
 ### Three invariants
 
@@ -218,10 +222,11 @@ and pops do not allocate new wrapper objects).
   need an indexed priority queue (or a treap, or a hash-map of "lazy
   deletes"); see the `@treap` / `@implicit_treap` packages for set
   data structures that support arbitrary removal.
-- **Integer overflow in `upper_median`**. The implementation negates
-  values when storing in `hi`, so `Int::MIN_VALUE` cannot round-trip
-  (its negation overflows). Use `Int64`-sized inputs and convert at
-  the boundary if you need full range; left as a future enhancement.
+- **Negation overflows at `Int::MIN_VALUE`**. Storing `-x` in the
+  `hi` heap looks natural, but `-Int::MIN_VALUE` wraps back to
+  `Int::MIN_VALUE`, which then sorts as the *largest* element of `hi`
+  and corrupts every median query. This package stores `x.lnot()`
+  instead, which is order-reversing on the full `Int` range.
 - **`median()` returns `Double`**; if you only need exact-Int answers,
   reach for `lower_median()` or `upper_median()`.
 - **The two heaps share nothing**. Two `OnlineMedian` instances are

@@ -1,5 +1,7 @@
+// `n <= 2147483647` always holds for an `Int`; stating it lets the prover
+// establish the initial bracket `n < 46341 * 46341` of `isqrt`.
 predicate nonneg(n : Int) {
-  n >= 0
+  n >= 0 && n <= 2147483647
 }
 
 predicate isqrt_ok(n : Int, result : Int) {

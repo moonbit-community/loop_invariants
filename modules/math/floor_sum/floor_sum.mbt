@@ -56,7 +56,14 @@ pub fn floor_sum(n : Int64, m : Int64, a : Int64, b : Int64) -> Int64 {
     // The first part sums to floor(a0/m0) * n0*(n0-1)/2 over i=0..n0-1.
     let (a1, ans1) = if a0 >= m0 {
       let q = a0 / m0
-      (a0 % m0, ans + (n0 - 1L) * n0 / 2L * q)
+      // n0 * (n0 - 1) / 2 without forming n0 * (n0 - 1), which overflows
+      // Int64 for n0 > 3037000499 even when the final sum fits.
+      let tri = if n0 % 2L == 0L {
+        n0 / 2L * (n0 - 1L)
+      } else {
+        (n0 - 1L) / 2L * n0
+      }
+      (a0 % m0, ans + tri * q)
     } else {
       (a0, ans)
     }

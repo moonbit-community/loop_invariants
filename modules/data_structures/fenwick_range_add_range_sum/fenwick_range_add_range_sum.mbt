@@ -285,5 +285,11 @@ pub fn FenwickRangeAddRangeSum::range_sum(
   if self.n <= 0 || l > r {
     return 0L
   }
+  // `prefix_sum(i)` reads `bit[i + 1]`, which exists only for `i <= n`, so
+  // clamp `r` to the last element; a range starting past it is empty.
+  let r = if r >= self.n { self.n - 1 } else { r }
+  if l > r {
+    return 0L
+  }
   self.prefix_sum(r) - self.prefix_sum(l - 1)
 }

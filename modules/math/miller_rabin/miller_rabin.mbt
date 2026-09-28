@@ -86,16 +86,12 @@ fn mod_mul(a : Int64, b : Int64, m : Int64) -> Int64 {
   }
   let mut r = 0L
   while y > 0L {
+    // `r + x` and `x + x` can exceed Int64 when m > 2^62, so compare
+    // against `m - x` (which cannot overflow) before adding.
     if y.land(1L) == 1L {
-      r = r + x
-      if r >= m {
-        r = r - m
-      }
+      r = if r >= m - x { r - (m - x) } else { r + x }
     }
-    x = x + x
-    if x >= m {
-      x = x - m
-    }
+    x = if x >= m - x { x - (m - x) } else { x + x }
     y = y / 2L
   }
   r

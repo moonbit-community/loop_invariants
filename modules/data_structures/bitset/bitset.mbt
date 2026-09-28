@@ -132,6 +132,16 @@ fn BitSet::masked_last_word(self : BitSet) -> Int64 {
 }
 
 ///|
+/// Re-establish the invariant after a bulk op: zero the padding bits of the
+/// last word (a wider `other` may carry set bits there).
+fn BitSet::clear_padding(self : BitSet) -> Unit {
+  let words = self.bits.length()
+  if words > 0 {
+    self.bits[words - 1] = self.masked_last_word()
+  }
+}
+
+///|
 /// Smallest index >= 0 that is set, or `-1` when none.
 pub fn BitSet::first_set(self : BitSet) -> Int {
   let words = self.bits.length()
@@ -200,6 +210,7 @@ pub fn BitSet::or_in(self : BitSet, other : BitSet) -> Unit {
   for i in 0..<n {
     self.bits[i] = self.bits[i] | other.bits[i]
   }
+  self.clear_padding()
 }
 
 ///|
@@ -223,6 +234,7 @@ pub fn BitSet::xor_in(self : BitSet, other : BitSet) -> Unit {
   for i in 0..<n {
     self.bits[i] = self.bits[i] ^ other.bits[i]
   }
+  self.clear_padding()
 }
 
 ///|

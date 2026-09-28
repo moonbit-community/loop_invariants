@@ -156,7 +156,9 @@ S = P + "$" + T
 ```
 
 Compute Z on `S`.  
-Any position `i > |P|` with `Z[i] == |P|` is a match in `T` at index `i - |P| - 1`.
+Any position `i > |P|` with `Z[i] >= |P|` is a match in `T` at index `i - |P| - 1`.
+(`Z[i]` can exceed `|P|` only when `T` itself contains `P + "$"`, so testing
+`== |P|` would miss those matches.)
 
 **Example: find `"ab"` in `"ababab"`**
 

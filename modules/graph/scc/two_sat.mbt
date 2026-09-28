@@ -30,14 +30,15 @@
 //
 // FINDING ASSIGNMENT:
 // ```
-//   Use the SCC numbering (topological order):
-//     - If SCC(xi) > SCC(NOT xi): set xi = true
-//     - If SCC(xi) < SCC(NOT xi): set xi = false
+//   Use Tarjan's SCC numbering (reverse topological order):
+//     - If SCC(xi) < SCC(NOT xi): set xi = true
+//     - If SCC(xi) > SCC(NOT xi): set xi = false
 //
 //   Why this works:
 //     If xi = true leads to contradiction, then there's a path
-//     xi => ... => NOT xi, meaning SCC(xi) <= SCC(NOT xi).
-//     By choosing the one with higher SCC number, we avoid the
+//     xi => ... => NOT xi, meaning SCC(xi) >= SCC(NOT xi) (Tarjan
+//     completes, and so numbers, the SCCs reachable from a vertex first).
+//     By choosing the literal with the lower SCC number, we avoid the
 //     implication chain leading to contradiction.
 // ```
 //
@@ -167,9 +168,9 @@ pub fn TwoSAT::add_clause(
 /// 2. For each variable `xᵢ`, check that `xᵢ` and `NOT xᵢ` are in
 ///    **different** SCCs. If they share an SCC the formula is unsatisfiable
 ///    (they mutually imply each other, creating a contradiction).
-/// 3. Assign `xᵢ = true` if `SCC(xᵢ) > SCC(NOT xᵢ)` in Tarjan's numbering
-///    (higher index = earlier in topological order = the literal that is
-///    "forced" to be true by the implication structure).
+/// 3. Assign `xᵢ = true` if `SCC(xᵢ) < SCC(NOT xᵢ)` in Tarjan's numbering
+///    (lower index = later in topological order, so choosing that literal
+///    never implies its own negation).
 ///
 /// Returns:
 /// - `Some(assignment)` where `assignment[i]` is the value of variable `i`,
@@ -198,12 +199,12 @@ pub fn TwoSAT::solve(self : TwoSAT) -> Array[Bool]? {
 
   // Assign values based on SCC ordering
   // Tarjan numbers SCCs in reverse topological order
-  // Higher SCC number = earlier in topological order = "stronger"
+  // Lower SCC number = later in topological order
   let assignment = Array::make(self.n, false)
   for x in 0..<self.n {
-    // If SCC(x) > SCC(NOT x), then x implies NOT x would be
-    // going against topological order, so x = true is safe
-    assignment[x] = result.component[x] > result.component[x + self.n]
+    // If SCC(x) < SCC(NOT x), x comes after NOT x topologically, so there
+    // is no path x => NOT x and x = true is safe
+    assignment[x] = result.component[x] < result.component[x + self.n]
   }
   Some(assignment)
 }

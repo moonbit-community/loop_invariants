@@ -191,7 +191,9 @@ pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
   // These positions correspond to text[i - m - 1]
   // INVARIANT: Valid matches are at positions > m (after pattern$)
   for i in (m + 1)..<z.length() {
-    if z[i] == m {
+    // `>=`, not `==`: the '$' separator does not stop the Z-box when the
+    // text itself contains `pattern + "$"`, so z[i] may exceed m at a match.
+    if z[i] >= m {
       result.push(i - m - 1) // Convert to text index
     }
   } where {
@@ -201,7 +203,7 @@ pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
       #|Indices in [m+1..i) correspond to text positions already checked, and
       #|result stores all matches found so far.
       #|MAINTENANCE:
-      #|If z[i] == m, record the match at i - m - 1 and advance.
+      #|If z[i] >= m, record the match at i - m - 1 and advance.
       #|TERMINATION:
       #|At i = z.length(), all text positions are examined.
     ),

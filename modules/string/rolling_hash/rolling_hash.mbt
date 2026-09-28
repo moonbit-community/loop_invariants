@@ -111,7 +111,12 @@ fn RollingHash::RollingHash(s : String) -> RollingHash {
   let prefix_hash = Array::make(n + 1, 0L)
   for i in 0..<n {
     let char_val = (s[i].to_int() - 'a'.to_int() + 1).to_int64()
-    prefix_hash[i + 1] = (prefix_hash[i] * HASH_BASE + char_val) % HASH_MOD
+    // Characters below 'a' have negative values and `%` keeps the sign of
+    // its dividend, so reduce to the canonical residue in [0, HASH_MOD);
+    // otherwise `get_hash` can return h - HASH_MOD for a window whose true
+    // hash is h, and a real match is skipped.
+    let h = (prefix_hash[i] * HASH_BASE + char_val) % HASH_MOD
+    prefix_hash[i + 1] = if h < 0L { h + HASH_MOD } else { h }
   } where {
     proof_invariant: i >= 0 && i <= n,
     proof_reasoning: (

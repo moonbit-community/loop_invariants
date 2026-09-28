@@ -7,7 +7,7 @@ pub fn div_nonneg(
   proof_require: valid_division_args(n, d),
   proof_ensure: result => div_ok(n, d, result),
 } {
-  for q = 0, r = n; q < n + 1; {
+  for q = 0, r = n; q < n; {
     if r < d {
       break q
     } else {
@@ -35,9 +35,14 @@ pub fn div_nonneg(
       #| `q * d <= n < (q + 1) * d`, so yielding `q` is correct.
       #|
       #| The auxiliary bound `q <= n` keeps the synthetic loop guard
-      #| `q < n + 1` proof-friendly without changing the mathematical argument:
+      #| `q < n` proof-friendly without changing the mathematical argument:
       #| when `d > 0`, every successful subtraction increases `q` by one and
-      #| removes at least one unit from `r`.
+      #| removes at least one unit from `r`. If the guard fails, `q == n`,
+      #| and `n == q * d + r` with `r >= 0` forces `n == 0` or `d == 1` with
+      #| `r == 0`, so `q` is again the exact quotient. (The guard used to be
+      #| `q < n + 1`, which overflows for `n = Int max`; `q <= n` would avoid
+      #| the overflow too, but only a `q < bound` guard gets the automatic
+      #| termination variant `bound - q`.)
     ),
   }
 }

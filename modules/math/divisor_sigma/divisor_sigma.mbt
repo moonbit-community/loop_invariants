@@ -49,6 +49,14 @@ fn ipow(p : Int64, e : Int) -> Int64 {
 }
 
 ///|
+/// `p * p <= m` for `p >= 1`, `m >= 0`, without forming `p * p`: that
+/// product wraps negative once `p > 3037000499`, which kept trial division
+/// running forever for primes in (3037000499^2, Int64::MAX].
+fn square_fits(p : Int64, m : Int64) -> Bool {
+  p <= m / p
+}
+
+///|
 /// Number of divisors `d(n) = sigma_0(n)`. Returns `0` for `n <= 0`.
 ///
 /// ## Example
@@ -68,7 +76,7 @@ pub fn divisor_count(n : Int64) -> Int64 {
   let mut m = n
   let mut total = 1L
   let mut p = 2L
-  while p * p <= m {
+  while square_fits(p, m) {
     if m % p == 0L {
       let mut e = 0
       while m % p == 0L {
@@ -106,18 +114,24 @@ pub fn sigma_k(n : Int64, k : Int) -> Int64 {
   let mut m = n
   let mut total = 1L
   let mut p = 2L
-  while p * p <= m {
+  while square_fits(p, m) {
     if m % p == 0L {
       let mut e = 0
       while m % p == 0L {
         m = m / p
         e = e + 1
       }
-      // (p^{k(e+1)} - 1) / (p^k - 1)
+      // sigma_k(p^e) = 1 + p^k + ... + p^{ke} = (p^{k(e+1)} - 1) / (p^k - 1).
+      // Accumulate the sum term by term: the closed form's numerator
+      // p^{k(e+1)} can overflow Int64 even when sigma_k(n) itself fits.
       let pk = ipow(p, k)
-      let num = ipow(pk, e + 1) - 1L
-      let den = pk - 1L
-      total = total * (num / den)
+      let mut term = 1L
+      let mut sum = 1L
+      for _ in 0..<e {
+        term = term * pk
+        sum = sum + term
+      }
+      total = total * sum
     }
     p = p + 1L
   }

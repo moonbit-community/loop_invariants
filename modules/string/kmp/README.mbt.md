@@ -225,8 +225,9 @@ Z-value:  7  1  0  0  3  1  0
 
 ### Pattern Matching with Z
 
-Build `S = pattern + "$" + text`.  Any position `i` with `Z[i] == m` is a
-match start (at index `i - m - 1` in the text).
+Build `S = pattern + "$" + text`.  Any position `i > m` with `Z[i] >= m` is a
+match start (at index `i - m - 1` in the text).  `Z[i]` exceeds `m` only when
+the text itself contains `pattern + "$"`; testing `Z[i] == m` would miss those.
 
 ```
 P = "AB"   T = "ABABAB"   S = "AB$ABABAB"

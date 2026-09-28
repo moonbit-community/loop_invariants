@@ -361,14 +361,18 @@ pub fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
   if n == 0 {
     return 0
   }
-  for right = 0, left = 0, sum = 0L, max_len = 0; right < n; {
-    let (left, sum) = for left = left, sum = sum + arr[right]; sum > target &&
+  // The window sum is kept as `UInt64`: before adding `arr[right]` it is at
+  // most `max(target, 0) <= Int64::MAX_VALUE`, so adding one more
+  // non-negative element stays below `2^64` instead of wrapping an `Int64`.
+  for right = 0, left = 0, sum = 0UL, max_len = 0; right < n; {
+    let x = arr[right].reinterpret_as_uint64()
+    let (left, sum) = for left = left, sum = sum + x; sum_gt(sum, target) &&
                          left <= right; {
-      continue left + 1, sum - arr[left]
+      continue left + 1, sum - arr[left].reinterpret_as_uint64()
     } nobreak {
       (left, sum)
     }
-    let new_max_len = if sum <= target {
+    let new_max_len = if !sum_gt(sum, target) {
       let len = right - left + 1
       if len > max_len {
         len
@@ -410,6 +414,18 @@ pub fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
 }
 
 ///|
+/// `sum > target` for a window sum of non-negative elements held as `UInt64`.
+fn sum_gt(sum : UInt64, target : Int64) -> Bool {
+  target < 0L || sum > target.reinterpret_as_uint64()
+}
+
+///|
+/// `sum >= target` for a window sum of non-negative elements held as `UInt64`.
+fn sum_ge(sum : UInt64, target : Int64) -> Bool {
+  target <= 0L || sum >= target.reinterpret_as_uint64()
+}
+
+///|
 /// Find the minimum length of a contiguous subarray whose sum is at least
 /// `target`.
 ///
@@ -441,13 +457,18 @@ pub fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int {
   if n == 0 {
     return 0
   }
-  let min_len = for right = 0, left = 0, sum = 0L, min_len = n + 1; right < n; {
-    let (left, sum, min_len) = for left = left, sum = sum + arr[right], min_len = min_len; sum >=
-                                  target &&
+  // The window sum is kept as `UInt64`: before adding `arr[right]` it is
+  // below `max(target, 1) <= Int64::MAX_VALUE`, so adding one more
+  // non-negative element stays below `2^64` instead of wrapping an `Int64`.
+  let min_len = for right = 0, left = 0, sum = 0UL, min_len = n + 1; right < n; {
+    let x = arr[right].reinterpret_as_uint64()
+    let (left, sum, min_len) = for left = left, sum = sum + x, min_len = min_len; sum_ge(
+                                    sum, target,
+                                  ) &&
                                   left <= right; {
       let len = right - left + 1
       let min_len = if len < min_len { len } else { min_len }
-      continue left + 1, sum - arr[left], min_len
+      continue left + 1, sum - arr[left].reinterpret_as_uint64(), min_len
     } nobreak {
       (left, sum, min_len)
     }

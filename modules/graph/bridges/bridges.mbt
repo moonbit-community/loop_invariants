@@ -84,9 +84,10 @@ fn BridgeFinder::add_edge(self : BridgeFinder, u : Int, v : Int) -> Unit {
 /// - **Tree edge** (`disc[v] < 0`): recurse into `v`, then pull `low[v]` up
 ///   into `low[u]`.  Apply the bridge rule and the non-root articulation-point
 ///   rule after returning.
-/// - **Back edge** (`v != p`): update `low[u] = min(low[u], disc[v])`.
-/// - **Parent edge** (`v == p`): skip to avoid treating the undirected parent
-///   edge as a back edge.
+/// - **Back edge** (`v != p`, or a further parallel copy of the parent
+///   edge): update `low[u] = min(low[u], disc[v])`.
+/// - **Parent edge** (the first `v == p`): skip once to avoid treating the
+///   undirected tree edge itself as a back edge.
 ///
 /// After all neighbours are processed, apply the root articulation-point rule
 /// if `p < 0` and the DFS-child count is >= 2.
@@ -95,7 +96,9 @@ fn BridgeFinder::dfs(self : BridgeFinder, u : Int, p : Int) -> Unit {
   self.low[u] = self.timer
   self.timer = self.timer + 1
   self.parent[u] = p
-  let children = for i in 0..<self.adj[u].length(); children = 0 {
+  let children = for
+    i in 0..<self.adj[u].length()
+    children = 0, skipped_parent = false {
     let v = self.adj[u][i]
     if self.disc[v] < 0 {
       // Tree edge
@@ -115,15 +118,16 @@ fn BridgeFinder::dfs(self : BridgeFinder, u : Int, p : Int) -> Unit {
       if self.low[v] > self.disc[u] {
         self.bridges.push((u, v))
       }
-      continue children + 1
-    } else if v != p {
-      // Back edge (not to parent)
+      continue children + 1, skipped_parent
+    } else if v != p || skipped_parent {
+      // Back edge (a parallel copy of the parent edge is a back edge too)
       if self.disc[v] < self.low[u] {
         self.low[u] = self.disc[v]
       }
-      continue children
+      continue children, skipped_parent
     } else {
-      continue children
+      // Skip the tree edge to the parent exactly once
+      continue children, true
     }
   } nobreak {
     children
