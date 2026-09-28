@@ -289,7 +289,7 @@ Add edges for every implication, then run SCC:
 
   SATISFIABLE   : for each i, choose the literal whose SCC
                   comes later in topological order
-                  (higher SCC index in Tarjan's numbering)
+                  (lower SCC index in Tarjan's numbering)
 ```
 
 Mini example — clause `(x OR y)`:
