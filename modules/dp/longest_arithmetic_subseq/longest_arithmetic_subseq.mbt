@@ -48,6 +48,14 @@ fn get_or_zero(map : Map[Int64, Int], key : Int64) -> Int {
 }
 
 ///|
+/// Whether `diff = a - b` wrapped around, i.e. the exact difference is
+/// outside the `Int64` range (operands of different signs and a result
+/// whose sign differs from `a`).
+fn sub_overflows(a : Int64, b : Int64, diff : Int64) -> Bool {
+  ((a ^ b) & (a ^ diff)) < 0L
+}
+
+///|
 /// Length of the longest arithmetic subsequence of `arr`.
 /// Returns `0` for empty input and `1` for single elements.
 ///
@@ -71,6 +79,15 @@ pub fn length(arr : Array[Int64]) -> Int {
   for i in 1..<n {
     for j in 0..<i {
       let d = arr[i] - arr[j]
+      if sub_overflows(arr[i], arr[j], d) {
+        // |arr[i] - arr[j]| >= 2^63: no third Int64 term can continue this
+        // pair, and its wrapped `d` must not be confused with a real
+        // difference. The pair itself is arithmetic (length 2).
+        if best < 2 {
+          best = 2
+        }
+        continue
+      }
       let prev = get_or_zero(dp[j], d)
       let cand = if prev > 0 { prev + 1 } else { 2 }
       let cur = get_or_zero(dp[i], d)
@@ -99,7 +116,13 @@ pub fn length_fixed_diff(arr : Array[Int64], d : Int64) -> Int {
   let mut best = 1
   for i in 0..<n {
     let prev = arr[i] - d
-    let p = get_or_zero(end, prev)
+    // If `arr[i] - d` overflows, the predecessor lies outside `Int64`, so
+    // there is none (the wrapped value would match an unrelated element).
+    let p = if sub_overflows(arr[i], d, prev) {
+      0
+    } else {
+      get_or_zero(end, prev)
+    }
     let cand = if p > 0 { p + 1 } else { 1 }
     let cur = get_or_zero(end, arr[i])
     if cand > cur {
