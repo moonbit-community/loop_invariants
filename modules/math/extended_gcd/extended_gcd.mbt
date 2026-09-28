@@ -23,14 +23,17 @@
 //
 // ITERATIVE FORM (used here)
 //
-// Maintain four numbers `(old_r, r, old_s, s)` with the invariant
+// Maintain six numbers `(old_r, r, old_s, s, old_t, t)` with the invariant
 //
-//     a * old_s + b * (?)  = old_r     -- but we drop the second
-//     a * s     + b * (?)  = r            coefficient; we recover it at
-//                                         the end from old_y = (g - a*x) / b.
+//     |a| * old_s + |b| * old_t = old_r
+//     |a| * s     + |b| * t     = r
+//
+// (Recovering the second coefficient at the end as `(g - a*x) / b`
+// would overflow Int64 whenever `b * y` does, even if `y` itself fits.)
+// The remainders are kept as UInt64 so that `|Int64::MIN| = 2^63` fits.
 //
 // Each step does one Euclidean reduction: `(old_r, r) <- (r, old_r - q*r)`,
-// and the same on `(old_s, s)`. This preserves the invariant and runs in
+// and the same on `(old_s, s)` and `(old_t, t)`. This preserves the invariant and runs in
 // `O(log min(|a|, |b|))` iterations.
 //
 // COMPLEXITY
@@ -40,9 +43,9 @@
 //
 // THE INVARIANT
 //
-//   "At every iteration, `old_r = a * old_s + b * old_t` and
-//    `r = a * s + b * t` hold, where `t = (old_r - a*old_s) / b` (or 0
-//    when `b = 0`). When `r` becomes 0, `old_r = gcd(|a|, |b|)`."
+//   "At every iteration, `old_r = |a| * old_s + |b| * old_t` and
+//    `r = |a| * s + |b| * t` hold. When `r` becomes 0,
+//    `old_r = gcd(|a|, |b|)`."
 
 ///|
 /// Bezout's identity for `(a, b)`: returns `(g, x, y)` with
@@ -63,28 +66,36 @@ pub fn bezout(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
   if a == 0L && b == 0L {
     return (0L, 0L, 0L)
   }
-  // Track sign so the returned g is non-negative while the coefficients
-  // refer to the original a, b.
-  let sign_a = if a < 0L { -1L } else { 1L }
-  let mut old_r = if a < 0L { -a } else { a }
-  let mut r = if b < 0L { -b } else { b }
+  // Run the Euclidean reduction on the magnitudes |a|, |b| as UInt64 so
+  // that |Int64::MIN| = 2^63 is representable, and track both Bezout
+  // coefficients. Recovering y afterwards as (g - a*x) / b would overflow
+  // when b*y does not fit in Int64 even though y itself does.
+  let mut old_r = magnitude(a)
+  let mut r = magnitude(b)
   let mut old_s = 1L
   let mut s = 0L
-  while r != 0L {
+  let mut old_t = 0L
+  let mut t = 1L
+  while r != 0UL {
     let q = old_r / r
     let new_r = old_r - q * r
     old_r = r
     r = new_r
-    let new_s = old_s - q * s
+    // The retained coefficients are bounded by max(|a|, |b|) / g, so
+    // wrapping Int64 arithmetic yields their exact values.
+    let qi = q.reinterpret_as_int64()
+    let new_s = old_s - qi * s
     old_s = s
     s = new_s
+    let new_t = old_t - qi * t
+    old_t = t
+    t = new_t
   }
-  // Now old_r = gcd(|a|, |b|), and (old_s) is the Bezout coefficient
-  // for |a|. Recover y from g - |a| * x.
-  let g = old_r
-  let x = old_s * sign_a
-  // y * b = g - a * x. Use original b to compute; b may be 0.
-  let y = if b == 0L { 0L } else { (g - a * x) / b }
+  // Now old_r = gcd(|a|, |b|) and |a| * old_s + |b| * old_t = old_r.
+  // Transfer the signs of a and b onto the coefficients.
+  let g = old_r.reinterpret_as_int64()
+  let x = if a < 0L { -old_s } else { old_s }
+  let y = if b < 0L { -old_t } else { old_t }
   (g, x, y)
 }
 
