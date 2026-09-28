@@ -50,12 +50,33 @@ fn mod_pow(base : Int64, exp : Int64, p : Int64) -> Int64 {
   let mut r = 1L
   while e > 0L {
     if e.land(1L) == 1L {
-      r = r * b % p
+      r = mul_mod(r, b, p)
     }
-    b = b * b % p
+    b = mul_mod(b, b, p)
     e = e / 2L
   }
   r
+}
+
+///|
+/// `(a * b) mod p` for `0 <= a, b < p`. A plain product overflows Int64
+/// once `p > 3037000499`; then fall back to binary ("Russian peasant")
+/// multiplication with guarded additions.
+fn mul_mod(a : Int64, b : Int64, p : Int64) -> Int64 {
+  if p <= 3037000499L {
+    return a * b % p
+  }
+  let mut x = a
+  let mut y = b
+  let mut acc = 0L
+  while y > 0L {
+    if y.land(1L) == 1L {
+      acc = if acc >= p - x { acc - (p - x) } else { acc + x }
+    }
+    x = if x >= p - x { x - (p - x) } else { x + x }
+    y = y / 2L
+  }
+  acc
 }
 
 ///|
@@ -83,7 +104,7 @@ pub fn build(n : Int, p : Int64) -> BinomTable {
   let m = if n < 0 { 0 } else { n }
   let fact = Array::make(m + 1, 1L)
   for i in 1..<=m {
-    fact[i] = fact[i - 1] * i.to_int64() % p
+    fact[i] = mul_mod(fact[i - 1], i.to_int64(), p)
   }
   let inv_fact = Array::make(m + 1, 1L)
   if m >= 0 {
@@ -91,7 +112,7 @@ pub fn build(n : Int, p : Int64) -> BinomTable {
   }
   let mut i = m - 1
   while i >= 0 {
-    inv_fact[i] = inv_fact[i + 1] * (i + 1).to_int64() % p
+    inv_fact[i] = mul_mod(inv_fact[i + 1], (i + 1).to_int64(), p)
     i = i - 1
   }
   { fact, inv_fact, modulus: p, }
@@ -107,11 +128,8 @@ pub fn BinomTable::choose(self : BinomTable, n : Int, k : Int) -> Int64 {
   if n >= self.fact.length() {
     return 0L
   }
-  self.fact[n] *
-  self.inv_fact[k] %
-  self.modulus *
-  self.inv_fact[n - k] %
-  self.modulus
+  let p = self.modulus
+  mul_mod(mul_mod(self.fact[n], self.inv_fact[k], p), self.inv_fact[n - k], p)
 }
 
 ///|
@@ -138,12 +156,13 @@ pub fn lucas(n : Int64, k : Int64, p : Int64) -> Int64 {
   let mut nn = n
   let mut kk = k
   while kk > 0L {
-    let ni = (nn % p).to_int()
-    let ki = (kk % p).to_int()
+    // Digits stay Int64: they can exceed Int range when p > 2^31.
+    let ni = nn % p
+    let ki = kk % p
     if ki > ni {
       return 0L
     }
-    result = result * small_choose(ni, ki, p) % p
+    result = mul_mod(result, small_choose(ni, ki, p), p)
     nn = nn / p
     kk = kk / p
   }
@@ -151,18 +170,18 @@ pub fn lucas(n : Int64, k : Int64, p : Int64) -> Int64 {
 }
 
 ///|
-fn small_choose(n : Int, k : Int, p : Int64) -> Int64 {
+fn small_choose(n : Int64, k : Int64, p : Int64) -> Int64 {
   let mut kk = k
   if kk > n - kk {
     kk = n - kk
   }
   let mut num = 1L
   let mut den = 1L
-  for i in 0..<kk {
-    num = num * (n - i).to_int64() % p
-    den = den * (i + 1).to_int64() % p
+  for i in 0L..<kk {
+    num = mul_mod(num, n - i, p)
+    den = mul_mod(den, i + 1L, p)
   }
-  num * mod_pow(den, p - 2L, p) % p
+  mul_mod(num, mod_pow(den, p - 2L, p), p)
 }
 
 ///|
