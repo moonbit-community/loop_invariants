@@ -605,10 +605,12 @@ fn two_sum_sorted(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
     if lo >= hi {
       break None
     } else {
-      let sum = arr[lo] + arr[hi]
-      if sum == target {
+      // Sum in Int64: an overflowing Int sum would wrap around and send the
+      // pointers the wrong way (e.g. [1, 2, Int max] with target 3).
+      let sum = arr[lo].to_int64() + arr[hi].to_int64()
+      if sum == target.to_int64() {
         break Some((lo, hi))
-      } else if sum < target {
+      } else if sum < target.to_int64() {
         continue lo + 1, hi
       } else {
         continue lo, hi - 1
