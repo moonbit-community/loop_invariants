@@ -25,7 +25,9 @@ pub fn isqrt(
   proof_require: nonneg(n),
   proof_ensure: result => isqrt_ok(n, result),
 } {
-  for lo = 0, hi = n + 1; lo < hi - 1; {
+  // Every Int is below 46341 * 46341 = 2147488281, so capping the upper
+  // bracket at 46341 keeps `mid * mid` (and `n + 1`) from overflowing Int.
+  for lo = 0, hi = (if n < 46341 { n + 1 } else { 46341 }); lo < hi - 1; {
     let mid = lo + (hi - lo) / 2
     if mid * mid <= n {
       continue mid, hi
@@ -44,8 +46,10 @@ pub fn isqrt(
       #| root. `lo` is always feasible because `lo * lo <= n`, while `hi` is
       #| always too large because `n < hi * hi`.
       #|
-      #| At the start, `lo = 0` and `hi = n + 1`, so the interval is valid for
-      #| every nonnegative `n`.
+      #| At the start, `lo = 0` and `hi = min(n + 1, 46341)`, so the interval
+      #| is valid for every nonnegative `n`: `n < (n + 1) * (n + 1)`, and every
+      #| `Int` is below `46341 * 46341`. The cap also keeps every `mid * mid`
+      #| within `Int` range.
       #|
       #| The midpoint test `mid * mid <= n` decides whether the answer is at or
       #| below `mid` or strictly above it:
