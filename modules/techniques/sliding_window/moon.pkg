@@ -1,3 +1,7 @@
 import {
   "moonbitlang/core/deque",
 }
+
+import {
+  "moonbitlang/core/quickcheck",
+} for "test"

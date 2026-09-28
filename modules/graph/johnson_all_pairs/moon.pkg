@@ -1,3 +1,7 @@
 import {
   "bobzhang/loop_invariants_graph/bellman_ford",
 }
+
+import {
+  "moonbitlang/core/quickcheck",
+} for "test"
