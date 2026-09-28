@@ -55,6 +55,12 @@ fn upper_bound_fixed(
 }
 
 ///|
+const INT_MAX : Int = 2147483647
+
+///|
+const INT_MIN : Int = -2147483648
+
+///|
 /// Maximum subset sum <= target using meet-in-the-middle.
 pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int {
   let n = nums.length()
@@ -69,7 +75,16 @@ pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int {
     right_sums_fixed[i] = val
   }
   for val in left_sums; best = 0 {
-    let remaining = target - val
+    // `target - val` can overflow `Int` when `val` is negative; compute it in
+    // `Int64` and clamp (every right-half sum lies within `Int` anyway).
+    let remaining64 = target.to_int64() - val.to_int64()
+    let remaining = if remaining64 > INT_MAX.to_int64() {
+      INT_MAX
+    } else if remaining64 < INT_MIN.to_int64() {
+      INT_MIN
+    } else {
+      remaining64.to_int()
+    }
     let idx = upper_bound_fixed(right_sums_fixed, remaining)
     let new_best = if idx > 0 {
       let cand = val + right_sums_fixed[idx - 1]
