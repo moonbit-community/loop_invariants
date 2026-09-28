@@ -214,13 +214,11 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
   if n <= 0 {
     return None
   }
-  if n <= 2 {
-    if edges.length() == n - 1 {
-      return Some([])
-    } else {
-      return None
-    }
+  if n == 1 {
+    // A single vertex has no edges and an empty code.
+    return if edges.length() == 0 { Some([]) } else { None }
   }
+  // For n == 2 the edge is still validated below; the code is then empty.
   let (adj, deg) = match build_tree(n, edges) {
     None => return None
     Some(pair) => pair
