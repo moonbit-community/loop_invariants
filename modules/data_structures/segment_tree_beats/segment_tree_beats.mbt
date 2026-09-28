@@ -249,7 +249,9 @@ fn SegmentTreeBeats::chmin_impl(
   if qr <= l || r <= ql || x >= self.max[node] {
     return
   }
-  if ql <= l && r <= qr && x > self.second_max[node] {
+  // A leaf has no children to descend into, so it is always updated in place
+  // (its `second_max` sentinel need not be below `x`).
+  if ql <= l && r <= qr && (x > self.second_max[node] || r - l == 1) {
     self.apply_chmin(node, x)
     return
   }
