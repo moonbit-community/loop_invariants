@@ -324,7 +324,9 @@ pub fn z_search(text : String, pattern : String) -> Array[Int] {
   let z = compute_z_function(concat)
   let offset = m + 1
   for i in offset..<concat.length() {
-    if z[i] == m {
+    // `>=`, not `==`: the sentinel does not stop the Z-box when the text
+    // itself contains `pattern + "$"`, so z[i] may exceed m at a real match.
+    if z[i] >= m {
       matches.push(i - offset)
     }
   }
