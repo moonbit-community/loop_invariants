@@ -40,6 +40,14 @@
 //    factor recurs we abort with 0)."
 
 ///|
+/// `p * p <= m` for `p >= 1`, `m >= 0`, without forming `p * p`: that
+/// product wraps negative once `p > 3037000499`, which kept trial division
+/// running forever for primes in (3037000499^2, Int64::MAX].
+fn square_fits(p : Int64, m : Int64) -> Bool {
+  p <= m / p
+}
+
+///|
 /// Mobius function `mu(n)` for a single positive integer.
 /// Returns `0` for `n <= 0`. Runs in `O(sqrt(n))` by trial division.
 ///
@@ -68,7 +76,7 @@ pub fn mu(n : Int64) -> Int {
     }
   }
   let mut p = 3L
-  while p * p <= m {
+  while square_fits(p, m) {
     if m % p == 0L {
       m = m / p
       sign = -sign
