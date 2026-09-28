@@ -167,7 +167,9 @@ pub fn linear_recurrence_nth(
     return mod_norm(initial[n.to_int()], m)
   }
   if k == 1 {
-    return mod_mul(initial[0], pow_mod(coeffs[0], n, m), m)
+    // Normalise initial[0] first: a negative operand would make the
+    // product (and hence the result) negative.
+    return mod_mul(mod_norm(initial[0], m), pow_mod(coeffs[0], n, m), m)
   }
   let init_res = Array::make(k, 0L)
   init_res[0] = 1L
