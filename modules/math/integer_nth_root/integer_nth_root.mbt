@@ -69,14 +69,15 @@ pub fn nth_root(x : Int64, n : Int) -> Int64 {
   if n == 1 || x == 0L || x == 1L {
     return x
   }
-  // Initial guess: 2^ceil(log2(x) / n) is comfortably above the root.
-  let mut r = 1L
-  while ipow_safe(r, n) < x && r <= 1000000000L {
-    r = r * 2L
+  // 2^63 > x, so for n >= 63 the root of any x >= 2 is 1.
+  if n >= 63 {
+    return 1L
   }
-  // Cap r to avoid Int64.max accidents.
-  if r > 2147483647L {
-    r = 2147483647L
+  // Initial guess: double r until r^n > x, so Newton starts above the
+  // root (r <= 2^32 because (2^32)^2 > Int64::MAX).
+  let mut r = 1L
+  while pow_le(r, n, x) {
+    r = r * 2L
   }
   // Newton iterate.
   let mut prev = r
@@ -98,13 +99,31 @@ pub fn nth_root(x : Int64, n : Int) -> Int64 {
   }
   let _ = prev
   // Floor adjustment in case Newton overshot slightly: walk down/up.
-  while r > 0L && ipow_safe(r, n) > x {
+  // `pow_le` is exact; a saturated `ipow_safe` compared against
+  // `x == Int64::MAX` would wrongly report `(r + 1)^n <= x`.
+  while r > 0L && !pow_le(r, n, x) {
     r = r - 1L
   }
-  while ipow_safe(r + 1L, n) <= x {
+  while pow_le(r + 1L, n, x) {
     r = r + 1L
   }
   r
+}
+
+///|
+/// `b^e <= x` for `b >= 0`, `e >= 1`, `x >= 0`, computed without overflow.
+fn pow_le(b : Int64, e : Int, x : Int64) -> Bool {
+  if b <= 1L {
+    return b <= x
+  }
+  let mut acc = 1L
+  for _ in 0..<e {
+    if acc > x / b {
+      return false
+    }
+    acc = acc * b
+  }
+  true
 }
 
 ///|
