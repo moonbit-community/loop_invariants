@@ -7,10 +7,15 @@
 /// Count subarrays with sum <= k (requires non-negative values).
 pub fn count_subarrays_leq(arr : ArrayView[Int], k : Int) -> Int {
   let n = arr.length()
-  for right in 0..<n; left = 0, sum = 0, count = 0 {
-    let (new_left, new_sum) = for left1 = left, sum1 = sum + arr[right] {
-      if left1 <= right && sum1 > k {
-        continue left1 + 1, sum1 - arr[left1]
+  // The window sum is accumulated in `Int64`: it is at most `max(k, 0)`
+  // before `arr[right]` is added, so the addition cannot overflow the way an
+  // `Int` accumulator does when values are close to `Int::MAX_VALUE`.
+  let k64 = k.to_int64()
+  for right in 0..<n; left = 0, sum = 0L, count = 0 {
+    let (new_left, new_sum) = for left1 = left, sum1 = sum +
+                                    arr[right].to_int64() {
+      if left1 <= right && sum1 > k64 {
+        continue left1 + 1, sum1 - arr[left1].to_int64()
       } else {
         break (left1, sum1)
       }
