@@ -40,6 +40,21 @@ const RK_BASE : Int64 = 31L
 const RK_MOD : Int64 = 1000000007L
 
 ///|
+/// Reduce `x` to the canonical residue in `[0, RK_MOD)`.
+///
+/// Characters below `'a'` map to negative values, and `%` keeps the sign of
+/// its dividend, so without this step equal windows could end up with hashes
+/// that differ by `RK_MOD` and a real match would be skipped.
+fn reduce_mod(x : Int64) -> Int64 {
+  let r = x % RK_MOD
+  if r < 0L {
+    r + RK_MOD
+  } else {
+    r
+  }
+}
+
+///|
 /// Compute the polynomial rolling hash of `s[start..<start+len]`.
 ///
 /// Each character `c` is mapped to `c.to_int() - 96` (so `'a'` -> 1,
@@ -57,7 +72,7 @@ const RK_MOD : Int64 = 1000000007L
 fn compute_hash(s : String, start : Int, len : Int) -> Int64 {
   for offset in 0..<len; h = 0L {
     let c = s[start + offset].to_int() - 96 // 'a' = 97, so 'a' -> 1
-    continue (h * RK_BASE + c.to_int64()) % RK_MOD
+    continue reduce_mod(h * RK_BASE + c.to_int64())
   } nobreak {
     h
   }
@@ -147,8 +162,9 @@ pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
     let next_hash = if i < n - m {
       let old_char = (text[i].to_int() - 96).to_int64()
       let new_char = (text[i + m].to_int() - 96).to_int64()
-      ((text_hash - old_char * base_pow % RK_MOD + RK_MOD) * RK_BASE + new_char) %
-      RK_MOD
+      reduce_mod(
+        (text_hash - old_char * base_pow % RK_MOD + RK_MOD) * RK_BASE + new_char,
+      )
     } else {
       text_hash
     }
@@ -296,11 +312,10 @@ pub fn rabin_karp_multi(
       let next_hash = if i < n - len {
         let old_char = (text[i].to_int() - 96).to_int64()
         let new_char = (text[i + len].to_int() - 96).to_int64()
-        (
+        reduce_mod(
           (text_hash - old_char * base_pow % RK_MOD + RK_MOD) * RK_BASE +
-          new_char
-        ) %
-        RK_MOD
+          new_char,
+        )
       } else {
         text_hash
       }
