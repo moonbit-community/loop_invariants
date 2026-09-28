@@ -924,7 +924,10 @@ fn isqrt_newton(n : Int) -> Int {
   guard n > 0 else { return 0 }
   // Start with initial guess (n itself, or better heuristic)
   for x = n {
-    let x_next = (x + n / x) / 2
+    // x_next = (x + n / x) / 2, written as q + (x - q) / 2 so that the sum
+    // cannot overflow (x >= q holds because x * x >= n).
+    let q = n / x
+    let x_next = q + (x - q) / 2
     if x_next >= x {
       break x // Converged
     } else {
