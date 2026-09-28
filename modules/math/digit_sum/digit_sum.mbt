@@ -31,6 +31,17 @@
 //    of the lowest k digits of n in the chosen base."
 
 ///|
+/// `|n|` as an unsigned value; exact even for `Int64::MIN`, whose absolute
+/// value 2^63 does not fit in Int64 (negating it overflows).
+fn magnitude(n : Int64) -> UInt64 {
+  if n < 0L {
+    0UL - n.reinterpret_as_uint64()
+  } else {
+    n.reinterpret_as_uint64()
+  }
+}
+
+///|
 /// Sum of the digits of `n` written in base `base`.
 /// Treats `n < 0` as its absolute value; returns `0` for `base <= 1`.
 ///
@@ -45,10 +56,10 @@ pub fn digit_sum(n : Int64, base : Int) -> Int {
   if base <= 1 {
     return 0
   }
-  let mut m = if n < 0L { -n } else { n }
-  let b = base.to_int64()
+  let mut m = magnitude(n)
+  let b = base.to_uint64()
   let mut s = 0
-  while m > 0L {
+  while m > 0UL {
     s = s + (m % b).to_int()
     m = m / b
   }
@@ -62,13 +73,13 @@ pub fn digit_count(n : Int64, base : Int) -> Int {
   if base <= 1 {
     return 0
   }
-  let mut m = if n < 0L { -n } else { n }
-  if m == 0L {
+  let mut m = magnitude(n)
+  if m == 0UL {
     return 1
   }
-  let b = base.to_int64()
+  let b = base.to_uint64()
   let mut c = 0
-  while m > 0L {
+  while m > 0UL {
     c = c + 1
     m = m / b
   }
@@ -78,13 +89,13 @@ pub fn digit_count(n : Int64, base : Int) -> Int {
 ///|
 /// Iterated digit sum until a single digit remains.
 pub fn digital_root(n : Int64, base : Int) -> Int {
-  let mut m = if n < 0L { -n } else { n }
+  let mut m = magnitude(n)
   if base <= 1 {
     return 0
   }
-  let b = base.to_int64()
+  let b = base.to_uint64()
   while m >= b {
-    m = digit_sum(m, base).to_int64()
+    m = digit_sum(m.reinterpret_as_int64(), base).to_uint64()
   }
   m.to_int()
 }
@@ -95,11 +106,11 @@ pub fn reverse_digits(n : Int64, base : Int) -> Int64 {
   if base <= 1 {
     return 0L
   }
-  let mut m = if n < 0L { -n } else { n }
-  let b = base.to_int64()
+  let mut m = magnitude(n)
+  let b = base.to_uint64()
   let mut r = 0L
-  while m > 0L {
-    r = r * b + m % b
+  while m > 0UL {
+    r = r * b.reinterpret_as_int64() + (m % b).reinterpret_as_int64()
     m = m / b
   }
   r
@@ -119,10 +130,10 @@ pub fn digit_at(n : Int64, position : Int, base : Int) -> Int {
   if base <= 1 || position < 0 {
     return 0
   }
-  let mut m = if n < 0L { -n } else { n }
-  let b = base.to_int64()
+  let mut m = magnitude(n)
+  let b = base.to_uint64()
   let mut p = position
-  while p > 0 && m > 0L {
+  while p > 0 && m > 0UL {
     m = m / b
     p = p - 1
   }
@@ -135,13 +146,13 @@ pub fn to_digits(n : Int64, base : Int) -> Array[Int] {
   if base <= 1 {
     return []
   }
-  let mut m = if n < 0L { -n } else { n }
-  if m == 0L {
+  let mut m = magnitude(n)
+  if m == 0UL {
     return [0]
   }
   let res : Array[Int] = []
-  let b = base.to_int64()
-  while m > 0L {
+  let b = base.to_uint64()
+  while m > 0UL {
     res.push((m % b).to_int())
     m = m / b
   }
