@@ -17,7 +17,7 @@ fn gen_symbols(rs : @quickcheck.RandomState, size : Int) -> Array[Int] {
   match rint(rs, 0, 3) {
     0 | 1 => Array::makei(len, _ => rint(rs, 0, 2))
     2 => {
-      let pool = [0, 1, 65537, -65535, 65536, -1]
+      let pool : ReadOnlyArray[Int] = [0, 1, 65537, -65535, 65536, -1]
       Array::makei(len, _ => pool[rint(rs, 0, pool.length() - 1)])
     }
     _ => Array::makei(len, _ => @quickcheck.Arbitrary::arbitrary(size, rs))
