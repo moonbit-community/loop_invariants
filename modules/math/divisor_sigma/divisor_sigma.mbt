@@ -121,11 +121,17 @@ pub fn sigma_k(n : Int64, k : Int) -> Int64 {
         m = m / p
         e = e + 1
       }
-      // (p^{k(e+1)} - 1) / (p^k - 1)
+      // sigma_k(p^e) = 1 + p^k + ... + p^{ke} = (p^{k(e+1)} - 1) / (p^k - 1).
+      // Accumulate the sum term by term: the closed form's numerator
+      // p^{k(e+1)} can overflow Int64 even when sigma_k(n) itself fits.
       let pk = ipow(p, k)
-      let num = ipow(pk, e + 1) - 1L
-      let den = pk - 1L
-      total = total * (num / den)
+      let mut term = 1L
+      let mut sum = 1L
+      for _ in 0..<e {
+        term = term * pk
+        sum = sum + term
+      }
+      total = total * sum
     }
     p = p + 1L
   }
