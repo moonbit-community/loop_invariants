@@ -41,6 +41,14 @@
 /// `lo` is the max-heap of the smaller half; `hi` stores the *complemented*
 /// values of the larger half, so its max-heap peek gives the min of the
 /// larger half.
+///
+/// Representation of `hi` (breaking change): each element `x` of the larger
+/// half is stored as its bitwise complement `x.lnot()` (= `-x - 1`), and is
+/// decoded with `.lnot()` again. Earlier versions stored the negation `-x`,
+/// which overflows for `Int::MIN_VALUE`; code that reads `hi` directly and
+/// decodes with negation now gets values off by one (after adding `1` and
+/// `3`, `hi.peek()` is `Some(-4)`, not `Some(-3)`). Prefer `lower_median`,
+/// `upper_median` and `median`, which are unaffected.
 pub struct OnlineMedian {
   lo : @priority_queue.PriorityQueue[Int]
   hi : @priority_queue.PriorityQueue[Int]

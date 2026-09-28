@@ -36,6 +36,8 @@ is a max-heap. For the `hi` side we store the **bitwise complement**
 `x.lnot()` (that is, `-x - 1`) of each value so that the max-heap's peek
 gives the minimum of the original numbers. Plain negation would overflow
 for `Int::MIN_VALUE`; the complement reverses the order of every `Int`.
+(Earlier versions stored `-x`; this representation change is breaking for
+code that reads the public `hi` field directly.)
 
 ### Three invariants
 
