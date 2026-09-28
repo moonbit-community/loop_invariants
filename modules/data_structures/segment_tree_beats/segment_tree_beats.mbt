@@ -26,8 +26,10 @@
 
 ///|
 /// Sentinel value used for `second_max` when no second-largest element exists
-/// (e.g. a leaf node or a segment where all elements are equal).
-const NEG_INF : Int64 = -9223372036854775807L
+/// (e.g. a leaf node or a segment where all elements are equal), and the
+/// identity of `max`. It must be `Int64::MIN`: any larger value would beat a
+/// genuine `Int64::MIN` element in `range_max`.
+const NEG_INF : Int64 = -9223372036854775808L
 
 ///|
 fn max_i64(a : Int64, b : Int64) -> Int64 {
