@@ -89,16 +89,27 @@ pub fn bezout(a : Int64, b : Int64) -> (Int64, Int64, Int64) {
 }
 
 ///|
+/// `|x|` as an unsigned value; exact even for `Int64::MIN`.
+fn magnitude(x : Int64) -> UInt64 {
+  if x < 0L {
+    0UL - x.reinterpret_as_uint64()
+  } else {
+    x.reinterpret_as_uint64()
+  }
+}
+
+///|
 /// Greatest common divisor of `|a|` and `|b|`; non-negative.
 pub fn gcd(a : Int64, b : Int64) -> Int64 {
-  let mut x = if a < 0L { -a } else { a }
-  let mut y = if b < 0L { -b } else { b }
-  while y != 0L {
+  // Work on unsigned magnitudes: negating Int64::MIN overflows.
+  let mut x = magnitude(a)
+  let mut y = magnitude(b)
+  while y != 0UL {
     let t = x % y
     x = y
     y = t
   }
-  x
+  x.reinterpret_as_int64()
 }
 
 ///|
