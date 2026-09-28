@@ -13,7 +13,9 @@ fn days_needed_fixed(
 } {
   for i in 0..<weights.length(); used = 1, load = 0 {
     let w = weights[i]
-    if load + w > capacity {
+    // `w > capacity - load` rather than `load + w > capacity`: the sum can
+    // overflow `Int` when both are large, but `capacity - load >= 0` cannot.
+    if w > capacity - load {
       continue used + 1, w
     } else {
       continue used, load + w
