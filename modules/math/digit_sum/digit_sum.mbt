@@ -95,7 +95,14 @@ pub fn digital_root(n : Int64, base : Int) -> Int {
   }
   let b = base.to_uint64()
   while m >= b {
-    m = digit_sum(m.reinterpret_as_int64(), base).to_uint64()
+    // Sum the digits in UInt64 (at most 64 digits < 2^31 each): the Int
+    // returned by `digit_sum` overflows for bases above ~2^30.
+    let mut s = 0UL
+    while m > 0UL {
+      s = s + m % b
+      m = m / b
+    }
+    m = s
   }
   m.to_int()
 }
