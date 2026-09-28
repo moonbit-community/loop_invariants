@@ -49,6 +49,14 @@ fn ipow(p : Int64, e : Int) -> Int64 {
 }
 
 ///|
+/// `p * p <= m` for `p >= 1`, `m >= 0`, without forming `p * p`: that
+/// product wraps negative once `p > 3037000499`, which kept trial division
+/// running forever for primes in (3037000499^2, Int64::MAX].
+fn square_fits(p : Int64, m : Int64) -> Bool {
+  p <= m / p
+}
+
+///|
 /// Number of divisors `d(n) = sigma_0(n)`. Returns `0` for `n <= 0`.
 ///
 /// ## Example
@@ -68,7 +76,7 @@ pub fn divisor_count(n : Int64) -> Int64 {
   let mut m = n
   let mut total = 1L
   let mut p = 2L
-  while p * p <= m {
+  while square_fits(p, m) {
     if m % p == 0L {
       let mut e = 0
       while m % p == 0L {
@@ -106,7 +114,7 @@ pub fn sigma_k(n : Int64, k : Int) -> Int64 {
   let mut m = n
   let mut total = 1L
   let mut p = 2L
-  while p * p <= m {
+  while square_fits(p, m) {
     if m % p == 0L {
       let mut e = 0
       while m % p == 0L {
