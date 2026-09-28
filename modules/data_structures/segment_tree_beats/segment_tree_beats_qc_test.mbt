@@ -79,7 +79,8 @@ fn run_case(c : Case) -> Bool {
   let n = c.init.length()
   let model = c.init.copy()
   let st = @segment_tree_beats.SegmentTreeBeats(c.init[:])
-  let empty_max = st.range_max(0, 0)
+  // Documented result for an empty range: `NEG_INF`, i.e. `Int64::MIN`.
+  let empty_max = -9223372036854775808L
   let clamp = (l : Int, r : Int) => {
     (if l < 0 { 0 } else { l }, if r > n { n } else { r })
   }

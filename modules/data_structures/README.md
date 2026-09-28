@@ -16,3 +16,17 @@ moon test
 moon info
 moon fmt
 ```
+
+## Release notes
+
+### Unreleased
+
+- **Behaviour change — `segment_tree_beats`:** `range_max` of an empty range
+  (or of an empty tree) now returns `Int64::MIN` instead of `Int64::MIN + 1`.
+  The `NEG_INF` sentinel is now the real `Int64::MIN`, so ranges containing
+  `Int64::MIN` report it correctly; `range_chmin` to a cap at or below the
+  sentinel no longer corrupts leaves.
+- `implicit_treap`: `range_max` of values equal to `Int64::MIN` is now exact.
+- `bitset`: `or_in`/`xor_in` no longer set bits past the capacity.
+- `fenwick_range_add_range_sum`: `range_sum` with `r >= n` is clamped instead
+  of aborting.

@@ -17,6 +17,8 @@
 //                                   update sum and max in O(1) without
 //                                   descending (this is the "tag")
 //   Case C  x <= second_max   -> must push tag and recurse into children
+//           (except at a leaf, which has no children: a leaf is always
+//           updated in place, see `chmin_impl`)
 //
 // COMPLEXITY:
 //   range_chmin : O(log^2 n) amortized
@@ -151,7 +153,11 @@ fn SegmentTreeBeats::pull(self : SegmentTreeBeats, node : Int) -> Unit {
 ///|
 /// Apply a chmin tag to `node` under the Case-B precondition.
 ///
-/// Precondition: `second_max[node] < x < max[node]`.
+/// Precondition: `x < max[node]`, and either `second_max[node] < x`
+/// (Case B) or `node` is a leaf. A leaf holds a single value, so every
+/// element equal to `max` is the whole segment and the update below is exact
+/// even when `x <= second_max[node]`; this happens when
+/// `x == second_max == NEG_INF == Int64::MIN`.
 ///
 /// Because only the `count_max` elements currently equal to `max` will be
 /// lowered to `x`, the update is exact and O(1):
@@ -236,6 +242,9 @@ pub fn SegmentTreeBeats::range_chmin(
 ///
 /// - No overlap with `[ql, qr)`, or `x >= max[node]`  ->  return immediately (Case A).
 /// - Full overlap and `x > second_max[node]`           ->  apply tag in O(1) (Case B).
+/// - Full overlap of a leaf (`r - l == 1`)              ->  apply tag in O(1): a leaf
+///   has no children, and its `second_max` sentinel (`Int64::MIN`) need not
+///   be below `x` (e.g. `x == Int64::MIN`).
 /// - Otherwise                                          ->  push, recurse, pull (Case C).
 fn SegmentTreeBeats::chmin_impl(
   self : SegmentTreeBeats,
@@ -269,7 +278,7 @@ fn SegmentTreeBeats::chmin_impl(
 /// - `l` — inclusive left endpoint (0-indexed)
 /// - `r` — exclusive right endpoint; the range is `[l, r)`
 ///
-/// Returns `NEG_INF` when `l >= r` or the tree is empty.
+/// Returns `NEG_INF` (= `Int64::MIN`) when `l >= r` or the tree is empty.
 ///
 /// Complexity: O(log n).
 pub fn SegmentTreeBeats::range_max(

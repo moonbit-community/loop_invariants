@@ -122,6 +122,11 @@ count_max   unchanged
 above `x`.  We cannot know from the node statistics alone which elements to
 lower, so we push the pending lazy tag downward and recurse into both children.
 
+The one exception is a **leaf**: it holds a single value and has no children,
+so it is always updated in place like Case B.  This matters when
+`x == second_max == NEG_INF == Int64::MIN`, where the Case-B test fails even
+though the leaf update is exact.
+
 ---
 
 ## 5. Tag propagation (push)
@@ -414,7 +419,8 @@ Li Chao tree         range minimum over a set of linear functions
 3. `push` must be called before descending into children.
 4. `pull` must be called after returning from children.
 5. The algorithm relies on tracking `max`, `second_max`, and `count_max`.
-6. `NEG_INF` acts as a sentinel for "no second maximum" at leaf nodes.
+6. `NEG_INF` (= `Int64::MIN`) acts as a sentinel for "no second maximum" at leaf
+   nodes, and is what `range_max` returns for an empty range.
 
 ---
 
