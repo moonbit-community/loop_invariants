@@ -19,7 +19,7 @@ moon fmt
 
 ## Release notes
 
-### Unreleased
+### 0.12.0
 
 - **Behaviour change — `segment_tree_beats`:** `range_max` of an empty range
   (or of an empty tree) now returns `Int64::MIN` instead of `Int64::MIN + 1`.

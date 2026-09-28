@@ -18,7 +18,7 @@ moon fmt
 
 ## Release notes
 
-### Unreleased
+### 0.16.0
 
 - **Behaviour change — `aho_corasick`:** an empty pattern in the dictionary
   now never matches (like every other searcher in this module). Previously it

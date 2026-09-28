@@ -18,7 +18,7 @@ moon fmt
 
 ## Release notes
 
-### Unreleased
+### 0.18.0
 
 - **Breaking — `online_median`:** the public `OnlineMedian::hi` heap now stores
   each element of the larger half as its bitwise complement `x.lnot()`

@@ -1,6 +1,6 @@
 name = "bobzhang/loop_invariants_graph"
 
-version = "0.17.2"
+version = "0.18.0"
 
 readme = "README.md"
 
