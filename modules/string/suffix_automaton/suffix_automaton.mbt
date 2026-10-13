@@ -29,7 +29,7 @@
 // SPACE COMPLEXITY: O(n * alphabet_size)
 
 ///|
-const SAM_ALPHABET : Int = 26
+const SAM_ALPHABET : Int32 = 26
 
 ///|
 /// A single state in the suffix automaton.
@@ -48,10 +48,10 @@ const SAM_ALPHABET : Int = 26
 ///                 the longest string in this class; used when counting
 ///                 occurrences
 pub struct SAMState {
-  mut len : Int // Length of longest string in this class
-  mut link : Int // Suffix link (-1 for initial state)
-  next : Array[Int] // Transitions (next[c] = state after character c)
-  mut first_pos : Int // First occurrence ending position
+  mut len : Int32 // Length of longest string in this class
+  mut link : Int32 // Suffix link (-1 for initial state)
+  next : Array[Int32] // Transitions (next[c] = state after character c)
+  mut first_pos : Int32 // First occurrence ending position
 }
 
 ///|
@@ -83,8 +83,8 @@ fn SAMState::SAMState() -> SAMState {
 /// - `size`   - number of allocated states (includes initial state at index 0)
 pub struct SuffixAutomaton {
   states : Array[SAMState]
-  mut last : Int // State corresponding to entire string
-  mut size : Int // Number of states
+  mut last : Int32 // State corresponding to entire string
+  mut size : Int32 // Number of states
 }
 
 ///|
@@ -100,7 +100,7 @@ pub struct SuffixAutomaton {
 ///
 /// Returns a fresh `SuffixAutomaton` with only the initial state (index 0,
 /// representing the empty string).
-pub fn SuffixAutomaton::SuffixAutomaton(max_len : Int) -> SuffixAutomaton {
+pub fn SuffixAutomaton::SuffixAutomaton(max_len : Int32) -> SuffixAutomaton {
   let states : Array[SAMState] = []
   // Create initial state (empty string)
   let init = SAMState()
@@ -129,7 +129,7 @@ pub fn SuffixAutomaton::SuffixAutomaton(max_len : Int) -> SuffixAutomaton {
 /// After the call, `self.last` is updated to `cur`.
 ///
 /// Time complexity: O(1) amortised.
-pub fn SuffixAutomaton::add_char(self : SuffixAutomaton, c : Int) -> Unit {
+pub fn SuffixAutomaton::add_char(self : SuffixAutomaton, c : Int32) -> Unit {
   let cur = self.size
   self.size = self.size + 1
   self.states[cur].len = self.states[self.last].len + 1
@@ -256,7 +256,7 @@ pub fn SuffixAutomaton::count_distinct_substrings(
 /// character.
 ///
 /// Time complexity: O(|s1| + |s2|).
-pub fn longest_common_substring(s1 : String, s2 : String) -> Int {
+pub fn longest_common_substring(s1 : String, s2 : String) -> Int32 {
   if s1.length() == 0 || s2.length() == 0 {
     return 0
   }
@@ -316,7 +316,7 @@ pub fn longest_common_substring(s1 : String, s2 : String) -> Int {
 /// automaton built from an empty string returns 1.
 ///
 /// Useful for verifying the O(n) size bound in tests and benchmarks.
-pub fn SuffixAutomaton::state_count(self : SuffixAutomaton) -> Int {
+pub fn SuffixAutomaton::state_count(self : SuffixAutomaton) -> Int32 {
   self.size
 }
 
@@ -341,7 +341,7 @@ pub fn SuffixAutomaton::state_count(self : SuffixAutomaton) -> Int {
 pub fn SuffixAutomaton::count_occurrences(
   self : SuffixAutomaton,
   pattern : String,
-) -> Int {
+) -> Int32 {
   // First, find the state for pattern
   let state = for i in 0..<pattern.length(); state = 0 {
     let c = pattern[i].to_int() - 97
@@ -360,7 +360,7 @@ pub fn SuffixAutomaton::count_occurrences(
   // Count using topological sort on suffix link tree
   // Each terminal state contributes 1, propagate through suffix links
   let cnt = Array::make(self.size, 0)
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
 
   // Sort states by length (longest first)
   let max_len = self.states[:self.size]
@@ -368,7 +368,7 @@ pub fn SuffixAutomaton::count_occurrences(
     .map(s => s.len)
     .maximum()
     .unwrap_or(0)
-  let by_len : Array[Array[Int]] = [ for _ in 0..<(max_len + 1) => [] ]
+  let by_len : Array[Array[Int32]] = [ for _ in 0..<(max_len + 1) => [] ]
   for i in 0..<self.size {
     by_len[self.states[i].len].push(i)
   }

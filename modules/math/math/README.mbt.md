@@ -303,7 +303,7 @@ A*(B*C) costs 30*5*60 + 10*30*60 = 27000
 ```mbt nocheck
 ///|
 test "matrix_chain_order examples" {
-  let dims : Array[Int] = [10, 30, 5, 60]
+  let dims : Array[Int32] = [10, 30, 5, 60]
   debug_inspect(matrix_chain_order(dims[:]), content="4500")
 }
 ```

@@ -92,7 +92,7 @@
 /// // r.component[0] == r.component[1] == r.component[2]  (the cycle)
 /// // r.component[3] != r.component[0]                    (the tail)
 /// ```
-pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
+pub fn find_sccs(n : Int32, adj : Array[Array[Int32]]) -> SCCResult {
   if n == 0 {
     return { num_sccs: 0, component: [], scc_sizes: [], scc_adj: [], }
   }
@@ -102,10 +102,10 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   let low = Array::make(n, -1) // Low-link value
   let on_stack = Array::make(n, false) // Is vertex currently on stack?
   let component = Array::make(n, -1) // SCC assignment
-  let stack : Array[Int] = [] // DFS stack
+  let stack : Array[Int32] = [] // DFS stack
   let timer : Counter = { val: 0, } // Discovery time counter
   let scc_count : Counter = { val: 0, } // SCC ID counter
-  let scc_sizes : Array[Int] = []
+  let scc_sizes : Array[Int32] = []
 
   // Run DFS from each unvisited vertex
   for v in 0..<n {
@@ -138,7 +138,7 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
 
   // Build condensation graph (DAG of SCCs)
   let num_sccs = scc_count.val
-  let scc_adj : Array[Array[Int]] = [ for _ in 0..<num_sccs => [] ]
+  let scc_adj : Array[Array[Int32]] = [ for _ in 0..<num_sccs => [] ]
 
   // Add edges between SCCs (avoiding duplicates)
   for u in 0..<n {
@@ -201,16 +201,16 @@ pub fn find_sccs(n : Int, adj : Array[Array[Int]]) -> SCCResult {
 /// `adj`, `disc`, `low`, `on_stack`, `stack`, `component`, `timer`,
 /// `scc_count`, `scc_sizes`.
 fn tarjan_dfs(
-  v : Int,
-  adj : Array[Array[Int]],
-  disc : Array[Int],
-  low : Array[Int],
+  v : Int32,
+  adj : Array[Array[Int32]],
+  disc : Array[Int32],
+  low : Array[Int32],
   on_stack : Array[Bool],
-  stack : Array[Int],
-  component : Array[Int],
+  stack : Array[Int32],
+  component : Array[Int32],
   timer : Counter,
   scc_count : Counter,
-  scc_sizes : Array[Int],
+  scc_sizes : Array[Int32],
 ) -> Unit {
   // Step 1: Initialize discovery time and low-link
   disc[v] = timer.val

@@ -29,7 +29,7 @@ pub enum Tree[T] {
 } derive(Debug)
 
 ///|
-fn[T] tree_size(t : Tree[T]) -> Int {
+fn[T] tree_size(t : Tree[T]) -> Int32 {
   match t {
     Empty => 0
     Node(value=_, left~, right~) => 1 + tree_size(left) + tree_size(right)
@@ -46,7 +46,7 @@ pub fn[T] empty() -> Tree[T] {
 
 ///|
 /// Return number of nodes in the tree.
-pub fn[T] size(t : Tree[T]) -> Int {
+pub fn[T] size(t : Tree[T]) -> Int32 {
   tree_size(t)
 }
 

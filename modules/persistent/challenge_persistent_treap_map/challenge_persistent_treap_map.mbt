@@ -29,8 +29,8 @@ pub enum TreapMap[K, V] {
   Node(
     key~ : K,
     value~ : V,
-    priority~ : Int,
-    size~ : Int,
+    priority~ : Int32,
+    size~ : Int32,
     left~ : TreapMap[K, V],
     right~ : TreapMap[K, V]
   )
@@ -38,7 +38,7 @@ pub enum TreapMap[K, V] {
 
 ///|
 /// Return the number of entries in the map.
-pub fn[K, V] size(t : TreapMap[K, V]) -> Int {
+pub fn[K, V] size(t : TreapMap[K, V]) -> Int32 {
   match t {
     Empty => 0
     Node(key=_, value=_, priority=_, size~, left=_, right=_) => size
@@ -48,7 +48,7 @@ pub fn[K, V] size(t : TreapMap[K, V]) -> Int {
 ///|
 
 ///|
-fn[K : Hash] priority_for(key : K) -> Int {
+fn[K : Hash] priority_for(key : K) -> Int32 {
   key.hash()
 }
 
@@ -56,7 +56,7 @@ fn[K : Hash] priority_for(key : K) -> Int {
 fn[K, V] make_node(
   key : K,
   value : V,
-  priority : Int,
+  priority : Int32,
   left : TreapMap[K, V],
   right : TreapMap[K, V],
 ) -> TreapMap[K, V] {

@@ -39,7 +39,7 @@
 /// Entry in the priority queue: (distance, vertex)
 priv struct HeapEntry {
   dist : Int64
-  vertex : Int
+  vertex : Int32
 }
 
 ///|
@@ -132,20 +132,20 @@ fn MinHeap::is_empty(self : MinHeap) -> Bool {
 ///|
 /// Weighted edge
 pub(all) struct Edge {
-  to : Int
+  to : Int32
   weight : Int64
 } derive(Debug)
 
 ///|
 /// Graph as adjacency list
 pub(all) struct Graph {
-  n : Int // Number of vertices
+  n : Int32 // Number of vertices
   adj : Array[Array[Edge]] // adj[u] = edges from u
 }
 
 ///|
 /// Create a new graph with n vertices
-pub fn Graph::Graph(n : Int) -> Graph {
+pub fn Graph::Graph(n : Int32) -> Graph {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, adj, }
 }
@@ -154,8 +154,8 @@ pub fn Graph::Graph(n : Int) -> Graph {
 /// Add a directed edge from u to v with given weight
 pub fn Graph::add_edge(
   self : Graph,
-  from : Int,
-  to : Int,
+  from : Int32,
+  to : Int32,
   weight : Int64,
 ) -> Unit {
   if from >= 0 && from < self.n && to >= 0 && to < self.n {
@@ -167,8 +167,8 @@ pub fn Graph::add_edge(
 /// Add an undirected edge between u and v
 pub fn Graph::add_undirected_edge(
   self : Graph,
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
   weight : Int64,
 ) -> Unit {
   self.add_edge(u, v, weight)
@@ -183,13 +183,13 @@ pub fn Graph::add_undirected_edge(
 const INF : Int64 = 4611686018427387903L // Large value for infinity
 
 ///|
-const DIJK_INF_INT : Int = 0x3fffffff
+const DIJK_INF_INT : Int32 = 0x3fffffff
 
 ///|
 /// Result of Dijkstra's algorithm
 pub(all) struct DijkstraResult {
   dist : Array[Int64] // dist[v] = shortest distance from source to v
-  parent : Array[Int] // parent[v] = previous vertex on shortest path (-1 if none)
+  parent : Array[Int32] // parent[v] = previous vertex on shortest path (-1 if none)
 }
 
 ///|
@@ -199,7 +199,7 @@ pub(all) struct DijkstraResult {
 /// ALGORITHM INVARIANT:
 /// After each iteration, for all visited vertices v:
 /// dist[v] = shortest path distance from source to v
-pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
+pub fn dijkstra(graph : Graph, source : Int32) -> DijkstraResult {
   let n = graph.n
   let dist = Array::make(n, INF)
   let parent = Array::make(n, -1)
@@ -274,7 +274,10 @@ pub fn dijkstra(graph : Graph, source : Int) -> DijkstraResult {
 
 ///|
 /// Array-based Dijkstra for small or dense graphs (O(n^2)).
-pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
+pub fn dijkstra_dense(
+  adj : Array[Array[(Int32, Int32)]],
+  src : Int32,
+) -> Array[Int32] {
   let n = adj.length()
   let dist = Array::make(n, DIJK_INF_INT)
   let used = Array::make(n, false)
@@ -342,8 +345,11 @@ pub fn dijkstra_dense(adj : Array[Array[(Int, Int)]], src : Int) -> Array[Int] {
 
 ///|
 /// Reconstruct path from source to target using parent pointers
-pub fn reconstruct_path(result : DijkstraResult, target : Int) -> Array[Int] {
-  let path : Array[Int] = []
+pub fn reconstruct_path(
+  result : DijkstraResult,
+  target : Int32,
+) -> Array[Int32] {
+  let path : Array[Int32] = []
   if target < 0 || target >= result.parent.length() {
     return path
   }
@@ -364,7 +370,11 @@ pub fn reconstruct_path(result : DijkstraResult, target : Int) -> Array[Int] {
 
 ///|
 /// Get shortest distance from source to target
-pub fn shortest_distance(graph : Graph, source : Int, target : Int) -> Int64? {
+pub fn shortest_distance(
+  graph : Graph,
+  source : Int32,
+  target : Int32,
+) -> Int64? {
   if target < 0 || target >= graph.n {
     return None
   }
@@ -389,8 +399,8 @@ pub fn shortest_distance(graph : Graph, source : Int, target : Int) -> Int64? {
 pub fn bidirectional_dijkstra(
   graph : Graph,
   reverse_graph : Graph,
-  source : Int,
-  target : Int,
+  source : Int32,
+  target : Int32,
 ) -> Int64? {
   if source < 0 || source >= graph.n || target < 0 || target >= graph.n {
     return None
@@ -572,7 +582,7 @@ test "dijkstra basic" {
 
 ///|
 test "dijkstra dense basic" {
-  let adj : Array[Array[(Int, Int)]] = [
+  let adj : Array[Array[(Int32, Int32)]] = [
     [(1, 2), (2, 5)],
     [(2, 1), (3, 2)],
     [(3, 3)],

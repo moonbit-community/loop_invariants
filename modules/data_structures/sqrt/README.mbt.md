@@ -330,7 +330,7 @@ Convergence for n=12:
 
 ```mbt nocheck
 ///|
-fn range_sum(l : Int, r : Int) -> Int {
+fn range_sum(l : Int32, r : Int32) -> Int32 {
   for l = l, sum = 0 {
     if l > r {
       break sum

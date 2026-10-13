@@ -28,7 +28,7 @@
 pub enum Rope {
   Empty
   Leaf(value~ : String)
-  Node(len~ : Int, left~ : Rope, right~ : Rope)
+  Node(len~ : Int32, left~ : Rope, right~ : Rope)
 } derive(Debug)
 
 ///|
@@ -45,7 +45,7 @@ pub fn leaf(value : String) -> Rope {
 
 ///|
 /// Return the total length of the rope.
-pub fn length(r : Rope) -> Int {
+pub fn length(r : Rope) -> Int32 {
   match r {
     Empty => 0
     Leaf(value~) => value.length()

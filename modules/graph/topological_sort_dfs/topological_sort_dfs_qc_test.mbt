@@ -5,7 +5,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -15,8 +15,8 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// (edges follow a random vertex ranking); the rest are arbitrary and may
 /// contain self-loops and parallel edges.
 priv struct DG {
-  n : Int
-  edges : Array[(Int, Int)]
+  n : Int32
+  edges : Array[(Int32, Int32)]
 } derive(Debug)
 
 ///|
@@ -32,7 +32,7 @@ impl @quickcheck.Arbitrary for DG with fn arbitrary(size, rs) {
     rank[j] = t
   }
   let dag = rint(rs, 0, 1) == 0
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   for _ in 0..<m {
     let u = rint(rs, 0, n - 1)
     let v = rint(rs, 0, n - 1)
@@ -92,7 +92,7 @@ fn has_cycle(g : DG) -> Bool {
 /// `order` lists distinct vertices of `g`, every edge between two listed
 /// vertices goes forward, and no listed vertex has a predecessor that is
 /// not listed before it (a valid topological prefix).
-fn is_prefix(g : DG, order : Array[Int]) -> Bool {
+fn is_prefix(g : DG, order : Array[Int32]) -> Bool {
   let pos = Array::make(g.n, -1)
   for i, v in order {
     if v < 0 || v >= g.n || pos[v] != -1 {
@@ -107,7 +107,7 @@ fn is_prefix(g : DG, order : Array[Int]) -> Bool {
 
 ///|
 /// A complete topological order.
-fn is_order(g : DG, order : Array[Int]) -> Bool {
+fn is_order(g : DG, order : Array[Int32]) -> Bool {
   order.length() == g.n && is_prefix(g, order)
 }
 

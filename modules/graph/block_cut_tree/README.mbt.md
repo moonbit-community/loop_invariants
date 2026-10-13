@@ -214,7 +214,7 @@ Vertices 0, 2, 3 each appear in exactly one block.
 ```mbt check
 ///|
 test "triangle with tail" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
   let tree = @block_cut_tree.build_block_cut_tree(4, edges)
   let comp0 = 4
   let comp1 = 5
@@ -263,7 +263,7 @@ No vertex is an articulation point.
 ```mbt check
 ///|
 test "cycle becomes one block" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
   let tree = @block_cut_tree.build_block_cut_tree(4, edges)
   let block = 4
   debug_inspect(tree.adj[block].length(), content="4")
@@ -313,7 +313,7 @@ Vertex 1 is an articulation point inside component A.
 ```mbt check
 ///|
 test "disconnected graph" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (3, 4)]
   let tree = @block_cut_tree.build_block_cut_tree(6, edges)
   // There are three blocks: (0,1), (1,2), (3,4)
   debug_inspect(tree.component_count, content="3")

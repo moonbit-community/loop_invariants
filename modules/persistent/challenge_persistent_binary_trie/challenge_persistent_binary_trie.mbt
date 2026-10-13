@@ -28,7 +28,7 @@
 /// ```
 pub enum Node {
   Empty
-  Node(count~ : Int, zero~ : Node, one~ : Node)
+  Node(count~ : Int32, zero~ : Node, one~ : Node)
 } derive(Debug)
 
 ///|
@@ -39,7 +39,7 @@ pub fn empty() -> Node {
 
 ///|
 /// Return the number of values stored in the trie.
-pub fn count(node : Node) -> Int {
+pub fn count(node : Node) -> Int32 {
   match node {
     Empty => 0
     Node(count~, zero=_, one=_) => count
@@ -48,7 +48,7 @@ pub fn count(node : Node) -> Int {
 
 ///|
 /// Insert a value and return the new trie.
-pub fn insert(node : Node, value : Int, bit : Int) -> Node {
+pub fn insert(node : Node, value : Int32, bit : Int32) -> Node {
   if bit < 0 {
     match node {
       Empty => Node(count=1, zero=Empty, one=Empty)
@@ -75,7 +75,7 @@ pub fn insert(node : Node, value : Int, bit : Int) -> Node {
 
 ///|
 /// Query the maximum xor with value (assumes trie is non-empty).
-pub fn max_xor(root : Node, value : Int, max_bit : Int) -> Int {
+pub fn max_xor(root : Node, value : Int32, max_bit : Int32) -> Int32 {
   for bit in max_bit>=..0; cur = root, acc = 0 {
     match cur {
       Empty => break acc

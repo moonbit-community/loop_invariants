@@ -34,7 +34,7 @@ priv struct Poly {
 } derive(Debug)
 
 ///|
-fn reduced_poly(size : Int, rs : @quickcheck.RandomState) -> Array[Int64] {
+fn reduced_poly(size : Int32, rs : @quickcheck.RandomState) -> Array[Int64] {
   let len = if rs.next_uint(limit=10) == 0 {
     rs.next_uint(limit=300).reinterpret_as_int()
   } else {

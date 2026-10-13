@@ -3,7 +3,7 @@
 // ============================================================================
 
 ///|
-fn min(a : Int, b : Int) -> Int {
+fn min(a : Int32, b : Int32) -> Int32 {
   if a < b {
     a
   } else {
@@ -26,20 +26,20 @@ fn min(a : Int, b : Int) -> Int {
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
+///   let arr : Array[Int32] = [5, 2, 4, 7, 1, 3, 6, 0]
 ///   let st = build_sparse_table(arr[:])
 ///   @debug.assert_eq(range_min(st, 1, 5), 1)
 ///   @debug.assert_eq(range_min(st, 0, 8), 0)
 /// }
 /// ```
 pub struct SparseTable {
-  log : Array[Int]
-  table : Array[Array[Int]]
+  log : Array[Int32]
+  table : Array[Array[Int32]]
 }
 
 ///|
 /// Build a sparse table for range minimum queries.
-pub fn build_sparse_table(arr : ArrayView[Int]) -> SparseTable {
+pub fn build_sparse_table(arr : ArrayView[Int32]) -> SparseTable {
   let n = arr.length()
   if n == 0 {
     return { log: [0], table: [], }
@@ -65,7 +65,7 @@ pub fn build_sparse_table(arr : ArrayView[Int]) -> SparseTable {
 
 ///|
 /// Query the minimum over [l, r).
-pub fn range_min(st : SparseTable, l : Int, r : Int) -> Int {
+pub fn range_min(st : SparseTable, l : Int32, r : Int32) -> Int32 {
   let len = r - l
   let k = st.log[len]
   let span = 1 << k

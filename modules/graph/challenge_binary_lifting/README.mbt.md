@@ -97,7 +97,7 @@ jump 4 (bit 2), then jump 2 (bit 1)
 ```mbt check
 ///|
 test "binary lifting basic" {
-  let parent : Array[Int] = [-1, 0, 0, 1, 1, 2]
+  let parent : Array[Int32] = [-1, 0, 0, 1, 1, 2]
   let up = @challenge_binary_lifting.build_lift(parent)
   debug_inspect(@challenge_binary_lifting.lift(up, 4, 0), content="4")
   debug_inspect(@challenge_binary_lifting.lift(up, 4, 1), content="1")
@@ -115,7 +115,7 @@ test "binary lifting basic" {
 ```mbt check
 ///|
 test "binary lifting chain" {
-  let parent : Array[Int] = [-1, 0, 1, 2]
+  let parent : Array[Int32] = [-1, 0, 1, 2]
   let up = @challenge_binary_lifting.build_lift(parent)
   debug_inspect(@challenge_binary_lifting.lift(up, 3, 1), content="2")
   debug_inspect(@challenge_binary_lifting.lift(up, 3, 2), content="1")
@@ -129,7 +129,7 @@ test "binary lifting chain" {
 ```mbt check
 ///|
 test "root stays -1" {
-  let parent : Array[Int] = [-1, 0, 0]
+  let parent : Array[Int32] = [-1, 0, 0]
   let up = @challenge_binary_lifting.build_lift(parent)
   debug_inspect(@challenge_binary_lifting.lift(up, 0, 1), content="-1")
   debug_inspect(@challenge_binary_lifting.lift(up, 0, 2), content="-1")

@@ -52,8 +52,8 @@
 /// package-private; callers go through `new`, `add`, `estimate`,
 /// `merge`, `width_of`, `depth_of`.
 pub struct CountMinSketch {
-  width : Int
-  depth : Int
+  width : Int32
+  depth : Int32
   counts : Array[Array[Int64]]
   hash_a : Array[Int64]
   hash_b : Array[Int64]
@@ -118,7 +118,7 @@ fn lcg_init(seed : Int64) -> Int64 {
 ///   assert_true(s.estimate(7L) >= 2L)
 /// }
 /// ```
-pub fn new(width~ : Int, depth~ : Int, seed~ : Int64) -> CountMinSketch {
+pub fn new(width~ : Int32, depth~ : Int32, seed~ : Int64) -> CountMinSketch {
   let w = if width < 1 { 1 } else { width }
   let d = if depth < 1 { 1 } else { depth }
   let counts : Array[Array[Int64]] = Array::make(d, [])
@@ -211,7 +211,11 @@ pub fn from_error_bounds(
 /// All arithmetic is done modulo `cms_prime = 2^31 - 1` to keep
 /// intermediate products within Int64 range. The final reduction by
 /// `width` brings the result into a valid column index.
-fn CountMinSketch::hash_row(self : CountMinSketch, r : Int, key : Int64) -> Int {
+fn CountMinSketch::hash_row(
+  self : CountMinSketch,
+  r : Int32,
+  key : Int64,
+) -> Int32 {
   let p = cms_prime
   // Normalise key to [0, p) first so the multiplication is bounded.
   let k = {
@@ -318,13 +322,13 @@ pub fn CountMinSketch::merge(
 
 ///|
 /// Inspector for tests: the configured width.
-pub fn CountMinSketch::width_of(self : CountMinSketch) -> Int {
+pub fn CountMinSketch::width_of(self : CountMinSketch) -> Int32 {
   self.width
 }
 
 ///|
 /// Inspector for tests: the configured depth.
-pub fn CountMinSketch::depth_of(self : CountMinSketch) -> Int {
+pub fn CountMinSketch::depth_of(self : CountMinSketch) -> Int32 {
   self.depth
 }
 

@@ -52,7 +52,7 @@ pub struct MontgomeryCtx {
 }
 
 ///|
-const R_BITS : Int = 32
+const R_BITS : Int32 = 32
 
 ///|
 const R_MASK : Int64 = 4294967295L // 2^32 - 1

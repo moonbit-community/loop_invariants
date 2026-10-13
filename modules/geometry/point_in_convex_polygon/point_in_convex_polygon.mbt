@@ -63,7 +63,7 @@ fn cross(a : (Int64, Int64), b : (Int64, Int64), c : (Int64, Int64)) -> Int64 {
 ///   @debug.assert_eq(@point_in_convex_polygon.locate(poly, (5L, 5L)), -1)
 /// }
 /// ```
-pub fn locate(poly : Array[(Int64, Int64)], q : (Int64, Int64)) -> Int {
+pub fn locate(poly : Array[(Int64, Int64)], q : (Int64, Int64)) -> Int32 {
   let n = poly.length()
   if n < 3 {
     return -1

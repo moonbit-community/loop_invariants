@@ -62,7 +62,7 @@ const MOD : Int64 = 1000000007L
 ///   @debug.assert_eq(@coin_change_count.count_unordered([1, 2, 5], 5), 4L)
 /// }
 /// ```
-pub fn count_unordered(coins : Array[Int], amount : Int) -> Int64 {
+pub fn count_unordered(coins : Array[Int32], amount : Int32) -> Int64 {
   if amount < 0 {
     return 0L
   }
@@ -84,7 +84,7 @@ pub fn count_unordered(coins : Array[Int], amount : Int) -> Int64 {
 /// `amount`. Order matters.
 ///
 /// Result is taken modulo `1e9 + 7`.
-pub fn count_ordered(coins : Array[Int], amount : Int) -> Int64 {
+pub fn count_ordered(coins : Array[Int32], amount : Int32) -> Int64 {
   if amount < 0 {
     return 0L
   }
@@ -103,7 +103,7 @@ pub fn count_ordered(coins : Array[Int], amount : Int) -> Int64 {
 ///|
 /// Minimum number of coins required to make `amount`, or `-1` when
 /// impossible. Returns `0` for `amount == 0`.
-pub fn min_coins(coins : Array[Int], amount : Int) -> Int {
+pub fn min_coins(coins : Array[Int32], amount : Int32) -> Int32 {
   if amount < 0 {
     return -1
   }

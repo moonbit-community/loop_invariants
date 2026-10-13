@@ -99,7 +99,11 @@ pub fn TDigest::add(self : TDigest, x : Double) -> Unit {
 ///|
 /// Check whether the centroid at index `idx` can absorb `extra_weight`
 /// more without violating the k-function bound.
-fn TDigest::can_merge(self : TDigest, idx : Int, extra_weight : Double) -> Bool {
+fn TDigest::can_merge(
+  self : TDigest,
+  idx : Int32,
+  extra_weight : Double,
+) -> Bool {
   if self.total_weight < 1.0 {
     return true
   }
@@ -234,13 +238,13 @@ pub fn TDigest::quantile(self : TDigest, q : Double) -> Double {
 
 ///|
 /// Total number of samples consumed.
-pub fn TDigest::count(self : TDigest) -> Int {
+pub fn TDigest::count(self : TDigest) -> Int32 {
   (self.total_weight + 0.5).to_int()
 }
 
 ///|
 /// Number of centroids currently held (for inspection / debugging).
-pub fn TDigest::centroid_count(self : TDigest) -> Int {
+pub fn TDigest::centroid_count(self : TDigest) -> Int32 {
   self.means.length()
 }
 

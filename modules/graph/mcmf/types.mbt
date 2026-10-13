@@ -91,11 +91,11 @@ pub const MCMF_INF : Int64 = 4611686018427387903L
 ///   residual(e) = e.cap - e.flow   (must be > 0 to push more flow)
 /// ```
 pub(all) struct MCMFEdge {
-  to : Int
+  to : Int32
   cap : Int64
   cost : Int64
   mut flow : Int64
-  rev : Int // Index of reverse edge in adj[to]
+  rev : Int32 // Index of reverse edge in adj[to]
 }
 
 ///|
@@ -123,11 +123,11 @@ pub(all) struct MCMFEdge {
 ///   // flow = 10, cost = 30
 /// ```
 pub(all) struct MinCostMaxFlow {
-  n : Int
+  n : Int32
   adj : Array[Array[MCMFEdge]]
   dist : Array[Int64]
-  prev_v : Array[Int]
-  prev_e : Array[Int]
+  prev_v : Array[Int32]
+  prev_e : Array[Int32]
   in_queue : Array[Bool]
 }
 
@@ -141,7 +141,7 @@ pub(all) struct MinCostMaxFlow {
 /// - `n` - number of vertices (must be >= 1)
 ///
 /// Returns a solver with empty adjacency lists and zeroed auxiliary arrays.
-pub fn MinCostMaxFlow::MinCostMaxFlow(n : Int) -> MinCostMaxFlow {
+pub fn MinCostMaxFlow::MinCostMaxFlow(n : Int32) -> MinCostMaxFlow {
   let adj : Array[Array[MCMFEdge]] = [ for _ in 0..<n => [] ]
   {
     n,
@@ -176,8 +176,8 @@ pub fn MinCostMaxFlow::MinCostMaxFlow(n : Int) -> MinCostMaxFlow {
 /// edges). Each call adds an independent pair of forward/reverse edges.
 pub fn MinCostMaxFlow::add_edge(
   self : MinCostMaxFlow,
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
   cap : Int64,
   cost : Int64,
 ) -> Unit {

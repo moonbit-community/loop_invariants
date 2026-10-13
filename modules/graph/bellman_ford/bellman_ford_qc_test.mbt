@@ -5,14 +5,14 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 /// `true` when `f(i, xs[i])` holds for every index.
-fn[T] all_i(xs : Array[T], f : (Int, T) -> Bool) -> Bool {
+fn[T] all_i(xs : Array[T], f : (Int32, T) -> Bool) -> Bool {
   for i, x in xs {
     if !f(i, x) {
       return false
@@ -24,9 +24,9 @@ fn[T] all_i(xs : Array[T], f : (Int, T) -> Bool) -> Bool {
 ///|
 /// Directed multigraph with a source; `src` is in `[0, n)` (n >= 1).
 priv struct NG {
-  n : Int
-  src : Int
-  edges : Array[(Int, Int, Int64)]
+  n : Int32
+  src : Int32
+  edges : Array[(Int32, Int32, Int64)]
 } derive(Debug)
 
 ///|
@@ -34,7 +34,7 @@ fn gen_weight(rs : @quickcheck.RandomState) -> Int64 {
   match rint(rs, 0, 29) {
     0 => 1000000000000000L
     1 => -1000000000000000L
-    2..=9 => rint(rs, -5, -1).to_int64()
+    2..<=9 => rint(rs, -5, -1).to_int64()
     _ => rint(rs, 0, 9).to_int64()
   }
 }
@@ -84,7 +84,7 @@ impl @quickcheck.Shrink for NG with fn shrink(g) {
 /// One step of the walk DP: best walk with one more edge allowed.
 fn walk_step(
   d : Array[Int64?],
-  edges : Array[(Int, Int, Int64)],
+  edges : Array[(Int32, Int32, Int64)],
 ) -> Array[Int64?] {
   let next = d.copy()
   for e in edges {
@@ -114,7 +114,11 @@ fn reference(g : NG) -> (Array[Int64?], Bool) {
 }
 
 ///|
-fn min_edge(edges : Array[(Int, Int, Int64)], u : Int, v : Int) -> Int64? {
+fn min_edge(
+  edges : Array[(Int32, Int32, Int64)],
+  u : Int32,
+  v : Int32,
+) -> Int64? {
   edges.fold(init=None, (acc, e) => {
     if e.0 != u || e.1 != v {
       acc

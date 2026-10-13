@@ -1,6 +1,6 @@
 ///|
 /// mu(n) from its definition via trial-division factorisation.
-fn naive_mu(n : Int64) -> Int {
+fn naive_mu(n : Int64) -> Int32 {
   if n <= 0L {
     return 0
   }
@@ -86,7 +86,7 @@ test "qc: mu agrees with the factorisation definition" {
 ///|
 test "qc: sieve(n)[k] == mu(k) for every k <= n" {
   @quickcheck.check(
-    (x : Int) => {
+    (x : Int32) => {
       let n = x % 3000
       let t = @mobius.sieve(n)
       if n < 0 {
@@ -107,7 +107,7 @@ test "qc: sieve(n)[k] == mu(k) for every k <= n" {
 ///|
 test "qc: sum of mu(d) over the divisors d of n is [n == 1]" {
   @quickcheck.check(
-    (x : Int) => {
+    (x : Int32) => {
       let n = (x % 20000).abs().to_int64() + 1L
       let mut s = 0
       for d in 1L..<=n {
@@ -125,7 +125,7 @@ test "qc: sum of mu(d) over the divisors d of n is [n == 1]" {
 ///|
 test "qc: mu is multiplicative on coprime arguments" {
   @quickcheck.check(
-    (p : (Int, Int)) => {
+    (p : (Int32, Int32)) => {
       let a = (p.0 % 1000000).abs().to_int64() + 1L
       let b = (p.1 % 1000000).abs().to_int64() + 1L
       let mut x = a

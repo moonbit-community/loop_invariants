@@ -26,12 +26,12 @@
 /// }
 /// ```
 pub enum Node {
-  Leaf(xor~ : Int)
-  Branch(xor~ : Int, left~ : Node, right~ : Node)
+  Leaf(xor~ : Int32)
+  Branch(xor~ : Int32, left~ : Node, right~ : Node)
 } derive(Debug)
 
 ///|
-fn node_xor(node : Node) -> Int {
+fn node_xor(node : Node) -> Int32 {
   match node {
     Leaf(xor~) => xor
     Branch(xor~, left=_, right=_) => xor
@@ -42,13 +42,13 @@ fn node_xor(node : Node) -> Int {
 
 ///|
 /// Return the xor value stored at the root.
-pub fn xor_value(node : Node) -> Int {
+pub fn xor_value(node : Node) -> Int32 {
   node_xor(node)
 }
 
 ///|
 /// Build a segment tree over arr[l..r).
-pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
+pub fn build(arr : ArrayView[Int32], l : Int32, r : Int32) -> Node {
   if r - l == 1 {
     Leaf(xor=arr[l])
   } else {
@@ -61,7 +61,13 @@ pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 
 ///|
 /// Set index idx to value and return the new tree.
-pub fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
+pub fn set_value(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  idx : Int32,
+  value : Int32,
+) -> Node {
   if r - l == 1 {
     Leaf(xor=value)
   } else {
@@ -90,7 +96,13 @@ pub fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node 
 
 ///|
 /// Query the xor over [ql, qr).
-pub fn range_xor(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
+pub fn range_xor(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
+) -> Int32 {
   if qr <= l || r <= ql {
     0
   } else if ql <= l && r <= qr {
@@ -109,8 +121,8 @@ pub fn range_xor(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 /// Apply point updates (idx, value).
 pub fn apply_updates(
   root : Node,
-  n : Int,
-  updates : ArrayView[(Int, Int)],
+  n : Int32,
+  updates : ArrayView[(Int32, Int32)],
 ) -> Node {
   updates.fold(init=root, (tree, update) => {
     let (idx, value) = update

@@ -7,7 +7,7 @@ priv struct Nat {
 } derive(Debug)
 
 ///|
-fn gen_digits(size : Int, rs : @quickcheck.RandomState) -> String {
+fn gen_digits(size : Int32, rs : @quickcheck.RandomState) -> String {
   let len = match rs.next_uint(limit=6) {
     0 => rs.next_uint(limit=20).reinterpret_as_int()
     1 => 9 * (1 + rs.next_uint(limit=80).reinterpret_as_int()) // limb boundary
@@ -33,7 +33,7 @@ fn gen_digits(size : Int, rs : @quickcheck.RandomState) -> String {
           rs.next_uint(limit=10).reinterpret_as_int()
         }
     }
-    sb.write_char(Int::unsafe_to_char('0'.to_int() + d))
+    sb.write_char(Int32::unsafe_to_char('0'.to_int() + d))
   }
   sb.to_string()
 }
@@ -83,7 +83,7 @@ test "qc: to_string(from_string(s)) == s for canonical decimal strings" {
 ///|
 test "qc: from_string ignores leading zeros" {
   @quickcheck.check(
-    (p : (Nat, Int)) => {
+    (p : (Nat, Int32)) => {
       let (n, k) = p
       let pad = "0".repeat((k % 20).abs())
       @karatsuba.from_string(pad + n.digits) == @karatsuba.from_string(n.digits)

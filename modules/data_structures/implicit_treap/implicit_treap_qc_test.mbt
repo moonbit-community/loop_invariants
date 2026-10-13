@@ -5,7 +5,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -25,18 +25,18 @@ fn gen_val(rs : @quickcheck.RandomState) -> Int64 {
 /// Positions are stored raw and resolved against the current length at run
 /// time: `raw % (len + 3) - 1`, i.e. in `[-1, len + 1]`.
 priv enum Op {
-  Insert(Int, Int64)
-  Delete(Int)
-  Get(Int)
-  Set(Int, Int64)
+  Insert(Int32, Int64)
+  Delete(Int32)
+  Get(Int32)
+  Set(Int32, Int64)
   PushBack(Int64)
   PushFront(Int64)
   PopBack
   PopFront
-  RangeSum(Int, Int)
-  RangeMin(Int, Int)
-  RangeMax(Int, Int)
-  Reverse(Int, Int)
+  RangeSum(Int32, Int32)
+  RangeMin(Int32, Int32)
+  RangeMax(Int32, Int32)
+  Reverse(Int32, Int32)
 } derive(Debug)
 
 ///|
@@ -85,8 +85,10 @@ impl @quickcheck.Shrink for Case with fn shrink(self) {
 fn run_case(c : Case) -> Bool {
   let t = @implicit_treap.ImplicitTreap::from_array(c.init.copy())
   let model = c.init.copy()
-  let pos = (raw : Int) => raw % (model.length() + 3) - 1
-  let valid_range = (l : Int, r : Int) => l >= 0 && l < r && r <= model.length()
+  let pos = (raw : Int32) => raw % (model.length() + 3) - 1
+  let valid_range = (l : Int32, r : Int32) => {
+    l >= 0 && l < r && r <= model.length()
+  }
   for op in c.ops {
     match op {
       Insert(raw, x) => {

@@ -9,7 +9,7 @@ const LMIN : Int64 = -9223372036854775808L
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -42,7 +42,7 @@ impl @quickcheck.Arbitrary for I64s with fn arbitrary(size, rs) {
 }
 
 ///|
-fn ref_top_k(xs : Array[Int64], k : Int) -> Array[Int64] {
+fn ref_top_k(xs : Array[Int64], k : Int32) -> Array[Int64] {
   let s = xs.copy()
   s.sort_by((a, b) => b.compare(a))
   let m = if k < 0 { 0 } else if k > s.length() { s.length() } else { k }
@@ -52,7 +52,7 @@ fn ref_top_k(xs : Array[Int64], k : Int) -> Array[Int64] {
 ///|
 priv struct TopCase {
   xs : Array[Int64]
-  k : Int
+  k : Int32
 } derive(Debug)
 
 ///|

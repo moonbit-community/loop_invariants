@@ -28,7 +28,7 @@ const BF_INF : Int64 = 4611686018427387903L // Large value but allows addition w
 
 ///|
 /// Sentinel distance value for the Int-based convenience wrapper.
-const BF_INF_INT : Int = 0x3fffffff
+const BF_INF_INT : Int32 = 0x3fffffff
 
 ///|
 /// A Bellman-Ford solver for single-source shortest paths on a directed
@@ -42,10 +42,10 @@ const BF_INF_INT : Int = 0x3fffffff
 /// - `has_negative_cycle`: set to `true` by `compute` when a negative cycle
 ///   reachable from the source is found
 pub struct BellmanFord {
-  n : Int
-  edges : Array[(Int, Int, Int64)] // (from, to, weight)
+  n : Int32
+  edges : Array[(Int32, Int32, Int64)] // (from, to, weight)
   dist : Array[Int64]
-  parent : Array[Int]
+  parent : Array[Int32]
   has_negative_cycle : Bool
 }
 
@@ -60,7 +60,7 @@ pub struct BellmanFord {
 /// the graph, then call `compute` to run the algorithm.
 ///
 /// Time complexity: O(n).
-pub fn BellmanFord::BellmanFord(n : Int) -> BellmanFord {
+pub fn BellmanFord::BellmanFord(n : Int32) -> BellmanFord {
   {
     n,
     edges: [],
@@ -84,8 +84,8 @@ pub fn BellmanFord::BellmanFord(n : Int) -> BellmanFord {
 /// Time complexity: O(1) amortised.
 pub fn BellmanFord::add_edge(
   self : BellmanFord,
-  from : Int,
-  to : Int,
+  from : Int32,
+  to : Int32,
   weight : Int64,
 ) -> Unit {
   self.edges.push((from, to, weight))
@@ -115,7 +115,7 @@ pub fn BellmanFord::add_edge(
 ///
 /// Time complexity: O(V * E) in the worst case, O(E) with early exit.
 /// Space complexity: O(V).
-pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
+pub fn BellmanFord::compute(self : BellmanFord, source : Int32) -> BellmanFord {
   // Initialize distances
   self.dist.fill(BF_INF)
   self.parent.fill(-1)
@@ -180,10 +180,10 @@ pub fn BellmanFord::compute(self : BellmanFord, source : Int) -> BellmanFord {
 ///
 /// Time complexity: O(V * E). Space complexity: O(V + E).
 pub fn bellman_ford(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int)],
-  src : Int,
-) -> (Array[Int], Bool) {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int32)],
+  src : Int32,
+) -> (Array[Int32], Bool) {
   if n <= 0 {
     return ([], false)
   }
@@ -216,7 +216,7 @@ pub fn bellman_ford(
 /// Returns `Some(distance)` as an `Int64`, or `None`.
 ///
 /// Time complexity: O(1).
-pub fn BellmanFord::get_distance(self : BellmanFord, v : Int) -> Int64? {
+pub fn BellmanFord::get_distance(self : BellmanFord, v : Int32) -> Int64? {
   if v < 0 || v >= self.n || self.dist[v] == BF_INF {
     None
   } else {
@@ -259,11 +259,14 @@ pub fn BellmanFord::has_negative_cycle(self : BellmanFord) -> Bool {
 /// cycle.
 ///
 /// Time complexity: O(V) for path reconstruction.
-pub fn BellmanFord::get_path(self : BellmanFord, target : Int) -> Array[Int]? {
+pub fn BellmanFord::get_path(
+  self : BellmanFord,
+  target : Int32,
+) -> Array[Int32]? {
   if target < 0 || target >= self.n || self.dist[target] == BF_INF {
     return None
   }
-  let path : Array[Int] = []
+  let path : Array[Int32] = []
   for current = target; current >= 0; {
     path.push(current)
     continue self.parent[current]
@@ -290,16 +293,16 @@ pub fn BellmanFord::get_path(self : BellmanFord, target : Int) -> Array[Int]? {
 
 ///|
 priv struct SPFA {
-  n : Int
-  adj : Array[Array[(Int, Int64)]] // (neighbor, weight)
+  n : Int32
+  adj : Array[Array[(Int32, Int64)]] // (neighbor, weight)
   dist : Array[Int64]
   in_queue : Array[Bool]
-  count : Array[Int] // Number of times vertex entered queue (for cycle detection)
+  count : Array[Int32] // Number of times vertex entered queue (for cycle detection)
 }
 
 ///|
-fn SPFA::SPFA(n : Int) -> SPFA {
-  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
+fn SPFA::SPFA(n : Int32) -> SPFA {
+  let adj : Array[Array[(Int32, Int64)]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,
@@ -310,18 +313,23 @@ fn SPFA::SPFA(n : Int) -> SPFA {
 }
 
 ///|
-fn SPFA::add_edge(self : SPFA, from : Int, to : Int, weight : Int64) -> Unit {
+fn SPFA::add_edge(
+  self : SPFA,
+  from : Int32,
+  to : Int32,
+  weight : Int64,
+) -> Unit {
   self.adj[from].push((to, weight))
 }
 
 ///|
 /// Returns None if negative cycle detected, Some(distances) otherwise
-fn SPFA::compute(self : SPFA, source : Int) -> Array[Int64]? {
+fn SPFA::compute(self : SPFA, source : Int32) -> Array[Int64]? {
   self.dist.fill(BF_INF)
   self.in_queue.fill(false)
   self.count.fill(0)
   self.dist[source] = 0L
-  let queue : Array[Int] = [source]
+  let queue : Array[Int32] = [source]
   self.in_queue[source] = true
   self.count[source] = 1
   let _ = for front = 0 {
@@ -378,7 +386,7 @@ test "bellman_ford basic" {
 
 ///|
 test "bellman_ford wrapper" {
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 1),
     (1, 2, 2),
     (0, 2, 5),
@@ -391,7 +399,7 @@ test "bellman_ford wrapper" {
 
 ///|
 test "bellman_ford wrapper negative cycle" {
-  let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2), (2, 1, -2)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, 1), (1, 2, -2), (2, 1, -2)]
   let (_dist, neg) = bellman_ford(3, edges, 0)
   debug_inspect(neg, content="true")
 }

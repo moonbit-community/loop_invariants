@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -13,8 +13,8 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// Undirected multigraph on `[0, n)` (self-loops and parallel edges
 /// allowed). Half of the graphs start from a random spanning tree.
 priv struct UG {
-  n : Int
-  edges : Array[(Int, Int)]
+  n : Int32
+  edges : Array[(Int32, Int32)]
 } derive(Debug)
 
 ///|
@@ -22,7 +22,7 @@ impl @quickcheck.Arbitrary for UG with fn arbitrary(size, rs) {
   let n = rint(rs, 0, 8)
   let max_m = if size < 2 * n { size } else { 2 * n }
   let m = if n == 0 { 0 } else { rint(rs, 0, max_m) }
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   if rint(rs, 0, 1) == 0 {
     for i in 1..<n {
       edges.push((rint(rs, 0, i - 1), i))
@@ -53,7 +53,7 @@ impl @quickcheck.Shrink for UG with fn shrink(g) {
 ///|
 /// Connected-component label per vertex, ignoring vertex `skip` and the
 /// edge with index `skip_edge` (pass `-1` to ignore nothing).
-fn labels(g : UG, skip : Int, skip_edge : Int) -> Array[Int] {
+fn labels(g : UG, skip : Int32, skip_edge : Int32) -> Array[Int32] {
   let label = Array::make(g.n, -1)
   for s in 0..<g.n {
     if s == skip || label[s] != -1 {
@@ -80,10 +80,10 @@ fn labels(g : UG, skip : Int, skip_edge : Int) -> Array[Int] {
 ///|
 /// Brute force: `v` is an articulation point iff its neighbours (other than
 /// itself) fall into at least two components of `G - v`.
-fn brute_articulation_points(g : UG) -> Array[Int] {
+fn brute_articulation_points(g : UG) -> Array[Int32] {
   Array::makei(g.n, v => v).filter(v => {
     let label = labels(g, v, -1)
-    let seen : Array[Int] = []
+    let seen : Array[Int32] = []
     for e in g.edges {
       let w = if e.0 == v { e.1 } else if e.1 == v { e.0 } else { v }
       if w != v && !seen.contains(label[w]) {
@@ -95,7 +95,7 @@ fn brute_articulation_points(g : UG) -> Array[Int] {
 }
 
 ///|
-fn normalize(pairs : Array[(Int, Int)]) -> Array[(Int, Int)] {
+fn normalize(pairs : Array[(Int32, Int32)]) -> Array[(Int32, Int32)] {
   let out = pairs.map(p => if p.0 <= p.1 { p } else { (p.1, p.0) })
   out.sort()
   out

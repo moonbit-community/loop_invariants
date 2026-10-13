@@ -1,7 +1,7 @@
 ///|
 /// Reference digits of |n| in base b (least significant first) on big
 /// integers, so |Int64::MIN| = 2^63 is handled.
-fn ref_digits(n : Int64, base : Int) -> Array[Int] {
+fn ref_digits(n : Int64, base : Int32) -> Array[Int32] {
   let mut m = @bigint.BigInt::from_int64(n)
   if m < 0N {
     m = -m
@@ -23,7 +23,7 @@ fn ref_digits(n : Int64, base : Int) -> Array[Int] {
 /// extrema) or small; base usually 2..36, sometimes large or invalid.
 priv struct DigitCase {
   n : Int64
-  base : Int
+  base : Int32
 } derive(Debug)
 
 ///|
@@ -93,7 +93,7 @@ test "qc: from_digits inverts to_digits (for |n| representable)" {
 ///|
 test "qc: digit_sum, digit_count and digit_at agree with the digit list" {
   @quickcheck.check(
-    (p : (DigitCase, Int)) => {
+    (p : (DigitCase, Int32)) => {
       let (c, pos) = p
       if c.base <= 1 {
         @digit_sum.digit_sum(c.n, c.base) == 0 &&

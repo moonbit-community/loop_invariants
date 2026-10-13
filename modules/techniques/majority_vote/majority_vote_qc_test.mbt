@@ -2,14 +2,14 @@
 // explicit occurrence count.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -19,7 +19,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix of
 /// small values and `Int` extrema.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 }
 
 ///|
@@ -42,13 +42,13 @@ impl @quickcheck.Arbitrary for Ints with fn arbitrary(size, rs) {
 }
 
 ///|
-fn occurrences(xs : Array[Int], x : Int) -> Int {
+fn occurrences(xs : Array[Int32], x : Int32) -> Int32 {
   xs.iter().filter(y => y == x).count()
 }
 
 ///|
 /// Reference: the element occurring more than n / 2 times, if any.
-fn ref_majority(xs : Array[Int]) -> Int? {
+fn ref_majority(xs : Array[Int32]) -> Int32? {
   for x in xs {
     if occurrences(xs, x) * 2 > xs.length() {
       return Some(x)
@@ -60,7 +60,7 @@ fn ref_majority(xs : Array[Int]) -> Int? {
 ///|
 /// Arrays that frequently have a strict majority (or an exact half).
 priv struct Voting {
-  xs : Array[Int]
+  xs : Array[Int32]
 } derive(Debug)
 
 ///|

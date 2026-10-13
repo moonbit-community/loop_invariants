@@ -33,7 +33,7 @@
 /// ```
 pub fn ImplicitTreap::insert(
   self : ImplicitTreap,
-  pos : Int,
+  pos : Int32,
   val : Int64,
 ) -> Unit {
   let new_node = self.alloc_node(val)
@@ -56,7 +56,7 @@ pub fn ImplicitTreap::insert(
 ///
 ///   Time: O(log n) expected
 /// ```
-pub fn ImplicitTreap::delete(self : ImplicitTreap, pos : Int) -> Int64? {
+pub fn ImplicitTreap::delete(self : ImplicitTreap, pos : Int32) -> Int64? {
   if pos < 0 || pos >= self.size() {
     return None
   }
@@ -84,7 +84,7 @@ pub fn ImplicitTreap::delete(self : ImplicitTreap, pos : Int) -> Int64? {
 ///
 ///   Time: O(log n) expected
 /// ```
-pub fn ImplicitTreap::get(self : ImplicitTreap, pos : Int) -> Int64? {
+pub fn ImplicitTreap::get(self : ImplicitTreap, pos : Int32) -> Int64? {
   if pos < 0 || pos >= self.size() {
     return None
   }
@@ -125,7 +125,11 @@ pub fn ImplicitTreap::get(self : ImplicitTreap, pos : Int) -> Int64? {
 
 ///|
 /// Set value at position pos.
-pub fn ImplicitTreap::set(self : ImplicitTreap, pos : Int, val : Int64) -> Unit {
+pub fn ImplicitTreap::set(
+  self : ImplicitTreap,
+  pos : Int32,
+  val : Int64,
+) -> Unit {
   if pos < 0 || pos >= self.size() {
     return
   }
@@ -176,7 +180,11 @@ pub fn ImplicitTreap::from_array(arr : Array[Int64]) -> ImplicitTreap {
 /// Performs in-order traversal to extract elements in position order.
 pub fn ImplicitTreap::to_array(self : ImplicitTreap) -> Array[Int64] {
   let result : Array[Int64] = []
-  fn inorder(treap : ImplicitTreap, node : Int, result : Array[Int64]) -> Unit {
+  fn inorder(
+    treap : ImplicitTreap,
+    node : Int32,
+    result : Array[Int64],
+  ) -> Unit {
     if node < 0 {
       return
     }

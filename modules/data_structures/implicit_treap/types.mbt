@@ -98,14 +98,14 @@
 /// ```
 pub(all) struct ImplicitNode {
   mut val : Int64 // Value stored at this position
-  priority : Int // Random priority for heap property
-  mut size : Int // Size of subtree (for implicit key computation)
+  priority : Int32 // Random priority for heap property
+  mut size : Int32 // Size of subtree (for implicit key computation)
   mut sum : Int64 // Sum of values in subtree (for range queries)
   mut min_val : Int64 // Minimum value in subtree
   mut max_val : Int64 // Maximum value in subtree
   mut rev : Bool // Lazy reversal flag
-  mut left : Int // Index of left child (-1 if none)
-  mut right : Int // Index of right child (-1 if none)
+  mut left : Int32 // Index of left child (-1 if none)
+  mut right : Int32 // Index of right child (-1 if none)
 }
 
 ///|
@@ -141,9 +141,9 @@ pub(all) struct ImplicitNode {
 /// ```
 pub(all) struct ImplicitTreap {
   nodes : Array[ImplicitNode]
-  mut root : Int
-  mut rand_state : Int
-  free_list : Array[Int]
+  mut root : Int32
+  mut rand_state : Int32
+  free_list : Array[Int32]
 }
 
 ///|
@@ -174,6 +174,6 @@ pub fn ImplicitTreap::ImplicitTreap() -> ImplicitTreap {
 /// let treap = ImplicitTreap::from_array([1L, 2L, 3L])
 /// debug_inspect(treap.size(), content="3")
 /// ```
-pub fn ImplicitTreap::size(self : ImplicitTreap) -> Int {
+pub fn ImplicitTreap::size(self : ImplicitTreap) -> Int32 {
   self.get_size(self.root)
 }

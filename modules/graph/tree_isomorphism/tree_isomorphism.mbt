@@ -24,21 +24,21 @@
 //    a label-preserving isomorphism between them respecting roots."
 
 ///|
-fn find_centroids(n : Int, adj : Array[Array[Int]]) -> Array[Int] {
+fn find_centroids(n : Int32, adj : Array[Array[Int32]]) -> Array[Int32] {
   if n <= 1 {
     return Array::makei(n, i => i)
   }
   let deg = Array::makei(n, i => adj[i].length())
   // Iteratively peel leaves.
   let mut remaining = n
-  let leaves : Array[Int] = []
+  let leaves : Array[Int32] = []
   for i in 0..<n {
     if deg[i] <= 1 {
       leaves.push(i)
     }
   }
   while remaining > 2 {
-    let new_leaves : Array[Int] = []
+    let new_leaves : Array[Int32] = []
     for l in leaves {
       remaining = remaining - 1
       for nb in adj[l] {
@@ -57,7 +57,7 @@ fn find_centroids(n : Int, adj : Array[Array[Int]]) -> Array[Int] {
 }
 
 ///|
-fn canon(v : Int, parent : Int, adj : Array[Array[Int]]) -> String {
+fn canon(v : Int32, parent : Int32, adj : Array[Array[Int32]]) -> String {
   let kids : Array[String] = []
   for u in adj[v] {
     if u != parent {
@@ -89,7 +89,11 @@ fn sort_strings(arr : Array[String]) -> Unit {
 
 ///|
 /// Canonical string representation of a *rooted* tree.
-pub fn canonical_string(root : Int, n : Int, adj : Array[Array[Int]]) -> String {
+pub fn canonical_string(
+  root : Int32,
+  n : Int32,
+  adj : Array[Array[Int32]],
+) -> String {
   if n == 0 {
     return ""
   }
@@ -99,7 +103,7 @@ pub fn canonical_string(root : Int, n : Int, adj : Array[Array[Int]]) -> String 
 ///|
 /// Canonical string for an *unrooted* tree: root at the centroid(s)
 /// and take the lex-smaller string when there are two centroids.
-pub fn unrooted_canonical(n : Int, adj : Array[Array[Int]]) -> String {
+pub fn unrooted_canonical(n : Int32, adj : Array[Array[Int32]]) -> String {
   if n == 0 {
     return ""
   }
@@ -128,10 +132,10 @@ pub fn unrooted_canonical(n : Int, adj : Array[Array[Int]]) -> String {
 /// }
 /// ```
 pub fn is_isomorphic(
-  n1 : Int,
-  adj1 : Array[Array[Int]],
-  n2 : Int,
-  adj2 : Array[Array[Int]],
+  n1 : Int32,
+  adj1 : Array[Array[Int32]],
+  n2 : Int32,
+  adj2 : Array[Array[Int32]],
 ) -> Bool {
   if n1 != n2 {
     return false
@@ -141,40 +145,40 @@ pub fn is_isomorphic(
 
 ///|
 test "iso same path" {
-  let a : Array[Array[Int]] = [[1], [0, 2], [1]]
-  let b : Array[Array[Int]] = [[1], [0, 2], [1]]
+  let a : Array[Array[Int32]] = [[1], [0, 2], [1]]
+  let b : Array[Array[Int32]] = [[1], [0, 2], [1]]
   @debug.assert_eq(is_isomorphic(3, a, 3, b), true)
 }
 
 ///|
 test "iso star vs path" {
   // Star with 4 leaves vs path of 5: not isomorphic.
-  let star : Array[Array[Int]] = [[1, 2, 3, 4], [0], [0], [0], [0]]
-  let path : Array[Array[Int]] = [[1], [0, 2], [1, 3], [2, 4], [3]]
+  let star : Array[Array[Int32]] = [[1, 2, 3, 4], [0], [0], [0], [0]]
+  let path : Array[Array[Int32]] = [[1], [0, 2], [1, 3], [2, 4], [3]]
   @debug.assert_eq(is_isomorphic(5, star, 5, path), false)
 }
 
 ///|
 test "iso same star different labels" {
-  let s1 : Array[Array[Int]] = [[1, 2, 3], [0], [0], [0]]
+  let s1 : Array[Array[Int32]] = [[1, 2, 3], [0], [0], [0]]
   // Same star centered on vertex 2 instead.
-  let s2 : Array[Array[Int]] = [[2], [2], [0, 1, 3], [2]]
+  let s2 : Array[Array[Int32]] = [[2], [2], [0, 1, 3], [2]]
   @debug.assert_eq(is_isomorphic(4, s1, 4, s2), true)
 }
 
 ///|
 test "iso different sizes" {
-  let a : Array[Array[Int]] = [[1], [0]]
-  let b : Array[Array[Int]] = [[1], [0, 2], [1]]
+  let a : Array[Array[Int32]] = [[1], [0]]
+  let b : Array[Array[Int32]] = [[1], [0, 2], [1]]
   @debug.assert_eq(is_isomorphic(2, a, 3, b), false)
 }
 
 ///|
 test "iso same binary tree" {
   // Tree rooted at 0: 0->1, 0->2, 1->3.
-  let a : Array[Array[Int]] = [[1, 2], [0, 3], [0], [1]]
+  let a : Array[Array[Int32]] = [[1, 2], [0, 3], [0], [1]]
   // Re-labelled: 3->2, 3->4, 2->1.
-  let b : Array[Array[Int]] = [[3], [2], [1, 3], [0, 2]]
+  let b : Array[Array[Int32]] = [[3], [2], [1, 3], [0, 2]]
   @debug.assert_eq(is_isomorphic(4, a, 4, b), true)
 }
 
@@ -188,7 +192,7 @@ test "iso single vertex / empty" {
 test "iso caterpillar vs Y-shape" {
   // Caterpillar 0-1-2-3 with leaf 4 attached to 1.
   // Y-shape with three leaves emanating from the centre.
-  let cat : Array[Array[Int]] = [[1], [0, 2, 4], [1, 3], [2], [1]]
-  let y : Array[Array[Int]] = [[1], [0, 2, 3, 4], [1], [1], [1]]
+  let cat : Array[Array[Int32]] = [[1], [0, 2, 4], [1, 3], [2], [1]]
+  let y : Array[Array[Int32]] = [[1], [0, 2, 3, 4], [1], [1], [1]]
   @debug.assert_eq(is_isomorphic(5, cat, 5, y), false)
 }

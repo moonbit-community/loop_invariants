@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -22,7 +22,7 @@ impl @quickcheck.Shrink for Op
 
 ///|
 priv struct Case {
-  max_bits : Int
+  max_bits : Int32
   ops : Array[Op]
 } derive(Debug)
 

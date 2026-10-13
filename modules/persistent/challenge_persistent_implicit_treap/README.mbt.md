@@ -150,7 +150,7 @@ insert_at(1, 15) -> [10, 15, 20]
 ```mbt check
 ///|
 test "implicit treap basic" {
-  let t0 : @challenge_persistent_implicit_treap.Treap[Int] = @challenge_persistent_implicit_treap.empty()
+  let t0 : @challenge_persistent_implicit_treap.Treap[Int32] = @challenge_persistent_implicit_treap.empty()
   let t1 = @challenge_persistent_implicit_treap.insert_at(t0, 0, 10)
   let t2 = @challenge_persistent_implicit_treap.insert_at(t1, 1, 20)
   let t3 = @challenge_persistent_implicit_treap.insert_at(t2, 1, 15)

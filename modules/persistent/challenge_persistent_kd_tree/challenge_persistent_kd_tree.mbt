@@ -24,8 +24,8 @@
 /// }
 /// ```
 pub(all) struct Point {
-  x : Int
-  y : Int
+  x : Int32
+  y : Int32
 } derive(Debug, Eq)
 
 ///|
@@ -54,12 +54,12 @@ pub(all) struct Point {
 /// ```
 pub enum Kd {
   Empty
-  Node(point~ : Point, axis~ : Int, left~ : Kd, right~ : Kd)
+  Node(point~ : Point, axis~ : Int32, left~ : Kd, right~ : Kd)
 } derive(Debug)
 
 ///|
 /// Return the number of points stored in the tree.
-pub fn size(t : Kd) -> Int {
+pub fn size(t : Kd) -> Int32 {
   match t {
     Empty => 0
     Node(point=_, axis=_, left~, right~) => 1 + size(left) + size(right)
@@ -67,7 +67,7 @@ pub fn size(t : Kd) -> Int {
 }
 
 ///|
-fn coord(p : Point, axis : Int) -> Int {
+fn coord(p : Point, axis : Int32) -> Int32 {
   if axis == 0 {
     p.x
   } else {
@@ -76,7 +76,7 @@ fn coord(p : Point, axis : Int) -> Int {
 }
 
 ///|
-fn insert_node(t : Kd, p : Point, axis : Int) -> Kd {
+fn insert_node(t : Kd, p : Point, axis : Int32) -> Kd {
   match t {
     Empty => Node(point=p, axis~, left=Empty, right=Empty)
     Node(point=pt, axis=ax, left=l, right=r) =>

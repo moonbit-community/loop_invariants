@@ -70,7 +70,7 @@
 ///   If parent >= 0 but neither left nor right child of parent is x,
 ///   then x is actually connected via path_parent, not splay tree edge.
 /// ```
-fn LinkCutTree::is_splay_root(self : LinkCutTree, x : Int) -> Bool {
+fn LinkCutTree::is_splay_root(self : LinkCutTree, x : Int32) -> Bool {
   let p = self.nodes[x].parent
   if p < 0 {
     true
@@ -95,7 +95,7 @@ fn LinkCutTree::is_splay_root(self : LinkCutTree, x : Int) -> Bool {
 ///   This implements lazy propagation - we only apply the reversal
 ///   when we actually need to traverse through a node.
 /// ```
-fn LinkCutTree::push_down(self : LinkCutTree, x : Int) -> Unit {
+fn LinkCutTree::push_down(self : LinkCutTree, x : Int32) -> Unit {
   if self.nodes[x].reversed {
     // Swap children
     let tmp = self.nodes[x].left
@@ -127,7 +127,7 @@ fn LinkCutTree::push_down(self : LinkCutTree, x : Int) -> Unit {
 ///
 ///   Called after any structural change (rotation, link, cut).
 /// ```
-fn LinkCutTree::push_up(self : LinkCutTree, x : Int) -> Unit {
+fn LinkCutTree::push_up(self : LinkCutTree, x : Int32) -> Unit {
   let l = self.nodes[x].left
   let r = self.nodes[x].right
   let l_sum = if l >= 0 { self.nodes[l].subtree_sum } else { 0 }
@@ -160,7 +160,7 @@ fn LinkCutTree::push_up(self : LinkCutTree, x : Int) -> Unit {
 ///   3. y becomes child of x
 ///   4. Path-parent transfers from y to x
 /// ```
-fn LinkCutTree::rotate(self : LinkCutTree, x : Int) -> Unit {
+fn LinkCutTree::rotate(self : LinkCutTree, x : Int32) -> Unit {
   let y = self.nodes[x].parent
   let z = self.nodes[y].parent
   let is_left = self.nodes[y].left == x
@@ -218,9 +218,9 @@ fn LinkCutTree::rotate(self : LinkCutTree, x : Int) -> Unit {
 ///   1. Collect path from x to splay root
 ///   2. Push down from root to x (reverse order)
 /// ```
-fn LinkCutTree::push_down_path(self : LinkCutTree, x : Int) -> Unit {
+fn LinkCutTree::push_down_path(self : LinkCutTree, x : Int32) -> Unit {
   // Collect ancestors (need to push from top down)
-  let path : Array[Int] = []
+  let path : Array[Int32] = []
   for node = x; !self.is_splay_root(node); {
     path.push(node)
     continue self.nodes[node].parent
@@ -272,7 +272,7 @@ fn LinkCutTree::push_down_path(self : LinkCutTree, x : Int) -> Unit {
 ///   The zig-zig case is crucial: rotating parent first creates
 ///   a more balanced structure, leading to better amortization.
 /// ```
-fn LinkCutTree::splay(self : LinkCutTree, x : Int) -> Unit {
+fn LinkCutTree::splay(self : LinkCutTree, x : Int32) -> Unit {
   // Push down lazy values first
   self.push_down_path(x)
 

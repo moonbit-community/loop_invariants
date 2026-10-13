@@ -72,7 +72,12 @@
 ///
 ///   return 0   (dead end)
 /// ```
-pub fn Dinic::dfs(self : Dinic, u : Int, sink : Int, pushed : Int64) -> Int64 {
+pub fn Dinic::dfs(
+  self : Dinic,
+  u : Int32,
+  sink : Int32,
+  pushed : Int64,
+) -> Int64 {
   // Base cases
   if u == sink || pushed == 0L {
     return pushed

@@ -5,14 +5,14 @@
 
 ///|
 enum Node {
-  Leaf(value~ : Int)
+  Leaf(value~ : Int32)
   Branch(left~ : Node, right~ : Node)
 } derive(Debug)
 
 ///|
 struct PArray {
   root : Node
-  n : Int
+  n : Int32
 } derive(Debug)
 
 ///|
@@ -44,7 +44,7 @@ pub struct DSU {
 } derive(Debug)
 
 ///|
-fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
+fn build(arr : ArrayView[Int32], l : Int32, r : Int32) -> Node {
   if r - l == 1 {
     Leaf(value=arr[l])
   } else {
@@ -56,7 +56,7 @@ fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 }
 
 ///|
-fn get(node : Node, l : Int, r : Int, idx : Int) -> Int {
+fn get(node : Node, l : Int32, r : Int32, idx : Int32) -> Int32 {
   match node {
     Leaf(value~) => value
     Branch(left~, right~) => {
@@ -71,7 +71,7 @@ fn get(node : Node, l : Int, r : Int, idx : Int) -> Int {
 }
 
 ///|
-fn set(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
+fn set(node : Node, l : Int32, r : Int32, idx : Int32, value : Int32) -> Node {
   if r - l == 1 {
     Leaf(value~)
   } else {
@@ -89,24 +89,24 @@ fn set(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
 }
 
 ///|
-fn make_array(arr : ArrayView[Int]) -> PArray {
+fn make_array(arr : ArrayView[Int32]) -> PArray {
   let n = arr.length()
   { root: build(arr, 0, n), n, }
 }
 
 ///|
-fn array_get(arr : PArray, idx : Int) -> Int {
+fn array_get(arr : PArray, idx : Int32) -> Int32 {
   get(arr.root, 0, arr.n, idx)
 }
 
 ///|
-fn array_set(arr : PArray, idx : Int, value : Int) -> PArray {
+fn array_set(arr : PArray, idx : Int32, value : Int32) -> PArray {
   { root: set(arr.root, 0, arr.n, idx, value), n: arr.n, }
 }
 
 ///|
 /// Create a persistent DSU with n singleton elements.
-pub fn make(n : Int) -> DSU {
+pub fn make(n : Int32) -> DSU {
   let parents = [ for i in 0..<n => i ]
   let sizes = Array::make(n, 1)
   { parent: make_array(parents), size: make_array(sizes), }
@@ -114,7 +114,7 @@ pub fn make(n : Int) -> DSU {
 
 ///|
 /// Find the representative of x without path compression.
-pub fn find(dsu : DSU, x : Int) -> Int {
+pub fn find(dsu : DSU, x : Int32) -> Int32 {
   let p = array_get(dsu.parent, x)
   if p == x {
     x
@@ -125,7 +125,7 @@ pub fn find(dsu : DSU, x : Int) -> Int {
 
 ///|
 /// Return a new DSU after unioning the sets containing a and b.
-pub fn union(dsu : DSU, a : Int, b : Int) -> DSU {
+pub fn union(dsu : DSU, a : Int32, b : Int32) -> DSU {
   let ra = find(dsu, a)
   let rb = find(dsu, b)
   if ra == rb {
@@ -147,6 +147,6 @@ pub fn union(dsu : DSU, a : Int, b : Int) -> DSU {
 
 ///|
 /// Check whether a and b belong to the same set.
-pub fn same(dsu : DSU, a : Int, b : Int) -> Bool {
+pub fn same(dsu : DSU, a : Int32, b : Int32) -> Bool {
   find(dsu, a) == find(dsu, b)
 }

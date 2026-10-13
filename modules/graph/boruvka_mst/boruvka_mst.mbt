@@ -67,11 +67,11 @@
 /// ]
 /// @boruvka_mst.mst(n, edges)  // [0, 2, 3]
 /// ```
-pub fn mst(n : Int, edges : Array[(Int, Int, Int)]) -> Array[Int] {
+pub fn mst(n : Int32, edges : Array[(Int32, Int32, Int32)]) -> Array[Int32] {
   // Union-find with path compression and union by size.
   let parent = Array::makei(n, i => i)
   let size = Array::make(n, 1)
-  fn find(x : Int) -> Int {
+  fn find(x : Int32) -> Int32 {
     let mut r = x
     while parent[r] != r {
       r = parent[r]
@@ -86,7 +86,7 @@ pub fn mst(n : Int, edges : Array[(Int, Int, Int)]) -> Array[Int] {
     r
   }
 
-  fn union(x : Int, y : Int) -> Bool {
+  fn union(x : Int32, y : Int32) -> Bool {
     let rx = find(x)
     let ry = find(y)
     if rx == ry {
@@ -102,7 +102,7 @@ pub fn mst(n : Int, edges : Array[(Int, Int, Int)]) -> Array[Int] {
     true
   }
 
-  let chosen : Array[Int] = []
+  let chosen : Array[Int32] = []
   let mut num_components = n
   // Phase loop.
   while num_components > 1 {
@@ -156,7 +156,7 @@ pub fn mst(n : Int, edges : Array[(Int, Int, Int)]) -> Array[Int] {
 
 ///|
 /// Convenience: compute the total weight of the MST.
-pub fn mst_weight(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
+pub fn mst_weight(n : Int32, edges : Array[(Int32, Int32, Int32)]) -> Int32 {
   let chosen = mst(n, edges)
   let mut total = 0
   for ei in chosen {
@@ -202,8 +202,8 @@ test "boruvka small example" {
 ///|
 test "boruvka cross-validates with Kruskal" {
   // Run a naive Kruskal: sort edges by weight, greedily add if no cycle.
-  fn kruskal(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
-    let indexed : Array[(Int, Int, Int, Int)] = []
+  fn kruskal(n : Int32, edges : Array[(Int32, Int32, Int32)]) -> Int32 {
+    let indexed : Array[(Int32, Int32, Int32, Int32)] = []
     for i in 0..<edges.length() {
       let (u, v, w) = edges[i]
       indexed.push((w, u, v, i))
@@ -214,7 +214,7 @@ test "boruvka cross-validates with Kruskal" {
       wa.compare(wb)
     })
     let parent = Array::makei(n, i => i)
-    fn find(x : Int) -> Int {
+    fn find(x : Int32) -> Int32 {
       let mut r = x
       while parent[r] != r {
         r = parent[r]
@@ -235,7 +235,7 @@ test "boruvka cross-validates with Kruskal" {
     total
   }
 
-  let tests : Array[(Int, Array[(Int, Int, Int)])] = [
+  let tests : Array[(Int32, Array[(Int32, Int32, Int32)])] = [
     (1, []),
     (2, [(0, 1, 7)]),
     (3, [(0, 1, 1), (1, 2, 2), (0, 2, 3)]),

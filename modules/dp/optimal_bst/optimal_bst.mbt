@@ -79,7 +79,9 @@ pub fn min_cost(w : Array[Double]) -> Double {
   let e : Array[Array[Double]] = Array::makei(n + 2, _ => {
     Array::make(n + 1, 0.0)
   })
-  let root : Array[Array[Int]] = Array::makei(n + 2, _ => Array::make(n + 1, 0))
+  let root : Array[Array[Int32]] = Array::makei(n + 2, _ => {
+    Array::make(n + 1, 0)
+  })
   // Base case: e[i][i] = w[i].
   for i in 1..<=n {
     e[i][i] = w[i - 1]
@@ -120,7 +122,7 @@ pub fn min_cost(w : Array[Double]) -> Double {
 /// each key in the optimal BST. `parent[k] = -1` if `k` is the root.
 /// Indices in the returned `parent` array are 1-based (matching key
 /// positions 1..n), with index 0 unused.
-pub fn min_cost_with_tree(w : Array[Double]) -> (Double, Array[Int]) {
+pub fn min_cost_with_tree(w : Array[Double]) -> (Double, Array[Int32]) {
   let n = w.length()
   if n == 0 {
     return (0.0, [])
@@ -132,7 +134,9 @@ pub fn min_cost_with_tree(w : Array[Double]) -> (Double, Array[Int]) {
   let e : Array[Array[Double]] = Array::makei(n + 2, _ => {
     Array::make(n + 1, 0.0)
   })
-  let root : Array[Array[Int]] = Array::makei(n + 2, _ => Array::make(n + 1, 0))
+  let root : Array[Array[Int32]] = Array::makei(n + 2, _ => {
+    Array::make(n + 1, 0)
+  })
   for i in 1..<=n {
     e[i][i] = w[i - 1]
     root[i][i] = i
@@ -166,11 +170,11 @@ pub fn min_cost_with_tree(w : Array[Double]) -> (Double, Array[Int]) {
 ///|
 /// Reconstruct parent indices from the `root` table.
 fn build_tree(
-  root : Array[Array[Int]],
-  i : Int,
-  j : Int,
-  par : Int,
-  parent : Array[Int],
+  root : Array[Array[Int32]],
+  i : Int32,
+  j : Int32,
+  par : Int32,
+  parent : Array[Int32],
 ) -> Unit {
   if i > j {
     return

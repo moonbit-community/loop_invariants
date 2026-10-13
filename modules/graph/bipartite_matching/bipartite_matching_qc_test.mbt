@@ -5,7 +5,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -14,9 +14,9 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// Bipartite graph: edges `(u, v)` with `u` in `[0, left)` and `v` in
 /// `[0, right)`; parallel edges allowed.
 priv struct BG {
-  left : Int
-  right : Int
-  edges : Array[(Int, Int)]
+  left : Int32
+  right : Int32
+  edges : Array[(Int32, Int32)]
 } derive(Debug)
 
 ///|
@@ -56,9 +56,9 @@ fn build(g : BG) -> @bipartite_matching.BipartiteGraph {
 ///|
 /// Brute force: try every choice (skip, or any free right neighbour) for
 /// each left vertex in turn.
-fn brute_matching(g : BG) -> Int {
+fn brute_matching(g : BG) -> Int32 {
   let used = Array::make(g.right, false)
-  fn go(u : Int) -> Int {
+  fn go(u : Int32) -> Int32 {
     if u == g.left {
       return 0
     }
@@ -80,7 +80,7 @@ fn brute_matching(g : BG) -> Int {
 
 ///|
 /// Pairs are edges of `g` with no repeated left or right vertex.
-fn valid_matching(g : BG, pairs : Array[(Int, Int)]) -> Bool {
+fn valid_matching(g : BG, pairs : Array[(Int32, Int32)]) -> Bool {
   let ls = Array::make(g.left, false)
   let rs = Array::make(g.right, false)
   pairs

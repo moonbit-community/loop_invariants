@@ -3,11 +3,11 @@
 // ============================================================================
 
 ///|
-const INF : Int = 0x3fffffff
+const INF : Int32 = 0x3fffffff
 
 ///|
 /// Minimum cuts to partition s into palindromes.
-pub fn min_palindrome_cuts(s : String) -> Int {
+pub fn min_palindrome_cuts(s : String) -> Int32 {
   let n = s.length()
   if n == 0 {
     return 0

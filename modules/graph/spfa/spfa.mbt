@@ -36,7 +36,7 @@
 ///|
 /// A weighted directed edge.
 pub(all) struct Edge {
-  to : Int
+  to : Int32
   w : Int64
 }
 
@@ -54,7 +54,7 @@ pub const INF : Int64 = 4611686018427387903L
 ///                       When this is `true`, `dist` is unreliable.
 pub(all) struct SpfaResult {
   dist : Array[Int64]
-  parent : Array[Int]
+  parent : Array[Int32]
   negative_cycle : Bool
 }
 
@@ -76,9 +76,9 @@ pub(all) struct SpfaResult {
 /// }
 /// ```
 pub fn shortest_path(
-  n : Int,
+  n : Int32,
   adj : Array[Array[Edge]],
-  source : Int,
+  source : Int32,
 ) -> SpfaResult {
   let dist = Array::make(n, INF)
   let parent = Array::make(n, -1)
@@ -88,7 +88,7 @@ pub fn shortest_path(
   dist[source] = 0L
   // SLF-like queue using a circular buffer; we use a plain queue plus
   // an `in_queue` flag.
-  let queue : Array[Int] = []
+  let queue : Array[Int32] = []
   let in_queue = Array::make(n, false)
   let count = Array::make(n, 0)
   queue.push(source)
@@ -133,11 +133,11 @@ pub fn shortest_path(
 /// Reconstruct the path from `source` to `target` using `parent`.
 /// Returns `[]` when no path exists.
 pub fn reconstruct(
-  parent : Array[Int],
-  source : Int,
-  target : Int,
-) -> Array[Int] {
-  let path : Array[Int] = []
+  parent : Array[Int32],
+  source : Int32,
+  target : Int32,
+) -> Array[Int32] {
+  let path : Array[Int32] = []
   let mut v = target
   while v != -1 && v != source {
     path.push(v)

@@ -33,20 +33,20 @@ enum Bucket[K, V] {
 /// ```
 pub struct HashMap[K, V] {
   buckets : Array[Bucket[K, V]]
-  size : Int
+  size : Int32
 } derive(Debug)
 
 ///|
 
 ///|
 /// Create an empty hash map with the given capacity (min 1).
-pub fn[K, V] make(capacity : Int) -> HashMap[K, V] {
+pub fn[K, V] make(capacity : Int32) -> HashMap[K, V] {
   let cap = if capacity <= 0 { 1 } else { capacity }
   { buckets: Array::make(cap, Nil), size: 0, }
 }
 
 ///|
-fn[K : Hash] index_for(key : K, cap : Int) -> Int {
+fn[K : Hash] index_for(key : K, cap : Int32) -> Int32 {
   let m = key.hash() % cap
   if m < 0 {
     m + cap
@@ -88,13 +88,13 @@ fn[K : Eq, V] bucket_insert(
 
 ///|
 /// Return the number of entries in the map.
-pub fn[K, V] size(map : HashMap[K, V]) -> Int {
+pub fn[K, V] size(map : HashMap[K, V]) -> Int32 {
   map.size
 }
 
 ///|
 /// Return the number of buckets in the map.
-pub fn[K, V] capacity(map : HashMap[K, V]) -> Int {
+pub fn[K, V] capacity(map : HashMap[K, V]) -> Int32 {
   map.buckets.length()
 }
 

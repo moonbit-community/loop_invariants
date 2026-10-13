@@ -51,7 +51,7 @@
 /// sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3)
 /// // => [3, 3, 5, 5, 6, 7]
 /// ```
-pub fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
+pub fn sliding_window_max(arr : Array[Int64], k : Int32) -> Array[Int64] {
   let n = arr.length()
   if n == 0 || k <= 0 {
     return []
@@ -62,7 +62,7 @@ pub fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
     return [m]
   }
   let result : Array[Int64] = []
-  let dq : @deque.Deque[Int] = Deque([])
+  let dq : @deque.Deque[Int32] = Deque([])
   for i in 0..<n {
     // Remove elements outside window
     let _ = for front = dq.front() {
@@ -178,7 +178,7 @@ pub fn sliding_window_max(arr : Array[Int64], k : Int) -> Array[Int64] {
 /// sliding_window_min([1, 3, -1, -3, 5, 3, 6, 7], 3)
 /// // => [-1, -3, -3, -3, 3, 3]
 /// ```
-pub fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
+pub fn sliding_window_min(arr : Array[Int64], k : Int32) -> Array[Int64] {
   let n = arr.length()
   if n == 0 || k <= 0 {
     return []
@@ -189,7 +189,7 @@ pub fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
     return [m]
   }
   let result : Array[Int64] = []
-  let dq : @deque.Deque[Int] = Deque([])
+  let dq : @deque.Deque[Int32] = Deque([])
   for i in 0..<n {
     let _ = for front = dq.front() {
       match front {
@@ -296,7 +296,7 @@ pub fn sliding_window_min(arr : Array[Int64], k : Int) -> Array[Int64] {
 /// sliding_window_sum([1, 2, 3, 4, 5], 3)
 /// // => [6, 9, 12]
 /// ```
-pub fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
+pub fn sliding_window_sum(arr : Array[Int64], k : Int32) -> Array[Int64] {
   let n = arr.length()
   if n == 0 || k <= 0 || k > n {
     return []
@@ -356,7 +356,10 @@ pub fn sliding_window_sum(arr : Array[Int64], k : Int) -> Array[Int64] {
 /// longest_subarray_with_sum_le([1, 2, 3, 4, 5], 6)
 /// // => 3  ([1, 2, 3])
 /// ```
-pub fn longest_subarray_with_sum_le(arr : Array[Int64], target : Int64) -> Int {
+pub fn longest_subarray_with_sum_le(
+  arr : Array[Int64],
+  target : Int64,
+) -> Int32 {
   let n = arr.length()
   if n == 0 {
     return 0
@@ -452,7 +455,7 @@ fn sum_ge(sum : UInt64, target : Int64) -> Bool {
 /// min_subarray_with_sum_ge([2, 3, 1, 2, 4, 3], 7)
 /// // => 2  ([4, 3])
 /// ```
-pub fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int {
+pub fn min_subarray_with_sum_ge(arr : Array[Int64], target : Int64) -> Int32 {
   let n = arr.length()
   if n == 0 {
     return 0

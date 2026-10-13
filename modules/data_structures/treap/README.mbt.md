@@ -168,7 +168,7 @@ The actual code uses a recursive delete, but the behavior matches this idea.
 ```mbt check
 ///|
 test "treap empty" {
-  let t : @treap.Treap[Int] = Treap()
+  let t : @treap.Treap[Int32] = Treap()
   debug_inspect(t.size(), content="0")
   debug_inspect(t.min(), content="None")
   debug_inspect(t.max(), content="None")

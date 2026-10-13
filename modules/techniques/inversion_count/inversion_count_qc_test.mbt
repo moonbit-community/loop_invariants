@@ -2,14 +2,14 @@
 // of an inversion, plus algebraic facts that follow from it.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -18,7 +18,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// Arrays whose elements come from one of three regimes: a tiny range (many
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -46,7 +46,7 @@ impl @quickcheck.Shrink for Ints with fn shrink(self) {
 }
 
 ///|
-fn brute(arr : Array[Int]) -> Int64 {
+fn brute(arr : Array[Int32]) -> Int64 {
   let mut c = 0L
   for i in 0..<arr.length() {
     for j in (i + 1)..<arr.length() {

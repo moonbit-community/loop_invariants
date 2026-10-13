@@ -34,7 +34,7 @@
 const MAX : Int64 = 9223372036854775807L
 
 ///|
-fn ipow_safe(b : Int64, e : Int) -> Int64 {
+fn ipow_safe(b : Int64, e : Int32) -> Int64 {
   if b == 0L {
     return if e == 0 { 1L } else { 0L }
   }
@@ -73,7 +73,7 @@ fn ipow_safe(b : Int64, e : Int) -> Int64 {
 ///   @debug.assert_eq(@integer_log.floor_log(1000L, 10), 3)
 /// }
 /// ```
-pub fn floor_log(x : Int64, b : Int) -> Int {
+pub fn floor_log(x : Int64, b : Int32) -> Int32 {
   if x <= 0L || b <= 1 {
     return -1
   }
@@ -94,7 +94,7 @@ pub fn floor_log(x : Int64, b : Int) -> Int {
 
 ///|
 /// ceil(log_b(x)). Returns `-1` for `x <= 0` or `b <= 1`.
-pub fn ceil_log(x : Int64, b : Int) -> Int {
+pub fn ceil_log(x : Int64, b : Int32) -> Int32 {
   if x <= 0L || b <= 1 {
     return -1
   }
@@ -112,7 +112,7 @@ pub fn ceil_log(x : Int64, b : Int) -> Int {
 ///|
 /// `true` iff `x = b^k` for some `k >= 0`. Returns `false` for `x <= 0`,
 /// `b <= 1`, or non-power x.
-pub fn is_power_of(x : Int64, b : Int) -> Bool {
+pub fn is_power_of(x : Int64, b : Int32) -> Bool {
   if x <= 0L || b <= 1 {
     return false
   }
@@ -132,7 +132,7 @@ pub fn is_power_of(x : Int64, b : Int) -> Bool {
 
 ///|
 /// floor(log_2(x)).
-pub fn log2_floor(x : Int64) -> Int {
+pub fn log2_floor(x : Int64) -> Int32 {
   if x <= 0L {
     return -1
   }
@@ -147,7 +147,7 @@ pub fn log2_floor(x : Int64) -> Int {
 
 ///|
 /// ceil(log_2(x)).
-pub fn log2_ceil(x : Int64) -> Int {
+pub fn log2_ceil(x : Int64) -> Int32 {
   if x <= 0L {
     return -1
   }
@@ -181,7 +181,7 @@ pub fn is_perfect_power(x : Int64) -> Bool {
 }
 
 ///|
-fn nth_root_floor(x : Int64, n : Int) -> Int64 {
+fn nth_root_floor(x : Int64, n : Int32) -> Int64 {
   if x <= 0L || n < 1 {
     return 0L
   }
@@ -229,7 +229,7 @@ fn nth_root_floor(x : Int64, n : Int) -> Int64 {
 
 ///|
 /// `b^e <= x` for `b >= 0`, `e >= 1`, `x >= 0`, computed without overflow.
-fn pow_le(b : Int64, e : Int, x : Int64) -> Bool {
+fn pow_le(b : Int64, e : Int32, x : Int64) -> Bool {
   if b <= 1L {
     return b <= x
   }

@@ -37,7 +37,7 @@
 ///   @debug.assert_eq(@inversion_count.count([3, 1, 2]), 2L)
 /// }
 /// ```
-pub fn count(arr : Array[Int]) -> Int64 {
+pub fn count(arr : Array[Int32]) -> Int64 {
   let n = arr.length()
   if n <= 1 {
     return 0L
@@ -48,7 +48,12 @@ pub fn count(arr : Array[Int]) -> Int64 {
 }
 
 ///|
-fn merge_sort(arr : Array[Int], buf : Array[Int], lo : Int, hi : Int) -> Int64 {
+fn merge_sort(
+  arr : Array[Int32],
+  buf : Array[Int32],
+  lo : Int32,
+  hi : Int32,
+) -> Int64 {
   if hi - lo <= 1 {
     return 0L
   }
@@ -61,11 +66,11 @@ fn merge_sort(arr : Array[Int], buf : Array[Int], lo : Int, hi : Int) -> Int64 {
 
 ///|
 fn merge_run(
-  arr : Array[Int],
-  buf : Array[Int],
-  lo : Int,
-  mid : Int,
-  hi : Int,
+  arr : Array[Int32],
+  buf : Array[Int32],
+  lo : Int32,
+  mid : Int32,
+  hi : Int32,
 ) -> Int64 {
   let mut i = lo
   let mut j = mid
@@ -121,7 +126,7 @@ test "inv duplicates" {
 
 ///|
 test "inv agrees with brute force" {
-  fn brute(arr : Array[Int]) -> Int64 {
+  fn brute(arr : Array[Int32]) -> Int64 {
     let n = arr.length()
     let mut c = 0L
     for i in 0..<n {
@@ -134,7 +139,7 @@ test "inv agrees with brute force" {
     c
   }
 
-  let cases : ReadOnlyArray[Array[Int]] = [
+  let cases : ReadOnlyArray[Array[Int32]] = [
     [3, 1, 4, 1, 5, 9, 2, 6],
     [10, 20, 5, 30, 15],
     [],

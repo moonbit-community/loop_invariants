@@ -5,8 +5,8 @@
 
 ///|
 enum Node {
-  Leaf(count~ : Int)
-  Branch(count~ : Int, left~ : Node, right~ : Node)
+  Leaf(count~ : Int32)
+  Branch(count~ : Int32, left~ : Node, right~ : Node)
 } derive(Debug)
 
 ///|
@@ -31,11 +31,11 @@ enum Node {
 /// ```
 pub struct Bitset {
   root : Node
-  n : Int
+  n : Int32
 } derive(Debug)
 
 ///|
-fn node_count(node : Node) -> Int {
+fn node_count(node : Node) -> Int32 {
   match node {
     Leaf(count~) => count
     Branch(count~, left=_, right=_) => count
@@ -45,7 +45,7 @@ fn node_count(node : Node) -> Int {
 ///|
 
 ///|
-fn build_zero(l : Int, r : Int) -> Node {
+fn build_zero(l : Int32, r : Int32) -> Node {
   if r - l == 1 {
     Leaf(count=0)
   } else {
@@ -57,7 +57,13 @@ fn build_zero(l : Int, r : Int) -> Node {
 }
 
 ///|
-fn set_bit(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
+fn set_bit(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  idx : Int32,
+  value : Int32,
+) -> Node {
   if r - l == 1 {
     Leaf(count=value)
   } else {
@@ -85,7 +91,7 @@ fn set_bit(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
 }
 
 ///|
-fn get_bit(node : Node, l : Int, r : Int, idx : Int) -> Int {
+fn get_bit(node : Node, l : Int32, r : Int32, idx : Int32) -> Int32 {
   match node {
     Leaf(count~) => count
     Branch(left~, right~, count=_) => {
@@ -100,7 +106,13 @@ fn get_bit(node : Node, l : Int, r : Int, idx : Int) -> Int {
 }
 
 ///|
-fn count_range_node(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
+fn count_range_node(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
+) -> Int32 {
   if qr <= l || r <= ql {
     0
   } else if ql <= l && r <= qr {
@@ -118,13 +130,13 @@ fn count_range_node(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 
 ///|
 /// Create a bitset of length n initialized to zeros.
-pub fn make(n : Int) -> Bitset {
+pub fn make(n : Int32) -> Bitset {
   { root: build_zero(0, n), n, }
 }
 
 ///|
 /// Set index idx to value (0 or 1) and return the new bitset.
-pub fn set(bs : Bitset, idx : Int, value : Int) -> Bitset {
+pub fn set(bs : Bitset, idx : Int32, value : Int32) -> Bitset {
   if idx < 0 || idx >= bs.n {
     bs
   } else {
@@ -134,7 +146,7 @@ pub fn set(bs : Bitset, idx : Int, value : Int) -> Bitset {
 
 ///|
 /// Get the bit at idx (0 if out of range).
-pub fn get(bs : Bitset, idx : Int) -> Int {
+pub fn get(bs : Bitset, idx : Int32) -> Int32 {
   if idx < 0 || idx >= bs.n {
     0
   } else {
@@ -144,19 +156,19 @@ pub fn get(bs : Bitset, idx : Int) -> Int {
 
 ///|
 /// Return the length of the bitset.
-pub fn length(bs : Bitset) -> Int {
+pub fn length(bs : Bitset) -> Int32 {
   bs.n
 }
 
 ///|
 /// Count number of set bits in [ql, qr).
-pub fn count_range(bs : Bitset, ql : Int, qr : Int) -> Int {
+pub fn count_range(bs : Bitset, ql : Int32, qr : Int32) -> Int32 {
   count_range_node(bs.root, 0, bs.n, ql, qr)
 }
 
 ///|
 /// Build a bitset by setting indices to 1.
-pub fn from_indices(n : Int, idxs : ArrayView[Int]) -> Bitset {
+pub fn from_indices(n : Int32, idxs : ArrayView[Int32]) -> Bitset {
   for idx in idxs; bs = make(n) {
     continue set(bs, idx, 1)
   } nobreak {

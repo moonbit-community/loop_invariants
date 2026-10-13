@@ -31,10 +31,10 @@
 /// - `state` — per-vertex DFS color: 0=unvisited, 1=visiting, 2=done.
 /// - `order` — accumulates vertices in finish order (reversed at the end).
 priv struct TopoSorter {
-  n : Int
-  adj : Array[Array[Int]]
-  state : Array[Int]
-  order : Array[Int]
+  n : Int32
+  adj : Array[Array[Int32]]
+  state : Array[Int32]
+  order : Array[Int32]
 }
 
 ///|
@@ -42,8 +42,8 @@ priv struct TopoSorter {
 ///
 /// All vertices start in the unvisited state (state 0).
 /// The finish list starts empty.
-fn TopoSorter::TopoSorter(n : Int) -> TopoSorter {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+fn TopoSorter::TopoSorter(n : Int32) -> TopoSorter {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   { n, adj, state: Array::make(n, 0), order: [], }
 }
 
@@ -53,7 +53,7 @@ fn TopoSorter::TopoSorter(n : Int) -> TopoSorter {
 /// Both `u` and `v` must be valid vertex indices (0 to n-1).
 /// Out-of-range indices are rejected by the public `topological_sort`
 /// function before `add_edge` is called.
-fn TopoSorter::add_edge(self : TopoSorter, u : Int, v : Int) -> Unit {
+fn TopoSorter::add_edge(self : TopoSorter, u : Int32, v : Int32) -> Unit {
   self.adj[u].push(v)
 }
 
@@ -70,7 +70,7 @@ fn TopoSorter::add_edge(self : TopoSorter, u : Int, v : Int) -> Unit {
 /// When the call returns `true`, `u` is appended to `self.order`.
 /// The finish list therefore grows in post-order; reversing it yields a
 /// valid topological order.
-fn TopoSorter::dfs(self : TopoSorter, u : Int) -> Bool {
+fn TopoSorter::dfs(self : TopoSorter, u : Int32) -> Bool {
   self.state[u] = 1
   let ok = for v in self.adj[u] {
     if self.state[v] == 0 {
@@ -103,7 +103,7 @@ fn TopoSorter::dfs(self : TopoSorter, u : Int) -> Bool {
 ///
 /// Returns `Some(order)` — the topological order — when no cycle is found.
 /// Returns `None` as soon as a cycle is detected.
-fn TopoSorter::sort(self : TopoSorter) -> Array[Int]? {
+fn TopoSorter::sort(self : TopoSorter) -> Array[Int32]? {
   let ok = for v in 0..<self.n {
     if self.state[v] == 0 {
       if !self.dfs(v) {
@@ -162,7 +162,10 @@ fn TopoSorter::sort(self : TopoSorter) -> Array[Int]? {
 /// @topological_sort_dfs.topological_sort(4, edges[:])
 /// // => Some([0, 1, 2, 3])
 /// ```
-pub fn topological_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
+pub fn topological_sort(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Int32]? {
   if n <= 0 {
     return Some([])
   }
@@ -182,7 +185,7 @@ pub fn topological_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
 
 ///|
 test "topological sort basic" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
   let order = topological_sort(4, edges).unwrap()
   // Validate order by checking edge directions
   let pos = Array::make(4, 0)
@@ -198,6 +201,6 @@ test "topological sort basic" {
 
 ///|
 test "topological sort cycle" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0)]
   debug_inspect(topological_sort(3, edges), content="None")
 }

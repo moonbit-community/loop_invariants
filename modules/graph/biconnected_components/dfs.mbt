@@ -67,8 +67,8 @@
 /// ```
 fn BiconnectedFinder::dfs(
   self : BiconnectedFinder,
-  u : Int,
-  p_edge : Int,
+  u : Int32,
+  p_edge : Int32,
 ) -> Unit {
   // Assign discovery time
   self.disc[u] = self.timer
@@ -97,7 +97,7 @@ fn BiconnectedFinder::dfs(
       // Component extraction:
       // All edges pushed since (u,v) belong to one biconnected component.
       if self.low[v] >= self.disc[u] {
-        let comp : Array[(Int, Int)] = []
+        let comp : Array[(Int32, Int32)] = []
         for ;; {
           match self.edge_stack.pop() {
             Some(e) => {
@@ -178,7 +178,9 @@ fn BiconnectedFinder::run(self : BiconnectedFinder) -> Unit {
 /// (e.g., a single cycle or an empty graph).
 fn BiconnectedFinder::collect_articulation_points(
   self : BiconnectedFinder,
-) -> Array[Int] {
-  let result : Array[Int] = [ for i in 0..<self.n if self.articulation[i] => i ]
+) -> Array[Int32] {
+  let result : Array[Int32] = [
+    for i in 0..<self.n if self.articulation[i] => i
+  ]
   result
 }

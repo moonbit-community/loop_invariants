@@ -11,7 +11,7 @@
 ///|
 /// Integers biased towards small values (duplicates, zero, signs) while still
 /// reaching overflow-prone boundaries.
-fn gen_int_mixed() -> @quickcheck.Generator[Int] {
+fn gen_int_mixed() -> @quickcheck.Generator[Int32] {
   @quickcheck.frequency([
     (4, @quickcheck.int_range(-8, 9)),
     (2, @quickcheck.int_range(-1000, 1001)),
@@ -34,9 +34,9 @@ fn gen_int_mixed() -> @quickcheck.Generator[Int] {
 
 ///|
 fn gen_array(
-  elem : @quickcheck.Generator[Int],
-  max_len : Int,
-) -> @quickcheck.Generator[Array[Int]] {
+  elem : @quickcheck.Generator[Int32],
+  max_len : Int32,
+) -> @quickcheck.Generator[Array[Int32]] {
   @quickcheck.sized(size => {
     let hi = if size < max_len { size } else { max_len }
     @quickcheck.int_range(0, hi + 1).flat_map(n => elem.array_with_size(n))
@@ -45,7 +45,7 @@ fn gen_array(
 
 ///|
 /// Arrays mixing small values (many duplicates) with extreme values.
-priv struct Ints(Array[Int]) derive(Debug)
+priv struct Ints(Array[Int32]) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for Ints with fn arbitrary(size, rs) {
@@ -59,7 +59,7 @@ impl @quickcheck.Shrink for Ints with fn shrink(self) {
 
 ///|
 /// Arrays whose sums cannot overflow `Int` (|x| <= 10^6, length <= 60).
-priv struct Bounded(Array[Int]) derive(Debug)
+priv struct Bounded(Array[Int32]) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for Bounded with fn arbitrary(size, rs) {
@@ -78,10 +78,10 @@ impl @quickcheck.Shrink for Bounded with fn shrink(self) {
 ///|
 /// Non-negative integers: small values, values around perfect squares and the
 /// 32-bit overflow boundaries, and uniformly random non-negative values.
-priv struct NonNeg(Int) derive(Debug)
+priv struct NonNeg(Int32) derive(Debug)
 
 ///|
-fn gen_nonneg() -> @quickcheck.Generator[Int] {
+fn gen_nonneg() -> @quickcheck.Generator[Int32] {
   @quickcheck.frequency([
     (3, @quickcheck.int_range(0, 50)),
     (2, @quickcheck.int_range(0, 1000000)),
@@ -120,7 +120,7 @@ impl @quickcheck.Shrink for NonNeg with fn shrink(self) {
 ///|
 /// Modulus in [2, Int max], biased towards large moduli where
 /// `b * b` overflows 32-bit arithmetic.
-priv struct Modulus(Int) derive(Debug)
+priv struct Modulus(Int32) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for Modulus with fn arbitrary(size, rs) {
@@ -173,7 +173,7 @@ impl @quickcheck.Shrink for Parens with fn shrink(self) {
 
 ///|
 /// Non-negative remainder (safe for Int::min_value, unlike `abs() % m`).
-fn umod(x : Int, m : Int) -> Int {
+fn umod(x : Int32, m : Int32) -> Int32 {
   let r = x % m
   if r < 0 {
     r + m
@@ -183,14 +183,14 @@ fn umod(x : Int, m : Int) -> Int {
 }
 
 ///|
-fn sorted_copy(xs : Array[Int]) -> Array[Int] {
+fn sorted_copy(xs : Array[Int32]) -> Array[Int32] {
   let ys = xs.copy()
   ys.sort()
   ys
 }
 
 ///|
-fn naive_gcd(a : Int, b : Int) -> Int {
+fn naive_gcd(a : Int32, b : Int32) -> Int32 {
   // Largest d dividing both (a, b >= 0, not both 0 → gcd(0, 0) = 0).
   if a == 0 {
     return b
@@ -208,7 +208,7 @@ fn naive_gcd(a : Int, b : Int) -> Int {
 }
 
 ///|
-fn naive_is_prime(n : Int) -> Bool {
+fn naive_is_prime(n : Int32) -> Bool {
   if n < 2 {
     return false
   }
@@ -221,7 +221,7 @@ fn naive_is_prime(n : Int) -> Bool {
 }
 
 ///|
-fn lex_less(a : Array[Int], b : Array[Int]) -> Bool {
+fn lex_less(a : Array[Int32], b : Array[Int32]) -> Bool {
   for i in 0..<a.length() {
     if a[i] != b[i] {
       return a[i] < b[i]
@@ -232,14 +232,14 @@ fn lex_less(a : Array[Int], b : Array[Int]) -> Bool {
 
 ///|
 /// All distinct permutations of `xs`, in lexicographic order.
-fn all_distinct_perms(xs : Array[Int]) -> Array[Array[Int]] {
-  let out : Array[Array[Int]] = []
-  fn go(prefix : Array[Int], rest : Array[Int]) -> Unit {
+fn all_distinct_perms(xs : Array[Int32]) -> Array[Array[Int32]] {
+  let out : Array[Array[Int32]] = []
+  fn go(prefix : Array[Int32], rest : Array[Int32]) -> Unit {
     if rest.is_empty() {
       out.push(prefix.copy())
       return
     }
-    let seen : Array[Int] = []
+    let seen : Array[Int32] = []
     for i in 0..<rest.length() {
       if seen.contains(rest[i]) {
         continue
@@ -260,7 +260,7 @@ fn all_distinct_perms(xs : Array[Int]) -> Array[Array[Int]] {
 ///|
 fn star_balanced_brute(cs : Array[Char]) -> Bool {
   // Try every replacement of '*' by '(', ')' or empty.
-  fn go(i : Int, bal : Int) -> Bool {
+  fn go(i : Int32, bal : Int32) -> Bool {
     if bal < 0 {
       return false
     }
@@ -283,7 +283,7 @@ fn star_balanced_brute(cs : Array[Char]) -> Bool {
 // ---------------------------------------------------------------------------
 
 ///|
-fn is_floor_sqrt(n : Int, r : Int) -> Bool {
+fn is_floor_sqrt(n : Int32, r : Int32) -> Bool {
   let n64 = n.to_int64()
   let r64 = r.to_int64()
   r64 >= 0L && r64 * r64 <= n64 && (r64 + 1L) * (r64 + 1L) > n64
@@ -337,7 +337,7 @@ test "regression: isqrt_newton overflow at Int max" {
 ///|
 test "qc: gcd_loop agrees with the divisor-search definition (small inputs)" {
   @quickcheck.check(
-    (p : (Int, Int)) => {
+    (p : (Int32, Int32)) => {
       let a = umod(p.0, 500)
       let b = umod(p.1, 500)
       gcd_loop(a, b) == naive_gcd(a, b) && gcd_loop(a, b) == gcd_rec(a, b)
@@ -383,7 +383,7 @@ test "qc: extended_gcd satisfies Bezout's identity" {
 ///|
 test "qc: pow_loop agrees with pow_rec and repeated multiplication" {
   @quickcheck.check(
-    (p : (Int, Int)) => {
+    (p : (Int32, Int32)) => {
       let base = p.0
       let exp = umod(p.1, 70)
       let naive = for i = 0, acc = 1; i < exp; {
@@ -399,7 +399,7 @@ test "qc: pow_loop agrees with pow_rec and repeated multiplication" {
 }
 
 ///|
-fn naive_mod_pow(base : Int, exp : Int, m : Int) -> Int {
+fn naive_mod_pow(base : Int32, exp : Int32, m : Int32) -> Int32 {
   let m64 = m.to_int64()
   let r = base.to_int64() % m64
   let b = if r < 0L { r + m64 } else { r }
@@ -413,7 +413,7 @@ fn naive_mod_pow(base : Int, exp : Int, m : Int) -> Int {
 ///|
 test "qc: mod_pow agrees with repeated multiplication in Int64" {
   @quickcheck.check(
-    (p : (Int, Int, Modulus)) => {
+    (p : (Int32, Int32, Modulus)) => {
       let base = p.0
       let exp = umod(p.1, 200)
       let m = p.2.0
@@ -442,7 +442,7 @@ test "regression: mod_pow large modulus and negative base" {
 ///|
 test "qc: sieve lists exactly the primes up to n" {
   @quickcheck.check(
-    (n : Int) => {
+    (n : Int32) => {
       let n = n % 3000
       let expected = Array::makei(if n < 0 { 0 } else { n + 1 }, i => i).filter(
         naive_is_prime,
@@ -457,7 +457,7 @@ test "qc: sieve lists exactly the primes up to n" {
 ///|
 test "qc: popcount counts all 32 bits" {
   @quickcheck.check(
-    (n : Int) => {
+    (n : Int32) => {
       let naive = for i = 0, c = 0; i < 32; {
         continue i + 1, c + ((n >> i) & 1)
       } nobreak {
@@ -473,7 +473,7 @@ test "qc: popcount counts all 32 bits" {
 ///|
 test "qc: fib_loop agrees with recursive fib" {
   @quickcheck.check(
-    (n : Int) => {
+    (n : Int32) => {
       let n = umod(n, 26)
       fib_loop(n) == fib(n)
     },
@@ -484,7 +484,7 @@ test "qc: fib_loop agrees with recursive fib" {
 ///|
 test "qc: div_mod_nonneg agrees with / and %" {
   @quickcheck.check(
-    (p : (Int, Int)) => {
+    (p : (Int32, Int32)) => {
       let n = umod(p.0, 100000)
       let d = umod(p.1, 1000) + 1
       div_mod_nonneg(n, d) == (n / d, n % d)
@@ -497,7 +497,7 @@ test "qc: div_mod_nonneg agrees with / and %" {
 ///|
 test "qc: horner_eval agrees with the naive polynomial sum" {
   @quickcheck.check(
-    (p : (Ints, Int)) => {
+    (p : (Ints, Int32)) => {
       let coeffs = p.0.0
       let x = p.1
       let n = coeffs.length()
@@ -523,7 +523,7 @@ test "qc: horner_eval agrees with the naive polynomial sum" {
 ///|
 test "qc: binary_search agrees with linear scan on sorted arrays" {
   @quickcheck.check(
-    (p : (Ints, Int, Bool)) => {
+    (p : (Ints, Int32, Bool)) => {
       let xs = sorted_copy(p.0.0)
       let target = if p.2 && xs.length() > 0 {
         xs[umod(p.1, xs.length())]
@@ -546,7 +546,7 @@ test "qc: binary_search agrees with linear scan on sorted arrays" {
 ///|
 test "qc: lower_bound counts the elements smaller than target" {
   @quickcheck.check(
-    (p : (Ints, Int)) => {
+    (p : (Ints, Int32)) => {
       let xs = sorted_copy(p.0.0)
       let t = p.1 % 10
       lower_bound(xs, xs.length(), t) == xs.filter(x => x < t).length()
@@ -559,7 +559,7 @@ test "qc: lower_bound counts the elements smaller than target" {
 ///|
 test "qc: two_sum_sorted finds a pair iff one exists" {
   @quickcheck.check(
-    (p : (Ints, Int, Bool)) => {
+    (p : (Ints, Int32, Bool)) => {
       let xs = sorted_copy(p.0.0)
       let n = xs.length()
       // Half the time aim for a sum that is attainable.
@@ -658,7 +658,7 @@ test "qc: reverse_inplace equals Array::rev and is an involution" {
 ///|
 test "qc: dutch_flag produces a permutation split into <, ==, > regions" {
   @quickcheck.check(
-    (p : (Ints, Int)) => {
+    (p : (Ints, Int32)) => {
       let xs = p.0.0.map(x => x % 4)
       let pivot = p.1 % 4
       let a = xs.copy()

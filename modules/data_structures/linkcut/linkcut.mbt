@@ -73,10 +73,10 @@
 /// - `path_sum` — sum of `value` for all nodes in this node's splay subtree;
 ///   maintained by `update` after every structural change
 priv struct LCTNode {
-  mut parent : Int // Parent in splay tree (-1 if root of splay tree)
-  mut left : Int // Left child in splay tree
-  mut right : Int // Right child in splay tree
-  mut path_parent : Int // Parent of this splay tree's root in represented tree
+  mut parent : Int32 // Parent in splay tree (-1 if root of splay tree)
+  mut left : Int32 // Left child in splay tree
+  mut right : Int32 // Right child in splay tree
+  mut path_parent : Int32 // Parent of this splay tree's root in represented tree
   mut flip : Bool // Lazy flip flag for makeroot operation
   mut value : Int64 // Node value
   mut path_sum : Int64 // Sum of values on path (in this splay subtree)
@@ -107,7 +107,7 @@ priv struct LinkCutTree {
 /// - `n` — the number of nodes; must be >= 0
 ///
 /// Returns a `LinkCutTree` with `n` nodes all disconnected from each other.
-fn LinkCutTree::LinkCutTree(n : Int) -> LinkCutTree {
+fn LinkCutTree::LinkCutTree(n : Int32) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
   for _ in 0..<n {
     nodes.push({
@@ -136,7 +136,7 @@ fn LinkCutTree::LinkCutTree(n : Int) -> LinkCutTree {
 /// Specifically, `v` is the splay root iff:
 /// - `parent < 0`, OR
 /// - `nodes[parent].left != v` AND `nodes[parent].right != v`
-fn LinkCutTree::is_splay_root(self : LinkCutTree, v : Int) -> Bool {
+fn LinkCutTree::is_splay_root(self : LinkCutTree, v : Int32) -> Bool {
   let node = self.nodes[v]
   if node.parent < 0 {
     return true
@@ -159,7 +159,7 @@ fn LinkCutTree::is_splay_root(self : LinkCutTree, v : Int) -> Bool {
 /// - `v`'s `left` and `right` pointers are physically swapped
 ///
 /// This is the standard lazy-propagation mechanism used by `make_root`.
-fn LinkCutTree::push_down(self : LinkCutTree, v : Int) -> Unit {
+fn LinkCutTree::push_down(self : LinkCutTree, v : Int32) -> Unit {
   if v < 0 {
     return
   }
@@ -190,7 +190,7 @@ fn LinkCutTree::push_down(self : LinkCutTree, v : Int) -> Unit {
 ///
 /// Invariant maintained: for every node v,
 ///   `nodes[v].path_sum == sum of nodes[x].value for all x in v's splay subtree`
-fn LinkCutTree::update(self : LinkCutTree, v : Int) -> Unit {
+fn LinkCutTree::update(self : LinkCutTree, v : Int32) -> Unit {
   if v < 0 {
     return
   }
@@ -231,7 +231,7 @@ fn LinkCutTree::update(self : LinkCutTree, v : Int) -> Unit {
 /// - `update` is called on p first, then v, to keep `path_sum` correct
 ///
 /// Precondition: `v` must not be a splay-tree root (i.e., it has a parent).
-fn LinkCutTree::rotate(self : LinkCutTree, v : Int) -> Unit {
+fn LinkCutTree::rotate(self : LinkCutTree, v : Int32) -> Unit {
   let p = self.nodes[v].parent
   if p < 0 {
     return
@@ -304,9 +304,9 @@ fn LinkCutTree::rotate(self : LinkCutTree, v : Int) -> Unit {
 /// - `v` is the root of its splay tree (`is_splay_root(v)` returns `true`)
 /// - The BST property (depth order) is preserved
 /// - `path_sum` is correct for every node on the path that was rotated
-fn LinkCutTree::splay(self : LinkCutTree, v : Int) -> Unit {
+fn LinkCutTree::splay(self : LinkCutTree, v : Int32) -> Unit {
   // First push down from root to v
-  let path : Array[Int] = []
+  let path : Array[Int32] = []
   let curr = for curr = v; !self.is_splay_root(curr); {
     path.push(curr)
     continue self.nodes[curr].parent
@@ -365,7 +365,7 @@ fn LinkCutTree::splay(self : LinkCutTree, v : Int) -> Unit {
 ///
 /// Each call to `access` does O(number of preferred-path changes) rotations.
 /// The amortized cost is O(log n) by the access lemma.
-fn LinkCutTree::access(self : LinkCutTree, v : Int) -> Int {
+fn LinkCutTree::access(self : LinkCutTree, v : Int32) -> Int32 {
   self.splay(v)
 
   // Cut right child (make v the bottom of its preferred path)
@@ -408,7 +408,7 @@ fn LinkCutTree::access(self : LinkCutTree, v : Int) -> Int {
 /// to the splay-tree root for amortized efficiency.
 ///
 /// This operation has amortized O(log n) time.
-fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
+fn LinkCutTree::find_root(self : LinkCutTree, v : Int32) -> Int32 {
   let _ = self.access(v)
 
   // Root is leftmost node in splay tree
@@ -439,7 +439,7 @@ fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
 ///
 /// After `make_root(v)`, `find_root(w)` returns `v` for every node `w` in
 /// the same tree.
-fn LinkCutTree::make_root(self : LinkCutTree, v : Int) -> Unit {
+fn LinkCutTree::make_root(self : LinkCutTree, v : Int32) -> Unit {
   let _ = self.access(v)
   // Flip the path (reverse it)
   self.nodes[v].flip = !self.nodes[v].flip
@@ -461,7 +461,7 @@ fn LinkCutTree::make_root(self : LinkCutTree, v : Int) -> Unit {
 ///    the represented-tree edge w -> v.
 ///
 /// Precondition: both `v` and `w` must be valid node indices in `[0, n)`.
-fn LinkCutTree::link(self : LinkCutTree, v : Int, w : Int) -> Bool {
+fn LinkCutTree::link(self : LinkCutTree, v : Int32, w : Int32) -> Bool {
   // Make v root of its tree
   self.make_root(v)
 
@@ -492,7 +492,7 @@ fn LinkCutTree::link(self : LinkCutTree, v : Int, w : Int) -> Bool {
 /// If `v` is already a tree root (no parent edge), this is a no-op.
 ///
 /// Precondition: `v` must be a valid node index in `[0, n)`.
-fn LinkCutTree::cut_parent(self : LinkCutTree, v : Int) -> Unit {
+fn LinkCutTree::cut_parent(self : LinkCutTree, v : Int32) -> Unit {
   let _ = self.access(v)
 
   // v's left subtree contains its ancestors
@@ -521,7 +521,7 @@ fn LinkCutTree::cut_parent(self : LinkCutTree, v : Int) -> Unit {
 /// 3. Detach v from w's left pointer.
 ///
 /// Precondition: both `v` and `w` must be valid node indices in `[0, n)`.
-fn LinkCutTree::cut(self : LinkCutTree, v : Int, w : Int) -> Bool {
+fn LinkCutTree::cut(self : LinkCutTree, v : Int32, w : Int32) -> Bool {
   self.make_root(v)
   let _ = self.access(w)
 
@@ -548,7 +548,7 @@ fn LinkCutTree::cut(self : LinkCutTree, v : Int, w : Int) -> Bool {
 /// `access(w)`, meaning v and w share a common root.
 ///
 /// Time: O(log n) amortized.
-fn LinkCutTree::connected(self : LinkCutTree, v : Int, w : Int) -> Bool {
+fn LinkCutTree::connected(self : LinkCutTree, v : Int32, w : Int32) -> Bool {
   if v == w {
     return true
   }
@@ -578,7 +578,7 @@ fn LinkCutTree::connected(self : LinkCutTree, v : Int, w : Int) -> Bool {
 /// on both the root-to-v path and the root-to-w path.
 ///
 /// Time: O(log n) amortized.
-fn LinkCutTree::lca(self : LinkCutTree, v : Int, w : Int) -> Int {
+fn LinkCutTree::lca(self : LinkCutTree, v : Int32, w : Int32) -> Int32 {
   if v == w {
     return v
   }
@@ -603,7 +603,7 @@ fn LinkCutTree::lca(self : LinkCutTree, v : Int, w : Int) -> Int {
 /// Parameters:
 /// - `v` — node index in `[0, n)`
 /// - `value` — new `Int64` value to store at node `v`
-fn LinkCutTree::set_value(self : LinkCutTree, v : Int, value : Int64) -> Unit {
+fn LinkCutTree::set_value(self : LinkCutTree, v : Int32, value : Int64) -> Unit {
   let _ = self.access(v)
   self.nodes[v].value = value
   self.update(v)
@@ -617,7 +617,7 @@ fn LinkCutTree::set_value(self : LinkCutTree, v : Int, value : Int64) -> Unit {
 ///
 /// Parameters:
 /// - `v` — node index in `[0, n)`
-fn LinkCutTree::get_value(self : LinkCutTree, v : Int) -> Int64 {
+fn LinkCutTree::get_value(self : LinkCutTree, v : Int32) -> Int64 {
   self.nodes[v].value
 }
 
@@ -639,14 +639,14 @@ fn LinkCutTree::get_value(self : LinkCutTree, v : Int) -> Int64 {
 /// - `v` — node index in `[0, n)`
 ///
 /// Returns: `Int64` sum of `value` fields along the path from v to the root.
-fn LinkCutTree::path_sum_to_root(self : LinkCutTree, v : Int) -> Int64 {
+fn LinkCutTree::path_sum_to_root(self : LinkCutTree, v : Int32) -> Int64 {
   let _ = self.access(v)
   self.nodes[v].path_sum
 }
 
 ///|
 /// Return the number of nodes in this Link-Cut Tree.
-fn LinkCutTree::size(self : LinkCutTree) -> Int {
+fn LinkCutTree::size(self : LinkCutTree) -> Int32 {
   self.nodes.length()
 }
 

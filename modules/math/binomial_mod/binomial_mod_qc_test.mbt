@@ -9,7 +9,7 @@ let moduli : Array[Int64] = [
 
 ///|
 /// Row `n` of Pascal's triangle on big integers.
-fn pascal_row(n : Int) -> Array[@bigint.BigInt] {
+fn pascal_row(n : Int32) -> Array[@bigint.BigInt] {
   let mut row = [1N]
   for _ in 0..<n {
     let next = Array::make(row.length() + 1, 1N)
@@ -31,9 +31,9 @@ fn bmod(x : @bigint.BigInt, p : Int64) -> Int64 {
 /// that may fall outside the table or have k outside [0, n].
 priv struct Query {
   p : Int64
-  size : Int
-  n : Int
-  k : Int
+  size : Int32
+  n : Int32
+  k : Int32
 } derive(Debug)
 
 ///|
@@ -109,7 +109,7 @@ test "qc: BinomTable::factorial equals n! mod p" {
 ///|
 test "qc: lucas equals C(n, k) mod p for small n (n may exceed p)" {
   @quickcheck.check(
-    (q : (Query, Int, Int)) => {
+    (q : (Query, Int32, Int32)) => {
       let p = q.0.p
       let n = (q.1 % 120).abs()
       let k = q.2 % 125
@@ -124,7 +124,7 @@ test "qc: lucas equals C(n, k) mod p for small n (n may exceed p)" {
 
 ///|
 /// Number of carries when adding `a` and `b` in base `p`.
-fn carries(a : Int64, b : Int64, p : Int64) -> Int {
+fn carries(a : Int64, b : Int64, p : Int64) -> Int32 {
   let mut x = a
   let mut y = b
   let mut c = 0L
@@ -169,7 +169,7 @@ fn big_choose(n : Int64, k : Int64) -> @bigint.BigInt {
 ///|
 test "qc: lucas equals exact C(n, k) mod p for huge n and small k" {
   @quickcheck.check(
-    (q : (Query, Int64, Int)) => {
+    (q : (Query, Int64, Int32)) => {
       let p = q.0.p
       let n = if q.1 < 0L { -(q.1 + 1L) } else { q.1 }
       let k = (q.2 % 25).abs().to_int64()

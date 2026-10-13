@@ -76,7 +76,7 @@ We want the sum of all elements. The invariant is:
 ```mbt check
 ///|
 test "invariant sum example" {
-  let xs : Array[Int] = [1, 2, 3, 4]
+  let xs : Array[Int32] = [1, 2, 3, 4]
   let n = xs.length()
   let total = for i = 0, sum = 0; i < n; {
     continue i + 1, sum + xs[i]
@@ -99,7 +99,7 @@ We keep a running maximum. The invariant is:
 ```mbt check
 ///|
 test "invariant max example" {
-  let xs : Array[Int] = [2, 7, 1, 5]
+  let xs : Array[Int32] = [2, 7, 1, 5]
   let n = xs.length()
   let best = for i = 0, best = xs[0]; i < n; {
     let v = xs[i]
@@ -121,7 +121,7 @@ For very simple loops, a `for .. in` loop is clearer and needs no invariant.
 ```mbt check
 ///|
 test "simple loop example" {
-  let xs : Array[Int] = [1, 2, 3]
+  let xs : Array[Int32] = [1, 2, 3]
   let sum = for v in xs; sum = 0 {
     continue sum + v
   } nobreak {

@@ -41,14 +41,14 @@ const MATRIX_MOD : Int64 = 1000000007L
 ///|
 priv struct Matrix {
   data : Array[Array[Int64]]
-  rows : Int
-  cols : Int
+  rows : Int32
+  cols : Int32
 }
 
 /// Creates a zero-filled `rows x cols` matrix.
 
 ///|
-fn Matrix::Matrix(rows : Int, cols : Int) -> Matrix {
+fn Matrix::Matrix(rows : Int32, cols : Int32) -> Matrix {
   let data = [ for _ in 0..<rows => Array::make(cols, 0L) ]
   { data, rows, cols, }
 }
@@ -69,7 +69,7 @@ fn Matrix::Matrix(rows : Int, cols : Int) -> Matrix {
 /// ```
 
 ///|
-fn Matrix::identity(n : Int) -> Matrix {
+fn Matrix::identity(n : Int32) -> Matrix {
   let m = Matrix(n, n)
   for i in 0..<n {
     m.data[i][i] = 1L
@@ -104,14 +104,14 @@ fn Matrix::from_array(arr : Array[Array[Int64]]) -> Matrix {
 /// Returns the element at row `i`, column `j`.
 
 ///|
-fn Matrix::get(self : Matrix, i : Int, j : Int) -> Int64 {
+fn Matrix::get(self : Matrix, i : Int32, j : Int32) -> Int64 {
   self.data[i][j]
 }
 
 /// Sets the element at row `i`, column `j` to `v`.
 
 ///|
-fn Matrix::set(self : Matrix, i : Int, j : Int, v : Int64) -> Unit {
+fn Matrix::set(self : Matrix, i : Int32, j : Int32, v : Int64) -> Unit {
   self.data[i][j] = v
 }
 

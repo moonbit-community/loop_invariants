@@ -6,14 +6,14 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 /// Capacities clustered around word boundaries.
-fn gen_cap(rs : @quickcheck.RandomState) -> Int {
+fn gen_cap(rs : @quickcheck.RandomState) -> Int32 {
   match rint(rs, 0, 3) {
     0 => rint(rs, 0, 3)
     1 => 64 * rint(rs, 0, 3) + rint(rs, -2, 2)
@@ -22,7 +22,7 @@ fn gen_cap(rs : @quickcheck.RandomState) -> Int {
 }
 
 ///|
-fn gen_bit(rs : @quickcheck.RandomState, cap : Int) -> Int {
+fn gen_bit(rs : @quickcheck.RandomState, cap : Int32) -> Int32 {
   if cap == 0 || rint(rs, 0, 9) == 0 {
     rint(rs, -3, cap + 3)
   } else {
@@ -32,13 +32,13 @@ fn gen_bit(rs : @quickcheck.RandomState, cap : Int) -> Int {
 
 ///|
 priv enum Op {
-  Set(Int)
-  Unset(Int)
-  Flip(Int)
-  Contains(Int)
-  NextSet(Int)
+  Set(Int32)
+  Unset(Int32)
+  Flip(Int32)
+  Contains(Int32)
+  NextSet(Int32)
   /// Bulk op with another set: kind 0 = or, 1 = and, 2 = xor.
-  Bulk(Int, Int, Array[Int])
+  Bulk(Int32, Int32, Array[Int32])
 } derive(Debug)
 
 ///|
@@ -46,7 +46,7 @@ impl @quickcheck.Shrink for Op
 
 ///|
 priv struct Case {
-  cap : Int
+  cap : Int32
   ops : Array[Op]
 } derive(Debug)
 
@@ -76,7 +76,7 @@ impl @quickcheck.Shrink for Case with fn shrink(self) {
 }
 
 ///|
-fn model_next(model : Array[Bool], start : Int) -> Int {
+fn model_next(model : Array[Bool], start : Int32) -> Int32 {
   for i in (if start < 0 { 0 } else { start })..<model.length() {
     if model[i] {
       return i
@@ -91,7 +91,7 @@ fn run_case(c : Case) -> Bool {
   let cap = if c.cap < 0 { 0 } else { c.cap }
   let b = @bitset.new(c.cap)
   let model = Array::make(cap, false)
-  let valid = (i : Int) => i >= 0 && i < cap
+  let valid = (i : Int32) => i >= 0 && i < cap
   if b.capacity() != cap {
     return false
   }
@@ -127,7 +127,7 @@ fn run_case(c : Case) -> Bool {
             other_model[i] = true
           }
         }
-        let o = (i : Int) => i < other_cap && other_model[i]
+        let o = (i : Int32) => i < other_cap && other_model[i]
         match kind {
           0 => {
             b.or_in(other)

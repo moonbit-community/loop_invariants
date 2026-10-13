@@ -5,14 +5,14 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 /// `true` when `f(i, xs[i])` holds for every index.
-fn[T] all_i(xs : Array[T], f : (Int, T) -> Bool) -> Bool {
+fn[T] all_i(xs : Array[T], f : (Int32, T) -> Bool) -> Bool {
   for i, x in xs {
     if !f(i, x) {
       return false
@@ -25,9 +25,9 @@ fn[T] all_i(xs : Array[T], f : (Int, T) -> Bool) -> Bool {
 /// Directed multigraph with a source vertex. `src` is in `[0, n)` when
 /// `n > 0`.
 priv struct WG {
-  n : Int
-  src : Int
-  edges : Array[(Int, Int, Int64)]
+  n : Int32
+  src : Int32
+  edges : Array[(Int32, Int32, Int64)]
 } derive(Debug)
 
 ///|
@@ -83,9 +83,9 @@ impl @quickcheck.Shrink for WG with fn shrink(g) {
 ///|
 /// Bellman-Ford reference: `Some(d)` for vertices reachable from `s`.
 fn ref_dist(
-  n : Int,
-  edges : Array[(Int, Int, Int64)],
-  s : Int,
+  n : Int32,
+  edges : Array[(Int32, Int32, Int64)],
+  s : Int32,
 ) -> Array[Int64?] {
   let d : Array[Int64?] = Array::make(n, None)
   if s < 0 || s >= n {
@@ -126,7 +126,11 @@ fn build_reverse(g : WG) -> @dijkstra.Graph {
 
 ///|
 /// Minimum weight among the parallel edges `u -> v`, if any.
-fn min_edge(edges : Array[(Int, Int, Int64)], u : Int, v : Int) -> Int64? {
+fn min_edge(
+  edges : Array[(Int32, Int32, Int64)],
+  u : Int32,
+  v : Int32,
+) -> Int64? {
   edges.fold(init=None, (acc, e) => {
     if e.0 != u || e.1 != v {
       acc
@@ -252,7 +256,7 @@ test "qc: dijkstra_dense agrees with the reference on Int weights" {
   @quickcheck.check(
     (g : WG) => {
       let small = g.edges.map(e => (e.0, e.1, e.2 % 1000L))
-      let adj : Array[Array[(Int, Int)]] = Array::makei(g.n, _ => [])
+      let adj : Array[Array[(Int32, Int32)]] = Array::makei(g.n, _ => [])
       for e in small {
         adj[e.0].push((e.1, e.2.to_int()))
       }

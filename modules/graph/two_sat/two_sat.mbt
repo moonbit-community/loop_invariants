@@ -51,9 +51,9 @@
 /// `set_value` to add constraints, and `solve` to find a satisfying
 /// assignment.
 priv struct TwoSat {
-  n : Int // Number of variables (0 to n-1)
-  adj : Array[Array[Int]] // Implication graph: adj[node] = list of implied nodes
-  radj : Array[Array[Int]] // Reverse graph for Kosaraju
+  n : Int32 // Number of variables (0 to n-1)
+  adj : Array[Array[Int32]] // Implication graph: adj[node] = list of implied nodes
+  radj : Array[Array[Int32]] // Reverse graph for Kosaraju
 }
 
 ///|
@@ -65,9 +65,9 @@ priv struct TwoSat {
 ///
 /// After construction, use `add_clause`, `add_implication`, or `set_value`
 /// to add constraints, then call `solve` to obtain an assignment.
-fn TwoSat::TwoSat(n : Int) -> TwoSat {
-  let adj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
-  let radj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
+fn TwoSat::TwoSat(n : Int32) -> TwoSat {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<(2 * n) => [] ]
+  let radj : Array[Array[Int32]] = [ for _ in 0..<(2 * n) => [] ]
   { n, adj, radj, }
 }
 
@@ -81,7 +81,7 @@ fn TwoSat::TwoSat(n : Int) -> TwoSat {
 ///
 /// The last bit therefore acts as the negation flag, which allows `negate_node`
 /// to flip it with a single XOR.
-fn literal_to_node(v : Int, negated : Bool) -> Int {
+fn literal_to_node(v : Int32, negated : Bool) -> Int32 {
   2 * v + (if negated { 1 } else { 0 })
 }
 
@@ -91,7 +91,7 @@ fn literal_to_node(v : Int, negated : Bool) -> Int {
 /// Because positive and negative literals share a consecutive pair of indices
 /// (`2*v` and `2*v+1`), flipping the last bit with XOR produces the
 /// complement in O(1).
-fn negate_node(node : Int) -> Int {
+fn negate_node(node : Int32) -> Int32 {
   node ^ 1 // Flip last bit: 2k <-> 2k+1
 }
 
@@ -111,9 +111,9 @@ fn negate_node(node : Int) -> Int {
 /// internally.
 fn TwoSat::add_clause(
   self : TwoSat,
-  var_a : Int,
+  var_a : Int32,
   neg_a : Bool,
-  var_b : Int,
+  var_b : Int32,
   neg_b : Bool,
 ) -> Unit {
   // (a ∨ b) ≡ (¬a → b) ∧ (¬b → a)
@@ -145,9 +145,9 @@ fn TwoSat::add_clause(
 /// `add_implication(0, false, 1, false)`.
 fn TwoSat::add_implication(
   self : TwoSat,
-  var_a : Int,
+  var_a : Int32,
   neg_a : Bool,
-  var_b : Int,
+  var_b : Int32,
   neg_b : Bool,
 ) -> Unit {
   // a → b is equivalent to (¬a ∨ b)
@@ -161,7 +161,7 @@ fn TwoSat::add_implication(
 /// or `(¬v)` (when `value = false`), expressed by adding the self-implication
 /// clause `(L ∨ L)` for the corresponding literal `L`. Any solution returned
 /// by `solve` will honour this constraint.
-fn TwoSat::set_value(self : TwoSat, v : Int, value : Bool) -> Unit {
+fn TwoSat::set_value(self : TwoSat, v : Int32, value : Bool) -> Unit {
   // To force v = true: add clause (v ∨ v)
   // To force v = false: add clause (¬v ∨ ¬v)
   self.add_clause(v, !value, v, !value)
@@ -191,7 +191,7 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
 
   // Kosaraju's algorithm for SCCs
   let visited = Array::make(num_nodes, false)
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
 
   // First DFS: compute finish order
   for i in 0..<num_nodes {
@@ -257,10 +257,10 @@ fn TwoSat::solve(self : TwoSat) -> Array[Bool]? {
 /// (i.e., after all its descendants have been visited), so `order` ends up
 /// sorted by increasing finish time.
 fn dfs1(
-  adj : Array[Array[Int]],
+  adj : Array[Array[Int32]],
   visited : Array[Bool],
-  order : Array[Int],
-  u : Int,
+  order : Array[Int32],
+  u : Int32,
 ) -> Unit {
   visited[u] = true
   for v in adj[u] {
@@ -279,10 +279,10 @@ fn dfs1(
 /// Because the second pass is driven in reverse finish-time order on the
 /// transposed graph, each tree of this DFS corresponds to exactly one SCC.
 fn dfs2(
-  radj : Array[Array[Int]],
-  comp : Array[Int],
-  scc_id : Int,
-  u : Int,
+  radj : Array[Array[Int32]],
+  comp : Array[Int32],
+  scc_id : Int32,
+  u : Int32,
 ) -> Unit {
   comp[u] = scc_id
   for v in radj[u] {

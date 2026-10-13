@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -13,9 +13,9 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// A tree on `[0, n)` given as a shuffled, randomly oriented edge list,
 /// plus a root. Shapes: random recursive tree, path (deep), or star.
 priv struct Tree {
-  n : Int
-  root : Int
-  edges : Array[(Int, Int)]
+  n : Int32
+  root : Int32
+  edges : Array[(Int32, Int32)]
 } derive(Debug)
 
 ///|
@@ -74,7 +74,7 @@ impl @quickcheck.Shrink for Tree with fn shrink(t) {
 ///|
 /// Naive reference: BFS parents/depths from `root`, then walk the deeper
 /// vertex up until both meet.
-fn naive_lca(t : Tree, root : Int, u : Int, v : Int) -> Int {
+fn naive_lca(t : Tree, root : Int32, u : Int32, v : Int32) -> Int32 {
   let parent = Array::make(t.n, -1)
   let depth = Array::make(t.n, -1)
   depth[root] = 0
@@ -104,7 +104,7 @@ fn naive_lca(t : Tree, root : Int, u : Int, v : Int) -> Int {
 
 ///|
 /// Depth of the deepest vertex when rooted at `root`.
-fn height(t : Tree, root : Int) -> Int {
+fn height(t : Tree, root : Int32) -> Int32 {
   let depth = Array::make(t.n, -1)
   depth[root] = 0
   let queue = [root]

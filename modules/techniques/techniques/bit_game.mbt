@@ -13,7 +13,7 @@
 /// Each iteration removes exactly one set bit.
 ///
 /// INVARIANT: After k iterations, k bits have been counted and cleared.
-fn count_set_bits(n : Int) -> Int {
+fn count_set_bits(n : Int32) -> Int32 {
   for num = n, count = 0; num > 0; {
     continue num & (num - 1), count + 1
   } nobreak {
@@ -48,7 +48,7 @@ test "count set bits" {
 ///
 /// INSIGHT: A power of 2 has exactly one set bit: 2^k = 100...0
 /// So n & (n-1) = 0 for powers of 2.
-fn is_power_of_two(n : Int) -> Bool {
+fn is_power_of_two(n : Int32) -> Bool {
   n > 0 && (n & (n - 1)) == 0
 }
 
@@ -67,7 +67,7 @@ test "power of two" {
 /// MATHEMATICAL FOUNDATION:
 /// XOR properties: a ^ a = 0, a ^ 0 = a, associative & commutative
 /// If all elements appear twice except one, XOR of all = unique element.
-fn single_number(nums : ArrayView[Int]) -> Int {
+fn single_number(nums : ArrayView[Int32]) -> Int32 {
   for i in 0..<nums.length(); result = 0 {
     continue result ^ nums[i]
   } nobreak {
@@ -89,9 +89,9 @@ fn single_number(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "single number" {
-  let nums : ReadOnlyArray[Int] = [2, 2, 1]
+  let nums : ReadOnlyArray[Int32] = [2, 2, 1]
   @debug.assert_eq(single_number(nums), 1)
-  let nums2 : ReadOnlyArray[Int] = [4, 1, 2, 1, 2]
+  let nums2 : ReadOnlyArray[Int32] = [4, 1, 2, 1, 2]
   @debug.assert_eq(single_number(nums2), 4)
 }
 
@@ -99,7 +99,7 @@ test "single number" {
 /// Missing Number - XOR with indices
 ///
 /// If array contains [0, n] with one missing, XOR all values and indices.
-fn missing_number(nums : ArrayView[Int]) -> Int {
+fn missing_number(nums : ArrayView[Int32]) -> Int32 {
   let n = nums.length()
   for i in 0..<n; result = n {
     continue result ^ i ^ nums[i]
@@ -123,11 +123,11 @@ fn missing_number(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "missing number" {
-  let nums : ReadOnlyArray[Int] = [3, 0, 1]
+  let nums : ReadOnlyArray[Int32] = [3, 0, 1]
   @debug.assert_eq(missing_number(nums), 2)
-  let nums2 : ReadOnlyArray[Int] = [0, 1]
+  let nums2 : ReadOnlyArray[Int32] = [0, 1]
   @debug.assert_eq(missing_number(nums2), 2)
-  let nums3 : ReadOnlyArray[Int] = [9, 6, 4, 2, 3, 5, 7, 0, 1]
+  let nums3 : ReadOnlyArray[Int32] = [9, 6, 4, 2, 3, 5, 7, 0, 1]
   @debug.assert_eq(missing_number(nums3), 8)
 }
 
@@ -135,7 +135,7 @@ test "missing number" {
 /// Reverse Bits
 ///
 /// Reverse the 32 bits of an unsigned integer.
-fn reverse_bits(n : Int) -> Int {
+fn reverse_bits(n : Int32) -> Int32 {
   for _ in 0..<32; result = 0, num = n {
     let bit = num & 1
     let new_result = (result << 1) | bit
@@ -170,7 +170,7 @@ test "reverse bits" {
 
 ///|
 /// Hamming Distance - Count differing bits
-fn hamming_distance(x : Int, y : Int) -> Int {
+fn hamming_distance(x : Int32, y : Int32) -> Int32 {
   count_set_bits(x ^ y)
 }
 
@@ -184,12 +184,12 @@ test "hamming distance" {
 ///
 /// INSIGHT: For n elements, there are 2^n subsets.
 /// Each subset corresponds to a bitmask from 0 to 2^n - 1.
-fn generate_subsets(elements : ArrayView[Int]) -> Array[Array[Int]] {
+fn generate_subsets(elements : ArrayView[Int32]) -> Array[Array[Int32]] {
   let n = elements.length()
   let total = 1 << n // 2^n
-  let result : Array[Array[Int]] = []
+  let result : Array[Array[Int32]] = []
   for mask in 0..<total {
-    let subset : Array[Int] = [
+    let subset : Array[Int32] = [
       for i in 0..<n if ((mask >> i) & 1) == 1 => elements[i]
     ]
     result.push(subset)
@@ -199,7 +199,7 @@ fn generate_subsets(elements : ArrayView[Int]) -> Array[Array[Int]] {
 
 ///|
 test "generate subsets" {
-  let elements : ReadOnlyArray[Int] = [1, 2, 3]
+  let elements : ReadOnlyArray[Int32] = [1, 2, 3]
   let subsets = generate_subsets(elements)
   @debug.assert_eq(subsets.length(), 8) // 2^3 = 8
 }
@@ -210,9 +210,9 @@ test "generate subsets" {
 /// MATHEMATICAL FOUNDATION:
 /// Gray code for i is: i ^ (i >> 1)
 /// Adjacent codes differ by exactly one bit.
-fn gray_code(n : Int) -> Array[Int] {
+fn gray_code(n : Int32) -> Array[Int32] {
   let total = 1 << n
-  let result : Array[Int] = [ for i in 0..<total => i ^ (i >> 1) ]
+  let result : Array[Int32] = [ for i in 0..<total => i ^ (i >> 1) ]
   result
 }
 
@@ -233,7 +233,7 @@ test "gray code" {
 /// A position is losing (for the player to move) iff XOR of all pile sizes = 0.
 /// This is because the player moving from a zero-XOR position always creates
 /// a non-zero XOR position, and vice versa.
-fn nim_winner(piles : ArrayView[Int]) -> String {
+fn nim_winner(piles : ArrayView[Int32]) -> String {
   let xor_sum = nim_xor(piles)
   if xor_sum == 0 {
     "Second"
@@ -243,7 +243,7 @@ fn nim_winner(piles : ArrayView[Int]) -> String {
 }
 
 ///|
-fn nim_xor(piles : ArrayView[Int]) -> Int {
+fn nim_xor(piles : ArrayView[Int32]) -> Int32 {
   for i in 0..<piles.length(); result = 0 {
     continue result ^ piles[i]
   } nobreak {
@@ -279,7 +279,7 @@ test "nim winner" {
 /// Nim with Move - Find winning move
 ///
 /// Returns (pile_index, amount_to_remove) or None if losing position.
-fn nim_winning_move(piles : ArrayView[Int]) -> (Int, Int)? {
+fn nim_winning_move(piles : ArrayView[Int32]) -> (Int32, Int32)? {
   let xor_sum = nim_xor(piles)
   if xor_sum == 0 {
     return None // Losing position
@@ -308,14 +308,14 @@ test "nim winning move" {
 ///
 /// SPRAGUE-GRUNDY THEOREM:
 /// sg(n) = mex({sg(n-1), sg(n-2), sg(n-3)}) where mex = minimum excludant
-fn sprague_grundy_simple(n : Int) -> Int {
+fn sprague_grundy_simple(n : Int32) -> Int32 {
   if n == 0 {
     return 0 // Losing position (can't move)
   }
   let sg = Array::make(n + 1, 0)
   for i in 1..<=n {
     // Collect SG values of positions reachable in one move
-    let reachable : Array[Int] = []
+    let reachable : Array[Int32] = []
     if i >= 1 {
       reachable.push(sg[i - 1])
     }
@@ -331,7 +331,7 @@ fn sprague_grundy_simple(n : Int) -> Int {
 }
 
 ///|
-fn mex(values : ArrayView[Int]) -> Int {
+fn mex(values : ArrayView[Int32]) -> Int32 {
   // Find minimum excludant (smallest non-negative integer not in values)
   let present = Array::make(values.length() + 1, false)
   for i in 0..<values.length() {
@@ -364,7 +364,7 @@ test "sprague grundy simple" {
 /// sg(G1 + G2 + ... + Gk) = sg(G1) XOR sg(G2) XOR ... XOR sg(Gk)
 ///
 /// This allows solving complex games by computing SG for each independent part.
-fn combined_game_winner(sg_values : ArrayView[Int]) -> String {
+fn combined_game_winner(sg_values : ArrayView[Int32]) -> String {
   let xor_sum = nim_xor(sg_values)
   if xor_sum == 0 {
     "Second"
@@ -376,7 +376,7 @@ fn combined_game_winner(sg_values : ArrayView[Int]) -> String {
 ///|
 test "combined game" {
   // Game 1: 3 stones (sg=3), Game 2: 5 stones (sg=1), Game 3: 4 stones (sg=0)
-  let sg_values : ReadOnlyArray[Int] = [3, 1, 0]
+  let sg_values : ReadOnlyArray[Int32] = [3, 1, 0]
   // XOR = 3 ^ 1 ^ 0 = 2 != 0, so First wins
   @debug.assert_eq(combined_game_winner(sg_values), "First")
 }
@@ -387,7 +387,7 @@ test "combined game" {
 /// Uses trie-based approach for O(n * 32) time.
 /// INSIGHT: To maximize XOR, we want opposite bits at each position,
 /// starting from the most significant bit.
-fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
+fn maximum_xor_pair(nums : ArrayView[Int32]) -> Int32 {
   let n = nums.length()
   if n < 2 {
     return 0
@@ -433,7 +433,7 @@ fn maximum_xor_pair(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "maximum xor pair" {
-  let nums : ReadOnlyArray[Int] = [3, 10, 5, 25, 2, 8]
+  let nums : ReadOnlyArray[Int32] = [3, 10, 5, 25, 2, 8]
   @debug.assert_eq(maximum_xor_pair(nums), 28) // 25 ^ 5 = 28
 }
 
@@ -441,7 +441,7 @@ test "maximum xor pair" {
 /// Divide Two Integers using Bit Manipulation
 ///
 /// Without using multiplication, division, or mod operators.
-fn divide_bit(dividend : Int, divisor : Int) -> Int {
+fn divide_bit(dividend : Int32, divisor : Int32) -> Int32 {
   if divisor == 0 {
     return 2147483647 // Overflow
   }
@@ -499,7 +499,7 @@ test "divide bit" {
 
 ///|
 /// Lowest Set Bit
-fn lowest_set_bit(n : Int) -> Int {
+fn lowest_set_bit(n : Int32) -> Int32 {
   n & -n
 }
 
@@ -513,7 +513,7 @@ test "lowest set bit" {
 /// Next Higher Number with Same Number of Set Bits
 ///
 /// Useful for enumerating combinations in lexicographic order.
-fn next_with_same_bits(n : Int) -> Int {
+fn next_with_same_bits(n : Int32) -> Int32 {
   let c = n & -n // Lowest set bit
   let r = n + c // Add to propagate carry
   // ((r XOR n) >> 2) / c gives the trailing bits to add

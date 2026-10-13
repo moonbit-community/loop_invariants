@@ -100,7 +100,7 @@ pub struct BinomTable {
 ///   @debug.assert_eq(bt.choose(10, 3), 120L)
 /// }
 /// ```
-pub fn build(n : Int, p : Int64) -> BinomTable {
+pub fn build(n : Int32, p : Int64) -> BinomTable {
   let m = if n < 0 { 0 } else { n }
   let fact = Array::make(m + 1, 1L)
   for i in 1..<=m {
@@ -121,7 +121,7 @@ pub fn build(n : Int, p : Int64) -> BinomTable {
 ///|
 /// `C(n, k) mod p` using the precomputed tables. Returns `0` for
 /// `k < 0` or `k > n`. Returns `0` if `n` exceeds the table.
-pub fn BinomTable::choose(self : BinomTable, n : Int, k : Int) -> Int64 {
+pub fn BinomTable::choose(self : BinomTable, n : Int32, k : Int32) -> Int64 {
   if k < 0 || k > n || n < 0 {
     return 0L
   }
@@ -134,7 +134,7 @@ pub fn BinomTable::choose(self : BinomTable, n : Int, k : Int) -> Int64 {
 
 ///|
 /// `n! mod p`.
-pub fn BinomTable::factorial(self : BinomTable, n : Int) -> Int64 {
+pub fn BinomTable::factorial(self : BinomTable, n : Int32) -> Int64 {
   if n < 0 || n >= self.fact.length() {
     return 0L
   }

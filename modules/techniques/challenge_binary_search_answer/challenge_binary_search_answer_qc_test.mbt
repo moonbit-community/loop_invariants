@@ -4,14 +4,14 @@
 // include values near `Int::MAX_VALUE`.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -21,7 +21,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix of
 /// small values and `Int` extrema.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 }
 
 ///|
@@ -47,8 +47,8 @@ impl @quickcheck.Arbitrary for Ints with fn arbitrary(size, rs) {
 /// Non-negative weights (negative draws are mapped with `lnot`, so `IMIN`
 /// becomes `IMAX`) and a day budget `>= 1`.
 priv struct Ship {
-  ws : Array[Int]
-  days : Int
+  ws : Array[Int32]
+  days : Int32
 } derive(Debug)
 
 ///|
@@ -80,7 +80,7 @@ impl @quickcheck.Shrink for Ship with fn shrink(self) {
 
 ///|
 /// Greedy day count with 64-bit loads; `None` if some weight exceeds `cap`.
-fn days_needed64(ws : Array[Int], cap : Int64) -> Int? {
+fn days_needed64(ws : Array[Int32], cap : Int64) -> Int32? {
   let mut used = 1
   let mut load = 0L
   for w in ws {
@@ -99,7 +99,7 @@ fn days_needed64(ws : Array[Int], cap : Int64) -> Int? {
 }
 
 ///|
-fn ref_can_ship(ws : Array[Int], days : Int, cap : Int) -> Bool {
+fn ref_can_ship(ws : Array[Int32], days : Int32, cap : Int32) -> Bool {
   if days <= 0 || cap < 0 || ws.iter().any(w => w < 0) {
     return false
   }
@@ -111,7 +111,7 @@ fn ref_can_ship(ws : Array[Int], days : Int, cap : Int) -> Bool {
 
 ///|
 /// Smallest feasible capacity, searched over `Int64` so it cannot overflow.
-fn ref_min_capacity(ws : Array[Int], days : Int) -> Int64 {
+fn ref_min_capacity(ws : Array[Int32], days : Int32) -> Int64 {
   let mut lo = 0L
   let mut hi = 0L
   for w in ws {
@@ -135,7 +135,7 @@ fn ref_min_capacity(ws : Array[Int], days : Int) -> Int64 {
 ///|
 test "qc: can_ship agrees with a 64-bit greedy reference" {
   @quickcheck.check(
-    (input : (Ship, Int)) => {
+    (input : (Ship, Int32)) => {
       let (s, cap) = input
       // Aim the capacity near interesting values half of the time.
       let cap = if cap % 2 == 0 && s.ws.length() > 0 {
@@ -156,7 +156,7 @@ test "qc: can_ship agrees with a 64-bit greedy reference" {
 ///|
 test "qc: can_ship is monotone in capacity" {
   @quickcheck.check(
-    (input : (Ship, Int)) => {
+    (input : (Ship, Int32)) => {
       let (s, cap) = input
       !@challenge_binary_search_answer.can_ship(s.ws[:], s.days, cap) ||
       @challenge_binary_search_answer.can_ship(s.ws[:], s.days, cap + 1)

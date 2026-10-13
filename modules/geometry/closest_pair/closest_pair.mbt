@@ -41,7 +41,7 @@ fn sqrt_f64(x : Double) -> Double {
 priv struct Point {
   x : Double
   y : Double
-  idx : Int // Original index
+  idx : Int32 // Original index
 }
 
 ///|
@@ -70,7 +70,7 @@ const CP_INF : Double = 1.0e18
 /// recursion when `n <= 3`.
 ///
 /// Returns `(distance, original_index1, original_index2)`.
-fn brute_force_closest(points : ArrayView[Point]) -> (Double, Int, Int) {
+fn brute_force_closest(points : ArrayView[Point]) -> (Double, Int32, Int32) {
   let n = points.length()
   for i in 0..<n; min_dist = CP_INF, p1 = -1, p2 = -1 {
     let (min_dist, p1, p2) = for
@@ -111,9 +111,9 @@ fn brute_force_closest(points : ArrayView[Point]) -> (Double, Int, Int) {
 fn strip_closest(
   strip : Array[Point],
   delta : Double,
-  best_p1 : Int,
-  best_p2 : Int,
-) -> (Double, Int, Int) {
+  best_p1 : Int32,
+  best_p2 : Int32,
+) -> (Double, Int32, Int32) {
   let n = strip.length()
 
   // Sort strip by y coordinate
@@ -155,7 +155,7 @@ fn strip_closest(
 fn closest_pair_rec(
   points_x : ArrayView[Point],
   points_y : Array[Point],
-) -> (Double, Int, Int) {
+) -> (Double, Int32, Int32) {
   let n = points_x.length()
 
   // Base case: use brute force for small inputs
@@ -207,7 +207,7 @@ fn closest_pair_rec(
 ///|
 /// Find closest pair of points
 /// Returns (distance, index1, index2)
-pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int, Int) {
+pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int32, Int32) {
   let n = points.length()
   if n < 2 {
     return (CP_INF, -1, -1)
@@ -230,7 +230,9 @@ pub fn closest_pair(points : Array[(Double, Double)]) -> (Double, Int, Int) {
 
 ///|
 /// Simple O(n²) closest pair for verification
-fn closest_pair_naive(points : Array[(Double, Double)]) -> (Double, Int, Int) {
+fn closest_pair_naive(
+  points : Array[(Double, Double)],
+) -> (Double, Int32, Int32) {
   let n = points.length()
   if n < 2 {
     return (CP_INF, -1, -1)
@@ -264,10 +266,10 @@ fn closest_pair_naive(points : Array[(Double, Double)]) -> (Double, Int, Int) {
 /// Find k closest pairs using naive approach
 fn k_closest_pairs(
   points : Array[(Double, Double)],
-  k : Int,
-) -> Array[(Double, Int, Int)] {
+  k : Int32,
+) -> Array[(Double, Int32, Int32)] {
   let n = points.length()
-  let pairs : Array[(Double, Int, Int)] = []
+  let pairs : Array[(Double, Int32, Int32)] = []
   for i in 0..<n {
     for j in (i + 1)..<n {
       let dx = points[i].0 - points[j].0
@@ -281,7 +283,7 @@ fn k_closest_pairs(
   pairs.sort_by((a, b) => if a.0 < b.0 { -1 } else if a.0 > b.0 { 1 } else { 0 })
 
   // Take first k
-  let result : Array[(Double, Int, Int)] = []
+  let result : Array[(Double, Int32, Int32)] = []
   let limit = if k <= 0 {
     0
   } else if k < pairs.length() {

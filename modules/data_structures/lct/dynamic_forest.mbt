@@ -35,7 +35,7 @@ pub(all) struct DynamicForest {
 
 ///|
 /// Create a new dynamic forest with n isolated nodes.
-pub fn DynamicForest::DynamicForest(n : Int) -> DynamicForest {
+pub fn DynamicForest::DynamicForest(n : Int32) -> DynamicForest {
   { lct: LinkCutTree(n), }
 }
 
@@ -45,7 +45,7 @@ pub fn DynamicForest::DynamicForest(n : Int) -> DynamicForest {
 /// RETURNS:
 ///   - true: Edge added successfully
 ///   - false: u and v already connected (would create cycle)
-pub fn DynamicForest::link(self : DynamicForest, u : Int, v : Int) -> Bool {
+pub fn DynamicForest::link(self : DynamicForest, u : Int32, v : Int32) -> Bool {
   // Check if already connected (would create cycle)
   if self.lct.connected(u, v) {
     return false
@@ -60,7 +60,7 @@ pub fn DynamicForest::link(self : DynamicForest, u : Int, v : Int) -> Bool {
 /// RETURNS:
 ///   - true: Edge removed successfully
 ///   - false: u and v not connected (no edge to cut)
-pub fn DynamicForest::cut(self : DynamicForest, u : Int, v : Int) -> Bool {
+pub fn DynamicForest::cut(self : DynamicForest, u : Int32, v : Int32) -> Bool {
   // Check if connected
   if !self.lct.connected(u, v) {
     return false
@@ -71,6 +71,10 @@ pub fn DynamicForest::cut(self : DynamicForest, u : Int, v : Int) -> Bool {
 
 ///|
 /// Check if u and v are in the same tree.
-pub fn DynamicForest::connected(self : DynamicForest, u : Int, v : Int) -> Bool {
+pub fn DynamicForest::connected(
+  self : DynamicForest,
+  u : Int32,
+  v : Int32,
+) -> Bool {
   self.lct.connected(u, v)
 }

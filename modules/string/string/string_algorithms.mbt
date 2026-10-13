@@ -50,10 +50,10 @@
 /// `bobzhang/loop_invariants_string/z_algorithm` is unaffected.  Left as-is
 /// here because fixing it is a behaviour change, not a lint fix.
 #warnings("+missing_invariant+missing_reasoning")
-fn z_algorithm(s : ArrayView[Char]) -> Array[Int] {
+fn z_algorithm(s : ArrayView[Char]) -> Array[Int32] {
   let n = s.length()
   guard n > 0 else { return [] }
-  let z : Array[Int] = Array::make(n, 0)
+  let z : Array[Int32] = Array::make(n, 0)
   z[0] = n // By convention, entire string matches itself
 
   // [l, r) is the "Z-box": rightmost interval where s[l..r) == s[0..r-l)
@@ -279,17 +279,17 @@ test "z_algorithm" {
 /// transformed string) of the palindrome centred at position `i`.
 /// A radius of `k` corresponds to a palindrome of original length `k`.
 #warnings("+missing_invariant+missing_reasoning")
-fn manacher(s : ArrayView[Char]) -> Array[Int] {
+fn manacher(s : ArrayView[Char]) -> Array[Int32] {
   let n = s.length()
   guard n > 0 else { return [] }
 
   // Transform: "abc" -> "#a#b#c#" (length 2n+1)
   // This handles both odd and even length palindromes uniformly
   let t_len = 2 * n + 1
-  let p : Array[Int] = Array::make(t_len, 0)
+  let p : Array[Int32] = Array::make(t_len, 0)
 
   // Helper to get character at position in transformed string
-  fn get_char(i : Int) -> Char {
+  fn get_char(i : Int32) -> Char {
     if i % 2 == 0 {
       '#'
     } else {
@@ -473,7 +473,7 @@ fn manacher(s : ArrayView[Char]) -> Array[Int] {
 /// // "bcb" inside "abcbd"
 /// // longest_palindrome_range(['a','b','c','b','d']) == (1, 3)
 /// ```
-pub fn longest_palindrome_range(s : ArrayView[Char]) -> (Int, Int) {
+pub fn longest_palindrome_range(s : ArrayView[Char]) -> (Int32, Int32) {
   let n = s.length()
   guard n > 0 else { return (0, 0) }
   let p = manacher(s)
@@ -568,7 +568,10 @@ test "manacher" {
 /// // rabin_karp("aaaaa", "aa") == [0, 1, 2, 3]
 /// ```
 #warnings("+missing_invariant+missing_reasoning")
-fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
+fn rabin_karp(
+  text : ArrayView[Char],
+  pattern : ArrayView[Char],
+) -> Array[Int32] {
   let n = text.length()
   let m = pattern.length()
   guard m > 0 && n >= m else { return [] }
@@ -626,7 +629,7 @@ fn rabin_karp(text : ArrayView[Char], pattern : ArrayView[Char]) -> Array[Int] {
       #|At i == m, both initial hashes are computed.
     ),
   }
-  let results : Array[Int] = []
+  let results : Array[Int32] = []
 
   // Slide the pattern over text
   for i = 0, th = text_hash {
@@ -772,12 +775,12 @@ test "rabin_karp" {
 /// // lcs_length(['A','A','A'], ['A','A']) == 2
 /// ```
 #warnings("+missing_invariant+missing_reasoning")
-pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
+pub fn lcs_length(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int32 {
   let m = s1.length()
   let n = s2.length()
   guard m > 0 && n > 0 else { return 0 }
-  let prev0 : Array[Int] = Array::make(n + 1, 0)
-  let curr0 : Array[Int] = Array::make(n + 1, 0)
+  let prev0 : Array[Int32] = Array::make(n + 1, 0)
+  let curr0 : Array[Int32] = Array::make(n + 1, 0)
   for i = 1, prev = prev0, curr = curr0 {
     if i > m {
       break prev[n]
@@ -912,17 +915,17 @@ test "lcs_length" {
 /// - Equality testing under rotation
 /// - Preprocessing for the Burrows-Wheeler Transform
 #warnings("+missing_invariant+missing_reasoning")
-fn booth_smallest_rotation(s : ArrayView[Char]) -> Int {
+fn booth_smallest_rotation(s : ArrayView[Char]) -> Int32 {
   let n = s.length()
   guard n > 0 else { return 0 }
 
   // Concatenate s with itself conceptually (use modular indexing)
-  fn get(i : Int) -> Char {
+  fn get(i : Int32) -> Char {
     s[i % n]
   }
 
   // failure[i] similar to KMP failure function for doubled string
-  let failure : Array[Int] = Array::make(2 * n, -1)
+  let failure : Array[Int32] = Array::make(2 * n, -1)
   for i = 1, k = 0 {
     if i >= 2 * n {
       break k

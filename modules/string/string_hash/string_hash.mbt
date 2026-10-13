@@ -54,7 +54,7 @@ const HASH_MOD : Int64 = 1000000007L
 priv struct StringHash {
   prefix : Array[Int64]
   powers : Array[Int64]
-  n : Int
+  n : Int32
 }
 
 ///|
@@ -100,7 +100,7 @@ fn StringHash::StringHash(s : String) -> StringHash {
 /// Returns the hash value, or `0` if the range is empty or out of bounds.
 ///
 /// Time complexity: O(1).
-fn StringHash::get_hash(self : StringHash, l : Int, r : Int) -> Int64 {
+fn StringHash::get_hash(self : StringHash, l : Int32, r : Int32) -> Int64 {
   if l >= r || l < 0 || r > self.n {
     return 0L
   }
@@ -125,10 +125,10 @@ fn StringHash::get_hash(self : StringHash, l : Int, r : Int) -> Int64 {
 /// Time complexity: O(1).
 fn StringHash::compare(
   self : StringHash,
-  l1 : Int,
-  r1 : Int,
-  l2 : Int,
-  r2 : Int,
+  l1 : Int32,
+  r1 : Int32,
+  l2 : Int32,
+  r2 : Int32,
 ) -> Bool {
   if r1 - l1 != r2 - l2 {
     return false
@@ -140,7 +140,7 @@ fn StringHash::compare(
 /// Return the length of the string used to build this `StringHash`.
 ///
 /// Time complexity: O(1).
-fn StringHash::length(self : StringHash) -> Int {
+fn StringHash::length(self : StringHash) -> Int32 {
   self.n
 }
 
@@ -180,7 +180,7 @@ priv struct DoubleHash {
   prefix2 : Array[Int64]
   powers1 : Array[Int64]
   powers2 : Array[Int64]
-  n : Int
+  n : Int32
 }
 
 ///|
@@ -224,7 +224,11 @@ fn DoubleHash::DoubleHash(s : String) -> DoubleHash {
 /// Returns a pair of hash values `(h1, h2)`.
 ///
 /// Time complexity: O(1).
-fn DoubleHash::get_hash(self : DoubleHash, l : Int, r : Int) -> (Int64, Int64) {
+fn DoubleHash::get_hash(
+  self : DoubleHash,
+  l : Int32,
+  r : Int32,
+) -> (Int64, Int64) {
   if l >= r || l < 0 || r > self.n {
     return (0L, 0L)
   }
@@ -258,10 +262,10 @@ fn DoubleHash::get_hash(self : DoubleHash, l : Int, r : Int) -> (Int64, Int64) {
 /// Time complexity: O(1).
 fn DoubleHash::compare(
   self : DoubleHash,
-  l1 : Int,
-  r1 : Int,
-  l2 : Int,
-  r2 : Int,
+  l1 : Int32,
+  r1 : Int32,
+  l2 : Int32,
+  r2 : Int32,
 ) -> Bool {
   if r1 - l1 != r2 - l2 {
     return false
@@ -289,7 +293,7 @@ fn DoubleHash::compare(
 /// already differ).
 ///
 /// Time complexity: O(log n).
-fn StringHash::lcp(self : StringHash, i : Int, j : Int) -> Int {
+fn StringHash::lcp(self : StringHash, i : Int32, j : Int32) -> Int32 {
   let max_len = if self.n - i < self.n - j { self.n - i } else { self.n - j }
   for lo = 0, hi = max_len {
     if lo < hi {
@@ -336,8 +340,8 @@ fn StringHash::lcp(self : StringHash, i : Int, j : Int) -> Int {
 /// hash_pattern_match("abababab", "aba")
 /// // => [0, 2, 4]
 /// ```
-pub fn hash_pattern_match(text : String, pattern : String) -> Array[Int] {
-  let result : Array[Int] = []
+pub fn hash_pattern_match(text : String, pattern : String) -> Array[Int32] {
+  let result : Array[Int32] = []
   let n = text.length()
   let m = pattern.length()
   if m == 0 || m > n {
@@ -374,7 +378,7 @@ pub fn hash_pattern_match(text : String, pattern : String) -> Array[Int] {
 ///
 /// Time complexity: O(n) expected (hash map insertion and lookup).
 /// Space complexity: O(n) for the hash map.
-fn count_distinct_substrings(s : String, k : Int) -> Int {
+fn count_distinct_substrings(s : String, k : Int32) -> Int32 {
   let n = s.length()
   if k <= 0 || k > n {
     return 0

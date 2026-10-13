@@ -34,7 +34,10 @@
 /// Two pointers from both ends converge to the solution.
 ///
 /// INVARIANT: If a solution exists, it lies within indices [left, right].
-fn two_sum_two_pointer(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
+fn two_sum_two_pointer(
+  arr : ArrayView[Int32],
+  target : Int32,
+) -> (Int32, Int32)? {
   for left = 0, right = arr.length() - 1; left < right; {
     let sum = arr[left] + arr[right]
     if sum == target {
@@ -75,7 +78,7 @@ fn two_sum_two_pointer(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
 
 ///|
 test "two sum sorted" {
-  let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+  let arr : ReadOnlyArray[Int32] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
   debug_inspect(two_sum_two_pointer(arr, 10), content="Some((0, 8))") // 1 + 9
   debug_inspect(two_sum_two_pointer(arr, 7), content="Some((0, 5))") // 1 + 6
   debug_inspect(two_sum_two_pointer(arr, 100), content="None")
@@ -89,9 +92,12 @@ test "two sum sorted" {
 /// are skipped to avoid returning the same triplet more than once.
 ///
 /// Time: O(n^2).  Space: O(n) for the sorted copy.
-fn three_sum(arr : Array[Int], target : Int) -> Array[(Int, Int, Int)] {
+fn three_sum(
+  arr : Array[Int32],
+  target : Int32,
+) -> Array[(Int32, Int32, Int32)] {
   let n = arr.length()
-  let result : Array[(Int, Int, Int)] = []
+  let result : Array[(Int32, Int32, Int32)] = []
   if n < 3 {
     return result
   }
@@ -141,10 +147,10 @@ fn three_sum(arr : Array[Int], target : Int) -> Array[(Int, Int, Int)] {
 /// Returns the first index in `(left, right)` whose value differs from
 /// `arr[left]`, or `right` if no such index exists.
 fn skip_duplicates_forward(
-  arr : ArrayView[Int],
-  left : Int,
-  right : Int,
-) -> Int {
+  arr : ArrayView[Int32],
+  left : Int32,
+  right : Int32,
+) -> Int32 {
   for l = left + 1; l < right && arr[l] == arr[left]; {
     continue l + 1
   } nobreak {
@@ -167,10 +173,10 @@ fn skip_duplicates_forward(
 /// Returns the last index in `(left, right)` whose value differs from
 /// `arr[right]`, or `left` if no such index exists.
 fn skip_duplicates_backward(
-  arr : ArrayView[Int],
-  left : Int,
-  right : Int,
-) -> Int {
+  arr : ArrayView[Int32],
+  left : Int32,
+  right : Int32,
+) -> Int32 {
   for r = right - 1; r > left && arr[r] == arr[right]; {
     continue r - 1
   } nobreak {
@@ -207,7 +213,7 @@ test "three sum" {
 /// INVARIANT: The maximum area is either already found or lies within [left, right].
 ///
 /// Time: O(n).  Space: O(1).
-fn max_water_container(heights : ArrayView[Int]) -> Int {
+fn max_water_container(heights : ArrayView[Int32]) -> Int32 {
   for left = 0, right = heights.length() - 1, max_area = 0; left < right; {
     let width = right - left
     let height = if heights[left] < heights[right] {
@@ -249,7 +255,7 @@ fn max_water_container(heights : ArrayView[Int]) -> Int {
 
 ///|
 test "max water container" {
-  let heights : ReadOnlyArray[Int] = [1, 8, 6, 2, 5, 4, 8, 3, 7]
+  let heights : ReadOnlyArray[Int32] = [1, 8, 6, 2, 5, 4, 8, 3, 7]
   @debug.assert_eq(max_water_container(heights), 49) // indices 1 and 8: min(8,7) * 7
 }
 
@@ -261,7 +267,7 @@ test "max water container" {
 /// Two-pointer approach computes this in O(n) time, O(1) space.
 ///
 /// INVARIANT: At each step, we know the limiting max for the shorter side.
-fn trap_water_two_pointer(height : ArrayView[Int]) -> Int {
+fn trap_water_two_pointer(height : ArrayView[Int32]) -> Int32 {
   let n = height.length()
   if n < 3 {
     return 0
@@ -313,7 +319,7 @@ fn trap_water_two_pointer(height : ArrayView[Int]) -> Int {
 
 ///|
 test "trap rain water" {
-  let height : ReadOnlyArray[Int] = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
+  let height : ReadOnlyArray[Int32] = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
   @debug.assert_eq(trap_water_two_pointer(height), 6)
 }
 
@@ -324,15 +330,15 @@ test "trap rain water" {
 ///
 /// INVARIANT: Deque contains indices of elements in decreasing order,
 /// all within the current window.
-fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
+fn sliding_window_max_deque(nums : ArrayView[Int32], k : Int32) -> Array[Int32] {
   let n = nums.length()
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   if n == 0 || k == 0 {
     return result
   }
 
   // Deque stores indices, front is maximum
-  let deque : Array[Int] = []
+  let deque : Array[Int32] = []
   for i in 0..<n {
     // Remove elements outside window
     for ;; {
@@ -385,7 +391,7 @@ fn sliding_window_max_deque(nums : ArrayView[Int], k : Int) -> Array[Int] {
 
 ///|
 test "sliding window maximum" {
-  let nums : ReadOnlyArray[Int] = [1, 3, -1, -3, 5, 3, 6, 7]
+  let nums : ReadOnlyArray[Int32] = [1, 3, -1, -3, 5, 3, 6, 7]
   let result = sliding_window_max_deque(nums, 3)
   @debug.assert_eq(result.length(), 6)
   @debug.assert_eq(result[0], 3)
@@ -412,7 +418,7 @@ fn min_window_substring(s : String, t : String) -> String {
   let t_len = t_chars.length()
 
   // Count required characters
-  let required : Array[Int] = Array::make(128, 0)
+  let required : Array[Int32] = Array::make(128, 0)
   for i in 0..<t_len {
     required[t_chars[i].to_int()] = required[t_chars[i].to_int()] + 1
   }
@@ -430,7 +436,7 @@ fn min_window_substring(s : String, t : String) -> String {
   }
 
   // Window character counts
-  let window : Array[Int] = Array::make(128, 0)
+  let window : Array[Int32] = Array::make(128, 0)
   for left = 0, right = 0, formed = 0, min_len = s_len + 1, min_left = 0; right <
      s_len; {
     // Expand window by including s[right]
@@ -488,15 +494,15 @@ fn min_window_substring(s : String, t : String) -> String {
 ///|
 fn contract_window(
   s_chars : Array[Char],
-  required : Array[Int],
-  window : Array[Int],
-  left : Int,
-  right : Int,
-  formed : Int,
-  required_count : Int,
-  min_len : Int,
-  min_left : Int,
-) -> (Int, Int, Int, Int) {
+  required : Array[Int32],
+  window : Array[Int32],
+  left : Int32,
+  right : Int32,
+  formed : Int32,
+  required_count : Int32,
+  min_len : Int32,
+  min_left : Int32,
+) -> (Int32, Int32, Int32, Int32) {
   for l = left, f = formed, mlen = min_len, mleft = min_left; f ==
      required_count; {
     // Update minimum if current window is smaller
@@ -545,7 +551,7 @@ test "min window substring" {
 /// Longest Substring Without Repeating Characters
 ///
 /// Classic sliding window maintaining uniqueness.
-fn longest_unique_substring(s : String) -> Int {
+fn longest_unique_substring(s : String) -> Int32 {
   let chars = s.to_array()
   let n = chars.length()
   if n == 0 {
@@ -553,7 +559,7 @@ fn longest_unique_substring(s : String) -> Int {
   }
 
   // Last seen position of each character
-  let last_seen : Array[Int] = Array::make(128, -1)
+  let last_seen : Array[Int32] = Array::make(128, -1)
   for i in 0..<n; start = 0, max_len = 0 {
     let c = chars[i].to_int()
     // If character seen in current window, move start past it
@@ -599,13 +605,13 @@ test "longest unique substring" {
 ///
 /// INSIGHT: sum[i..j] = prefix[j] - prefix[i-1] = k
 /// So we count prefix sums where prefix[j] - k was seen before.
-fn subarray_sum_equals_k(nums : ArrayView[Int], k : Int) -> Int {
+fn subarray_sum_equals_k(nums : ArrayView[Int32], k : Int32) -> Int32 {
   let n = nums.length()
 
   // Use array to count prefix sums (for small value range)
   // In practice, use a hash map for arbitrary values
   let offset = 10000 // Handle negative sums
-  let count : Array[Int] = Array::make(20001, 0)
+  let count : Array[Int32] = Array::make(20001, 0)
   count[offset] = 1 // Empty prefix has sum 0
   for i in 0..<n; prefix = 0, result = 0 {
     let new_prefix = prefix + nums[i]
@@ -642,9 +648,9 @@ fn subarray_sum_equals_k(nums : ArrayView[Int], k : Int) -> Int {
 
 ///|
 test "subarray sum equals k" {
-  let nums : ReadOnlyArray[Int] = [1, 1, 1]
+  let nums : ReadOnlyArray[Int32] = [1, 1, 1]
   @debug.assert_eq(subarray_sum_equals_k(nums, 2), 2)
-  let nums2 : ReadOnlyArray[Int] = [1, 2, 3]
+  let nums2 : ReadOnlyArray[Int32] = [1, 2, 3]
   @debug.assert_eq(subarray_sum_equals_k(nums2, 3), 2)
 }
 
@@ -653,7 +659,7 @@ test "subarray sum equals k" {
 ///
 /// Find longest substring where at most k characters can be replaced
 /// to make all characters the same.
-fn character_replacement(s : String, k : Int) -> Int {
+fn character_replacement(s : String, k : Int32) -> Int32 {
   let chars = s.to_array()
   let n = chars.length()
   if n == 0 {
@@ -661,7 +667,7 @@ fn character_replacement(s : String, k : Int) -> Int {
   }
 
   // Count of each character in current window
-  let count : Array[Int] = Array::make(26, 0)
+  let count : Array[Int32] = Array::make(26, 0)
   for left = 0, right = 0, max_count = 0, max_len = 0; right < n; {
     // Add right character to window
     let c = chars[right].to_int() - 'A'.to_int()
@@ -716,14 +722,14 @@ test "character replacement" {
 
 ///|
 /// Fruit Into Baskets - Longest subarray with at most 2 distinct elements
-fn fruit_into_baskets(fruits : ArrayView[Int]) -> Int {
+fn fruit_into_baskets(fruits : ArrayView[Int32]) -> Int32 {
   let n = fruits.length()
   if n == 0 {
     return 0
   }
 
   // Use a simpler approach: track last occurrence of each fruit type
-  let last_seen : Array[Int] = Array::make(40001, -1) // Assume fruit types 0-40000
+  let last_seen : Array[Int32] = Array::make(40001, -1) // Assume fruit types 0-40000
   for left = 0, right = 0, distinct = 0, max_len = 0; right < n; {
     let fruit = fruits[right]
     let was_seen = last_seen[fruit] >= left
@@ -772,7 +778,7 @@ fn fruit_into_baskets(fruits : ArrayView[Int]) -> Int {
 
 ///|
 /// Remove Duplicates from Sorted Array - In-place with two pointers
-fn remove_duplicates(nums : Array[Int]) -> Int {
+fn remove_duplicates(nums : Array[Int32]) -> Int32 {
   let n = nums.length()
   if n == 0 {
     return 0
@@ -817,7 +823,7 @@ test "remove duplicates" {
 
 ///|
 /// Move Zeroes - Move all zeros to end while maintaining relative order
-fn move_zeroes(nums : Array[Int]) -> Unit {
+fn move_zeroes(nums : Array[Int32]) -> Unit {
   let n = nums.length()
 
   // write_pos: next position to write non-zero element
@@ -863,7 +869,7 @@ test "move zeroes" {
 /// MATHEMATICAL FOUNDATION:
 /// Partition array into three sections: [0s][1s][2s]
 /// Three pointers: low (end of 0s), mid (current), high (start of 2s)
-fn sort_colors(nums : Array[Int]) -> Unit {
+fn sort_colors(nums : Array[Int32]) -> Unit {
   let n = nums.length()
   if n == 0 {
     return
@@ -926,7 +932,7 @@ test "sort colors" {
 ///
 /// Partition array around pivot such that elements < pivot come before elements >= pivot.
 /// Returns the partition index.
-fn partition(arr : Array[Int], lo : Int, hi : Int) -> Int {
+fn partition(arr : Array[Int32], lo : Int32, hi : Int32) -> Int32 {
   let pivot = arr[hi]
   for i = lo, j = lo; j < hi; {
     if arr[j] < pivot {
@@ -981,6 +987,6 @@ test "partition" {
 
 ///|
 test "fruit into baskets" {
-  let fruits : ReadOnlyArray[Int] = [1, 2, 1, 2]
+  let fruits : ReadOnlyArray[Int32] = [1, 2, 1, 2]
   debug_inspect(fruit_into_baskets(fruits), content="4")
 }

@@ -24,11 +24,11 @@
 /// - `mu`: Mobius function.  `mu[k]` is 1, -1, or 0 depending on the
 ///   squarefreeness and number of prime factors of `k`.
 pub struct LinearSieve {
-  n : Int
-  primes : Array[Int]
-  spf : Array[Int]
-  phi : Array[Int]
-  mu : Array[Int]
+  n : Int32
+  primes : Array[Int32]
+  spf : Array[Int32]
+  phi : Array[Int32]
+  mu : Array[Int32]
 }
 
 ///|
@@ -56,7 +56,7 @@ pub struct LinearSieve {
 /// // s.phi[6]  => 2   (phi(6) = |{1,5}|)
 /// // s.mu[6]   => 1   (6 = 2*3, squarefree, even number of factors)
 /// ```
-pub fn LinearSieve::LinearSieve(n : Int) -> LinearSieve {
+pub fn LinearSieve::LinearSieve(n : Int32) -> LinearSieve {
   if n < 0 {
     return { n: 0, primes: [], spf: [], phi: [], mu: [], }
   }
@@ -64,7 +64,7 @@ pub fn LinearSieve::LinearSieve(n : Int) -> LinearSieve {
   let spf = Array::make(size, 0)
   let phi = Array::make(size, 0)
   let mu = Array::make(size, 0)
-  let primes : Array[Int] = []
+  let primes : Array[Int32] = []
   if n >= 1 {
     phi[1] = 1
     mu[1] = 1
@@ -135,7 +135,7 @@ pub fn LinearSieve::LinearSieve(n : Int) -> LinearSieve {
 /// s.is_prime(9)   // false  (9 = 3 * 3)
 /// s.is_prime(25)  // false  (25 > n=20, out of range)
 /// ```
-pub fn LinearSieve::is_prime(self : LinearSieve, x : Int) -> Bool {
+pub fn LinearSieve::is_prime(self : LinearSieve, x : Int32) -> Bool {
   x >= 2 && x <= self.n && self.spf[x] == x
 }
 
@@ -163,8 +163,11 @@ pub fn LinearSieve::is_prime(self : LinearSieve, x : Int) -> Bool {
 /// s.factorize(60)  // [(2, 2), (3, 1), (5, 1)]
 /// s.factorize(97)  // [(97, 1)]   (97 is prime)
 /// ```
-pub fn LinearSieve::factorize(self : LinearSieve, x : Int) -> Array[(Int, Int)] {
-  let result : Array[(Int, Int)] = []
+pub fn LinearSieve::factorize(
+  self : LinearSieve,
+  x : Int32,
+) -> Array[(Int32, Int32)] {
+  let result : Array[(Int32, Int32)] = []
   let _ = for v = x {
     if v <= 1 {
       break ()

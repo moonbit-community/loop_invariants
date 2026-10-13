@@ -5,7 +5,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -14,7 +14,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 fn gen_str(
   rs : @quickcheck.RandomState,
   alpha : Array[Char],
-  max_len : Int,
+  max_len : Int32,
 ) -> String {
   let len = rint(rs, 0, max_len)
   let sb = StringBuilder()
@@ -27,7 +27,7 @@ fn gen_str(
 ///|
 /// Mostly 'a'..'c' (frequent, overlapping matches); sometimes the whole
 /// supported byte range, including NUL, 0x7F-0xFF.
-fn gen_byte_text(rs : @quickcheck.RandomState, max_len : Int) -> String {
+fn gen_byte_text(rs : @quickcheck.RandomState, max_len : Int32) -> String {
   if rint(rs, 0, 3) == 0 {
     let len = rint(rs, 0, max_len)
     let sb = StringBuilder()
@@ -79,10 +79,10 @@ impl @quickcheck.Shrink for Dict with fn shrink(self) {
 }
 
 ///|
-fn naive_search(text : String, pattern : String) -> Array[Int] {
+fn naive_search(text : String, pattern : String) -> Array[Int32] {
   let n = text.length()
   let m = pattern.length()
-  let res : Array[Int] = []
+  let res : Array[Int32] = []
   if m == 0 || m > n {
     return res
   }
@@ -105,8 +105,8 @@ fn naive_search(text : String, pattern : String) -> Array[Int] {
 fn naive_matches(
   patterns : Array[String],
   text : String,
-) -> Array[(Int, Int, String)] {
-  let res : Array[(Int, Int, String)] = []
+) -> Array[(Int32, Int32, String)] {
+  let res : Array[(Int32, Int32, String)] = []
   for p in patterns {
     for i in naive_search(text, p) {
       res.push((i, i + p.length(), p))

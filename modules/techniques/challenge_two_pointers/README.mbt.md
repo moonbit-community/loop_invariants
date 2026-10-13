@@ -64,7 +64,7 @@ There are `right - left + 1 = 2` of them.
 ```mbt check
 ///|
 test "two pointers basic" {
-  let arr : Array[Int] = [1, 2, 1, 1]
+  let arr : Array[Int32] = [1, 2, 1, 1]
   let count = @challenge_two_pointers.count_subarrays_leq(arr, 3)
   debug_inspect(count, content="7")
 }
@@ -83,7 +83,7 @@ Valid subarrays (sum <= 3):
 ```mbt check
 ///|
 test "two pointers uniform" {
-  let arr : Array[Int] = [2, 2, 2]
+  let arr : Array[Int32] = [2, 2, 2]
   let count = @challenge_two_pointers.count_subarrays_leq(arr, 3)
   debug_inspect(count, content="3")
 }
@@ -98,7 +98,7 @@ Only the single-element subarrays are valid.
 ```mbt check
 ///|
 test "two pointers small k" {
-  let arr : Array[Int] = [1, 1, 1]
+  let arr : Array[Int32] = [1, 1, 1]
   let count = @challenge_two_pointers.count_subarrays_leq(arr, 0)
   debug_inspect(count, content="0")
 }

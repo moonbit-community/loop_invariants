@@ -3,14 +3,14 @@
 // `Int::MAX_VALUE`.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -20,7 +20,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix of
 /// small values and `Int` extrema.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 }
 
 ///|
@@ -46,12 +46,12 @@ impl @quickcheck.Arbitrary for Ints with fn arbitrary(size, rs) {
 /// Non-negative array (negatives mapped by `lnot`) and a bound `k` that is
 /// small, an element, an extremum, or arbitrary.
 priv struct Case {
-  xs : Array[Int]
-  k : Int
+  xs : Array[Int32]
+  k : Int32
 } derive(Debug)
 
 ///|
-fn nonneg(xs : Array[Int]) -> Array[Int] {
+fn nonneg(xs : Array[Int32]) -> Array[Int32] {
   xs.map(x => if x < 0 { x.lnot() } else { x })
 }
 
@@ -80,7 +80,7 @@ impl @quickcheck.Shrink for Case with fn shrink(self) {
 ///|
 /// O(n^2) count; extensions are tested as `x > k - s` with `0 <= s <= k`, so
 /// the reference cannot overflow.
-fn ref_count(xs : Array[Int], k : Int) -> Int {
+fn ref_count(xs : Array[Int32], k : Int32) -> Int32 {
   if k < 0 {
     return 0
   }

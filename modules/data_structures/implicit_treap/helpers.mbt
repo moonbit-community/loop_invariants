@@ -28,7 +28,7 @@
 ///   Any sequence of insert/delete operations maintains balance
 ///   without explicit rebalancing.
 /// ```
-fn ImplicitTreap::random_priority(self : ImplicitTreap) -> Int {
+fn ImplicitTreap::random_priority(self : ImplicitTreap) -> Int32 {
   self.rand_state = (self.rand_state * 1103515245 + 12345) % 2147483647
   if self.rand_state < 0 {
     -self.rand_state
@@ -48,7 +48,7 @@ fn ImplicitTreap::random_priority(self : ImplicitTreap) -> Int {
 ///   This avoids memory fragmentation and allows
 ///   O(1) amortized allocation.
 /// ```
-fn ImplicitTreap::alloc_node(self : ImplicitTreap, val : Int64) -> Int {
+fn ImplicitTreap::alloc_node(self : ImplicitTreap, val : Int64) -> Int32 {
   let priority = self.random_priority()
   if self.free_list.pop() is Some(idx) {
     self.nodes[idx] = {
@@ -82,7 +82,7 @@ fn ImplicitTreap::alloc_node(self : ImplicitTreap, val : Int64) -> Int {
 
 ///|
 /// Get size of subtree (handles -1 for null).
-fn ImplicitTreap::get_size(self : ImplicitTreap, node : Int) -> Int {
+fn ImplicitTreap::get_size(self : ImplicitTreap, node : Int32) -> Int32 {
   if node < 0 {
     0
   } else {
@@ -92,7 +92,7 @@ fn ImplicitTreap::get_size(self : ImplicitTreap, node : Int) -> Int {
 
 ///|
 /// Get sum of subtree values (returns 0 for null).
-fn ImplicitTreap::get_sum(self : ImplicitTreap, node : Int) -> Int64 {
+fn ImplicitTreap::get_sum(self : ImplicitTreap, node : Int32) -> Int64 {
   if node < 0 {
     0L
   } else {
@@ -102,7 +102,7 @@ fn ImplicitTreap::get_sum(self : ImplicitTreap, node : Int) -> Int64 {
 
 ///|
 /// Get minimum value in subtree (returns MAX_INT64 for null).
-fn ImplicitTreap::get_min(self : ImplicitTreap, node : Int) -> Int64 {
+fn ImplicitTreap::get_min(self : ImplicitTreap, node : Int32) -> Int64 {
   if node < 0 {
     9223372036854775807L // Int64 max
   } else {
@@ -112,7 +112,7 @@ fn ImplicitTreap::get_min(self : ImplicitTreap, node : Int) -> Int64 {
 
 ///|
 /// Get maximum value in subtree (returns MIN_INT64 for null).
-fn ImplicitTreap::get_max(self : ImplicitTreap, node : Int) -> Int64 {
+fn ImplicitTreap::get_max(self : ImplicitTreap, node : Int32) -> Int64 {
   if node < 0 {
     -9223372036854775808L // Int64 min
   } else {
@@ -137,7 +137,7 @@ fn ImplicitTreap::get_max(self : ImplicitTreap, node : Int) -> Int64 {
 ///   - Value update
 ///   - Child pointer modification
 /// ```
-fn ImplicitTreap::update(self : ImplicitTreap, node : Int) -> Unit {
+fn ImplicitTreap::update(self : ImplicitTreap, node : Int32) -> Unit {
   if node < 0 {
     return
   }
@@ -179,7 +179,7 @@ fn ImplicitTreap::update(self : ImplicitTreap, node : Int) -> Unit {
 ///
 ///   This enables O(log n) range reversal.
 /// ```
-fn ImplicitTreap::push_down(self : ImplicitTreap, node : Int) -> Unit {
+fn ImplicitTreap::push_down(self : ImplicitTreap, node : Int32) -> Unit {
   if node < 0 || !self.nodes[node].rev {
     return
   }
@@ -206,7 +206,10 @@ fn ImplicitTreap::push_down(self : ImplicitTreap, node : Int) -> Unit {
 ///
 /// Note: This is a simple but inefficient approach.
 /// A better implementation would track the path and update only ancestors.
-fn ImplicitTreap::rebuild_aggregates(self : ImplicitTreap, node : Int) -> Unit {
+fn ImplicitTreap::rebuild_aggregates(
+  self : ImplicitTreap,
+  node : Int32,
+) -> Unit {
   if node < 0 {
     return
   }

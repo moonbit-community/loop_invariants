@@ -31,7 +31,7 @@ pub enum Heap[T] {
 } derive(Debug)
 
 ///|
-fn[T] heap_size(h : Heap[T]) -> Int {
+fn[T] heap_size(h : Heap[T]) -> Int32 {
   match h {
     Empty => 0
     Node(value=_, left~, right~) => 1 + heap_size(left) + heap_size(right)
@@ -48,7 +48,7 @@ pub fn[T] empty() -> Heap[T] {
 
 ///|
 /// Return number of elements in the heap.
-pub fn[T] size(h : Heap[T]) -> Int {
+pub fn[T] size(h : Heap[T]) -> Int32 {
   heap_size(h)
 }
 

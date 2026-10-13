@@ -29,7 +29,7 @@ const INF64 : Int64 = 4611686018427387903L
 ///   vertex NOT in `source_side` is a cut edge.
 pub(all) struct MinCutSTResult {
   value : Int64
-  source_side : Array[Int]
+  source_side : Array[Int32]
 }
 
 ///|
@@ -40,10 +40,10 @@ pub(all) struct MinCutSTResult {
 /// index of the paired edge in the adjacency list of the opposite endpoint,
 /// enabling O(1) residual updates.
 priv struct Edge {
-  to : Int
+  to : Int32
   cap : Int64
   mut flow : Int64
-  rev : Int
+  rev : Int32
 }
 
 ///|
@@ -57,15 +57,15 @@ priv struct Edge {
 /// - `iter`: current-arc pointer per vertex used by the DFS blocking-flow
 ///   phase to skip already-exhausted edges.
 priv struct FlowGraph {
-  n : Int
+  n : Int32
   adj : Array[Array[Edge]]
-  level : Array[Int]
-  iter : Array[Int]
+  level : Array[Int32]
+  iter : Array[Int32]
 }
 
 ///|
 /// Create a new flow graph with `n` vertices and no edges.
-fn FlowGraph::FlowGraph(n : Int) -> FlowGraph {
+fn FlowGraph::FlowGraph(n : Int32) -> FlowGraph {
   let adj = [ for _ in 0..<n => [] ]
   { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0), }
 }
@@ -78,8 +78,8 @@ fn FlowGraph::FlowGraph(n : Int) -> FlowGraph {
 /// DFS can cancel flow along the forward edge.
 fn FlowGraph::add_edge(
   self : FlowGraph,
-  from : Int,
-  to : Int,
+  from : Int32,
+  to : Int32,
   cap : Int64,
 ) -> Unit {
   let rev_from = self.adj[to].length()
@@ -94,7 +94,7 @@ fn FlowGraph::add_edge(
 /// Returns `true` if `sink` is reachable, meaning another blocking-flow
 /// phase is possible.  Populates `self.level` with shortest-path distances
 /// in the residual graph.
-fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
+fn FlowGraph::bfs(self : FlowGraph, source : Int32, sink : Int32) -> Bool {
   for i in 0..<self.n {
     self.level[i] = -1
   } where {
@@ -109,7 +109,7 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
     ),
   }
   self.level[source] = 0
-  let queue : Array[Int] = [source]
+  let queue : Array[Int32] = [source]
   for front = 0; front < queue.length(); {
     let u = queue[front]
     for i in 0..<self.adj[u].length() {
@@ -146,8 +146,8 @@ fn FlowGraph::bfs(self : FlowGraph, source : Int, sink : Int) -> Bool {
 /// edge from `u` not yet proven useless, avoiding repeated scanning.
 fn FlowGraph::dfs(
   self : FlowGraph,
-  u : Int,
-  sink : Int,
+  u : Int32,
+  sink : Int32,
   pushed : Int64,
 ) -> Int64 {
   if u == sink || pushed == 0L {
@@ -181,7 +181,7 @@ fn FlowGraph::dfs(
 /// Alternates between BFS (build level graph) and DFS (find blocking flow)
 /// until the sink is unreachable in the residual graph.  Returns the total
 /// flow value.
-fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
+fn FlowGraph::max_flow(self : FlowGraph, source : Int32, sink : Int32) -> Int64 {
   for flow = 0L; self.bfs(source, sink); {
     for i in 0..<self.n {
       self.iter[i] = 0
@@ -230,11 +230,14 @@ fn FlowGraph::max_flow(self : FlowGraph, source : Int, sink : Int) -> Int64 {
 /// The returned array is the S-side of the minimum s-t cut.  Every original
 /// edge from a vertex in this set to a vertex NOT in this set is a saturated
 /// cut edge.
-fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] {
+fn FlowGraph::min_cut_source_side(
+  self : FlowGraph,
+  source : Int32,
+) -> Array[Int32] {
   let visited = Array::make(self.n, false)
-  let queue : Array[Int] = [source]
+  let queue : Array[Int32] = [source]
   visited[source] = true
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   for front = 0; front < queue.length(); {
     let u = queue[front]
     result.push(u)
@@ -305,10 +308,10 @@ fn FlowGraph::min_cut_source_side(self : FlowGraph, source : Int) -> Array[Int] 
 ///   Cut edges: 0->2 (cap 2) and 1->3 (cap 2)
 /// ```
 pub fn min_cut_st(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
-  source : Int,
-  sink : Int,
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
+  source : Int32,
+  sink : Int32,
 ) -> MinCutSTResult? {
   if n <= 0 ||
     source < 0 ||
@@ -347,9 +350,9 @@ pub fn min_cut_st(
 
 ///|
 fn cut_capacity(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
-  source_side : Array[Int],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
+  source_side : Array[Int32],
 ) -> Int64 {
   let in_source = Array::make(n, false)
   for v in source_side {
@@ -372,7 +375,7 @@ fn cut_capacity(
 
 ///|
 test "min cut st basic" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 3L),
     (0, 2, 2L),
     (1, 3, 2L),
@@ -385,13 +388,13 @@ test "min cut st basic" {
 
 ///|
 test "min cut st no path" {
-  let edges : Array[(Int, Int, Int64)] = []
+  let edges : Array[(Int32, Int32, Int64)] = []
   let result = min_cut_st(3, edges, 0, 2).unwrap()
   debug_inspect(result.value, content="0")
 }
 
 ///|
 test "min cut st invalid" {
-  let edges : Array[(Int, Int, Int64)] = []
+  let edges : Array[(Int32, Int32, Int64)] = []
   guard min_cut_st(0, edges, 0, 0) is None else { fail("expected None") }
 }

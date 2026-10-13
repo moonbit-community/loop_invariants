@@ -38,7 +38,7 @@
 
 ///|
 /// KMP failure table.
-fn failure(p : Array[Int]) -> Array[Int] {
+fn failure(p : Array[Int32]) -> Array[Int32] {
   let m = p.length()
   let f = Array::make(m, 0)
   let mut k = 0
@@ -67,7 +67,7 @@ fn failure(p : Array[Int]) -> Array[Int] {
 ///   @debug.assert_eq(@repetition_count.smallest_period(s), 3)
 /// }
 /// ```
-pub fn smallest_period(s : Array[Int]) -> Int {
+pub fn smallest_period(s : Array[Int32]) -> Int32 {
   let n = s.length()
   if n == 0 {
     return 0
@@ -79,7 +79,7 @@ pub fn smallest_period(s : Array[Int]) -> Int {
 ///|
 /// `true` iff `s` is a perfect concatenation of `>= 2` copies of a
 /// shorter string.
-pub fn is_periodic(s : Array[Int]) -> Bool {
+pub fn is_periodic(s : Array[Int32]) -> Bool {
   let n = s.length()
   if n < 2 {
     return false
@@ -92,7 +92,7 @@ pub fn is_periodic(s : Array[Int]) -> Bool {
 /// Number of times `s` is the concatenation of a smaller block. Returns
 /// `1` when `s` is aperiodic (or empty / single-char), `n / period`
 /// otherwise.
-pub fn repetition_count(s : Array[Int]) -> Int {
+pub fn repetition_count(s : Array[Int32]) -> Int32 {
   let n = s.length()
   if n == 0 {
     return 0
@@ -107,7 +107,7 @@ pub fn repetition_count(s : Array[Int]) -> Int {
 
 ///|
 /// Number of (overlapping) occurrences of `pattern` in `text` via KMP.
-pub fn count_occurrences(text : Array[Int], pattern : Array[Int]) -> Int {
+pub fn count_occurrences(text : Array[Int32], pattern : Array[Int32]) -> Int32 {
   let n = text.length()
   let m = pattern.length()
   if m == 0 || m > n {
@@ -132,8 +132,8 @@ pub fn count_occurrences(text : Array[Int], pattern : Array[Int]) -> Int {
 }
 
 ///|
-fn s(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn s(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }
@@ -191,7 +191,7 @@ test "count_occurrences none" {
 
 ///|
 test "period agrees with brute force" {
-  fn brute_period(arr : Array[Int]) -> Int {
+  fn brute_period(arr : Array[Int32]) -> Int32 {
     let n = arr.length()
     if n == 0 {
       return 0

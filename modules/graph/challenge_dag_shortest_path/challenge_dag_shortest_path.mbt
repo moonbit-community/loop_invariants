@@ -3,17 +3,17 @@
 // ============================================================================
 
 ///|
-const INF : Int = 0x3fffffff
+const INF : Int32 = 0x3fffffff
 
 ///|
 /// Return shortest paths in a DAG, or None if a cycle exists.
 pub fn dag_shortest_paths(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int)],
-  src : Int,
-) -> Array[Int]? {
-  let adj : Array[Array[(Int, Int)]] = [ for _ in 0..<n => [] ]
-  let indeg : Array[Int] = Array::make(n, 0)
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int32)],
+  src : Int32,
+) -> Array[Int32]? {
+  let adj : Array[Array[(Int32, Int32)]] = [ for _ in 0..<n => [] ]
+  let indeg : Array[Int32] = Array::make(n, 0)
   for edge in edges {
     let (u, v, w) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
@@ -21,8 +21,8 @@ pub fn dag_shortest_paths(
       indeg[v] = indeg[v] + 1
     }
   }
-  let queue : Array[Int] = [ for i in 0..<n if indeg[i] == 0 => i ]
-  let order : Array[Int] = []
+  let queue : Array[Int32] = [ for i in 0..<n if indeg[i] == 0 => i ]
+  let order : Array[Int32] = []
   for head = 0 {
     if head >= queue.length() {
       break

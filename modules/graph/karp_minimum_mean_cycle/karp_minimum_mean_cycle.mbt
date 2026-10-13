@@ -88,10 +88,10 @@ fn ratio_lt(a : Int64, da : Int64, b : Int64, db : Int64) -> Bool {
 ///
 /// O(V * E) time and O(V) extra space.
 pub fn min_mean_cycle(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
-  start : Int,
-) -> (Int64, Int)? {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
+  start : Int32,
+) -> (Int64, Int32)? {
   if n <= 0 || start < 0 || start >= n {
     return None
   }
@@ -187,7 +187,7 @@ pub fn min_mean_cycle(
   //
   // best_num/best_den holds the current minimum-over-v of M(v).
   let mut best_num : Int64 = 0L
-  let mut best_den : Int = 1
+  let mut best_den : Int32 = 1
   let mut have_best = false
   for v in 0..<n {
     let fn_v = dp[n][v]
@@ -205,7 +205,7 @@ pub fn min_mean_cycle(
     //
     // Implementation: scan k in [0, n), track the maximum rational.
     let mut m_num : Int64 = 0L
-    let mut m_den : Int = 1
+    let mut m_den : Int32 = 1
     let mut have_m = false
     for k in 0..<n {
       let fk_v = dp[k][v]
@@ -278,28 +278,28 @@ pub fn min_mean_cycle(
 ///|
 test "karp single 2-cycle" {
   // Graph: 0 -> 1 (w = 5), 1 -> 0 (w = 3). Min mean = 8 / 2 = 4.
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L), (1, 0, 3L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, 5L), (1, 0, 3L)]
   @debug.assert_eq(min_mean_cycle(2, edges, 0), Some((8L, 2)))
 }
 
 ///|
 test "karp self-loop" {
   // Single self-loop of weight 7.
-  let edges : Array[(Int, Int, Int64)] = [(0, 0, 7L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 0, 7L)]
   @debug.assert_eq(min_mean_cycle(1, edges, 0), Some((7L, 1)))
 }
 
 ///|
 test "karp negative cycle" {
   // 0 -> 1 (w = -2), 1 -> 0 (w = -3). Min mean = -5 / 2.
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, -2L), (1, 0, -3L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, -2L), (1, 0, -3L)]
   @debug.assert_eq(min_mean_cycle(2, edges, 0), Some((-5L, 2)))
 }
 
 ///|
 test "karp dag returns none" {
   // 0 -> 1 -> 2 with no back edges. No cycle.
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, 1L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, 1L), (1, 2, 1L)]
   @debug.assert_eq(min_mean_cycle(3, edges, 0), None)
 }
 
@@ -309,7 +309,7 @@ test "karp two cycles picks smaller mean" {
   //   inner triangle 0 -> 1 -> 2 -> 0 with weights (1, 2, 3)  -> mean 6/3 = 2
   //   side cycle    0 -> 3 -> 0 with weights (10, 10)         -> mean 20/2 = 10
   // The algorithm must pick the smaller mean.
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (1, 2, 2L),
     (2, 0, 3L),
@@ -327,7 +327,7 @@ test "karp two cycles picks smaller mean exact" {
   // Same as above but with weights chosen so the exact rational is unique.
   // Cycle A: 0 -> 1 -> 0 with weights (1, 4) -> mean 5/2 = 2.5
   // Cycle B: 0 -> 2 -> 0 with weights (3, 4) -> mean 7/2 = 3.5
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (1, 0, 4L),
     (0, 2, 3L),
@@ -340,7 +340,7 @@ test "karp two cycles picks smaller mean exact" {
 test "karp longer cycle wins over short heavy one" {
   // Triangle 0->1->2->0 with weights (1, 1, 1) -> mean 1.
   // Self-loop at 0 with weight 100 -> mean 100.
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (1, 2, 1L),
     (2, 0, 1L),
@@ -355,7 +355,7 @@ test "karp longer cycle wins over short heavy one" {
 test "karp unreachable cycle from start" {
   // Two components: 0 is isolated; the cycle 1 -> 2 -> 1 is not reachable
   // from 0. With start = 0, we report no cycle.
-  let edges : Array[(Int, Int, Int64)] = [(1, 2, 1L), (2, 1, 1L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(1, 2, 1L), (2, 1, 1L)]
   @debug.assert_eq(min_mean_cycle(3, edges, 0), None)
   // From start = 1 the cycle IS reachable.
   @debug.assert_eq(min_mean_cycle(3, edges, 1), Some((2L, 2)))
@@ -364,13 +364,13 @@ test "karp unreachable cycle from start" {
 ///|
 test "karp negative self-loop" {
   // Self-loop with negative weight.
-  let edges : Array[(Int, Int, Int64)] = [(0, 0, -4L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 0, -4L)]
   @debug.assert_eq(min_mean_cycle(1, edges, 0), Some((-4L, 1)))
 }
 
 ///|
 test "karp invalid arguments" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 0, 1L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, 1L), (1, 0, 1L)]
   // n <= 0
   @debug.assert_eq(min_mean_cycle(0, edges, 0), None)
   // start out of range
@@ -382,6 +382,10 @@ test "karp invalid arguments" {
 test "karp three vertex worked example" {
   // 0 -> 1 (w = 2), 1 -> 2 (w = -1), 2 -> 0 (w = -2)
   // Only cycle has weight 2 + (-1) + (-2) = -1, length 3, mean -1/3.
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 2L), (1, 2, -1L), (2, 0, -2L)]
+  let edges : Array[(Int32, Int32, Int64)] = [
+    (0, 1, 2L),
+    (1, 2, -1L),
+    (2, 0, -2L),
+  ]
   @debug.assert_eq(min_mean_cycle(3, edges, 0), Some((-1L, 3)))
 }

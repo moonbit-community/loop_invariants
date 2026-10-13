@@ -5,7 +5,7 @@
 ///|
 /// Compute (q, r) for non-negative n and positive d.
 #warnings("+missing_invariant+missing_reasoning")
-fn div_mod_nonneg(n : Int, d : Int) -> (Int, Int) {
+fn div_mod_nonneg(n : Int32, d : Int32) -> (Int32, Int32) {
   guard n >= 0 && d > 0 else { return (0, 0) }
   for q = 0, r = n {
     if r < d {
@@ -48,7 +48,7 @@ test "div_mod_nonneg" {
 
 ///|
 /// Evaluate polynomial prefix of length end with Horner's scheme.
-fn poly_prefix(coeffs : ArrayView[Int], end : Int, x : Int) -> Int {
+fn poly_prefix(coeffs : ArrayView[Int32], end : Int32, x : Int32) -> Int32 {
   if end <= 0 {
     0
   } else if end == 1 {
@@ -62,7 +62,7 @@ fn poly_prefix(coeffs : ArrayView[Int], end : Int, x : Int) -> Int {
 ///|
 /// Evaluate polynomial with coefficients in descending powers.
 #warnings("+missing_invariant+missing_reasoning")
-fn horner_eval(coeffs : ArrayView[Int], x : Int) -> Int {
+fn horner_eval(coeffs : ArrayView[Int32], x : Int32) -> Int32 {
   guard coeffs.length() > 0 else { return 0 }
   for i = 1, acc = coeffs[0] {
     if i >= coeffs.length() {

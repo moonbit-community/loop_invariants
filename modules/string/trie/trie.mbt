@@ -52,8 +52,8 @@
 priv struct TrieNode {
   children : Array[TrieNode?]
   mut is_end : Bool
-  mut count : Int // Number of words ending here
-  mut prefix_count : Int // Number of words with this prefix
+  mut count : Int32 // Number of words ending here
+  mut prefix_count : Int32 // Number of words with this prefix
 }
 
 ///|
@@ -168,7 +168,7 @@ fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
 /// Returns 0 if no such node exists.
 ///
 /// Time complexity: O(p) where p = `prefix.length()`.
-fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
+fn Trie::count_prefix(self : Trie, prefix : String) -> Int32 {
   match self.find_node(prefix) {
     Some(node) => node.prefix_count
     None => 0
@@ -182,7 +182,7 @@ fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
 /// not present or if all copies have been deleted.
 ///
 /// Time complexity: O(m) where m = `word.length()`.
-fn Trie::count_word(self : Trie, word : String) -> Int {
+fn Trie::count_word(self : Trie, word : String) -> Int32 {
   match self.find_node(word) {
     Some(node) => node.count
     None => 0
@@ -644,7 +644,7 @@ fn insert_into_node(node : CompressedTrieNode, word : StringView) -> Unit {
 /// `min(a.length(), b.length())` if one is a prefix of the other.
 ///
 /// Time complexity: O(min(|a|, |b|)).
-fn common_prefix_len(a : StringView, b : StringView) -> Int {
+fn common_prefix_len(a : StringView, b : StringView) -> Int32 {
   let min_len = if a.length() < b.length() { a.length() } else { b.length() }
   for i in 0..<min_len {
     if a[i] != b[i] {

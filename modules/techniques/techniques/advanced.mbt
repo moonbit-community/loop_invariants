@@ -12,13 +12,13 @@
 /// A simple linked list node for demonstrating cycle detection.
 /// Using array indices to simulate pointers.
 priv struct ListNode {
-  next : Int // -1 means null/end
+  next : Int32 // -1 means null/end
 }
 
 ///|
 /// Get next index in the "linked list" represented by nodes array.
 /// Returns -1 if at end or invalid.
-fn get_next(nodes : ArrayView[ListNode], idx : Int) -> Int {
+fn get_next(nodes : ArrayView[ListNode], idx : Int32) -> Int32 {
   if idx < 0 || idx >= nodes.length() {
     -1
   } else {
@@ -30,11 +30,14 @@ fn get_next(nodes : ArrayView[ListNode], idx : Int) -> Int {
 /// Floyd's cycle detection: returns (has_cycle, cycle_start_index).
 /// This is one of the most elegant algorithms in computer science.
 #warnings("+missing_invariant+missing_reasoning")
-fn floyd_cycle_detect(nodes : ArrayView[ListNode], head : Int) -> (Bool, Int) {
+fn floyd_cycle_detect(
+  nodes : ArrayView[ListNode],
+  head : Int32,
+) -> (Bool, Int32) {
   guard head >= 0 && head < nodes.length() else { return (false, -1) }
 
   // Phase 1: Detect if cycle exists using tortoise and hare
-  let meet_point : Int? = for slow = head, fast = head, first_step = true {
+  let meet_point : Int32? = for slow = head, fast = head, first_step = true {
     let next_slow = get_next(nodes, slow)
     let next_fast_1 = get_next(nodes, fast)
     let next_fast = get_next(nodes, next_fast_1)
@@ -191,9 +194,9 @@ test "floyd_cycle_detect" {
 /// Build the KMP failure function (also called "partial match table" or "π function").
 /// failure[i] = length of longest proper prefix of pattern[0..i+1] that is also a suffix.
 #warnings("+missing_invariant+missing_reasoning")
-fn build_kmp_failure(pattern : ArrayView[Char]) -> Array[Int] {
+fn build_kmp_failure(pattern : ArrayView[Char]) -> Array[Int32] {
   guard pattern.length() > 0 else { return [] }
-  let failure : Array[Int] = Array::make(pattern.length(), 0)
+  let failure : Array[Int32] = Array::make(pattern.length(), 0)
   // failure[0] = 0 by definition (no proper prefix)
 
   for i = 1, j = 0 {
@@ -282,7 +285,7 @@ fn build_kmp_failure(pattern : ArrayView[Char]) -> Array[Int] {
 /// KMP string matching: find first occurrence of pattern in text.
 /// Returns starting index or -1 if not found.
 #warnings("+missing_invariant+missing_reasoning")
-fn kmp_search(text : ArrayView[Char], pattern : ArrayView[Char]) -> Int {
+fn kmp_search(text : ArrayView[Char], pattern : ArrayView[Char]) -> Int32 {
   guard pattern.length() > 0 && text.length() >= pattern.length() else {
     return -1
   }
@@ -387,10 +390,10 @@ test "kmp_search" {
 /// Recursive specification for edit distance (reference for correctness proofs).
 fn edit_dist_spec(
   s1 : ArrayView[Char],
-  i : Int,
+  i : Int32,
   s2 : ArrayView[Char],
-  j : Int,
-) -> Int {
+  j : Int32,
+) -> Int32 {
   if i == 0 {
     j // Insert j characters
   } else if j == 0 {
@@ -406,7 +409,7 @@ fn edit_dist_spec(
 }
 
 ///|
-fn min3(a : Int, b : Int, c : Int) -> Int {
+fn min3(a : Int32, b : Int32, c : Int32) -> Int32 {
   if a <= b && a <= c {
     a
   } else if b <= c {
@@ -419,14 +422,14 @@ fn min3(a : Int, b : Int, c : Int) -> Int {
 ///|
 /// Edit distance using space-optimized DP (two rows).
 #warnings("+missing_invariant+missing_reasoning")
-fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
+fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int32 {
   let m = s1.length()
   let n = s2.length()
   guard m > 0 && n > 0 else { return m + n }
 
   // Only need two rows: previous and current
-  let prev : Array[Int] = Array::make(n + 1, 0)
-  let curr : Array[Int] = Array::make(n + 1, 0)
+  let prev : Array[Int32] = Array::make(n + 1, 0)
+  let curr : Array[Int32] = Array::make(n + 1, 0)
 
   // Initialize first row: edit distance from empty string to s2[0..j)
   for j in 0..<=n {
@@ -548,20 +551,20 @@ test "edit_distance" {
 
 ///|
 priv struct Point {
-  x : Int
-  y : Int
+  x : Int32
+  y : Int32
 }
 
 ///|
 /// Cross product of vectors OA and OB where O is origin.
 /// Positive = counterclockwise, Negative = clockwise, Zero = collinear.
-fn cross_product(o : Point, a : Point, b : Point) -> Int {
+fn cross_product(o : Point, a : Point, b : Point) -> Int32 {
   (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
 }
 
 ///|
 /// Compare points for sorting: first by x, then by y.
-fn point_cmp(p1 : Point, p2 : Point) -> Int {
+fn point_cmp(p1 : Point, p2 : Point) -> Int32 {
   if p1.x != p2.x {
     p1.x - p2.x
   } else {

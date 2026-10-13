@@ -29,7 +29,7 @@
 const BASE : Int64 = 1000000000L
 
 ///|
-const CUTOFF : Int = 32
+const CUTOFF : Int32 = 32
 
 ///|
 /// Strip trailing zero limbs (most-significant), keeping at least one
@@ -93,7 +93,7 @@ pub fn sub(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
 
 ///|
 /// Shift `x` left by `k` limbs: returns `x * BASE^k`.
-fn shift_left(x : Array[Int64], k : Int) -> Array[Int64] {
+fn shift_left(x : Array[Int64], k : Int32) -> Array[Int64] {
   if x.length() == 1 && x[0] == 0L {
     return [0L]
   }
@@ -123,7 +123,7 @@ pub fn mul_naive(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
 }
 
 ///|
-fn take_slice(arr : Array[Int64], lo : Int, hi : Int) -> Array[Int64] {
+fn take_slice(arr : Array[Int64], lo : Int32, hi : Int32) -> Array[Int64] {
   if lo >= hi {
     return [0L]
   }

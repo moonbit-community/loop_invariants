@@ -5,11 +5,11 @@
 ///|
 /// Build adjacency from left to right (u in [0,left_n), v in [0,right_n)).
 pub fn build_adj(
-  left_n : Int,
-  right_n : Int,
-  edges : ArrayView[(Int, Int)],
-) -> Array[Array[Int]] {
-  let adj : Array[Array[Int]] = [ for _ in 0..<left_n => [] ]
+  left_n : Int32,
+  right_n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Array[Int32]] {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<left_n => [] ]
   for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < left_n && v >= 0 && v < right_n {
@@ -21,10 +21,10 @@ pub fn build_adj(
 
 ///|
 fn try_kuhn(
-  u : Int,
-  adj : Array[Array[Int]],
+  u : Int32,
+  adj : Array[Array[Int32]],
   seen : Array[Bool],
-  match_r : Array[Int],
+  match_r : Array[Int32],
 ) -> Bool {
   let neighbors = adj[u]
   let right_n = match_r.length()
@@ -46,7 +46,7 @@ fn try_kuhn(
 
 ///|
 /// Maximum bipartite matching size.
-pub fn max_matching(adj : Array[Array[Int]], right_n : Int) -> Int {
+pub fn max_matching(adj : Array[Array[Int32]], right_n : Int32) -> Int32 {
   let left_n = adj.length()
   let match_r = Array::make(right_n, -1)
   for u in 0..<left_n; matched = 0 {

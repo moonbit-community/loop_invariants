@@ -67,7 +67,7 @@ fn is_left(
 pub fn winding_number(
   poly : Array[(Double, Double)],
   q : (Double, Double),
-) -> Int {
+) -> Int32 {
   let n = poly.length()
   if n < 3 {
     return 0

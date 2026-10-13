@@ -75,7 +75,7 @@ caller side or filter the returned array.
 ///|
 test "horspool finds repeated pattern" {
   let to_arr = fn(s : String) {
-    let r : Array[Int] = []
+    let r : Array[Int32] = []
     for c in s {
       r.push(c.to_int())
     }
@@ -94,7 +94,7 @@ test "horspool finds repeated pattern" {
 ///|
 test "horspool first vs none" {
   let to_arr = fn(s : String) {
-    let r : Array[Int] = []
+    let r : Array[Int32] = []
     for c in s {
       r.push(c.to_int())
     }

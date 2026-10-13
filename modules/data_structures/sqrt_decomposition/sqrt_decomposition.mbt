@@ -34,7 +34,7 @@
 ///
 /// Uses Newton's method, converging in O(log n) iterations.
 /// Returns 0 for non-positive inputs.
-fn isqrt(n : Int) -> Int {
+fn isqrt(n : Int32) -> Int32 {
   if n <= 0 {
     return 0
   }
@@ -68,8 +68,8 @@ fn isqrt(n : Int) -> Int {
 pub struct SqrtSum {
   arr : Array[Int64]
   blocks : Array[Int64]
-  block_size : Int
-  n : Int
+  block_size : Int32
+  n : Int32
 }
 
 ///|
@@ -109,7 +109,7 @@ pub fn SqrtSum::SqrtSum(arr : Array[Int64]) -> SqrtSum {
 /// Parameters:
 /// - `idx` — 0-based index of the element to change.
 /// - `val` — new value to assign.
-pub fn SqrtSum::update(self : SqrtSum, idx : Int, val : Int64) -> Unit {
+pub fn SqrtSum::update(self : SqrtSum, idx : Int32, val : Int64) -> Unit {
   if idx < 0 || idx >= self.n {
     return
   }
@@ -131,7 +131,7 @@ pub fn SqrtSum::update(self : SqrtSum, idx : Int, val : Int64) -> Unit {
 /// Parameters:
 /// - `l` — inclusive left index (0-based).
 /// - `r` — inclusive right index (0-based).
-pub fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int64 {
+pub fn SqrtSum::query(self : SqrtSum, l : Int32, r : Int32) -> Int64 {
   if l > r || l < 0 || r >= self.n {
     return 0L
   }
@@ -241,8 +241,8 @@ const SQRT_INF : Int64 = 9223372036854775807L
 priv struct SqrtMin {
   arr : Array[Int64]
   blocks : Array[Int64]
-  block_size : Int
-  n : Int
+  block_size : Int32
+  n : Int32
 }
 
 ///|
@@ -273,7 +273,7 @@ fn SqrtMin::SqrtMin(arr : Array[Int64]) -> SqrtMin {
 /// invalidate the stored block minimum; a full rescan is required.
 ///
 /// Time: O(√n) (at most `block_size` elements scanned).
-fn SqrtMin::rebuild_block(self : SqrtMin, block : Int) -> Unit {
+fn SqrtMin::rebuild_block(self : SqrtMin, block : Int32) -> Unit {
   let start = block * self.block_size
   let end = if (block + 1) * self.block_size < self.n {
     (block + 1) * self.block_size
@@ -292,7 +292,7 @@ fn SqrtMin::rebuild_block(self : SqrtMin, block : Int) -> Unit {
 /// Set `arr[idx] = val` and rebuild the block minimum in O(√n).
 ///
 /// Indices outside `[0, n)` are silently ignored.
-fn SqrtMin::update(self : SqrtMin, idx : Int, val : Int64) -> Unit {
+fn SqrtMin::update(self : SqrtMin, idx : Int32, val : Int64) -> Unit {
   if idx < 0 || idx >= self.n {
     return
   }
@@ -307,7 +307,7 @@ fn SqrtMin::update(self : SqrtMin, idx : Int, val : Int64) -> Unit {
 /// left partial scan, whole-block minimums, right partial scan.
 ///
 /// Returns `SQRT_INF` (Int64 max) when the range is empty or out of bounds.
-fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int64 {
+fn SqrtMin::query(self : SqrtMin, l : Int32, r : Int32) -> Int64 {
   if l > r || l < 0 || r >= self.n {
     return SQRT_INF
   }
@@ -418,8 +418,8 @@ priv struct SqrtLazy {
   arr : Array[Int64]
   blocks : Array[Int64] // Block sums
   lazy_add : Array[Int64] // Lazy additive value for entire block
-  block_size : Int
-  n : Int
+  block_size : Int32
+  n : Int32
 }
 
 ///|
@@ -453,7 +453,7 @@ fn SqrtLazy::SqrtLazy(arr : Array[Int64]) -> SqrtLazy {
 /// logical value of element `i`.
 ///
 /// Time: O(√n) (scans at most `block_size` elements).
-fn SqrtLazy::push(self : SqrtLazy, block : Int) -> Unit {
+fn SqrtLazy::push(self : SqrtLazy, block : Int32) -> Unit {
   if self.lazy_add[block] == 0L {
     return
   }
@@ -478,7 +478,12 @@ fn SqrtLazy::push(self : SqrtLazy, block : Int) -> Unit {
 /// elements.
 ///
 /// Indices outside `[0, n)` or an empty range `l > r` are silently ignored.
-fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
+fn SqrtLazy::range_add(
+  self : SqrtLazy,
+  l : Int32,
+  r : Int32,
+  val : Int64,
+) -> Unit {
   if l > r || l < 0 || r >= self.n {
     return
   }
@@ -574,7 +579,7 @@ fn SqrtLazy::range_add(self : SqrtLazy, l : Int, r : Int, val : Int64) -> Unit {
 /// (it is updated eagerly in `range_add`), so it is used directly.
 ///
 /// Returns 0 if the range is empty or out of bounds.
-fn SqrtLazy::query(self : SqrtLazy, l : Int, r : Int) -> Int64 {
+fn SqrtLazy::query(self : SqrtLazy, l : Int32, r : Int32) -> Int64 {
   if l > r || l < 0 || r >= self.n {
     return 0L
   }

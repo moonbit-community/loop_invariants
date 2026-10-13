@@ -1,5 +1,5 @@
 ///|
-priv struct NonNeg(Int) derive(Debug)
+priv struct NonNeg(Int32) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for NonNeg with fn arbitrary(size, rs) {
@@ -19,7 +19,7 @@ impl @quickcheck.Shrink for NonNeg with fn shrink(self) {
 }
 
 ///|
-fn naive_gcd(a : Int, b : Int) -> Int {
+fn naive_gcd(a : Int32, b : Int32) -> Int32 {
   if a == 0 {
     return b
   }
@@ -37,7 +37,7 @@ fn naive_gcd(a : Int, b : Int) -> Int {
 ///|
 test "qc: gcd_euclid and gcd_binary agree with divisor search (small)" {
   @quickcheck.check(
-    (p : (Int, Int)) => {
+    (p : (Int32, Int32)) => {
       let a = (p.0 % 300).abs()
       let b = (p.1 % 300).abs()
       let g = naive_gcd(a, b)

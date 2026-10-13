@@ -33,7 +33,7 @@ const SD_INF : Int64 = 4611686018427387903L
 ///|
 priv struct HeapEntry {
   dist : Int64
-  vertex : Int
+  vertex : Int32
 }
 
 /// A binary min-heap over `HeapEntry` values, ordered by `dist`.
@@ -144,13 +144,13 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 
 ///|
 fn dijkstra_original(
-  n : Int,
-  adj : Array[Array[Int]],
-  to : Array[Int],
+  n : Int32,
+  adj : Array[Array[Int32]],
+  to : Array[Int32],
   weight : Array[Int64],
-  source : Int,
-  sink : Int,
-) -> (Array[Int64], Array[Int])? {
+  source : Int32,
+  sink : Int32,
+) -> (Array[Int64], Array[Int32])? {
   let dist = Array::make(n, SD_INF)
   let prev_edge = Array::make(n, -1)
   dist[source] = 0L
@@ -210,9 +210,9 @@ fn dijkstra_original(
 
 ///|
 priv struct Edge2 {
-  to : Int
+  to : Int32
   weight : Int64
-  orig_id : Int
+  orig_id : Int32
   reversed : Bool
 }
 
@@ -237,11 +237,11 @@ priv struct Edge2 {
 
 ///|
 fn dijkstra_modified(
-  n : Int,
+  n : Int32,
   adj : Array[Array[Edge2]],
-  source : Int,
-  sink : Int,
-) -> (Array[Int64], Array[Int], Array[Int])? {
+  source : Int32,
+  sink : Int32,
+) -> (Array[Int64], Array[Int32], Array[Int32])? {
   let dist = Array::make(n, SD_INF)
   let prev_v = Array::make(n, -1)
   let prev_e = Array::make(n, -1)
@@ -301,7 +301,7 @@ fn dijkstra_modified(
 /// the combined first and second paths.
 
 ///|
-fn remove_edge(adj : Array[Array[Int]], u : Int, v : Int) -> Bool {
+fn remove_edge(adj : Array[Array[Int32]], u : Int32, v : Int32) -> Bool {
   for i in 0..<adj[u].length() {
     if adj[u][i] == v {
       let _ = adj[u].remove(i)
@@ -333,11 +333,11 @@ fn remove_edge(adj : Array[Array[Int]], u : Int, v : Int) -> Bool {
 
 ///|
 fn extract_path(
-  adj : Array[Array[Int]],
-  source : Int,
-  sink : Int,
-) -> Array[Int]? {
-  let path : Array[Int] = []
+  adj : Array[Array[Int32]],
+  source : Int32,
+  sink : Int32,
+) -> Array[Int32]? {
+  let path : Array[Int32] = []
   for steps = 0, cur = source; cur != sink; {
     path.push(cur)
     let next = adj[cur].pop()
@@ -388,7 +388,7 @@ fn extract_path(
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let edges : Array[(Int, Int, Int64)] = [
+///   let edges : Array[(Int32, Int32, Int64)] = [
 ///     (0, 1, 1L),
 ///     (1, 4, 1L),
 ///     (0, 2, 1L),
@@ -403,11 +403,11 @@ fn extract_path(
 /// }
 /// ```
 pub fn suurballe_disjoint_paths(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
-  source : Int,
-  sink : Int,
-) -> (Array[Int], Array[Int])? {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
+  source : Int32,
+  sink : Int32,
+) -> (Array[Int32], Array[Int32])? {
   if n <= 0 ||
     source < 0 ||
     source >= n ||
@@ -446,7 +446,7 @@ pub fn suurballe_disjoint_paths(
     None => return None
     Some(result) => result
   }
-  let path_edges : Array[Int] = []
+  let path_edges : Array[Int32] = []
   for steps = 0, v = sink; v != source; {
     let e = prev_edge[v]
     if e < 0 {
@@ -523,7 +523,7 @@ pub fn suurballe_disjoint_paths(
     None => return None
     Some(result) => result
   }
-  let path2 : Array[(Int, Edge2)] = []
+  let path2 : Array[(Int32, Edge2)] = []
   for steps = 0, v = sink; v != source; {
     let u = prev_v[v]
     let idx = prev_e[v]

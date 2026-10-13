@@ -31,7 +31,7 @@
 /// Used for the discovery-time timer in Tarjan's algorithm and for
 /// counting how many SCCs have been identified so far.
 priv struct Counter {
-  mut val : Int
+  mut val : Int32
 }
 
 ///|
@@ -66,8 +66,8 @@ priv struct Counter {
 ///   scc_adj   = [[], [0]]       // SCC 1 -> SCC 0; SCC 0 has no outgoing edges
 /// ```
 pub(all) struct SCCResult {
-  num_sccs : Int
-  component : Array[Int]
-  scc_sizes : Array[Int]
-  scc_adj : Array[Array[Int]]
+  num_sccs : Int32
+  component : Array[Int32]
+  scc_sizes : Array[Int32]
+  scc_adj : Array[Array[Int32]]
 } derive(Debug)

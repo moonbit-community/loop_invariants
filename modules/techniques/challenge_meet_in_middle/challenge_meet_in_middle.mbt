@@ -3,10 +3,10 @@
 // ============================================================================
 
 ///|
-fn subset_sums(arr : ArrayView[Int]) -> Array[Int] {
+fn subset_sums(arr : ArrayView[Int32]) -> Array[Int32] {
   let n = arr.length()
   let total = 1 << n
-  let sums : Array[Int] = Array::make(total, 0)
+  let sums : Array[Int32] = Array::make(total, 0)
   for mask in 0..<total {
     sums[mask] = for i in 0..<n; acc = 0 {
       if ((mask >> i) & 1) == 1 {
@@ -23,9 +23,9 @@ fn subset_sums(arr : ArrayView[Int]) -> Array[Int] {
 
 ///|
 fn upper_bound_fixed(
-  arr : FixedArray[Int],
-  target : Int,
-) -> Int where {
+  arr : FixedArray[Int32],
+  target : Int32,
+) -> Int32 where {
   proof_require: sorted(arr),
   proof_ensure: result => upper_bound_ok(arr, target, result),
 } {
@@ -55,14 +55,14 @@ fn upper_bound_fixed(
 }
 
 ///|
-const INT_MAX : Int = 2147483647
+const INT_MAX : Int32 = 2147483647
 
 ///|
-const INT_MIN : Int = -2147483648
+const INT_MIN : Int32 = -2147483648
 
 ///|
 /// Maximum subset sum <= target using meet-in-the-middle.
-pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int {
+pub fn best_subset_sum_leq(nums : ArrayView[Int32], target : Int32) -> Int32 {
   let n = nums.length()
   let mid = n / 2
   let left = nums[:mid]
@@ -104,7 +104,7 @@ pub fn best_subset_sum_leq(nums : ArrayView[Int], target : Int) -> Int {
 
 ///|
 test "meet_in_middle" {
-  let nums : Array[Int] = [3, 34, 4, 12, 5, 2]
+  let nums : Array[Int32] = [3, 34, 4, 12, 5, 2]
   @debug.assert_eq(best_subset_sum_leq(nums, 9), 9)
   @debug.assert_eq(best_subset_sum_leq(nums, 10), 10)
 }

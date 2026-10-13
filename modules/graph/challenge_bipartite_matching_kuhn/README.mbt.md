@@ -62,7 +62,7 @@ A maximum matching is size 3: `(0,0)`, `(1,1)`, `(2,2)`.
 ```mbt check
 ///|
 test "basic matching" {
-  let edges : Array[(Int, Int)] = [(0, 0), (0, 1), (1, 1), (2, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 0), (0, 1), (1, 1), (2, 2)]
   let adj = @challenge_bipartite_matching_kuhn.build_adj(3, 3, edges)
   let m = @challenge_bipartite_matching_kuhn.max_matching(adj, 3)
   debug_inspect(m, content="3")
@@ -74,7 +74,7 @@ test "basic matching" {
 ```mbt check
 ///|
 test "not perfect" {
-  let edges : Array[(Int, Int)] = [(0, 0), (1, 0), (2, 0)]
+  let edges : Array[(Int32, Int32)] = [(0, 0), (1, 0), (2, 0)]
   let adj = @challenge_bipartite_matching_kuhn.build_adj(3, 1, edges)
   let m = @challenge_bipartite_matching_kuhn.max_matching(adj, 1)
   debug_inspect(m, content="1")
@@ -86,7 +86,7 @@ test "not perfect" {
 ```mbt check
 ///|
 test "empty graph" {
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   let adj = @challenge_bipartite_matching_kuhn.build_adj(2, 2, edges)
   let m = @challenge_bipartite_matching_kuhn.max_matching(adj, 2)
   debug_inspect(m, content="0")
@@ -98,7 +98,7 @@ test "empty graph" {
 ```mbt check
 ///|
 test "uneven sizes" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 0), (2, 1), (3, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 0), (2, 1), (3, 2)]
   let adj = @challenge_bipartite_matching_kuhn.build_adj(4, 3, edges)
   let m = @challenge_bipartite_matching_kuhn.max_matching(adj, 3)
   debug_inspect(m, content="3")

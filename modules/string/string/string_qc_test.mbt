@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -12,7 +12,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 ///|
 /// Mostly a 3-letter alphabet; sometimes arbitrary chars including '#', the
 /// separator Manacher's transform uses internally, and astral chars.
-fn gen_chars(rs : @quickcheck.RandomState, max_len : Int) -> Array[Char] {
+fn gen_chars(rs : @quickcheck.RandomState, max_len : Int32) -> Array[Char] {
   let len = rint(rs, 0, max_len)
   let alpha = if rint(rs, 0, 2) == 0 {
     ['a', '#', 'Z', '😀', '\u{0}']
@@ -42,9 +42,9 @@ impl @quickcheck.Shrink for Chars with fn shrink(self) {
 }
 
 ///|
-fn naive_lcs(a : ArrayView[Char], b : ArrayView[Char]) -> Int {
-  let memo : Map[(Int, Int), Int] = Map([])
-  fn go(i : Int, j : Int) -> Int {
+fn naive_lcs(a : ArrayView[Char], b : ArrayView[Char]) -> Int32 {
+  let memo : Map[(Int32, Int32), Int32] = Map([])
+  fn go(i : Int32, j : Int32) -> Int32 {
     if i == a.length() || j == b.length() {
       return 0
     }
@@ -71,7 +71,7 @@ fn naive_lcs(a : ArrayView[Char], b : ArrayView[Char]) -> Int {
 }
 
 ///|
-fn is_pal(s : ArrayView[Char], i : Int, j : Int) -> Bool {
+fn is_pal(s : ArrayView[Char], i : Int32, j : Int32) -> Bool {
   let mut a = i
   let mut b = j - 1
   while a < b {
@@ -87,7 +87,7 @@ fn is_pal(s : ArrayView[Char], i : Int, j : Int) -> Bool {
 ///|
 test "qc: lcs_length agrees with the recursive definition, including on sub-views" {
   @quickcheck.check(
-    (c : (Chars, Chars, Int)) => {
+    (c : (Chars, Chars, Int32)) => {
       let a = c.0.0
       let b = c.1.0
       // also exercise views that do not start at offset 0
@@ -107,7 +107,7 @@ test "qc: lcs_length agrees with the recursive definition, including on sub-view
 ///|
 test "qc: longest_palindrome_range is a longest palindrome" {
   @quickcheck.check(
-    (c : (Chars, Int)) => {
+    (c : (Chars, Int32)) => {
       let full = c.0.0
       let off = if full.length() == 0 { 0 } else { (c.1 % full.length()).abs() }
       let s = full[off:]

@@ -44,7 +44,7 @@ enum InsertResult[T] {
 
 ///|
 /// Return the number of keys in the tree.
-pub fn[T] size(t : Tree[T]) -> Int {
+pub fn[T] size(t : Tree[T]) -> Int32 {
   match t {
     Empty => 0
     Two(key=_, left~, right~) => 1 + size(left) + size(right)
@@ -224,7 +224,7 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Tree[T] {
 ///|
 test "persistent 2-3 tree invariants" {
   let tree = from_array([3, 1, 4, 2])
-  let none : Int? = None
+  let none : Int32? = None
   assert_true(tree_valid(tree, none, none))
   assert_true(contains(tree, 4))
 }

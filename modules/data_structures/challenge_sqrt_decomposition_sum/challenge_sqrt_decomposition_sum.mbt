@@ -3,7 +3,7 @@
 // ============================================================================
 
 ///|
-fn sqrt_ceil(n : Int) -> Int {
+fn sqrt_ceil(n : Int32) -> Int32 {
   if n <= 0 {
     1
   } else {
@@ -12,7 +12,7 @@ fn sqrt_ceil(n : Int) -> Int {
 }
 
 ///|
-fn sqrt_ceil_from(n : Int, b : Int) -> Int {
+fn sqrt_ceil_from(n : Int32, b : Int32) -> Int32 {
   if b * b >= n {
     b
   } else {
@@ -32,7 +32,7 @@ fn sqrt_ceil_from(n : Int, b : Int) -> Int {
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let arr : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+///   let arr : Array[Int32] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ///   let sd = build_sqrt_decomp(arr[:])
 ///   @debug.assert_eq(range_sum(sd, 0, 9), 45)
 ///   update(sd, 2, 30)
@@ -40,15 +40,15 @@ fn sqrt_ceil_from(n : Int, b : Int) -> Int {
 /// }
 /// ```
 pub struct SqrtDecomp {
-  n : Int
-  block_size : Int
-  arr : Array[Int]
-  block_sum : Array[Int]
+  n : Int32
+  block_size : Int32
+  arr : Array[Int32]
+  block_sum : Array[Int32]
 }
 
 ///|
 /// Build a sqrt decomposition structure for range sums.
-pub fn build_sqrt_decomp(arr : ArrayView[Int]) -> SqrtDecomp {
+pub fn build_sqrt_decomp(arr : ArrayView[Int32]) -> SqrtDecomp {
   let n = arr.length()
   let block_size = sqrt_ceil(n)
   let block_count = (n + block_size - 1) / block_size
@@ -62,12 +62,17 @@ pub fn build_sqrt_decomp(arr : ArrayView[Int]) -> SqrtDecomp {
 
 ///|
 /// Query the sum over [l, r).
-pub fn range_sum(sd : SqrtDecomp, l : Int, r : Int) -> Int {
+pub fn range_sum(sd : SqrtDecomp, l : Int32, r : Int32) -> Int32 {
   range_sum_from(sd, l, r, 0)
 }
 
 ///|
-fn range_sum_from(sd : SqrtDecomp, pos : Int, r : Int, acc : Int) -> Int {
+fn range_sum_from(
+  sd : SqrtDecomp,
+  pos : Int32,
+  r : Int32,
+  acc : Int32,
+) -> Int32 {
   if pos >= r {
     acc
   } else if pos % sd.block_size == 0 && pos + sd.block_size <= r {
@@ -84,7 +89,7 @@ fn range_sum_from(sd : SqrtDecomp, pos : Int, r : Int, acc : Int) -> Int {
 
 ///|
 /// Update index idx to value in the sqrt decomposition structure.
-pub fn update(sd : SqrtDecomp, idx : Int, value : Int) -> Unit {
+pub fn update(sd : SqrtDecomp, idx : Int32, value : Int32) -> Unit {
   let block = idx / sd.block_size
   let diff = value - sd.arr[idx]
   sd.arr[idx] = value

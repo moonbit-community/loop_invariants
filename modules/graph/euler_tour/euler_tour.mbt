@@ -30,20 +30,20 @@
 /// Stores the adjacency list, per-node entry/exit times, the preorder
 /// visit sequence, depths, parent pointers, and a running DFS timer.
 priv struct EulerTour {
-  adj : Array[Array[Int]]
-  entry : Array[Int] // Entry time of each node
-  exit : Array[Int] // Exit time of each node
-  tour : Array[Int] // Euler tour sequence
-  depth : Array[Int] // Depth of each node
-  parent : Array[Int]
-  mut timer : Int
+  adj : Array[Array[Int32]]
+  entry : Array[Int32] // Entry time of each node
+  exit : Array[Int32] // Exit time of each node
+  tour : Array[Int32] // Euler tour sequence
+  depth : Array[Int32] // Depth of each node
+  parent : Array[Int32]
+  mut timer : Int32
 }
 
 ///|
 /// Allocate a fresh `EulerTour` for a tree with `n` nodes.
 /// All times are initialised to 0; the adjacency list is empty.
-fn EulerTour::EulerTour(n : Int) -> EulerTour {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+fn EulerTour::EulerTour(n : Int32) -> EulerTour {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   {
     adj,
     entry: Array::make(n, 0),
@@ -57,7 +57,7 @@ fn EulerTour::EulerTour(n : Int) -> EulerTour {
 
 ///|
 /// Add an undirected edge between nodes `u` and `v`.
-fn EulerTour::add_edge(self : EulerTour, u : Int, v : Int) -> Unit {
+fn EulerTour::add_edge(self : EulerTour, u : Int32, v : Int32) -> Unit {
   self.adj[u].push(v)
   self.adj[v].push(u)
 }
@@ -67,7 +67,7 @@ fn EulerTour::add_edge(self : EulerTour, u : Int, v : Int) -> Unit {
 ///
 /// Resets the timer and tour sequence, then runs a recursive DFS from
 /// `root` to populate `entry`, `exit`, `tour`, `depth`, and `parent`.
-fn EulerTour::build(self : EulerTour, root : Int) -> Unit {
+fn EulerTour::build(self : EulerTour, root : Int32) -> Unit {
   self.timer = 0
   self.tour.clear()
   self.dfs(root, -1, 0)
@@ -80,7 +80,7 @@ fn EulerTour::build(self : EulerTour, root : Int) -> Unit {
 /// - `u`  – current node
 /// - `p`  – parent node (`-1` at the root)
 /// - `d`  – depth of `u` (root is 0)
-fn EulerTour::dfs(self : EulerTour, u : Int, p : Int, d : Int) -> Unit {
+fn EulerTour::dfs(self : EulerTour, u : Int32, p : Int32, d : Int32) -> Unit {
   self.parent[u] = p
   self.depth[u] = d
   self.entry[u] = self.timer
@@ -97,14 +97,14 @@ fn EulerTour::dfs(self : EulerTour, u : Int, p : Int, d : Int) -> Unit {
 ///|
 /// Return the half-open interval `[entry[v], exit[v])` that covers the
 /// subtree of `v` in the tour array.
-fn EulerTour::subtree_range(self : EulerTour, v : Int) -> (Int, Int) {
+fn EulerTour::subtree_range(self : EulerTour, v : Int32) -> (Int32, Int32) {
   (self.entry[v], self.exit[v])
 }
 
 ///|
 /// Return the number of nodes in the subtree rooted at `v`
 /// (including `v` itself).
-fn EulerTour::subtree_size(self : EulerTour, v : Int) -> Int {
+fn EulerTour::subtree_size(self : EulerTour, v : Int32) -> Int32 {
   self.exit[v] - self.entry[v]
 }
 
@@ -112,13 +112,13 @@ fn EulerTour::subtree_size(self : EulerTour, v : Int) -> Int {
 /// Return `true` if `u` is an ancestor of `v` in the rooted tree.
 ///
 /// A node is considered an ancestor of itself.
-fn EulerTour::is_ancestor(self : EulerTour, u : Int, v : Int) -> Bool {
+fn EulerTour::is_ancestor(self : EulerTour, u : Int32, v : Int32) -> Bool {
   self.entry[u] <= self.entry[v] && self.exit[v] <= self.exit[u]
 }
 
 ///|
 /// Return an array of all node IDs in the subtree of `v`, in tour order.
-fn EulerTour::get_subtree(self : EulerTour, v : Int) -> Array[Int] {
+fn EulerTour::get_subtree(self : EulerTour, v : Int32) -> Array[Int32] {
   let start = self.entry[v]
   let end = self.exit[v]
   [
@@ -140,11 +140,11 @@ fn EulerTour::get_subtree(self : EulerTour, v : Int) -> Array[Int] {
 /// - `depth`  – depth of each node; the root has depth 0
 /// - `parent` – parent of each node; the root's parent is `-1`
 pub struct EulerTourInfo {
-  entry : Array[Int]
-  exit : Array[Int]
-  tour : Array[Int]
-  depth : Array[Int]
-  parent : Array[Int]
+  entry : Array[Int32]
+  exit : Array[Int32]
+  tour : Array[Int32]
+  depth : Array[Int32]
+  parent : Array[Int32]
 }
 
 ///|
@@ -161,9 +161,9 @@ pub struct EulerTourInfo {
 ///
 /// Time: O(n).  Space: O(n).
 pub fn build_euler_tour(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-  root : Int,
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+  root : Int32,
 ) -> EulerTourInfo {
   if n <= 0 {
     return { entry: [], exit: [], tour: [], depth: [], parent: [], }
@@ -195,10 +195,10 @@ pub fn build_euler_tour(
 ///
 /// Returns `(entry, exit, tour)` – all arrays of length `n`.
 pub fn euler_tour(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-  root : Int,
-) -> (Array[Int], Array[Int], Array[Int]) {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+  root : Int32,
+) -> (Array[Int32], Array[Int32], Array[Int32]) {
   let info = build_euler_tour(n, edges, root)
   (info.entry, info.exit, info.tour)
 }
@@ -207,7 +207,7 @@ pub fn euler_tour(
 /// Return the DFS entry time of node `v`.
 ///
 /// Returns `-1` if `v` is out of bounds.
-pub fn EulerTourInfo::entry(self : EulerTourInfo, v : Int) -> Int {
+pub fn EulerTourInfo::entry(self : EulerTourInfo, v : Int32) -> Int32 {
   if v < 0 || v >= self.entry.length() {
     -1
   } else {
@@ -222,7 +222,7 @@ pub fn EulerTourInfo::entry(self : EulerTourInfo, v : Int) -> Int {
 /// `tour[entry[v]..exit[v]]` contains exactly the nodes of `v`'s subtree.
 ///
 /// Returns `-1` if `v` is out of bounds.
-pub fn EulerTourInfo::exit(self : EulerTourInfo, v : Int) -> Int {
+pub fn EulerTourInfo::exit(self : EulerTourInfo, v : Int32) -> Int32 {
   if v < 0 || v >= self.exit.length() {
     -1
   } else {
@@ -236,7 +236,7 @@ pub fn EulerTourInfo::exit(self : EulerTourInfo, v : Int) -> Int {
 ///
 /// Computed as `exit[v] - entry[v]` in O(1).
 /// Returns 0 if `v` is out of bounds.
-pub fn EulerTourInfo::subtree_size(self : EulerTourInfo, v : Int) -> Int {
+pub fn EulerTourInfo::subtree_size(self : EulerTourInfo, v : Int32) -> Int32 {
   if v < 0 || v >= self.entry.length() {
     0
   } else {
@@ -254,8 +254,8 @@ pub fn EulerTourInfo::subtree_size(self : EulerTourInfo, v : Int) -> Int {
 /// Returns `false` if either index is out of bounds.
 pub fn EulerTourInfo::is_ancestor(
   self : EulerTourInfo,
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
 ) -> Bool {
   if u < 0 || v < 0 || u >= self.entry.length() || v >= self.entry.length() {
     false
@@ -269,7 +269,7 @@ pub fn EulerTourInfo::is_ancestor(
 ///
 /// Each node appears exactly once.  The position of node `u` in this array
 /// is `entry[u]`.
-pub fn EulerTourInfo::tour(self : EulerTourInfo) -> Array[Int] {
+pub fn EulerTourInfo::tour(self : EulerTourInfo) -> Array[Int32] {
   self.tour
 }
 
@@ -280,8 +280,8 @@ pub fn EulerTourInfo::tour(self : EulerTourInfo) -> Array[Int] {
 /// Returns an empty array if `v` is out of bounds.
 pub fn EulerTourInfo::subtree_nodes(
   self : EulerTourInfo,
-  v : Int,
-) -> Array[Int] {
+  v : Int32,
+) -> Array[Int32] {
   if v < 0 || v >= self.entry.length() {
     return []
   }
@@ -303,18 +303,18 @@ pub fn EulerTourInfo::subtree_nodes(
 /// producing a sequence of length `2n - 1`.  A sparse table over the depths
 /// in this sequence enables O(1) LCA queries after O(n log n) preprocessing.
 priv struct EulerTourLCA {
-  adj : Array[Array[Int]]
-  first : Array[Int] // First occurrence in tour
-  euler : Array[Int] // Euler tour (with revisits)
-  depth : Array[Int] // Depth at each position in euler tour
-  mut sparse : Array[Array[Int]] // Sparse table for RMQ
-  log : Array[Int]
+  adj : Array[Array[Int32]]
+  first : Array[Int32] // First occurrence in tour
+  euler : Array[Int32] // Euler tour (with revisits)
+  depth : Array[Int32] // Depth at each position in euler tour
+  mut sparse : Array[Array[Int32]] // Sparse table for RMQ
+  log : Array[Int32]
 }
 
 ///|
 /// Allocate a fresh `EulerTourLCA` for a tree with `n` nodes.
-fn EulerTourLCA::EulerTourLCA(n : Int) -> EulerTourLCA {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+fn EulerTourLCA::EulerTourLCA(n : Int32) -> EulerTourLCA {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   {
     adj,
     first: Array::make(n, -1),
@@ -327,7 +327,7 @@ fn EulerTourLCA::EulerTourLCA(n : Int) -> EulerTourLCA {
 
 ///|
 /// Add an undirected edge between nodes `u` and `v`.
-fn EulerTourLCA::add_edge(self : EulerTourLCA, u : Int, v : Int) -> Unit {
+fn EulerTourLCA::add_edge(self : EulerTourLCA, u : Int32, v : Int32) -> Unit {
   self.adj[u].push(v)
   self.adj[v].push(u)
 }
@@ -341,9 +341,9 @@ fn EulerTourLCA::add_edge(self : EulerTourLCA, u : Int, v : Int) -> Unit {
 /// - `d` – depth of `u`
 fn EulerTourLCA::dfs_euler(
   self : EulerTourLCA,
-  u : Int,
-  p : Int,
-  d : Int,
+  u : Int32,
+  p : Int32,
+  d : Int32,
 ) -> Unit {
   self.first[u] = self.euler.length()
   self.euler.push(u)
@@ -364,7 +364,7 @@ fn EulerTourLCA::dfs_euler(
 /// with ties broken in favour of the left entry.
 ///
 /// Time: O(n log n).  Space: O(n log n).
-fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
+fn EulerTourLCA::build(self : EulerTourLCA, root : Int32) -> Unit {
   self.euler.clear()
   self.depth.clear()
   self.dfs_euler(root, -1, 0)
@@ -407,7 +407,7 @@ fn EulerTourLCA::build(self : EulerTourLCA, root : Int) -> Unit {
 /// occurrences of `u` and `v`, using the precomputed sparse table.
 ///
 /// Time: O(1) after `build`.
-fn EulerTourLCA::lca(self : EulerTourLCA, u : Int, v : Int) -> Int {
+fn EulerTourLCA::lca(self : EulerTourLCA, u : Int32, v : Int32) -> Int32 {
   let left = self.first[u]
   let right = self.first[v]
   let (l, r) = if left <= right { (left, right) } else { (right, left) }
@@ -427,7 +427,7 @@ fn EulerTourLCA::lca(self : EulerTourLCA, u : Int, v : Int) -> Int {
 /// Return the number of edges on the path between nodes `u` and `v`.
 ///
 /// Uses the LCA to compute `depth[u] + depth[v] - 2 * depth[lca(u, v)]`.
-fn EulerTourLCA::distance(self : EulerTourLCA, u : Int, v : Int) -> Int {
+fn EulerTourLCA::distance(self : EulerTourLCA, u : Int32, v : Int32) -> Int32 {
   let ancestor = self.lca(u, v)
   self.depth[self.first[u]] +
   self.depth[self.first[v]] -

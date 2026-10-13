@@ -25,8 +25,8 @@
 /// }
 /// ```
 pub(all) struct Line {
-  m : Int
-  b : Int
+  m : Int32
+  b : Int32
 } derive(Debug)
 
 ///|
@@ -59,12 +59,12 @@ pub enum Node {
 } derive(Debug)
 
 ///|
-fn eval(line : Line, x : Int) -> Int {
+fn eval(line : Line, x : Int32) -> Int32 {
   line.m * x + line.b
 }
 
 ///|
-fn line_count(t : Node) -> Int {
+fn line_count(t : Node) -> Int32 {
   match t {
     Empty => 0
     Node(line=_, left=l, right=r) => 1 + line_count(l) + line_count(r)
@@ -72,7 +72,7 @@ fn line_count(t : Node) -> Int {
 }
 
 ///|
-fn insert_line(node : Node, line : Line, l : Int, r : Int) -> Node {
+fn insert_line(node : Node, line : Line, l : Int32, r : Int32) -> Node {
   match node {
     Empty => Node(line~, left=Empty, right=Empty)
     Node(line=cur, left~, right~) => {
@@ -102,19 +102,19 @@ pub fn empty() -> Node {
 
 ///|
 /// Return the number of lines stored in the tree.
-pub fn size(tree : Node) -> Int {
+pub fn size(tree : Node) -> Int32 {
   line_count(tree)
 }
 
 ///|
 /// Insert a line over domain [l, r) and return the new tree.
-pub fn insert(tree : Node, line : Line, l : Int, r : Int) -> Node {
+pub fn insert(tree : Node, line : Line, l : Int32, r : Int32) -> Node {
   insert_line(tree, line, l, r)
 }
 
 ///|
 /// Query the minimum value at x over domain [l, r).
-pub fn query(node : Node, x : Int, l : Int, r : Int) -> Int {
+pub fn query(node : Node, x : Int32, l : Int32, r : Int32) -> Int32 {
   match node {
     Empty => 0x3fffffff
     Node(line=ln, left~, right~) => {
@@ -143,7 +143,7 @@ pub fn query(node : Node, x : Int, l : Int, r : Int) -> Int {
 
 ///|
 /// Build a Li Chao tree by inserting lines in order.
-pub fn from_array(lines : ArrayView[Line], l : Int, r : Int) -> Node {
+pub fn from_array(lines : ArrayView[Line], l : Int32, r : Int32) -> Node {
   for line in lines; tree = Empty {
     continue insert(tree, line, l, r)
   } nobreak {

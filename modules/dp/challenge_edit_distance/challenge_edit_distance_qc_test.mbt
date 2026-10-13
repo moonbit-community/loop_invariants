@@ -3,13 +3,13 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
-fn min2(a : Int, b : Int) -> Int {
+fn min2(a : Int32, b : Int32) -> Int32 {
   if a < b {
     a
   } else {
@@ -18,7 +18,7 @@ fn min2(a : Int, b : Int) -> Int {
 }
 
 ///|
-fn max2(a : Int, b : Int) -> Int {
+fn max2(a : Int32, b : Int32) -> Int32 {
   if a > b {
     a
   } else {
@@ -54,9 +54,9 @@ impl @quickcheck.Shrink for Str with fn shrink(self) {
 
 ///|
 /// Recursive definition of Levenshtein distance on suffixes, memoised.
-fn ref_dist(a : Array[Char], b : Array[Char]) -> Int {
-  let memo : Map[(Int, Int), Int] = Map([])
-  fn go(i : Int, j : Int) -> Int {
+fn ref_dist(a : Array[Char], b : Array[Char]) -> Int32 {
+  let memo : Map[(Int32, Int32), Int32] = Map([])
+  fn go(i : Int32, j : Int32) -> Int32 {
     if i == a.length() {
       return b.length() - j
     }
@@ -83,7 +83,7 @@ fn ref_dist(a : Array[Char], b : Array[Char]) -> Int {
 }
 
 ///|
-fn d(a : Str, b : Str) -> Int {
+fn d(a : Str, b : Str) -> Int32 {
   @challenge_edit_distance.edit_distance(a.cs[:], b.cs[:])
 }
 

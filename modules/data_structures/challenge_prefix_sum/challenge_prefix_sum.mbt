@@ -5,8 +5,8 @@
 
 ///|
 fn build_prefix_sum_fixed(
-  arr : FixedArray[Int],
-) -> FixedArray[Int] where {
+  arr : FixedArray[Int32],
+) -> FixedArray[Int32] where {
   proof_ensure: result => prefix_sum_ok(arr, result),
 } {
   let n = arr.length()
@@ -36,13 +36,13 @@ fn build_prefix_sum_fixed(
 
 ///|
 /// Build prefix sums where prefix[i] = sum(arr[0..i)).
-pub fn build_prefix_sum(arr : ArrayView[Int]) -> Array[Int] {
+pub fn build_prefix_sum(arr : ArrayView[Int32]) -> Array[Int32] {
   let fixed = FixedArray::make(arr.length(), 0)
   for i, val in arr {
     fixed[i] = val
   }
   let prefix_fixed = build_prefix_sum_fixed(fixed)
-  let prefix : Array[Int] = Array::make(prefix_fixed.length(), 0)
+  let prefix : Array[Int32] = Array::make(prefix_fixed.length(), 0)
   for i in 0..<prefix_fixed.length() {
     prefix[i] = prefix_fixed[i]
   }
@@ -51,7 +51,7 @@ pub fn build_prefix_sum(arr : ArrayView[Int]) -> Array[Int] {
 
 ///|
 /// Range sum for inclusive bounds [l, r] using prefix sums.
-pub fn range_sum(prefix : ArrayView[Int], l : Int, r : Int) -> Int {
+pub fn range_sum(prefix : ArrayView[Int32], l : Int32, r : Int32) -> Int32 {
   if l < 0 || r < l || r + 1 >= prefix.length() {
     return 0
   }
@@ -60,7 +60,7 @@ pub fn range_sum(prefix : ArrayView[Int], l : Int, r : Int) -> Int {
 
 ///|
 test "prefix_sum" {
-  let arr : Array[Int] = [3, -1, 4, 2]
+  let arr : Array[Int32] = [3, -1, 4, 2]
   let prefix = build_prefix_sum(arr)
   @debug.assert_eq(prefix, [0, 3, 2, 6, 8])
   @debug.assert_eq(range_sum(prefix, 0, 0), 3)

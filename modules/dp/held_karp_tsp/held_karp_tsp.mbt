@@ -91,7 +91,7 @@ let hk_inf : Int64 = 1000000000000000000L
 ///   assert_eq(@held_karp_tsp.shortest_tour(3, cost[:]), Some(6L))
 /// }
 /// ```
-pub fn shortest_tour(n : Int, cost : ArrayView[Array[Int64]]) -> Int64? {
+pub fn shortest_tour(n : Int32, cost : ArrayView[Array[Int64]]) -> Int64? {
   if n <= 0 || n > 20 {
     return None
   }

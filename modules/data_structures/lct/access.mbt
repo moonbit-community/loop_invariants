@@ -81,7 +81,7 @@
 ///   - Path from v to tree root is one continuous preferred path
 ///   - v is at the root of this path's splay tree
 ///   - v has no right child (deepest node on preferred path)
-fn LinkCutTree::access(self : LinkCutTree, v : Int) -> Unit {
+fn LinkCutTree::access(self : LinkCutTree, v : Int32) -> Unit {
   // Step 1: Splay v in its current splay tree
   self.splay(v)
 

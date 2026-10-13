@@ -192,7 +192,7 @@ Edges: 0->1, 1->2, 2->3, 1->3
 ```mbt check
 ///|
 test "dominator tree example" {
-  let edges : Array[(Int, Int)] = [
+  let edges : Array[(Int32, Int32)] = [
     (0, 1),
     (1, 2),
     (2, 3),
@@ -211,7 +211,7 @@ test "dominator tree example" {
 ///|
 test "dominator diamond" {
   // Diamond: 0 -> 1,2 -> 3
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
   let dom = @dominator_tree.build_dominator_tree(4, edges, 0).unwrap()
   debug_inspect(dom.idom[3], content="0")
   // 3's idom is 0, not 1 or 2 (both paths converge)
@@ -221,7 +221,7 @@ test "dominator diamond" {
 ```mbt check
 ///|
 test "dominator invalid root" {
-  let edges : Array[(Int, Int)] = [(0, 1)]
+  let edges : Array[(Int32, Int32)] = [(0, 1)]
   debug_inspect(
     @dominator_tree.build_dominator_tree(2, edges, -1),
     content="None",

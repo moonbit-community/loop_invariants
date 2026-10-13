@@ -105,7 +105,7 @@ fn is_bad(l1 : Line, l2 : Line, l3 : Line) -> Bool {
 /// ```
 pub struct ConvexHullTrick {
   lines : Array[Line]
-  mut head : Int
+  mut head : Int32
 }
 
 ///|

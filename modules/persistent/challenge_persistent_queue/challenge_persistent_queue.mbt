@@ -24,7 +24,7 @@ enum Stack[T] {
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let q : @challenge_persistent_queue.Queue[Int] = @challenge_persistent_queue.empty()
+///   let q : @challenge_persistent_queue.Queue[Int32] = @challenge_persistent_queue.empty()
 ///   let q = @challenge_persistent_queue.enqueue(q, 1)
 ///   let q = @challenge_persistent_queue.enqueue(q, 2)
 ///   guard @challenge_persistent_queue.dequeue(q) is Some((x, _)) else {
@@ -45,7 +45,7 @@ pub fn[T] empty() -> Queue[T] {
 }
 
 ///|
-fn[T] size_stack(s : Stack[T]) -> Int {
+fn[T] size_stack(s : Stack[T]) -> Int32 {
   match s {
     Nil => 0
     Cons(head=_, tail~) => 1 + size_stack(tail)
@@ -54,7 +54,7 @@ fn[T] size_stack(s : Stack[T]) -> Int {
 
 ///|
 /// Return the number of elements in the queue.
-pub fn[T] size(q : Queue[T]) -> Int {
+pub fn[T] size(q : Queue[T]) -> Int32 {
   size_stack(q.front) + size_stack(q.back)
 }
 

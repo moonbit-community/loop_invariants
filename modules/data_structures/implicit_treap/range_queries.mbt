@@ -35,8 +35,8 @@
 /// ```
 pub fn ImplicitTreap::range_sum(
   self : ImplicitTreap,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if l >= r || l < 0 || r > self.size() {
     return 0L
@@ -58,8 +58,8 @@ pub fn ImplicitTreap::range_sum(
 /// Query minimum in range [l, r).
 pub fn ImplicitTreap::range_min(
   self : ImplicitTreap,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64? {
   if l >= r || l < 0 || r > self.size() {
     return None
@@ -75,8 +75,8 @@ pub fn ImplicitTreap::range_min(
 /// Query maximum in range [l, r).
 pub fn ImplicitTreap::range_max(
   self : ImplicitTreap,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64? {
   if l >= r || l < 0 || r > self.size() {
     return None
@@ -114,7 +114,11 @@ pub fn ImplicitTreap::range_max(
 ///   Before: [1, 2, 3, 4, 5]
 ///   After:  [1, 4, 3, 2, 5]  (indices 1-3 reversed)
 /// ```
-pub fn ImplicitTreap::reverse(self : ImplicitTreap, l : Int, r : Int) -> Unit {
+pub fn ImplicitTreap::reverse(
+  self : ImplicitTreap,
+  l : Int32,
+  r : Int32,
+) -> Unit {
   if l >= r || l < 0 || r > self.size() {
     return
   }

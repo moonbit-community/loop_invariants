@@ -32,8 +32,8 @@
 /// Node in persistent segment tree
 /// Nodes are never modified - updates create new nodes
 priv struct PSTNode {
-  left : Int // Left child index (-1 if leaf)
-  right : Int // Right child index (-1 if leaf)
+  left : Int32 // Left child index (-1 if leaf)
+  right : Int32 // Right child index (-1 if leaf)
   sum : Int64 // Aggregate value (sum in this case)
 }
 
@@ -43,7 +43,7 @@ fn PSTNode::leaf(value : Int64) -> PSTNode {
 }
 
 ///|
-fn PSTNode::internal(left : Int, right : Int, sum : Int64) -> PSTNode {
+fn PSTNode::internal(left : Int32, right : Int32, sum : Int64) -> PSTNode {
   { left, right, sum, }
 }
 
@@ -51,8 +51,8 @@ fn PSTNode::internal(left : Int, right : Int, sum : Int64) -> PSTNode {
 /// Persistent Segment Tree
 priv struct PersistentSegTree {
   nodes : Array[PSTNode] // All nodes (never deleted, only added)
-  roots : Array[Int] // Root index for each version
-  n : Int // Array size
+  roots : Array[Int32] // Root index for each version
+  n : Int32 // Array size
 }
 
 ///|
@@ -68,9 +68,9 @@ fn PersistentSegTree::build(arr : Array[Int64]) -> PersistentSegTree {
   fn build_rec(
     arr : Array[Int64],
     nodes : Array[PSTNode],
-    lo : Int,
-    hi : Int,
-  ) -> Int {
+    lo : Int32,
+    hi : Int32,
+  ) -> Int32 {
     if lo == hi {
       // Leaf node
       let idx = nodes.length()
@@ -93,7 +93,7 @@ fn PersistentSegTree::build(arr : Array[Int64]) -> PersistentSegTree {
 
 ///|
 /// Create empty persistent segment tree of given size
-fn PersistentSegTree::PersistentSegTree(n : Int) -> PersistentSegTree {
+fn PersistentSegTree::PersistentSegTree(n : Int32) -> PersistentSegTree {
   if n == 0 {
     return { nodes: [], roots: [], n: 0, }
   }
@@ -110,10 +110,10 @@ fn PersistentSegTree::PersistentSegTree(n : Int) -> PersistentSegTree {
 /// Returns index of new version
 fn PersistentSegTree::update(
   self : PersistentSegTree,
-  ver : Int,
-  idx : Int,
+  ver : Int32,
+  idx : Int32,
   value : Int64,
-) -> Int {
+) -> Int32 {
   if ver < 0 || ver >= self.roots.length() || idx < 0 || idx >= self.n {
     return ver // Invalid, return same version
   }
@@ -128,12 +128,12 @@ fn PersistentSegTree::update(
 /// Recursive update helper - creates new nodes on path to updated position
 fn PersistentSegTree::update_rec(
   self : PersistentSegTree,
-  node : Int,
-  lo : Int,
-  hi : Int,
-  idx : Int,
+  node : Int32,
+  lo : Int32,
+  hi : Int32,
+  idx : Int32,
   value : Int64,
-) -> Int {
+) -> Int32 {
   if lo == hi {
     // Leaf - create new leaf with updated value
     let new_idx = self.nodes.length()
@@ -167,9 +167,9 @@ fn PersistentSegTree::update_rec(
 /// Query sum in range [l, r] for version ver
 fn PersistentSegTree::query(
   self : PersistentSegTree,
-  ver : Int,
-  l : Int,
-  r : Int,
+  ver : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if ver < 0 || ver >= self.roots.length() || l > r || l < 0 || r >= self.n {
     return 0L
@@ -181,11 +181,11 @@ fn PersistentSegTree::query(
 /// Recursive query helper
 fn PersistentSegTree::query_rec(
   self : PersistentSegTree,
-  node : Int,
-  lo : Int,
-  hi : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  lo : Int32,
+  hi : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   // Loop invariant maintained through recursion:
   // - [lo, hi] is the range covered by node
@@ -219,7 +219,7 @@ fn PersistentSegTree::query_rec(
 
 ///|
 /// Get number of versions
-fn PersistentSegTree::version_count(self : PersistentSegTree) -> Int {
+fn PersistentSegTree::version_count(self : PersistentSegTree) -> Int32 {
   self.roots.length()
 }
 
@@ -227,15 +227,15 @@ fn PersistentSegTree::version_count(self : PersistentSegTree) -> Int {
 /// Get value at position idx in version ver
 fn PersistentSegTree::get(
   self : PersistentSegTree,
-  ver : Int,
-  idx : Int,
+  ver : Int32,
+  idx : Int32,
 ) -> Int64 {
   self.query(ver, idx, idx)
 }
 
 ///|
 /// Create a copy of version ver (useful for branching history)
-fn PersistentSegTree::fork(self : PersistentSegTree, ver : Int) -> Int {
+fn PersistentSegTree::fork(self : PersistentSegTree, ver : Int32) -> Int32 {
   if ver < 0 || ver >= self.roots.length() {
     return -1
   }
@@ -344,24 +344,24 @@ test "persistent segment tree fork" {
 /// Uses coordinate compression and difference between versions
 priv struct KthSmallestTree {
   pst : PersistentSegTree
-  sorted_values : Array[Int] // Coordinate compressed values
-  n : Int
+  sorted_values : Array[Int32] // Coordinate compressed values
+  n : Int32
 }
 
 ///|
 /// Build k-th smallest tree from array
 /// Each position i creates version i with values [0..i] inserted
-fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
+fn KthSmallestTree::build(arr : Array[Int32]) -> KthSmallestTree {
   if arr.length() == 0 {
     return { pst: PersistentSegTree(0), sorted_values: [], n: 0, }
   }
 
   // Coordinate compression
-  let sorted : Array[Int] = arr.copy()
+  let sorted : Array[Int32] = arr.copy()
   sorted.sort()
 
   // Remove duplicates
-  let unique : Array[Int] = [
+  let unique : Array[Int32] = [
     for i, val in sorted if i == 0 || val != sorted[i - 1] => val
   ]
   let m = unique.length()
@@ -387,7 +387,7 @@ fn KthSmallestTree::build(arr : Array[Int]) -> KthSmallestTree {
 
 ///|
 /// Binary search for value in sorted array
-fn binary_search(arr : Array[Int], value : Int) -> Int {
+fn binary_search(arr : Array[Int32], value : Int32) -> Int32 {
   for lo = 0, hi = arr.length() - 1; lo <= hi; {
     let mid = (lo + hi) / 2
     if arr[mid] == value {
@@ -420,10 +420,10 @@ fn binary_search(arr : Array[Int], value : Int) -> Int {
 /// Find k-th smallest in range [l, r] (1-indexed k)
 fn KthSmallestTree::kth_smallest(
   self : KthSmallestTree,
-  l : Int,
-  r : Int,
-  k : Int,
-) -> Int? {
+  l : Int32,
+  r : Int32,
+  k : Int32,
+) -> Int32? {
   if l < 0 || r >= self.n || l > r || k <= 0 {
     return None
   }
@@ -445,12 +445,12 @@ fn KthSmallestTree::kth_smallest(
 /// Recursive k-th smallest using two-version difference
 fn KthSmallestTree::kth_rec(
   self : KthSmallestTree,
-  left_node : Int,
-  right_node : Int,
-  lo : Int,
-  hi : Int,
-  k : Int,
-) -> Int? {
+  left_node : Int32,
+  right_node : Int32,
+  lo : Int32,
+  hi : Int32,
+  k : Int32,
+) -> Int32? {
   if lo == hi {
     return Some(self.sorted_values[lo])
   }
@@ -516,7 +516,7 @@ priv struct PersistentArray {
 
 ///|
 fn PersistentArray::PersistentArray(
-  n : Int,
+  n : Int32,
   default_value : Int64,
 ) -> PersistentArray {
   let arr : Array[Int64] = Array::make(n, default_value)
@@ -531,8 +531,8 @@ fn PersistentArray::from_array(arr : Array[Int64]) -> PersistentArray {
 ///|
 fn PersistentArray::get(
   self : PersistentArray,
-  version : Int,
-  index : Int,
+  version : Int32,
+  index : Int32,
 ) -> Int64 {
   self.pst.get(version, index)
 }
@@ -540,15 +540,15 @@ fn PersistentArray::get(
 ///|
 fn PersistentArray::set(
   self : PersistentArray,
-  version : Int,
-  index : Int,
+  version : Int32,
+  index : Int32,
   value : Int64,
-) -> Int {
+) -> Int32 {
   self.pst.update(version, index, value)
 }
 
 ///|
-fn PersistentArray::version_count(self : PersistentArray) -> Int {
+fn PersistentArray::version_count(self : PersistentArray) -> Int32 {
   self.pst.version_count()
 }
 

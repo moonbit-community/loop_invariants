@@ -55,7 +55,7 @@ collecting SCCs in the second pass.
 ///|
 test "scc kosaraju basic" {
   let n = 4
-  let edges : ReadOnlyArray[(Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32)] = [
     (0, 1),
     (1, 0),
     (1, 2),
@@ -78,7 +78,7 @@ an id.
 ///|
 test "scc kosaraju single" {
   let n = 3
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0)]
   let comp = @challenge_scc_kosaraju.scc_kosaraju(n, edges)
   debug_inspect(comp, content="[0, 0, 0]")
 }
@@ -92,7 +92,7 @@ test "scc kosaraju single" {
 ///|
 test "scc kosaraju dag" {
   let n = 4
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3)]
   let comp = @challenge_scc_kosaraju.scc_kosaraju(n, edges)
   debug_inspect(comp, content="[0, 1, 2, 3]")
 }

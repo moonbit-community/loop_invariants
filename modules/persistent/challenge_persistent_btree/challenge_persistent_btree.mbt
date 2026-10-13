@@ -45,7 +45,7 @@ fn[T] is_leaf(node : BNode[T]) -> Bool {
 }
 
 ///|
-fn[T] node_size(node : BNode[T]) -> Int {
+fn[T] node_size(node : BNode[T]) -> Int32 {
   if is_leaf(node) {
     node.keys.length()
   } else {
@@ -58,7 +58,7 @@ fn[T] node_size(node : BNode[T]) -> Int {
 }
 
 ///|
-fn[T] tree_size(t : Tree[T]) -> Int {
+fn[T] tree_size(t : Tree[T]) -> Int32 {
   match t {
     Empty => 0
     Node(node=n) => node_size(n)
@@ -66,7 +66,7 @@ fn[T] tree_size(t : Tree[T]) -> Int {
 }
 
 ///|
-fn[T] insert_key(keys : Array[T], pos : Int, key : T) -> Array[T] {
+fn[T] insert_key(keys : Array[T], pos : Int32, key : T) -> Array[T] {
   let out = []
   for i, item in keys {
     if i == pos {
@@ -83,7 +83,7 @@ fn[T] insert_key(keys : Array[T], pos : Int, key : T) -> Array[T] {
 ///|
 fn[T] insert_children(
   children : Array[BNode[T]],
-  pos : Int,
+  pos : Int32,
   left : BNode[T],
   right : BNode[T],
 ) -> Array[BNode[T]] {
@@ -104,7 +104,7 @@ fn[T] insert_children(
 }
 
 ///|
-fn[T : Compare] find_pos(keys : Array[T], key : T) -> (Int, Bool) {
+fn[T : Compare] find_pos(keys : Array[T], key : T) -> (Int32, Bool) {
   for i = 0 {
     if i >= keys.length() {
       break (keys.length(), false)
@@ -194,7 +194,7 @@ pub fn[T] empty() -> Tree[T] {
 
 ///|
 /// Return the number of keys in the tree.
-pub fn[T] size(t : Tree[T]) -> Int {
+pub fn[T] size(t : Tree[T]) -> Int32 {
   tree_size(t)
 }
 

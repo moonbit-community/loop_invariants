@@ -35,10 +35,10 @@
 ///             edges, encoding the cancellation of forward flow)
 /// - `rev`  -- index of the reverse edge in `adj[to]`
 pub struct Edge {
-  to : Int
+  to : Int32
   cap : Int64
   mut flow : Int64
-  rev : Int
+  rev : Int32
 }
 
 ///|
@@ -63,11 +63,11 @@ pub struct Edge {
 /// - `in_active` -- whether a vertex is already present in the active queue,
 ///                  preventing duplicate enqueuing
 pub struct PushRelabel {
-  n : Int
+  n : Int32
   adj : Array[Array[Edge]]
-  height : Array[Int]
+  height : Array[Int32]
   excess : Array[Int64]
-  next_edge : Array[Int]
+  next_edge : Array[Int32]
   in_active : Array[Bool]
 }
 
@@ -85,7 +85,7 @@ pub struct PushRelabel {
 /// ```mbt nocheck
 /// let pr = PushRelabel(4)
 /// ```
-pub fn PushRelabel::PushRelabel(n : Int) -> PushRelabel {
+pub fn PushRelabel::PushRelabel(n : Int32) -> PushRelabel {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   {
     n,
@@ -122,8 +122,8 @@ pub fn PushRelabel::PushRelabel(n : Int) -> PushRelabel {
 /// ```
 pub fn PushRelabel::add_edge(
   self : PushRelabel,
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
   cap : Int64,
 ) -> Unit {
   let rev_u = self.adj[v].length()
@@ -159,8 +159,8 @@ pub fn PushRelabel::add_edge(
 /// ```
 pub fn PushRelabel::add_undirected_edge(
   self : PushRelabel,
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
   cap : Int64,
 ) -> Unit {
   let rev_u = self.adj[v].length()
@@ -191,10 +191,10 @@ fn min_i64(a : Int64, b : Int64) -> Int64 {
 /// redundantly.
 fn PushRelabel::enqueue(
   self : PushRelabel,
-  v : Int,
-  source : Int,
-  sink : Int,
-  active : Array[Int],
+  v : Int32,
+  source : Int32,
+  sink : Int32,
+  active : Array[Int32],
 ) -> Unit {
   if v != source && v != sink && self.excess[v] > 0L && !self.in_active[v] {
     active.push(v)
@@ -217,11 +217,11 @@ fn PushRelabel::enqueue(
 /// Does nothing when the edge is already saturated or `u` has no excess.
 fn PushRelabel::push_edge(
   self : PushRelabel,
-  u : Int,
-  idx : Int,
-  active : Array[Int],
-  source : Int,
-  sink : Int,
+  u : Int32,
+  idx : Int32,
+  active : Array[Int32],
+  source : Int32,
+  sink : Int32,
 ) -> Unit {
   let v = self.adj[u][idx].to
   let residual = self.adj[u][idx].cap - self.adj[u][idx].flow
@@ -252,7 +252,7 @@ fn PushRelabel::push_edge(
 /// residual edges the height is not changed (the node is isolated in the
 /// residual graph and its excess will eventually be pushed back to the source
 /// by the surrounding algorithm).
-fn PushRelabel::relabel(self : PushRelabel, u : Int) -> Unit {
+fn PushRelabel::relabel(self : PushRelabel, u : Int32) -> Unit {
   let min_height = for e in self.adj[u]; min_height = 1000000000 {
     if e.cap > e.flow && self.height[e.to] < min_height {
       continue self.height[e.to]
@@ -283,10 +283,10 @@ fn PushRelabel::relabel(self : PushRelabel, u : Int) -> Unit {
 /// under the current height of `u`.
 fn PushRelabel::discharge(
   self : PushRelabel,
-  u : Int,
-  active : Array[Int],
-  source : Int,
-  sink : Int,
+  u : Int32,
+  active : Array[Int32],
+  source : Int32,
+  sink : Int32,
 ) -> Unit {
   for steps = 0; self.excess[u] > 0L; steps = steps + 1 {
     if self.next_edge[u] < self.adj[u].length() {
@@ -359,8 +359,8 @@ fn PushRelabel::discharge(
 /// ```
 pub fn PushRelabel::max_flow(
   self : PushRelabel,
-  source : Int,
-  sink : Int,
+  source : Int32,
+  sink : Int32,
 ) -> Int64 {
   let n = self.n
   for i in 0..<n {
@@ -373,7 +373,7 @@ pub fn PushRelabel::max_flow(
     }
   }
   self.height[source] = n
-  let active : Array[Int] = []
+  let active : Array[Int32] = []
 
   // Preflow: saturate edges out of source.
   for i in 0..<self.adj[source].length() {

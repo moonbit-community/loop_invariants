@@ -179,7 +179,7 @@ This is exactly the pair we wanted, even though `P1` was not part of it.
 ```mbt check
 ///|
 test "suurballe basic example" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (1, 4, 1L),
     (0, 2, 1L),
@@ -209,7 +209,11 @@ test "suurballe basic example" {
 ```mbt check
 ///|
 test "suurballe returns None when no pair exists" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, 1L), (2, 3, 1L)]
+  let edges : Array[(Int32, Int32, Int64)] = [
+    (0, 1, 1L),
+    (1, 2, 1L),
+    (2, 3, 1L),
+  ]
   let result = @suurballe_disjoint_paths.suurballe_disjoint_paths(
     4, edges, 0, 3,
   )

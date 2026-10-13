@@ -33,7 +33,7 @@ const INF64 : Int64 = 4611686018427387903L
 /// edge weights along that sequence.
 pub(all) struct KPath {
   /// Ordered sequence of node indices from source to target.
-  nodes : Array[Int]
+  nodes : Array[Int32]
   /// Total weight of all edges along `nodes`.
   cost : Int64
 } derive(Debug)
@@ -43,7 +43,7 @@ pub(all) struct KPath {
 ///
 /// Used to identify which previously found paths share the same root as the
 /// current spur candidate, so that their outgoing edges can be blocked.
-fn has_prefix(path : Array[Int], prefix : Array[Int]) -> Bool {
+fn has_prefix(path : Array[Int32], prefix : Array[Int32]) -> Bool {
   if prefix.length() > path.length() {
     return false
   }
@@ -61,7 +61,7 @@ fn has_prefix(path : Array[Int], prefix : Array[Int]) -> Bool {
 ///
 /// Used as an equality predicate for node-sequence arrays where structural
 /// equality is needed but the arrays are heap-allocated.
-fn paths_equal(a : Array[Int], b : Array[Int]) -> Bool {
+fn paths_equal(a : Array[Int32], b : Array[Int32]) -> Bool {
   if a.length() != b.length() {
     return false
   }
@@ -79,7 +79,7 @@ fn paths_equal(a : Array[Int], b : Array[Int]) -> Bool {
 ///
 /// Used to prevent duplicate entries in the candidate set `B` and to skip
 /// candidates that are already recorded in the accepted set `A`.
-fn path_in_list(paths : Array[KPath], nodes : Array[Int]) -> Bool {
+fn path_in_list(paths : Array[KPath], nodes : Array[Int32]) -> Bool {
   for p in paths {
     if paths_equal(p.nodes, nodes) {
       return true
@@ -93,7 +93,7 @@ fn path_in_list(paths : Array[KPath], nodes : Array[Int]) -> Bool {
 ///
 /// Returns `-1` when `paths` is empty.  Used instead of a priority queue to
 /// pop the best candidate from the candidate set `B`.
-fn min_cost_index(paths : Array[KPath]) -> Int {
+fn min_cost_index(paths : Array[KPath]) -> Int32 {
   let (idx, _) = for i in 0..<paths.length(); idx = -1, best = INF64 {
     if paths[i].cost < best {
       continue i, paths[i].cost
@@ -111,7 +111,11 @@ fn min_cost_index(paths : Array[KPath]) -> Int {
 /// Called for every edge in the original graph before adding it to the
 /// temporary spur-search graph, so that edges that would recreate a previously
 /// accepted path with the same root prefix are suppressed.
-fn is_blocked_edge(blocked : Array[(Int, Int)], u : Int, v : Int) -> Bool {
+fn is_blocked_edge(
+  blocked : Array[(Int32, Int32)],
+  u : Int32,
+  v : Int32,
+) -> Bool {
   for edge in blocked {
     let (a, b) = edge
     if a == u && b == v {
@@ -128,10 +132,10 @@ fn is_blocked_edge(blocked : Array[(Int, Int)], u : Int, v : Int) -> Bool {
 /// non-negative weights) or if any endpoint is out of range `[0, n)`.
 /// Valid edges are stored as `(neighbor, weight)` pairs in `adj[u]`.
 fn build_adj(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
-) -> Array[Array[(Int, Int64)]]? {
-  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
+) -> Array[Array[(Int32, Int64)]]? {
+  let adj : Array[Array[(Int32, Int64)]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v, w) = edge
     if w < 0L {
@@ -151,9 +155,9 @@ fn build_adj(
 /// The minimum is taken because parallel edges are allowed; the algorithm
 /// always uses the cheapest option when computing root-path cost.
 fn min_edge_weight(
-  adj : Array[Array[(Int, Int64)]],
-  u : Int,
-  v : Int,
+  adj : Array[Array[(Int32, Int64)]],
+  u : Int32,
+  v : Int32,
 ) -> Int64? {
   if u < 0 || u >= adj.length() {
     return None
@@ -181,7 +185,10 @@ fn min_edge_weight(
 /// Returns `Some(total)` when every consecutive pair `(nodes[i], nodes[i+1])`
 /// has at least one edge in `adj`, or `None` if any hop is missing.
 /// Paths with a single node have cost `0`.
-fn path_cost(adj : Array[Array[(Int, Int64)]], nodes : Array[Int]) -> Int64? {
+fn path_cost(
+  adj : Array[Array[(Int32, Int64)]],
+  nodes : Array[Int32],
+) -> Int64? {
   if nodes.length() <= 1 {
     return Some(0L)
   }
@@ -204,8 +211,8 @@ fn path_cost(adj : Array[Array[(Int, Int64)]], nodes : Array[Int]) -> Int64? {
 ///
 /// The resulting slice becomes the "root path" used when computing spur
 /// candidates.  It always contains at least the source node.
-fn prefix_nodes(nodes : Array[Int], end_idx : Int) -> Array[Int] {
-  let prefix : Array[Int] = [ for i in 0..<=end_idx => nodes[i] ]
+fn prefix_nodes(nodes : Array[Int32], end_idx : Int32) -> Array[Int32] {
+  let prefix : Array[Int32] = [ for i in 0..<=end_idx => nodes[i] ]
   prefix
 }
 
@@ -215,8 +222,8 @@ fn prefix_nodes(nodes : Array[Int], end_idx : Int) -> Array[Int] {
 /// The last element of `root` is the spur node, which is the first element of
 /// `spur`, so it must not be duplicated.  The function therefore appends all
 /// of `root` except its last element, followed by the entirety of `spur`.
-fn combine_paths(root : Array[Int], spur : Array[Int]) -> Array[Int] {
-  let combined : Array[Int] = []
+fn combine_paths(root : Array[Int32], spur : Array[Int32]) -> Array[Int32] {
+  let combined : Array[Int32] = []
   if root.length() > 0 {
     for i in 0..<(root.length() - 1) {
       combined.push(root[i])
@@ -242,12 +249,12 @@ fn combine_paths(root : Array[Int], spur : Array[Int]) -> Array[Int] {
 /// Returns `None` when `source` or `target` is out of range, any edge weight
 /// is negative, or no path exists in the filtered graph.
 fn shortest_path_filtered(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
   blocked_nodes : Array[Bool],
-  blocked_edges : Array[(Int, Int)],
-  source : Int,
-  target : Int,
+  blocked_edges : Array[(Int32, Int32)],
+  source : Int32,
+  target : Int32,
 ) -> KPath? {
   if source < 0 || source >= n || target < 0 || target >= n {
     return None
@@ -324,7 +331,7 @@ fn shortest_path_filtered(
 ///
 /// ```mbt check
 /// test "yen k shortest paths" {
-///   let edges : Array[(Int, Int, Int64)] = [
+///   let edges : Array[(Int32, Int32, Int64)] = [
 ///     (0, 1, 1L),
 ///     (1, 3, 1L),
 ///     (0, 2, 3L),
@@ -338,11 +345,11 @@ fn shortest_path_filtered(
 /// }
 /// ```
 pub fn yen_k_shortest_paths(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
-  source : Int,
-  target : Int,
-  k : Int,
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
+  source : Int32,
+  target : Int32,
+  k : Int32,
 ) -> Array[KPath] {
   if n <= 0 || k <= 0 || source < 0 || source >= n || target < 0 || target >= n {
     return []
@@ -378,7 +385,7 @@ pub fn yen_k_shortest_paths(
         None => continue
         Some(c) => c
       }
-      let blocked_edges : Array[(Int, Int)] = [
+      let blocked_edges : Array[(Int32, Int32)] = [
         for p in a_paths if p.nodes.length() > i && has_prefix(p.nodes, root) => {
           (p.nodes[i], p.nodes[i + 1])
         }
@@ -422,7 +429,7 @@ pub fn yen_k_shortest_paths(
 
 ///|
 test "yen k shortest paths" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (1, 3, 1L),
     (0, 2, 3L),
@@ -438,14 +445,18 @@ test "yen k shortest paths" {
 
 ///|
 test "yen no path" {
-  let edges : Array[(Int, Int, Int64)] = []
+  let edges : Array[(Int32, Int32, Int64)] = []
   let paths = yen_k_shortest_paths(3, edges, 0, 2, 2)
   debug_inspect(paths.length(), content="0")
 }
 
 ///|
 test "yen path cost uses lightest parallel edge" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L), (0, 1, 2L), (1, 2, 1L)]
+  let edges : Array[(Int32, Int32, Int64)] = [
+    (0, 1, 5L),
+    (0, 1, 2L),
+    (1, 2, 1L),
+  ]
   let adj = build_adj(3, edges).unwrap()
   debug_inspect(path_cost(adj, [0, 1, 2]).unwrap(), content="3")
 }

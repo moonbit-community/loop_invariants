@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -24,7 +24,7 @@ let spicy_alpha : Array[Char] = [
 fn gen_str(
   rs : @quickcheck.RandomState,
   alpha : Array[Char],
-  max_len : Int,
+  max_len : Int32,
 ) -> String {
   let len = rint(rs, 0, max_len)
   let sb = StringBuilder()
@@ -35,7 +35,7 @@ fn gen_str(
 }
 
 ///|
-fn gen_text(rs : @quickcheck.RandomState, size : Int) -> String {
+fn gen_text(rs : @quickcheck.RandomState, size : Int32) -> String {
   let k = rint(rs, 0, 9)
   if k < 5 {
     gen_str(rs, small_alpha, size)
@@ -110,10 +110,10 @@ impl @quickcheck.Shrink for Str with fn shrink(self) {
 
 ///|
 /// Reference: all (overlapping) start indices; none for an empty pattern.
-fn naive_search(text : String, pattern : String) -> Array[Int] {
+fn naive_search(text : String, pattern : String) -> Array[Int32] {
   let n = text.length()
   let m = pattern.length()
-  let res : Array[Int] = []
+  let res : Array[Int32] = []
   if m == 0 || m > n {
     return res
   }
@@ -145,7 +145,7 @@ fn has_astral(s : String) -> Bool {
 ///|
 /// Lexicographic comparison of the suffixes starting at `a` and `b`, code
 /// unit by code unit (a proper prefix sorts first).
-fn cmp_suffix(s : String, a : Int, b : Int) -> Int {
+fn cmp_suffix(s : String, a : Int32, b : Int32) -> Int32 {
   let n = s.length()
   let mut k = 0
   while a + k < n && b + k < n {
@@ -167,14 +167,14 @@ fn cmp_suffix(s : String, a : Int, b : Int) -> Int {
 }
 
 ///|
-fn naive_sa(s : String) -> Array[Int] {
+fn naive_sa(s : String) -> Array[Int32] {
   let sa = Array::makei(s.length(), i => i)
   sa.sort_by((a, b) => cmp_suffix(s, a, b))
   sa
 }
 
 ///|
-fn lcp_at(s : String, a : Int, b : Int) -> Int {
+fn lcp_at(s : String, a : Int32, b : Int32) -> Int32 {
   let n = s.length()
   let mut k = 0
   while a + k < n && b + k < n && s[a + k] == s[b + k] {
@@ -184,7 +184,7 @@ fn lcp_at(s : String, a : Int, b : Int) -> Int {
 }
 
 ///|
-fn naive_lcp(s : String, sa : Array[Int]) -> Array[Int] {
+fn naive_lcp(s : String, sa : Array[Int32]) -> Array[Int32] {
   Array::makei(sa.length(), i => {
     if i == 0 {
       0
@@ -196,7 +196,7 @@ fn naive_lcp(s : String, sa : Array[Int]) -> Array[Int] {
 
 ///|
 /// Key identifying the code-unit substring `s[i..j)`.
-fn key(s : String, i : Int, j : Int) -> String {
+fn key(s : String, i : Int32, j : Int32) -> String {
   let sb = StringBuilder()
   for k in i..<j {
     sb.write_string(s[k].to_string())

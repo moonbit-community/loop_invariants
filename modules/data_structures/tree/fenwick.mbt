@@ -32,7 +32,7 @@
 /// Example: x = 12 = 1100₂
 ///         -x = 0100₂ (in 4-bit two's complement: ~1100 + 1 = 0011 + 1 = 0100)
 ///         x & -x = 0100₂ = 4
-fn lowbit(x : Int) -> Int {
+fn lowbit(x : Int32) -> Int32 {
   x & -x
 }
 
@@ -40,13 +40,13 @@ fn lowbit(x : Int) -> Int {
 /// Fenwick Tree structure.
 /// tree[i] stores partial sum for range ending at i.
 priv struct FenwickTree {
-  tree : Array[Int]
-  n : Int
+  tree : Array[Int32]
+  n : Int32
 }
 
 ///|
 /// Create a new Fenwick tree of size n+1 (1-indexed).
-fn FenwickTree::FenwickTree(n : Int) -> FenwickTree {
+fn FenwickTree::FenwickTree(n : Int32) -> FenwickTree {
   { tree: Array::make(n + 1, 0), n, }
 }
 
@@ -59,7 +59,7 @@ fn FenwickTree::FenwickTree(n : Int) -> FenwickTree {
 ///
 /// INVARIANT: Every ancestor of i (in the Fenwick tree sense) gets updated.
 #warnings("+missing_invariant+missing_reasoning")
-fn FenwickTree::update(self : FenwickTree, i : Int, delta : Int) -> Unit {
+fn FenwickTree::update(self : FenwickTree, i : Int32, delta : Int32) -> Unit {
   for idx = i {
     if idx > self.n {
       break
@@ -105,7 +105,7 @@ fn FenwickTree::update(self : FenwickTree, i : Int, delta : Int) -> Unit {
 ///
 /// INVARIANT: We accumulate the sum of arr[1..i] by summing disjoint ranges.
 #warnings("+missing_invariant+missing_reasoning")
-fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int {
+fn FenwickTree::prefix_sum(self : FenwickTree, i : Int32) -> Int32 {
   for idx = i, sum = 0 {
     if idx <= 0 {
       break sum
@@ -138,7 +138,7 @@ fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int {
 
 ///|
 /// Range sum query: compute sum from l to r (inclusive, 1-indexed).
-fn FenwickTree::range_sum(self : FenwickTree, l : Int, r : Int) -> Int {
+fn FenwickTree::range_sum(self : FenwickTree, l : Int32, r : Int32) -> Int32 {
   self.prefix_sum(r) - self.prefix_sum(l - 1)
 }
 
@@ -177,9 +177,9 @@ test "fenwick_basic" {
 ///|
 /// Build Fenwick tree from array in O(n) time.
 #warnings("+missing_invariant+missing_reasoning")
-fn FenwickTree::from_array(arr : ArrayView[Int]) -> FenwickTree {
+fn FenwickTree::from_array(arr : ArrayView[Int32]) -> FenwickTree {
   let n = arr.length()
-  let tree : Array[Int] = Array::make(n + 1, 0)
+  let tree : Array[Int32] = Array::make(n + 1, 0)
   // First, copy values (1-indexed)
   for i = 0 {
     if i >= n {
@@ -240,7 +240,7 @@ fn FenwickTree::from_array(arr : ArrayView[Int]) -> FenwickTree {
 
 ///|
 test "fenwick_from_array" {
-  let arr : Array[Int] = [3, 1, 4, 1, 5, 9, 2, 6]
+  let arr : Array[Int32] = [3, 1, 4, 1, 5, 9, 2, 6]
   let ft = FenwickTree::from_array(arr)
   @debug.assert_eq(ft.prefix_sum(4), 9)
   @debug.assert_eq(ft.prefix_sum(8), 31)
@@ -262,7 +262,7 @@ test "fenwick_from_array" {
 /// Assumes tree stores non-negative values (frequency counts).
 /// Returns 0 if no such index exists or if k <= 0.
 #warnings("+missing_invariant+missing_reasoning")
-fn FenwickTree::find_kth(self : FenwickTree, k : Int) -> Int {
+fn FenwickTree::find_kth(self : FenwickTree, k : Int32) -> Int32 {
   if k <= 0 {
     return 0
   }
@@ -393,13 +393,13 @@ test "fenwick_find_kth" {
 
 ///|
 priv struct FenwickTree2D {
-  tree : Array[Int]
-  n : Int
-  m : Int
+  tree : Array[Int32]
+  n : Int32
+  m : Int32
 }
 
 ///|
-fn FenwickTree2D::FenwickTree2D(n : Int, m : Int) -> FenwickTree2D {
+fn FenwickTree2D::FenwickTree2D(n : Int32, m : Int32) -> FenwickTree2D {
   { tree: Array::make((n + 1) * (m + 1), 0), n, m, }
 }
 
@@ -407,9 +407,9 @@ fn FenwickTree2D::FenwickTree2D(n : Int, m : Int) -> FenwickTree2D {
 #warnings("+missing_invariant+missing_reasoning")
 fn FenwickTree2D::update(
   self : FenwickTree2D,
-  i : Int,
-  j : Int,
-  delta : Int,
+  i : Int32,
+  j : Int32,
+  delta : Int32,
 ) -> Unit {
   for x = i {
     if x > self.n {
@@ -461,7 +461,11 @@ fn FenwickTree2D::update(
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn FenwickTree2D::prefix_sum(self : FenwickTree2D, i : Int, j : Int) -> Int {
+fn FenwickTree2D::prefix_sum(
+  self : FenwickTree2D,
+  i : Int32,
+  j : Int32,
+) -> Int32 {
   for x = i, sum = 0 {
     if x <= 0 {
       break sum
@@ -509,11 +513,11 @@ fn FenwickTree2D::prefix_sum(self : FenwickTree2D, i : Int, j : Int) -> Int {
 /// Query sum in rectangle (r1, c1) to (r2, c2) inclusive.
 fn FenwickTree2D::range_sum(
   self : FenwickTree2D,
-  r1 : Int,
-  c1 : Int,
-  r2 : Int,
-  c2 : Int,
-) -> Int {
+  r1 : Int32,
+  c1 : Int32,
+  r2 : Int32,
+  c2 : Int32,
+) -> Int32 {
   // Inclusion-exclusion principle
   self.prefix_sum(r2, c2) -
   self.prefix_sum(r1 - 1, c2) -
@@ -572,7 +576,7 @@ priv struct FenwickTreeRangeUpdate {
 
 ///|
 fn FenwickTreeRangeUpdate::FenwickTreeRangeUpdate(
-  n : Int,
+  n : Int32,
 ) -> FenwickTreeRangeUpdate {
   { diff: FenwickTree(n), }
 }
@@ -581,9 +585,9 @@ fn FenwickTreeRangeUpdate::FenwickTreeRangeUpdate(
 /// Add delta to all elements in range [l, r].
 fn FenwickTreeRangeUpdate::range_add(
   self : FenwickTreeRangeUpdate,
-  l : Int,
-  r : Int,
-  delta : Int,
+  l : Int32,
+  r : Int32,
+  delta : Int32,
 ) -> Unit {
   self.diff.update(l, delta)
   if r + 1 <= self.diff.n {
@@ -595,8 +599,8 @@ fn FenwickTreeRangeUpdate::range_add(
 /// Query value at position i.
 fn FenwickTreeRangeUpdate::point_query(
   self : FenwickTreeRangeUpdate,
-  i : Int,
-) -> Int {
+  i : Int32,
+) -> Int32 {
   self.diff.prefix_sum(i)
 }
 
@@ -648,12 +652,12 @@ test "fenwick_range_update" {
 priv struct FenwickTreeRangeRange {
   tree1 : FenwickTree // D[i]
   tree2 : FenwickTree // i * D[i]
-  n : Int
+  n : Int32
 }
 
 ///|
 fn FenwickTreeRangeRange::FenwickTreeRangeRange(
-  n : Int,
+  n : Int32,
 ) -> FenwickTreeRangeRange {
   { tree1: FenwickTree(n), tree2: FenwickTree(n), n, }
 }
@@ -662,9 +666,9 @@ fn FenwickTreeRangeRange::FenwickTreeRangeRange(
 /// Add delta to all elements in range [l, r].
 fn FenwickTreeRangeRange::range_add(
   self : FenwickTreeRangeRange,
-  l : Int,
-  r : Int,
-  delta : Int,
+  l : Int32,
+  r : Int32,
+  delta : Int32,
 ) -> Unit {
   // Update D[l] += delta
   self.tree1.update(l, delta)
@@ -680,8 +684,8 @@ fn FenwickTreeRangeRange::range_add(
 /// Query prefix sum from 1 to i.
 fn FenwickTreeRangeRange::prefix_sum(
   self : FenwickTreeRangeRange,
-  i : Int,
-) -> Int {
+  i : Int32,
+) -> Int32 {
   // sum(1, i) = (i+1) × prefix_D(i) - prefix_iD(i)
   (i + 1) * self.tree1.prefix_sum(i) - self.tree2.prefix_sum(i)
 }
@@ -690,9 +694,9 @@ fn FenwickTreeRangeRange::prefix_sum(
 /// Query sum in range [l, r].
 fn FenwickTreeRangeRange::range_sum(
   self : FenwickTreeRangeRange,
-  l : Int,
-  r : Int,
-) -> Int {
+  l : Int32,
+  r : Int32,
+) -> Int32 {
   self.prefix_sum(r) - self.prefix_sum(l - 1)
 }
 
@@ -730,7 +734,7 @@ test "fenwick_range_range" {
 /// Count inversions in an array.
 /// Values should be in range [1, max_val].
 #warnings("+missing_invariant+missing_reasoning")
-fn count_inversions(arr : ArrayView[Int], max_val : Int) -> Int {
+fn count_inversions(arr : ArrayView[Int32], max_val : Int32) -> Int32 {
   let ft = FenwickTree(max_val)
   let n = arr.length()
   for i = n - 1, count = 0 {
@@ -769,16 +773,16 @@ fn count_inversions(arr : ArrayView[Int], max_val : Int) -> Int {
 ///|
 test "count_inversions" {
   // [3, 1, 2]: inversions are (3,1), (3,2) = 2
-  let arr1 : Array[Int] = [3, 1, 2]
+  let arr1 : Array[Int32] = [3, 1, 2]
   @debug.assert_eq(count_inversions(arr1, 3), 2)
   // [1, 2, 3, 4]: no inversions
-  let arr2 : Array[Int] = [1, 2, 3, 4]
+  let arr2 : Array[Int32] = [1, 2, 3, 4]
   @debug.assert_eq(count_inversions(arr2, 4), 0)
   // [4, 3, 2, 1]: all pairs are inversions = 4×3/2 = 6
-  let arr3 : Array[Int] = [4, 3, 2, 1]
+  let arr3 : Array[Int32] = [4, 3, 2, 1]
   @debug.assert_eq(count_inversions(arr3, 4), 6)
   // [2, 4, 1, 3, 5]: inversions (2,1), (4,1), (4,3) = 3
-  let arr4 : Array[Int] = [2, 4, 1, 3, 5]
+  let arr4 : Array[Int32] = [2, 4, 1, 3, 5]
   @debug.assert_eq(count_inversions(arr4, 5), 3)
 }
 

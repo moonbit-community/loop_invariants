@@ -43,24 +43,24 @@
 
 ///|
 priv struct MoQuery {
-  l : Int
-  r : Int // Inclusive range [l, r]
-  idx : Int // Original query index for result ordering
+  l : Int32
+  r : Int32 // Inclusive range [l, r]
+  idx : Int32 // Original query index for result ordering
 }
 
 ///|
 /// Mo's algorithm state for distinct element counting
 priv struct MoDistinct {
-  arr : Array[Int]
-  block_size : Int
-  mut curr_l : Int
-  mut curr_r : Int
-  mut distinct : Int
-  count : Array[Int] // count[x] = occurrences of x in current range
+  arr : Array[Int32]
+  block_size : Int32
+  mut curr_l : Int32
+  mut curr_r : Int32
+  mut distinct : Int32
+  count : Array[Int32] // count[x] = occurrences of x in current range
 }
 
 ///|
-fn isqrt(n : Int) -> Int {
+fn isqrt(n : Int32) -> Int32 {
   if n <= 0 {
     return 0
   }
@@ -72,7 +72,7 @@ fn isqrt(n : Int) -> Int {
 }
 
 ///|
-fn max_element(arr : Array[Int]) -> Int {
+fn max_element(arr : Array[Int32]) -> Int32 {
   let mx = for i in 0..<arr.length(); mx = 0 {
     let mx = if arr[i] > mx { arr[i] } else { mx }
     continue mx
@@ -94,7 +94,7 @@ fn max_element(arr : Array[Int]) -> Int {
 
 ///|
 /// Create Mo's algorithm solver for distinct element queries
-fn MoDistinct::MoDistinct(arr : Array[Int]) -> MoDistinct {
+fn MoDistinct::MoDistinct(arr : Array[Int32]) -> MoDistinct {
   let n = arr.length()
   let block_size = if n > 0 { isqrt(n) } else { 1 }
   let max_val = max_element(arr) + 1
@@ -109,7 +109,7 @@ fn MoDistinct::MoDistinct(arr : Array[Int]) -> MoDistinct {
 }
 
 ///|
-fn MoDistinct::add(self : MoDistinct, idx : Int) -> Unit {
+fn MoDistinct::add(self : MoDistinct, idx : Int32) -> Unit {
   let x = self.arr[idx]
   if self.count[x] == 0 {
     self.distinct = self.distinct + 1
@@ -118,7 +118,7 @@ fn MoDistinct::add(self : MoDistinct, idx : Int) -> Unit {
 }
 
 ///|
-fn MoDistinct::remove(self : MoDistinct, idx : Int) -> Unit {
+fn MoDistinct::remove(self : MoDistinct, idx : Int32) -> Unit {
   let x = self.arr[idx]
   self.count[x] = self.count[x] - 1
   if self.count[x] == 0 {
@@ -130,8 +130,8 @@ fn MoDistinct::remove(self : MoDistinct, idx : Int) -> Unit {
 /// Process queries and return results in original order
 fn MoDistinct::process_queries(
   self : MoDistinct,
-  queries : Array[(Int, Int)],
-) -> Array[Int] {
+  queries : Array[(Int32, Int32)],
+) -> Array[Int32] {
   let q = queries.length()
   if q == 0 {
     return []
@@ -223,9 +223,9 @@ fn MoDistinct::process_queries(
 ///|
 priv struct MoSum {
   arr : Array[Int64]
-  block_size : Int
-  mut curr_l : Int
-  mut curr_r : Int
+  block_size : Int32
+  mut curr_l : Int32
+  mut curr_r : Int32
   mut sum : Int64
 }
 
@@ -237,19 +237,19 @@ fn MoSum::MoSum(arr : Array[Int64]) -> MoSum {
 }
 
 ///|
-fn MoSum::add(self : MoSum, idx : Int) -> Unit {
+fn MoSum::add(self : MoSum, idx : Int32) -> Unit {
   self.sum = self.sum + self.arr[idx]
 }
 
 ///|
-fn MoSum::remove(self : MoSum, idx : Int) -> Unit {
+fn MoSum::remove(self : MoSum, idx : Int32) -> Unit {
   self.sum = self.sum - self.arr[idx]
 }
 
 ///|
 fn MoSum::process_queries(
   self : MoSum,
-  queries : Array[(Int, Int)],
+  queries : Array[(Int32, Int32)],
 ) -> Array[Int64] {
   let q = queries.length()
   if q == 0 {
@@ -390,7 +390,7 @@ test "mo empty queries" {
 ///|
 test "mo large block" {
   // Test with more elements to verify sqrt blocking
-  let arr : Array[Int] = [ for i in 0..<100 => i % 10 ]
+  let arr : Array[Int32] = [ for i in 0..<100 => i % 10 ]
   let mo = MoDistinct(arr)
   let queries = [(0, 99), (0, 9), (50, 59), (25, 75)]
   let results = mo.process_queries(queries)

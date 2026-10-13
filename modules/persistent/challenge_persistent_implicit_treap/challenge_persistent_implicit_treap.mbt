@@ -30,8 +30,8 @@ pub enum Treap[T] {
   Empty
   Node(
     value~ : T,
-    priority~ : Int,
-    size~ : Int,
+    priority~ : Int32,
+    size~ : Int32,
     left~ : Treap[T],
     right~ : Treap[T]
   )
@@ -39,7 +39,7 @@ pub enum Treap[T] {
 
 ///|
 /// Return the number of elements in the treap.
-pub fn[T] size(t : Treap[T]) -> Int {
+pub fn[T] size(t : Treap[T]) -> Int32 {
   match t {
     Empty => 0
     Node(value=_, priority=_, size~, left=_, right=_) => size
@@ -49,14 +49,14 @@ pub fn[T] size(t : Treap[T]) -> Int {
 ///|
 
 ///|
-fn[T : Hash] priority_for(value : T, salt : Int) -> Int {
+fn[T : Hash] priority_for(value : T, salt : Int32) -> Int32 {
   value.hash() + salt * 12345
 }
 
 ///|
 fn[T] make_node(
   value : T,
-  priority : Int,
+  priority : Int32,
   left : Treap[T],
   right : Treap[T],
 ) -> Treap[T] {
@@ -72,7 +72,7 @@ pub fn[T] empty() -> Treap[T] {
 
 ///|
 /// Split by position k into (prefix, suffix).
-pub fn[T] split(t : Treap[T], k : Int) -> (Treap[T], Treap[T]) {
+pub fn[T] split(t : Treap[T], k : Int32) -> (Treap[T], Treap[T]) {
   match t {
     Empty => (Empty, Empty)
     Node(value=v, priority=p, size=_, left=l, right=r) => {
@@ -108,7 +108,7 @@ pub fn[T] merge(a : Treap[T], b : Treap[T]) -> Treap[T] {
 
 ///|
 /// Insert a value at index idx and return the new treap.
-pub fn[T : Hash] insert_at(t : Treap[T], idx : Int, value : T) -> Treap[T] {
+pub fn[T : Hash] insert_at(t : Treap[T], idx : Int32, value : T) -> Treap[T] {
   let (l, r) = split(t, idx)
   let node = make_node(value, priority_for(value, idx), Empty, Empty)
   merge(merge(l, node), r)
@@ -116,7 +116,7 @@ pub fn[T : Hash] insert_at(t : Treap[T], idx : Int, value : T) -> Treap[T] {
 
 ///|
 /// Get the value at index idx, or None if out of range.
-pub fn[T] get(t : Treap[T], idx : Int) -> T? {
+pub fn[T] get(t : Treap[T], idx : Int32) -> T? {
   match t {
     Empty => None
     Node(value=v, priority=_, size=_, left=l, right=r) => {
@@ -154,7 +154,7 @@ pub fn[T : Hash] from_array(arr : ArrayView[T]) -> Treap[T] {
 
 ///|
 test "persistent_implicit_treap" {
-  let t0 : Treap[Int] = Empty
+  let t0 : Treap[Int32] = Empty
   let t1 = insert_at(t0, 0, 10)
   let t2 = insert_at(t1, 1, 20)
   let t3 = insert_at(t2, 1, 15)

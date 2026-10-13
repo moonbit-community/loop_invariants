@@ -114,7 +114,7 @@ pub fn has_negative_cycle(dist : Array[Array[Int64]]) -> Bool {
 /// to `j` (or `-1` if unreachable or `i == j`).
 pub fn apsp_with_path(
   weight : Array[Array[Int64]],
-) -> (Array[Array[Int64]], Array[Array[Int]]) {
+) -> (Array[Array[Int64]], Array[Array[Int32]]) {
   let n = weight.length()
   let dist = Array::makei(n, i => Array::makei(n, j => weight[i][j]))
   let next_hop = Array::makei(n, i => {
@@ -144,11 +144,11 @@ pub fn apsp_with_path(
 /// Reconstruct the path from `src` to `dst` using `next_hop` produced
 /// by `apsp_with_path`. Returns an empty array if no path exists.
 pub fn reconstruct(
-  next_hop : Array[Array[Int]],
-  src : Int,
-  dst : Int,
-) -> Array[Int] {
-  let path : Array[Int] = []
+  next_hop : Array[Array[Int32]],
+  src : Int32,
+  dst : Int32,
+) -> Array[Int32] {
+  let path : Array[Int32] = []
   if src == dst {
     path.push(src)
     return path

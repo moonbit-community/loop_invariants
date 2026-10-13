@@ -30,7 +30,7 @@ const MCF_INF : Int64 = 4611686018427387903L
 /// capacity.
 pub struct Edge {
   /// Destination vertex index.
-  to : Int
+  to : Int32
   /// Maximum capacity of this edge.
   cap : Int64
   /// Cost per unit of flow on this edge.  Reverse edges carry `-cost`.
@@ -38,7 +38,7 @@ pub struct Edge {
   /// Current flow sent along this edge.  Residual capacity = `cap - flow`.
   mut flow : Int64
   /// Index of the reverse edge in `adj[to]`.
-  rev : Int
+  rev : Int32
 }
 
 ///|
@@ -66,7 +66,7 @@ pub struct Edge {
 /// Bellman-Ford pass first or use the SPFA-based `mcmf` package.
 pub struct MinCostFlowPotentials {
   /// Number of vertices in the graph.
-  n : Int
+  n : Int32
   /// Adjacency list.  `adj[u]` holds all edges (including reverse edges)
   /// that originate at vertex `u`.
   adj : Array[Array[Edge]]
@@ -74,10 +74,10 @@ pub struct MinCostFlowPotentials {
   dist : Array[Int64]
   /// `prev_v[v]` is the predecessor vertex of `v` on the shortest path found
   /// by the most recent Dijkstra call.
-  prev_v : Array[Int]
+  prev_v : Array[Int32]
   /// `prev_e[v]` is the index into `adj[prev_v[v]]` of the edge leading to
   /// `v` on the shortest path found by the most recent Dijkstra call.
-  prev_e : Array[Int]
+  prev_e : Array[Int32]
 }
 
 // ============================================================================
@@ -87,7 +87,7 @@ pub struct MinCostFlowPotentials {
 ///|
 priv struct HeapEntry {
   dist : Int64
-  vertex : Int
+  vertex : Int32
 }
 
 ///|
@@ -177,7 +177,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 /// Parameters:
 /// - `n`: number of vertices (must be >= 1).
 pub fn MinCostFlowPotentials::MinCostFlowPotentials(
-  n : Int,
+  n : Int32,
 ) -> MinCostFlowPotentials {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   {
@@ -204,8 +204,8 @@ pub fn MinCostFlowPotentials::MinCostFlowPotentials(
 ///   variant to be correct without a Bellman-Ford initialisation step.
 pub fn MinCostFlowPotentials::add_edge(
   self : MinCostFlowPotentials,
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
   cap : Int64,
   cost : Int64,
 ) -> Unit {
@@ -218,8 +218,8 @@ pub fn MinCostFlowPotentials::add_edge(
 ///|
 fn MinCostFlowPotentials::dijkstra(
   self : MinCostFlowPotentials,
-  source : Int,
-  sink : Int,
+  source : Int32,
+  sink : Int32,
   potential : Array[Int64],
 ) -> Bool {
   for i in 0..<self.n {
@@ -275,8 +275,8 @@ fn MinCostFlowPotentials::dijkstra(
 /// - `sink`: index of the sink vertex.
 pub fn MinCostFlowPotentials::compute(
   self : MinCostFlowPotentials,
-  source : Int,
-  sink : Int,
+  source : Int32,
+  sink : Int32,
 ) -> (Int64, Int64) {
   self.compute_with_limit(source, sink, MCF_INF)
 }
@@ -306,8 +306,8 @@ pub fn MinCostFlowPotentials::compute(
 /// - `flow_limit`: upper bound on the total flow to send.
 pub fn MinCostFlowPotentials::compute_with_limit(
   self : MinCostFlowPotentials,
-  source : Int,
-  sink : Int,
+  source : Int32,
+  sink : Int32,
   flow_limit : Int64,
 ) -> (Int64, Int64) {
   let potential = Array::make(self.n, 0L)

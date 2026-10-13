@@ -58,7 +58,7 @@ for interval in order:
 ```mbt check
 ///|
 test "interval scheduling basic" {
-  let intervals : Array[(Int, Int)] = [
+  let intervals : Array[(Int32, Int32)] = [
     (1, 3),
     (2, 4),
     (3, 5),
@@ -80,7 +80,7 @@ One optimal selection is `(1,3)`, `(3,5)`, `(8,9)`.
 ```mbt check
 ///|
 test "interval scheduling disjoint" {
-  let intervals : Array[(Int, Int)] = [(0, 1), (2, 3), (4, 5)]
+  let intervals : Array[(Int32, Int32)] = [(0, 1), (2, 3), (4, 5)]
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
     intervals,
   )
@@ -97,7 +97,7 @@ test "interval scheduling disjoint" {
 ```mbt check
 ///|
 test "interval scheduling nested" {
-  let intervals : Array[(Int, Int)] = [(0, 10), (1, 2), (2, 3), (3, 4)]
+  let intervals : Array[(Int32, Int32)] = [(0, 10), (1, 2), (2, 3), (3, 4)]
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
     intervals,
   )
@@ -112,7 +112,7 @@ Touching is allowed: end == next start.
 ```mbt check
 ///|
 test "interval scheduling touching" {
-  let intervals : Array[(Int, Int)] = [(0, 2), (2, 4), (4, 6)]
+  let intervals : Array[(Int32, Int32)] = [(0, 2), (2, 4), (4, 6)]
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
     intervals,
   )
@@ -127,7 +127,7 @@ When multiple intervals end at the same time, any of them is safe to pick.
 ```mbt check
 ///|
 test "interval scheduling tie" {
-  let intervals : Array[(Int, Int)] = [(0, 3), (1, 3), (2, 3), (3, 5)]
+  let intervals : Array[(Int32, Int32)] = [(0, 3), (1, 3), (2, 3), (3, 5)]
   let count = @challenge_interval_scheduling.max_non_overlapping_pairs(
     intervals,
   )

@@ -44,7 +44,7 @@
 ///|
 /// The number of distinct byte values used as the trie alphabet.
 /// All transition arrays have exactly this many slots (one per byte 0-255).
-const AC_ALPHABET : Int = 256
+const AC_ALPHABET : Int32 = 256
 
 ///|
 /// A single state (node) in the Aho-Corasick automaton.
@@ -62,9 +62,9 @@ const AC_ALPHABET : Int = 256
 ///   ends at this state.  This list is populated both when a pattern is
 ///   inserted (direct output) and during `build` (inherited via failure links).
 priv struct ACState {
-  children : Array[Int] // Transitions for each byte
-  mut failure : Int // Failure link (-1 for root)
-  output : Array[Int] // Pattern indices that end at this state
+  children : Array[Int32] // Transitions for each byte
+  mut failure : Int32 // Failure link (-1 for root)
+  output : Array[Int32] // Pattern indices that end at this state
 }
 
 ///|
@@ -177,7 +177,7 @@ fn AhoCorasick::add_pattern(self : AhoCorasick, pattern : String) -> Unit {
 /// already correct.
 fn AhoCorasick::build(self : AhoCorasick) -> Unit {
   // BFS queue
-  let queue : Array[Int] = []
+  let queue : Array[Int32] = []
 
   // Initialize: children of root have failure link to root
   for c in 0..<AC_ALPHABET {
@@ -261,8 +261,11 @@ fn AhoCorasick::build(self : AhoCorasick) -> Unit {
 /// follow the order entries appear in `states[s].output`).
 ///
 /// Time complexity: O(n + z) where n = text length, z = number of matches.
-fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[(Int, Int)] {
-  let matches : Array[(Int, Int)] = []
+fn AhoCorasick::search(
+  self : AhoCorasick,
+  text : String,
+) -> Array[(Int32, Int32)] {
+  let matches : Array[(Int32, Int32)] = []
 
   // INVARIANT: state represents the longest suffix of text[0..i] that is
   // a prefix of some pattern
@@ -314,13 +317,13 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[(Int, Int)] {
 ///
 /// Indices are assigned in insertion order starting from 0.
 /// Panics if `idx` is out of bounds.
-fn AhoCorasick::get_pattern(self : AhoCorasick, idx : Int) -> String {
+fn AhoCorasick::get_pattern(self : AhoCorasick, idx : Int32) -> String {
   self.patterns[idx]
 }
 
 ///|
 /// Return the number of patterns registered in this automaton.
-fn AhoCorasick::pattern_count(self : AhoCorasick) -> Int {
+fn AhoCorasick::pattern_count(self : AhoCorasick) -> Int32 {
   self.patterns.length()
 }
 
@@ -329,7 +332,7 @@ fn AhoCorasick::pattern_count(self : AhoCorasick) -> Int {
 ///
 /// This equals 1 (root) plus the number of distinct non-empty prefixes
 /// across all inserted patterns.  Shared prefixes count only once.
-fn AhoCorasick::state_count(self : AhoCorasick) -> Int {
+fn AhoCorasick::state_count(self : AhoCorasick) -> Int32 {
   self.states.length()
 }
 
@@ -397,7 +400,7 @@ fn AhoCorasick::contains_any(self : AhoCorasick, text : String) -> Bool {
 /// avoids building the intermediate array.
 ///
 /// The automaton must have been built with `build` before calling this method.
-fn AhoCorasick::count_matches(self : AhoCorasick, text : String) -> Int {
+fn AhoCorasick::count_matches(self : AhoCorasick, text : String) -> Int32 {
   let matches = self.search(text)
   matches.length()
 }
@@ -417,9 +420,9 @@ fn AhoCorasick::count_matches(self : AhoCorasick, text : String) -> Int {
 fn AhoCorasick::find_all(
   self : AhoCorasick,
   text : String,
-) -> Array[(Int, Int, String)] {
+) -> Array[(Int32, Int32, String)] {
   let raw_matches = self.search(text)
-  let result : Array[(Int, Int, String)] = []
+  let result : Array[(Int32, Int32, String)] = []
   for m in raw_matches {
     let (start, pattern_idx) = m
     let pattern = self.patterns[pattern_idx]
@@ -448,7 +451,7 @@ fn AhoCorasick::find_all(
 pub fn find_all_matches(
   patterns : ArrayView[String],
   text : String,
-) -> Array[(Int, Int, String)] {
+) -> Array[(Int32, Int32, String)] {
   let ac = AhoCorasick::from_patterns(patterns.to_owned())
   ac.find_all(text)
 }
@@ -464,7 +467,7 @@ pub fn find_all_matches(
 /// count_all_matches(["he", "she", "his", "hers"][:], "ushers")
 /// // => 3
 /// ```
-pub fn count_all_matches(patterns : ArrayView[String], text : String) -> Int {
+pub fn count_all_matches(patterns : ArrayView[String], text : String) -> Int32 {
   let ac = AhoCorasick::from_patterns(patterns.to_owned())
   ac.count_matches(text)
 }

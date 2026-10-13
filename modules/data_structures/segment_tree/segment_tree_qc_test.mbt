@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -22,7 +22,7 @@ fn gen_val(rs : @quickcheck.RandomState) -> Int64 {
 
 ///|
 /// Mostly valid indices, sometimes just outside `[0, n)`.
-fn gen_index(rs : @quickcheck.RandomState, n : Int) -> Int {
+fn gen_index(rs : @quickcheck.RandomState, n : Int32) -> Int32 {
   if n == 0 || rint(rs, 0, 7) == 0 {
     rint(rs, -2, n + 2)
   } else {
@@ -32,8 +32,8 @@ fn gen_index(rs : @quickcheck.RandomState, n : Int) -> Int {
 
 ///|
 priv enum Op {
-  Update(Int, Int64)
-  Query(Int, Int)
+  Update(Int32, Int64)
+  Query(Int32, Int32)
 } derive(Debug)
 
 ///|
@@ -69,7 +69,7 @@ fn run_case(c : Case) -> Bool {
   let n = c.init.length()
   let model = c.init.copy()
   let st = @segment_tree.SegmentTree(c.init.copy())
-  let check_query = (l : Int, r : Int) => {
+  let check_query = (l : Int32, r : Int32) => {
     let expected = if l < 0 || r >= n || l > r {
       0L
     } else {

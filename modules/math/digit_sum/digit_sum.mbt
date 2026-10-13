@@ -52,7 +52,7 @@ fn magnitude(n : Int64) -> UInt64 {
 ///   @debug.assert_eq(@digit_sum.digit_sum(12345L, 10), 15)
 /// }
 /// ```
-pub fn digit_sum(n : Int64, base : Int) -> Int {
+pub fn digit_sum(n : Int64, base : Int32) -> Int32 {
   if base <= 1 {
     return 0
   }
@@ -69,7 +69,7 @@ pub fn digit_sum(n : Int64, base : Int) -> Int {
 ///|
 /// Number of digits in `n` written in base `base`.
 /// `0` has `1` digit by convention.
-pub fn digit_count(n : Int64, base : Int) -> Int {
+pub fn digit_count(n : Int64, base : Int32) -> Int32 {
   if base <= 1 {
     return 0
   }
@@ -88,7 +88,7 @@ pub fn digit_count(n : Int64, base : Int) -> Int {
 
 ///|
 /// Iterated digit sum until a single digit remains.
-pub fn digital_root(n : Int64, base : Int) -> Int {
+pub fn digital_root(n : Int64, base : Int32) -> Int32 {
   let mut m = magnitude(n)
   if base <= 1 {
     return 0
@@ -109,7 +109,7 @@ pub fn digital_root(n : Int64, base : Int) -> Int {
 
 ///|
 /// Reverse the digit string of `n` in base `base`.
-pub fn reverse_digits(n : Int64, base : Int) -> Int64 {
+pub fn reverse_digits(n : Int64, base : Int32) -> Int64 {
   if base <= 1 {
     return 0L
   }
@@ -126,14 +126,14 @@ pub fn reverse_digits(n : Int64, base : Int) -> Int64 {
 ///|
 /// `true` iff the digit string of `|n|` in `base` reads the same forwards
 /// and backwards.
-pub fn is_palindrome(n : Int64, base : Int) -> Bool {
+pub fn is_palindrome(n : Int64, base : Int32) -> Bool {
   n == reverse_digits(n, base) || (n < 0L && -n == reverse_digits(-n, base))
 }
 
 ///|
 /// The `position`-th digit from the right (0-indexed). Returns `0`
 /// when `position` exceeds the digit count.
-pub fn digit_at(n : Int64, position : Int, base : Int) -> Int {
+pub fn digit_at(n : Int64, position : Int32, base : Int32) -> Int32 {
   if base <= 1 || position < 0 {
     return 0
   }
@@ -149,7 +149,7 @@ pub fn digit_at(n : Int64, position : Int, base : Int) -> Int {
 
 ///|
 /// Lowest-significant-first digit array.
-pub fn to_digits(n : Int64, base : Int) -> Array[Int] {
+pub fn to_digits(n : Int64, base : Int32) -> Array[Int32] {
   if base <= 1 {
     return []
   }
@@ -157,7 +157,7 @@ pub fn to_digits(n : Int64, base : Int) -> Array[Int] {
   if m == 0UL {
     return [0]
   }
-  let res : Array[Int] = []
+  let res : Array[Int32] = []
   let b = base.to_uint64()
   while m > 0UL {
     res.push((m % b).to_int())
@@ -169,7 +169,7 @@ pub fn to_digits(n : Int64, base : Int) -> Array[Int] {
 ///|
 /// Inverse of `to_digits`: rebuild the integer from a lowest-first
 /// digit array.
-pub fn from_digits(digits : Array[Int], base : Int) -> Int64 {
+pub fn from_digits(digits : Array[Int32], base : Int32) -> Int64 {
   if base <= 1 {
     return 0L
   }

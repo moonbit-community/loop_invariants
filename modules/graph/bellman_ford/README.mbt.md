@@ -160,7 +160,7 @@ vertices reachable via this cycle.
 ```mbt check
 ///|
 test "basic graph" {
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 5),
     (0, 2, 2),
     (2, 1, 1),
@@ -183,7 +183,7 @@ Shortest paths:
 ```mbt check
 ///|
 test "negative edge without negative cycle" {
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 4),
     (0, 2, 5),
     (1, 2, -2),
@@ -202,7 +202,7 @@ Here the path `0 -> 1 -> 2` (cost 2) beats the direct edge `0 -> 2` (cost 5).
 ```mbt check
 ///|
 test "negative cycle detection" {
-  let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2), (2, 1, -2)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, 1), (1, 2, -2), (2, 1, -2)]
   let (_dist, neg) = @bellman_ford.bellman_ford(3, edges, 0)
   debug_inspect(neg, content="true")
 }

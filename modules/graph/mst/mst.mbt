@@ -33,8 +33,8 @@
 /// Both `u` and `v` are 0-based vertex indices. `weight` is the cost
 /// assigned to this edge and may be any `Int64` value, including zero.
 priv struct Edge {
-  u : Int
-  v : Int
+  u : Int32
+  v : Int32
   weight : Int64
 }
 
@@ -44,7 +44,7 @@ priv struct Edge {
 /// `n` is the number of vertices (indexed `0..n-1`). Edges are stored in
 /// an unsorted flat array and sorted lazily when `kruskal` is called.
 priv struct MST {
-  n : Int
+  n : Int32
   edges : Array[Edge]
 }
 
@@ -58,7 +58,7 @@ priv struct MST {
 /// ```moonbit nocheck
 /// let g = MST(5)
 /// ```
-fn MST::MST(n : Int) -> MST {
+fn MST::MST(n : Int32) -> MST {
   { n, edges: [], }
 }
 
@@ -71,7 +71,7 @@ fn MST::MST(n : Int) -> MST {
 /// # Parameters
 /// - `u`, `v`: Endpoint vertex indices (0-based).
 /// - `weight`: Edge cost (`Int64`).
-fn MST::add_edge(self : MST, u : Int, v : Int, weight : Int64) -> Unit {
+fn MST::add_edge(self : MST, u : Int32, v : Int32, weight : Int64) -> Unit {
   self.edges.push({ u, v, weight, })
 }
 
@@ -81,8 +81,8 @@ fn MST::add_edge(self : MST, u : Int, v : Int, weight : Int64) -> Unit {
 /// Uses path compression in `find` and union by rank in `union` so that
 /// both operations run in nearly O(1) amortised time.
 priv struct UF {
-  parent : Array[Int]
-  rank : Array[Int]
+  parent : Array[Int32]
+  rank : Array[Int32]
 }
 
 ///|
@@ -92,7 +92,7 @@ priv struct UF {
 ///
 /// # Parameters
 /// - `n`: Number of elements (vertices). Each starts in its own set.
-fn UF::UF(n : Int) -> UF {
+fn UF::UF(n : Int32) -> UF {
   let parent = Array::make(n, 0)
   let rank = Array::make(n, 0)
   for i in 0..<n {
@@ -122,7 +122,7 @@ fn UF::UF(n : Int) -> UF {
 ///
 /// # Parameters
 /// - `x`: A vertex index in `[0, n)`.
-fn UF::find(self : UF, x : Int) -> Int {
+fn UF::find(self : UF, x : Int32) -> Int32 {
   if self.parent[x] != x {
     self.parent[x] = self.find(self.parent[x])
   }
@@ -141,7 +141,7 @@ fn UF::find(self : UF, x : Int) -> Int {
 ///
 /// # Parameters
 /// - `x`, `y`: Vertex indices whose sets are to be merged.
-fn UF::union(self : UF, x : Int, y : Int) -> Bool {
+fn UF::union(self : UF, x : Int32, y : Int32) -> Bool {
   let rx = self.find(x)
   let ry = self.find(y)
   if rx == ry {
@@ -252,8 +252,8 @@ fn MST::get_mst_weight(self : MST) -> Int64? {
 /// `n` is the number of vertices. `adj[u]` holds a list of
 /// `(neighbor, weight)` pairs for every edge incident to vertex `u`.
 priv struct PrimMST {
-  n : Int
-  adj : Array[Array[(Int, Int64)]] // (neighbor, weight)
+  n : Int32
+  adj : Array[Array[(Int32, Int64)]] // (neighbor, weight)
 }
 
 ///|
@@ -261,8 +261,8 @@ priv struct PrimMST {
 ///
 /// # Parameters
 /// - `n`: Number of vertices. Vertices are labelled `0` to `n-1`.
-fn PrimMST::PrimMST(n : Int) -> PrimMST {
-  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
+fn PrimMST::PrimMST(n : Int32) -> PrimMST {
+  let adj : Array[Array[(Int32, Int64)]] = [ for _ in 0..<n => [] ]
   { n, adj, }
 }
 
@@ -273,7 +273,12 @@ fn PrimMST::PrimMST(n : Int) -> PrimMST {
 /// # Parameters
 /// - `u`, `v`: Endpoint vertex indices (0-based).
 /// - `weight`: Edge cost (`Int64`).
-fn PrimMST::add_edge(self : PrimMST, u : Int, v : Int, weight : Int64) -> Unit {
+fn PrimMST::add_edge(
+  self : PrimMST,
+  u : Int32,
+  v : Int32,
+  weight : Int64,
+) -> Unit {
   self.adj[u].push((v, weight))
   self.adj[v].push((u, weight))
 }

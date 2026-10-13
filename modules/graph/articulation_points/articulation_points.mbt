@@ -52,7 +52,7 @@
 ///   @debug.assert_eq(@articulation_points.find(3, adj), [1])
 /// }
 /// ```
-pub fn find(n : Int, adj : Array[Array[Int]]) -> Array[Int] {
+pub fn find(n : Int32, adj : Array[Array[Int32]]) -> Array[Int32] {
   let disc = Array::make(n, -1)
   let low = Array::make(n, 0)
   let parent = Array::make(n, -1)
@@ -63,7 +63,7 @@ pub fn find(n : Int, adj : Array[Array[Int]]) -> Array[Int] {
       dfs(start, adj, disc, low, parent, is_ap, timer)
     }
   }
-  let res : Array[Int] = []
+  let res : Array[Int32] = []
   for v in 0..<n {
     if is_ap[v] {
       res.push(v)
@@ -74,16 +74,16 @@ pub fn find(n : Int, adj : Array[Array[Int]]) -> Array[Int] {
 
 ///|
 priv struct Counter {
-  mut val : Int
+  mut val : Int32
 }
 
 ///|
 fn dfs(
-  u : Int,
-  adj : Array[Array[Int]],
-  disc : Array[Int],
-  low : Array[Int],
-  parent : Array[Int],
+  u : Int32,
+  adj : Array[Array[Int32]],
+  disc : Array[Int32],
+  low : Array[Int32],
+  parent : Array[Int32],
   is_ap : Array[Bool],
   timer : Counter,
 ) -> Unit {
@@ -122,14 +122,14 @@ fn dfs(
 ///|
 test "ap path graph" {
   // 0 - 1 - 2 - 3 - 4
-  let adj : Array[Array[Int]] = [[1], [0, 2], [1, 3], [2, 4], [3]]
+  let adj : Array[Array[Int32]] = [[1], [0, 2], [1, 3], [2, 4], [3]]
   @debug.assert_eq(find(5, adj), [1, 2, 3])
 }
 
 ///|
 test "ap triangle has none" {
   // 0 - 1 - 2 - 0
-  let adj : Array[Array[Int]] = [[1, 2], [0, 2], [0, 1]]
+  let adj : Array[Array[Int32]] = [[1, 2], [0, 2], [0, 1]]
   @debug.assert_eq(find(3, adj), [])
 }
 
@@ -137,39 +137,39 @@ test "ap triangle has none" {
 test "ap bowtie shape" {
   // Two triangles sharing vertex 0: {0,1,2} and {0,3,4}.
   // 0 is the articulation point.
-  let adj : Array[Array[Int]] = [[1, 2, 3, 4], [0, 2], [0, 1], [0, 4], [0, 3]]
+  let adj : Array[Array[Int32]] = [[1, 2, 3, 4], [0, 2], [0, 1], [0, 4], [0, 3]]
   @debug.assert_eq(find(5, adj), [0])
 }
 
 ///|
 test "ap star center" {
   // 0 in the middle of star with 4 leaves.
-  let adj : Array[Array[Int]] = [[1, 2, 3, 4], [0], [0], [0], [0]]
+  let adj : Array[Array[Int32]] = [[1, 2, 3, 4], [0], [0], [0], [0]]
   @debug.assert_eq(find(5, adj), [0])
 }
 
 ///|
 test "ap single vertex" {
-  let adj : Array[Array[Int]] = [[]]
+  let adj : Array[Array[Int32]] = [[]]
   @debug.assert_eq(find(1, adj), [])
 }
 
 ///|
 test "ap disconnected components" {
   // {0,1} edge + {2,3,4} triangle.
-  let adj : Array[Array[Int]] = [[1], [0], [3, 4], [2, 4], [2, 3]]
+  let adj : Array[Array[Int32]] = [[1], [0], [3, 4], [2, 4], [2, 3]]
   @debug.assert_eq(find(5, adj), [])
 }
 
 ///|
 test "ap bridge endpoints not necessarily APs" {
   // 0 - 1 - 2 with extra edge 1 - 3 (still chain): 1 is AP.
-  let adj : Array[Array[Int]] = [[1], [0, 2, 3], [1], [1]]
+  let adj : Array[Array[Int32]] = [[1], [0, 2, 3], [1], [1]]
   @debug.assert_eq(find(4, adj), [1])
 }
 
 ///|
 test "ap complete graph K4 has none" {
-  let adj : Array[Array[Int]] = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]
+  let adj : Array[Array[Int32]] = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]
   @debug.assert_eq(find(4, adj), [])
 }

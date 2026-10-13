@@ -6,7 +6,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -24,11 +24,11 @@ fn gen_val(rs : @quickcheck.RandomState) -> Int64 {
 
 ///|
 priv enum Op {
-  Update(Int, Int, Int64)
-  SetTo(Int, Int, Int64)
-  Get(Int, Int)
-  Prefix(Int, Int)
-  Range(Int, Int, Int, Int)
+  Update(Int32, Int32, Int64)
+  SetTo(Int32, Int32, Int64)
+  Get(Int32, Int32)
+  Prefix(Int32, Int32)
+  Range(Int32, Int32, Int32, Int32)
 } derive(Debug)
 
 ///|
@@ -36,8 +36,8 @@ impl @quickcheck.Shrink for Op
 
 ///|
 priv struct Case {
-  rows : Int
-  cols : Int
+  rows : Int32
+  cols : Int32
   ops : Array[Op]
 } derive(Debug)
 
@@ -85,10 +85,10 @@ fn run_case(c : Case) -> Bool {
   }
   // model[x][y] for 1 <= x <= rows, 1 <= y <= cols (row/col 0 unused).
   let model = Array::makei(c.rows + 1, _ => Array::make(c.cols + 1, 0L))
-  let inside = (x : Int, y : Int) => {
+  let inside = (x : Int32, y : Int32) => {
     x >= 1 && x <= c.rows && y >= 1 && y <= c.cols
   }
-  let rect = (x1 : Int, y1 : Int, x2 : Int, y2 : Int) => {
+  let rect = (x1 : Int32, y1 : Int32, x2 : Int32, y2 : Int32) => {
     let mut s = 0L
     for x in 1..<=c.rows {
       for y in 1..<=c.cols {

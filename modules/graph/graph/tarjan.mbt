@@ -24,18 +24,18 @@
 
 ///|
 priv struct TarjanSCC {
-  graph : Array[Array[Int]] // Adjacency list
-  n : Int
-  disc : Array[Int] // Discovery time
-  low : Array[Int] // Low-link value
+  graph : Array[Array[Int32]] // Adjacency list
+  n : Int32
+  disc : Array[Int32] // Discovery time
+  low : Array[Int32] // Low-link value
   on_stack : Array[Bool] // Is vertex on stack?
-  stack : Array[Int] // DFS stack
-  mut time : Int // Global timer
-  sccs : Array[Array[Int]] // Result: list of SCCs
+  stack : Array[Int32] // DFS stack
+  mut time : Int32 // Global timer
+  sccs : Array[Array[Int32]] // Result: list of SCCs
 }
 
 ///|
-fn TarjanSCC::TarjanSCC(graph : Array[Array[Int]]) -> TarjanSCC {
+fn TarjanSCC::TarjanSCC(graph : Array[Array[Int32]]) -> TarjanSCC {
   let n = graph.length()
   {
     graph,
@@ -62,7 +62,7 @@ fn TarjanSCC::TarjanSCC(graph : Array[Array[Int]]) -> TarjanSCC {
 /// After processing all neighbors, if disc[v] == low[v], then v is an SCC root.
 /// All vertices from v to top of stack form this SCC.
 #warnings("+missing_invariant+missing_reasoning")
-fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
+fn TarjanSCC::dfs(self : TarjanSCC, v : Int32) -> Unit {
   // Initialize discovery and low-link
   self.disc[v] = self.time
   self.low[v] = self.time
@@ -140,7 +140,7 @@ fn TarjanSCC::dfs(self : TarjanSCC, v : Int) -> Unit {
   // Check if v is an SCC root
   if self.disc[v] == self.low[v] {
     // Pop all vertices until v to form this SCC
-    let scc : Array[Int] = []
+    let scc : Array[Int32] = []
     for ;; {
       match self.stack.pop() {
         Some(w) => {
@@ -212,8 +212,8 @@ fn TarjanSCC::find_sccs(self : TarjanSCC) -> Unit {
 ///|
 /// Convenience function to find SCCs in a graph.
 fn find_strongly_connected_components(
-  graph : Array[Array[Int]],
-) -> Array[Array[Int]] {
+  graph : Array[Array[Int32]],
+) -> Array[Array[Int32]] {
   let tarjan = TarjanSCC(graph)
   tarjan.find_sccs()
   tarjan.sccs
@@ -226,7 +226,7 @@ test "tarjan_basic" {
   // SCC2: {3, 4} - cycle: 3 → 4 → 3
   // SCC3: {5} - single vertex
   // Edges: 2 → 3, 4 → 5 (connecting SCCs)
-  let graph : Array[Array[Int]] = [
+  let graph : Array[Array[Int32]] = [
     [1], // 0 → 1
     [2], // 1 → 2
     [0, 3], // 2 → 0, 2 → 3
@@ -246,7 +246,7 @@ test "tarjan_basic" {
 ///|
 test "tarjan_single_scc" {
   // Complete graph on 4 vertices - one big SCC
-  let graph : Array[Array[Int]] = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]
+  let graph : Array[Array[Int32]] = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]
   let sccs = find_strongly_connected_components(graph)
   @debug.assert_eq(sccs.length(), 1)
   @debug.assert_eq(sccs[0].length(), 4)
@@ -256,7 +256,7 @@ test "tarjan_single_scc" {
 test "tarjan_dag" {
   // DAG: each vertex is its own SCC
   // 0 → 1 → 2 → 3
-  let graph : Array[Array[Int]] = [[1], [2], [3], []]
+  let graph : Array[Array[Int32]] = [[1], [2], [3], []]
   let sccs = find_strongly_connected_components(graph)
   @debug.assert_eq(sccs.length(), 4)
 }
@@ -276,20 +276,20 @@ test "tarjan_dag" {
 
 ///|
 priv struct KosarajuSCC {
-  graph : Array[Array[Int]]
-  reversed : Array[Array[Int]]
-  n : Int
+  graph : Array[Array[Int32]]
+  reversed : Array[Array[Int32]]
+  n : Int32
   visited : Array[Bool]
-  finish_order : Array[Int]
-  sccs : Array[Array[Int]]
+  finish_order : Array[Int32]
+  sccs : Array[Array[Int32]]
 }
 
 ///|
 #warnings("-missing_invariant-missing_reasoning")
-fn KosarajuSCC::KosarajuSCC(graph : Array[Array[Int]]) -> KosarajuSCC {
+fn KosarajuSCC::KosarajuSCC(graph : Array[Array[Int32]]) -> KosarajuSCC {
   let n = graph.length()
   // Build reversed graph
-  let reversed : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+  let reversed : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for v in 0..<n {
     for w in graph[v] {
       reversed[w].push(v)
@@ -308,7 +308,7 @@ fn KosarajuSCC::KosarajuSCC(graph : Array[Array[Int]]) -> KosarajuSCC {
 ///|
 /// First DFS: record finish order (post-order traversal).
 #warnings("+missing_invariant+missing_reasoning")
-fn KosarajuSCC::dfs1(self : KosarajuSCC, v : Int) -> Unit {
+fn KosarajuSCC::dfs1(self : KosarajuSCC, v : Int32) -> Unit {
   self.visited[v] = true
   let neighbors = self.graph[v]
   for i in 0..<neighbors.length() {
@@ -349,7 +349,7 @@ fn KosarajuSCC::dfs1(self : KosarajuSCC, v : Int) -> Unit {
 ///|
 /// Second DFS: collect SCC on reversed graph.
 #warnings("+missing_invariant+missing_reasoning")
-fn KosarajuSCC::dfs2(self : KosarajuSCC, v : Int, scc : Array[Int]) -> Unit {
+fn KosarajuSCC::dfs2(self : KosarajuSCC, v : Int32, scc : Array[Int32]) -> Unit {
   self.visited[v] = true
   scc.push(v)
   let neighbors = self.reversed[v]
@@ -432,7 +432,7 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
     } else {
       let v = self.finish_order[i]
       if !self.visited[v] {
-        let scc : Array[Int] = []
+        let scc : Array[Int32] = []
         self.dfs2(v, scc)
         self.sccs.push(scc)
       }
@@ -475,7 +475,7 @@ fn KosarajuSCC::find_sccs(self : KosarajuSCC) -> Unit {
 }
 
 ///|
-fn find_sccs_kosaraju(graph : Array[Array[Int]]) -> Array[Array[Int]] {
+fn find_sccs_kosaraju(graph : Array[Array[Int32]]) -> Array[Array[Int32]] {
   let kosaraju = KosarajuSCC(graph)
   kosaraju.find_sccs()
   kosaraju.sccs
@@ -484,7 +484,7 @@ fn find_sccs_kosaraju(graph : Array[Array[Int]]) -> Array[Array[Int]] {
 ///|
 test "kosaraju_basic" {
   // Same graph as tarjan_basic
-  let graph : Array[Array[Int]] = [[1], [2], [0, 3], [4], [3, 5], []]
+  let graph : Array[Array[Int32]] = [[1], [2], [0, 3], [4], [3, 5], []]
   let sccs = find_sccs_kosaraju(graph)
   @debug.assert_eq(sccs.length(), 3)
 }
@@ -503,18 +503,18 @@ test "kosaraju_basic" {
 
 ///|
 priv struct ArticulationFinder {
-  graph : Array[Array[Int]]
-  n : Int
-  disc : Array[Int]
-  low : Array[Int]
-  parent : Array[Int]
+  graph : Array[Array[Int32]]
+  n : Int32
+  disc : Array[Int32]
+  low : Array[Int32]
+  parent : Array[Int32]
   is_ap : Array[Bool] // Is articulation point?
-  mut time : Int
+  mut time : Int32
 }
 
 ///|
 fn ArticulationFinder::ArticulationFinder(
-  graph : Array[Array[Int]],
+  graph : Array[Array[Int32]],
 ) -> ArticulationFinder {
   let n = graph.length()
   {
@@ -530,7 +530,7 @@ fn ArticulationFinder::ArticulationFinder(
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
+fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int32) -> Unit {
   self.disc[v] = self.time
   self.low[v] = self.time
   self.time = self.time + 1
@@ -604,14 +604,14 @@ fn ArticulationFinder::dfs(self : ArticulationFinder, v : Int) -> Unit {
 
 ///|
 #warnings("-missing_invariant-missing_reasoning")
-fn find_articulation_points(graph : Array[Array[Int]]) -> Array[Int] {
+fn find_articulation_points(graph : Array[Array[Int32]]) -> Array[Int32] {
   let finder = ArticulationFinder(graph)
   for v in 0..<finder.n {
     if finder.disc[v] == -1 {
       finder.dfs(v)
     }
   }
-  let aps : Array[Int] = [ for v in 0..<finder.n if finder.is_ap[v] => v ]
+  let aps : Array[Int32] = [ for v in 0..<finder.n if finder.is_ap[v] => v ]
   aps
 }
 
@@ -621,7 +621,7 @@ test "articulation_points" {
   //             |    |
   //             4 -- 5
   // Articulation points: 1, 2
-  let graph : Array[Array[Int]] = [
+  let graph : Array[Array[Int32]] = [
     [1], // 0
     [0, 2, 4], // 1
     [1, 3, 5], // 2
@@ -645,17 +645,17 @@ test "articulation_points" {
 
 ///|
 priv struct BridgeFinder {
-  graph : Array[Array[Int]]
-  n : Int
-  disc : Array[Int]
-  low : Array[Int]
-  parent : Array[Int]
-  bridges : Array[(Int, Int)]
-  mut time : Int
+  graph : Array[Array[Int32]]
+  n : Int32
+  disc : Array[Int32]
+  low : Array[Int32]
+  parent : Array[Int32]
+  bridges : Array[(Int32, Int32)]
+  mut time : Int32
 }
 
 ///|
-fn BridgeFinder::BridgeFinder(graph : Array[Array[Int]]) -> BridgeFinder {
+fn BridgeFinder::BridgeFinder(graph : Array[Array[Int32]]) -> BridgeFinder {
   let n = graph.length()
   {
     graph,
@@ -670,7 +670,7 @@ fn BridgeFinder::BridgeFinder(graph : Array[Array[Int]]) -> BridgeFinder {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn BridgeFinder::dfs(self : BridgeFinder, v : Int) -> Unit {
+fn BridgeFinder::dfs(self : BridgeFinder, v : Int32) -> Unit {
   self.disc[v] = self.time
   self.low[v] = self.time
   self.time = self.time + 1
@@ -731,7 +731,7 @@ fn BridgeFinder::dfs(self : BridgeFinder, v : Int) -> Unit {
 
 ///|
 #warnings("-missing_invariant-missing_reasoning")
-fn find_bridges(graph : Array[Array[Int]]) -> Array[(Int, Int)] {
+fn find_bridges(graph : Array[Array[Int32]]) -> Array[(Int32, Int32)] {
   let finder = BridgeFinder(graph)
   for v in 0..<finder.n {
     if finder.disc[v] == -1 {
@@ -747,7 +747,7 @@ test "bridges" {
   //             |    |
   //             4 -- 5
   // Bridges: (0,1), (2,3)
-  let graph : Array[Array[Int]] = [
+  let graph : Array[Array[Int32]] = [
     [1],
     [0, 2, 4],
     [1, 3, 5],
@@ -769,16 +769,16 @@ test "bridges" {
 
 ///|
 priv struct TopologicalSort {
-  graph : Array[Array[Int]]
-  n : Int
-  state : Array[Int] // 0: unvisited, 1: visiting, 2: visited
-  result : Array[Int]
+  graph : Array[Array[Int32]]
+  n : Int32
+  state : Array[Int32] // 0: unvisited, 1: visiting, 2: visited
+  result : Array[Int32]
   mut has_cycle : Bool
 }
 
 ///|
 fn TopologicalSort::TopologicalSort(
-  graph : Array[Array[Int]],
+  graph : Array[Array[Int32]],
 ) -> TopologicalSort {
   let n = graph.length()
   { graph, n, state: Array::make(n, 0), result: [], has_cycle: false, }
@@ -786,7 +786,7 @@ fn TopologicalSort::TopologicalSort(
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn TopologicalSort::dfs(self : TopologicalSort, v : Int) -> Unit {
+fn TopologicalSort::dfs(self : TopologicalSort, v : Int32) -> Unit {
   if self.has_cycle {
     return
   }
@@ -843,7 +843,7 @@ fn TopologicalSort::dfs(self : TopologicalSort, v : Int) -> Unit {
 
 ///|
 #warnings("-missing_invariant-missing_reasoning")
-fn topological_sort_dfs(graph : Array[Array[Int]]) -> Array[Int]? {
+fn topological_sort_dfs(graph : Array[Array[Int32]]) -> Array[Int32]? {
   let ts = TopologicalSort(graph)
   for v in 0..<ts.n {
     if ts.state[v] == 0 {
@@ -863,7 +863,7 @@ test "topological_sort" {
   // DAG: 0 → 1 → 2
   //      ↓
   //      3 → 4
-  let graph : Array[Array[Int]] = [
+  let graph : Array[Array[Int32]] = [
     [1, 3], // 0 → 1, 3
     [2], // 1 → 2
     [], // 2
@@ -881,7 +881,7 @@ test "topological_sort" {
 ///|
 test "topological_sort_cycle" {
   // Graph with cycle: 0 → 1 → 2 → 0
-  let graph : Array[Array[Int]] = [[1], [2], [0]]
+  let graph : Array[Array[Int32]] = [[1], [2], [0]]
   let result = topological_sort_dfs(graph)
   assert_true(result is None) // Cycle detected
 }

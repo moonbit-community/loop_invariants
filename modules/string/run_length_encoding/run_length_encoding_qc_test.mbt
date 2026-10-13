@@ -3,7 +3,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -11,11 +11,11 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 ///|
 /// An array built from runs, so long runs are common; symbols come from a
 /// 3-letter alphabet or are arbitrary integers (including extremes).
-priv struct Runs(Array[Int]) derive(Debug)
+priv struct Runs(Array[Int32]) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for Runs with fn arbitrary(size, rs) {
-  let out : Array[Int] = []
+  let out : Array[Int32] = []
   let wide = rint(rs, 0, 3) == 0
   for _ in 0..<rint(rs, 0, size) {
     let v = if wide {
@@ -68,9 +68,9 @@ test "qc: decode(encode(x)) == x and the runs are maximal" {
 ///|
 test "qc: encode(decode(runs)) == runs for canonical run lists" {
   @quickcheck.check(
-    (raw : Array[(Int, Int)]) => {
+    (raw : Array[(Int32, Int32)]) => {
       // canonicalise: positive counts, adjacent values distinct
-      let runs : Array[(Int, Int)] = []
+      let runs : Array[(Int32, Int32)] = []
       for p in raw {
         let v = p.0 % 4
         let c = (p.1 % 6).abs() + 1

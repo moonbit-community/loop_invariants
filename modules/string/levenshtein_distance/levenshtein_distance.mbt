@@ -46,7 +46,7 @@
 ///   @debug.assert_eq(@levenshtein_distance.distance([1, 2, 3], [1, 4, 3]), 1)
 /// }
 /// ```
-pub fn distance(a : Array[Int], b : Array[Int]) -> Int {
+pub fn distance(a : Array[Int32], b : Array[Int32]) -> Int32 {
   let n = a.length()
   let m = b.length()
   if n == 0 {
@@ -90,12 +90,12 @@ pub fn distance(a : Array[Int], b : Array[Int]) -> Int {
 ///
 /// All costs must be non-negative.
 pub fn distance_weighted(
-  a : Array[Int],
-  b : Array[Int],
-  cost_insert~ : Int,
-  cost_delete~ : Int,
-  cost_subst~ : Int,
-) -> Int {
+  a : Array[Int32],
+  b : Array[Int32],
+  cost_insert~ : Int32,
+  cost_delete~ : Int32,
+  cost_subst~ : Int32,
+) -> Int32 {
   let n = a.length()
   let m = b.length()
   if n == 0 {

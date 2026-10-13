@@ -25,7 +25,7 @@ enum ChildList[T] {
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let h : @challenge_persistent_pairing_heap.Heap[Int] = @challenge_persistent_pairing_heap.empty()
+///   let h : @challenge_persistent_pairing_heap.Heap[Int32] = @challenge_persistent_pairing_heap.empty()
 ///   let h = @challenge_persistent_pairing_heap.insert(h, 8)
 ///   let h = @challenge_persistent_pairing_heap.insert(h, 3)
 ///   let h = @challenge_persistent_pairing_heap.insert(h, 6)
@@ -41,7 +41,7 @@ pub enum Heap[T] {
 } derive(Debug)
 
 ///|
-fn[T] heap_size(h : Heap[T]) -> Int {
+fn[T] heap_size(h : Heap[T]) -> Int32 {
   match h {
     Empty => 0
     Node(value=_, children~) => 1 + children_size(children)
@@ -49,7 +49,7 @@ fn[T] heap_size(h : Heap[T]) -> Int {
 }
 
 ///|
-fn[T] children_size(children : ChildList[T]) -> Int {
+fn[T] children_size(children : ChildList[T]) -> Int32 {
   match children {
     Nil => 0
     Cons(head~, tail~) => heap_size(head) + children_size(tail)
@@ -66,7 +66,7 @@ pub fn[T] empty() -> Heap[T] {
 
 ///|
 /// Return number of elements in the heap.
-pub fn[T] size(h : Heap[T]) -> Int {
+pub fn[T] size(h : Heap[T]) -> Int32 {
   heap_size(h)
 }
 
@@ -143,7 +143,7 @@ pub fn[T : Compare] delete_min(h : Heap[T]) -> Heap[T]? {
 
 ///|
 test "persistent_pairing_heap" {
-  let h0 : Heap[Int] = Empty
+  let h0 : Heap[Int32] = Empty
   let h1 = insert(h0, 8)
   let h2 = insert(h1, 3)
   let h3 = insert(h2, 6)

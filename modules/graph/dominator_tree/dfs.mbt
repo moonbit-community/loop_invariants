@@ -42,7 +42,7 @@
 /// POST-CONDITION:
 ///   All vertices reachable from u have DFS indices assigned.
 ///   The DFS tree structure is recorded in parent[].
-fn DominatorWork::dfs(self : DominatorWork, u : Int) -> Unit {
+fn DominatorWork::dfs(self : DominatorWork, u : Int32) -> Unit {
   // Assign DFS number to u
   self.time.val = self.time.val + 1
   let t = self.time.val
@@ -98,7 +98,7 @@ fn DominatorWork::dfs(self : DominatorWork, u : Int) -> Unit {
 ///   - edges: the original edge list
 fn DominatorWork::build_predecessors(
   self : DominatorWork,
-  edges : ArrayView[(Int, Int)],
+  edges : ArrayView[(Int32, Int32)],
 ) -> Unit {
   for edge in edges {
     let (u, v) = edge

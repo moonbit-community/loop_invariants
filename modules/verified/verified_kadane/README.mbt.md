@@ -146,7 +146,7 @@ test "kadane_singleton_negative" {
 ///|
 test "kadane_classic" {
   // [4, -1, 2, 1] sums to 6.
-  let arr : Array[Int] = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+  let arr : Array[Int32] = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
   debug_inspect(@verified_kadane.max_subarray_sum(arr[:]), content="6")
 }
 ```
@@ -157,7 +157,7 @@ test "kadane_classic" {
 ///|
 test "kadane_all_positive" {
   // No reason to skip any element; the answer is the total sum.
-  let arr : Array[Int] = [5, 4, -1, 7, 8]
+  let arr : Array[Int32] = [5, 4, -1, 7, 8]
   debug_inspect(@verified_kadane.max_subarray_sum(arr[:]), content="23")
 }
 ```
@@ -169,7 +169,7 @@ test "kadane_all_positive" {
 test "kadane_all_negative" {
   // The maximum-subarray must be non-empty, so the answer is the
   // largest single element, here `-1`.
-  let arr : Array[Int] = [-3, -2, -5, -1, -4]
+  let arr : Array[Int32] = [-3, -2, -5, -1, -4]
   debug_inspect(@verified_kadane.max_subarray_sum(arr[:]), content="-1")
 }
 ```

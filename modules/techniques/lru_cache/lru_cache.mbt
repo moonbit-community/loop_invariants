@@ -35,20 +35,20 @@
 struct Slot {
   mut key : Int64
   mut value : Int64
-  mut prev : Int
-  mut next : Int
+  mut prev : Int32
+  mut next : Int32
 }
 
 ///|
 /// Bounded LRU cache mapping `Int64` keys to `Int64` values.
 pub struct LruCache {
-  capacity : Int
+  capacity : Int32
   slots : Array[Slot]
-  mut head : Int // most-recent
-  mut tail : Int // least-recent
-  mut size : Int
-  map : Map[Int64, Int]
-  free : Array[Int]
+  mut head : Int32 // most-recent
+  mut tail : Int32 // least-recent
+  mut size : Int32
+  map : Map[Int64, Int32]
+  free : Array[Int32]
 }
 
 ///|
@@ -67,12 +67,12 @@ pub struct LruCache {
 ///   @debug.assert_eq(c.get(2L), None)
 /// }
 /// ```
-pub fn new(capacity : Int) -> LruCache {
+pub fn new(capacity : Int32) -> LruCache {
   let cap = if capacity < 1 { 1 } else { capacity }
   let slots = Array::makei(cap, _ => {
     ({ key: 0L, value: 0L, prev: -1, next: -1, } : Slot)
   })
-  let free : Array[Int] = []
+  let free : Array[Int32] = []
   let mut i = cap - 1
   while i >= 0 {
     free.push(i)
@@ -90,7 +90,7 @@ pub fn new(capacity : Int) -> LruCache {
 }
 
 ///|
-fn LruCache::detach(self : LruCache, idx : Int) -> Unit {
+fn LruCache::detach(self : LruCache, idx : Int32) -> Unit {
   let s = self.slots[idx]
   let pv = s.prev
   let nx = s.next
@@ -109,7 +109,7 @@ fn LruCache::detach(self : LruCache, idx : Int) -> Unit {
 }
 
 ///|
-fn LruCache::attach_head(self : LruCache, idx : Int) -> Unit {
+fn LruCache::attach_head(self : LruCache, idx : Int32) -> Unit {
   let s = self.slots[idx]
   s.prev = -1
   s.next = self.head
@@ -172,13 +172,13 @@ pub fn LruCache::put(self : LruCache, key : Int64, value : Int64) -> Unit {
 
 ///|
 /// Number of entries currently stored.
-pub fn LruCache::length(self : LruCache) -> Int {
+pub fn LruCache::length(self : LruCache) -> Int32 {
   self.size
 }
 
 ///|
 /// Maximum entries.
-pub fn LruCache::cap(self : LruCache) -> Int {
+pub fn LruCache::cap(self : LruCache) -> Int32 {
   self.capacity
 }
 

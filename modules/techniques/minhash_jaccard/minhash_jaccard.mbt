@@ -57,7 +57,7 @@
 /// A MinHash signature with `k` independent hash functions and the
 /// per-hash running minimum.
 pub struct MinHash {
-  k : Int
+  k : Int32
   // Per-hash salts derived from the user seed.
   salts : Array[Int64]
   // Running min for each hash; `Int64::MAX_VALUE` means "no item seen yet."
@@ -66,7 +66,7 @@ pub struct MinHash {
 
 ///|
 /// Logical right shift on Int64 (built-in `>>` is arithmetic).
-fn shr_logical(x : Int64, n : Int) -> Int64 {
+fn shr_logical(x : Int64, n : Int32) -> Int64 {
   (x.reinterpret_as_uint64() >> n).reinterpret_as_int64()
 }
 
@@ -85,7 +85,7 @@ fn mh_mix(x : Int64) -> Int64 {
 /// Hash an item under the `i`-th hash function: salt the item with
 /// `salts[i]` and mix. Two MinHash instances built with the same seed
 /// share the same hash family and can therefore be compared and merged.
-fn MinHash::mh_hash(self : MinHash, i : Int, item : Int64) -> Int64 {
+fn MinHash::mh_hash(self : MinHash, i : Int32, item : Int64) -> Int64 {
   mh_mix(item ^ self.salts[i])
 }
 
@@ -110,7 +110,7 @@ fn MinHash::mh_hash(self : MinHash, i : Int, item : Int64) -> Int64 {
 ///   assert_eq(m.signature().length(), 256)
 /// }
 /// ```
-pub fn new(k~ : Int, seed~ : Int64) -> MinHash {
+pub fn new(k~ : Int32, seed~ : Int64) -> MinHash {
   let k_clamped = if k < 1 { 1 } else { k }
   let salts = Array::make(k_clamped, 0L)
   // Walk a small LCG so the salts are spread.
@@ -227,7 +227,7 @@ pub fn MinHash::merge(self : MinHash, other : MinHash) -> Unit {
 
 ///|
 /// Inspector: the configured `k`.
-pub fn MinHash::width(self : MinHash) -> Int {
+pub fn MinHash::width(self : MinHash) -> Int32 {
   self.k
 }
 

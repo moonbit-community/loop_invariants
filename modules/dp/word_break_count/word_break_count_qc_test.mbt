@@ -5,22 +5,22 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 priv struct Case {
-  s : Array[Int]
-  dict : Array[Array[Int]]
+  s : Array[Int32]
+  dict : Array[Array[Int32]]
 } derive(Debug)
 
 ///|
 /// Removes duplicate words (the count is over sequences of dictionary
 /// entries, so duplicates would be counted twice).
-fn dedup_words(dict : Array[Array[Int]]) -> Array[Array[Int]] {
-  let out : Array[Array[Int]] = []
+fn dedup_words(dict : Array[Array[Int32]]) -> Array[Array[Int32]] {
+  let out : Array[Array[Int32]] = []
   for w in dict {
     if !out.contains(w) {
       out.push(w)
@@ -46,7 +46,7 @@ impl @quickcheck.Arbitrary for Case with fn arbitrary(_, rs) {
     Array::makei(rint(rs, 0, 12), _ => letter())
   } else {
     // Concatenate random dictionary words so a segmentation usually exists.
-    let s : Array[Int] = []
+    let s : Array[Int32] = []
     for _ in 0..<rint(rs, 0, 8) {
       s.append(dict[rint(rs, 0, dict.length() - 1)])
     }
@@ -66,8 +66,8 @@ impl @quickcheck.Shrink for Case with fn shrink(self) {
 ///|
 /// Counts segmentations by trying every non-empty word at every position,
 /// without memoisation.
-fn ref_count(s : Array[Int], dict : Array[Array[Int]]) -> Int64 {
-  fn go(i : Int) -> Int64 {
+fn ref_count(s : Array[Int32], dict : Array[Array[Int32]]) -> Int64 {
+  fn go(i : Int32) -> Int64 {
     if i == s.length() {
       return 1L
     }

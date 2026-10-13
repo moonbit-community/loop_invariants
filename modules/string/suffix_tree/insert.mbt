@@ -34,9 +34,9 @@
 fn find_edge(
   nodes : Array[Node],
   text : Array[Char],
-  node_idx : Int,
+  node_idx : Int32,
   ch : Char,
-) -> Int? {
+) -> Int32? {
   let edges = nodes[node_idx].edges
   edges.search_by(e => text[e.start] == ch)
 }
@@ -82,7 +82,11 @@ fn find_edge(
 ///
 /// Post-condition: `text[start..n)` is represented by a unique root-to-leaf
 /// path in the tree.
-fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
+fn insert_suffix(
+  nodes : Array[Node],
+  text : Array[Char],
+  start : Int32,
+) -> Unit {
   let n = text.length()
 
   // Main insertion loop: walk down tree, matching suffix characters
@@ -185,7 +189,7 @@ fn insert_suffix(nodes : Array[Node], text : Array[Char], start : Int) -> Unit {
 /// Returns the leaf count of the subtree rooted at `node_idx`.
 ///
 /// Time: O(n) — each node is visited exactly once.
-fn compute_leaf_counts(nodes : Array[Node], node_idx : Int) -> Int {
+fn compute_leaf_counts(nodes : Array[Node], node_idx : Int32) -> Int32 {
   // Base case: leaf node
   if nodes[node_idx].edges.length() == 0 {
     nodes[node_idx].leaf_count = 1

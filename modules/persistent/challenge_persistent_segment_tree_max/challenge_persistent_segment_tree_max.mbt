@@ -26,12 +26,12 @@
 /// }
 /// ```
 pub enum Node {
-  Leaf(max~ : Int)
-  Branch(max~ : Int, left~ : Node, right~ : Node)
+  Leaf(max~ : Int32)
+  Branch(max~ : Int32, left~ : Node, right~ : Node)
 } derive(Debug)
 
 ///|
-fn node_max(node : Node) -> Int {
+fn node_max(node : Node) -> Int32 {
   match node {
     Leaf(max~) => max
     Branch(max~, left=_, right=_) => max
@@ -42,13 +42,13 @@ fn node_max(node : Node) -> Int {
 
 ///|
 /// Return the maximum stored at the root.
-pub fn max_value(node : Node) -> Int {
+pub fn max_value(node : Node) -> Int32 {
   node_max(node)
 }
 
 ///|
 /// Build a segment tree over arr[l..r).
-pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
+pub fn build(arr : ArrayView[Int32], l : Int32, r : Int32) -> Node {
   if r - l == 1 {
     Leaf(max=arr[l])
   } else {
@@ -66,7 +66,13 @@ pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 
 ///|
 /// Set index idx to value and return the new tree.
-pub fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
+pub fn set_value(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  idx : Int32,
+  value : Int32,
+) -> Node {
   if r - l == 1 {
     Leaf(max=value)
   } else {
@@ -97,7 +103,13 @@ pub fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node 
 
 ///|
 /// Query the maximum over [ql, qr).
-pub fn range_max(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
+pub fn range_max(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
+) -> Int32 {
   if qr <= l || r <= ql {
     -0x3fffffff
   } else if ql <= l && r <= qr {
@@ -123,8 +135,8 @@ pub fn range_max(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 /// Apply point updates (idx, value).
 pub fn apply_updates(
   root : Node,
-  n : Int,
-  updates : ArrayView[(Int, Int)],
+  n : Int32,
+  updates : ArrayView[(Int32, Int32)],
 ) -> Node {
   for update in updates; tree = root {
     let (idx, value) = update

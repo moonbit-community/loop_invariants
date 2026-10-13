@@ -33,9 +33,9 @@ pub const SENTINEL : Char = '\u0000'
 /// - `end`   - Exclusive end index of the edge label in `text`.
 /// - `child` - Index of the child `Node` that this edge leads to.
 pub(all) struct Edge {
-  start : Int
-  end : Int
-  child : Int
+  start : Int32
+  end : Int32
+  child : Int32
 }
 
 ///|
@@ -59,7 +59,7 @@ pub(all) struct Edge {
 ///   complete.
 pub(all) struct Node {
   edges : Array[Edge]
-  mut leaf_count : Int
+  mut leaf_count : Int32
 }
 
 ///|

@@ -21,9 +21,9 @@
 /// Build the graph with `new`, populate it with `add_edge`, then create a
 /// matcher via `hungarian()` or `hopcroft_karp()`.
 struct BipartiteGraph {
-  n_left : Int
-  n_right : Int
-  adj : Array[Array[Int]]
+  n_left : Int32
+  n_right : Int32
+  adj : Array[Array[Int32]]
 }
 
 ///|
@@ -45,10 +45,10 @@ struct BipartiteGraph {
 /// let size = graph.hungarian().max_matching()
 /// ```
 pub fn BipartiteGraph::BipartiteGraph(
-  n_left : Int,
-  n_right : Int,
+  n_left : Int32,
+  n_right : Int32,
 ) -> BipartiteGraph {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n_left => [] ]
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n_left => [] ]
   { n_left, n_right, adj, }
 }
 
@@ -64,8 +64,8 @@ pub fn BipartiteGraph::BipartiteGraph(
 /// must ensure indices are valid.
 pub fn BipartiteGraph::add_edge(
   self : BipartiteGraph,
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
 ) -> Unit {
   // u is in left set (0..n_left-1), v is in right set (0..n_right-1)
   self.adj[u].push(v)

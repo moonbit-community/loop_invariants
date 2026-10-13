@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -12,7 +12,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 ///|
 /// Mostly small Ints, sometimes full-range values (including the extrema);
 /// arithmetic wraps identically in the implementation and the model.
-fn gen_int(rs : @quickcheck.RandomState) -> Int {
+fn gen_int(rs : @quickcheck.RandomState) -> Int32 {
   match rint(rs, 0, 7) {
     0 => @quickcheck.Arbitrary::arbitrary(0, rs)
     1 => [2147483647, -2147483648][rint(rs, 0, 1)]
@@ -24,8 +24,8 @@ fn gen_int(rs : @quickcheck.RandomState) -> Int {
 /// Indices are stored raw and resolved at run time: updates use
 /// `raw % n`, range bounds `raw % (n + 1)`.
 priv enum Op {
-  Update(Int, Int)
-  Sum(Int, Int)
+  Update(Int32, Int32)
+  Sum(Int32, Int32)
 } derive(Debug)
 
 ///|
@@ -33,7 +33,7 @@ impl @quickcheck.Shrink for Op
 
 ///|
 priv struct Case {
-  init : Array[Int]
+  init : Array[Int32]
   ops : Array[Op]
 } derive(Debug)
 
@@ -62,7 +62,7 @@ fn run_case(c : Case) -> Bool {
   let n = c.init.length()
   let model = c.init.copy()
   let sd = @challenge_sqrt_decomposition_sum.build_sqrt_decomp(c.init[:])
-  let expected = (l : Int, r : Int) => {
+  let expected = (l : Int32, r : Int32) => {
     let mut s = 0
     for i in l..<r {
       s = s + model[i]

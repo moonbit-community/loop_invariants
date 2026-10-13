@@ -40,7 +40,7 @@
 //    sigma_k_table[j] = sigma_k(j) for every 1 <= j < i."
 
 ///|
-fn ipow(p : Int64, e : Int) -> Int64 {
+fn ipow(p : Int64, e : Int32) -> Int64 {
   let mut r = 1L
   for _ in 0..<e {
     r = r * p
@@ -101,7 +101,7 @@ pub fn divisor_sum(n : Int64) -> Int64 {
 
 ///|
 /// `sigma_k(n) = sum_{d | n} d^k`. `k >= 0`.
-pub fn sigma_k(n : Int64, k : Int) -> Int64 {
+pub fn sigma_k(n : Int64, k : Int32) -> Int64 {
   if n <= 0L || k < 0 {
     return 0L
   }
@@ -146,7 +146,7 @@ pub fn sigma_k(n : Int64, k : Int) -> Int64 {
 ///|
 /// Bulk: `divisor_count(k)` for every `k` in `[0, n]` via linear sieve.
 /// `result[0] = 0`, `result[1..n] = d(k)`.
-pub fn divisor_count_sieve(n : Int) -> Array[Int64] {
+pub fn divisor_count_sieve(n : Int32) -> Array[Int64] {
   if n < 0 {
     return []
   }
@@ -157,7 +157,7 @@ pub fn divisor_count_sieve(n : Int) -> Array[Int64] {
   d[1] = 1L
   let spf = Array::make(n + 1, 0)
   let cnt = Array::make(n + 1, 0) // exponent of spf in i
-  let primes : Array[Int] = []
+  let primes : Array[Int32] = []
   for i in 2..<=n {
     if spf[i] == 0 {
       spf[i] = i

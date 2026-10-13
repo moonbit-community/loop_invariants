@@ -49,7 +49,7 @@
 ///   @debug.assert_eq(@lcs.length(a, b), 4)
 /// }
 /// ```
-pub fn length(a : Array[Int], b : Array[Int]) -> Int {
+pub fn length(a : Array[Int32], b : Array[Int32]) -> Int32 {
   let n = a.length()
   let m = b.length()
   if n == 0 || m == 0 {
@@ -81,7 +81,10 @@ pub fn length(a : Array[Int], b : Array[Int]) -> Int {
 
 ///|
 /// Return the length and one realising LCS sequence (in original order).
-pub fn length_and_path(a : Array[Int], b : Array[Int]) -> (Int, Array[Int]) {
+pub fn length_and_path(
+  a : Array[Int32],
+  b : Array[Int32],
+) -> (Int32, Array[Int32]) {
   let n = a.length()
   let m = b.length()
   if n == 0 || m == 0 {
@@ -100,7 +103,7 @@ pub fn length_and_path(a : Array[Int], b : Array[Int]) -> (Int, Array[Int]) {
     }
   }
   // Reconstruct.
-  let path : Array[Int] = []
+  let path : Array[Int32] = []
   let mut i = n
   let mut j = m
   while i > 0 && j > 0 {
@@ -128,8 +131,8 @@ pub fn length_and_path(a : Array[Int], b : Array[Int]) -> (Int, Array[Int]) {
 }
 
 ///|
-fn s(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn s(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }
@@ -137,7 +140,7 @@ fn s(str : String) -> Array[Int] {
 }
 
 ///|
-fn is_subseq(sub : Array[Int], full : Array[Int]) -> Bool {
+fn is_subseq(sub : Array[Int32], full : Array[Int32]) -> Bool {
   let mut i = 0
   let mut j = 0
   while i < sub.length() && j < full.length() {
@@ -209,7 +212,7 @@ test "lcs symmetry" {
 
 ///|
 test "lcs by brute force on small inputs" {
-  fn brute(a : Array[Int], b : Array[Int]) -> Int {
+  fn brute(a : Array[Int32], b : Array[Int32]) -> Int32 {
     let n = a.length()
     let m = b.length()
     if n == 0 || m == 0 {
@@ -218,7 +221,7 @@ test "lcs by brute force on small inputs" {
     let mut best = 0
     let mut mask = 0
     while mask < 1 << n {
-      let sub : Array[Int] = []
+      let sub : Array[Int32] = []
       for k in 0..<n {
         if ((mask >> k) & 1) == 1 {
           sub.push(a[k])

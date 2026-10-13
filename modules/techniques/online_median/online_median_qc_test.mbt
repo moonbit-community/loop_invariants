@@ -2,14 +2,14 @@
 // the lower / upper / Double medians must match a sorted copy of the prefix.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -19,7 +19,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix of
 /// small values and `Int` extrema.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -48,7 +48,7 @@ impl @quickcheck.Shrink for Ints with fn shrink(self) {
 
 ///|
 /// Replays `xs` and checks all queries after each insertion.
-fn medians_match(xs : Array[Int]) -> Bool {
+fn medians_match(xs : Array[Int32]) -> Bool {
   let m = @online_median.new()
   if m.size() != 0 ||
     m.lower_median() is Some(_) ||
@@ -56,7 +56,7 @@ fn medians_match(xs : Array[Int]) -> Bool {
     m.median() is Some(_) {
     return false
   }
-  let seen : Array[Int] = []
+  let seen : Array[Int32] = []
   for x in xs {
     m.add(x)
     seen.push(x)

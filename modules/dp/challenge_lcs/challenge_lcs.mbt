@@ -3,7 +3,7 @@
 // ============================================================================
 
 ///|
-fn max(a : Int, b : Int) -> Int {
+fn max(a : Int32, b : Int32) -> Int32 {
   if a > b {
     a
   } else {
@@ -14,13 +14,13 @@ fn max(a : Int, b : Int) -> Int {
 ///|
 /// Compute LCS length using two-row DP.
 #warnings("+missing_invariant+missing_reasoning")
-pub fn lcs_length(a : ArrayView[Char], b : ArrayView[Char]) -> Int {
+pub fn lcs_length(a : ArrayView[Char], b : ArrayView[Char]) -> Int32 {
   let m = a.length()
   let n = b.length()
   if m == 0 || n == 0 {
     return 0
   }
-  let prev : Array[Int] = for
+  let prev : Array[Int32] = for
     i in 1..<=m
     prev = Array::make(n + 1, 0), curr = Array::make(n + 1, 0) {
     curr[0] = 0

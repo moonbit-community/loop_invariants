@@ -6,7 +6,7 @@
 ///|
 enum Node {
   Empty
-  Node(count~ : Int, left~ : Node, right~ : Node)
+  Node(count~ : Int32, left~ : Node, right~ : Node)
 } derive(Debug)
 
 ///|
@@ -36,12 +36,12 @@ enum Node {
 /// ```
 pub struct OrderStat {
   root : Node
-  lo : Int
-  hi : Int
+  lo : Int32
+  hi : Int32
 } derive(Debug)
 
 ///|
-fn count(node : Node) -> Int {
+fn count(node : Node) -> Int32 {
   match node {
     Empty => 0
     Node(count~, left=_, right=_) => count
@@ -51,7 +51,7 @@ fn count(node : Node) -> Int {
 ///|
 
 ///|
-fn insert(node : Node, l : Int, r : Int, value : Int) -> Node {
+fn insert(node : Node, l : Int32, r : Int32, value : Int32) -> Node {
   if value < l || value >= r {
     node
   } else if r - l == 1 {
@@ -79,25 +79,25 @@ fn insert(node : Node, l : Int, r : Int, value : Int) -> Node {
 
 ///|
 /// Create an empty multiset for values in [lo, hi).
-pub fn make(lo : Int, hi : Int) -> OrderStat {
+pub fn make(lo : Int32, hi : Int32) -> OrderStat {
   { root: Empty, lo, hi, }
 }
 
 ///|
 /// Return the total number of elements in the multiset.
-pub fn size(os : OrderStat) -> Int {
+pub fn size(os : OrderStat) -> Int32 {
   count(os.root)
 }
 
 ///|
 /// Insert value and return a new order-statistic structure.
-pub fn add(os : OrderStat, value : Int) -> OrderStat {
+pub fn add(os : OrderStat, value : Int32) -> OrderStat {
   { root: insert(os.root, os.lo, os.hi, value), lo: os.lo, hi: os.hi, }
 }
 
 ///|
 /// kth element (0-based) within the multiset.
-pub fn kth(os : OrderStat, k : Int) -> Int? {
+pub fn kth(os : OrderStat, k : Int32) -> Int32? {
   if k < 0 || k >= count(os.root) {
     return None
   }
@@ -108,7 +108,7 @@ pub fn kth(os : OrderStat, k : Int) -> Int? {
 }
 
 ///|
-fn kth_node(node : Node, l : Int, r : Int, k : Int) -> Int? {
+fn kth_node(node : Node, l : Int32, r : Int32, k : Int32) -> Int32? {
   match node {
     Empty => None
     Node(left~, right~, count=_) =>

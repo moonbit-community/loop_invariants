@@ -88,16 +88,16 @@
 /// `O(3^(n/3))` worst case (optimal -- matches the maximum possible
 /// number of maximal cliques in any graph of `n` vertices, Moon-Moser).
 pub fn maximal_cliques(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-) -> Array[Array[Int]] {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Array[Int32]] {
   if n <= 0 {
     return []
   }
   // Build the adjacency bitset: nbr[v] contains the indices of v's
   // neighbours, sorted. We use a sorted Array[Int] for efficient
   // intersection.
-  let neighbours = Array::make(n, ([] : Array[Int]))
+  let neighbours = Array::make(n, ([] : Array[Int32]))
   for i in 0..<n {
     neighbours[i] = []
   }
@@ -122,14 +122,14 @@ pub fn maximal_cliques(
       #|via classic two-pointer merge.
     ),
   }
-  let results : Array[Array[Int]] = []
+  let results : Array[Array[Int32]] = []
   // Initial call: R = empty, P = all vertices, X = empty.
-  let p_init : Array[Int] = []
+  let p_init : Array[Int32] = []
   for i in 0..<n {
     p_init.push(i)
   }
-  let r : Array[Int] = []
-  let x : Array[Int] = []
+  let r : Array[Int32] = []
+  let x : Array[Int32] = []
   expand(neighbours, results, r, p_init, x)
   results
 }
@@ -137,11 +137,11 @@ pub fn maximal_cliques(
 ///|
 /// Recursive enumeration step. `neighbours[i]` is sorted ascending.
 fn expand(
-  neighbours : Array[Array[Int]],
-  results : Array[Array[Int]],
-  r : Array[Int],
-  p : Array[Int],
-  x : Array[Int],
+  neighbours : Array[Array[Int32]],
+  results : Array[Array[Int32]],
+  r : Array[Int32],
+  p : Array[Int32],
+  x : Array[Int32],
 ) -> Unit {
   if p.length() == 0 && x.length() == 0 {
     results.push(r.copy())
@@ -153,7 +153,7 @@ fn expand(
   // this snapshot is safe even though `p_copy` is modified inside the
   // loop.
   let pivot_neighbours = neighbours[pivot]
-  let candidates : Array[Int] = []
+  let candidates : Array[Int32] = []
   for v in p {
     if !pivot_neighbours.contains(v) {
       candidates.push(v)
@@ -177,10 +177,10 @@ fn expand(
 ///|
 /// Pick the vertex in P ∪ X with the most neighbours in P.
 fn choose_pivot(
-  neighbours : Array[Array[Int]],
-  p : Array[Int],
-  x : Array[Int],
-) -> Int {
+  neighbours : Array[Array[Int32]],
+  p : Array[Int32],
+  x : Array[Int32],
+) -> Int32 {
   let mut best = -1
   let mut best_score = -1
   for v in p {
@@ -202,8 +202,8 @@ fn choose_pivot(
 
 ///|
 /// Sorted-array intersection using a two-pointer merge.
-fn intersect_sorted(a : ArrayView[Int], b : ArrayView[Int]) -> Array[Int] {
-  let out : Array[Int] = []
+fn intersect_sorted(a : ArrayView[Int32], b : ArrayView[Int32]) -> Array[Int32] {
+  let out : Array[Int32] = []
   for i = 0, j = 0; i < a.length() && j < b.length(); {
     let av = a[i]
     let bv = b[j]
@@ -229,7 +229,7 @@ fn intersect_sorted(a : ArrayView[Int], b : ArrayView[Int]) -> Array[Int] {
 
 ///|
 /// Count of values present in both sorted arrays.
-fn count_intersection(a : ArrayView[Int], b : ArrayView[Int]) -> Int {
+fn count_intersection(a : ArrayView[Int32], b : ArrayView[Int32]) -> Int32 {
   let mut count = 0
   for i = 0, j = 0; i < a.length() && j < b.length(); {
     let av = a[i]
@@ -254,7 +254,7 @@ fn count_intersection(a : ArrayView[Int], b : ArrayView[Int]) -> Int {
 ///|
 /// Remove a value from a sorted array (in place). Returns true iff the
 /// value was present. Caller ensures the array stays sorted.
-fn remove_from_sorted(a : Array[Int], v : Int) -> Bool {
+fn remove_from_sorted(a : Array[Int32], v : Int32) -> Bool {
   for i in 0..<a.length() {
     if a[i] == v {
       a.remove(i) |> ignore
@@ -268,7 +268,7 @@ fn remove_from_sorted(a : Array[Int], v : Int) -> Bool {
 
 ///|
 /// Insert into a sorted array if not already present, maintaining order.
-fn insert_sorted(a : Array[Int], v : Int) -> Unit {
+fn insert_sorted(a : Array[Int32], v : Int32) -> Unit {
   for i in 0..<a.length() {
     if a[i] == v {
       return

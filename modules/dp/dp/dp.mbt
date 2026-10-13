@@ -18,10 +18,10 @@
 ///
 /// Space-optimized to O(W) by processing weights in reverse.
 fn knapsack_01(
-  weights : ArrayView[Int],
-  values : ArrayView[Int],
-  capacity : Int,
-) -> Int {
+  weights : ArrayView[Int32],
+  values : ArrayView[Int32],
+  capacity : Int32,
+) -> Int32 {
   let n = weights.length()
   if n == 0 || capacity == 0 {
     return 0
@@ -61,8 +61,8 @@ fn knapsack_01(
 
 ///|
 test "knapsack 01" {
-  let weights : ReadOnlyArray[Int] = [1, 2, 3, 4]
-  let values : ReadOnlyArray[Int] = [1, 4, 5, 7]
+  let weights : ReadOnlyArray[Int32] = [1, 2, 3, 4]
+  let values : ReadOnlyArray[Int32] = [1, 4, 5, 7]
   @debug.assert_eq(knapsack_01(weights, values, 7), 12) // items 1,3 (4+7=11, wait let me recalc)
   // weights: 1,2,3,4  values: 1,4,5,7
   // capacity 7: take items with w=2,3 -> v=4+5=9, or w=3,4 -> 5+7=12, or w=1,2,4 -> 1+4+7=12
@@ -74,10 +74,10 @@ test "knapsack 01" {
 ///
 /// Recurrence: dp[w] = max(dp[w], dp[w-w[i]] + v[i]) for all i where w >= w[i]
 fn knapsack_unbounded(
-  weights : ArrayView[Int],
-  values : ArrayView[Int],
-  capacity : Int,
-) -> Int {
+  weights : ArrayView[Int32],
+  values : ArrayView[Int32],
+  capacity : Int32,
+) -> Int32 {
   let n = weights.length()
   if n == 0 || capacity == 0 {
     return 0
@@ -129,8 +129,8 @@ fn knapsack_unbounded(
 
 ///|
 test "knapsack unbounded" {
-  let weights : ReadOnlyArray[Int] = [1, 3, 4]
-  let values : ReadOnlyArray[Int] = [1, 4, 5]
+  let weights : ReadOnlyArray[Int32] = [1, 3, 4]
+  let values : ReadOnlyArray[Int32] = [1, 4, 5]
   // Capacity 7: best is 2 items of weight 3 (value 8) + 1 item of weight 1 (value 1) = 9
   // Or: 1 item of weight 4 (5) + 1 item of weight 3 (4) = 9
   @debug.assert_eq(knapsack_unbounded(weights, values, 7), 9)
@@ -144,14 +144,14 @@ test "knapsack unbounded" {
 /// tails is always sorted, so we can use binary search.
 ///
 /// Time: O(n log n), Space: O(n)
-fn lis_binary_search(nums : ArrayView[Int]) -> Int {
+fn lis_binary_search(nums : ArrayView[Int32]) -> Int32 {
   let n = nums.length()
   if n == 0 {
     return 0
   }
 
   // tails[i] = smallest tail of all increasing subsequences of length i+1
-  let tails : Array[Int] = []
+  let tails : Array[Int32] = []
   for i in 0..<n {
     let num = nums[i]
     // Binary search for the position to insert/replace
@@ -194,7 +194,7 @@ fn lis_binary_search(nums : ArrayView[Int]) -> Int {
 /// Parameters:
 /// - `arr`    : Sorted array to search.
 /// - `target` : Value to find the lower bound for.
-fn lower_bound_lis(arr : ArrayView[Int], target : Int) -> Int {
+fn lower_bound_lis(arr : ArrayView[Int32], target : Int32) -> Int32 {
   for lo = 0, hi = arr.length(); lo < hi; {
     let mid = (lo + hi) / 2
     if arr[mid] < target {
@@ -222,9 +222,9 @@ fn lower_bound_lis(arr : ArrayView[Int], target : Int) -> Int {
 
 ///|
 test "LIS binary search" {
-  let nums : ReadOnlyArray[Int] = [10, 9, 2, 5, 3, 7, 101, 18]
+  let nums : ReadOnlyArray[Int32] = [10, 9, 2, 5, 3, 7, 101, 18]
   @debug.assert_eq(lis_binary_search(nums), 4) // [2, 3, 7, 101] or [2, 3, 7, 18]
-  let nums2 : ReadOnlyArray[Int] = [0, 1, 0, 3, 2, 3]
+  let nums2 : ReadOnlyArray[Int32] = [0, 1, 0, 3, 2, 3]
   @debug.assert_eq(lis_binary_search(nums2), 4) // [0, 1, 2, 3]
 }
 
@@ -232,7 +232,7 @@ test "LIS binary search" {
 /// Coin Change - Minimum coins to make amount
 ///
 /// Recurrence: dp[a] = min(dp[a - coin] + 1) for all valid coins
-fn coin_change_min(coins : ArrayView[Int], amount : Int) -> Int {
+fn coin_change_min(coins : ArrayView[Int32], amount : Int32) -> Int32 {
   if amount == 0 {
     return 0
   }
@@ -285,15 +285,15 @@ fn coin_change_min(coins : ArrayView[Int], amount : Int) -> Int {
 
 ///|
 test "coin change min" {
-  let coins : ReadOnlyArray[Int] = [1, 2, 5]
+  let coins : ReadOnlyArray[Int32] = [1, 2, 5]
   @debug.assert_eq(coin_change_min(coins, 11), 3) // 5 + 5 + 1
-  let coins2 : ReadOnlyArray[Int] = [2]
+  let coins2 : ReadOnlyArray[Int32] = [2]
   @debug.assert_eq(coin_change_min(coins2, 3), -1) // impossible
 }
 
 ///|
 /// Coin Change - Number of ways to make amount
-fn coin_change_ways(coins : ArrayView[Int], amount : Int) -> Int {
+fn coin_change_ways(coins : ArrayView[Int32], amount : Int32) -> Int32 {
   let dp = Array::make(amount + 1, 0)
   dp[0] = 1 // One way to make 0: use no coins
 
@@ -333,7 +333,7 @@ fn coin_change_ways(coins : ArrayView[Int], amount : Int) -> Int {
 
 ///|
 test "coin change ways" {
-  let coins : ReadOnlyArray[Int] = [1, 2, 5]
+  let coins : ReadOnlyArray[Int32] = [1, 2, 5]
   @debug.assert_eq(coin_change_ways(coins, 5), 4) // [5], [2,2,1], [2,1,1,1], [1,1,1,1,1]
 }
 
@@ -345,7 +345,7 @@ test "coin change ways" {
 /// Recurrence:
 ///   LCS(i, j) = LCS(i-1, j-1) + 1       if s1[i-1] == s2[j-1]
 ///   LCS(i, j) = max(LCS(i-1, j), LCS(i, j-1))  otherwise
-fn longest_common_subsequence(s1 : String, s2 : String) -> Int {
+fn longest_common_subsequence(s1 : String, s2 : String) -> Int32 {
   let chars1 = s1.to_array()
   let chars2 = s2.to_array()
   let m = chars1.length()
@@ -412,7 +412,7 @@ test "longest common subsequence" {
 ///
 /// dp[i] = maximum sum of subarray ending at index i
 /// Recurrence: dp[i] = max(nums[i], dp[i-1] + nums[i])
-fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
+fn max_subarray_dp(nums : ArrayView[Int32]) -> Int32 {
   let n = nums.length()
   if n == 0 {
     return 0
@@ -448,7 +448,7 @@ fn max_subarray_dp(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "max subarray dp" {
-  let nums : ReadOnlyArray[Int] = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+  let nums : ReadOnlyArray[Int32] = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
   @debug.assert_eq(max_subarray_dp(nums), 6) // [4, -1, 2, 1]
 }
 
@@ -456,7 +456,7 @@ test "max subarray dp" {
 /// House Robber - Maximum sum with no adjacent elements
 ///
 /// Recurrence: dp[i] = max(dp[i-1], dp[i-2] + nums[i])
-fn house_robber(nums : ArrayView[Int]) -> Int {
+fn house_robber(nums : ArrayView[Int32]) -> Int32 {
   let n = nums.length()
   if n == 0 {
     return 0
@@ -499,9 +499,9 @@ fn house_robber(nums : ArrayView[Int]) -> Int {
 
 ///|
 test "house robber" {
-  let nums : ReadOnlyArray[Int] = [2, 7, 9, 3, 1]
+  let nums : ReadOnlyArray[Int32] = [2, 7, 9, 3, 1]
   @debug.assert_eq(house_robber(nums), 12) // 2 + 9 + 1
-  let nums2 : ReadOnlyArray[Int] = [1, 2, 3, 1]
+  let nums2 : ReadOnlyArray[Int32] = [1, 2, 3, 1]
   @debug.assert_eq(house_robber(nums2), 4) // 1 + 3
 }
 
@@ -509,7 +509,7 @@ test "house robber" {
 /// Unique Paths - Count paths in grid from (0,0) to (m-1, n-1)
 ///
 /// Recurrence: dp[i][j] = dp[i-1][j] + dp[i][j-1]
-fn unique_paths(m : Int, n : Int) -> Int {
+fn unique_paths(m : Int32, n : Int32) -> Int32 {
   if m == 0 || n == 0 {
     return 0
   }
@@ -556,7 +556,7 @@ test "unique paths" {
 /// Minimum Path Sum in Grid
 ///
 /// Recurrence: dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])
-fn min_path_sum(grid : Array[Array[Int]]) -> Int {
+fn min_path_sum(grid : Array[Array[Int32]]) -> Int32 {
   let m = grid.length()
   if m == 0 {
     return 0
@@ -683,7 +683,7 @@ fn word_break(s : String, word_dict : Array[String]) -> Bool {
 /// - `chars` : Full character array of the input string.
 /// - `start` : Index into `chars` where the comparison begins.
 /// - `word`  : The target word as a character array.
-fn matches_word(chars : Array[Char], start : Int, word : Array[Char]) -> Bool {
+fn matches_word(chars : Array[Char], start : Int32, word : Array[Char]) -> Bool {
   let word_len = word.length()
   for i in 0..<word_len {
     if chars[start + i] != word[i] {
@@ -719,7 +719,7 @@ test "word break" {
 /// Palindrome Partitioning - Minimum cuts for palindrome partitions
 ///
 /// dp[i] = minimum cuts needed for s[0..i)
-fn min_palindrome_cuts(s : String) -> Int {
+fn min_palindrome_cuts(s : String) -> Int32 {
   let chars = s.to_array()
   let n = chars.length()
   if n <= 1 {
@@ -832,7 +832,7 @@ test "min palindrome cuts" {
 /// Recurrence: dp[k][n] = 1 + min over all x in [1,n] of max(dp[k-1][x-1], dp[k][n-x])
 ///
 /// Optimized with binary search.
-fn egg_drop(eggs : Int, floors : Int) -> Int {
+fn egg_drop(eggs : Int32, floors : Int32) -> Int32 {
   if floors == 0 || floors == 1 {
     return floors
   }
@@ -885,7 +885,7 @@ test "egg drop" {
 /// Longest Palindromic Subsequence
 ///
 /// dp[i][j] = length of longest palindromic subsequence in s[i..j+1)
-fn longest_palindromic_subsequence(s : String) -> Int {
+fn longest_palindromic_subsequence(s : String) -> Int32 {
   let chars = s.to_array()
   let n = chars.length()
   if n == 0 {
@@ -893,7 +893,7 @@ fn longest_palindromic_subsequence(s : String) -> Int {
   }
 
   // Full 2D DP table
-  let dp : Array[Array[Int]] = []
+  let dp : Array[Array[Int32]] = []
   for i in 0..<n {
     dp.push(Array::make(n, 0))
     dp[i][i] = 1 // Single character is palindrome of length 1
@@ -955,14 +955,14 @@ test "longest palindromic subsequence" {
 /// Find optimal parenthesization to minimize multiplications.
 ///
 /// dp[i][j] = min cost to multiply matrices i through j
-fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
+fn matrix_chain_mult(dimensions : ArrayView[Int32]) -> Int32 {
   let n = dimensions.length() - 1 // Number of matrices
   if n <= 1 {
     return 0
   }
 
   // dp[i][j] = min cost to multiply matrices i..j (1-indexed)
-  let dp : Array[Array[Int]] = [ for _ in 0..<=n => Array::make(n + 1, 0) ]
+  let dp : Array[Array[Int32]] = [ for _ in 0..<=n => Array::make(n + 1, 0) ]
 
   // Chain length from 2 to n
   for len in 2..<=n {
@@ -1022,7 +1022,7 @@ fn matrix_chain_mult(dimensions : ArrayView[Int]) -> Int {
 ///|
 test "matrix chain multiplication" {
   // Matrices: 10x30, 30x5, 5x60
-  let dims : ReadOnlyArray[Int] = [10, 30, 5, 60]
+  let dims : ReadOnlyArray[Int32] = [10, 30, 5, 60]
   // Option 1: (AB)C = 10*30*5 + 10*5*60 = 1500 + 3000 = 4500
   // Option 2: A(BC) = 30*5*60 + 10*30*60 = 9000 + 18000 = 27000
   @debug.assert_eq(matrix_chain_mult(dims), 4500)

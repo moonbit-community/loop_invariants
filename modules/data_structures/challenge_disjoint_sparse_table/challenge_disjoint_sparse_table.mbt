@@ -3,7 +3,7 @@
 // ============================================================================
 
 ///|
-fn min(a : Int, b : Int) -> Int {
+fn min(a : Int32, b : Int32) -> Int32 {
   if a < b {
     a
   } else {
@@ -12,7 +12,7 @@ fn min(a : Int, b : Int) -> Int {
 }
 
 ///|
-fn highest_bit(x : Int) -> Int {
+fn highest_bit(x : Int32) -> Int32 {
   for v = x, k = 0 {
     if v <= 1 {
       break k
@@ -47,20 +47,22 @@ fn highest_bit(x : Int) -> Int {
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
+///   let arr : Array[Int32] = [5, 2, 4, 7, 1, 3, 6, 0]
 ///   let dst = build_disjoint_sparse_table(arr[:])
 ///   @debug.assert_eq(range_min(dst, 1, 5), 1)
 ///   @debug.assert_eq(range_min(dst, 5, 8), 0)
 /// }
 /// ```
 pub struct DisjointSparseTable {
-  n : Int
-  table : Array[Array[Int]]
+  n : Int32
+  table : Array[Array[Int32]]
 }
 
 ///|
 /// Build a disjoint sparse table for range minimum queries.
-pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable {
+pub fn build_disjoint_sparse_table(
+  arr : ArrayView[Int32],
+) -> DisjointSparseTable {
   let n = arr.length()
   if n == 0 {
     return { n: 0, table: [], }
@@ -132,7 +134,7 @@ pub fn build_disjoint_sparse_table(arr : ArrayView[Int]) -> DisjointSparseTable 
 
 ///|
 /// Query the minimum over [l, r).
-pub fn range_min(dst : DisjointSparseTable, l : Int, r : Int) -> Int {
+pub fn range_min(dst : DisjointSparseTable, l : Int32, r : Int32) -> Int32 {
   if r - l <= 1 {
     return dst.table[0][l]
   }

@@ -27,8 +27,8 @@
 /// }
 /// ```
 pub fn max_subarray_sum(
-  arr : ArrayView[Int],
-) -> Int where {
+  arr : ArrayView[Int32],
+) -> Int32 where {
   proof_require: nonempty(arr),
   proof_ensure: result => kadane_post(arr, result),
 } {
@@ -49,7 +49,7 @@ pub fn max_subarray_sum(
     proof_invariant: i <= arr.length(),
     proof_invariant: best_ending_here >= arr[i - 1],
     proof_invariant: best_so_far >= best_ending_here,
-    proof_invariant: ∃ k : Int, (0 <= k && k < i) && arr[k] <= best_so_far,
+    proof_invariant: ∃ k : Int32, (0 <= k && k < i) && arr[k] <= best_so_far,
     proof_reasoning: (
       #| Kadane's algorithm rests on a "local-vs-global" decomposition.
       #| For every prefix `arr[0..i)` we track two quantities:

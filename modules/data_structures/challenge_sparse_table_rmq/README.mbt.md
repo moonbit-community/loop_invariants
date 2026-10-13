@@ -80,7 +80,7 @@ The minimum of those two blocks is the answer.
 ```mbt check
 ///|
 test "sparse table example" {
-  let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
+  let arr : Array[Int32] = [5, 2, 4, 7, 1, 3, 6, 0]
   let st = @challenge_sparse_table_rmq.build_sparse_table(arr)
   debug_inspect(@challenge_sparse_table_rmq.range_min(st, 1, 5), content="1")
 }
@@ -93,7 +93,7 @@ test "sparse table example" {
 ```mbt check
 ///|
 test "sparse table short range" {
-  let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
+  let arr : Array[Int32] = [5, 2, 4, 7, 1, 3, 6, 0]
   let st = @challenge_sparse_table_rmq.build_sparse_table(arr)
   debug_inspect(@challenge_sparse_table_rmq.range_min(st, 2, 4), content="4")
 }
@@ -106,7 +106,7 @@ test "sparse table short range" {
 ```mbt check
 ///|
 test "sparse table full range" {
-  let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
+  let arr : Array[Int32] = [5, 2, 4, 7, 1, 3, 6, 0]
   let st = @challenge_sparse_table_rmq.build_sparse_table(arr)
   debug_inspect(@challenge_sparse_table_rmq.range_min(st, 0, 8), content="0")
 }

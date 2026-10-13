@@ -26,7 +26,7 @@
 
 ///|
 /// Sentinel indicating "no child" in the heavy-child array.
-const NO_CHILD : Int = -1
+const NO_CHILD : Int32 = -1
 
 ///|
 /// Compute subtree sizes, heavy children, and Euler-tour entry/exit times in a
@@ -47,17 +47,17 @@ const NO_CHILD : Int = -1
 ///
 /// Returns the next available timer value after finishing subtree(u).
 fn dfs_sizes(
-  adj : Array[Array[Int]],
-  u : Int,
-  p : Int,
-  parent : Array[Int],
-  size : Array[Int],
-  heavy : Array[Int],
-  tin : Array[Int],
-  tout : Array[Int],
-  euler : Array[Int],
-  timer : Int,
-) -> Int {
+  adj : Array[Array[Int32]],
+  u : Int32,
+  p : Int32,
+  parent : Array[Int32],
+  size : Array[Int32],
+  heavy : Array[Int32],
+  tin : Array[Int32],
+  tout : Array[Int32],
+  euler : Array[Int32],
+  timer : Int32,
+) -> Int32 {
   parent[u] = p
   tin[u] = timer
   euler[timer] = u
@@ -116,9 +116,9 @@ fn dfs_sizes(
 /// subtree(0) contains all colors {1,2,1,2,3}: colors 1 and 2 both have
 ///   freq 2, so result[0] = 1+2 = 3.
 pub fn subtree_color_mode_sum(
-  adj : Array[Array[Int]],
-  colors : Array[Int],
-  root? : Int = 0,
+  adj : Array[Array[Int32]],
+  colors : Array[Int32],
+  root~ : Int32 = 0,
 ) -> Array[Int64] {
   let n = adj.length()
   if n == 0 {
@@ -146,17 +146,17 @@ pub fn subtree_color_mode_sum(
   // counts   : color -> frequency in the current accumulated subtree
   // max_freq : maximum frequency seen so far
   // sum_ref  : sum of all colors achieving max_freq
-  let counts : Map[Int, Int] = Map([])
-  let max_freq : Ref[Int] = { val: 0, }
+  let counts : Map[Int32, Int32] = Map([])
+  let max_freq : Ref[Int32] = { val: 0, }
   let sum_ref : Ref[Int64] = { val: 0L, }
   let result : Array[Int64] = Array::make(n, 0L)
   // Insert a single color into the global data structure, updating max_freq
   // and sum_ref as needed.
   fn add_color(
-    counts : Map[Int, Int],
-    max_freq : Ref[Int],
+    counts : Map[Int32, Int32],
+    max_freq : Ref[Int32],
     sum_ref : Ref[Int64],
-    color : Int,
+    color : Int32,
   ) -> Unit {
     let prev = counts.get_or_default(color, 0)
     let next = prev + 1
@@ -175,14 +175,14 @@ pub fn subtree_color_mode_sum(
   // pre-computed Euler-tour range [tin[u], tout[u]).  This avoids a recursive
   // walk and keeps the cost proportional to subtree size.
   fn add_subtree(
-    counts : Map[Int, Int],
-    max_freq : Ref[Int],
+    counts : Map[Int32, Int32],
+    max_freq : Ref[Int32],
     sum_ref : Ref[Int64],
-    colors : Array[Int],
-    tin : Array[Int],
-    tout : Array[Int],
-    euler : Array[Int],
-    u : Int,
+    colors : Array[Int32],
+    tin : Array[Int32],
+    tout : Array[Int32],
+    euler : Array[Int32],
+    u : Int32,
   ) -> Unit {
     // Euler interval [tin[u], tout[u]) enumerates exactly the subtree of u.
     for idx in tin[u]..<tout[u] {
@@ -202,18 +202,18 @@ pub fn subtree_color_mode_sum(
   //
   // Invariant on exit (keep=false): the data structure is empty.
   fn dfs_dsu(
-    adj : Array[Array[Int]],
-    colors : Array[Int],
-    heavy : Array[Int],
-    tin : Array[Int],
-    tout : Array[Int],
-    euler : Array[Int],
-    counts : Map[Int, Int],
-    max_freq : Ref[Int],
+    adj : Array[Array[Int32]],
+    colors : Array[Int32],
+    heavy : Array[Int32],
+    tin : Array[Int32],
+    tout : Array[Int32],
+    euler : Array[Int32],
+    counts : Map[Int32, Int32],
+    max_freq : Ref[Int32],
     sum_ref : Ref[Int64],
     result : Array[Int64],
-    u : Int,
-    p : Int,
+    u : Int32,
+    p : Int32,
     keep : Bool,
   ) -> Unit {
     // Step 1: recurse into light children with keep=false so their data is
@@ -290,7 +290,7 @@ pub fn subtree_color_mode_sum(
 // ============================================================================
 
 ///|
-fn make_adj(n : Int) -> Array[Array[Int]] {
+fn make_adj(n : Int32) -> Array[Array[Int32]] {
   [
     for _ in 0..<n => []
   ]
@@ -307,7 +307,7 @@ test "dsu on tree mode sum" {
   adj[3].push(1)
   adj[1].push(4)
   adj[4].push(1)
-  let colors : Array[Int] = [1, 2, 1, 2, 3]
+  let colors : Array[Int32] = [1, 2, 1, 2, 3]
   let result = subtree_color_mode_sum(adj, colors)
   debug_inspect(result, content="[3, 2, 1, 2, 3]")
 }
@@ -319,7 +319,7 @@ test "dsu on tree tie case" {
   adj[1].push(0)
   adj[1].push(2)
   adj[2].push(1)
-  let colors : Array[Int] = [5, 5, 7]
+  let colors : Array[Int32] = [5, 5, 7]
   let result = subtree_color_mode_sum(adj, colors)
   debug_inspect(result, content="[5, 12, 7]")
 }
@@ -333,7 +333,7 @@ test "dsu on tree keeps carried state when parent edge is skipped" {
   adj[1].push(0)
   adj[1].push(3)
   adj[3].push(1)
-  let colors : Array[Int] = [1, 2, 2, 3]
+  let colors : Array[Int32] = [1, 2, 2, 3]
   let result = subtree_color_mode_sum(adj, colors)
   debug_inspect(result, content="[2, 2, 2, 3]")
 }

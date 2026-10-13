@@ -11,10 +11,10 @@
 // SPACE COMPLEXITY: O(n + k)
 
 ///|
-const NO_PARENT : Int = -1
+const NO_PARENT : Int32 = -1
 
 ///|
-fn make_adj(n : Int) -> Array[Array[Int]] {
+fn make_adj(n : Int32) -> Array[Array[Int32]] {
   [
     for _ in 0..<n => []
   ]
@@ -29,9 +29,9 @@ fn make_adj(n : Int) -> Array[Array[Int]] {
 /// `log = ceil(log2(n))` rows, which is sufficient for all ancestor jumps
 /// over a tree with `n` nodes.
 fn build_lca(
-  adj : Array[Array[Int]],
-  root : Int,
-) -> (Array[Array[Int]], Array[Int], Array[Int], Array[Int]) {
+  adj : Array[Array[Int32]],
+  root : Int32,
+) -> (Array[Array[Int32]], Array[Int32], Array[Int32], Array[Int32]) {
   let n = adj.length()
   let (log, _pow) = for log = 1, pow = 1; pow < n; {
     continue log + 1, pow * 2
@@ -47,20 +47,20 @@ fn build_lca(
       #|When pow >= n, log is large enough for binary lifting.
     ),
   }
-  let up : Array[Array[Int]] = [ for _ in 0..<log => Array::make(n, root) ]
+  let up : Array[Array[Int32]] = [ for _ in 0..<log => Array::make(n, root) ]
   let depth = Array::make(n, 0)
   let tin = Array::make(n, 0)
   let tout = Array::make(n, 0)
   fn dfs(
-    adj : Array[Array[Int]],
-    up : Array[Array[Int]],
-    depth : Array[Int],
-    tin : Array[Int],
-    tout : Array[Int],
-    u : Int,
-    p : Int,
-    timer : Int,
-  ) -> Int {
+    adj : Array[Array[Int32]],
+    up : Array[Array[Int32]],
+    depth : Array[Int32],
+    tin : Array[Int32],
+    tout : Array[Int32],
+    u : Int32,
+    p : Int32,
+    timer : Int32,
+  ) -> Int32 {
     up[0][u] = if p == NO_PARENT { u } else { p }
     depth[u] = if p == NO_PARENT { 0 } else { depth[p] + 1 }
     tin[u] = timer
@@ -98,7 +98,12 @@ fn build_lca(
 ///    them on different ancestors, until only one step separates them.
 /// 4. Return the parent of either node (both share the same parent at this
 ///    point, which is the LCA).
-fn lca(up : Array[Array[Int]], depth : Array[Int], a0 : Int, b0 : Int) -> Int {
+fn lca(
+  up : Array[Array[Int32]],
+  depth : Array[Int32],
+  a0 : Int32,
+  b0 : Int32,
+) -> Int32 {
   let log = up.length()
   let (a, b) = if depth[a0] < depth[b0] { (b0, a0) } else { (a0, b0) }
   let target_depth = depth[b]
@@ -139,8 +144,8 @@ fn lca(up : Array[Array[Int]], depth : Array[Int], a0 : Int, b0 : Int) -> Int {
 ///   Each edge `(u, v)` stored here corresponds to an ancestor-descendant
 ///   relationship in the original tree.
 pub struct VirtualTree {
-  nodes : Array[Int]
-  adj : Array[Array[Int]]
+  nodes : Array[Int32]
+  adj : Array[Array[Int32]]
 }
 
 ///|
@@ -169,9 +174,9 @@ pub struct VirtualTree {
 /// Complexity: O(k log n) time, O(n + k) space,
 /// where k = `important.length()` and n = `adj.length()`.
 pub fn build_virtual_tree(
-  adj : Array[Array[Int]],
-  important : Array[Int],
-  root? : Int = 0,
+  adj : Array[Array[Int32]],
+  important : Array[Int32],
+  root~ : Int32 = 0,
 ) -> VirtualTree {
   let n = adj.length()
   let vt_adj = make_adj(n)
@@ -186,13 +191,13 @@ pub fn build_virtual_tree(
     nodes.push(lca(up, depth, ordered[i], ordered[i + 1]))
   }
   nodes.sort_by((a, b) => tin[a] - tin[b])
-  let uniq : Array[Int] = []
+  let uniq : Array[Int32] = []
   for v in nodes {
     if uniq.length() == 0 || uniq[uniq.length() - 1] != v {
       uniq.push(v)
     }
   }
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   stack.push(uniq[0])
   for i in 1..<uniq.length() {
     let v = uniq[i]

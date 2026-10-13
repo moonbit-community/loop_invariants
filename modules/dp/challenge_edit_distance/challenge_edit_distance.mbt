@@ -3,7 +3,7 @@
 // ============================================================================
 
 ///|
-fn min3(a : Int, b : Int, c : Int) -> Int {
+fn min3(a : Int32, b : Int32, c : Int32) -> Int32 {
   if a <= b && a <= c {
     a
   } else if b <= c {
@@ -15,10 +15,10 @@ fn min3(a : Int, b : Int, c : Int) -> Int {
 
 ///|
 /// Compute edit distance using full DP table.
-pub fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int {
+pub fn edit_distance(s1 : ArrayView[Char], s2 : ArrayView[Char]) -> Int32 {
   let m = s1.length()
   let n = s2.length()
-  let dp : Array[Int] = Array::make((m + 1) * (n + 1), 0)
+  let dp : Array[Int32] = Array::make((m + 1) * (n + 1), 0)
   for i in 0..<=m {
     dp[i * (n + 1)] = i
   }

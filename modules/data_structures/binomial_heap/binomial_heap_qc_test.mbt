@@ -5,7 +5,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -24,9 +24,9 @@ fn gen_val(rs : @quickcheck.RandomState) -> Int64 {
 ///|
 /// Operations refer to earlier versions by `index % versions.length()`.
 priv enum Op {
-  Push(Int, Int64)
-  Pop(Int)
-  Merge(Int, Int)
+  Push(Int32, Int64)
+  Pop(Int32)
+  Merge(Int32, Int32)
 } derive(Debug)
 
 ///|

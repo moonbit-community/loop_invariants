@@ -52,7 +52,7 @@
 ///   @debug.assert_eq(@longest_palindromic_subsequence.length(s), 7)
 /// }
 /// ```
-pub fn length(s : Array[Int]) -> Int {
+pub fn length(s : Array[Int32]) -> Int32 {
   let n = s.length()
   if n == 0 {
     return 0
@@ -80,7 +80,7 @@ pub fn length(s : Array[Int]) -> Int {
 ///|
 /// Length plus one realising palindromic subsequence (returned as an
 /// `Array[Int]` in left-to-right order).
-pub fn length_and_path(s : Array[Int]) -> (Int, Array[Int]) {
+pub fn length_and_path(s : Array[Int32]) -> (Int32, Array[Int32]) {
   let n = s.length()
   if n == 0 {
     return (0, [])
@@ -103,8 +103,8 @@ pub fn length_and_path(s : Array[Int]) -> (Int, Array[Int]) {
     }
   }
   // Reconstruct.
-  let left : Array[Int] = []
-  let right : Array[Int] = []
+  let left : Array[Int32] = []
+  let right : Array[Int32] = []
   let mut i = 0
   let mut j = n - 1
   while i < j {
@@ -132,7 +132,7 @@ pub fn length_and_path(s : Array[Int]) -> (Int, Array[Int]) {
 }
 
 ///|
-fn is_palindrome(a : Array[Int]) -> Bool {
+fn is_palindrome(a : Array[Int32]) -> Bool {
   let n = a.length()
   for i in 0..<(n / 2) {
     if a[i] != a[n - 1 - i] {
@@ -143,7 +143,7 @@ fn is_palindrome(a : Array[Int]) -> Bool {
 }
 
 ///|
-fn is_subsequence(sub : Array[Int], full : Array[Int]) -> Bool {
+fn is_subsequence(sub : Array[Int32], full : Array[Int32]) -> Bool {
   let mut i = 0
   let mut j = 0
   while i < sub.length() && j < full.length() {
@@ -156,8 +156,8 @@ fn is_subsequence(sub : Array[Int], full : Array[Int]) -> Bool {
 }
 
 ///|
-fn s(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn s(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }

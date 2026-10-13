@@ -4,11 +4,11 @@
 // undirected edges, and repeated calls agree.
 
 ///|
-const BIG_CAP : Int = 1000000000
+const BIG_CAP : Int32 = 1000000000
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -18,14 +18,14 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// `t`; self-loops, parallel and anti-parallel edges and zero capacities
 /// allowed.
 priv struct Net {
-  n : Int
-  s : Int
-  t : Int
-  edges : Array[(Int, Int, Int)]
+  n : Int32
+  s : Int32
+  t : Int32
+  edges : Array[(Int32, Int32, Int32)]
 } derive(Debug)
 
 ///|
-fn gen_cap(rs : @quickcheck.RandomState) -> Int {
+fn gen_cap(rs : @quickcheck.RandomState) -> Int32 {
   match rint(rs, 0, 19) {
     0 => 0
     1 => BIG_CAP - rint(rs, 0, 5)
@@ -40,7 +40,7 @@ impl @quickcheck.Arbitrary for Net with fn arbitrary(size, rs) {
   let m = rint(rs, 0, max_m)
   let s = rint(rs, 0, n - 1)
   let t = (s + rint(rs, 1, n - 1)) % n
-  let edges : Array[(Int, Int, Int)] = []
+  let edges : Array[(Int32, Int32, Int32)] = []
   // Half of the networks get a random s -> ... -> t path first.
   if rint(rs, 0, 1) == 0 {
     let last = for k = rint(rs, 0, 2), u = s; k > 0; {
@@ -87,7 +87,7 @@ impl @quickcheck.Shrink for Net with fn shrink(g) {
 
 ///|
 /// Capacity of the cut `(S, V \ S)`; `in_s` is a bitmask of `S`.
-fn cut_capacity(g : Net, in_s : Int) -> Int64 {
+fn cut_capacity(g : Net, in_s : Int32) -> Int64 {
   g.edges.fold(init=0L, (acc, e) => {
     if ((in_s >> e.0) & 1) == 1 && ((in_s >> e.1) & 1) == 0 {
       acc + e.2.to_int64()
@@ -142,7 +142,7 @@ test "qc: push-relabel undirected edges equal two directed edges" {
   @quickcheck.check(
     (g : Net) => {
       let pr = @push_relabel_max_flow.PushRelabel(g.n)
-      let both : Array[(Int, Int, Int)] = []
+      let both : Array[(Int32, Int32, Int32)] = []
       for e in g.edges {
         pr.add_undirected_edge(e.0, e.1, e.2.to_int64())
         both.push(e)

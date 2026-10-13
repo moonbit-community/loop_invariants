@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -12,7 +12,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 ///|
 /// A short sequence: usually over a 3-symbol alphabet, sometimes arbitrary
 /// integers (including extreme values).
-fn gen_seq(rs : @quickcheck.RandomState, max_len : Int) -> Array[Int] {
+fn gen_seq(rs : @quickcheck.RandomState, max_len : Int32) -> Array[Int32] {
   let len = rint(rs, 0, max_len)
   if rint(rs, 0, 4) == 0 {
     Array::makei(len, _ => @quickcheck.Arbitrary::arbitrary(max_len, rs))
@@ -23,7 +23,7 @@ fn gen_seq(rs : @quickcheck.RandomState, max_len : Int) -> Array[Int] {
 
 ///|
 /// `a` after a few random edits (insert / delete / substitute / swap).
-fn mutate(rs : @quickcheck.RandomState, a : Array[Int]) -> Array[Int] {
+fn mutate(rs : @quickcheck.RandomState, a : Array[Int32]) -> Array[Int32] {
   let b = a.copy()
   for _ in 0..<rint(rs, 0, 3) {
     let n = b.length()
@@ -45,8 +45,8 @@ fn mutate(rs : @quickcheck.RandomState, a : Array[Int]) -> Array[Int] {
 
 ///|
 priv struct Pair {
-  a : Array[Int]
-  b : Array[Int]
+  a : Array[Int32]
+  b : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -64,9 +64,9 @@ impl @quickcheck.Shrink for Pair with fn shrink(self) {
 
 ///|
 priv struct Triple {
-  a : Array[Int]
-  b : Array[Int]
-  c : Array[Int]
+  a : Array[Int32]
+  b : Array[Int32]
+  c : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -88,7 +88,7 @@ impl @quickcheck.Shrink for Triple with fn shrink(self) {
 }
 
 ///|
-fn max(x : Int, y : Int) -> Int {
+fn max(x : Int32, y : Int32) -> Int32 {
   if x > y {
     x
   } else {
@@ -98,9 +98,9 @@ fn max(x : Int, y : Int) -> Int {
 
 ///|
 /// Reference LCS length of the suffixes a[i..] and b[j..], memoised.
-fn naive_lcs(a : Array[Int], b : Array[Int]) -> Int {
-  let memo : Map[(Int, Int), Int] = Map([])
-  fn go(i : Int, j : Int) -> Int {
+fn naive_lcs(a : Array[Int32], b : Array[Int32]) -> Int32 {
+  let memo : Map[(Int32, Int32), Int32] = Map([])
+  fn go(i : Int32, j : Int32) -> Int32 {
     if i == a.length() || j == b.length() {
       return 0
     }
@@ -121,7 +121,7 @@ fn naive_lcs(a : Array[Int], b : Array[Int]) -> Int {
 }
 
 ///|
-fn is_subseq(sub : Array[Int], full : Array[Int]) -> Bool {
+fn is_subseq(sub : Array[Int32], full : Array[Int32]) -> Bool {
   let mut i = 0
   for x in full {
     if i < sub.length() && sub[i] == x {

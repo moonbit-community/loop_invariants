@@ -127,7 +127,7 @@ test "convex hull trick basic" {
 /// When queries are also monotonic, we can answer in O(1) amortized.
 priv struct MonotonicCHT {
   lines : Array[(Int64, Int64)]
-  ptr : Array[Int] // Current pointer for monotonic queries
+  ptr : Array[Int32] // Current pointer for monotonic queries
 }
 
 ///|
@@ -361,8 +361,8 @@ test "li chao tree" {
 ///
 /// This is useful when the cost function satisfies the quadrangle inequality.
 fn divide_conquer_dp(
-  n : Int,
-  cost : (Int, Int) -> Int64,
+  n : Int32,
+  cost : (Int32, Int32) -> Int64,
   initial : Array[Int64],
 ) -> Array[Int64] {
   let dp = [ for i in 0..<n => initial[i] ]
@@ -371,11 +371,11 @@ fn divide_conquer_dp(
   // Computes dp[lo..hi] given that opt is in [opt_lo, opt_hi]
   fn solve(
     dp : Array[Int64],
-    lo : Int,
-    hi : Int,
-    opt_lo : Int,
-    opt_hi : Int,
-    cost : (Int, Int) -> Int64,
+    lo : Int32,
+    hi : Int32,
+    opt_lo : Int32,
+    opt_hi : Int32,
+    cost : (Int32, Int32) -> Int64,
   ) -> Unit {
     if lo > hi {
       return
@@ -421,7 +421,7 @@ fn divide_conquer_dp(
 test "divide conquer dp" {
   // Simple quadratic cost: cost(j, i) = (i - j)^2
   let n = 5
-  let cost = fn(j : Int, i : Int) -> Int64 {
+  let cost = fn(j : Int32, i : Int32) -> Int64 {
     let diff = (i - j).to_int64()
     diff * diff
   }
@@ -445,8 +445,8 @@ test "divide conquer dp" {
 ///
 /// dp[i][j] = min over i<k<j of (dp[i][k] + dp[k][j] + cost(i, j))
 fn knuth_optimization(
-  n : Int,
-  cost : (Int, Int) -> Int64,
+  n : Int32,
+  cost : (Int32, Int32) -> Int64,
 ) -> Array[Array[Int64]] {
   let dp = [ for _ in 0..<n => Array::make(n, 0L) ]
   let opt = [
@@ -514,7 +514,7 @@ fn knuth_optimization(
 test "knuth optimization" {
   // Matrix chain multiplication-like cost
   let n = 4
-  let cost = fn(i : Int, j : Int) -> Int64 {
+  let cost = fn(i : Int32, j : Int32) -> Int64 {
     if i >= j || i < 0 || j >= n {
       0L
     } else {
@@ -532,10 +532,10 @@ test "knuth optimization" {
 ///
 /// For dp[i] = min over j in [i-k, i-1] of (dp[j] + a[i])
 /// Use monotone deque for O(n) total.
-fn sliding_window_dp(arr : ArrayView[Int64], k : Int) -> Array[Int64] {
+fn sliding_window_dp(arr : ArrayView[Int64], k : Int32) -> Array[Int64] {
   let n = arr.length()
   let dp : Array[Int64] = Array::make(n, 0L)
-  let deque : Array[Int] = [] // Indices
+  let deque : Array[Int32] = [] // Indices
   dp[0] = arr[0]
   deque.push(0)
   for i in 1..<n {
@@ -609,9 +609,9 @@ test "sliding window dp" {
 /// binary search on the penalty λ for using an item.
 /// The optimal k becomes monotonic in λ.
 fn aliens_trick(
-  n : Int,
-  target_k : Int,
-  compute_dp : (Int64) -> (Int64, Int),
+  n : Int32,
+  target_k : Int32,
+  compute_dp : (Int64) -> (Int64, Int32),
 ) -> Int64 {
   let _ = n
   // Binary search for the right penalty

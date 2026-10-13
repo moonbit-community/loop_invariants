@@ -19,7 +19,7 @@
 /// Any vertex whose final distance equals this value was not reachable from
 /// the source. The value is 1,000,000,000, which is safely below `Int` overflow
 /// when added to 0 or 1.
-const ZERO_ONE_INF : Int = 1000000000
+const ZERO_ONE_INF : Int32 = 1000000000
 
 ///|
 /// A directed edge with a weight that must be 0 or 1.
@@ -27,8 +27,8 @@ const ZERO_ONE_INF : Int = 1000000000
 /// `to` is the destination vertex index (0-based).
 /// `weight` must be 0 or 1; any other value produces undefined results.
 pub struct Edge {
-  to : Int
-  weight : Int
+  to : Int32
+  weight : Int32
 } derive(Debug)
 
 ///|
@@ -37,7 +37,7 @@ pub struct Edge {
 /// Vertices are numbered 0 to `n - 1`. Each entry in `adj[u]` is an `Edge`
 /// leaving vertex `u`.
 pub struct Graph {
-  n : Int
+  n : Int32
   adj : Array[Array[Edge]]
 }
 
@@ -52,7 +52,7 @@ pub struct Graph {
 /// ```
 /// let g = Graph(5)   // vertices 0..4
 /// ```
-pub fn Graph::Graph(n : Int) -> Graph {
+pub fn Graph::Graph(n : Int32) -> Graph {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, adj, }
 }
@@ -76,7 +76,12 @@ pub fn Graph::Graph(n : Int) -> Graph {
 /// g.add_edge(0, 1, 0)   // free edge
 /// g.add_edge(1, 2, 1)   // unit-cost edge
 /// ```
-pub fn Graph::add_edge(self : Graph, u : Int, v : Int, weight : Int) -> Unit {
+pub fn Graph::add_edge(
+  self : Graph,
+  u : Int32,
+  v : Int32,
+  weight : Int32,
+) -> Unit {
   self.adj[u].push({ to: v, weight, })
 }
 
@@ -100,9 +105,9 @@ pub fn Graph::add_edge(self : Graph, u : Int, v : Int, weight : Int) -> Unit {
 /// ```
 pub fn Graph::add_undirected_edge(
   self : Graph,
-  u : Int,
-  v : Int,
-  weight : Int,
+  u : Int32,
+  v : Int32,
+  weight : Int32,
 ) -> Unit {
   self.add_edge(u, v, weight)
   self.add_edge(v, u, weight)
@@ -150,14 +155,14 @@ pub fn Graph::add_undirected_edge(
 /// let dist = zero_one_bfs(g, 0)
 /// // dist == [0, 0, 1]
 /// ```
-pub fn zero_one_bfs(graph : Graph, source : Int) -> Array[Int] {
+pub fn zero_one_bfs(graph : Graph, source : Int32) -> Array[Int32] {
   let n = graph.n
   let dist = Array::make(n, ZERO_ONE_INF)
   if n == 0 {
     return dist
   }
   dist[source] = 0
-  let deque : @deque.Deque[Int] = Deque([])
+  let deque : @deque.Deque[Int32] = Deque([])
   deque.push_front(source)
   let _ = for popped = deque.pop_front() {
     match popped {

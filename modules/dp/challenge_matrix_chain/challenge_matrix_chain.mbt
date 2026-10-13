@@ -3,17 +3,17 @@
 // ============================================================================
 
 ///|
-const INF : Int = 0x3fffffff
+const INF : Int32 = 0x3fffffff
 
 ///|
 /// Minimum scalar multiplications for matrix chain.
 /// dims has length n+1, where matrix i is dims[i] x dims[i+1].
-pub fn matrix_chain_min_cost(dims : ArrayView[Int]) -> Int {
+pub fn matrix_chain_min_cost(dims : ArrayView[Int32]) -> Int32 {
   let n = dims.length() - 1
   if n <= 0 {
     return 0
   }
-  let dp : Array[Array[Int]] = [ for _ in 0..<n => Array::make(n, 0) ]
+  let dp : Array[Array[Int32]] = [ for _ in 0..<n => Array::make(n, 0) ]
   for len in 2..<(n + 1) {
     for i in 0..<(n - len + 1) {
       let j = i + len - 1

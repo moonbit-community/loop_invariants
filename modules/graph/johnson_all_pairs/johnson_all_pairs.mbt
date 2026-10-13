@@ -43,7 +43,7 @@ const INF64 : Int64 = 4611686018427387903L
 /// (where `dist != current_dist[node]`) are discarded when popped.
 priv struct HeapEntry {
   dist : Int64
-  node : Int
+  node : Int32
 }
 
 ///|
@@ -160,7 +160,7 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 /// - `n`: number of vertices.
 ///
 /// Time complexity: O(n).
-fn build_adj(n : Int) -> Array[Array[(Int, Int64)]] {
+fn build_adj(n : Int32) -> Array[Array[(Int32, Int64)]] {
   [
     for _ in 0..<n => []
   ]
@@ -189,9 +189,9 @@ fn build_adj(n : Int) -> Array[Array[(Int, Int64)]] {
 /// Time complexity: O((E + V) log V) with binary heap.
 /// Space complexity: O(V + E).
 fn dijkstra(
-  n : Int,
-  adj : Array[Array[(Int, Int64)]],
-  src : Int,
+  n : Int32,
+  adj : Array[Array[(Int32, Int64)]],
+  src : Int32,
 ) -> Array[Int64] {
   let dist = Array::make(n, INF64)
   dist[src] = 0L
@@ -282,8 +282,8 @@ fn dijkstra(
 /// Time complexity: O(V * E + V^2 * log V).
 /// Space complexity: O(V + E) working space, O(V^2) for the output matrix.
 pub fn johnson_all_pairs(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
 ) -> Array[Array[Int64]]? {
   if n <= 0 {
     return Some([])
@@ -338,7 +338,7 @@ pub fn johnson_all_pairs(
 
 ///|
 test "johnson basic" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (0, 2, 4L),
     (1, 2, -2L),
@@ -352,13 +352,17 @@ test "johnson basic" {
 
 ///|
 test "johnson negative cycle" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, -2L), (2, 1, -2L)]
+  let edges : Array[(Int32, Int32, Int64)] = [
+    (0, 1, 1L),
+    (1, 2, -2L),
+    (2, 1, -2L),
+  ]
   debug_inspect(johnson_all_pairs(3, edges), content="None")
 }
 
 ///|
 test "johnson unreachable" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 2L), (1, 2, 3L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, 2L), (1, 2, 3L)]
   let dist = johnson_all_pairs(4, edges).unwrap()
   debug_inspect(dist[0][3], content="4611686018427387903")
 }

@@ -5,14 +5,14 @@
 
 ///|
 enum Node {
-  Leaf(value~ : Int)
+  Leaf(value~ : Int32)
   Branch(left~ : Node, right~ : Node)
 } derive(Debug)
 
 ///|
 struct Fenwick {
   root : Node
-  n : Int
+  n : Int32
 } derive(Debug)
 
 ///|
@@ -43,11 +43,11 @@ struct Fenwick {
 pub struct RangeFenwick {
   bit1 : Fenwick
   bit2 : Fenwick
-  n : Int
+  n : Int32
 } derive(Debug)
 
 ///|
-fn build_zero(l : Int, r : Int) -> Node {
+fn build_zero(l : Int32, r : Int32) -> Node {
   if r - l == 1 {
     Leaf(value=0)
   } else {
@@ -59,7 +59,7 @@ fn build_zero(l : Int, r : Int) -> Node {
 }
 
 ///|
-fn array_get(node : Node, l : Int, r : Int, idx : Int) -> Int {
+fn array_get(node : Node, l : Int32, r : Int32, idx : Int32) -> Int32 {
   match node {
     Leaf(value~) => value
     Branch(left~, right~) => {
@@ -74,7 +74,13 @@ fn array_get(node : Node, l : Int, r : Int, idx : Int) -> Int {
 }
 
 ///|
-fn array_set(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
+fn array_set(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  idx : Int32,
+  value : Int32,
+) -> Node {
   if r - l == 1 {
     Leaf(value~)
   } else {
@@ -92,12 +98,12 @@ fn array_set(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
 }
 
 ///|
-fn make_bit(n : Int) -> Fenwick {
+fn make_bit(n : Int32) -> Fenwick {
   { root: build_zero(0, n), n, }
 }
 
 ///|
-fn add_point(bit : Fenwick, idx : Int, delta : Int) -> Fenwick {
+fn add_point(bit : Fenwick, idx : Int32, delta : Int32) -> Fenwick {
   for i = idx, tree = bit.root {
     if i >= bit.n {
       break { root: tree, n: bit.n, }
@@ -120,7 +126,7 @@ fn add_point(bit : Fenwick, idx : Int, delta : Int) -> Fenwick {
 }
 
 ///|
-fn prefix_sum(bit : Fenwick, idx : Int) -> Int {
+fn prefix_sum(bit : Fenwick, idx : Int32) -> Int32 {
   for i = idx, acc = 0 {
     if i <= 0 {
       break acc
@@ -143,14 +149,14 @@ fn prefix_sum(bit : Fenwick, idx : Int) -> Int {
 
 ///|
 /// Create a range-update Fenwick structure with n elements.
-pub fn make(n : Int) -> RangeFenwick {
+pub fn make(n : Int32) -> RangeFenwick {
   let size = n + 2
   { bit1: make_bit(size), bit2: make_bit(size), n, }
 }
 
 ///|
 /// Return the number of elements tracked by the structure.
-pub fn length(rf : RangeFenwick) -> Int {
+pub fn length(rf : RangeFenwick) -> Int32 {
   rf.n
 }
 
@@ -158,9 +164,9 @@ pub fn length(rf : RangeFenwick) -> Int {
 /// Add delta to all indices in [l, r] (inclusive).
 pub fn range_add(
   rf : RangeFenwick,
-  l : Int,
-  r : Int,
-  delta : Int,
+  l : Int32,
+  r : Int32,
+  delta : Int32,
 ) -> RangeFenwick {
   if l > r {
     rf
@@ -177,7 +183,7 @@ pub fn range_add(
 
 ///|
 /// Return prefix sum over [0, idx] after range updates.
-pub fn prefix_sum_range(rf : RangeFenwick, idx : Int) -> Int {
+pub fn prefix_sum_range(rf : RangeFenwick, idx : Int32) -> Int32 {
   if idx < 0 {
     0
   } else {
@@ -190,7 +196,7 @@ pub fn prefix_sum_range(rf : RangeFenwick, idx : Int) -> Int {
 
 ///|
 /// Query the sum over [l, r] (inclusive).
-pub fn range_sum(rf : RangeFenwick, l : Int, r : Int) -> Int {
+pub fn range_sum(rf : RangeFenwick, l : Int32, r : Int32) -> Int32 {
   if l > r {
     0
   } else {
@@ -202,7 +208,7 @@ pub fn range_sum(rf : RangeFenwick, l : Int, r : Int) -> Int {
 /// Apply range adds (l, r, delta) inclusive.
 pub fn apply_updates(
   rf : RangeFenwick,
-  updates : ArrayView[(Int, Int, Int)],
+  updates : ArrayView[(Int32, Int32, Int32)],
 ) -> RangeFenwick {
   for update in updates; cur = rf {
     let (l, r, delta) = update

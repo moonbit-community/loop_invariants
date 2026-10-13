@@ -153,7 +153,7 @@ majority-vote algorithm:
 ```mbt check
 ///|
 test "mg majority" {
-  let mg : @misra_gries_heavy_hitters.MisraGries[Int] = @misra_gries_heavy_hitters.new(
+  let mg : @misra_gries_heavy_hitters.MisraGries[Int32] = @misra_gries_heavy_hitters.new(
     capacity=1,
   )
   for x in [3, 1, 3, 2, 3, 4, 3, 5, 3, 3] {
@@ -169,7 +169,7 @@ test "mg majority" {
 ```mbt check
 ///|
 test "mg top 2" {
-  let mg : @misra_gries_heavy_hitters.MisraGries[Int] = @misra_gries_heavy_hitters.new(
+  let mg : @misra_gries_heavy_hitters.MisraGries[Int32] = @misra_gries_heavy_hitters.new(
     capacity=2,
   )
   let stream = [1, 1, 1, 2, 2, 3, 4, 1, 1, 2, 2, 2]
@@ -188,7 +188,7 @@ test "mg top 2" {
 ```mbt check
 ///|
 test "mg lower bound" {
-  let mg : @misra_gries_heavy_hitters.MisraGries[Int] = @misra_gries_heavy_hitters.new(
+  let mg : @misra_gries_heavy_hitters.MisraGries[Int32] = @misra_gries_heavy_hitters.new(
     capacity=4,
   )
   for _ in 0..<10 {
@@ -208,7 +208,7 @@ test "mg lower bound" {
 ```mbt check
 ///|
 test "mg capacity hard bound" {
-  let mg : @misra_gries_heavy_hitters.MisraGries[Int] = @misra_gries_heavy_hitters.new(
+  let mg : @misra_gries_heavy_hitters.MisraGries[Int32] = @misra_gries_heavy_hitters.new(
     capacity=3,
   )
   for v in 0..<100 {

@@ -32,7 +32,7 @@
 /// Choosing `log_p(n)` where p is the promotion probability gives expected
 /// logarithmic height for up to `p^max_level` elements.  With p = 4 and
 /// max_level = 16 this covers up to ~4 billion elements comfortably.
-let max_level : Int = 16
+let max_level : Int32 = 16
 
 ///|
 /// Reciprocal of the per-level promotion probability (1/4 per level).
@@ -41,7 +41,7 @@ let max_level : Int = 16
 /// probability 1/4.  Compared to p = 1/2 this yields:
 /// - expected 4/3 forward pointers per node (vs 2 for p = 1/2),
 /// - slightly taller searches but better memory efficiency.
-let promotion_probability : Int = 4 // 1 in 4 chance
+let promotion_probability : Int32 = 4 // 1 in 4 chance
 
 ///|
 /// A single node in the skip list.
@@ -71,7 +71,7 @@ priv struct SkipNode[K, V] {
 fn[K, V] SkipNode::SkipNode(
   key : K?,
   value : V?,
-  level : Int,
+  level : Int32,
 ) -> SkipNode[K, V] {
   { key, value, forward: Array::make(level, None), }
 }
@@ -97,11 +97,11 @@ priv struct SkipList[K, V] {
   // header.key should be treated as -infinity
   header : SkipNode[K, V]
   // Current maximum level in use (0-indexed)
-  mut level : Int
+  mut level : Int32
   // Random state for probabilistic level generation
-  mut rand_state : Int
+  mut rand_state : Int32
   // Number of elements
-  mut size : Int
+  mut size : Int32
 }
 
 ///|
@@ -132,7 +132,7 @@ fn[K, V] SkipList::SkipList() -> SkipList[K, V] {
 /// rand_state = (rand_state * 1103 + 12345) mod 65536
 /// ```
 /// A result divisible by `promotion_probability` counts as "heads".
-fn[K, V] SkipList::random_level(self : SkipList[K, V]) -> Int {
+fn[K, V] SkipList::random_level(self : SkipList[K, V]) -> Int32 {
   // Loop invariant: lvl represents the current level being considered
   // We flip coins until we get "heads" (random not divisible by p)
   for lvl in 0..<(max_level - 1) {
@@ -550,7 +550,7 @@ fn[K : Compare, V] SkipList::range_query(
 /// Return the number of key-value pairs currently stored in the skip list.
 ///
 /// This is an O(1) operation; the count is maintained incrementally.
-fn[K, V] SkipList::length(self : SkipList[K, V]) -> Int {
+fn[K, V] SkipList::length(self : SkipList[K, V]) -> Int32 {
   self.size
 }
 
@@ -735,7 +735,7 @@ fn[K : Compare, V] SkipList::floor(self : SkipList[K, V], key : K) -> (K, V)? {
 fn[K : Compare, V] SkipList::count_less_than(
   self : SkipList[K, V],
   key : K,
-) -> Int {
+) -> Int32 {
   for current = self.header.forward[0], count = 0 {
     match current {
       Some(node) if node.key is Some(node_key) && node_key < key =>
@@ -767,7 +767,7 @@ fn[K : Compare, V] SkipList::count_less_than(
 ///
 /// Example: for keys [1, 3, 5, 7, 9], `kth_element(2)` returns
 /// `Some((5, value_of_5))`.
-fn[K, V] SkipList::kth_element(self : SkipList[K, V], k : Int) -> (K, V)? {
+fn[K, V] SkipList::kth_element(self : SkipList[K, V], k : Int32) -> (K, V)? {
   if k < 0 || k >= self.size {
     return None
   }
@@ -807,7 +807,7 @@ fn[K, V] SkipList::kth_element(self : SkipList[K, V], k : Int) -> (K, V)? {
 
 ///|
 test "skip list basic operations" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int32, Int32] = SkipList()
 
   // Empty list check
   debug_inspect(sl.is_empty(), content="true")
@@ -829,7 +829,7 @@ test "skip list basic operations" {
 
 ///|
 test "skip list delete" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int32, Int32] = SkipList()
   sl.insert(1, 10)
   sl.insert(2, 20)
   sl.insert(3, 30)
@@ -855,7 +855,7 @@ test "skip list delete" {
 
 ///|
 test "skip list range query" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int32, Int32] = SkipList()
   for i in 0..<10 {
     sl.insert(i * 2, i * 20) // Insert 0, 2, 4, ..., 18
   }
@@ -871,7 +871,7 @@ test "skip list range query" {
 
 ///|
 test "skip list min max" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int32, Int32] = SkipList()
   debug_inspect(sl.min(), content="None")
   debug_inspect(sl.max(), content="None")
   sl.insert(50, 500)
@@ -885,7 +885,7 @@ test "skip list min max" {
 
 ///|
 test "skip list ceil floor" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int32, Int32] = SkipList()
 
   // Insert 10, 20, 30, 40, 50
   for i in 1..<=5 {
@@ -907,7 +907,7 @@ test "skip list ceil floor" {
 
 ///|
 test "skip list ordered statistics" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int32, Int32] = SkipList()
 
   // Insert 1, 3, 5, 7, 9
   for i in 0..<5 {
@@ -928,7 +928,7 @@ test "skip list ordered statistics" {
 
 ///|
 test "skip list stress test" {
-  let sl : SkipList[Int, Int] = SkipList()
+  let sl : SkipList[Int32, Int32] = SkipList()
 
   // Insert 100 elements
   for i in 0..<100 {
@@ -986,7 +986,7 @@ priv struct MultiSkipNode[K, V] {
 fn[K, V] MultiSkipNode::MultiSkipNode(
   key : K?,
   values : Array[V],
-  level : Int,
+  level : Int32,
 ) -> MultiSkipNode[K, V] {
   { key, values, forward: Array::make(level, None), }
 }
@@ -1003,9 +1003,9 @@ fn[K, V] MultiSkipNode::MultiSkipNode(
 /// ordering and level hierarchy.
 priv struct MultiSkipList[K, V] {
   header : MultiSkipNode[K, V]
-  mut level : Int
-  mut rand_state : Int
-  mut size : Int // Total count including duplicates
+  mut level : Int32
+  mut rand_state : Int32
+  mut size : Int32 // Total count including duplicates
 }
 
 ///|
@@ -1025,7 +1025,7 @@ fn[K, V] MultiSkipList::MultiSkipList() -> MultiSkipList[K, V] {
 ///|
 /// Generate a random height for a newly inserted node using the same LCG
 /// and geometric distribution as `SkipList::random_level`.
-fn[K, V] MultiSkipList::random_level(self : MultiSkipList[K, V]) -> Int {
+fn[K, V] MultiSkipList::random_level(self : MultiSkipList[K, V]) -> Int32 {
   for lvl in 0..<(max_level - 1) {
     self.rand_state = (self.rand_state * 1103 + 12345) % 65536
     let r = if self.rand_state < 0 { -self.rand_state } else { self.rand_state }
@@ -1167,7 +1167,7 @@ fn[K : Compare, V] MultiSkipList::search(
 
 ///|
 test "multi skip list duplicates" {
-  let msl : MultiSkipList[Int, Int] = MultiSkipList()
+  let msl : MultiSkipList[Int32, Int32] = MultiSkipList()
 
   // Insert duplicate keys
   msl.insert(5, 50)

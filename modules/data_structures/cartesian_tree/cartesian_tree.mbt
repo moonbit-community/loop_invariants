@@ -63,10 +63,10 @@
 /// - `parent` -- index into `nodes` of the parent, or `-1` for the root
 priv struct CartesianNode {
   value : Int64
-  index : Int // Position in original array
-  mut left : Int // Index of left child in nodes array (-1 if none)
-  mut right : Int // Index of right child in nodes array (-1 if none)
-  mut parent : Int // Index of parent (-1 for root)
+  index : Int32 // Position in original array
+  mut left : Int32 // Index of left child in nodes array (-1 if none)
+  mut right : Int32 // Index of right child in nodes array (-1 if none)
+  mut parent : Int32 // Index of parent (-1 for root)
 }
 
 ///|
@@ -90,12 +90,12 @@ priv struct CartesianNode {
 /// - `log_n`          -- ceiling of log2(n), used as the table height for binary lifting
 priv struct CartesianTree {
   nodes : Array[CartesianNode]
-  root : Int // Index of root node
-  index_to_node : Array[Int] // Maps array index to node index
-  depth : Array[Int] // Depth of each node
-  ancestors : Array[Array[Int]] // ancestors[k][v] = 2^k-th ancestor of v
-  n : Int
-  log_n : Int
+  root : Int32 // Index of root node
+  index_to_node : Array[Int32] // Maps array index to node index
+  depth : Array[Int32] // Depth of each node
+  ancestors : Array[Array[Int32]] // ancestors[k][v] = 2^k-th ancestor of v
+  n : Int32
+  log_n : Int32
 }
 
 ///|
@@ -140,7 +140,7 @@ fn CartesianTree::CartesianTree(arr : Array[Int64]) -> CartesianTree {
   // Build tree using monotonic stack
   // INVARIANT: Stack contains nodes on rightmost path, in increasing depth order
   // Stack values are decreasing (since we're building min-heap)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     // Pop nodes with larger values
     // INVARIANT: Popped nodes will become left subtree of current node
@@ -192,7 +192,7 @@ fn CartesianTree::CartesianTree(arr : Array[Int64]) -> CartesianTree {
 
   // Compute depths using BFS
   let depth = Array::make(n, 0)
-  let queue : Array[Int] = [root]
+  let queue : Array[Int32] = [root]
   depth[root] = 0
   for head = 0; head < queue.length(); {
     let v = queue[head]
@@ -225,7 +225,7 @@ fn CartesianTree::CartesianTree(arr : Array[Int64]) -> CartesianTree {
   // Binary lifting preprocessing
   // ancestors[k][v] = 2^k-th ancestor of v
   // INVARIANT: ancestors[k][v] = ancestors[k-1][ancestors[k-1][v]]
-  let ancestors : Array[Array[Int]] = [
+  let ancestors : Array[Array[Int32]] = [
     for _ in 0..<log_n => Array::make(n, -1)
   ]
 
@@ -253,7 +253,7 @@ fn CartesianTree::CartesianTree(arr : Array[Int64]) -> CartesianTree {
 /// Used to determine the height of the binary-lifting table: `log_n = highest_bit(n) + 1`.
 ///
 /// Example: `highest_bit(5)` returns `2` because 2^2 = 4 <= 5 < 8 = 2^3.
-fn highest_bit(x : Int) -> Int {
+fn highest_bit(x : Int32) -> Int32 {
   if x <= 0 {
     return 0
   }
@@ -288,7 +288,7 @@ fn highest_bit(x : Int) -> Int {
 ///    nodes are the immediate children of the LCA.
 ///
 /// Time complexity: O(log n).
-fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
+fn CartesianTree::lca(self : CartesianTree, u : Int32, v : Int32) -> Int32 {
   if u < 0 || v < 0 || u >= self.n || v >= self.n {
     return -1
   }
@@ -358,7 +358,11 @@ fn CartesianTree::lca(self : CartesianTree, u : Int, v : Int) -> Int {
 /// Returns `None` when `l < 0`, `r >= n`, or `l > r`.
 ///
 /// Time complexity: O(log n).
-fn CartesianTree::query_min(self : CartesianTree, l : Int, r : Int) -> Int64? {
+fn CartesianTree::query_min(
+  self : CartesianTree,
+  l : Int32,
+  r : Int32,
+) -> Int64? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None
   }
@@ -396,7 +400,7 @@ fn CartesianTree::query_min(self : CartesianTree, l : Int, r : Int) -> Int64? {
 /// let arr : Array[Int64] = [3L, 2L, 6L, 1L, 9L]
 /// assert_eq!(@cartesian_tree.range_min(arr[:], 1, 3), Some(1L))
 /// ```
-pub fn range_min(arr : ArrayView[Int64], l : Int, r : Int) -> Int64? {
+pub fn range_min(arr : ArrayView[Int64], l : Int32, r : Int32) -> Int64? {
   let tree = CartesianTree(arr.to_owned())
   tree.query_min(l, r)
 }
@@ -414,9 +418,9 @@ pub fn range_min(arr : ArrayView[Int64], l : Int, r : Int) -> Int64? {
 /// Time complexity: O(log n).
 fn CartesianTree::query_min_index(
   self : CartesianTree,
-  l : Int,
-  r : Int,
-) -> Int? {
+  l : Int32,
+  r : Int32,
+) -> Int32? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None
   }
@@ -431,7 +435,7 @@ fn CartesianTree::query_min_index(
 
 ///|
 /// Return the number of elements in the tree (same as the source array length).
-fn CartesianTree::length(self : CartesianTree) -> Int {
+fn CartesianTree::length(self : CartesianTree) -> Int32 {
   self.n
 }
 
@@ -479,7 +483,7 @@ fn CartesianTree::verify_inorder(
 /// subtree.  A node index of `-1` is treated as an empty subtree.
 fn inorder_collect(
   nodes : Array[CartesianNode],
-  node : Int,
+  node : Int32,
   result : Array[Int64],
 ) -> Unit {
   if node == -1 {
@@ -507,7 +511,7 @@ fn CartesianTree::verify_heap(self : CartesianTree) -> Bool {
 ///
 /// Returns `false` as soon as a violation is found (a child whose value is
 /// strictly less than its parent's value), otherwise returns `true`.
-fn verify_heap_recursive(nodes : Array[CartesianNode], node : Int) -> Bool {
+fn verify_heap_recursive(nodes : Array[CartesianNode], node : Int32) -> Bool {
   if node == -1 {
     return true
   }
@@ -544,13 +548,13 @@ fn verify_heap_recursive(nodes : Array[CartesianNode], node : Int) -> Bool {
 /// This is equivalent to reading off the left-parent pointer in the Cartesian
 /// tree: the left parent of node `i` is exactly the nearest smaller value to
 /// its left.
-fn nearest_smaller_left(arr : Array[Int64]) -> Array[Int] {
+fn nearest_smaller_left(arr : Array[Int64]) -> Array[Int32] {
   let n = arr.length()
   let result = Array::make(n, -1)
 
   // Use monotonic stack
   // INVARIANT: Stack contains indices with strictly increasing values
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     // Pop elements >= arr[i]
     for pop_next = stack.length() > 0; pop_next; {
@@ -579,12 +583,12 @@ fn nearest_smaller_left(arr : Array[Int64]) -> Array[Int] {
 ///
 /// Mirrors `nearest_smaller_left` but processes the array right to left.
 /// Time complexity: O(n).
-fn nearest_smaller_right(arr : Array[Int64]) -> Array[Int] {
+fn nearest_smaller_right(arr : Array[Int64]) -> Array[Int32] {
   let n = arr.length()
   let result = Array::make(n, -1)
 
   // Process from right to left
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in n>..0 {
     for pop_next = stack.length() > 0; pop_next; {
       let top = stack[stack.length() - 1]
@@ -670,7 +674,7 @@ fn CartesianTree::tree_number(self : CartesianTree) -> Int64 {
 
   // Generate balanced parentheses encoding
   // ( = 1, ) = 0 in binary
-  let bits : Array[Int] = []
+  let bits : Array[Int32] = []
   encode_tree(self.nodes, self.root, bits)
 
   // Convert to number
@@ -689,8 +693,8 @@ fn CartesianTree::tree_number(self : CartesianTree) -> Int64 {
 /// contributes `0`.  The full encoding of an n-node tree is `2n + 1` bits long.
 fn encode_tree(
   nodes : Array[CartesianNode],
-  node : Int,
-  bits : Array[Int],
+  node : Int32,
+  bits : Array[Int32],
 ) -> Unit {
   // Encode using null markers to distinguish left vs right children
   // null = 0, has_node = 1

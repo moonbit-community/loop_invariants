@@ -3,14 +3,14 @@
 // and `Int` extrema.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -20,7 +20,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix of
 /// small values and `Int` extrema.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 }
 
 ///|
@@ -46,9 +46,9 @@ impl @quickcheck.Arbitrary for Ints with fn arbitrary(size, rs) {
 /// A sorted array plus a target that is often an element of the array, a
 /// neighbour of one, or an arbitrary `Int` (including the extrema).
 priv struct Case {
-  xs : Array[Int]
-  target : Int
-  start : Int
+  xs : Array[Int32]
+  target : Int32
+  start : Int32
 } derive(Debug)
 
 ///|
@@ -79,7 +79,7 @@ impl @quickcheck.Shrink for Case with fn shrink(self) {
 }
 
 ///|
-fn naive_lower_bound(xs : Array[Int], from : Int, t : Int) -> Int {
+fn naive_lower_bound(xs : Array[Int32], from : Int32, t : Int32) -> Int32 {
   let mut i = from
   while i < xs.length() && xs[i] < t {
     i = i + 1

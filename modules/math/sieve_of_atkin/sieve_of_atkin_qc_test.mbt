@@ -1,5 +1,5 @@
 ///|
-fn trial_is_prime(n : Int) -> Bool {
+fn trial_is_prime(n : Int32) -> Bool {
   if n < 2 {
     return false
   }
@@ -16,7 +16,7 @@ fn trial_is_prime(n : Int) -> Bool {
 /// perfect squares of primes (which Atkin must explicitly eliminate), plus
 /// larger bounds up to 20000.
 priv struct Limit {
-  n : Int
+  n : Int32
 } derive(Debug)
 
 ///|

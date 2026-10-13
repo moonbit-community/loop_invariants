@@ -3,7 +3,7 @@
 // ============================================================================
 
 ///|
-fn clamp_nonneg(x : Int) -> Int {
+fn clamp_nonneg(x : Int32) -> Int32 {
   if x < 0 {
     0
   } else {
@@ -14,7 +14,7 @@ fn clamp_nonneg(x : Int) -> Int {
 ///|
 /// Unclamped min/max balance for chars[0..end).
 /// "(" adds 1, ")" subtracts 1, "*" can do both.
-fn range_prefix(chars : ArrayView[Char], end : Int) -> (Int, Int) {
+fn range_prefix(chars : ArrayView[Char], end : Int32) -> (Int32, Int32) {
   if end <= 0 {
     (0, 0)
   } else {

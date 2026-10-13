@@ -5,13 +5,13 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
-priv struct Text(Array[Int]) derive(Debug)
+priv struct Text(Array[Int32]) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for Text with fn arbitrary(size, rs) {
@@ -20,7 +20,7 @@ impl @quickcheck.Arbitrary for Text with fn arbitrary(size, rs) {
   Text(
     Array::makei(len, _ => {
       if k == 0 {
-        let v : Int = @quickcheck.Arbitrary::arbitrary(size, rs)
+        let v : Int32 = @quickcheck.Arbitrary::arbitrary(size, rs)
         if v == -1 {
           -2
         } else {

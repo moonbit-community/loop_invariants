@@ -28,7 +28,7 @@
 //    length is dist[u] + dist[v] + 1."
 
 ///|
-const INF : Int = 2147483647
+const INF : Int32 = 2147483647
 
 ///|
 /// Girth of the undirected graph `adj`. Returns `-1` for acyclic
@@ -43,12 +43,12 @@ const INF : Int = 2147483647
 ///   @debug.assert_eq(@girth.girth(3, adj), 3)
 /// }
 /// ```
-pub fn girth(n : Int, adj : Array[Array[Int]]) -> Int {
+pub fn girth(n : Int32, adj : Array[Array[Int32]]) -> Int32 {
   let mut best = INF
   for s in 0..<n {
     let dist = Array::make(n, -1)
     let parent = Array::make(n, -1)
-    let queue : Array[Int] = []
+    let queue : Array[Int32] = []
     dist[s] = 0
     queue.push(s)
     let mut head = 0
@@ -82,19 +82,19 @@ pub fn girth(n : Int, adj : Array[Array[Int]]) -> Int {
 
 ///|
 test "triangle girth 3" {
-  let adj : Array[Array[Int]] = [[1, 2], [0, 2], [0, 1]]
+  let adj : Array[Array[Int32]] = [[1, 2], [0, 2], [0, 1]]
   @debug.assert_eq(girth(3, adj), 3)
 }
 
 ///|
 test "square girth 4" {
-  let adj : Array[Array[Int]] = [[1, 3], [0, 2], [1, 3], [0, 2]]
+  let adj : Array[Array[Int32]] = [[1, 3], [0, 2], [1, 3], [0, 2]]
   @debug.assert_eq(girth(4, adj), 4)
 }
 
 ///|
 test "path acyclic" {
-  let adj : Array[Array[Int]] = [[1], [0, 2], [1, 3], [2]]
+  let adj : Array[Array[Int32]] = [[1], [0, 2], [1, 3], [2]]
   @debug.assert_eq(girth(4, adj), -1)
 }
 
@@ -102,7 +102,7 @@ test "path acyclic" {
 test "Petersen graph girth 5" {
   // Petersen graph: 10 vertices, girth 5. Outer 5-cycle 0-1-2-3-4-0
   // connected to inner 5-star 5-6-7-8-9 via spokes; inner connects 5-7, 7-9, 9-6, 6-8, 8-5.
-  let adj : Array[Array[Int]] = [
+  let adj : Array[Array[Int32]] = [
     [1, 4, 5],
     [0, 2, 6],
     [1, 3, 7],
@@ -119,7 +119,7 @@ test "Petersen graph girth 5" {
 
 ///|
 test "complete graph K4 girth 3" {
-  let adj : Array[Array[Int]] = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]
+  let adj : Array[Array[Int32]] = [[1, 2, 3], [0, 2, 3], [0, 1, 3], [0, 1, 2]]
   @debug.assert_eq(girth(4, adj), 3)
 }
 
@@ -131,6 +131,6 @@ test "single vertex" {
 ///|
 test "two components one cyclic" {
   // {0, 1} edge + {2, 3, 4} triangle.
-  let adj : Array[Array[Int]] = [[1], [0], [3, 4], [2, 4], [2, 3]]
+  let adj : Array[Array[Int32]] = [[1], [0], [3, 4], [2, 4], [2, 3]]
   @debug.assert_eq(girth(5, adj), 3)
 }

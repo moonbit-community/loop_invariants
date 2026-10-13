@@ -35,7 +35,7 @@
 //    is still possible. The loop exits when x_{k+1} >= x_k."
 
 ///|
-fn ipow(b : Int64, e : Int) -> Int64 {
+fn ipow(b : Int64, e : Int32) -> Int64 {
   let mut r = 1L
   let mut bb = b
   let mut ee = e
@@ -62,7 +62,7 @@ fn ipow(b : Int64, e : Int) -> Int64 {
 ///   @debug.assert_eq(@integer_nth_root.nth_root(1000000L, 3), 100L)
 /// }
 /// ```
-pub fn nth_root(x : Int64, n : Int) -> Int64 {
+pub fn nth_root(x : Int64, n : Int32) -> Int64 {
   if x < 0L || n < 1 {
     return 0L
   }
@@ -112,7 +112,7 @@ pub fn nth_root(x : Int64, n : Int) -> Int64 {
 
 ///|
 /// `b^e <= x` for `b >= 0`, `e >= 1`, `x >= 0`, computed without overflow.
-fn pow_le(b : Int64, e : Int, x : Int64) -> Bool {
+fn pow_le(b : Int64, e : Int32, x : Int64) -> Bool {
   if b <= 1L {
     return b <= x
   }
@@ -128,7 +128,7 @@ fn pow_le(b : Int64, e : Int, x : Int64) -> Bool {
 
 ///|
 /// Safe `b^e` that saturates at `Int64.max_value` on overflow.
-fn ipow_safe(b : Int64, e : Int) -> Int64 {
+fn ipow_safe(b : Int64, e : Int32) -> Int64 {
   let max = 9223372036854775807L
   if b == 0L {
     return if e == 0 { 1L } else { 0L }
@@ -162,7 +162,7 @@ fn ipow_safe(b : Int64, e : Int) -> Int64 {
 
 ///|
 /// `true` iff `x` is a perfect `n`-th power.
-pub fn is_perfect_nth_power(x : Int64, n : Int) -> Bool {
+pub fn is_perfect_nth_power(x : Int64, n : Int32) -> Bool {
   if x < 0L || n < 1 {
     return false
   }

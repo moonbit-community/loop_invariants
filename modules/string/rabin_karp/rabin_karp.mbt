@@ -69,7 +69,7 @@ fn reduce_mod(x : Int64) -> Int64 {
 /// Returns the hash value in the range `[0, RK_MOD)`.
 ///
 /// Time complexity: O(len)
-fn compute_hash(s : String, start : Int, len : Int) -> Int64 {
+fn compute_hash(s : String, start : Int32, len : Int32) -> Int64 {
   for offset in 0..<len; h = 0L {
     let c = s[start + offset].to_int() - 96 // 'a' = 97, so 'a' -> 1
     continue reduce_mod(h * RK_BASE + c.to_int64())
@@ -93,7 +93,7 @@ fn compute_hash(s : String, start : Int, len : Int) -> Int64 {
 /// Returns `base^exp mod m`.
 ///
 /// Time complexity: O(log exp)
-fn pow_mod(base : Int64, exp : Int, m : Int64) -> Int64 {
+fn pow_mod(base : Int64, exp : Int32, m : Int64) -> Int64 {
   for result = 1L, b = base % m, e = exp; e > 0; {
     let next_result = if e % 2 == 1 { result * b % m } else { result }
     continue next_result, b * b % m, e / 2
@@ -134,8 +134,8 @@ fn pow_mod(base : Int64, exp : Int, m : Int64) -> Int64 {
 /// let positions = rabin_karp_search("abababab", "aba")
 /// // positions == [0, 2, 4]
 /// ```
-pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
-  let result : Array[Int] = []
+pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int32] {
+  let result : Array[Int32] = []
   let n = text.length()
   let m = pattern.length()
   if m == 0 || m > n {
@@ -208,7 +208,7 @@ pub fn rabin_karp_search(text : String, pattern : String) -> Array[Int] {
 /// let count = rabin_karp_count("aaaa", "aa")
 /// // count == 3
 /// ```
-pub fn rabin_karp_count(text : String, pattern : String) -> Int {
+pub fn rabin_karp_count(text : String, pattern : String) -> Int32 {
   rabin_karp_search(text, pattern).length()
 }
 
@@ -254,16 +254,16 @@ pub fn rabin_karp_count(text : String, pattern : String) -> Int {
 pub fn rabin_karp_multi(
   text : String,
   patterns : Array[String],
-) -> Array[(Int, Int)] {
+) -> Array[(Int32, Int32)] {
   // Returns (pattern_index, position) pairs
-  let result : Array[(Int, Int)] = []
+  let result : Array[(Int32, Int32)] = []
   let n = text.length()
   if patterns.length() == 0 {
     return result
   }
 
   // Group patterns by length
-  let by_length : Map[Int, Array[(Int, Int64)]] = Map([]) // length -> [(pattern_idx, hash)]
+  let by_length : Map[Int32, Array[(Int32, Int64)]] = Map([]) // length -> [(pattern_idx, hash)]
   for i, pat in patterns {
     let m = pat.length()
     if m > 0 && m <= n {
@@ -359,7 +359,7 @@ pub fn rabin_karp_multi(
 priv struct HashArray {
   prefix_hash : Array[Int64]
   powers : Array[Int64]
-  n : Int
+  n : Int32
 }
 
 ///|
@@ -404,7 +404,7 @@ fn HashArray::HashArray(s : String) -> HashArray {
 /// - `r`    - end index (exclusive)
 ///
 /// Time complexity: O(1)
-fn HashArray::get_hash(self : HashArray, l : Int, r : Int) -> Int64 {
+fn HashArray::get_hash(self : HashArray, l : Int32, r : Int32) -> Int64 {
   if l >= r || l < 0 || r > self.n {
     return 0L
   }
@@ -434,10 +434,10 @@ fn HashArray::get_hash(self : HashArray, l : Int, r : Int) -> Int64 {
 /// Time complexity: O(1)
 fn HashArray::compare(
   self : HashArray,
-  l1 : Int,
-  r1 : Int,
-  l2 : Int,
-  r2 : Int,
+  l1 : Int32,
+  r1 : Int32,
+  l2 : Int32,
+  r2 : Int32,
 ) -> Bool {
   if r1 - l1 != r2 - l2 {
     return false

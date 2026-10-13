@@ -88,17 +88,17 @@
 ///   // reviewer 0 prefers p1 > p0 > p2
 ///   // reviewer 1 prefers p0 > p1 > p2
 ///   // reviewer 2 prefers p2 > p1 > p0
-///   let pp : Array[Array[Int]] = [[0, 1, 2], [0, 2, 1], [1, 0, 2]]
-///   let rp : Array[Array[Int]] = [[1, 0, 2], [0, 1, 2], [2, 1, 0]]
+///   let pp : Array[Array[Int32]] = [[0, 1, 2], [0, 2, 1], [1, 0, 2]]
+///   let rp : Array[Array[Int32]] = [[1, 0, 2], [0, 1, 2], [2, 1, 0]]
 ///   let m = @gale_shapley_stable_matching.stable_match(pp[:], rp[:])
 ///   // proposer 0 -> 1, proposer 1 -> 0, proposer 2 -> 2 (one valid output)
 ///   assert_eq(m, [1, 0, 2])
 /// }
 /// ```
 pub fn stable_match(
-  proposer_prefs : ArrayView[Array[Int]],
-  reviewer_prefs : ArrayView[Array[Int]],
-) -> Array[Int] {
+  proposer_prefs : ArrayView[Array[Int32]],
+  reviewer_prefs : ArrayView[Array[Int32]],
+) -> Array[Int32] {
   let n = proposer_prefs.length()
   if n != reviewer_prefs.length() {
     return []
@@ -135,7 +135,7 @@ pub fn stable_match(
   let match_of_proposer = Array::make(n, -1)
   let match_of_reviewer = Array::make(n, -1)
   // Stack of unmatched proposers; initially everyone.
-  let pending : Array[Int] = []
+  let pending : Array[Int32] = []
   for p in 0..<n {
     pending.push(p)
     if proposer_prefs[p].length() != n {
@@ -182,9 +182,9 @@ pub fn stable_match(
 /// Predicate: is `m` a stable matching for the given preferences?
 /// Returns `true` iff `m` has no blocking pair.
 pub fn is_stable(
-  proposer_prefs : ArrayView[Array[Int]],
-  reviewer_prefs : ArrayView[Array[Int]],
-  m : ArrayView[Int],
+  proposer_prefs : ArrayView[Array[Int32]],
+  reviewer_prefs : ArrayView[Array[Int32]],
+  m : ArrayView[Int32],
 ) -> Bool {
   let n = proposer_prefs.length()
   if n != reviewer_prefs.length() || m.length() != n {
@@ -236,8 +236,8 @@ pub fn is_stable(
 ///|
 test "gale-shapley three person example" {
   // Same example as the docstring above.
-  let pp : Array[Array[Int]] = [[0, 1, 2], [0, 2, 1], [1, 0, 2]]
-  let rp : Array[Array[Int]] = [[1, 0, 2], [0, 1, 2], [2, 1, 0]]
+  let pp : Array[Array[Int32]] = [[0, 1, 2], [0, 2, 1], [1, 0, 2]]
+  let rp : Array[Array[Int32]] = [[1, 0, 2], [0, 1, 2], [2, 1, 0]]
   let m = stable_match(pp[:], rp[:])
   @debug.assert_eq(m, [1, 0, 2])
   @debug.assert_eq(is_stable(pp[:], rp[:], m[:]), true)
@@ -245,24 +245,24 @@ test "gale-shapley three person example" {
 
 ///|
 test "gale-shapley single pair" {
-  let pp : Array[Array[Int]] = [[0]]
-  let rp : Array[Array[Int]] = [[0]]
+  let pp : Array[Array[Int32]] = [[0]]
+  let rp : Array[Array[Int32]] = [[0]]
   let m = stable_match(pp[:], rp[:])
   @debug.assert_eq(m, [0])
 }
 
 ///|
 test "gale-shapley empty inputs" {
-  let pp : Array[Array[Int]] = []
-  let rp : Array[Array[Int]] = []
+  let pp : Array[Array[Int32]] = []
+  let rp : Array[Array[Int32]] = []
   let m = stable_match(pp[:], rp[:])
   @debug.assert_eq(m, [])
 }
 
 ///|
 test "gale-shapley mismatched sizes returns empty" {
-  let pp : Array[Array[Int]] = [[0, 1]]
-  let rp : Array[Array[Int]] = [[0]]
+  let pp : Array[Array[Int32]] = [[0, 1]]
+  let rp : Array[Array[Int32]] = [[0]]
   let m = stable_match(pp[:], rp[:])
   @debug.assert_eq(m, [])
 }
@@ -271,8 +271,8 @@ test "gale-shapley mismatched sizes returns empty" {
 test "gale-shapley all-same-favourite reviewer" {
   // Every proposer ranks r0 first; r0 picks their favourite proposer
   // (p1 in this case). Others cascade.
-  let pp : Array[Array[Int]] = [[0, 1, 2], [0, 1, 2], [0, 1, 2]]
-  let rp : Array[Array[Int]] = [[1, 0, 2], [0, 1, 2], [0, 1, 2]]
+  let pp : Array[Array[Int32]] = [[0, 1, 2], [0, 1, 2], [0, 1, 2]]
+  let rp : Array[Array[Int32]] = [[1, 0, 2], [0, 1, 2], [0, 1, 2]]
   let m = stable_match(pp[:], rp[:])
   @debug.assert_eq(is_stable(pp[:], rp[:], m[:]), true)
   // r0 should pick p1 (their top choice).
@@ -283,13 +283,13 @@ test "gale-shapley all-same-favourite reviewer" {
 test "gale-shapley always produces stable matching" {
   // Random-ish but deterministic preferences. The output must always
   // be stable.
-  let pp : Array[Array[Int]] = [
+  let pp : Array[Array[Int32]] = [
     [2, 0, 1, 3],
     [3, 2, 0, 1],
     [1, 3, 0, 2],
     [0, 1, 2, 3],
   ]
-  let rp : Array[Array[Int]] = [
+  let rp : Array[Array[Int32]] = [
     [1, 0, 3, 2],
     [3, 1, 2, 0],
     [2, 0, 1, 3],
@@ -309,13 +309,13 @@ test "gale-shapley always produces stable matching" {
 test "gale-shapley proposer-optimal at most pessimistic" {
   // A scenario where one proposer has unique top choice that the
   // reviewer also tops -- they should be matched.
-  let pp : Array[Array[Int]] = [
+  let pp : Array[Array[Int32]] = [
     [2, 0, 1, 3], // proposer 0 wants r2 most
     [0, 1, 2, 3],
     [1, 0, 2, 3],
     [3, 2, 1, 0],
   ]
-  let rp : Array[Array[Int]] = [
+  let rp : Array[Array[Int32]] = [
     [1, 0, 2, 3],
     [2, 0, 1, 3],
     [0, 1, 2, 3], // reviewer 2 wants p0 most

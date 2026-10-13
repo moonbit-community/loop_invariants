@@ -4,13 +4,13 @@
 
 ///|
 /// Minimum Hamiltonian cycle cost starting at node 0.
-pub fn tsp_min_cycle(dist : Array[Array[Int]], inf : Int) -> Int {
+pub fn tsp_min_cycle(dist : Array[Array[Int32]], inf : Int32) -> Int32 {
   let n = dist.length()
   if n == 0 {
     return 0
   }
   let total = 1 << n
-  let dp : Array[Array[Int]] = [ for _ in 0..<total => Array::make(n, inf) ]
+  let dp : Array[Array[Int32]] = [ for _ in 0..<total => Array::make(n, inf) ]
   dp[1][0] = 0
   for mask in 1..<total {
     for u in 0..<n {
@@ -44,7 +44,7 @@ pub fn tsp_min_cycle(dist : Array[Array[Int]], inf : Int) -> Int {
 ///|
 test "tsp_min_cycle" {
   let inf = 1_000_000
-  let dist : Array[Array[Int]] = [
+  let dist : Array[Array[Int32]] = [
     [0, 1, 3, 4],
     [1, 0, 2, 5],
     [3, 2, 0, 6],

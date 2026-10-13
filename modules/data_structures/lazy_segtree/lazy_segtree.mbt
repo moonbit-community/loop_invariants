@@ -79,7 +79,7 @@
 /// This invariant is maintained by `push_down` before any descent and by
 /// recomputing `tree[k]` from its children on the way back up.
 pub struct LazySegTreeSum {
-  n : Int
+  n : Int32
   tree : Array[Int64] // Sum of range
   pending : Array[Int64] // Pending add value
 }
@@ -110,9 +110,9 @@ pub fn LazySegTreeSum::LazySegTreeSum(arr : Array[Int64]) -> LazySegTreeSum {
 fn build(
   arr : Array[Int64],
   tree : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
 ) -> Unit {
   if start == end {
     tree[node] = arr[start]
@@ -154,9 +154,9 @@ fn build(
 fn push_down(
   tree : Array[Int64],
   pending : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
 ) -> Unit {
   if pending[node] != 0L {
     let mid = (start + end) / 2
@@ -190,8 +190,8 @@ fn push_down(
 ///   ignored.
 pub fn LazySegTreeSum::range_add(
   self : LazySegTreeSum,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
   val : Int64,
 ) -> Unit {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
@@ -208,11 +208,11 @@ pub fn LazySegTreeSum::range_add(
 fn range_add_helper(
   tree : Array[Int64],
   pending : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  l : Int32,
+  r : Int32,
   val : Int64,
 ) -> Unit {
   if r < start || end < l {
@@ -250,8 +250,8 @@ fn range_add_helper(
 /// - Returns `None` when `l < 0`, `r >= n`, `l > r`, or the tree is empty.
 pub fn LazySegTreeSum::range_sum(
   self : LazySegTreeSum,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None
@@ -266,11 +266,11 @@ pub fn LazySegTreeSum::range_sum(
 fn range_sum_helper(
   tree : Array[Int64],
   pending : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if r < start || end < l {
     return 0L
@@ -302,7 +302,7 @@ fn range_sum_helper(
 /// is returned.
 ///
 /// - Time: O(log n)
-pub fn LazySegTreeSum::point_query(self : LazySegTreeSum, i : Int) -> Int64? {
+pub fn LazySegTreeSum::point_query(self : LazySegTreeSum, i : Int32) -> Int64? {
   self.range_sum(i, i)
 }
 
@@ -317,7 +317,7 @@ pub fn LazySegTreeSum::point_query(self : LazySegTreeSum, i : Int) -> Int64? {
 /// - Out-of-bounds indices are silently ignored.
 pub fn LazySegTreeSum::point_set(
   self : LazySegTreeSum,
-  i : Int,
+  i : Int32,
   val : Int64,
 ) -> Unit {
   if i < 0 || i >= self.n {
@@ -333,7 +333,7 @@ pub fn LazySegTreeSum::point_set(
 ///|
 /// Return the number of elements in the original array that was used to build
 /// this tree.  Valid index range for all operations is `[0, length() - 1]`.
-pub fn LazySegTreeSum::length(self : LazySegTreeSum) -> Int {
+pub fn LazySegTreeSum::length(self : LazySegTreeSum) -> Int32 {
   self.n
 }
 
@@ -359,7 +359,7 @@ pub fn LazySegTreeSum::length(self : LazySegTreeSum) -> Int {
 /// - `has_pending` -- distinguishes "no pending assignment" from "assign 0".
 ///   A fresh tree has all `has_pending` slots set to `false`.
 priv struct LazySegTreeSetSum {
-  n : Int
+  n : Int32
   tree : Array[Int64]
   pending : Array[Int64]
   has_pending : Array[Bool] // Whether node has pending assignment
@@ -387,9 +387,9 @@ fn LazySegTreeSetSum::LazySegTreeSetSum(
 fn build_set(
   arr : Array[Int64],
   tree : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
 ) -> Unit {
   if start == end {
     tree[node] = arr[start]
@@ -411,9 +411,9 @@ fn push_down_set(
   tree : Array[Int64],
   pending : Array[Int64],
   has_pending : Array[Bool],
-  node : Int,
-  start : Int,
-  end : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
 ) -> Unit {
   if has_pending[node] {
     let mid = (start + end) / 2
@@ -445,8 +445,8 @@ fn push_down_set(
 /// - Time: O(log n)
 fn LazySegTreeSetSum::range_set(
   self : LazySegTreeSetSum,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
   val : Int64,
 ) -> Unit {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
@@ -471,11 +471,11 @@ fn range_set_helper(
   tree : Array[Int64],
   pending : Array[Int64],
   has_pending : Array[Bool],
-  node : Int,
-  start : Int,
-  end : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  l : Int32,
+  r : Int32,
   val : Int64,
 ) -> Unit {
   if r < start || end < l {
@@ -513,8 +513,8 @@ fn range_set_helper(
 /// - Time: O(log n)
 fn LazySegTreeSetSum::range_sum(
   self : LazySegTreeSetSum,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None
@@ -539,11 +539,11 @@ fn range_sum_set_helper(
   tree : Array[Int64],
   pending : Array[Int64],
   has_pending : Array[Bool],
-  node : Int,
-  start : Int,
-  end : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if r < start || end < l {
     return 0L
@@ -578,7 +578,7 @@ fn range_sum_set_helper(
 
 ///|
 /// Return the number of elements tracked by this tree.
-fn LazySegTreeSetSum::length(self : LazySegTreeSetSum) -> Int {
+fn LazySegTreeSetSum::length(self : LazySegTreeSetSum) -> Int32 {
   self.n
 }
 
@@ -603,7 +603,7 @@ fn LazySegTreeSetSum::length(self : LazySegTreeSetSum) -> Int {
 ///   already accounting for `pending[k]` itself.
 /// - `pending` -- addend owed to the children of node `k`.
 priv struct LazySegTreeMin {
-  n : Int
+  n : Int32
   tree : Array[Int64] // Min of range
   pending : Array[Int64] // Pending add value
 }
@@ -634,9 +634,9 @@ fn LazySegTreeMin::LazySegTreeMin(arr : Array[Int64]) -> LazySegTreeMin {
 fn build_min(
   arr : Array[Int64],
   tree : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
 ) -> Unit {
   if start == end {
     tree[node] = arr[start]
@@ -667,7 +667,7 @@ fn build_min(
 fn push_down_min(
   tree : Array[Int64],
   pending : Array[Int64],
-  node : Int,
+  node : Int32,
 ) -> Unit {
   if pending[node] != 0L {
     tree[2 * node] = tree[2 * node] + pending[node]
@@ -688,8 +688,8 @@ fn push_down_min(
 /// - Time: O(log n)
 fn LazySegTreeMin::range_add(
   self : LazySegTreeMin,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
   val : Int64,
 ) -> Unit {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
@@ -703,11 +703,11 @@ fn LazySegTreeMin::range_add(
 fn range_add_min_helper(
   tree : Array[Int64],
   pending : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  l : Int32,
+  r : Int32,
   val : Int64,
 ) -> Unit {
   if r < start || end < l {
@@ -737,7 +737,11 @@ fn range_add_min_helper(
 /// accumulation `min(left, right)` is correct at every level.
 ///
 /// - Time: O(log n)
-fn LazySegTreeMin::range_min(self : LazySegTreeMin, l : Int, r : Int) -> Int64? {
+fn LazySegTreeMin::range_min(
+  self : LazySegTreeMin,
+  l : Int32,
+  r : Int32,
+) -> Int64? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None
   }
@@ -749,11 +753,11 @@ fn LazySegTreeMin::range_min(self : LazySegTreeMin, l : Int, r : Int) -> Int64? 
 fn range_min_helper(
   tree : Array[Int64],
   pending : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if r < start || end < l {
     return INT64_MAX
@@ -774,7 +778,7 @@ fn range_min_helper(
 
 ///|
 /// Return the number of elements tracked by this tree.
-fn LazySegTreeMin::length(self : LazySegTreeMin) -> Int {
+fn LazySegTreeMin::length(self : LazySegTreeMin) -> Int32 {
   self.n
 }
 

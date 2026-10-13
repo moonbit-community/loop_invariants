@@ -49,8 +49,8 @@
 ///|
 /// A reservoir-sampling sketch over `Int64` items with capacity `k`.
 pub struct Reservoir {
-  capacity : Int
-  mut count : Int
+  capacity : Int32
+  mut count : Int32
   reservoir : Array[Int64]
   mut rng_state : Int64
 }
@@ -65,7 +65,7 @@ fn rs_lcg(state : Int64) -> Int64 {
 ///|
 /// Draw a uniform integer in `[0, n)` from the LCG state. Returns the
 /// new state alongside the index.
-fn rs_next_index(state : Int64, n : Int) -> (Int, Int64) {
+fn rs_next_index(state : Int64, n : Int32) -> (Int32, Int64) {
   let s = rs_lcg(state)
   let abs_s = if s < 0L { -s } else { s }
   let idx = (abs_s % n.to_int64()).to_int()
@@ -89,7 +89,7 @@ fn rs_next_index(state : Int64, n : Int) -> (Int, Int64) {
 ///   assert_eq(r.sample().length(), 3)
 /// }
 /// ```
-pub fn new(capacity~ : Int, seed~ : Int64) -> Reservoir {
+pub fn new(capacity~ : Int32, seed~ : Int64) -> Reservoir {
   let cap = if capacity < 0 { 0 } else { capacity }
   {
     capacity: cap,
@@ -145,13 +145,13 @@ pub fn Reservoir::sample(self : Reservoir) -> Array[Int64] {
 ///|
 /// Number of items consumed from the stream so far. `min(items_seen(),
 /// capacity)` is the current reservoir length.
-pub fn Reservoir::items_seen(self : Reservoir) -> Int {
+pub fn Reservoir::items_seen(self : Reservoir) -> Int32 {
   self.count
 }
 
 ///|
 /// Reservoir capacity `k`. Constant after construction.
-pub fn Reservoir::capacity_of(self : Reservoir) -> Int {
+pub fn Reservoir::capacity_of(self : Reservoir) -> Int32 {
   self.capacity
 }
 

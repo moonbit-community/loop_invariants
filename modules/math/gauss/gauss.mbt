@@ -60,7 +60,7 @@ const GAUSS_EPS : Double = 0.000000001
 /// ```
 pub struct GaussResult {
   solution : Array[Double]
-  rank : Int
+  rank : Int32
   has_solution : Bool
   has_unique_solution : Bool
 }
@@ -587,7 +587,7 @@ fn gauss_mod(
 
 ///|
 /// Solve system over GF(2) (XOR equations)
-fn gauss_xor(a : Array[Array[Int]], b : Array[Int]) -> (Array[Int], Bool) {
+fn gauss_xor(a : Array[Array[Int32]], b : Array[Int32]) -> (Array[Int32], Bool) {
   let n = a.length()
   if n == 0 {
     return ([], true)
@@ -823,8 +823,8 @@ test "gauss_xor basic" {
   // x XOR y = 1
   // y = 1
   // Solution: x = 0, y = 1
-  let a : Array[Array[Int]] = [[1, 1], [0, 1]]
-  let b : Array[Int] = [1, 1]
+  let a : Array[Array[Int32]] = [[1, 1], [0, 1]]
+  let b : Array[Int32] = [1, 1]
   let (solution, success) = gauss_xor(a, b)
   debug_inspect(success, content="true")
   debug_inspect(solution[0], content="0")
@@ -837,8 +837,8 @@ test "gauss_xor lights out" {
   // x1 XOR x2 = 1
   // x2 XOR x3 = 0
   // x1 XOR x3 = 1
-  let a : Array[Array[Int]] = [[1, 1, 0], [0, 1, 1], [1, 0, 1]]
-  let b : Array[Int] = [1, 0, 1]
+  let a : Array[Array[Int32]] = [[1, 1, 0], [0, 1, 1], [1, 0, 1]]
+  let b : Array[Int32] = [1, 0, 1]
   let (_, success) = gauss_xor(a, b)
   debug_inspect(success, content="true")
 }

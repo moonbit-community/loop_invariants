@@ -73,7 +73,7 @@ pub fn closure(adj : Array[Array[Bool]]) -> Array[Array[Bool]] {
 /// of the right word giving the edge `(i, j)`. Returns the closure in
 /// the same packed format.
 pub fn closure_bitpacked(
-  n : Int,
+  n : Int32,
   adj_rows : Array[Array[Int64]],
 ) -> Array[Array[Int64]] {
   let words = (n + 63) / 64
@@ -117,7 +117,10 @@ pub fn pack_rows(adj : Array[Array[Bool]]) -> Array[Array[Int64]] {
 
 ///|
 /// Reverse of `pack_rows`.
-pub fn unpack_rows(n : Int, packed : Array[Array[Int64]]) -> Array[Array[Bool]] {
+pub fn unpack_rows(
+  n : Int32,
+  packed : Array[Array[Int64]],
+) -> Array[Array[Bool]] {
   Array::makei(n, i => {
     Array::makei(n, j => ((packed[i][j / 64] >> (j % 64)) & 1L) == 1L)
   })

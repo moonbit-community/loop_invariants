@@ -10,7 +10,7 @@ const LMIN : Int64 = -9223372036854775808L
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -55,7 +55,7 @@ fn diff_key(a : Int64, b : Int64) -> (Int64, Bool) {
 }
 
 ///|
-fn subseq(xs : Array[Int64], mask : Int) -> Array[Int64] {
+fn subseq(xs : Array[Int64], mask : Int32) -> Array[Int64] {
   let out : Array[Int64] = []
   for i in 0..<xs.length() {
     if ((mask >> i) & 1) == 1 {
@@ -76,7 +76,7 @@ fn is_arith(seq : Array[Int64]) -> Bool {
 }
 
 ///|
-fn brute(xs : Array[Int64], fixed : Int64?) -> Int {
+fn brute(xs : Array[Int64], fixed : Int64?) -> Int32 {
   let mut best = 0
   for mask in 0..<(1 << xs.length()) {
     let seq = subseq(xs, mask)

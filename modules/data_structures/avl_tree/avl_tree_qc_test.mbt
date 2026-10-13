@@ -17,7 +17,7 @@ test "qc: avl_sorted equals Array::sort on Int64" {
 
 ///|
 /// Arrays of small keys, so duplicates are frequent.
-priv struct SmallKeys(Array[Int]) derive(Debug)
+priv struct SmallKeys(Array[Int32]) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for SmallKeys with fn arbitrary(size, rs) {
@@ -35,8 +35,8 @@ impl @quickcheck.Shrink for SmallKeys with fn shrink(self) {
 ///|
 /// A key with a tag that the ordering ignores; used to observe stability.
 priv struct Tagged {
-  key : Int
-  tag : Int
+  key : Int32
+  tag : Int32
 }
 
 ///|

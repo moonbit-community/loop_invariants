@@ -47,7 +47,7 @@
 ///|
 /// Number of bits inferred from `arr.length() = 2^n`. Returns `-1` if
 /// the array is empty or not a power of two.
-fn pop_count_of_pow2(len : Int) -> Int {
+fn pop_count_of_pow2(len : Int32) -> Int32 {
   if len <= 0 {
     return -1
   }

@@ -50,16 +50,16 @@
 /// size(right)`.  Call `update_size` after any structural change.
 pub struct TreapNode[T] {
   key : T
-  priority : Int // Random priority; satisfies max-heap: parent.priority >= child.priority
+  priority : Int32 // Random priority; satisfies max-heap: parent.priority >= child.priority
   mut left : TreapNode[T]?
   mut right : TreapNode[T]?
-  mut size : Int // Cached subtree size (number of nodes rooted here)
+  mut size : Int32 // Cached subtree size (number of nodes rooted here)
 }
 
 ///|
 /// Allocates a new leaf node with the given key and priority.
 /// Both children are absent and the subtree size is 1.
-fn[T] TreapNode::TreapNode(key : T, priority : Int) -> TreapNode[T] {
+fn[T] TreapNode::TreapNode(key : T, priority : Int32) -> TreapNode[T] {
   { key, priority, left: None, right: None, size: 1, }
 }
 
@@ -67,7 +67,7 @@ fn[T] TreapNode::TreapNode(key : T, priority : Int) -> TreapNode[T] {
 /// Returns the subtree size of an optional node.
 /// Returns 0 for `None`, matching the convention that an empty subtree has
 /// zero elements.
-fn[T] get_size(node : TreapNode[T]?) -> Int {
+fn[T] get_size(node : TreapNode[T]?) -> Int32 {
   match node {
     None => 0
     Some(n) => n.size
@@ -95,7 +95,7 @@ fn[T] update_size(node : TreapNode[T]) -> Unit {
 /// deterministic behaviour for a fixed sequence of insertions.
 pub struct Treap[T] {
   mut root : TreapNode[T]?
-  mut rng_state : Int // Current LCG state; advances by one step per insertion
+  mut rng_state : Int32 // Current LCG state; advances by one step per insertion
 }
 
 ///|
@@ -104,7 +104,7 @@ pub struct Treap[T] {
 /// The returned `abs_value` is used directly as the priority of a new node.
 /// Using a fixed LCG keeps the implementation self-contained and
 /// deterministic.
-fn next_random(state : Int) -> (Int, Int) {
+fn next_random(state : Int32) -> (Int32, Int32) {
   // LCG: next = (a * state + c) mod m
   // Using common constants
   let a = 1103515245
@@ -124,7 +124,7 @@ fn next_random(state : Int) -> (Int, Int) {
 /// # Example
 ///
 /// ```moonbit nocheck
-/// let t : @treap.Treap[Int] = @treap.Treap()
+/// let t : @treap.Treap[Int32] = @treap.Treap()
 /// // t is empty
 /// ```
 pub fn[T] Treap::Treap() -> Treap[T] {

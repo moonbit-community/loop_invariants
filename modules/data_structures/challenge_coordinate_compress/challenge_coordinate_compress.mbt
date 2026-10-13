@@ -4,9 +4,9 @@
 
 ///|
 fn lower_bound_fixed(
-  arr : FixedArray[Int],
-  target : Int,
-) -> Int where {
+  arr : FixedArray[Int32],
+  target : Int32,
+) -> Int32 where {
   proof_require: sorted(arr),
   proof_ensure: result => lower_bound_ok(arr, target, result),
 } {
@@ -37,18 +37,20 @@ fn lower_bound_fixed(
 
 ///|
 /// Compress values to 0..(unique-1) preserving order.
-pub fn coordinate_compress(values : ArrayView[Int]) -> (Array[Int], Array[Int]) {
+pub fn coordinate_compress(
+  values : ArrayView[Int32],
+) -> (Array[Int32], Array[Int32]) {
   let n = values.length()
-  let sorted : Array[Int] = [ for val in values => val ]
+  let sorted : Array[Int32] = [ for val in values => val ]
   sorted.sort_by_key(x => x)
-  let unique : Array[Int] = [
+  let unique : Array[Int32] = [
     for i, val in sorted if i == 0 || val != sorted[i - 1] => val
   ]
   let unique_fixed = FixedArray::make(unique.length(), 0)
   for i, val in unique {
     unique_fixed[i] = val
   }
-  let compressed : Array[Int] = Array::make(n, 0)
+  let compressed : Array[Int32] = Array::make(n, 0)
   for i, val in values {
     compressed[i] = lower_bound_fixed(unique_fixed, val)
   }
@@ -57,7 +59,7 @@ pub fn coordinate_compress(values : ArrayView[Int]) -> (Array[Int], Array[Int]) 
 
 ///|
 test "coordinate_compress" {
-  let values : Array[Int] = [100, 50, 100, -10]
+  let values : Array[Int32] = [100, 50, 100, -10]
   let (comp, uniq) = coordinate_compress(values)
   @debug.assert_eq(uniq, [-10, 50, 100])
   @debug.assert_eq(comp, [2, 1, 2, 0])

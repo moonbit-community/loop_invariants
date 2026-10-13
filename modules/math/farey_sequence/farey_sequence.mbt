@@ -61,7 +61,7 @@ fn gcd(a : Int64, b : Int64) -> Int64 {
 ///   @debug.assert_eq(f.length(), 5)
 /// }
 /// ```
-pub fn generate(n : Int) -> Array[(Int64, Int64)] {
+pub fn generate(n : Int32) -> Array[(Int64, Int64)] {
   let res : Array[(Int64, Int64)] = []
   if n <= 0 {
     return res
@@ -95,13 +95,13 @@ pub fn generate(n : Int) -> Array[(Int64, Int64)] {
 ///|
 /// Number of terms in `F_n`. Computes it directly as
 /// `1 + sum_{k=1..n} phi(k)` using a small linear-sieve totient.
-pub fn size(n : Int) -> Int64 {
+pub fn size(n : Int32) -> Int64 {
   if n <= 0 {
     return 0L
   }
   let phi = Array::make(n + 1, 0)
   let spf = Array::make(n + 1, 0)
-  let primes : Array[Int] = []
+  let primes : Array[Int32] = []
   if n >= 1 {
     phi[1] = 1
   }

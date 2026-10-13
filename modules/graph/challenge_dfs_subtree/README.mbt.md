@@ -61,7 +61,7 @@ The implementation uses an explicit stack to avoid recursion.
 ```mbt check
 ///|
 test "dfs subtree basic" {
-  let adj : Array[Array[Int]] = [[1, 2], [0], [0, 3], [2]]
+  let adj : Array[Array[Int32]] = [[1, 2], [0], [0, 3], [2]]
   let size = @challenge_dfs_subtree.subtree_sizes(adj, 0)
   debug_inspect(size, content="[4, 1, 2, 1]")
 }
@@ -78,7 +78,7 @@ Root at 1.
 ```mbt check
 ///|
 test "dfs subtree chain" {
-  let adj : Array[Array[Int]] = [[1], [0, 2], [1]]
+  let adj : Array[Array[Int32]] = [[1], [0, 2], [1]]
   let size = @challenge_dfs_subtree.subtree_sizes(adj, 1)
   debug_inspect(size, content="[1, 3, 1]")
 }
@@ -89,7 +89,7 @@ test "dfs subtree chain" {
 ```mbt check
 ///|
 test "dfs subtree larger" {
-  let adj : Array[Array[Int]] = [
+  let adj : Array[Array[Int32]] = [
     [1, 2], // 0
     [0, 3, 4], // 1
     [0, 5], // 2

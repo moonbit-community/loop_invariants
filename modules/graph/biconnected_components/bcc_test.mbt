@@ -22,7 +22,7 @@
 ///   Articulation point: 1 (connects triangle to vertex 3)
 /// ```
 test "biconnected components basic" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
   let result = @biconnected_components.biconnected_components(4, edges)
 
   // Sort component sizes for comparison
@@ -53,7 +53,7 @@ test "biconnected components basic" {
 ///   Vertex 1 is articulation point (removing it disconnects 0 from 2,3).
 /// ```
 test "biconnected components tree" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (1, 3)]
   let result = @biconnected_components.biconnected_components(4, edges)
 
   // Each edge is a separate component
@@ -82,7 +82,7 @@ test "biconnected components tree" {
 ///   No articulation points (can remove any vertex and stay connected).
 /// ```
 test "biconnected components cycle" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
   let result = @biconnected_components.biconnected_components(4, edges)
 
   // One component with 4 edges
@@ -102,7 +102,7 @@ test "biconnected components cycle" {
 ///   Component 2: 2 - 3
 /// ```
 test "biconnected components disconnected" {
-  let edges : Array[(Int, Int)] = [(0, 1), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (2, 3)]
   let result = @biconnected_components.biconnected_components(4, edges)
 
   // Two components, each with one edge
@@ -115,7 +115,7 @@ test "biconnected components disconnected" {
 ///|
 /// Test empty graph.
 test "biconnected components empty" {
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   let result = @biconnected_components.biconnected_components(3, edges)
   debug_inspect(result.components, content="[]")
   debug_inspect(result.articulation_points, content="[]")
@@ -133,7 +133,7 @@ test "biconnected components empty" {
 ///   Forms a chain of biconnected components.
 /// ```
 test "biconnected components chain" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (1, 4), (2, 5)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (1, 4), (2, 5)]
   let result = @biconnected_components.biconnected_components(6, edges)
 
   // Each edge is separate (linear chain = all bridges)
@@ -147,7 +147,7 @@ test "biconnected components chain" {
 ///|
 /// Test single vertex (edge case).
 test "biconnected components single vertex" {
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   let result = @biconnected_components.biconnected_components(1, edges)
   debug_inspect(result.components, content="[]")
   debug_inspect(result.articulation_points, content="[]")

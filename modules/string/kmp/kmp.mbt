@@ -65,7 +65,7 @@
 /// let fail = compute_failure("ABAB")
 /// // fail == [0, 0, 1, 2]
 /// ```
-pub fn compute_failure(pattern : String) -> Array[Int] {
+pub fn compute_failure(pattern : String) -> Array[Int32] {
   let m = pattern.length()
   if m == 0 {
     return []
@@ -101,7 +101,7 @@ pub fn compute_failure(pattern : String) -> Array[Int] {
 /// let pi = prefix_function("ababa")
 /// // pi == [0, 0, 1, 2, 3]
 /// ```
-pub fn prefix_function(pattern : String) -> Array[Int] {
+pub fn prefix_function(pattern : String) -> Array[Int32] {
   compute_failure(pattern)
 }
 
@@ -136,10 +136,10 @@ pub fn prefix_function(pattern : String) -> Array[Int] {
 /// let overlapping = kmp_search("AAAA", "AA")
 /// // overlapping == [0, 1, 2]
 /// ```
-pub fn kmp_search(text : String, pattern : String) -> Array[Int] {
+pub fn kmp_search(text : String, pattern : String) -> Array[Int32] {
   let n = text.length()
   let m = pattern.length()
-  let matches : Array[Int] = []
+  let matches : Array[Int32] = []
   if m == 0 || m > n {
     return matches
   }
@@ -187,7 +187,7 @@ pub fn kmp_search(text : String, pattern : String) -> Array[Int] {
 /// let missing = kmp_find_first("HELLO WORLD", "XYZ")
 /// // missing == -1
 /// ```
-pub fn kmp_find_first(text : String, pattern : String) -> Int {
+pub fn kmp_find_first(text : String, pattern : String) -> Int32 {
   let matches = kmp_search(text, pattern)
   if matches.length() > 0 {
     matches[0]
@@ -220,7 +220,7 @@ pub fn kmp_find_first(text : String, pattern : String) -> Int {
 /// let none = kmp_count("HELLO", "XYZ")
 /// // none == 0
 /// ```
-pub fn kmp_count(text : String, pattern : String) -> Int {
+pub fn kmp_count(text : String, pattern : String) -> Int32 {
   kmp_search(text, pattern).length()
 }
 
@@ -257,7 +257,7 @@ pub fn kmp_count(text : String, pattern : String) -> Int {
 /// let z = compute_z_function("AABXAAB")
 /// // z == [7, 1, 0, 0, 3, 1, 0]
 /// ```
-pub fn compute_z_function(s : String) -> Array[Int] {
+pub fn compute_z_function(s : String) -> Array[Int32] {
   let n = s.length()
   if n == 0 {
     return []
@@ -313,10 +313,10 @@ pub fn compute_z_function(s : String) -> Array[Int] {
 /// let matches = z_search("ABABDABACDABABCABAB", "ABAB")
 /// // matches == [0, 10, 15]
 /// ```
-pub fn z_search(text : String, pattern : String) -> Array[Int] {
+pub fn z_search(text : String, pattern : String) -> Array[Int32] {
   let n = text.length()
   let m = pattern.length()
-  let matches : Array[Int] = []
+  let matches : Array[Int32] = []
   if m == 0 || m > n {
     return matches
   }

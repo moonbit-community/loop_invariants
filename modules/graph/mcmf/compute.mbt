@@ -59,8 +59,8 @@
 /// Note: all flow is pushed; use `compute_with_limit` to cap the flow.
 pub fn MinCostMaxFlow::compute(
   self : MinCostMaxFlow,
-  source : Int,
-  sink : Int,
+  source : Int32,
+  sink : Int32,
 ) -> (Int64, Int64) {
   // Main loop: find and augment minimum cost paths
   for total_flow = 0L, total_cost = 0L {
@@ -123,8 +123,8 @@ pub fn MinCostMaxFlow::compute(
 /// - `total_cost`    is the minimum cost for `achieved_flow` units
 pub fn MinCostMaxFlow::compute_with_limit(
   self : MinCostMaxFlow,
-  source : Int,
-  sink : Int,
+  source : Int32,
+  sink : Int32,
   max_flow_limit : Int64,
 ) -> (Int64, Int64) {
   for total_flow = 0L, total_cost = 0L {

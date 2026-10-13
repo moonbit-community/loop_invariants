@@ -181,7 +181,7 @@ fn[T] PStack::top(self : PStack[T]) -> T? {
 
 ///|
 test "persistent stack versions" {
-  let v0 : PStack[Int] = Nil
+  let v0 : PStack[Int32] = Nil
   let v1 = v0.push(5)
   let v2 = v1.push(3)
   let v3 = v1.push(7) // branch from v1

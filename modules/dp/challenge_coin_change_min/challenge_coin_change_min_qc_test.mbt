@@ -3,15 +3,15 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 priv struct Change {
-  coins : Array[Int]
-  amount : Int
+  coins : Array[Int32]
+  amount : Int32
 } derive(Debug)
 
 ///|
@@ -39,13 +39,13 @@ impl @quickcheck.Shrink for Change with fn shrink(self) {
 ///|
 /// Fewest coins over every multiset of the positive coins summing to
 /// `amount`, by enumerating how many of each coin is used.
-fn ref_min(coins : Array[Int], amount : Int) -> Int? {
+fn ref_min(coins : Array[Int32], amount : Int32) -> Int32? {
   if amount < 0 {
     return None
   }
   let pos = coins.filter(c => c > 0)
-  let mut best : Int? = None
-  fn go(i : Int, remaining : Int, used : Int) -> Unit {
+  let mut best : Int32? = None
+  fn go(i : Int32, remaining : Int32, used : Int32) -> Unit {
     if i == pos.length() {
       if remaining == 0 {
         match best {

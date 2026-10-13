@@ -5,9 +5,9 @@
 
 ///|
 fn days_needed_fixed(
-  weights : FixedArray[Int],
-  capacity : Int,
-) -> Int where {
+  weights : FixedArray[Int32],
+  capacity : Int32,
+) -> Int32 where {
   proof_require: capacity_admissible(weights, capacity),
   proof_ensure: result => days_needed_ok(weights, capacity, result),
 } {
@@ -45,7 +45,11 @@ fn days_needed_fixed(
 
 ///|
 /// Check if weights can be shipped within days using the given capacity.
-pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
+pub fn can_ship(
+  weights : ArrayView[Int32],
+  days : Int32,
+  capacity : Int32,
+) -> Bool {
   if days <= 0 {
     return false
   }
@@ -66,11 +70,11 @@ pub fn can_ship(weights : ArrayView[Int], days : Int, capacity : Int) -> Bool {
 }
 
 ///|
-const INT_MAX : Int = 2147483647
+const INT_MAX : Int32 = 2147483647
 
 ///|
 /// Minimum capacity to ship all weights within the given days.
-pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
+pub fn min_capacity(weights : ArrayView[Int32], days : Int32) -> Int32 {
   let (lo, hi) = for w in weights; lo = 0, hi = 0 {
     let new_lo = if w > lo { w } else { lo }
     // Saturate the upper bound at `Int::MAX_VALUE`: the plain sum of the
@@ -106,7 +110,7 @@ pub fn min_capacity(weights : ArrayView[Int], days : Int) -> Int {
 
 ///|
 test "min_capacity" {
-  let weights : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  let weights : Array[Int32] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   @debug.assert_eq(min_capacity(weights, 5), 15)
   @debug.assert_eq(min_capacity([3, 2, 2, 4, 1, 4], 3), 6)
 }

@@ -48,7 +48,7 @@ fn karger_lcg(state : Int64) -> Int64 {
 ///|
 /// Draw a uniform Int in [0, n) from the LCG state. Updates `state`
 /// in place by returning the new state alongside the index.
-fn karger_next_index(state : Int64, n : Int) -> (Int, Int64) {
+fn karger_next_index(state : Int64, n : Int32) -> (Int32, Int64) {
   let s = karger_lcg(state)
   let abs_s = if s < 0L { -s } else { s }
   let idx = (abs_s % n.to_int64()).to_int()
@@ -57,7 +57,7 @@ fn karger_next_index(state : Int64, n : Int) -> (Int, Int64) {
 
 ///|
 /// DSU helpers, private to this package.
-fn dsu_find(parent : Array[Int], x : Int) -> Int {
+fn dsu_find(parent : Array[Int32], x : Int32) -> Int32 {
   let root = for cur = x {
     if parent[cur] == cur {
       break cur
@@ -90,7 +90,12 @@ fn dsu_find(parent : Array[Int], x : Int) -> Int {
 }
 
 ///|
-fn dsu_union(parent : Array[Int], rank : Array[Int], a : Int, b : Int) -> Bool {
+fn dsu_union(
+  parent : Array[Int32],
+  rank : Array[Int32],
+  a : Int32,
+  b : Int32,
+) -> Bool {
   let ra = dsu_find(parent, a)
   let rb = dsu_find(parent, b)
   if ra == rb {
@@ -111,10 +116,10 @@ fn dsu_union(parent : Array[Int], rank : Array[Int], a : Int, b : Int) -> Bool {
 /// Run a single Karger contraction trial. Returns the size of the cut
 /// found in this run.
 fn one_trial(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
   initial_state : Int64,
-) -> (Int, Int64) {
+) -> (Int32, Int64) {
   let parent = Array::make(n, 0)
   let rank = Array::make(n, 0)
   for i in 0..<n {
@@ -188,7 +193,7 @@ fn one_trial(
 /// ```moonbit nocheck
 /// test {
 ///   // 4-cycle: min cut size is 2.
-///   let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
+///   let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
 ///   let answer = @karger_min_cut.karger_min_cut(4, edges[:], 50, seed=1L)
 ///   assert_eq(answer, 2)
 /// }
@@ -198,11 +203,11 @@ fn one_trial(
 ///
 /// Time `O(trials * (n + E))`, space `O(n + E)`.
 pub fn karger_min_cut(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-  trials : Int,
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+  trials : Int32,
   seed~ : Int64,
-) -> Int {
+) -> Int32 {
   if n <= 1 {
     return @int.MAX_VALUE
   }
@@ -234,14 +239,14 @@ pub fn karger_min_cut(
 ///|
 test "karger 4-cycle has min cut 2" {
   // 4-cycle: each vertex has degree 2, so min cut is 2.
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
   let cut = karger_min_cut(4, edges[:], 50, seed=1L)
   @debug.assert_eq(cut, 2)
 }
 
 ///|
 test "karger triangle has min cut 2" {
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0)]
   let cut = karger_min_cut(3, edges[:], 30, seed=42L)
   @debug.assert_eq(cut, 2)
 }
@@ -249,7 +254,7 @@ test "karger triangle has min cut 2" {
 ///|
 test "karger bridge edge has min cut 1" {
   // Two triangles connected by a single bridge edge: min cut = 1.
-  let edges : ReadOnlyArray[(Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32)] = [
     (0, 1),
     (1, 2),
     (2, 0), // triangle on {0, 1, 2}
@@ -265,7 +270,7 @@ test "karger bridge edge has min cut 1" {
 ///|
 test "karger complete graph K4 has min cut 3" {
   // K4: every vertex degree 3, min cut = 3.
-  let edges : ReadOnlyArray[(Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32)] = [
     (0, 1),
     (0, 2),
     (0, 3),
@@ -280,7 +285,7 @@ test "karger complete graph K4 has min cut 3" {
 ///|
 test "karger double-edge bridge has min cut 2" {
   // Two triangles connected by two parallel bridge edges.
-  let edges : ReadOnlyArray[(Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32)] = [
     (0, 1),
     (1, 2),
     (2, 0), // left triangle
@@ -296,7 +301,7 @@ test "karger double-edge bridge has min cut 2" {
 
 ///|
 test "karger single edge" {
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1)]
   let cut = karger_min_cut(2, edges[:], 10, seed=1L)
   @debug.assert_eq(cut, 1)
 }
@@ -304,7 +309,7 @@ test "karger single edge" {
 ///|
 test "karger edge cases" {
   // n = 0 or 1 has no proper cut; we return Int::MAX.
-  let empty : ReadOnlyArray[(Int, Int)] = []
+  let empty : ReadOnlyArray[(Int32, Int32)] = []
   @debug.assert_eq(karger_min_cut(0, empty[:], 5, seed=1L), @int.MAX_VALUE)
   @debug.assert_eq(karger_min_cut(1, empty[:], 5, seed=1L), @int.MAX_VALUE)
   // n >= 2 but no edges: cut is 0.
@@ -313,7 +318,7 @@ test "karger edge cases" {
 
 ///|
 test "karger deterministic for same seed" {
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (0, 3)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0), (0, 3)]
   let c1 = karger_min_cut(4, edges[:], 20, seed=1234L)
   let c2 = karger_min_cut(4, edges[:], 20, seed=1234L)
   @debug.assert_eq(c1, c2)

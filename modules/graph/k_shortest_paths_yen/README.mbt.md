@@ -237,7 +237,7 @@ sequenceDiagram
 ```mbt check
 ///|
 test "yen k shortest paths" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (1, 3, 1L),
     (0, 2, 3L),
@@ -254,7 +254,7 @@ test "yen k shortest paths" {
 ```mbt check
 ///|
 test "yen fewer than k" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, 1L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, 1L), (1, 2, 1L)]
   let paths = @k_shortest_paths_yen.yen_k_shortest_paths(3, edges, 0, 2, 5)
   // Only one simple path exists: 0->1->2
   debug_inspect(paths.length(), content="1")

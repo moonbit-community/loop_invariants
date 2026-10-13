@@ -25,7 +25,7 @@ enum MinStack[T] {
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let q : @challenge_persistent_queue_min.MinQueue[Int] = @challenge_persistent_queue_min.empty()
+///   let q : @challenge_persistent_queue_min.MinQueue[Int32] = @challenge_persistent_queue_min.empty()
 ///   let q = @challenge_persistent_queue_min.enqueue(q, 5)
 ///   let q = @challenge_persistent_queue_min.enqueue(q, 2)
 ///   let q = @challenge_persistent_queue_min.enqueue(q, 7)
@@ -44,7 +44,7 @@ pub fn[T] empty() -> MinQueue[T] {
 }
 
 ///|
-fn[T] size_stack(s : MinStack[T]) -> Int {
+fn[T] size_stack(s : MinStack[T]) -> Int32 {
   match s {
     Nil => 0
     Cons(value=_, min=_, tail~) => 1 + size_stack(tail)
@@ -53,7 +53,7 @@ fn[T] size_stack(s : MinStack[T]) -> Int {
 
 ///|
 /// Return the number of elements in the queue.
-pub fn[T] size(q : MinQueue[T]) -> Int {
+pub fn[T] size(q : MinQueue[T]) -> Int32 {
   size_stack(q.front) + size_stack(q.back)
 }
 
@@ -140,7 +140,7 @@ pub fn[T : Compare] min_queue(q : MinQueue[T]) -> T? {
 
 ///|
 test "persistent_queue_min" {
-  let q0 : MinQueue[Int] = empty()
+  let q0 : MinQueue[Int32] = empty()
   let q1 = enqueue(q0, 5)
   let q2 = enqueue(q1, 2)
   let q3 = enqueue(q2, 7)

@@ -98,8 +98,8 @@
 ///   One side: {3}  (crossing edges: 3-0 and 3-2)
 /// ```
 pub fn stoer_wagner_min_cut(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
 ) -> MinCutResult? {
   // Need at least 2 vertices for a cut
   if n <= 1 {
@@ -138,8 +138,8 @@ pub fn stoer_wagner_min_cut(
   let alive = Array::make(n, true)
 
   // members[v] = original vertices represented by supernode v
-  let members : Array[Array[Int]] = [ for i in 0..<n => [i] ]
-  let empty_cut : Array[Int] = []
+  let members : Array[Array[Int32]] = [ for i in 0..<n => [i] ]
+  let empty_cut : Array[Int32] = []
 
   // Step 2: Run n-1 phases of contraction
   let (_, best_weight, best_cut) = for phase = 0, alive_count = n, best_weight = INF64, best_cut = empty_cut; phase <

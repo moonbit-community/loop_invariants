@@ -10,7 +10,7 @@ const LMIN : Int64 = -9223372036854775808L
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -54,12 +54,12 @@ impl @quickcheck.Shrink for Ivs with fn shrink(self) {
 }
 
 ///|
-fn depth_at(ivs : Array[(Int64, Int64)], p : Int64) -> Int {
+fn depth_at(ivs : Array[(Int64, Int64)], p : Int64) -> Int32 {
   ivs.iter().filter(iv => iv.0 <= p && p < iv.1).count()
 }
 
 ///|
-fn ref_max(ivs : Array[(Int64, Int64)]) -> Int {
+fn ref_max(ivs : Array[(Int64, Int64)]) -> Int32 {
   let mut best = 0
   for iv in ivs {
     let d = depth_at(ivs, iv.0)

@@ -4,17 +4,17 @@
 // ============================================================================
 
 ///|
-const INF : Int = 0x3fffffff
+const INF : Int32 = 0x3fffffff
 
 ///|
 /// Return minimal tour cost visiting all nodes and returning to 0.
-pub fn tsp_min_cycle(dist : Array[Array[Int]]) -> Int {
+pub fn tsp_min_cycle(dist : Array[Array[Int32]]) -> Int32 {
   let n = dist.length()
   if n <= 1 {
     return 0
   }
   let total = 1 << n
-  let dp : Array[Array[Int]] = [ for _ in 0..<total => Array::make(n, INF) ]
+  let dp : Array[Array[Int32]] = [ for _ in 0..<total => Array::make(n, INF) ]
   dp[1][0] = 0
   for mask in 1..<total {
     for u in 0..<n {

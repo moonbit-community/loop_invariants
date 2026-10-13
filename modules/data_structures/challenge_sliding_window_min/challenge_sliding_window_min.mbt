@@ -4,11 +4,11 @@
 
 ///|
 /// Return minimum for each window of size k.
-pub fn sliding_window_min(arr : ArrayView[Int], k : Int) -> Array[Int] {
+pub fn sliding_window_min(arr : ArrayView[Int32], k : Int32) -> Array[Int32] {
   let n = arr.length()
   guard n >= k && k > 0 else { return [] }
-  let result : Array[Int] = []
-  let deque : @deque.Deque[Int] = Deque([])
+  let result : Array[Int32] = []
+  let deque : @deque.Deque[Int32] = Deque([])
   for i in 0..<n {
     let _ = for front = deque.front() {
       match front {
@@ -44,6 +44,6 @@ pub fn sliding_window_min(arr : ArrayView[Int], k : Int) -> Array[Int] {
 
 ///|
 test "sliding_window_min" {
-  let arr : Array[Int] = [4, 2, 12, 3, 5, 1]
+  let arr : Array[Int32] = [4, 2, 12, 3, 5, 1]
   @debug.assert_eq(sliding_window_min(arr, 3), [2, 2, 3, 1])
 }

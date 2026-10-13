@@ -10,7 +10,7 @@ const LMIN : Int64 = -9223372036854775808L
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -61,7 +61,7 @@ fn is_bitonic(seq : Array[Int64]) -> Bool {
 }
 
 ///|
-fn brute(xs : Array[Int64]) -> Int {
+fn brute(xs : Array[Int64]) -> Int32 {
   let n = xs.length()
   let mut best = 0
   for mask in 0..<(1 << n) {

@@ -81,7 +81,7 @@ impl @quickcheck.Shrink for FsCase with fn shrink(self) {
 ///|
 test "qc: floor_sum equals the term-by-term sum on small inputs" {
   @quickcheck.check(
-    (p : (Int, Int, Int, Int)) => {
+    (p : (Int32, Int32, Int32, Int32)) => {
       let n = (p.0 % 200).to_int64()
       let m = (p.1 % 1000).abs().to_int64() + 1L
       let a = (p.2 % 1000000).abs().to_int64()

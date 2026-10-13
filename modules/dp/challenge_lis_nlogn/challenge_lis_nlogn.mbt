@@ -5,10 +5,10 @@
 
 ///|
 fn lower_bound_prefix(
-  arr : FixedArray[Int],
-  len : Int,
-  target : Int,
-) -> Int where {
+  arr : FixedArray[Int32],
+  len : Int32,
+  target : Int32,
+) -> Int32 where {
   proof_require: sorted_prefix(arr, len),
   proof_ensure: result => lower_bound_prefix_ok(arr, len, target, result),
 } {
@@ -43,7 +43,7 @@ fn lower_bound_prefix(
 
 ///|
 /// Return the length of the longest increasing subsequence.
-pub fn lis_length(nums : ArrayView[Int]) -> Int {
+pub fn lis_length(nums : ArrayView[Int32]) -> Int32 {
   let tails = FixedArray::make(nums.length(), 0)
   for x in nums; len = 0 {
     let pos = lower_bound_prefix(tails, len, x)

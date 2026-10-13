@@ -56,7 +56,7 @@
 /// Loop invariant: at the start of each outer iteration, `flow` equals
 /// the total flow pushed across all completed BFS phases, and every
 /// intermediate flow assignment respects capacity constraints.
-pub fn Dinic::max_flow(self : Dinic, source : Int, sink : Int) -> Int64 {
+pub fn Dinic::max_flow(self : Dinic, source : Int32, sink : Int32) -> Int64 {
   // Main loop: BFS phases
   for flow = 0L; self.bfs(source, sink); {
     // Reset edge pointers for this phase
@@ -96,7 +96,7 @@ pub fn Dinic::max_flow(self : Dinic, source : Int, sink : Int) -> Int64 {
 /// from `u` to `v` exists.
 ///
 /// Useful for inspecting individual edge flows after `max_flow` has run.
-pub fn Dinic::get_flow(self : Dinic, u : Int, v : Int) -> Int64 {
+pub fn Dinic::get_flow(self : Dinic, u : Int32, v : Int32) -> Int64 {
   for e in self.adj[u] {
     if e.to == v {
       return e.flow
@@ -140,10 +140,10 @@ pub fn Dinic::reset(self : Dinic) -> Unit {
 ///   BFS from source using only edges with cap > flow.
 ///   Collect all visited vertices and return them.
 /// ```
-pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
+pub fn Dinic::min_cut_source_side(self : Dinic, source : Int32) -> Array[Int32] {
   let visited = Array::make(self.n, false)
-  let result : Array[Int] = []
-  let queue : Array[Int] = [source]
+  let result : Array[Int32] = []
+  let queue : Array[Int32] = [source]
   visited[source] = true
   for front = 0; queue.get(front) is Some(u); {
     result.push(u)
@@ -178,10 +178,10 @@ pub fn Dinic::min_cut_source_side(self : Dinic, source : Int) -> Array[Int] {
 /// Use `Dinic::new` directly if you need access to per-edge flows,
 /// min-cut information, or the ability to `reset` and rerun.
 pub fn max_flow(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
-  source : Int,
-  sink : Int,
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
+  source : Int32,
+  sink : Int32,
 ) -> Int64 {
   let flow = Dinic(n)
   for edge in edges {

@@ -25,12 +25,12 @@
 /// }
 /// ```
 pub enum Node {
-  Leaf(sum~ : Int)
-  Branch(sum~ : Int, left~ : Node, right~ : Node)
+  Leaf(sum~ : Int32)
+  Branch(sum~ : Int32, left~ : Node, right~ : Node)
 } derive(Debug)
 
 ///|
-fn node_sum(node : Node) -> Int {
+fn node_sum(node : Node) -> Int32 {
   match node {
     Leaf(sum~) => sum
     Branch(sum~, left=_, right=_) => sum
@@ -41,13 +41,13 @@ fn node_sum(node : Node) -> Int {
 
 ///|
 /// Return the sum stored at the root.
-pub fn total(node : Node) -> Int {
+pub fn total(node : Node) -> Int32 {
   node_sum(node)
 }
 
 ///|
 /// Build a segment tree over arr[l..r).
-pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
+pub fn build(arr : ArrayView[Int32], l : Int32, r : Int32) -> Node {
   if r - l == 1 {
     Leaf(sum=arr[l])
   } else {
@@ -60,7 +60,13 @@ pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 
 ///|
 /// Add delta at index idx and return the new tree.
-pub fn add(node : Node, l : Int, r : Int, idx : Int, delta : Int) -> Node {
+pub fn add(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  idx : Int32,
+  delta : Int32,
+) -> Node {
   if r - l == 1 {
     Leaf(sum=node_sum(node) + delta)
   } else {
@@ -89,7 +95,13 @@ pub fn add(node : Node, l : Int, r : Int, idx : Int, delta : Int) -> Node {
 
 ///|
 /// Query the sum over [ql, qr).
-pub fn query(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
+pub fn query(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
+) -> Int32 {
   if qr <= l || r <= ql {
     0
   } else if ql <= l && r <= qr {
@@ -108,8 +120,8 @@ pub fn query(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 /// Apply a list of point updates (index, delta).
 pub fn apply_updates(
   root : Node,
-  n : Int,
-  updates : ArrayView[(Int, Int)],
+  n : Int32,
+  updates : ArrayView[(Int32, Int32)],
 ) -> Node {
   for update in updates; tree = root {
     let (idx, delta) = update

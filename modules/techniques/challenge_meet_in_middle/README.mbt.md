@@ -161,7 +161,7 @@ The code uses two helpers:
 ```mbt check
 ///|
 test "meet in middle example 9" {
-  let nums : Array[Int] = [3, 34, 4, 12, 5, 2]
+  let nums : Array[Int32] = [3, 34, 4, 12, 5, 2]
   let best = @challenge_meet_in_middle.best_subset_sum_leq(nums, 9)
   debug_inspect(best, content="9")
 }
@@ -172,7 +172,7 @@ test "meet in middle example 9" {
 ```mbt check
 ///|
 test "meet in middle example 10" {
-  let nums : Array[Int] = [3, 34, 4, 12, 5, 2]
+  let nums : Array[Int32] = [3, 34, 4, 12, 5, 2]
   let best = @challenge_meet_in_middle.best_subset_sum_leq(nums, 10)
   debug_inspect(best, content="10")
 }
@@ -183,7 +183,7 @@ test "meet in middle example 10" {
 ```mbt check
 ///|
 test "meet in middle exact hit" {
-  let nums : Array[Int] = [1, 2, 3, 4]
+  let nums : Array[Int32] = [1, 2, 3, 4]
   let best = @challenge_meet_in_middle.best_subset_sum_leq(nums, 6)
   debug_inspect(best, content="6")
 }
@@ -194,7 +194,7 @@ test "meet in middle exact hit" {
 ```mbt check
 ///|
 test "meet in middle empty subset" {
-  let nums : Array[Int] = [5, 8, 13]
+  let nums : Array[Int32] = [5, 8, 13]
   let best = @challenge_meet_in_middle.best_subset_sum_leq(nums, 4)
   debug_inspect(best, content="0")
 }
@@ -205,7 +205,7 @@ test "meet in middle empty subset" {
 ```mbt check
 ///|
 test "meet in middle larger" {
-  let nums : Array[Int] = [8, 6, 7, 5, 3, 10, 9]
+  let nums : Array[Int32] = [8, 6, 7, 5, 3, 10, 9]
   let best = @challenge_meet_in_middle.best_subset_sum_leq(nums, 20)
   debug_inspect(best, content="20")
 }

@@ -39,8 +39,8 @@
 ///                    a witness of an odd cycle.
 pub(all) struct BipartiteResult {
   is_bipartite : Bool
-  color : Array[Int]
-  odd_cycle_edge : (Int, Int)?
+  color : Array[Int32]
+  odd_cycle_edge : (Int32, Int32)?
 }
 
 ///|
@@ -57,10 +57,10 @@ pub(all) struct BipartiteResult {
 ///   @debug.assert_eq(@bipartite_check.is_bipartite(4, adj).is_bipartite, true)
 /// }
 /// ```
-pub fn is_bipartite(n : Int, adj : Array[Array[Int]]) -> BipartiteResult {
+pub fn is_bipartite(n : Int32, adj : Array[Array[Int32]]) -> BipartiteResult {
   let color = Array::make(n, -1)
-  let queue : Array[Int] = []
-  let mut witness : (Int, Int)? = None
+  let queue : Array[Int32] = []
+  let mut witness : (Int32, Int32)? = None
   for start in 0..<n {
     if color[start] != -1 {
       continue

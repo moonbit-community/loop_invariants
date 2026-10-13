@@ -66,7 +66,7 @@ const INF : Int64 = 4611686018427387903L
 /// ```moonbit nocheck
 /// test {
 ///   // dp_0 = [0, 0, 0, 0]; cost(i, j) = (j - i)^2.
-///   let cost = fn(i : Int, j : Int) -> Int64 {
+///   let cost = fn(i : Int32, j : Int32) -> Int64 {
 ///     let d = (j - i).to_int64()
 ///     d * d
 ///   }
@@ -77,8 +77,8 @@ const INF : Int64 = 4611686018427387903L
 /// ```
 pub fn solve(
   base : Array[Int64],
-  layers : Int,
-  cost : (Int, Int) -> Int64,
+  layers : Int32,
+  cost : (Int32, Int32) -> Int64,
 ) -> Array[Int64] {
   let n = base.length()
   let mut prev = Array::makei(n, i => base[i])
@@ -100,11 +100,11 @@ pub fn solve(
 fn solve_range(
   prev : Array[Int64],
   cur : Array[Int64],
-  cost : (Int, Int) -> Int64,
-  lo : Int,
-  hi : Int,
-  a : Int,
-  b : Int,
+  cost : (Int32, Int32) -> Int64,
+  lo : Int32,
+  hi : Int32,
+  a : Int32,
+  b : Int32,
 ) -> Unit {
   if lo > hi {
     return
@@ -112,7 +112,7 @@ fn solve_range(
   let mid = (lo + hi) / 2
   let upper = if mid < b { mid } else { b }
   let mut best : Int64 = INF
-  let mut arg : Int = a
+  let mut arg : Int32 = a
   let mut i = a
   while i <= upper {
     if prev[i] != INF {
@@ -147,7 +147,7 @@ test "dq dp partition into 2" {
   // Set up "j = number of elements consumed"; dp_0[0] = 0 else INF.
   let base = Array::make(n + 1, INF)
   base[0] = 0L
-  fn cost(i : Int, j : Int) -> Int64 {
+  fn cost(i : Int32, j : Int32) -> Int64 {
     if i >= j {
       return 0L
     }
@@ -184,7 +184,7 @@ test "dq dp single layer matches brute" {
   // confirm 1 layer of DC DP matches naive O(n^2).
   let n = 6
   let base = [0L, 0L, 0L, 0L, 0L, 0L]
-  fn cost(i : Int, j : Int) -> Int64 {
+  fn cost(i : Int32, j : Int32) -> Int64 {
     let d = (j - i).to_int64()
     d * d
   }
@@ -211,7 +211,7 @@ test "dq dp larger brute force" {
   let base = Array::makei(n, i => if i == 0 { 0L } else { INF })
   // cost(i, j) = (sum of squares of an arbitrary fixed array slice).
   let weights : ReadOnlyArray[Int64] = [1L, 3L, 2L, 5L, 4L, 1L, 6L, 2L]
-  fn cost(i : Int, j : Int) -> Int64 {
+  fn cost(i : Int32, j : Int32) -> Int64 {
     let mut s = 0L
     let mut k = i
     while k < j {

@@ -43,7 +43,7 @@
 ///   @debug.assert_eq(r.0, 3) // point 4 is in all three intervals
 /// }
 /// ```
-pub fn max_overlap(intervals : Array[(Int64, Int64)]) -> (Int, Int64) {
+pub fn max_overlap(intervals : Array[(Int64, Int64)]) -> (Int32, Int64) {
   let n = intervals.length()
   if n == 0 {
     return (0, 0L)
@@ -71,7 +71,7 @@ pub fn max_overlap(intervals : Array[(Int64, Int64)]) -> (Int, Int64) {
 }
 
 ///|
-fn sort_events(arr : Array[(Int64, Int)], lo : Int, hi : Int) -> Unit {
+fn sort_events(arr : Array[(Int64, Int32)], lo : Int32, hi : Int32) -> Unit {
   if hi - lo <= 1 {
     return
   }
@@ -82,7 +82,12 @@ fn sort_events(arr : Array[(Int64, Int)], lo : Int, hi : Int) -> Unit {
 }
 
 ///|
-fn merge(arr : Array[(Int64, Int)], lo : Int, mid : Int, hi : Int) -> Unit {
+fn merge(
+  arr : Array[(Int64, Int32)],
+  lo : Int32,
+  mid : Int32,
+  hi : Int32,
+) -> Unit {
   let buf = Array::make(hi - lo, (0L, 0))
   let mut i = lo
   let mut j = mid
@@ -113,7 +118,7 @@ fn merge(arr : Array[(Int64, Int)], lo : Int, mid : Int, hi : Int) -> Unit {
 }
 
 ///|
-fn cmp_event(a : (Int64, Int), b : (Int64, Int)) -> Int {
+fn cmp_event(a : (Int64, Int32), b : (Int64, Int32)) -> Int32 {
   if a.0 < b.0 {
     -1
   } else if a.0 > b.0 {
@@ -199,7 +204,7 @@ test "overlap disjoint" {
 
 ///|
 test "overlap agrees with brute force" {
-  fn brute(ivs : Array[(Int64, Int64)]) -> Int {
+  fn brute(ivs : Array[(Int64, Int64)]) -> Int32 {
     // Sweep all coordinate-and-coordinate+0.5 candidate points.
     let candidates : Array[Int64] = []
     for iv in ivs {

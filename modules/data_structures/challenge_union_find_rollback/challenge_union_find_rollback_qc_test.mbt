@@ -5,20 +5,20 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 priv enum Op {
-  Union(Int, Int)
-  Same(Int, Int)
-  Find(Int)
+  Union(Int32, Int32)
+  Same(Int32, Int32)
+  Find(Int32)
   Snapshot
   /// Roll back to `raw % (history + 2)`; targets above the current history
   /// length must be no-ops.
-  Rollback(Int)
+  Rollback(Int32)
 } derive(Debug)
 
 ///|
@@ -26,7 +26,7 @@ impl @quickcheck.Shrink for Op
 
 ///|
 priv struct Case {
-  n : Int
+  n : Int32
   ops : Array[Op]
 } derive(Debug)
 
@@ -56,7 +56,7 @@ fn run_case(c : Case) -> Bool {
   let n = c.n
   let dsu = @challenge_union_find_rollback.RollbackDSU(n)
   // states[k] = component labels after k history entries.
-  let states : Array[Array[Int]] = [Array::makei(n, i => i)]
+  let states : Array[Array[Int32]] = [Array::makei(n, i => i)]
   for op in c.ops {
     let label = states[states.length() - 1]
     match op {

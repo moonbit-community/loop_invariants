@@ -28,7 +28,7 @@
 // SPACE COMPLEXITY: O(V + E)
 
 ///|
-fn build_adj_lists(n : Int) -> Array[Array[Int]] {
+fn build_adj_lists(n : Int32) -> Array[Array[Int32]] {
   [
     for _ in 0..<n => []
   ]
@@ -36,13 +36,13 @@ fn build_adj_lists(n : Int) -> Array[Array[Int]] {
 
 ///|
 fn is_connected_undirected(
-  n : Int,
-  adj : Array[Array[Int]],
+  n : Int32,
+  adj : Array[Array[Int32]],
   has_degree : Array[Bool],
-  start : Int,
+  start : Int32,
 ) -> Bool {
   let seen = Array::make(n, false)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   stack.push(start)
   seen[start] = true
   for idx = 0; idx < stack.length(); idx = idx + 1 {
@@ -77,9 +77,9 @@ fn is_connected_undirected(
 /// Eulerian path for a directed graph. Returns None if no Eulerian path exists.
 /// If edges is empty, returns Some([]).
 pub fn eulerian_path_directed(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-) -> Array[Int]? {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Int32]? {
   if n <= 0 {
     return Some([])
   }
@@ -145,8 +145,8 @@ pub fn eulerian_path_directed(
     return None
   }
   let next_index = Array::make(n, 0)
-  let stack : Array[Int] = [start]
-  let path : Array[Int] = []
+  let stack : Array[Int32] = [start]
+  let path : Array[Int32] = []
   for ;; {
     if stack.length() == 0 {
       break
@@ -195,9 +195,9 @@ pub fn eulerian_path_directed(
 /// Eulerian path for an undirected graph. Returns None if no Eulerian path exists.
 /// If edges is empty, returns Some([]).
 pub fn eulerian_path_undirected(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-) -> Array[Int]? {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Int32]? {
   if n <= 0 {
     return Some([])
   }
@@ -218,7 +218,7 @@ pub fn eulerian_path_undirected(
       has_degree[v] = true
     }
   }
-  let odd : Array[Int] = [ for v in 0..<n if deg[v] % 2 == 1 => v ]
+  let odd : Array[Int32] = [ for v in 0..<n if deg[v] % 2 == 1 => v ]
   if odd.length() != 0 && odd.length() != 2 {
     return None
   }
@@ -249,8 +249,8 @@ pub fn eulerian_path_undirected(
   }
   let used = Array::make(edges.length(), false)
   let cursor = Array::make(n, 0)
-  let stack : Array[Int] = [start]
-  let path : Array[Int] = []
+  let stack : Array[Int32] = [start]
+  let path : Array[Int32] = []
   for ;; {
     if stack.length() == 0 {
       break
@@ -311,10 +311,10 @@ pub fn eulerian_path_undirected(
 
 ///|
 fn consume_edge_directed(
-  edges : ArrayView[(Int, Int)],
+  edges : ArrayView[(Int32, Int32)],
   used : Array[Bool],
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
 ) -> Bool {
   for i in 0..<edges.length() {
     if !used[i] {
@@ -330,10 +330,10 @@ fn consume_edge_directed(
 
 ///|
 fn consume_edge_undirected(
-  edges : ArrayView[(Int, Int)],
+  edges : ArrayView[(Int32, Int32)],
   used : Array[Bool],
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
 ) -> Bool {
   for i in 0..<edges.length() {
     if !used[i] {
@@ -349,8 +349,8 @@ fn consume_edge_undirected(
 
 ///|
 fn valid_path_directed(
-  edges : ArrayView[(Int, Int)],
-  path : Array[Int],
+  edges : ArrayView[(Int32, Int32)],
+  path : Array[Int32],
 ) -> Bool {
   if edges.length() == 0 {
     return path.length() == 0
@@ -369,8 +369,8 @@ fn valid_path_directed(
 
 ///|
 fn valid_path_undirected(
-  edges : ArrayView[(Int, Int)],
-  path : Array[Int],
+  edges : ArrayView[(Int32, Int32)],
+  path : Array[Int32],
 ) -> Bool {
   if edges.length() == 0 {
     return path.length() == 0
@@ -393,40 +393,40 @@ fn valid_path_undirected(
 
 ///|
 test "eulerian directed path" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (0, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0), (0, 2)]
   let path = eulerian_path_directed(3, edges).unwrap()
   debug_inspect(valid_path_directed(edges, path), content="true")
 }
 
 ///|
 test "eulerian directed chain" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2)]
   let path = eulerian_path_directed(3, edges).unwrap()
   debug_inspect(path, content="[0, 1, 2]")
 }
 
 ///|
 test "eulerian directed none" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2)]
   debug_inspect(eulerian_path_directed(3, edges), content="None")
 }
 
 ///|
 test "eulerian undirected circuit" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0)]
   let path = eulerian_path_undirected(3, edges).unwrap()
   debug_inspect(valid_path_undirected(edges, path), content="true")
 }
 
 ///|
 test "eulerian undirected path" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2)]
   let path = eulerian_path_undirected(3, edges).unwrap()
   debug_inspect(path, content="[0, 1, 2]")
 }
 
 ///|
 test "eulerian undirected none" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (0, 3)]
   debug_inspect(eulerian_path_undirected(4, edges), content="None")
 }

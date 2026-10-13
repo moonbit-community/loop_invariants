@@ -232,18 +232,18 @@ This is conceptual (no public API in this package).
 ```mbt nocheck
 ///|
 struct Query {
-  l : Int
-  r : Int
-  idx : Int
+  l : Int32
+  r : Int32
+  idx : Int32
 }
 
 ///|
-fn block_of(i : Int, block_size : Int) -> Int {
+fn block_of(i : Int32, block_size : Int32) -> Int32 {
   i / block_size
 }
 
 ///|
-fn mo_order(qs : ArrayView[Query], block_size : Int) -> Array[Query] {
+fn mo_order(qs : ArrayView[Query], block_size : Int32) -> Array[Query] {
   let sorted = qs.to_array()
   sorted.sort_by((a, b) => {
     let ba = block_of(a.l, block_size)
@@ -258,15 +258,15 @@ fn mo_order(qs : ArrayView[Query], block_size : Int) -> Array[Query] {
 }
 
 ///|
-fn process_queries(a : ArrayView[Int], qs : ArrayView[Query]) -> Array[Int] {
+fn process_queries(a : ArrayView[Int32], qs : ArrayView[Query]) -> Array[Int32] {
   let n = a.length()
   let block_size = n.to_float().sqrt().to_int().max(1)
   let ordered = mo_order(qs, block_size)
 
-  let answers : Array[Int] = Array::make(qs.length(), 0)
-  let freq : Map[Int, Int] = {}
+  let answers : Array[Int32] = Array::make(qs.length(), 0)
+  let freq : Map[Int32, Int32] = {}
 
-  let add = (i : Int, distinct : Int) => {
+  let add = (i : Int32, distinct : Int32) => {
     let x = a[i]
     let c = freq.get(x).unwrap_or(0)
     freq[x] = c + 1
@@ -277,7 +277,7 @@ fn process_queries(a : ArrayView[Int], qs : ArrayView[Query]) -> Array[Int] {
     }
   }
 
-  let remove = (i : Int, distinct : Int) => {
+  let remove = (i : Int32, distinct : Int32) => {
     let x = a[i]
     let c = freq[x]
     freq[x] = c - 1

@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -15,12 +15,15 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// (drop, duplicate, or replace an edge with arbitrary endpoints, possibly
 /// out of range or a self-loop).
 priv struct MaybeTree {
-  n : Int
-  edges : Array[(Int, Int)]
+  n : Int32
+  edges : Array[(Int32, Int32)]
 } derive(Debug)
 
 ///|
-fn random_tree(rs : @quickcheck.RandomState, n : Int) -> Array[(Int, Int)] {
+fn random_tree(
+  rs : @quickcheck.RandomState,
+  n : Int32,
+) -> Array[(Int32, Int32)] {
   let label = Array::makei(n, i => i)
   for i = n - 1; i > 0; i = i - 1 {
     let j = rint(rs, 0, i)
@@ -71,7 +74,7 @@ impl @quickcheck.Shrink for MaybeTree
 ///|
 /// Independent tree check: `n - 1` in-range edges without self-loops that
 /// connect all `n` vertices (which also rules out duplicates).
-fn is_tree(n : Int, edges : Array[(Int, Int)]) -> Bool {
+fn is_tree(n : Int32, edges : Array[(Int32, Int32)]) -> Bool {
   if n <= 0 || edges.length() != n - 1 {
     return false
   }
@@ -96,7 +99,7 @@ fn is_tree(n : Int, edges : Array[(Int, Int)]) -> Bool {
 }
 
 ///|
-fn normalize(edges : Array[(Int, Int)]) -> Array[(Int, Int)] {
+fn normalize(edges : Array[(Int32, Int32)]) -> Array[(Int32, Int32)] {
   let out = edges.map(e => if e.0 <= e.1 { e } else { (e.1, e.0) })
   out.sort()
   out
@@ -145,7 +148,7 @@ test "qc: prufer_decode inverts prufer_encode on trees with n >= 2" {
 ///|
 test "qc: prufer_encode inverts prufer_decode on in-range codes" {
   @quickcheck.check(
-    (raw : Array[Int]) => {
+    (raw : Array[Int32]) => {
       let n = raw.length() + 2
       let code = raw.map(x => (x % n + n) % n)
       match @prufer_code.prufer_decode(code) {
@@ -164,7 +167,7 @@ test "qc: prufer_encode inverts prufer_decode on in-range codes" {
 ///|
 test "qc: prufer_decode rejects out-of-range codes" {
   @quickcheck.check(
-    (input : (Array[Int], Int)) => {
+    (input : (Array[Int32], Int32)) => {
       let (raw, bad) = input
       let n = raw.length() + 2
       let code = raw.map(x => (x % n + n) % n)

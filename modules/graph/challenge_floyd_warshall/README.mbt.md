@@ -57,7 +57,7 @@ Shortest path 0 -> 3 becomes 0 -> 1 -> 2 -> 3 with cost 1 + 2 + 3 = 6.
 ///|
 test "floyd warshall basic" {
   let inf = 1_000_000_000
-  let matrix : Array[Array[Int]] = [
+  let matrix : Array[Array[Int32]] = [
     [0, 1, 10, inf],
     [inf, 0, 2, inf],
     [inf, inf, 0, 3],
@@ -76,7 +76,7 @@ test "floyd warshall basic" {
 ///|
 test "floyd warshall negative edge" {
   let inf = 1_000_000_000
-  let matrix : Array[Array[Int]] = [[0, 2, inf], [inf, 0, -4], [3, inf, 0]]
+  let matrix : Array[Array[Int32]] = [[0, 2, inf], [inf, 0, -4], [3, inf, 0]]
   let dist = @challenge_floyd_warshall.floyd_warshall(matrix, inf)
   debug_inspect(dist[0][2], content="-2") // 0->1->2
   debug_inspect(dist[2][1], content="5") // 2->0->1
@@ -89,7 +89,7 @@ test "floyd warshall negative edge" {
 ///|
 test "floyd warshall unreachable" {
   let inf = 1_000_000_000
-  let matrix : Array[Array[Int]] = [[0, 1, inf], [inf, 0, inf], [inf, inf, 0]]
+  let matrix : Array[Array[Int32]] = [[0, 1, inf], [inf, 0, inf], [inf, inf, 0]]
   let dist = @challenge_floyd_warshall.floyd_warshall(matrix, inf)
   debug_inspect(dist[0][1], content="1")
   debug_inspect(dist[0][2] > 100000000, content="true")
@@ -106,7 +106,7 @@ from i.
 ///|
 test "floyd warshall negative cycle detection" {
   let inf = 1_000_000_000
-  let matrix : Array[Array[Int]] = [[0, 1, inf], [inf, 0, -2], [-2, inf, 0]]
+  let matrix : Array[Array[Int32]] = [[0, 1, inf], [inf, 0, -2], [-2, inf, 0]]
   let dist = @challenge_floyd_warshall.floyd_warshall(matrix, inf)
   debug_inspect(dist[0][0] < 0, content="true")
 }

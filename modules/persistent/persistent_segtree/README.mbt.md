@@ -155,16 +155,22 @@ query(v1, 1..3) = 16
 ```mbt nocheck
 ///|
 struct Node {
-  left : Int
-  right : Int
-  sum : Int
+  left : Int32
+  right : Int32
+  sum : Int32
 }
 
 // Update one position, return new root index.
 // Only nodes on the path from root to the leaf are created.
 
 ///|
-fn update(node : Int, lo : Int, hi : Int, idx : Int, val : Int) -> Int {
+fn update(
+  node : Int32,
+  lo : Int32,
+  hi : Int32,
+  idx : Int32,
+  val : Int32,
+) -> Int32 {
   if lo == hi {
     return new_node(left=-1, right=-1, sum=val) // new leaf
   }

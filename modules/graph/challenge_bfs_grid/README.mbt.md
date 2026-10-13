@@ -46,7 +46,7 @@ exactly the shortest-path algorithm we want.
 ```mbt check
 ///|
 test "basic path" {
-  let grid : Array[Array[Int]] = [[0, 0, 0], [1, 1, 0], [0, 0, 0]]
+  let grid : Array[Array[Int32]] = [[0, 0, 0], [1, 1, 0], [0, 0, 0]]
   let dist = @challenge_bfs_grid.shortest_path_grid(grid, 0, 0, 2, 2)
   debug_inspect(dist, content="Some(4)")
 }
@@ -57,7 +57,7 @@ test "basic path" {
 ```mbt check
 ///|
 test "unreachable" {
-  let grid : Array[Array[Int]] = [[0, 1], [1, 0]]
+  let grid : Array[Array[Int32]] = [[0, 1], [1, 0]]
   let dist = @challenge_bfs_grid.shortest_path_grid(grid, 0, 0, 1, 1)
   debug_inspect(dist, content="None")
 }
@@ -68,7 +68,7 @@ test "unreachable" {
 ```mbt check
 ///|
 test "start is target" {
-  let grid : Array[Array[Int]] = [[0, 0], [0, 0]]
+  let grid : Array[Array[Int32]] = [[0, 0], [0, 0]]
   let dist = @challenge_bfs_grid.shortest_path_grid(grid, 1, 1, 1, 1)
   debug_inspect(dist, content="Some(0)")
 }
@@ -79,7 +79,7 @@ test "start is target" {
 ```mbt check
 ///|
 test "blocked endpoints" {
-  let grid : Array[Array[Int]] = [[1, 0], [0, 0]]
+  let grid : Array[Array[Int32]] = [[1, 0], [0, 0]]
   let d1 = @challenge_bfs_grid.shortest_path_grid(grid, 0, 0, 1, 1)
   let d2 = @challenge_bfs_grid.shortest_path_grid(grid, 0, 1, 0, 0)
   debug_inspect(d1, content="None")

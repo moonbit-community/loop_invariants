@@ -81,7 +81,7 @@ add 3: new_mask = 1101, dp[1101][3] = dp[0101][2] + dist[2][3]
 ///|
 test "bitmask dp tsp basic" {
   let inf = 1_000_000
-  let dist : Array[Array[Int]] = [
+  let dist : Array[Array[Int32]] = [
     [0, 1, 3, 4],
     [1, 0, 2, 5],
     [3, 2, 0, 6],
@@ -105,7 +105,7 @@ cost = 1 + 2 + 6 + 4 = 13
 ///|
 test "bitmask dp tsp triangle" {
   let inf = 1_000_000
-  let dist : Array[Array[Int]] = [[0, 2, 4], [2, 0, 1], [4, 1, 0]]
+  let dist : Array[Array[Int32]] = [[0, 2, 4], [2, 0, 1], [4, 1, 0]]
   let best = @challenge_bitmask_dp.tsp_min_cycle(dist, inf)
   debug_inspect(best, content="7")
 }
@@ -126,7 +126,7 @@ The optimal cycle uses the ring.
 ///|
 test "bitmask dp tsp ring" {
   let inf = 1_000_000
-  let dist : Array[Array[Int]] = [
+  let dist : Array[Array[Int32]] = [
     [0, 2, 9, 9, 2],
     [2, 0, 2, 9, 9],
     [9, 2, 0, 2, 9],
@@ -147,7 +147,7 @@ There is no way to return to the start while visiting all nodes.
 ///|
 test "bitmask dp tsp unreachable" {
   let inf = 1_000_000
-  let dist : Array[Array[Int]] = [
+  let dist : Array[Array[Int32]] = [
     [0, 1, inf, inf],
     [1, 0, 1, inf],
     [inf, 1, 0, 1],

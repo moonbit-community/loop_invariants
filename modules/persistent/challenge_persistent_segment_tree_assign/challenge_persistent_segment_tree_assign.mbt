@@ -26,12 +26,12 @@
 /// }
 /// ```
 pub enum Node {
-  Leaf(sum~ : Int, tag~ : Int?)
-  Branch(sum~ : Int, tag~ : Int?, left~ : Node, right~ : Node)
+  Leaf(sum~ : Int32, tag~ : Int32?)
+  Branch(sum~ : Int32, tag~ : Int32?, left~ : Node, right~ : Node)
 } derive(Debug)
 
 ///|
-fn node_sum(node : Node) -> Int {
+fn node_sum(node : Node) -> Int32 {
   match node {
     Leaf(sum~, tag=_) => sum
     Branch(sum~, tag=_, left=_, right=_) => sum
@@ -41,7 +41,7 @@ fn node_sum(node : Node) -> Int {
 ///|
 
 ///|
-fn apply_assign(node : Node, len : Int, value : Int) -> Node {
+fn apply_assign(node : Node, len : Int32, value : Int32) -> Node {
   match node {
     Leaf(sum=_, tag=_) => Leaf(sum=value * len, tag=Some(value))
     Branch(sum=_, tag=_, left~, right~) =>
@@ -51,13 +51,13 @@ fn apply_assign(node : Node, len : Int, value : Int) -> Node {
 
 ///|
 /// Return the sum stored at the root.
-pub fn total(node : Node) -> Int {
+pub fn total(node : Node) -> Int32 {
   node_sum(node)
 }
 
 ///|
 /// Build a segment tree over arr[l..r).
-pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
+pub fn build(arr : ArrayView[Int32], l : Int32, r : Int32) -> Node {
   if r - l == 1 {
     Leaf(sum=arr[l], tag=None)
   } else {
@@ -72,11 +72,11 @@ pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 /// Assign value to all elements in [ql, qr) and return the new tree.
 pub fn range_assign(
   node : Node,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
-  value : Int,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
+  value : Int32,
 ) -> Node {
   if qr <= l || r <= ql {
     node
@@ -112,7 +112,13 @@ pub fn range_assign(
 
 ///|
 /// Query the sum over [ql, qr).
-pub fn range_sum(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
+pub fn range_sum(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
+) -> Int32 {
   if qr <= l || r <= ql {
     0
   } else if ql <= l && r <= qr {
@@ -142,8 +148,8 @@ pub fn range_sum(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 /// Apply range assignments (l, r, value), where r is exclusive.
 pub fn apply_updates(
   root : Node,
-  n : Int,
-  updates : ArrayView[(Int, Int, Int)],
+  n : Int32,
+  updates : ArrayView[(Int32, Int32, Int32)],
 ) -> Node {
   for update in updates; tree = root {
     let (l, r, v) = update

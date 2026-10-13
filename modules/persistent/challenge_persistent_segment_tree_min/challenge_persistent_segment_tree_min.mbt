@@ -26,12 +26,12 @@
 /// }
 /// ```
 pub enum Node {
-  Leaf(min~ : Int)
-  Branch(min~ : Int, left~ : Node, right~ : Node)
+  Leaf(min~ : Int32)
+  Branch(min~ : Int32, left~ : Node, right~ : Node)
 } derive(Debug)
 
 ///|
-fn node_min(node : Node) -> Int {
+fn node_min(node : Node) -> Int32 {
   match node {
     Leaf(min~) => min
     Branch(min~, left=_, right=_) => min
@@ -42,13 +42,13 @@ fn node_min(node : Node) -> Int {
 
 ///|
 /// Return the minimum stored at the root.
-pub fn min_value(node : Node) -> Int {
+pub fn min_value(node : Node) -> Int32 {
   node_min(node)
 }
 
 ///|
 /// Build a segment tree over arr[l..r).
-pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
+pub fn build(arr : ArrayView[Int32], l : Int32, r : Int32) -> Node {
   if r - l == 1 {
     Leaf(min=arr[l])
   } else {
@@ -66,7 +66,13 @@ pub fn build(arr : ArrayView[Int], l : Int, r : Int) -> Node {
 
 ///|
 /// Set index idx to value and return the new tree.
-pub fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
+pub fn set_value(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  idx : Int32,
+  value : Int32,
+) -> Node {
   if r - l == 1 {
     Leaf(min=value)
   } else {
@@ -97,7 +103,13 @@ pub fn set_value(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node 
 
 ///|
 /// Query the minimum over [ql, qr).
-pub fn range_min(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
+pub fn range_min(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
+) -> Int32 {
   if qr <= l || r <= ql {
     0x3fffffff
   } else if ql <= l && r <= qr {
@@ -123,8 +135,8 @@ pub fn range_min(node : Node, l : Int, r : Int, ql : Int, qr : Int) -> Int {
 /// Apply point updates (idx, value).
 pub fn apply_updates(
   root : Node,
-  n : Int,
-  updates : ArrayView[(Int, Int)],
+  n : Int32,
+  updates : ArrayView[(Int32, Int32)],
 ) -> Node {
   updates.fold(init=root, (tree, update) => {
     let (idx, value) = update

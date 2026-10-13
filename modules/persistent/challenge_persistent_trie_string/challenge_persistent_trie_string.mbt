@@ -37,12 +37,12 @@ pub fn empty() -> Node {
 }
 
 ///|
-fn char_index(ch : Char) -> Int {
+fn char_index(ch : Char) -> Int32 {
   ch.to_int() - 'a'.to_int()
 }
 
 ///|
-fn insert(node : Node, s : StringView, idx : Int) -> Node {
+fn insert(node : Node, s : StringView, idx : Int32) -> Node {
   if idx >= s.length() {
     { end: true, children: node.children, }
   } else {
@@ -76,7 +76,7 @@ pub fn contains(root : Node, s : String) -> Bool {
 }
 
 ///|
-fn contains_view(node : Node, view : StringView, idx : Int) -> Bool {
+fn contains_view(node : Node, view : StringView, idx : Int32) -> Bool {
   if idx >= view.length() {
     node.end
   } else {

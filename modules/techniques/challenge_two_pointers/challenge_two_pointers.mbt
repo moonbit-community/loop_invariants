@@ -5,7 +5,7 @@
 
 ///|
 /// Count subarrays with sum <= k (requires non-negative values).
-pub fn count_subarrays_leq(arr : ArrayView[Int], k : Int) -> Int {
+pub fn count_subarrays_leq(arr : ArrayView[Int32], k : Int32) -> Int32 {
   let n = arr.length()
   // The window sum is accumulated in `Int64`: it is at most `max(k, 0)`
   // before `arr[right]` is added, so the addition cannot overflow the way an
@@ -33,7 +33,7 @@ pub fn count_subarrays_leq(arr : ArrayView[Int], k : Int) -> Int {
 
 ///|
 test "count_subarrays_leq" {
-  let arr : Array[Int] = [1, 2, 1, 1]
+  let arr : Array[Int32] = [1, 2, 1, 1]
   // Valid subarrays with sum <= 3: [1], [1,2], [2], [2,1], [1], [1,1], [1]
   @debug.assert_eq(count_subarrays_leq(arr, 3), 7)
   @debug.assert_eq(count_subarrays_leq([2, 2, 2], 3), 3) // each single element

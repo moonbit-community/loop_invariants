@@ -3,7 +3,10 @@
 // ============================================================================
 
 ///|
-fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
+fn build_adj(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Array[Int32]] {
   let adj = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
@@ -15,12 +18,12 @@ fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
 
 ///|
 fn dfs_size(
-  u : Int,
-  p : Int,
-  adj : Array[Array[Int]],
+  u : Int32,
+  p : Int32,
+  adj : Array[Array[Int32]],
   removed : Array[Bool],
-  sub : Array[Int],
-) -> Int {
+  sub : Array[Int32],
+) -> Int32 {
   let size = adj[u].fold(init=1, (size, v) => {
     if v != p && !removed[v] {
       size + dfs_size(v, u, adj, removed, sub)
@@ -34,13 +37,13 @@ fn dfs_size(
 
 ///|
 fn find_centroid(
-  u : Int,
-  p : Int,
-  total : Int,
-  adj : Array[Array[Int]],
+  u : Int32,
+  p : Int32,
+  total : Int32,
+  adj : Array[Array[Int32]],
   removed : Array[Bool],
-  sub : Array[Int],
-) -> Int {
+  sub : Array[Int32],
+) -> Int32 {
   for v in adj[u] {
     if v != p && !removed[v] && sub[v] > total / 2 {
       return find_centroid(v, u, total, adj, removed, sub)
@@ -51,14 +54,14 @@ fn find_centroid(
 
 ///|
 fn decompose(
-  u : Int,
-  p : Int,
-  depth : Int,
-  adj : Array[Array[Int]],
+  u : Int32,
+  p : Int32,
+  depth : Int32,
+  adj : Array[Array[Int32]],
   removed : Array[Bool],
-  sub : Array[Int],
-  parent : Array[Int],
-  level : Array[Int],
+  sub : Array[Int32],
+  parent : Array[Int32],
+  level : Array[Int32],
 ) -> Unit {
   let total = dfs_size(u, -1, adj, removed, sub)
   let c = find_centroid(u, -1, total, adj, removed, sub)
@@ -89,20 +92,23 @@ fn decompose(
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+///   let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
 ///   let cd = build_centroid(5, edges[:])
 ///   @debug.assert_eq(cd.parent[2], -1)
 ///   @debug.assert_eq(cd.level[2], 0)
 /// }
 /// ```
 pub struct CentroidDecomp {
-  parent : Array[Int]
-  level : Array[Int]
+  parent : Array[Int32]
+  level : Array[Int32]
 }
 
 ///|
 /// Build centroid decomposition and return parent/level arrays.
-pub fn build_centroid(n : Int, edges : ArrayView[(Int, Int)]) -> CentroidDecomp {
+pub fn build_centroid(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> CentroidDecomp {
   let adj = build_adj(n, edges)
   let removed = Array::make(n, false)
   let sub = Array::make(n, 0)

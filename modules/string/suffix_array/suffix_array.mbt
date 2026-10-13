@@ -31,8 +31,8 @@
 ///
 /// Build with `SuffixArray::new`. Time: O(n log^2 n). Space: O(n).
 pub struct SuffixArray {
-  sa : Array[Int]
-  lcp : Array[Int]
+  sa : Array[Int32]
+  lcp : Array[Int32]
   text : String
 }
 
@@ -165,7 +165,7 @@ pub fn SuffixArray::SuffixArray(text : String) -> SuffixArray {
 /// i-th lexicographically smallest suffix of `s`.
 ///
 /// Time: O(n log^2 n). Space: O(n).
-pub fn suffix_array(s : String) -> Array[Int] {
+pub fn suffix_array(s : String) -> Array[Int32] {
   SuffixArray(s).sa
 }
 
@@ -189,7 +189,7 @@ pub fn suffix_array(s : String) -> Array[Int] {
 /// Returns an empty array if `s` is empty or if `sa.length() != s.length()`.
 ///
 /// Time: O(n). Space: O(n).
-pub fn lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
+pub fn lcp_array(s : String, sa : ArrayView[Int32]) -> Array[Int32] {
   let n = s.length()
   if n == 0 || sa.length() != n {
     return []
@@ -245,7 +245,10 @@ pub fn lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
 /// Returns `None` if `pattern` is empty, `text` is empty, or no match exists.
 ///
 /// Time: O(m log n) where m = `pattern.length()` and n = `text.length()`.
-pub fn SuffixArray::search(self : SuffixArray, pattern : String) -> (Int, Int)? {
+pub fn SuffixArray::search(
+  self : SuffixArray,
+  pattern : String,
+) -> (Int32, Int32)? {
   let n = self.sa.length()
   let m = pattern.length()
   if n == 0 || m == 0 {
@@ -288,7 +291,7 @@ pub fn SuffixArray::search(self : SuffixArray, pattern : String) -> (Int, Int)? 
 }
 
 ///|
-fn compare_suffix(text : String, start : Int, pattern : String) -> Int {
+fn compare_suffix(text : String, start : Int32, pattern : String) -> Int32 {
   let n = text.length()
   let m = pattern.length()
   for i in 0..<m {
@@ -306,7 +309,7 @@ fn compare_suffix(text : String, start : Int, pattern : String) -> Int {
 }
 
 ///|
-fn starts_with(text : String, start : Int, pattern : String) -> Bool {
+fn starts_with(text : String, start : Int32, pattern : String) -> Bool {
   let n = text.length()
   let m = pattern.length()
   if start + m > n {
@@ -339,11 +342,11 @@ fn starts_with(text : String, start : Int, pattern : String) -> Bool {
 pub fn SuffixArray::find_all(
   self : SuffixArray,
   pattern : String,
-) -> Array[Int] {
+) -> Array[Int32] {
   match self.search(pattern) {
     None => []
     Some((first, last)) => {
-      let result : Array[Int] = [ for i in first..<(last + 1) => self.sa[i] ]
+      let result : Array[Int32] = [ for i in first..<(last + 1) => self.sa[i] ]
       result.sort_by((a, b) => a - b)
       result
     }
@@ -362,7 +365,7 @@ pub fn SuffixArray::find_all(
 /// Returns 0 when `pattern` is not present or when either string is empty.
 ///
 /// Time: O(m log n) where m = `pattern.length()` and n = `text.length()`.
-pub fn SuffixArray::count(self : SuffixArray, pattern : String) -> Int {
+pub fn SuffixArray::count(self : SuffixArray, pattern : String) -> Int32 {
   match self.search(pattern) {
     None => 0
     Some((first, last)) => last - first + 1
@@ -446,7 +449,7 @@ pub fn SuffixArray::count_distinct_substrings(self : SuffixArray) -> Int64 {
 /// (i.e., `i < 0` or `i >= text.length()`).
 ///
 /// Time: O(n) to construct the returned string. Space: O(n).
-pub fn SuffixArray::get_suffix(self : SuffixArray, i : Int) -> String {
+pub fn SuffixArray::get_suffix(self : SuffixArray, i : Int32) -> String {
   if i < 0 || i >= self.sa.length() {
     return ""
   }

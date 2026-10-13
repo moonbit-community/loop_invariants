@@ -39,7 +39,7 @@
 ///
 /// An `Array[Int]` containing the vertices of one cycle, in traversal order.
 /// Returns an empty array when no cycle exists.
-fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
+fn find_cycle(n : Int32, root : Int32, parent : Array[Int32]) -> Array[Int32] {
   // seen[v] = ID of the vertex that started this traversal (-1 = unvisited)
   let seen = Array::make(n, -1)
   for v in 0..<n {
@@ -57,7 +57,7 @@ fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
     // Check if we found a cycle (revisited vertex marked with same ID)
     if cur != -1 && cur != root && seen[cur] == v {
       // Extract the cycle starting from cur
-      let cycle : Array[Int] = []
+      let cycle : Array[Int32] = []
       let start = cur
       cycle.push(start)
       for x = parent[start]; x != start; {
@@ -101,16 +101,16 @@ fn find_cycle(n : Int, root : Int, parent : Array[Int]) -> Array[Int] {
 ///
 /// `Array[Bool]` of length `n` where element `v` is `true` iff `v` is
 /// reachable from `root`.
-fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
+fn build_reachable(n : Int32, edges : Array[Edge], root : Int32) -> Array[Bool] {
   // Build adjacency list for forward edges
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for e in edges {
     adj[e.from].push(e.to)
   }
 
   // BFS from root
   let seen = Array::make(n, false)
-  let stack : Array[Int] = [root]
+  let stack : Array[Int32] = [root]
   seen[root] = true
   for idx = 0; idx < stack.length(); {
     let u = stack[idx]
@@ -148,6 +148,6 @@ fn build_reachable(n : Int, edges : Array[Edge], root : Int) -> Array[Bool] {
 /// ## Returns
 ///
 /// The sum of `in_cost[v]` for all `v` in `cycle`.
-fn cycle_cost(in_cost : Array[Int64], cycle : Array[Int]) -> Int64 {
+fn cycle_cost(in_cost : Array[Int64], cycle : Array[Int32]) -> Int64 {
   cycle.fold(init=0L, (total, v) => total + in_cost[v])
 }

@@ -29,7 +29,7 @@ fn congruent(x : Int64, r : Int64, m : Int64) -> Bool {
 }
 
 ///|
-fn rand_below(rs : @quickcheck.RandomState, bits : Int) -> Int64 {
+fn rand_below(rs : @quickcheck.RandomState, bits : Int32) -> Int64 {
   if bits <= 0 {
     0L
   } else {

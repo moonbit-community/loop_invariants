@@ -55,7 +55,7 @@ priv enum Color {
 } derive(Eq)
 
 ///|
-fn dsu_find(parent : Array[Int], x : Int) -> Int {
+fn dsu_find(parent : Array[Int32], x : Int32) -> Int32 {
   // Two-pass find with path compression. The loop walks up to the root,
   // then a second loop snaps every node on the path to point directly
   // at the root, giving the inverse-Ackermann amortized bound when
@@ -101,7 +101,12 @@ fn dsu_find(parent : Array[Int], x : Int) -> Int {
 }
 
 ///|
-fn dsu_union(parent : Array[Int], rank : Array[Int], a : Int, b : Int) -> Unit {
+fn dsu_union(
+  parent : Array[Int32],
+  rank : Array[Int32],
+  a : Int32,
+  b : Int32,
+) -> Unit {
   // Union by rank. Used exclusively to merge a finished child set into
   // its parent's set; the parent's representative is then re-tagged as
   // the highest still-open ancestor via `ancestor[find(u)] = u`.
@@ -164,8 +169,8 @@ fn dsu_union(parent : Array[Int], rank : Array[Int], a : Int, b : Int) -> Unit {
 ///   //      1   2
 ///   //     / \
 ///   //    3   4
-///   let adj : Array[Array[Int]] = [[1, 2], [0, 3, 4], [0], [1], [1]]
-///   let queries : ReadOnlyArray[(Int, Int)] = [(3, 4), (3, 2), (4, 2), (1, 1)]
+///   let adj : Array[Array[Int32]] = [[1, 2], [0, 3, 4], [0], [1], [1]]
+///   let queries : ReadOnlyArray[(Int32, Int32)] = [(3, 4), (3, 2), (4, 2), (1, 1)]
 ///   let ans = @tarjan_offline_lca.tarjan_offline_lca(5, adj[:], 0, queries[:])
 ///   @debug.assert_eq(ans, [1, 0, 0, 1])
 /// }
@@ -175,11 +180,11 @@ fn dsu_union(parent : Array[Int], rank : Array[Int], a : Int, b : Int) -> Unit {
 ///
 /// `O((N + Q) * alpha(N))` time and `O(N + Q)` space.
 pub fn tarjan_offline_lca(
-  n : Int,
-  adj : ArrayView[Array[Int]],
-  root : Int,
-  queries : ArrayView[(Int, Int)],
-) -> Array[Int] {
+  n : Int32,
+  adj : ArrayView[Array[Int32]],
+  root : Int32,
+  queries : ArrayView[(Int32, Int32)],
+) -> Array[Int32] {
   let q = queries.length()
   let answers = Array::make(q, -1)
   if n <= 0 || q == 0 {
@@ -191,7 +196,7 @@ pub fn tarjan_offline_lca(
 
   // Group queries by both endpoints. `query_at[u]` enumerates the indices
   // of queries that involve `u`, paired with the *other* endpoint.
-  let query_at : Array[Array[(Int, Int)]] = Array::make(n, [])
+  let query_at : Array[Array[(Int32, Int32)]] = Array::make(n, [])
   for i in 0..<n {
     query_at[i] = []
   } where {
@@ -255,7 +260,7 @@ pub fn tarjan_offline_lca(
   // examine. The first visit to a node paints it Gray and sets
   // `ancestor[u] = u`; popping a node paints it Black and runs the
   // query-answering pass for that endpoint.
-  let stack : Array[(Int, Int, Int)] = []
+  let stack : Array[(Int32, Int32, Int32)] = []
   color[root] = Gray
   ancestor[root] = root
   stack.push((root, -1, 0))
@@ -302,8 +307,11 @@ pub fn tarjan_offline_lca(
 ///|
 /// Build an adjacency list from an undirected edge list. Helper used by
 /// tests; not part of the public algorithm.
-fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj : Array[Array[Int]] = Array::make(n, [])
+fn build_adj(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Array[Int32]] {
+  let adj : Array[Array[Int32]] = Array::make(n, [])
   for i in 0..<n {
     adj[i] = []
   } where {
@@ -330,9 +338,9 @@ test "tarjan offline lca tiny tree" {
   //      1   2
   //     / \
   //    3   4
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
   let adj = build_adj(5, edges)
-  let queries : ReadOnlyArray[(Int, Int)] = [(3, 4), (3, 2), (4, 2), (1, 1)]
+  let queries : ReadOnlyArray[(Int32, Int32)] = [(3, 4), (3, 2), (4, 2), (1, 1)]
   let ans = tarjan_offline_lca(5, adj, 0, queries)
   @debug.assert_eq(ans[0], 1) // lca(3, 4)
   @debug.assert_eq(ans[1], 0) // lca(3, 2)
@@ -343,9 +351,9 @@ test "tarjan offline lca tiny tree" {
 ///|
 test "tarjan offline lca linear chain" {
   // 0 - 1 - 2 - 3 - 4
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
   let adj = build_adj(5, edges)
-  let queries : ReadOnlyArray[(Int, Int)] = [(0, 4), (2, 4), (1, 3), (3, 0)]
+  let queries : ReadOnlyArray[(Int32, Int32)] = [(0, 4), (2, 4), (1, 3), (3, 0)]
   let ans = tarjan_offline_lca(5, adj, 0, queries)
   @debug.assert_eq(ans[0], 0)
   @debug.assert_eq(ans[1], 2)
@@ -362,9 +370,9 @@ test "tarjan offline lca non-zero root" {
   //        3 4 0
   //              \
   //               2
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
   let adj = build_adj(5, edges)
-  let queries : ReadOnlyArray[(Int, Int)] = [(3, 2), (4, 0), (3, 4)]
+  let queries : ReadOnlyArray[(Int32, Int32)] = [(3, 2), (4, 0), (3, 4)]
   let ans = tarjan_offline_lca(5, adj, 1, queries)
   @debug.assert_eq(ans[0], 1) // lca(3, 2) with root 1
   @debug.assert_eq(ans[1], 1) // lca(4, 0) with root 1
@@ -386,7 +394,7 @@ test "tarjan offline lca caterpillar deep paths" {
   //      7
   //
   // Edges form a spine 0-1-2-3 plus four leaf legs 0-4, 1-5, 2-6, 3-7.
-  let edges : ReadOnlyArray[(Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32)] = [
     (0, 1),
     (1, 2),
     (2, 3),
@@ -396,7 +404,7 @@ test "tarjan offline lca caterpillar deep paths" {
     (3, 7),
   ]
   let adj = build_adj(8, edges)
-  let queries : ReadOnlyArray[(Int, Int)] = [
+  let queries : ReadOnlyArray[(Int32, Int32)] = [
     (4, 5), //  side leg vs spine -> meet at 0
     (4, 7), //  side leg vs deep spine -> meet at 0
     (5, 6), //  cousins below 1 and 2 -> meet at 1
@@ -418,23 +426,23 @@ test "tarjan offline lca caterpillar deep paths" {
 ///|
 test "tarjan offline lca empty cases" {
   // No nodes, no queries.
-  let empty_adj : ReadOnlyArray[Array[Int]] = []
-  let empty_q : ReadOnlyArray[(Int, Int)] = []
+  let empty_adj : ReadOnlyArray[Array[Int32]] = []
+  let empty_q : ReadOnlyArray[(Int32, Int32)] = []
   let ans0 = tarjan_offline_lca(0, empty_adj, 0, empty_q)
   @debug.assert_eq(ans0.length(), 0)
 
   // Single node, single self-query.
-  let one_adj : Array[Array[Int]] = [[]]
-  let one_q : ReadOnlyArray[(Int, Int)] = [(0, 0)]
+  let one_adj : Array[Array[Int32]] = [[]]
+  let one_q : ReadOnlyArray[(Int32, Int32)] = [(0, 0)]
   let ans1 = tarjan_offline_lca(1, one_adj, 0, one_q)
   @debug.assert_eq(ans1, [0])
 }
 
 ///|
 test "tarjan offline lca out-of-range query stays at sentinel" {
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2)]
   let adj = build_adj(3, edges)
-  let queries : ReadOnlyArray[(Int, Int)] = [(0, 5), (-1, 1), (1, 2)]
+  let queries : ReadOnlyArray[(Int32, Int32)] = [(0, 5), (-1, 1), (1, 2)]
   let ans = tarjan_offline_lca(3, adj, 0, queries)
   @debug.assert_eq(ans[0], -1) // invalid second endpoint
   @debug.assert_eq(ans[1], -1) // invalid first endpoint

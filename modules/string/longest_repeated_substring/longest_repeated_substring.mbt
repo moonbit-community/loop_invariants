@@ -41,7 +41,7 @@
 ///   @debug.assert_eq(len, 3) // "ana"
 /// }
 /// ```
-pub fn find(s : Array[Int]) -> (Int, Int) {
+pub fn find(s : Array[Int32]) -> (Int32, Int32) {
   let n = s.length()
   if n <= 1 {
     return (0, 0)
@@ -61,7 +61,7 @@ pub fn find(s : Array[Int]) -> (Int, Int) {
 
 ///|
 /// Build the suffix array via O(n log^2 n) sort with string compares.
-fn build_sa(s : Array[Int]) -> Array[Int] {
+fn build_sa(s : Array[Int32]) -> Array[Int32] {
   let n = s.length()
   let idx = Array::makei(n, i => i)
   sort_suffixes(idx, s, 0, n)
@@ -69,7 +69,12 @@ fn build_sa(s : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn sort_suffixes(arr : Array[Int], s : Array[Int], lo : Int, hi : Int) -> Unit {
+fn sort_suffixes(
+  arr : Array[Int32],
+  s : Array[Int32],
+  lo : Int32,
+  hi : Int32,
+) -> Unit {
   if hi - lo <= 1 {
     return
   }
@@ -81,11 +86,11 @@ fn sort_suffixes(arr : Array[Int], s : Array[Int], lo : Int, hi : Int) -> Unit {
 
 ///|
 fn merge_suffixes(
-  arr : Array[Int],
-  s : Array[Int],
-  lo : Int,
-  mid : Int,
-  hi : Int,
+  arr : Array[Int32],
+  s : Array[Int32],
+  lo : Int32,
+  mid : Int32,
+  hi : Int32,
 ) -> Unit {
   let buf = Array::make(hi - lo, 0)
   let mut i = lo
@@ -117,7 +122,7 @@ fn merge_suffixes(
 }
 
 ///|
-fn cmp_suffix(s : Array[Int], a : Int, b : Int) -> Int {
+fn cmp_suffix(s : Array[Int32], a : Int32, b : Int32) -> Int32 {
   let n = s.length()
   let mut i = a
   let mut j = b
@@ -142,7 +147,7 @@ fn cmp_suffix(s : Array[Int], a : Int, b : Int) -> Int {
 }
 
 ///|
-fn build_lcp(s : Array[Int], sa : Array[Int]) -> Array[Int] {
+fn build_lcp(s : Array[Int32], sa : Array[Int32]) -> Array[Int32] {
   let n = s.length()
   let rank = Array::make(n, 0)
   for i in 0..<n {
@@ -168,8 +173,8 @@ fn build_lcp(s : Array[Int], sa : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn s(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn s(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }

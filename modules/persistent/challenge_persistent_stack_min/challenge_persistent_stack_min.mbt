@@ -37,7 +37,7 @@ pub fn[T] empty() -> MinStack[T] {
 
 ///|
 /// Return the number of elements in the stack.
-pub fn[T] size(s : MinStack[T]) -> Int {
+pub fn[T] size(s : MinStack[T]) -> Int32 {
   match s {
     Nil => 0
     Cons(value=_, min=_, tail~) => 1 + size(tail)

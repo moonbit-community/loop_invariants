@@ -3,7 +3,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -12,12 +12,12 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// Symbol pools: a tiny alphabet (frequent matches), values that collide in
 /// the low 16 bits the shift table is indexed by (1, 65537, -65535 all map to
 /// slot 1), and arbitrary integers.
-fn gen_symbols(rs : @quickcheck.RandomState, size : Int) -> Array[Int] {
+fn gen_symbols(rs : @quickcheck.RandomState, size : Int32) -> Array[Int32] {
   let len = rint(rs, 0, size)
   match rint(rs, 0, 3) {
     0 | 1 => Array::makei(len, _ => rint(rs, 0, 2))
     2 => {
-      let pool : ReadOnlyArray[Int] = [0, 1, 65537, -65535, 65536, -1]
+      let pool : ReadOnlyArray[Int32] = [0, 1, 65537, -65535, 65536, -1]
       Array::makei(len, _ => pool[rint(rs, 0, pool.length() - 1)])
     }
     _ => Array::makei(len, _ => @quickcheck.Arbitrary::arbitrary(size, rs))
@@ -26,8 +26,8 @@ fn gen_symbols(rs : @quickcheck.RandomState, size : Int) -> Array[Int] {
 
 ///|
 priv struct Search {
-  text : Array[Int]
-  pattern : Array[Int]
+  text : Array[Int32]
+  pattern : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -55,10 +55,10 @@ impl @quickcheck.Shrink for Search with fn shrink(self) {
 
 ///|
 /// Reference: all (overlapping) start indices; none for an empty pattern.
-fn naive_search(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
+fn naive_search(text : Array[Int32], pattern : Array[Int32]) -> Array[Int32] {
   let n = text.length()
   let m = pattern.length()
-  let res : Array[Int] = []
+  let res : Array[Int32] = []
   if m == 0 || m > n {
     return res
   }
@@ -71,7 +71,7 @@ fn naive_search(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn first_of(xs : Array[Int]) -> Int? {
+fn first_of(xs : Array[Int32]) -> Int32? {
   if xs.length() > 0 {
     Some(xs[0])
   } else {
