@@ -4,11 +4,11 @@
 // ============================================================================
 
 ///|
-const INF : Int = 0x3fffffff
+const INF : Int32 = 0x3fffffff
 
 ///|
 /// Minimum number of coins to make amount, or None if impossible.
-pub fn min_coins(coins : ArrayView[Int], amount : Int) -> Int? {
+pub fn min_coins(coins : ArrayView[Int32], amount : Int32) -> Int32? {
   if amount < 0 {
     return None
   }

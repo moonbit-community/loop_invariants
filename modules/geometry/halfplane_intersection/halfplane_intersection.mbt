@@ -124,7 +124,7 @@ fn line_intersection(a : HalfPlane, b : HalfPlane) -> Point {
 /// This two-way partition is used to sort half-planes by angle in [0, 2*pi).
 /// Vectors in the same half are further ordered by cross product so that
 /// the full sort produces a counterclockwise sweep of directions.
-fn half(v : Point) -> Int {
+fn half(v : Point) -> Int32 {
   if v.y > 0.0 || (v.y == 0.0 && v.x >= 0.0) {
     0
   } else {

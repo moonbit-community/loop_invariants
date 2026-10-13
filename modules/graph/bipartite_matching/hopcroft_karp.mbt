@@ -23,7 +23,7 @@
 // SPACE COMPLEXITY: O(V + E)
 
 ///|
-const HK_INF : Int = 2147483647
+const HK_INF : Int32 = 2147483647
 
 ///|
 /// State for the Hopcroft-Karp algorithm for maximum bipartite matching.
@@ -54,9 +54,9 @@ const HK_INF : Int = 2147483647
 /// Space complexity: O(V + E).
 struct HopcroftKarp {
   graph : BipartiteGraph
-  match_left : Array[Int]
-  match_right : Array[Int]
-  dist : Array[Int]
+  match_left : Array[Int32]
+  match_right : Array[Int32]
+  dist : Array[Int32]
 }
 
 ///|
@@ -81,7 +81,7 @@ fn HopcroftKarp::HopcroftKarp(graph : BipartiteGraph) -> HopcroftKarp {
 /// vertex, and `dist[n_left]` holds the layer of the first unmatched right
 /// vertex reached (or `HK_INF` if none was found).
 fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
-  let queue : @queue.Queue[Int] = Queue([])
+  let queue : @queue.Queue[Int32] = Queue([])
   for u in 0..<self.graph.n_left {
     if self.match_left[u] < 0 {
       self.dist[u] = 0
@@ -130,7 +130,7 @@ fn HopcroftKarp::bfs(self : HopcroftKarp) -> Bool {
 /// prune them for subsequent DFS calls within the same phase.
 ///
 /// Returns `true` if an augmenting path was found and the matching updated.
-fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int) -> Bool {
+fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int32) -> Bool {
   if u >= self.graph.n_left {
     return true // Reached unmatched right vertex
   }
@@ -173,7 +173,7 @@ fn HopcroftKarp::dfs(self : HopcroftKarp, u : Int) -> Bool {
 /// let matcher = graph.hopcroft_karp()
 /// let size = matcher.max_matching() // 4
 /// ```
-pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
+pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int32 {
   // Keep finding augmenting paths until none exist
   for matching = 0; self.bfs(); {
     let phase_matches = for u in 0..<self.graph.n_left; count = 0 {
@@ -230,8 +230,8 @@ pub fn HopcroftKarp::max_matching(self : HopcroftKarp) -> Int {
 /// let _ = matcher.max_matching()
 /// let pairs = matcher.get_matching() // [(0, 0), (1, 1)]
 /// ```
-pub fn HopcroftKarp::get_matching(self : HopcroftKarp) -> Array[(Int, Int)] {
-  let result : Array[(Int, Int)] = [
+pub fn HopcroftKarp::get_matching(self : HopcroftKarp) -> Array[(Int32, Int32)] {
+  let result : Array[(Int32, Int32)] = [
     for u in 0..<self.graph.n_left if self.match_left[u] >= 0 => {
       (u, self.match_left[u])
     }
@@ -271,7 +271,7 @@ pub fn HopcroftKarp::get_matching(self : HopcroftKarp) -> Array[(Int, Int)] {
 /// ```
 pub fn HopcroftKarp::min_vertex_cover(
   self : HopcroftKarp,
-) -> (Array[Int], Array[Int]) {
+) -> (Array[Int32], Array[Int32]) {
   let _ = self.max_matching()
   let graph = self.graph
   // König's theorem: In bipartite graph, |max matching| = |min vertex cover|
@@ -282,8 +282,8 @@ pub fn HopcroftKarp::min_vertex_cover(
   // DFS from unmatched left vertices through alternating paths
   fn dfs_cover(
     graph : BipartiteGraph,
-    match_right : Array[Int],
-    u : Int,
+    match_right : Array[Int32],
+    u : Int32,
     visited_left : Array[Bool],
     visited_right : Array[Bool],
   ) -> Unit {
@@ -315,8 +315,8 @@ pub fn HopcroftKarp::min_vertex_cover(
   }
 
   // Vertex cover: left vertices NOT visited + right vertices visited
-  let left_cover : Array[Int] = []
-  let right_cover : Array[Int] = []
+  let left_cover : Array[Int32] = []
+  let right_cover : Array[Int32] = []
   for u in 0..<graph.n_left {
     if !visited_left[u] {
       left_cover.push(u)

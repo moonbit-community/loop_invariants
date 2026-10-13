@@ -87,7 +87,7 @@ pub fn LiChaoTree::LiChaoTree(lo : Int64, hi : Int64) -> LiChaoTree {
 ///
 /// Called internally whenever a loser line needs to be pushed into a child
 /// that does not yet exist.
-fn LiChaoTree::new_node(self : LiChaoTree) -> Int {
+fn LiChaoTree::new_node(self : LiChaoTree) -> Int32 {
   let idx = self.nodes.length()
   self.nodes.push({ line: undefined_line(), left: -1, right: -1, })
   idx
@@ -131,7 +131,7 @@ pub fn LiChaoTree::insert(self : LiChaoTree, m : Int64, b : Int64) -> Unit {
 /// can only beat the winner on one side of mid).
 fn insert_line_max(
   tree : LiChaoTree,
-  node_idx : Int,
+  node_idx : Int32,
   lo : Int64,
   hi : Int64,
   new_line : Line,
@@ -213,7 +213,7 @@ pub fn LiChaoTree::query(self : LiChaoTree, x : Int64) -> Int64 {
 /// (absent child), so that a missing child never contributes to the maximum.
 fn query_max_impl(
   tree : LiChaoTree,
-  node_idx : Int,
+  node_idx : Int32,
   lo : Int64,
   hi : Int64,
   x : Int64,
@@ -259,6 +259,6 @@ fn query_max_impl(
 /// Useful for benchmarking and verifying the O(L log C) space bound: after
 /// inserting L lines over a range of size C the node count should be at most
 /// `1 + L * ceil(log2(C + 1))`.
-pub fn LiChaoTree::node_count(self : LiChaoTree) -> Int {
+pub fn LiChaoTree::node_count(self : LiChaoTree) -> Int32 {
   self.nodes.length()
 }

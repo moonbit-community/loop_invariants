@@ -34,8 +34,8 @@
 ///   @debug.assert_eq(rle.length(), 5)
 /// }
 /// ```
-pub fn encode(arr : Array[Int]) -> Array[(Int, Int)] {
-  let res : Array[(Int, Int)] = []
+pub fn encode(arr : Array[Int32]) -> Array[(Int32, Int32)] {
+  let res : Array[(Int32, Int32)] = []
   let n = arr.length()
   if n == 0 {
     return res
@@ -57,8 +57,8 @@ pub fn encode(arr : Array[Int]) -> Array[(Int, Int)] {
 
 ///|
 /// Decode an RLE pair list back to the original sequence.
-pub fn decode(rle : Array[(Int, Int)]) -> Array[Int] {
-  let res : Array[Int] = []
+pub fn decode(rle : Array[(Int32, Int32)]) -> Array[Int32] {
+  let res : Array[Int32] = []
   for p in rle {
     let (v, c) = p
     for _ in 0..<c {
@@ -70,7 +70,7 @@ pub fn decode(rle : Array[(Int, Int)]) -> Array[Int] {
 
 ///|
 /// Length of the original sequence given its RLE.
-pub fn decoded_length(rle : Array[(Int, Int)]) -> Int {
+pub fn decoded_length(rle : Array[(Int32, Int32)]) -> Int32 {
   let mut total = 0
   for p in rle {
     total = total + p.1
@@ -82,7 +82,7 @@ pub fn decoded_length(rle : Array[(Int, Int)]) -> Int {
 /// Encode into a single packed `Int64` stream where each pair becomes
 /// two `Int64` values `(value, count)`. Convenient when you want a flat
 /// representation for further serialisation.
-pub fn encode_flat(arr : Array[Int]) -> Array[Int64] {
+pub fn encode_flat(arr : Array[Int32]) -> Array[Int64] {
   let pairs = encode(arr)
   let out = Array::make(pairs.length() * 2, 0L)
   for i in 0..<pairs.length() {
@@ -94,8 +94,8 @@ pub fn encode_flat(arr : Array[Int]) -> Array[Int64] {
 
 ///|
 /// Decode a flat `Array[Int64]` produced by `encode_flat`.
-pub fn decode_flat(flat : Array[Int64]) -> Array[Int] {
-  let res : Array[Int] = []
+pub fn decode_flat(flat : Array[Int64]) -> Array[Int32] {
+  let res : Array[Int32] = []
   let mut i = 0
   while i + 1 < flat.length() {
     let v = flat[i].to_int()
@@ -109,8 +109,8 @@ pub fn decode_flat(flat : Array[Int64]) -> Array[Int] {
 }
 
 ///|
-fn s(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn s(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }
@@ -142,7 +142,7 @@ test "encode no repeats" {
 
 ///|
 test "encode empty" {
-  let rle : Array[(Int, Int)] = encode([])
+  let rle : Array[(Int32, Int32)] = encode([])
   @debug.assert_eq(rle, [])
 }
 

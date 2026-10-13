@@ -1,12 +1,12 @@
 ///|
 /// Count elements strictly less than key.
-pub fn[T : Compare] Treap::count_less_than(self : Treap[T], key : T) -> Int {
+pub fn[T : Compare] Treap::count_less_than(self : Treap[T], key : T) -> Int32 {
   count_less_helper(self.root, key)
 }
 
 ///|
 /// Accumulate counts by skipping whole subtrees when possible.
-fn[T : Compare] count_less_helper(node : TreapNode[T]?, key : T) -> Int {
+fn[T : Compare] count_less_helper(node : TreapNode[T]?, key : T) -> Int32 {
   for current = node, acc = 0 {
     match current {
       None => break acc
@@ -22,7 +22,7 @@ fn[T : Compare] count_less_helper(node : TreapNode[T]?, key : T) -> Int {
 
 ///|
 /// Total number of keys in the treap.
-pub fn[T] Treap::size(self : Treap[T]) -> Int {
+pub fn[T] Treap::size(self : Treap[T]) -> Int32 {
   get_size(self.root)
 }
 

@@ -107,7 +107,7 @@ test "min_vertex_cover" {
 ///|
 test "min_vertex_cover covers all edges" {
   let graph = @bipartite_matching.BipartiteGraph(3, 3)
-  let edges : Array[(Int, Int)] = [(0, 0), (0, 1), (1, 1), (2, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 0), (0, 1), (1, 1), (2, 2)]
   for edge in edges {
     graph.add_edge(edge.0, edge.1)
   }

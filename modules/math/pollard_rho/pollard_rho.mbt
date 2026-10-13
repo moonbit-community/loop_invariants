@@ -159,7 +159,7 @@ fn gcd(a : Int64, b : Int64) -> Int64 {
 /// - `a` : the witness base; must satisfy `1 < a < n - 1`.
 /// - `d` : odd part of `n - 1`.
 /// - `s` : exponent of 2 in `n - 1 = d * 2^s`.
-fn miller_test(n : Int64, a : Int64, d : Int64, s : Int) -> Bool {
+fn miller_test(n : Int64, a : Int64, d : Int64, s : Int32) -> Bool {
   let x = pow_mod(a, d, n)
   if x == 1L || x == n - 1L {
     return true
@@ -400,9 +400,9 @@ pub fn factorize(n : Int64) -> Array[Int64] {
 ///
 /// Returns an `Array[(Int64, Int)]` of `(prime, exponent)` pairs sorted by
 /// prime in ascending order.
-pub fn factorize_with_counts(n : Int64) -> Array[(Int64, Int)] {
+pub fn factorize_with_counts(n : Int64) -> Array[(Int64, Int32)] {
   let factors = factorize(n)
-  let result : Array[(Int64, Int)] = []
+  let result : Array[(Int64, Int32)] = []
   for i = 0 {
     if i >= factors.length() {
       break result

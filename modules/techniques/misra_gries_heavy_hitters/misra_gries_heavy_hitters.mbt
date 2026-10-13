@@ -52,8 +52,8 @@
 /// by at most `N / (capacity + 1)`. If you need exact counts, run a
 /// second pass over the stream and count only the candidate set.
 pub struct MisraGries[K] {
-  capacity : Int
-  counts : Map[K, Int]
+  capacity : Int32
+  counts : Map[K, Int32]
 }
 
 ///|
@@ -74,7 +74,7 @@ pub struct MisraGries[K] {
 ///   assert_true(mg.candidates().contains(1))
 /// }
 /// ```
-pub fn[K : Hash + Eq] new(capacity~ : Int) -> MisraGries[K] {
+pub fn[K : Hash + Eq] new(capacity~ : Int32) -> MisraGries[K] {
   let cap = if capacity < 1 { 1 } else { capacity }
   { capacity: cap, counts: Map([], capacity=cap), }
 }
@@ -144,7 +144,7 @@ pub fn[K] MisraGries::candidates(self : MisraGries[K]) -> Array[K] {
 pub fn[K : Hash + Eq] MisraGries::estimate(
   self : MisraGries[K],
   item : K,
-) -> Int {
+) -> Int32 {
   match self.counts.get(item) {
     Some(c) => c
     None => 0
@@ -153,7 +153,7 @@ pub fn[K : Hash + Eq] MisraGries::estimate(
 
 ///|
 /// Current number of tracked candidates. Always `0 <= size <= capacity`.
-pub fn[K] MisraGries::size(self : MisraGries[K]) -> Int {
+pub fn[K] MisraGries::size(self : MisraGries[K]) -> Int32 {
   self.counts.length()
 }
 
@@ -186,7 +186,7 @@ pub fn[K : Hash + Eq] MisraGries::merge(
   if self.counts.length() <= self.capacity {
     return
   }
-  let values : Array[Int] = []
+  let values : Array[Int32] = []
   for _, v in self.counts {
     values.push(v)
   }
@@ -212,7 +212,7 @@ pub fn[K : Hash + Eq] MisraGries::merge(
 test "mg single majority via capacity 1" {
   // Boyer-Moore majority specialisation: capacity = 1 finds an absolute
   // majority element if one exists.
-  let mg : MisraGries[Int] = new(capacity=1)
+  let mg : MisraGries[Int32] = new(capacity=1)
   for x in [3, 1, 3, 2, 3, 4, 3, 5, 3, 3] {
     mg.add(x)
   }
@@ -224,7 +224,7 @@ test "mg single majority via capacity 1" {
 ///|
 test "mg no majority leaves arbitrary candidate" {
   // capacity = 1 with no majority -- output is just *some* survivor.
-  let mg : MisraGries[Int] = new(capacity=1)
+  let mg : MisraGries[Int32] = new(capacity=1)
   for x in [1, 2, 3, 4] {
     mg.add(x)
   }
@@ -235,7 +235,7 @@ test "mg no majority leaves arbitrary candidate" {
 
 ///|
 test "mg top-2 with capacity 2" {
-  let mg : MisraGries[Int] = new(capacity=2)
+  let mg : MisraGries[Int32] = new(capacity=2)
   let stream = [1, 1, 1, 2, 2, 3, 4, 1, 1, 2, 2, 2]
   for x in stream {
     mg.add(x)
@@ -250,7 +250,7 @@ test "mg top-2 with capacity 2" {
 test "mg estimate is a true lower bound" {
   // Build a stream where item 7 appears 10 times out of 30. With
   // capacity = 4 (threshold n / 5 = 6), 7 is a heavy hitter.
-  let mg : MisraGries[Int] = new(capacity=4)
+  let mg : MisraGries[Int32] = new(capacity=4)
   let n_seven = 10
   let n_filler = 20 // 20 unique values 100..119
   for _ in 0..<n_seven {
@@ -268,7 +268,7 @@ test "mg estimate is a true lower bound" {
 
 ///|
 test "mg candidates always within capacity" {
-  let mg : MisraGries[Int] = new(capacity=3)
+  let mg : MisraGries[Int32] = new(capacity=3)
   for v in 0..<100 {
     mg.add(v % 7)
   }
@@ -277,15 +277,15 @@ test "mg candidates always within capacity" {
 
 ///|
 test "mg empty stream" {
-  let mg : MisraGries[Int] = new(capacity=5)
+  let mg : MisraGries[Int32] = new(capacity=5)
   @debug.assert_eq(mg.candidates(), [])
   @debug.assert_eq(mg.estimate(42), 0)
 }
 
 ///|
 test "mg merge preserves majority" {
-  let mg1 : MisraGries[Int] = new(capacity=2)
-  let mg2 : MisraGries[Int] = new(capacity=2)
+  let mg1 : MisraGries[Int32] = new(capacity=2)
+  let mg2 : MisraGries[Int32] = new(capacity=2)
   for _ in 0..<10 {
     mg1.add(99)
   }
@@ -302,8 +302,8 @@ test "mg merge preserves majority" {
 
 ///|
 test "mg merge ignores mismatched capacity" {
-  let mg1 : MisraGries[Int] = new(capacity=2)
-  let mg2 : MisraGries[Int] = new(capacity=4)
+  let mg1 : MisraGries[Int32] = new(capacity=2)
+  let mg2 : MisraGries[Int32] = new(capacity=4)
   mg1.add(1)
   mg2.add(2)
   mg1.merge(mg2)
@@ -313,7 +313,7 @@ test "mg merge ignores mismatched capacity" {
 
 ///|
 test "mg degenerate capacity" {
-  let mg : MisraGries[Int] = new(capacity=0)
+  let mg : MisraGries[Int32] = new(capacity=0)
   // capacity coerced to 1 internally.
   for v in 0..<5 {
     mg.add(v)

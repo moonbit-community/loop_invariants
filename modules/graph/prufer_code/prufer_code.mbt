@@ -25,7 +25,7 @@
 
 ///|
 priv struct MinHeap {
-  data : Array[Int]
+  data : Array[Int32]
 }
 
 ///|
@@ -34,7 +34,7 @@ fn MinHeap::MinHeap() -> MinHeap {
 }
 
 ///|
-fn MinHeap::push(self : MinHeap, x : Int) -> Unit {
+fn MinHeap::push(self : MinHeap, x : Int32) -> Unit {
   self.data.push(x)
   let _ = for i = self.data.length() - 1 {
     if i <= 0 {
@@ -53,7 +53,7 @@ fn MinHeap::push(self : MinHeap, x : Int) -> Unit {
 }
 
 ///|
-fn MinHeap::pop(self : MinHeap) -> Int? {
+fn MinHeap::pop(self : MinHeap) -> Int32? {
   let n = self.data.length()
   if n == 0 {
     return None
@@ -102,14 +102,14 @@ fn MinHeap::pop(self : MinHeap) -> Int? {
 }
 
 ///|
-fn build_adj(n : Int) -> Array[Array[Int]] {
+fn build_adj(n : Int32) -> Array[Array[Int32]] {
   [
     for _ in 0..<n => []
   ]
 }
 
 ///|
-fn normalize_edge(u : Int, v : Int) -> (Int, Int) {
+fn normalize_edge(u : Int32, v : Int32) -> (Int32, Int32) {
   if u < v {
     (u, v)
   } else {
@@ -119,9 +119,9 @@ fn normalize_edge(u : Int, v : Int) -> (Int, Int) {
 
 ///|
 fn build_tree(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-) -> (Array[Array[Int]], Array[Int])? {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> (Array[Array[Int32]], Array[Int32])? {
   if n <= 0 {
     return None
   }
@@ -151,7 +151,7 @@ fn build_tree(
 
   // Check connectivity with BFS
   let seen_nodes = Array::make(n, false)
-  let queue : Array[Int] = [0]
+  let queue : Array[Int32] = [0]
   seen_nodes[0] = true
   for idx = 0; idx < queue.length(); idx = idx + 1 {
     let u = queue[idx]
@@ -210,7 +210,10 @@ fn build_tree(
 /// let code = prufer_encode(4, [(0,1),(1,2),(2,3)][:]).unwrap()
 /// // code == [1, 2]
 /// ```
-pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
+pub fn prufer_encode(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Int32]? {
   if n <= 0 {
     return None
   }
@@ -240,7 +243,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
     ),
   }
   let next_idx = Array::make(n, 0)
-  let code : Array[Int] = []
+  let code : Array[Int32] = []
   for _step in 0..<(n - 2) {
     let leaf = match heap.pop() {
       Some(v) => v
@@ -314,7 +317,7 @@ pub fn prufer_encode(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
 /// let edges = prufer_decode([1, 2][:]).unwrap()
 /// // edges contain (0,1), (1,2), (2,3) in some order
 /// ```
-pub fn prufer_decode(code : ArrayView[Int]) -> Array[(Int, Int)]? {
+pub fn prufer_decode(code : ArrayView[Int32]) -> Array[(Int32, Int32)]? {
   let n = code.length() + 2
   if n < 2 {
     return None
@@ -342,7 +345,7 @@ pub fn prufer_decode(code : ArrayView[Int]) -> Array[(Int, Int)]? {
       #|At v = n, heap holds all initial leaves.
     ),
   }
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   for v in code {
     let leaf = match heap.pop() {
       Some(x) => x
@@ -372,8 +375,8 @@ pub fn prufer_decode(code : ArrayView[Int]) -> Array[(Int, Int)]? {
 // ============================================================================
 
 ///|
-fn normalize_edges(edges : Array[(Int, Int)]) -> Array[(Int, Int)] {
-  let result : Array[(Int, Int)] = []
+fn normalize_edges(edges : Array[(Int32, Int32)]) -> Array[(Int32, Int32)] {
+  let result : Array[(Int32, Int32)] = []
   for e in edges {
     let (u, v) = e
     if u < v {
@@ -392,21 +395,21 @@ fn normalize_edges(edges : Array[(Int, Int)]) -> Array[(Int, Int)] {
 
 ///|
 test "prufer encode path" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3)]
   let code = prufer_encode(4, edges).unwrap()
   debug_inspect(code, content="[1, 2]")
 }
 
 ///|
 test "prufer encode star" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
   let code = prufer_encode(5, edges).unwrap()
   debug_inspect(code, content="[0, 0, 0]")
 }
 
 ///|
 test "prufer decode star" {
-  let code : Array[Int] = [0, 0, 0]
+  let code : Array[Int32] = [0, 0, 0]
   let edges = prufer_decode(code).unwrap()
   let norm = normalize_edges(edges)
   debug_inspect(norm, content="[(0, 1), (0, 2), (0, 3), (0, 4)]")
@@ -414,7 +417,7 @@ test "prufer decode star" {
 
 ///|
 test "prufer roundtrip" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (1, 3), (3, 4)]
   let code = prufer_encode(5, edges).unwrap()
   let edges2 = prufer_decode(code).unwrap()
   let code2 = prufer_encode(5, edges2).unwrap()
@@ -423,8 +426,8 @@ test "prufer roundtrip" {
 
 ///|
 test "prufer invalid" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2)]
   debug_inspect(prufer_encode(4, edges), content="None")
-  let code : Array[Int] = [0, 4]
+  let code : Array[Int32] = [0, 4]
   debug_inspect(prufer_decode(code), content="None")
 }

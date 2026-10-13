@@ -40,7 +40,7 @@
 //    difference d, considering only previous indices 0..i-1."
 
 ///|
-fn get_or_zero(map : Map[Int64, Int], key : Int64) -> Int {
+fn get_or_zero(map : Map[Int64, Int32], key : Int64) -> Int32 {
   match map.get(key) {
     Some(v) => v
     None => 0
@@ -66,7 +66,7 @@ fn sub_overflows(a : Int64, b : Int64, diff : Int64) -> Bool {
 ///   @debug.assert_eq(@longest_arithmetic_subseq.length([9, 4, 7, 2, 10]), 3)
 /// }
 /// ```
-pub fn length(arr : Array[Int64]) -> Int {
+pub fn length(arr : Array[Int64]) -> Int32 {
   let n = arr.length()
   if n == 0 {
     return 0
@@ -74,7 +74,7 @@ pub fn length(arr : Array[Int64]) -> Int {
   if n == 1 {
     return 1
   }
-  let dp : Array[Map[Int64, Int]] = Array::makei(n, _ => Map([], capacity=0))
+  let dp : Array[Map[Int64, Int32]] = Array::makei(n, _ => Map([], capacity=0))
   let mut best = 1
   for i in 1..<n {
     for j in 0..<i {
@@ -106,13 +106,13 @@ pub fn length(arr : Array[Int64]) -> Int {
 /// Length of the longest arithmetic subsequence with a **fixed** common
 /// difference `d`. Runs in `O(n)` using a hashmap keyed by the next
 /// expected value.
-pub fn length_fixed_diff(arr : Array[Int64], d : Int64) -> Int {
+pub fn length_fixed_diff(arr : Array[Int64], d : Int64) -> Int32 {
   let n = arr.length()
   if n == 0 {
     return 0
   }
   // For each x, end[x] = length of the LAS ending at value x.
-  let end : Map[Int64, Int] = Map([], capacity=0)
+  let end : Map[Int64, Int32] = Map([], capacity=0)
   let mut best = 1
   for i in 0..<n {
     let prev = arr[i] - d

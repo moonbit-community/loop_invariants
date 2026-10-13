@@ -106,10 +106,10 @@ After i=4:  bottom [idx=3, val=10] [idx=4, val=8] top
 
 ```mbt check
 ///|
-fn next_greater_right(a : ArrayView[Int]) -> Array[Int] {
+fn next_greater_right(a : ArrayView[Int32]) -> Array[Int32] {
   let n = a.length()
   let ans = Array::make(n, -1)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     let ai = a[i]
     for pop_next = stack.length() > 0 && a[stack[stack.length() - 1]] < ai; pop_next; {
@@ -125,7 +125,7 @@ fn next_greater_right(a : ArrayView[Int]) -> Array[Int] {
 
 ///|
 test "next greater to the right" {
-  let a : Array[Int] = [4, 5, 2, 10, 8]
+  let a : Array[Int32] = [4, 5, 2, 10, 8]
   debug_inspect(next_greater_right(a), content="[5, 10, 10, -1, -1]")
 }
 ```
@@ -151,10 +151,10 @@ After i=4 (val 6):  stack [2,4]       ans[4]=2   (popped 3, top val 2 < 6)
 
 ```mbt check
 ///|
-fn prev_smaller_left(a : ArrayView[Int]) -> Array[Int] {
+fn prev_smaller_left(a : ArrayView[Int32]) -> Array[Int32] {
   let n = a.length()
   let ans = Array::make(n, -1)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     let ai = a[i]
     for pop_next = stack.length() > 0 && a[stack[stack.length() - 1]] >= ai; pop_next; {
@@ -172,7 +172,7 @@ fn prev_smaller_left(a : ArrayView[Int]) -> Array[Int] {
 
 ///|
 test "previous smaller to the left" {
-  let a : Array[Int] = [3, 5, 2, 7, 6]
+  let a : Array[Int32] = [3, 5, 2, 7, 6]
   debug_inspect(prev_smaller_left(a), content="[-1, 3, -1, 2, 2]")
 }
 ```
@@ -206,10 +206,10 @@ are popped; the remaining top (if any) is the previous greater day.
 
 ```mbt check
 ///|
-fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
+fn stock_span(prices : ArrayView[Int32]) -> Array[Int32] {
   let n = prices.length()
   let span = Array::make(n, 0)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     let p = prices[i]
     for pop_next = stack.length() > 0 && prices[stack[stack.length() - 1]] <= p; pop_next; {
@@ -229,7 +229,7 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
 
 ///|
 test "stock span" {
-  let prices : Array[Int] = [100, 80, 60, 70, 60, 75, 85]
+  let prices : Array[Int32] = [100, 80, 60, 70, 60, 75, 85]
   debug_inspect(stock_span(prices), content="[1, 1, 1, 2, 1, 4, 6]")
 }
 ```

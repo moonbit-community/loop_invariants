@@ -5,7 +5,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -15,8 +15,8 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// (edges follow a random vertex ranking); the rest are arbitrary and may
 /// contain self-loops and parallel edges.
 priv struct DG {
-  n : Int
-  edges : Array[(Int, Int)]
+  n : Int32
+  edges : Array[(Int32, Int32)]
 } derive(Debug)
 
 ///|
@@ -32,7 +32,7 @@ impl @quickcheck.Arbitrary for DG with fn arbitrary(size, rs) {
     rank[j] = t
   }
   let dag = rint(rs, 0, 1) == 0
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   for _ in 0..<m {
     let u = rint(rs, 0, n - 1)
     let v = rint(rs, 0, n - 1)
@@ -84,14 +84,14 @@ fn reach(g : DG) -> Array[Array[Bool]] {
 
 ///|
 /// Reference SCC relation: `u` and `v` are mutually reachable.
-fn same_scc(r : Array[Array[Bool]], u : Int, v : Int) -> Bool {
+fn same_scc(r : Array[Array[Bool]], u : Int32, v : Int32) -> Bool {
   u == v || (r[u][v] && r[v][u])
 }
 
 ///|
 /// `comp` labels exactly the mutual-reachability classes of `g` using ids
 /// `0..k-1` (all used); returns `k`, or `-1` if the labelling is wrong.
-fn check_partition(g : DG, comp : Array[Int]) -> Int {
+fn check_partition(g : DG, comp : Array[Int32]) -> Int32 {
   if comp.length() != g.n {
     return -1
   }

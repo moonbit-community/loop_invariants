@@ -51,14 +51,14 @@
 /// - `count`: number of positions in the processed string at which this
 ///   palindrome occurs as the longest palindromic suffix (before propagation)
 priv struct EertreeNode {
-  len : Int // Length of palindrome (-1 for odd root, 0 for even root)
-  mut suffix_link : Int // Index of longest proper palindromic suffix
-  edges : Array[Int] // edges[c] = index of node for palindrome formed by adding c on both ends
-  mut count : Int // Number of occurrences of this palindrome
+  len : Int32 // Length of palindrome (-1 for odd root, 0 for even root)
+  mut suffix_link : Int32 // Index of longest proper palindromic suffix
+  edges : Array[Int32] // edges[c] = index of node for palindrome formed by adding c on both ends
+  mut count : Int32 // Number of occurrences of this palindrome
 }
 
 ///|
-fn EertreeNode::EertreeNode(len : Int) -> EertreeNode {
+fn EertreeNode::EertreeNode(len : Int32) -> EertreeNode {
   {
     len,
     suffix_link: 0,
@@ -81,9 +81,9 @@ fn EertreeNode::EertreeNode(len : Int) -> EertreeNode {
 /// `size` counts the real palindrome nodes (all nodes except the two roots).
 priv struct Eertree {
   nodes : Array[EertreeNode]
-  text : Array[Int] // Store characters as integers for faster access
-  mut last : Int // Index of node representing longest suffix palindrome
-  mut size : Int // Number of distinct palindromes (excluding roots)
+  text : Array[Int32] // Store characters as integers for faster access
+  mut last : Int32 // Index of node representing longest suffix palindrome
+  mut size : Int32 // Number of distinct palindromes (excluding roots)
 }
 
 ///|
@@ -110,7 +110,12 @@ fn Eertree::Eertree() -> Eertree {
 /// REASONING: We follow suffix links until we find a position where
 /// text[i-len-1] == c (where i is current position and len is palindrome length)
 /// This ensures we can extend the palindrome by c on both sides.
-fn Eertree::get_suffix_link(self : Eertree, v : Int, i : Int, c : Int) -> Int {
+fn Eertree::get_suffix_link(
+  self : Eertree,
+  v : Int32,
+  i : Int32,
+  c : Int32,
+) -> Int32 {
   // INVARIANT: We're looking for longest palindrome ending at position i-1
   // such that character before it equals c (so we can extend to position i)
   for cur = v {
@@ -182,7 +187,7 @@ fn Eertree::from_string(s : String) -> Eertree {
 
 ///|
 /// Get number of distinct palindromes
-fn Eertree::count_distinct(self : Eertree) -> Int {
+fn Eertree::count_distinct(self : Eertree) -> Int32 {
   self.size
 }
 
@@ -201,7 +206,7 @@ fn Eertree::propagate_counts(self : Eertree) -> Unit {
 
 ///|
 /// Get total number of palindrome occurrences (counting multiplicity)
-fn Eertree::count_total(self : Eertree) -> Int {
+fn Eertree::count_total(self : Eertree) -> Int32 {
   self.nodes[2:].fold(init=0, (acc, node) => acc + node.count)
 }
 
@@ -213,8 +218,8 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
   // DFS from both roots to collect all palindromes
   fn dfs(
     tree : Eertree,
-    node : Int,
-    current : Array[Int],
+    node : Int32,
+    current : Array[Int32],
     result : Array[String],
   ) -> Unit {
     // Skip roots for output
@@ -226,11 +231,11 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
       // Left half is reverse(current); right half is current (skip center if odd).
       let last = current.length() - 1
       for i in last>=..0 {
-        sb.write_char(Int::unsafe_to_char(current[i]))
+        sb.write_char(Int32::unsafe_to_char(current[i]))
       }
       let start = if len % 2 == 0 { 0 } else { 1 }
       for i in start..<current.length() {
-        sb.write_char(Int::unsafe_to_char(current[i]))
+        sb.write_char(Int32::unsafe_to_char(current[i]))
       }
       result.push(sb.to_string())
     }
@@ -255,7 +260,7 @@ fn Eertree::get_palindromes(self : Eertree) -> Array[String] {
 
 ///|
 /// Get length of longest palindrome
-fn Eertree::longest_length(self : Eertree) -> Int {
+fn Eertree::longest_length(self : Eertree) -> Int32 {
   self.nodes[2:].iter().map(n => n.len).maximum().unwrap_or(0)
 }
 
@@ -306,20 +311,20 @@ fn Eertree::contains_palindrome(self : Eertree, p : String) -> Bool {
 
 ///|
 /// Get the palindrome represented by a node
-fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
+fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int32) -> String {
   if node_idx < 2 {
     return ""
   }
 
   // Find the path from root to this node
-  let path : Array[Int] = []
+  let path : Array[Int32] = []
 
   // Find which character leads to this node
   fn find_path(
     tree : Eertree,
-    target : Int,
-    current : Int,
-    path : Array[Int],
+    target : Int32,
+    current : Int32,
+    path : Array[Int32],
   ) -> Bool {
     if current == target {
       return true
@@ -350,11 +355,11 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
   let sb = StringBuilder()
   let last = path.length() - 1
   for i in last>=..0 {
-    sb.write_char(Int::unsafe_to_char(path[i]))
+    sb.write_char(Int32::unsafe_to_char(path[i]))
   }
   let start = if len % 2 == 0 { 0 } else { 1 }
   for i in start..<path.length() {
-    sb.write_char(Int::unsafe_to_char(path[i]))
+    sb.write_char(Int32::unsafe_to_char(path[i]))
   }
   sb.to_string()
 }
@@ -373,7 +378,7 @@ fn Eertree::get_palindrome_at(self : Eertree, node_idx : Int) -> String {
 /// distinct_count("aaaa")   // => 4  ("a", "aa", "aaa", "aaaa")
 /// distinct_count("")        // => 0
 /// ```
-pub fn distinct_count(s : String) -> Int {
+pub fn distinct_count(s : String) -> Int32 {
   Eertree::from_string(s).count_distinct()
 }
 
@@ -389,7 +394,7 @@ pub fn distinct_count(s : String) -> Int {
 /// longest_length("abba")     // => 4  ("abba")
 /// longest_length("")          // => 0
 /// ```
-pub fn longest_length(s : String) -> Int {
+pub fn longest_length(s : String) -> Int32 {
   Eertree::from_string(s).longest_length()
 }
 

@@ -48,7 +48,7 @@
 /// same seed produce identical traces, which is useful for testing and
 /// for parallel "sharded" counts that you later combine.
 pub struct MorrisCounter {
-  mut c : Int
+  mut c : Int32
   base : Double
   mut rng_state : Int64
 }
@@ -119,7 +119,7 @@ pub fn MorrisCounter::increment(self : MorrisCounter) -> Unit {
 /// Process `n` increments in a row. Equivalent to calling
 /// `increment()` n times but runs in a single loop with a stated
 /// proof_invariant.
-pub fn MorrisCounter::increment_n(self : MorrisCounter, n : Int) -> Unit {
+pub fn MorrisCounter::increment_n(self : MorrisCounter, n : Int32) -> Unit {
   for _ in 0..<n {
     self.increment()
   } where {
@@ -161,7 +161,7 @@ pub fn MorrisCounter::estimate(self : MorrisCounter) -> Int64 {
 /// The raw stored counter `c`. Useful for serialisation and for merging
 /// counters across machines (the "combine" rule is non-trivial; see the
 /// README for guidance).
-pub fn MorrisCounter::raw(self : MorrisCounter) -> Int {
+pub fn MorrisCounter::raw(self : MorrisCounter) -> Int32 {
   self.c
 }
 

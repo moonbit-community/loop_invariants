@@ -64,7 +64,7 @@ pub fn area(vertices : Array[(Double, Double)]) -> Double {
 
 ///|
 /// `+1` for CCW, `-1` for CW, `0` for degenerate (collinear or empty).
-pub fn orientation(vertices : Array[(Double, Double)]) -> Int {
+pub fn orientation(vertices : Array[(Double, Double)]) -> Int32 {
   let s = signed_area(vertices)
   if s > 0.0 {
     1

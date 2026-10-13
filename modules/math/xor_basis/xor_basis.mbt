@@ -43,7 +43,7 @@
 // SPACE COMPLEXITY: O(B)
 
 ///|
-const MAX_BITS : Int = 63
+const MAX_BITS : Int32 = 63
 
 ///|
 /// An XOR linear basis over 63-bit integers.
@@ -68,7 +68,7 @@ const MAX_BITS : Int = 63
 /// The span of the stored vectors equals the span of all inserted values.
 pub struct XorBasis {
   basis : Array[Int64]
-  mut size : Int
+  mut size : Int32
 }
 
 ///|
@@ -222,7 +222,7 @@ pub fn XorBasis::max_xor(self : XorBasis, value : Int64) -> Int64 {
 /// The rank equals the number of `insert` calls that returned `true`.
 ///
 /// Time complexity: O(1).
-pub fn XorBasis::rank(self : XorBasis) -> Int {
+pub fn XorBasis::rank(self : XorBasis) -> Int32 {
   self.size
 }
 

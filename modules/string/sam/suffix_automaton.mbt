@@ -41,11 +41,11 @@
 ///                 index of the last character of the first occurrence of
 ///                 the longest string in this class.
 priv struct SAMState {
-  trans : Array[Int] // transitions: char_code -> state_id (-1 if none)
-  mut link : Int // suffix link (-1 for initial)
-  mut len : Int // length of longest string in this equivalence class
-  mut cnt : Int // occurrence count (computed via suffix link tree)
-  mut first_pos : Int // first position where this state was reached
+  trans : Array[Int32] // transitions: char_code -> state_id (-1 if none)
+  mut link : Int32 // suffix link (-1 for initial)
+  mut len : Int32 // length of longest string in this equivalence class
+  mut cnt : Int32 // occurrence count (computed via suffix link tree)
+  mut first_pos : Int32 // first position where this state was reached
 }
 
 ///|
@@ -54,7 +54,7 @@ priv struct SAMState {
 /// All transition arrays are sized to `alphabet_size` entries indexed by the
 /// integer value of an ASCII character.  Characters outside the range
 /// `[0, 127]` are not supported by this implementation.
-let alphabet_size : Int = 128 // ASCII alphabet
+let alphabet_size : Int32 = 128 // ASCII alphabet
 
 ///|
 fn SAMState::SAMState() -> SAMState {
@@ -107,7 +107,7 @@ fn SAMState::copy_trans(self : SAMState) -> SAMState {
 /// - `kth_substring(k)` to retrieve the k-th lexicographic substring.
 priv struct SuffixAutomaton {
   states : Array[SAMState]
-  mut last : Int // index of last state
+  mut last : Int32 // index of last state
 }
 
 ///|
@@ -138,7 +138,7 @@ fn SuffixAutomaton::SuffixAutomaton() -> SuffixAutomaton {
 /// 4. Update `last = cur`.
 ///
 /// Time per call: amortized O(1).
-fn SuffixAutomaton::add_char(self : SuffixAutomaton, c : Int) -> Unit {
+fn SuffixAutomaton::add_char(self : SuffixAutomaton, c : Int32) -> Unit {
   let pos = self.states[self.last].len
 
   // Create new state
@@ -272,7 +272,7 @@ pub fn contains_substring(text : String, pattern : String) -> Bool {
 /// // "a", "b", "ab", "ba", "aba", "bab", "abab"
 /// assert_eq!(@sam.distinct_substrings_count("abab"), 7)
 /// ```
-pub fn distinct_substrings_count(text : String) -> Int {
+pub fn distinct_substrings_count(text : String) -> Int32 {
   SuffixAutomaton::build(text).count_distinct_substrings()
 }
 
@@ -328,7 +328,7 @@ fn SuffixAutomaton::contains(self : SuffixAutomaton, pattern : String) -> Bool {
 /// contributes 0) gives the total.
 ///
 /// Time: O(n) where n is the number of SAM states (at most 2|text| - 1).
-fn SuffixAutomaton::count_distinct_substrings(self : SuffixAutomaton) -> Int {
+fn SuffixAutomaton::count_distinct_substrings(self : SuffixAutomaton) -> Int32 {
   for i in 0..<self.states.length(); count = 0 {
     let state = self.states[i]
     let link_len = if state.link >= 0 { self.states[state.link].len } else { 0 }
@@ -377,14 +377,14 @@ fn SuffixAutomaton::compute_counts(self : SuffixAutomaton) -> Unit {
 
   // Topological sort by length (counting sort)
   let max_len = self.states[self.last].len
-  let cnt_by_len : Array[Int] = Array::make(max_len + 1, 0)
+  let cnt_by_len : Array[Int32] = Array::make(max_len + 1, 0)
   for i in 0..<n {
     cnt_by_len[self.states[i].len] = cnt_by_len[self.states[i].len] + 1
   }
   for i in 1..<=max_len {
     cnt_by_len[i] = cnt_by_len[i] + cnt_by_len[i - 1]
   }
-  let sorted : Array[Int] = Array::make(n, 0)
+  let sorted : Array[Int32] = Array::make(n, 0)
   for i in 0..<n {
     let len = self.states[i].len
     cnt_by_len[len] = cnt_by_len[len] - 1
@@ -416,7 +416,7 @@ fn SuffixAutomaton::compute_counts(self : SuffixAutomaton) -> Unit {
 fn SuffixAutomaton::count_occurrences(
   self : SuffixAutomaton,
   pattern : String,
-) -> Int {
+) -> Int32 {
   for state = 0, i = 0; i < pattern.length(); {
     let c = pattern[i].to_int()
     let next = self.states[state].trans[c]
@@ -458,7 +458,7 @@ fn SuffixAutomaton::count_occurrences(
 fn SuffixAutomaton::longest_common_substring_length(
   self : SuffixAutomaton,
   other : String,
-) -> Int {
+) -> Int32 {
   for state = 0, cur_len = 0, best_len = 0, i = 0; i < other.length(); {
     let c = other[i].to_int()
     let next = self.states[state].trans[c]
@@ -502,9 +502,9 @@ fn SuffixAutomaton::longest_common_substring_length(
 /// fails.
 fn find_suffix_match(
   sam : SuffixAutomaton,
-  start_state : Int,
-  c : Int,
-) -> (Int, Int) {
+  start_state : Int32,
+  c : Int32,
+) -> (Int32, Int32) {
   for st = start_state; st >= 0; {
     let next = sam.states[st].trans[c]
     if next >= 0 {
@@ -605,7 +605,7 @@ fn SuffixAutomaton::longest_common_substring(
 fn SuffixAutomaton::compute_path_counts(self : SuffixAutomaton) -> Array[Int64] {
   let n = self.states.length()
   let memo : Array[Int64] = Array::make(n, -1L)
-  fn dfs(sam : SuffixAutomaton, state : Int, memo : Array[Int64]) -> Int64 {
+  fn dfs(sam : SuffixAutomaton, state : Int32, memo : Array[Int64]) -> Int64 {
     if memo[state] >= 0L {
       return memo[state]
     }
@@ -648,10 +648,10 @@ fn SuffixAutomaton::compute_path_counts(self : SuffixAutomaton) -> Array[Int64] 
 /// account for the empty path represented by the state itself.
 fn find_next_transition(
   sam : SuffixAutomaton,
-  state : Int,
+  state : Int32,
   remaining : Int64,
   path_cnt : Array[Int64],
-) -> (Int, Int64, Int)? {
+) -> (Int32, Int64, Int32)? {
   for c in 0..<alphabet_size; rem = remaining - 1L {
     let next = sam.states[state].trans[c]
     if next >= 0 {
@@ -846,7 +846,7 @@ fn SuffixAutomaton::all_substrings(self : SuffixAutomaton) -> Array[String] {
   let result : Array[String] = []
   fn dfs(
     sam : SuffixAutomaton,
-    state : Int,
+    state : Int32,
     current : StringBuilder,
     result : Array[String],
   ) -> Unit {

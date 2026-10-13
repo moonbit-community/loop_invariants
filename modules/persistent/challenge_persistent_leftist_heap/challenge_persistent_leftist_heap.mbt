@@ -28,11 +28,11 @@
 /// ```
 pub enum Heap[T] {
   Empty
-  Node(value~ : T, rank~ : Int, left~ : Heap[T], right~ : Heap[T])
+  Node(value~ : T, rank~ : Int32, left~ : Heap[T], right~ : Heap[T])
 } derive(Debug)
 
 ///|
-fn[T] rank(h : Heap[T]) -> Int {
+fn[T] rank(h : Heap[T]) -> Int32 {
   match h {
     Empty => 0
     Node(value=_, rank~, left=_, right=_) => rank
@@ -40,7 +40,7 @@ fn[T] rank(h : Heap[T]) -> Int {
 }
 
 ///|
-fn[T] heap_size(h : Heap[T]) -> Int {
+fn[T] heap_size(h : Heap[T]) -> Int32 {
   match h {
     Empty => 0
     Node(value=_, rank=_, left~, right~) =>
@@ -69,7 +69,7 @@ pub fn[T] empty() -> Heap[T] {
 
 ///|
 /// Return number of elements in the heap.
-pub fn[T] size(h : Heap[T]) -> Int {
+pub fn[T] size(h : Heap[T]) -> Int32 {
   heap_size(h)
 }
 
@@ -134,7 +134,7 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Heap[T] {
 
 ///|
 test "persistent_leftist_heap" {
-  let h0 : Heap[Int] = Empty
+  let h0 : Heap[Int32] = Empty
   let h1 = insert(h0, 5)
   let h2 = insert(h1, 3)
   let h3 = insert(h2, 7)

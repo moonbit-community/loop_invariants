@@ -77,11 +77,11 @@
 /// // bo[0] == bo[1] != bo[2]
 /// ```
 pub fn minimize(
-  n : Int,
-  k : Int,
-  transitions : Array[Array[Int]],
+  n : Int32,
+  k : Int32,
+  transitions : Array[Array[Int32]],
   accepting : Array[Bool],
-) -> Array[Int] {
+) -> Array[Int32] {
   // Trivial cases.
   if n <= 0 {
     return []
@@ -112,7 +112,7 @@ pub fn minimize(
   }
   // Reverse-transition table: rev[c][t] = list of states s with
   // transitions[s][c] = t.
-  let rev : Array[Array[Array[Int]]] = Array::makei(k, _ => {
+  let rev : Array[Array[Array[Int32]]] = Array::makei(k, _ => {
     Array::makei(n, _ => [])
   })
   for s in 0..<n {
@@ -126,7 +126,7 @@ pub fn minimize(
   let in_worklist : Array[Array[Bool]] = Array::makei(block_count, _ => {
     Array::make(k, false)
   })
-  let worklist : Array[(Int, Int)] = []
+  let worklist : Array[(Int32, Int32)] = []
   if block_count == 2 {
     // Count members of each.
     let mut count_acc = 0
@@ -146,7 +146,7 @@ pub fn minimize(
     }
   }
   // Members lists for each block, kept up to date.
-  let members : Array[Array[Int]] = Array::makei(block_count, _ => [])
+  let members : Array[Array[Int32]] = Array::makei(block_count, _ => [])
   for s in 0..<n {
     members[block_of[s]].push(s)
   }
@@ -158,8 +158,11 @@ pub fn minimize(
     // We only need to consider blocks B whose intersection with X
     // is non-trivial. For each t in A, for each s in rev[c][t],
     // group by block_of[s].
-    let touched : Array[Int] = []
-    let by_block : @hashmap.HashMap[Int, Array[Int]] = HashMap([], capacity=16)
+    let touched : Array[Int32] = []
+    let by_block : @hashmap.HashMap[Int32, Array[Int32]] = HashMap(
+      [],
+      capacity=16,
+    )
     for t in members[a_block] {
       for s in rev[c][t] {
         let b = block_of[s]
@@ -193,7 +196,7 @@ pub fn minimize(
         members[new_block_id].push(s)
       }
       // Rebuild members[b] to exclude `intersect`.
-      let kept : Array[Int] = []
+      let kept : Array[Int32] = []
       for s in members[b] {
         if block_of[s] == b {
           kept.push(s)
@@ -219,7 +222,7 @@ pub fn minimize(
   }
   // Normalize block ids to be contiguous in [0, m), in order of first
   // appearance from state 0 upward.
-  let remap : @hashmap.HashMap[Int, Int] = HashMap([], capacity=16)
+  let remap : @hashmap.HashMap[Int32, Int32] = HashMap([], capacity=16)
   let result = Array::make(n, 0)
   let mut next_id = 0
   for s in 0..<n {
@@ -239,7 +242,7 @@ pub fn minimize(
 ///|
 /// Number of distinct blocks (equivalence classes) in the output of
 /// `minimize`.
-pub fn block_count_of(block_of : Array[Int]) -> Int {
+pub fn block_count_of(block_of : Array[Int32]) -> Int32 {
   let mut m = 0
   for b in block_of {
     if b + 1 > m {

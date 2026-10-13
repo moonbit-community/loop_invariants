@@ -53,16 +53,16 @@
 ///|
 /// HyperLogLog cardinality sketch.
 pub struct HyperLogLog {
-  precision : Int
-  m : Int
-  registers : Array[Int]
+  precision : Int32
+  m : Int32
+  registers : Array[Int32]
 }
 
 ///|
 /// Logical right shift on Int64 (Int64's built-in `>>` is arithmetic
 /// and would sign-extend negative values, which we don't want when
 /// using the result as a hash bit-pattern).
-fn shr_logical(x : Int64, n : Int) -> Int64 {
+fn shr_logical(x : Int64, n : Int32) -> Int64 {
   (x.reinterpret_as_uint64() >> n).reinterpret_as_int64()
 }
 
@@ -101,7 +101,7 @@ fn hll_mix(x : Int64) -> Int64 {
 ///   assert_true(estimate > 900 && estimate < 1100)
 /// }
 /// ```
-pub fn new(precision : Int) -> HyperLogLog {
+pub fn new(precision : Int32) -> HyperLogLog {
   let p = if precision < 4 {
     4
   } else if precision > 16 {
@@ -119,7 +119,7 @@ pub fn new(precision : Int) -> HyperLogLog {
 /// hash, plus 1 (i.e. the 1-indexed position of the leftmost 1-bit
 /// among those bits). If all `64 - precision` bits are zero, return
 /// `64 - precision + 1`.
-fn count_leading(tail : Int64, bits : Int) -> Int {
+fn count_leading(tail : Int64, bits : Int32) -> Int32 {
   for r = 1, mask = 1L << (bits - 1) {
     if mask == 0L {
       // We've scanned all `bits` bits and saw no 1.
@@ -191,7 +191,7 @@ pub fn HyperLogLog::estimate(self : HyperLogLog) -> Int64 {
 ///|
 /// HLL bias-correction constant. Special-cased for small m as per the
 /// original paper.
-fn alpha_m(m : Int) -> Double {
+fn alpha_m(m : Int32) -> Double {
   if m == 16 {
     0.673
   } else if m == 32 {
@@ -220,7 +220,7 @@ pub fn HyperLogLog::merge(self : HyperLogLog, other : HyperLogLog) -> Unit {
 
 ///|
 /// Number of registers (m = 2^precision).
-pub fn HyperLogLog::register_count(self : HyperLogLog) -> Int {
+pub fn HyperLogLog::register_count(self : HyperLogLog) -> Int32 {
   self.m
 }
 

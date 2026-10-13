@@ -29,11 +29,11 @@ enum Node[T] {
 /// ```
 pub struct PArray[T] {
   root : Node[T]
-  n : Int
+  n : Int32
 } derive(Debug)
 
 ///|
-fn[T] build(arr : ArrayView[T], l : Int, r : Int) -> Node[T] {
+fn[T] build(arr : ArrayView[T], l : Int32, r : Int32) -> Node[T] {
   if r - l == 1 {
     Leaf(value=arr[l])
   } else {
@@ -45,7 +45,7 @@ fn[T] build(arr : ArrayView[T], l : Int, r : Int) -> Node[T] {
 }
 
 ///|
-fn[T] get_node(node : Node[T], l : Int, r : Int, idx : Int) -> T {
+fn[T] get_node(node : Node[T], l : Int32, r : Int32, idx : Int32) -> T {
   match node {
     Leaf(value~) => value
     Branch(left~, right~) => {
@@ -62,9 +62,9 @@ fn[T] get_node(node : Node[T], l : Int, r : Int, idx : Int) -> T {
 ///|
 fn[T] set_node(
   node : Node[T],
-  l : Int,
-  r : Int,
-  idx : Int,
+  l : Int32,
+  r : Int32,
+  idx : Int32,
   value : T,
 ) -> Node[T] {
   if r - l == 1 {
@@ -92,13 +92,13 @@ pub fn[T] from_array(arr : ArrayView[T]) -> PArray[T] {
 
 ///|
 /// Return the length of the persistent array.
-pub fn[T] length(arr : PArray[T]) -> Int {
+pub fn[T] length(arr : PArray[T]) -> Int32 {
   arr.n
 }
 
 ///|
 /// Get the value at idx, or None if out of range.
-pub fn[T] get_at(arr : PArray[T], idx : Int) -> T? {
+pub fn[T] get_at(arr : PArray[T], idx : Int32) -> T? {
   if idx < 0 || idx >= arr.n {
     None
   } else {
@@ -108,7 +108,7 @@ pub fn[T] get_at(arr : PArray[T], idx : Int) -> T? {
 
 ///|
 /// Set the value at idx and return the new persistent array.
-pub fn[T] set_at(arr : PArray[T], idx : Int, value : T) -> PArray[T] {
+pub fn[T] set_at(arr : PArray[T], idx : Int32, value : T) -> PArray[T] {
   if idx < 0 || idx >= arr.n {
     arr
   } else {

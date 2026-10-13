@@ -42,7 +42,7 @@
 /// PARAMETERS:
 ///   - self: working data structures
 ///   - v: vertex to compress (by DFS index)
-fn DominatorWork::compress(self : DominatorWork, v : Int) -> Unit {
+fn DominatorWork::compress(self : DominatorWork, v : Int32) -> Unit {
   // Base case: v is root of its set (dsu[v] = v)
   guard self.dsu[self.dsu[v]] != self.dsu[v] else { return }
 
@@ -83,7 +83,7 @@ fn DominatorWork::compress(self : DominatorWork, v : Int) -> Unit {
 ///
 /// RETURNS:
 ///   Vertex with minimum semi-dominator on path to root
-fn DominatorWork::eval(self : DominatorWork, v : Int) -> Int {
+fn DominatorWork::eval(self : DominatorWork, v : Int32) -> Int32 {
   if self.dsu[v] == v {
     // v is root of its set
     v
@@ -114,12 +114,12 @@ fn DominatorWork::eval(self : DominatorWork, v : Int) -> Int {
 ///   - self: working data structures
 ///   - u: the new parent (by DFS index)
 ///   - v: the child to attach (by DFS index)
-fn DominatorWork::link(self : DominatorWork, u : Int, v : Int) -> Unit {
+fn DominatorWork::link(self : DominatorWork, u : Int32, v : Int32) -> Unit {
   self.dsu[v] = u
 }
 
 ///|
-fn min(a : Int, b : Int) -> Int {
+fn min(a : Int32, b : Int32) -> Int32 {
   if a < b {
     a
   } else {

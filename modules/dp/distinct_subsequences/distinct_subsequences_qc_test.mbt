@@ -3,13 +3,13 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
-fn letter(rs : @quickcheck.RandomState, k : Int) -> Int {
+fn letter(rs : @quickcheck.RandomState, k : Int32) -> Int32 {
   if rint(rs, 0, 15) == 0 {
     [-2147483648, 2147483647][rint(rs, 0, 1)]
   } else {
@@ -21,8 +21,8 @@ fn letter(rs : @quickcheck.RandomState, k : Int) -> Int {
 /// `s` of length <= 12 and `t` of length <= 4 over an alphabet of 1-3
 /// letters; `t` is often an actual subsequence of `s`.
 priv struct Case {
-  s : Array[Int]
-  t : Array[Int]
+  s : Array[Int32]
+  t : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -30,7 +30,7 @@ impl @quickcheck.Arbitrary for Case with fn arbitrary(_, rs) {
   let k = rint(rs, 1, 3)
   let s = Array::makei(rint(rs, 0, 12), _ => letter(rs, k))
   let t = if s.length() > 0 && rint(rs, 0, 1) == 0 {
-    let t : Array[Int] = []
+    let t : Array[Int32] = []
     for x in s {
       if t.length() < 4 && rint(rs, 0, 2) == 0 {
         t.push(x)
@@ -56,8 +56,8 @@ impl @quickcheck.Shrink for Case with fn shrink(self) {
 }
 
 ///|
-fn subseq(s : Array[Int], mask : Int) -> Array[Int] {
-  let out : Array[Int] = []
+fn subseq(s : Array[Int32], mask : Int32) -> Array[Int32] {
+  let out : Array[Int32] = []
   for i in 0..<s.length() {
     if ((mask >> i) & 1) == 1 {
       out.push(s[i])
@@ -67,7 +67,7 @@ fn subseq(s : Array[Int], mask : Int) -> Array[Int] {
 }
 
 ///|
-fn ref_equal_target(s : Array[Int], t : Array[Int]) -> Int64 {
+fn ref_equal_target(s : Array[Int32], t : Array[Int32]) -> Int64 {
   let mut c = 0L
   for mask in 0..<(1 << s.length()) {
     if subseq(s, mask) == t {
@@ -78,7 +78,7 @@ fn ref_equal_target(s : Array[Int], t : Array[Int]) -> Int64 {
 }
 
 ///|
-fn ref_all_distinct(s : Array[Int]) -> Int64 {
+fn ref_all_distinct(s : Array[Int32]) -> Int64 {
   let seen : Map[String, Unit] = Map([])
   for mask in 1..<(1 << s.length()) {
     let key = StringBuilder()

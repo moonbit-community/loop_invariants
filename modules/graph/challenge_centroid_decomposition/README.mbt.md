@@ -81,7 +81,7 @@ centroid tree:
 ```mbt check
 ///|
 test "centroid decomposition path" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
   let cd = @challenge_centroid_decomposition.build_centroid(5, edges)
   debug_inspect(cd.parent[2], content="-1")
   debug_inspect(cd.level[2], content="0")
@@ -101,7 +101,7 @@ test "centroid decomposition path" {
 ```mbt check
 ///|
 test "centroid decomposition star" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
   let cd = @challenge_centroid_decomposition.build_centroid(5, edges)
   debug_inspect(cd.parent[0], content="-1")
   debug_inspect(cd.level[0], content="0")
@@ -114,7 +114,7 @@ test "centroid decomposition star" {
 ```mbt check
 ///|
 test "centroid decomposition balanced" {
-  let edges : Array[(Int, Int)] = [
+  let edges : Array[(Int32, Int32)] = [
     (0, 1),
     (0, 2),
     (1, 3),

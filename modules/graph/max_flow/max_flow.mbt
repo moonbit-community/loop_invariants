@@ -53,10 +53,10 @@
 /// - `rev_idx`  -- index of the paired reverse edge inside `adj[to]`, enabling
 ///                 O(1) residual updates
 priv struct Edge {
-  to : Int
+  to : Int32
   capacity : Int64
   mut flow : Int64
-  rev_idx : Int // Index of reverse edge in adj[to]
+  rev_idx : Int32 // Index of reverse edge in adj[to]
 }
 
 ///|
@@ -75,10 +75,10 @@ priv struct Edge {
 /// Create with `MaxFlow(n)` and populate with `add_edge` or
 /// `add_undirected_edge` before calling `max_flow`.
 priv struct MaxFlow {
-  n : Int
+  n : Int32
   adj : Array[Array[Edge]]
-  level : Array[Int]
-  iter : Array[Int] // For dead-end pruning in DFS
+  level : Array[Int32]
+  iter : Array[Int32] // For dead-end pruning in DFS
 }
 
 ///|
@@ -86,7 +86,7 @@ priv struct MaxFlow {
 ///
 /// All adjacency lists are initialised empty.  `level` and `iter` arrays are
 /// pre-allocated but their initial values are overwritten before each use.
-fn MaxFlow::MaxFlow(n : Int) -> MaxFlow {
+fn MaxFlow::MaxFlow(n : Int32) -> MaxFlow {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, adj, level: Array::make(n, -1), iter: Array::make(n, 0), }
 }
@@ -103,8 +103,8 @@ fn MaxFlow::MaxFlow(n : Int) -> MaxFlow {
 /// Panics (index-out-of-bounds) if `from` or `to` is outside `[0, n)`.
 fn MaxFlow::add_edge(
   self : MaxFlow,
-  from : Int,
-  to : Int,
+  from : Int32,
+  to : Int32,
   capacity : Int64,
 ) -> Unit {
   let from_idx = self.adj[from].length()
@@ -131,8 +131,8 @@ fn MaxFlow::add_edge(
 /// Panics (index-out-of-bounds) if `u` or `v` is outside `[0, n)`.
 fn MaxFlow::add_undirected_edge(
   self : MaxFlow,
-  u : Int,
-  v : Int,
+  u : Int32,
+  v : Int32,
   capacity : Int64,
 ) -> Unit {
   let u_idx = self.adj[u].length()
@@ -153,7 +153,7 @@ fn MaxFlow::add_undirected_edge(
 ///
 /// This function is called once per Dinic phase and resets all level values
 /// before each run so stale data from the previous phase does not interfere.
-fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
+fn MaxFlow::bfs(self : MaxFlow, source : Int32, sink : Int32) -> Bool {
   for i in 0..<self.n {
     self.level[i] = -1
   } where {
@@ -168,7 +168,7 @@ fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
     ),
   }
   self.level[source] = 0
-  let queue : Array[Int] = [source]
+  let queue : Array[Int32] = [source]
 
   // INVARIANT: head >= 0 && head <= queue.length()
   // I: level[source]=0, queue=[source]. M: BFS explores vertices level by level.
@@ -217,7 +217,12 @@ fn MaxFlow::bfs(self : MaxFlow, source : Int, sink : Int) -> Bool {
 /// to lead nowhere (DFS returned 0), `iter[u]` is advanced past it and it will
 /// never be re-examined in this phase.  This keeps the total DFS work across
 /// all calls in a single phase to O(V * E).
-fn MaxFlow::dfs(self : MaxFlow, u : Int, sink : Int, pushed : Int64) -> Int64 {
+fn MaxFlow::dfs(
+  self : MaxFlow,
+  u : Int32,
+  sink : Int32,
+  pushed : Int64,
+) -> Int64 {
   if u == sink {
     return pushed
   }
@@ -266,7 +271,7 @@ const FLOW_INF : Int64 = 9223372036854775807L
 /// The flow values accumulated in the `Edge.flow` fields can be inspected
 /// after this call to determine the actual flow on each individual edge.
 /// Call `min_cut` afterwards to identify a minimum cut achieving this flow.
-fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
+fn MaxFlow::max_flow(self : MaxFlow, source : Int32, sink : Int32) -> Int64 {
   // INVARIANT: flow >= 0
   // I: flow=0, no flow pushed. M: Each iteration builds level graph via BFS.
   // If sink unreachable, we're done (max-flow min-cut theorem). Otherwise, find
@@ -329,10 +334,13 @@ fn MaxFlow::max_flow(self : MaxFlow, source : Int, sink : Int) -> Int64 {
 /// Note: this function must be called **after** `max_flow`; calling it on a
 /// fresh network (no flow computed) will return the trivial cut containing all
 /// edges out of `source`.
-fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
+fn MaxFlow::min_cut(
+  self : MaxFlow,
+  source : Int32,
+) -> Array[(Int32, Int32, Int64)] {
   // After max flow, do one more BFS to find reachable vertices
   let visited = Array::make(self.n, false)
-  let queue : Array[Int] = [source]
+  let queue : Array[Int32] = [source]
   visited[source] = true
   for head = 0; head < queue.length(); {
     let u = queue[head]
@@ -357,7 +365,7 @@ fn MaxFlow::min_cut(self : MaxFlow, source : Int) -> Array[(Int, Int, Int64)] {
   }
 
   // Collect cut edges: from visited to non-visited with original capacity
-  let cut : Array[(Int, Int, Int64)] = []
+  let cut : Array[(Int32, Int32, Int64)] = []
   for u in 0..<self.n {
     if visited[u] {
       for i in 0..<self.adj[u].length() {

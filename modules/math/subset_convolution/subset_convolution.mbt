@@ -13,7 +13,7 @@
 
 ///|
 /// Returns true if `n` is a positive power of two.
-fn is_power_of_two(n : Int) -> Bool {
+fn is_power_of_two(n : Int32) -> Bool {
   n > 0 && (n & (n - 1)) == 0
 }
 
@@ -21,7 +21,7 @@ fn is_power_of_two(n : Int) -> Bool {
 /// Returns log2 of `n`, where `n` must be an exact power of two.
 ///
 /// For example, `log2_pow2(8)` returns `3`.
-fn log2_pow2(n : Int) -> Int {
+fn log2_pow2(n : Int32) -> Int32 {
   for v = n, bits = 0; v > 1; {
     continue v / 2, bits + 1
   } nobreak {
@@ -34,7 +34,7 @@ fn log2_pow2(n : Int) -> Int {
 ///
 /// Uses Brian Kernighan's trick: each `x & (x-1)` clears the lowest set bit,
 /// so the loop runs exactly `popcount(x)` times.
-fn popcount(x : Int) -> Int {
+fn popcount(x : Int32) -> Int32 {
   for v = x, cnt = 0; v > 0; {
     continue v & (v - 1), cnt + 1
   } nobreak {

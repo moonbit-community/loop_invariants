@@ -113,7 +113,7 @@ MST total weight = 6.
 ```mbt check
 ///|
 test "mst prim example" {
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 1),
     (1, 2, 2),
     (2, 3, 3),
@@ -130,7 +130,7 @@ test "mst prim example" {
 ```mbt check
 ///|
 test "mst prim walkthrough" {
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 1),
     (0, 2, 3),
     (0, 3, 4),
@@ -148,7 +148,7 @@ test "mst prim walkthrough" {
 ```mbt check
 ///|
 test "mst prim disconnected" {
-  let edges : Array[(Int, Int, Int)] = [(0, 1, 1)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, 1)]
   let adj = @challenge_mst_prim.build_adj(3, edges)
   let total = @challenge_mst_prim.mst_weight(adj)
   debug_inspect(total, content="None")
@@ -160,7 +160,7 @@ test "mst prim disconnected" {
 ```mbt check
 ///|
 test "mst prim negative" {
-  let edges : Array[(Int, Int, Int)] = [(0, 1, -2), (1, 2, 3), (0, 2, 1)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, -2), (1, 2, 3), (0, 2, 1)]
   let adj = @challenge_mst_prim.build_adj(3, edges)
   let total = @challenge_mst_prim.mst_weight(adj)
   debug_inspect(total, content="Some(-1)")
@@ -172,7 +172,7 @@ test "mst prim negative" {
 ```mbt check
 ///|
 test "mst prim ignores invalid" {
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 2),
     (1, 2, 1),
     (-1, 2, 5),

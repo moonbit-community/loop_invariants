@@ -40,21 +40,21 @@
 /// - `articulation_points` - boolean flags, one per vertex
 /// - `bridges`            - collected bridge edges in DFS discovery order
 priv struct BridgeFinder {
-  n : Int
-  adj : Array[Array[Int]]
-  disc : Array[Int]
-  low : Array[Int]
-  parent : Array[Int]
-  mut timer : Int
+  n : Int32
+  adj : Array[Array[Int32]]
+  disc : Array[Int32]
+  low : Array[Int32]
+  parent : Array[Int32]
+  mut timer : Int32
   articulation_points : Array[Bool]
-  bridges : Array[(Int, Int)]
+  bridges : Array[(Int32, Int32)]
 }
 
 ///|
 /// Create a new `BridgeFinder` for a graph with `n` vertices and no edges.
 /// All discovery timestamps are initialised to -1 (unvisited).
-fn BridgeFinder::BridgeFinder(n : Int) -> BridgeFinder {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+fn BridgeFinder::BridgeFinder(n : Int32) -> BridgeFinder {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,
@@ -70,7 +70,7 @@ fn BridgeFinder::BridgeFinder(n : Int) -> BridgeFinder {
 ///|
 /// Add the undirected edge `(u, v)` to the adjacency lists.
 /// Both directions are recorded so that DFS traverses the edge from either end.
-fn BridgeFinder::add_edge(self : BridgeFinder, u : Int, v : Int) -> Unit {
+fn BridgeFinder::add_edge(self : BridgeFinder, u : Int32, v : Int32) -> Unit {
   self.adj[u].push(v)
   self.adj[v].push(u)
 }
@@ -91,7 +91,7 @@ fn BridgeFinder::add_edge(self : BridgeFinder, u : Int, v : Int) -> Unit {
 ///
 /// After all neighbours are processed, apply the root articulation-point rule
 /// if `p < 0` and the DFS-child count is >= 2.
-fn BridgeFinder::dfs(self : BridgeFinder, u : Int, p : Int) -> Unit {
+fn BridgeFinder::dfs(self : BridgeFinder, u : Int32, p : Int32) -> Unit {
   self.disc[u] = self.timer
   self.low[u] = self.timer
   self.timer = self.timer + 1
@@ -154,8 +154,8 @@ fn BridgeFinder::find(self : BridgeFinder) -> Unit {
 ///|
 /// Return the indices of all articulation points found after `find()`.
 /// The vertices are listed in DFS discovery order.
-fn BridgeFinder::get_articulation_points(self : BridgeFinder) -> Array[Int] {
-  let result : Array[Int] = [
+fn BridgeFinder::get_articulation_points(self : BridgeFinder) -> Array[Int32] {
+  let result : Array[Int32] = [
     for i in 0..<self.n if self.articulation_points[i] => i
   ]
   result
@@ -165,14 +165,14 @@ fn BridgeFinder::get_articulation_points(self : BridgeFinder) -> Array[Int] {
 /// Return the list of bridge edges found after `find()`.
 /// Each bridge `(u, v)` is reported with `u` being the DFS parent.
 /// The list is in DFS discovery order.
-fn BridgeFinder::get_bridges(self : BridgeFinder) -> Array[(Int, Int)] {
+fn BridgeFinder::get_bridges(self : BridgeFinder) -> Array[(Int32, Int32)] {
   self.bridges
 }
 
 ///|
 /// Return `true` if vertex `u` is an articulation point after `find()`.
 /// Returns `false` for out-of-range indices.
-fn BridgeFinder::is_articulation_point(self : BridgeFinder, u : Int) -> Bool {
+fn BridgeFinder::is_articulation_point(self : BridgeFinder, u : Int32) -> Bool {
   if u < 0 || u >= self.n {
     return false
   }
@@ -195,9 +195,9 @@ fn BridgeFinder::is_articulation_point(self : BridgeFinder, u : Int) -> Bool {
 ///
 /// Time complexity: O(V + E).  Space complexity: O(V + E).
 pub fn find_bridges(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-) -> Array[(Int, Int)] {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[(Int32, Int32)] {
   let finder = BridgeFinder(n)
   for edge in edges {
     let (u, v) = edge
@@ -229,9 +229,9 @@ pub fn find_bridges(
 ///
 /// Time complexity: O(V + E).  Space complexity: O(V + E).
 pub fn articulation_points(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-) -> Array[Int] {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Int32] {
   let finder = BridgeFinder(n)
   for edge in edges {
     let (u, v) = edge

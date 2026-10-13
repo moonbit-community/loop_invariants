@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -15,8 +15,8 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// built as "a path of length `t` feeding into a cycle of length `c`" so
 /// long tails and long cycles both show up.
 priv struct Func {
-  table : Array[Int]
-  x0 : Int
+  table : Array[Int32]
+  x0 : Int32
 } derive(Debug)
 
 ///|
@@ -59,7 +59,7 @@ impl @quickcheck.Shrink for Func with fn shrink(self) {
 
 ///|
 /// Naive `(mu, lam)` from the index of the first visit of each value.
-fn naive_cycle(f : Func) -> (Int, Int) {
+fn naive_cycle(f : Func) -> (Int32, Int32) {
   let first = Array::make(f.table.length(), -1)
   let mut x = f.x0
   let mut i = 0
@@ -110,7 +110,7 @@ test "qc: brent_cycle matches the naive first-visit table" {
 test "qc: floyd and brent agree on Int64 affine maps modulo m" {
   // x -> (a * x + b) mod m over Int64 values, a different element type.
   @quickcheck.check(
-    (input : (Int, Int, Int, Int)) => {
+    (input : (Int32, Int32, Int32, Int32)) => {
       let m = (input.0 % 200).abs() + 1
       let a = (input.1 % m).abs().to_int64()
       let b = (input.2 % m).abs().to_int64()

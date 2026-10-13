@@ -44,7 +44,7 @@
 // SPACE COMPLEXITY: O(n)  (output copy; the in-place butterfly touches no extra memory)
 
 ///|
-fn is_power_of_two(n : Int) -> Bool {
+fn is_power_of_two(n : Int32) -> Bool {
   n > 0 && (n & (n - 1)) == 0
 }
 

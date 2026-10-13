@@ -44,7 +44,7 @@ pub fn MinMaxHeap::new() -> MinMaxHeap {
 
 ///|
 /// Number of elements.
-pub fn MinMaxHeap::length(self : MinMaxHeap) -> Int {
+pub fn MinMaxHeap::length(self : MinMaxHeap) -> Int32 {
   self.data.length()
 }
 
@@ -55,7 +55,7 @@ pub fn MinMaxHeap::is_empty(self : MinMaxHeap) -> Bool {
 }
 
 ///|
-fn level(i : Int) -> Int {
+fn level(i : Int32) -> Int32 {
   // 0-indexed level: floor(log2(i + 1)).
   let mut x = i + 1
   let mut l = 0
@@ -67,39 +67,39 @@ fn level(i : Int) -> Int {
 }
 
 ///|
-fn is_min_level(i : Int) -> Bool {
+fn is_min_level(i : Int32) -> Bool {
   level(i) % 2 == 0
 }
 
 ///|
-fn MinMaxHeap::swap(self : MinMaxHeap, a : Int, b : Int) -> Unit {
+fn MinMaxHeap::swap(self : MinMaxHeap, a : Int32, b : Int32) -> Unit {
   let t = self.data[a]
   self.data[a] = self.data[b]
   self.data[b] = t
 }
 
 ///|
-fn parent(i : Int) -> Int {
+fn parent(i : Int32) -> Int32 {
   (i - 1) / 2
 }
 
 ///|
-fn has_parent(i : Int) -> Bool {
+fn has_parent(i : Int32) -> Bool {
   i > 0
 }
 
 ///|
-fn has_grandparent(i : Int) -> Bool {
+fn has_grandparent(i : Int32) -> Bool {
   i > 2
 }
 
 ///|
-fn grandparent(i : Int) -> Int {
+fn grandparent(i : Int32) -> Int32 {
   ((i - 1) / 2 - 1) / 2
 }
 
 ///|
-fn MinMaxHeap::push_up(self : MinMaxHeap, i : Int) -> Unit {
+fn MinMaxHeap::push_up(self : MinMaxHeap, i : Int32) -> Unit {
   if !has_parent(i) {
     return
   }
@@ -122,7 +122,7 @@ fn MinMaxHeap::push_up(self : MinMaxHeap, i : Int) -> Unit {
 ///|
 fn MinMaxHeap::push_up_aux(
   self : MinMaxHeap,
-  i : Int,
+  i : Int32,
   on_min_level : Bool,
 ) -> Unit {
   // Repeatedly compare with grandparent on the same min/max sense.
@@ -179,13 +179,16 @@ pub fn MinMaxHeap::peek_max(self : MinMaxHeap) -> Int64? {
 }
 
 ///|
-fn MinMaxHeap::smallest_descendant_index(self : MinMaxHeap, root : Int) -> Int {
+fn MinMaxHeap::smallest_descendant_index(
+  self : MinMaxHeap,
+  root : Int32,
+) -> Int32 {
   // Return the index (root, children, grandchildren) with the smallest
   // value in this min-level subtree (for trickle-down on pop_min).
   let n = self.data.length()
   let mut best = root
   // Children indices: 2*root+1, 2*root+2.
-  let candidates : Array[Int] = [
+  let candidates : Array[Int32] = [
     2 * root + 1,
     2 * root + 2,
     4 * root + 3,
@@ -202,10 +205,13 @@ fn MinMaxHeap::smallest_descendant_index(self : MinMaxHeap, root : Int) -> Int {
 }
 
 ///|
-fn MinMaxHeap::largest_descendant_index(self : MinMaxHeap, root : Int) -> Int {
+fn MinMaxHeap::largest_descendant_index(
+  self : MinMaxHeap,
+  root : Int32,
+) -> Int32 {
   let n = self.data.length()
   let mut best = root
-  let candidates : Array[Int] = [
+  let candidates : Array[Int32] = [
     2 * root + 1,
     2 * root + 2,
     4 * root + 3,
@@ -222,7 +228,7 @@ fn MinMaxHeap::largest_descendant_index(self : MinMaxHeap, root : Int) -> Int {
 }
 
 ///|
-fn MinMaxHeap::trickle_down_min(self : MinMaxHeap, idx : Int) -> Unit {
+fn MinMaxHeap::trickle_down_min(self : MinMaxHeap, idx : Int32) -> Unit {
   let mut i = idx
   let mut keep_going = true
   while keep_going {
@@ -253,7 +259,7 @@ fn MinMaxHeap::trickle_down_min(self : MinMaxHeap, idx : Int) -> Unit {
 }
 
 ///|
-fn MinMaxHeap::trickle_down_max(self : MinMaxHeap, idx : Int) -> Unit {
+fn MinMaxHeap::trickle_down_max(self : MinMaxHeap, idx : Int32) -> Unit {
   let mut i = idx
   let mut keep_going = true
   while keep_going {

@@ -50,8 +50,8 @@
 /// `3`, `hi.peek()` is `Some(-4)`, not `Some(-3)`). Prefer `lower_median`,
 /// `upper_median` and `median`, which are unaffected.
 pub struct OnlineMedian {
-  lo : @priority_queue.PriorityQueue[Int]
-  hi : @priority_queue.PriorityQueue[Int]
+  lo : @priority_queue.PriorityQueue[Int32]
+  hi : @priority_queue.PriorityQueue[Int32]
 }
 
 ///|
@@ -82,7 +82,7 @@ pub fn new() -> OnlineMedian {
 /// New `x` goes to `lo` if it is `<= max(lo)`, else to `hi`. After
 /// routing, at most one transfer between the heaps restores the size
 /// invariant.
-pub fn OnlineMedian::add(self : OnlineMedian, x : Int) -> Unit {
+pub fn OnlineMedian::add(self : OnlineMedian, x : Int32) -> Unit {
   // Step 1: route x to the heap it belongs to.
   match self.lo.peek() {
     None => self.lo.push(x)
@@ -113,7 +113,7 @@ pub fn OnlineMedian::add(self : OnlineMedian, x : Int) -> Unit {
 
 ///|
 /// Current count of elements added so far.
-pub fn OnlineMedian::size(self : OnlineMedian) -> Int {
+pub fn OnlineMedian::size(self : OnlineMedian) -> Int32 {
   self.lo.length() + self.hi.length()
 }
 
@@ -124,7 +124,7 @@ pub fn OnlineMedian::size(self : OnlineMedian) -> Int {
 ///
 /// Use this when the stream is integer-valued and you want to avoid
 /// floating-point arithmetic.
-pub fn OnlineMedian::lower_median(self : OnlineMedian) -> Int? {
+pub fn OnlineMedian::lower_median(self : OnlineMedian) -> Int32? {
   self.lo.peek()
 }
 
@@ -132,7 +132,7 @@ pub fn OnlineMedian::lower_median(self : OnlineMedian) -> Int? {
 /// The **upper median**: when the count is odd, the unique middle
 /// element; when the count is even, the larger of the two middle
 /// elements. Returns `None` on an empty stream.
-pub fn OnlineMedian::upper_median(self : OnlineMedian) -> Int? {
+pub fn OnlineMedian::upper_median(self : OnlineMedian) -> Int32? {
   if self.lo.length() > self.hi.length() {
     // Odd count -- lower and upper medians coincide.
     self.lo.peek()
@@ -239,7 +239,7 @@ test "online median agrees with sort for many insertions" {
   // For each prefix of a length-20 stream, the online median should
   // agree with the ground-truth median computed by sorting.
   let stream = [8, 2, 5, 1, 9, 7, 3, 4, 6, 0, 5, 5, 2, 8, 8, 1, 9, 4, 7, 3]
-  let seen : Array[Int] = []
+  let seen : Array[Int32] = []
   let m = new()
   for x in stream {
     m.add(x)

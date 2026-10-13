@@ -59,17 +59,17 @@
 /// An edit step.
 pub enum Edit {
   /// Equal element: a[i] == b[j], advance both.
-  Equal(Int)
+  Equal(Int32)
   /// Insert b[j] (advance b, leave a behind).
-  Insert(Int)
+  Insert(Int32)
   /// Delete a[i] (advance a, leave b behind).
-  Delete(Int)
+  Delete(Int32)
 } derive(Eq)
 
 ///|
 /// Length of the shortest edit script transforming `a` into `b`.
 /// Equals `n + m - 2 * LCS(a, b)`.
-pub fn shortest_edit_distance(a : Array[Int], b : Array[Int]) -> Int {
+pub fn shortest_edit_distance(a : Array[Int32], b : Array[Int32]) -> Int32 {
   let n = a.length()
   let m = b.length()
   let max_d = n + m
@@ -121,7 +121,7 @@ pub fn shortest_edit_distance(a : Array[Int], b : Array[Int]) -> Int {
 /// let ops = @myers_diff.diff([1, 2, 3, 4], [1, 3, 4, 5])
 /// // [Equal(1), Delete(2), Equal(3), Equal(4), Insert(5)]
 /// ```
-pub fn diff(a : Array[Int], b : Array[Int]) -> Array[Edit] {
+pub fn diff(a : Array[Int32], b : Array[Int32]) -> Array[Edit] {
   let n = a.length()
   let m = b.length()
   if n == 0 {
@@ -142,7 +142,7 @@ pub fn diff(a : Array[Int], b : Array[Int]) -> Array[Edit] {
   let max_d = n + m
   let offset = max_d
   // trace[d] is a snapshot of V (length 2*max_d + 1) at edit-distance d.
-  let trace : Array[Array[Int]] = []
+  let trace : Array[Array[Int32]] = []
   let v = Array::make(2 * max_d + 1, -1)
   v[1 + offset] = 0
   let mut final_d = -1
@@ -177,7 +177,7 @@ pub fn diff(a : Array[Int], b : Array[Int]) -> Array[Edit] {
   }
   // Walk back from (n, m) using the trace. Build path of all grid
   // points visited, in reverse (from (n, m) back to (0, 0)).
-  let path : Array[(Int, Int)] = []
+  let path : Array[(Int32, Int32)] = []
   path.push((n, m))
   let mut x = n
   let mut y = m
@@ -316,7 +316,7 @@ test "myers diff reconstructs target" {
   let b = [2, 4, 5, 6]
   let ops = diff(a, b)
   // Apply ops to a, expect b.
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   let mut i = 0
   for o in ops {
     match o {

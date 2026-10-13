@@ -45,7 +45,7 @@
 ///   isqrt_ceil(9)  = 3   (3*3 = 9, exact)
 ///   isqrt_ceil(10) = 4   (3*3 = 9 < 10, so ceil is 4)
 ///   isqrt_ceil(12) = 4   (3*3 = 9 < 12, 4*4 = 16 >= 12)
-fn isqrt_ceil(n : Int) -> Int {
+fn isqrt_ceil(n : Int32) -> Int32 {
   if n <= 0 {
     return 1
   }
@@ -101,9 +101,9 @@ fn isqrt_ceil(n : Int) -> Int {
 ///
 /// Space: O(n)
 priv struct SqrtSum {
-  arr : Array[Int] // Original array
-  blocks : Array[Int] // Block sums
-  block_size : Int
+  arr : Array[Int32] // Original array
+  blocks : Array[Int32] // Block sums
+  block_size : Int32
 }
 
 ///|
@@ -118,7 +118,7 @@ priv struct SqrtSum {
 /// Returns: a new SqrtSum owning a copy of `arr`.
 ///
 /// Time complexity: O(n).
-fn SqrtSum::build(arr : Array[Int]) -> SqrtSum {
+fn SqrtSum::build(arr : Array[Int32]) -> SqrtSum {
   let n = arr.length()
   if n == 0 {
     return { arr: [], blocks: [], block_size: 1, }
@@ -157,7 +157,7 @@ fn SqrtSum::build(arr : Array[Int]) -> SqrtSum {
 ///   1. Partial left block: elements from l to end of l's block
 ///   2. Complete middle blocks: full blocks between l and r's blocks
 ///   3. Partial right block: elements from start of r's block to r
-fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
+fn SqrtSum::query(self : SqrtSum, l : Int32, r : Int32) -> Int32 {
   if l > r || l < 0 || r >= self.arr.length() {
     return 0
   }
@@ -256,7 +256,7 @@ fn SqrtSum::query(self : SqrtSum, l : Int, r : Int) -> Int {
 /// - `val`: new value for arr[i].
 ///
 /// Time complexity: O(1).
-fn SqrtSum::update(self : SqrtSum, i : Int, val : Int) -> Unit {
+fn SqrtSum::update(self : SqrtSum, i : Int32, val : Int32) -> Unit {
   if i < 0 || i >= self.arr.length() {
     return
   }
@@ -275,7 +275,7 @@ fn SqrtSum::update(self : SqrtSum, i : Int, val : Int) -> Unit {
 /// Returns: arr[i] after any previous updates.
 ///
 /// Time complexity: O(1).
-fn SqrtSum::get(self : SqrtSum, i : Int) -> Int {
+fn SqrtSum::get(self : SqrtSum, i : Int32) -> Int32 {
   self.arr[i]
 }
 
@@ -283,7 +283,7 @@ fn SqrtSum::get(self : SqrtSum, i : Int) -> Int {
 /// Returns the number of elements in the underlying array.
 ///
 /// Time complexity: O(1).
-fn SqrtSum::length(self : SqrtSum) -> Int {
+fn SqrtSum::length(self : SqrtSum) -> Int32 {
   self.arr.length()
 }
 
@@ -323,10 +323,10 @@ fn SqrtSum::length(self : SqrtSum) -> Int {
 ///
 /// Space: O(n)
 priv struct SqrtMin {
-  arr : Array[Int] // Original array
-  blocks : Array[Int] // Block minimums
-  pending : Array[Int] // Lazy add for each block (0 = no pending update)
-  block_size : Int
+  arr : Array[Int32] // Original array
+  blocks : Array[Int32] // Block minimums
+  pending : Array[Int32] // Lazy add for each block (0 = no pending update)
+  block_size : Int32
 }
 
 ///|
@@ -341,7 +341,7 @@ priv struct SqrtMin {
 /// Returns: a new SqrtMin owning a copy of `arr`.
 ///
 /// Time complexity: O(n).
-fn SqrtMin::build(arr : Array[Int]) -> SqrtMin {
+fn SqrtMin::build(arr : Array[Int32]) -> SqrtMin {
   let n = arr.length()
   if n == 0 {
     return { arr: [], blocks: [], pending: [], block_size: 1, }
@@ -374,7 +374,7 @@ fn SqrtMin::build(arr : Array[Int]) -> SqrtMin {
 /// Returns: arr[i] + pending[block of i].
 ///
 /// Time complexity: O(1).
-fn SqrtMin::get_value(self : SqrtMin, i : Int) -> Int {
+fn SqrtMin::get_value(self : SqrtMin, i : Int32) -> Int32 {
   self.arr[i] + self.pending[i / self.block_size]
 }
 
@@ -390,7 +390,7 @@ fn SqrtMin::get_value(self : SqrtMin, i : Int) -> Int {
 /// - `block_idx`: index of the block to flush.
 ///
 /// Time complexity: O(block_size) = O(sqrt(n)).
-fn SqrtMin::push_block(self : SqrtMin, block_idx : Int) -> Unit {
+fn SqrtMin::push_block(self : SqrtMin, block_idx : Int32) -> Unit {
   if self.pending[block_idx] == 0 {
     return
   }
@@ -421,7 +421,7 @@ fn SqrtMin::push_block(self : SqrtMin, block_idx : Int) -> Unit {
 /// - `block_idx`: index of the block to recompute.
 ///
 /// Time complexity: O(block_size) = O(sqrt(n)).
-fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int) -> Unit {
+fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int32) -> Unit {
   let start = block_idx * self.block_size
   let end_val = (block_idx + 1) * self.block_size
   let end = if end_val > self.arr.length() {
@@ -468,7 +468,7 @@ fn SqrtMin::recompute_block(self : SqrtMin, block_idx : Int) -> Unit {
 ///          or Int.max_value for invalid input.
 ///
 /// Time complexity: O(sqrt(n)).
-fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
+fn SqrtMin::query(self : SqrtMin, l : Int32, r : Int32) -> Int32 {
   if l > r || l < 0 || r >= self.arr.length() {
     return 2147483647
   }
@@ -605,7 +605,12 @@ fn SqrtMin::query(self : SqrtMin, l : Int, r : Int) -> Int {
 ///
 /// REASONING: For partial blocks, we must push lazy and update individually.
 /// For complete blocks, we just add to their lazy tag.
-fn SqrtMin::range_add(self : SqrtMin, l : Int, r : Int, val : Int) -> Unit {
+fn SqrtMin::range_add(
+  self : SqrtMin,
+  l : Int32,
+  r : Int32,
+  val : Int32,
+) -> Unit {
   if l > r || l < 0 || r >= self.arr.length() {
     return
   }
@@ -647,7 +652,7 @@ fn SqrtMin::range_add(self : SqrtMin, l : Int, r : Int, val : Int) -> Unit {
 /// Returns the number of elements in the underlying array.
 ///
 /// Time complexity: O(1).
-fn SqrtMin::length(self : SqrtMin) -> Int {
+fn SqrtMin::length(self : SqrtMin) -> Int32 {
   self.arr.length()
 }
 
@@ -671,9 +676,9 @@ fn SqrtMin::length(self : SqrtMin) -> Int {
 /// input slice so that results can be written back to the correct output index
 /// after queries are reordered by the Mo sort key.
 priv struct MoQuery {
-  l : Int
-  r : Int
-  idx : Int // Original query index for output ordering
+  l : Int32
+  r : Int32
+  idx : Int32 // Original query index for output ordering
 }
 
 ///|
@@ -690,8 +695,8 @@ priv struct MoQuery {
 /// Time complexity: O((n + q) * sqrt(n)) total for q queries.
 /// Space: O(n + q) for the count array and reordered query list.
 priv struct MoSolver {
-  arr : Array[Int]
-  block_size : Int
+  arr : Array[Int32]
+  block_size : Int32
 }
 
 ///|
@@ -708,7 +713,7 @@ priv struct MoSolver {
 /// Returns: a new MoSolver referencing `arr` (does not copy the array).
 ///
 /// Time complexity: O(1).
-fn MoSolver::MoSolver(arr : Array[Int]) -> MoSolver {
+fn MoSolver::MoSolver(arr : Array[Int32]) -> MoSolver {
   let n = arr.length()
   let block_size = if n > 0 { isqrt_ceil(n) } else { 1 }
   { arr, block_size, }
@@ -735,8 +740,8 @@ fn MoSolver::MoSolver(arr : Array[Int]) -> MoSolver {
 /// Space: O(n + q).
 fn MoSolver::solve_distinct(
   self : MoSolver,
-  queries : Array[(Int, Int)],
-) -> Array[Int] {
+  queries : Array[(Int32, Int32)],
+) -> Array[Int32] {
   let q = queries.length()
   if q == 0 {
     return []
@@ -898,9 +903,9 @@ fn MoSolver::solve_distinct(
 /// - `v`: the shared value of arr[l..r]. Mutable to support range_add and
 ///        range assign.
 priv struct Interval {
-  l : Int
-  mut r : Int
-  mut v : Int
+  l : Int32
+  mut r : Int32
+  mut v : Int32
 }
 
 ///|
@@ -942,7 +947,7 @@ priv struct IntervalTree {
 /// Returns: a new IntervalTree covering [0, n-1].
 ///
 /// Time complexity: O(n).
-fn IntervalTree::IntervalTree(arr : Array[Int]) -> IntervalTree {
+fn IntervalTree::IntervalTree(arr : Array[Int32]) -> IntervalTree {
   let intervals : Array[Interval] = []
   if arr.length() == 0 {
     return { intervals, }
@@ -999,7 +1004,7 @@ fn IntervalTree::IntervalTree(arr : Array[Int]) -> IntervalTree {
 ///          or None if `pos` is out of range or the tree is empty.
 ///
 /// Time complexity: O(log k) where k is the number of intervals.
-fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
+fn IntervalTree::find_interval(self : IntervalTree, pos : Int32) -> Int32? {
   // Binary search for interval containing pos
   for lo = 0, hi = self.intervals.length() - 1; lo <= hi; {
     let mid = (lo + hi) / 2
@@ -1058,7 +1063,7 @@ fn IntervalTree::find_interval(self : IntervalTree, pos : Int) -> Int? {
 ///
 /// Time complexity: O(log k + k) in the worst case (binary search + insertion
 ///                 into the middle of the array). O(log k) when no split occurs.
-fn IntervalTree::split_at(self : IntervalTree, pos : Int) -> Int {
+fn IntervalTree::split_at(self : IntervalTree, pos : Int32) -> Int32 {
   if pos < 0 {
     return 0
   }
@@ -1100,7 +1105,12 @@ fn IntervalTree::split_at(self : IntervalTree, pos : Int) -> Int {
 /// Time complexity: O(k) where k is the number of intervals removed.
 ///                 Amortised O(1) because each assign merges intervals that
 ///                 were previously created.
-fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit {
+fn IntervalTree::assign(
+  self : IntervalTree,
+  l : Int32,
+  r : Int32,
+  v : Int32,
+) -> Unit {
   if l > r || self.intervals.length() == 0 {
     return
   }
@@ -1157,7 +1167,7 @@ fn IntervalTree::assign(self : IntervalTree, l : Int, r : Int, v : Int) -> Unit 
 /// Returns: sum of arr[l..r].
 ///
 /// Time complexity: O(k) where k is the number of live intervals.
-fn IntervalTree::query_sum(self : IntervalTree, l : Int, r : Int) -> Int {
+fn IntervalTree::query_sum(self : IntervalTree, l : Int32, r : Int32) -> Int32 {
   if l > r || self.intervals.length() == 0 {
     return 0
   }
@@ -1205,9 +1215,9 @@ fn IntervalTree::query_sum(self : IntervalTree, l : Int, r : Int) -> Int {
 /// Time complexity: O(k + log k) where k is the number of intervals in [l, r].
 fn IntervalTree::range_add(
   self : IntervalTree,
-  l : Int,
-  r : Int,
-  val : Int,
+  l : Int32,
+  r : Int32,
+  val : Int32,
 ) -> Unit {
   if l > r || self.intervals.length() == 0 {
     return
@@ -1245,7 +1255,7 @@ fn IntervalTree::range_add(
 /// Returns: Some(value) if `pos` is within [0, n-1], or None otherwise.
 ///
 /// Time complexity: O(log k) where k is the current number of intervals.
-fn IntervalTree::get(self : IntervalTree, pos : Int) -> Int? {
+fn IntervalTree::get(self : IntervalTree, pos : Int32) -> Int32? {
   match self.find_interval(pos) {
     Some(idx) => Some(self.intervals[idx].v)
     None => None
@@ -1355,7 +1365,7 @@ test "mo algorithm distinct" {
 
 ///|
 test "mo algorithm empty" {
-  let arr : Array[Int] = []
+  let arr : Array[Int32] = []
   let solver = MoSolver(arr)
   let results = solver.solve_distinct([])
   debug_inspect(results, content="[]")
@@ -1424,7 +1434,7 @@ test "interval tree get" {
 ///|
 test "isqrt ceil" {
   // Test integer square root ceiling
-  fn test_isqrt(n : Int) -> Int {
+  fn test_isqrt(n : Int32) -> Int32 {
     isqrt_ceil(n)
   }
 

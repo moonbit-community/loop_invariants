@@ -53,7 +53,7 @@
 /// 2. For every leaf node `k` covering index `i`:
 ///    `tree[k] == arr[i]` (after any updates)
 pub struct SegmentTree {
-  n : Int
+  n : Int32
   tree : Array[Int64]
 }
 
@@ -87,9 +87,9 @@ pub fn SegmentTree::SegmentTree(arr : Array[Int64]) -> SegmentTree {
 fn build_tree(
   arr : Array[Int64],
   tree : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
 ) -> Unit {
   if start == end {
     tree[node] = arr[start]
@@ -116,7 +116,7 @@ fn build_tree(
 /// st.update(1, 10L)
 /// // st.query(0, 2) == 14L
 /// ```
-pub fn SegmentTree::update(self : SegmentTree, i : Int, val : Int64) -> Unit {
+pub fn SegmentTree::update(self : SegmentTree, i : Int32, val : Int64) -> Unit {
   if i < 0 || i >= self.n {
     return
   }
@@ -128,10 +128,10 @@ pub fn SegmentTree::update(self : SegmentTree, i : Int, val : Int64) -> Unit {
 /// and propagate the updated sum upward to `node`.
 fn update_helper(
   tree : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
-  i : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  i : Int32,
   val : Int64,
 ) -> Unit {
   if start == end {
@@ -163,7 +163,7 @@ fn update_helper(
 /// // st.query(1, 3) == 9L   (2 + 3 + 4)
 /// // st.query(0, 4) == 15L
 /// ```
-pub fn SegmentTree::query(self : SegmentTree, l : Int, r : Int) -> Int64 {
+pub fn SegmentTree::query(self : SegmentTree, l : Int32, r : Int32) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return 0L
   }
@@ -180,11 +180,11 @@ pub fn SegmentTree::query(self : SegmentTree, l : Int, r : Int) -> Int64 {
 /// - Partial overlap: recurse into both children and add their results.
 fn query_helper(
   tree : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if r < start || end < l {
     return 0L // No overlap
@@ -200,7 +200,7 @@ fn query_helper(
 
 ///|
 /// Return the number of elements in the tree (length of the original array).
-fn SegmentTree::length(self : SegmentTree) -> Int {
+fn SegmentTree::length(self : SegmentTree) -> Int32 {
   self.n
 }
 
@@ -216,7 +216,7 @@ fn SegmentTree::length(self : SegmentTree) -> Int {
 /// Each node stores the minimum of its subrange.  `ST_INF` acts as the
 /// identity element for the min operation.
 priv struct SegmentTreeMin {
-  n : Int
+  n : Int32
   tree : Array[Int64]
 }
 
@@ -246,9 +246,9 @@ fn SegmentTreeMin::SegmentTreeMin(arr : Array[Int64]) -> SegmentTreeMin {
 fn build_min_tree(
   arr : Array[Int64],
   tree : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
 ) -> Unit {
   if start == end {
     tree[node] = arr[start]
@@ -267,7 +267,11 @@ fn build_min_tree(
 ///|
 /// Set element at 0-indexed position `i` to `val` and update all ancestor
 /// minimums.  Out-of-bounds indices are silently ignored.
-fn SegmentTreeMin::update(self : SegmentTreeMin, i : Int, val : Int64) -> Unit {
+fn SegmentTreeMin::update(
+  self : SegmentTreeMin,
+  i : Int32,
+  val : Int64,
+) -> Unit {
   if i < 0 || i >= self.n {
     return
   }
@@ -279,10 +283,10 @@ fn SegmentTreeMin::update(self : SegmentTreeMin, i : Int, val : Int64) -> Unit {
 /// the updated minimum back to the root.
 fn update_min_helper(
   tree : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
-  i : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  i : Int32,
   val : Int64,
 ) -> Unit {
   if start == end {
@@ -306,7 +310,7 @@ fn update_min_helper(
 /// Return the minimum element in the closed range `[l, r]`.
 ///
 /// Returns `ST_INF` for invalid ranges (`l < 0`, `r >= n`, or `l > r`).
-fn SegmentTreeMin::query(self : SegmentTreeMin, l : Int, r : Int) -> Int64 {
+fn SegmentTreeMin::query(self : SegmentTreeMin, l : Int32, r : Int32) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return ST_INF
   }
@@ -321,11 +325,11 @@ fn SegmentTreeMin::query(self : SegmentTreeMin, l : Int, r : Int) -> Int64 {
 /// `tree[node]` when the node's range is fully contained in `[l, r]`.
 fn query_min_helper(
   tree : Array[Int64],
-  node : Int,
-  start : Int,
-  end : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  start : Int32,
+  end : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if r < start || end < l {
     return ST_INF
@@ -358,7 +362,7 @@ fn query_min_helper(
 /// This type is private and is used only in tests to cross-check
 /// `SegmentTree`.
 priv struct IterativeSegTree {
-  n : Int
+  n : Int32
   tree : Array[Int64] // 0-indexed, leaves at indices [n, 2n)
 }
 
@@ -394,7 +398,7 @@ fn IterativeSegTree::IterativeSegTree(arr : Array[Int64]) -> IterativeSegTree {
 /// at each step.  Out-of-bounds indices are silently ignored.
 fn IterativeSegTree::update(
   self : IterativeSegTree,
-  i : Int,
+  i : Int32,
   val : Int64,
 ) -> Unit {
   if i < 0 || i >= self.n {
@@ -423,7 +427,11 @@ fn IterativeSegTree::update(
 /// and retreat `right`.  Both pointers then move to their parents.
 ///
 /// Returns `0` for invalid ranges (`l < 0`, `r >= n`, or `l > r`).
-fn IterativeSegTree::query(self : IterativeSegTree, l : Int, r : Int) -> Int64 {
+fn IterativeSegTree::query(
+  self : IterativeSegTree,
+  l : Int32,
+  r : Int32,
+) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return 0L
   }

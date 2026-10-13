@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -22,7 +22,7 @@ fn gen_val(rs : @quickcheck.RandomState) -> Int64 {
 
 ///|
 /// Mostly valid indices, sometimes just outside `[0, n)`.
-fn gen_index(rs : @quickcheck.RandomState, n : Int) -> Int {
+fn gen_index(rs : @quickcheck.RandomState, n : Int32) -> Int32 {
   if n == 0 || rint(rs, 0, 7) == 0 {
     rint(rs, -2, n + 2)
   } else {
@@ -32,11 +32,11 @@ fn gen_index(rs : @quickcheck.RandomState, n : Int) -> Int {
 
 ///|
 priv enum Op {
-  Add(Int, Int64)
-  Set(Int, Int64)
-  Get(Int)
-  Prefix(Int)
-  Range(Int, Int)
+  Add(Int32, Int64)
+  Set(Int32, Int64)
+  Get(Int32)
+  Prefix(Int32)
+  Range(Int32, Int32)
 } derive(Debug)
 
 ///|
@@ -76,7 +76,7 @@ impl @quickcheck.Shrink for Case with fn shrink(self) {
 }
 
 ///|
-fn model_sum(arr : Array[Int64], l : Int, r : Int) -> Int64 {
+fn model_sum(arr : Array[Int64], l : Int32, r : Int32) -> Int64 {
   let mut s = 0L
   for i in l..<=r {
     s = s + arr[i]

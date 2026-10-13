@@ -4,19 +4,19 @@
 
 ///|
 struct DSU {
-  parent : Array[Int]
-  size : Array[Int]
+  parent : Array[Int32]
+  size : Array[Int32]
 } derive(Debug)
 
 ///|
-fn dsu_make(n : Int) -> DSU {
+fn dsu_make(n : Int32) -> DSU {
   let parent = [ for i in 0..<n => i ]
   let size = Array::make(n, 1)
   { parent, size, }
 }
 
 ///|
-fn dsu_find(dsu : DSU, x : Int) -> Int {
+fn dsu_find(dsu : DSU, x : Int32) -> Int32 {
   for cur = x {
     let p = dsu.parent[cur]
     if p == cur {
@@ -38,7 +38,7 @@ fn dsu_find(dsu : DSU, x : Int) -> Int {
 }
 
 ///|
-fn dsu_union(dsu : DSU, a : Int, b : Int) -> Bool {
+fn dsu_union(dsu : DSU, a : Int32, b : Int32) -> Bool {
   let ra = dsu_find(dsu, a)
   let rb = dsu_find(dsu, b)
   if ra == rb {
@@ -59,7 +59,10 @@ fn dsu_union(dsu : DSU, a : Int, b : Int) -> Bool {
 
 ///|
 /// Return the MST total weight if the graph is connected; otherwise None.
-pub fn mst_weight(n : Int, edges : ArrayView[(Int, Int, Int)]) -> Int? {
+pub fn mst_weight(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int32)],
+) -> Int32? {
   if n <= 1 {
     return Some(0)
   }
@@ -86,7 +89,7 @@ pub fn mst_weight(n : Int, edges : ArrayView[(Int, Int, Int)]) -> Int? {
 
 ///|
 test "mst_weight" {
-  let edges : ReadOnlyArray[(Int, Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32, Int32)] = [
     (0, 1, 1),
     (1, 2, 2),
     (0, 2, 4),

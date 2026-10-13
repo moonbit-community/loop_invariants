@@ -4,13 +4,13 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
-fn fact(n : Int) -> Int64 {
+fn fact(n : Int32) -> Int64 {
   let mut r = 1L
   for i in 2..<=n {
     r = r * i.to_int64()
@@ -22,7 +22,7 @@ fn fact(n : Int) -> Int64 {
 /// A uniformly random permutation of `{0, ..., n-1}`, `n` in `[0, 20]`
 /// (sometimes forced to the largest supported size).
 priv struct Perm {
-  p : Array[Int]
+  p : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -47,7 +47,7 @@ impl @quickcheck.Arbitrary for Perm with fn arbitrary(size, rs) {
 impl @quickcheck.Shrink for Perm
 
 ///|
-fn is_perm(p : Array[Int], n : Int) -> Bool {
+fn is_perm(p : Array[Int32], n : Int32) -> Bool {
   if p.length() != n {
     return false
   }
@@ -63,7 +63,7 @@ fn is_perm(p : Array[Int], n : Int) -> Bool {
 
 ///|
 /// Lexicographic `<` on equal-length arrays.
-fn lex_less(a : Array[Int], b : Array[Int]) -> Bool {
+fn lex_less(a : Array[Int32], b : Array[Int32]) -> Bool {
   for i in 0..<a.length() {
     if a[i] != b[i] {
       return a[i] < b[i]
@@ -101,7 +101,7 @@ test "qc: unrank(n, rank(p)) == p and 0 <= rank(p) < n!" {
 ///|
 test "qc: rank(unrank(n, r)) == r for random r in [0, n!)" {
   @quickcheck.check(
-    (input : (Int, UInt64)) => {
+    (input : (Int32, UInt64)) => {
       let n = (input.0 % 20).abs() + 1
       let r = (input.1 % fact(n).reinterpret_as_uint64()).reinterpret_as_int64()
       let p = @permutation_rank.unrank(n, r)
@@ -115,10 +115,10 @@ test "qc: rank(unrank(n, r)) == r for random r in [0, n!)" {
 ///|
 test "qc: unrank enumerates all n! permutations in lexicographic order" {
   @quickcheck.check(
-    (k : Int) => {
+    (k : Int32) => {
       let n = (k % 7).abs() + 1
       let total = fact(n)
-      let mut prev : Array[Int] = []
+      let mut prev : Array[Int32] = []
       for r = 0L; r < total; r = r + 1L {
         let p = @permutation_rank.unrank(n, r)
         if !is_perm(p, n) || (r > 0L && !lex_less(prev, p)) {
@@ -138,7 +138,7 @@ test "qc: unrank enumerates all n! permutations in lexicographic order" {
 ///|
 test "qc: unrank returns [] outside n in [1, 20] or r in [0, n!)" {
   @quickcheck.check(
-    (input : (Int, Int64)) => {
+    (input : (Int32, Int64)) => {
       let (n, r) = input
       let in_range = n >= 1 && n <= 20 && r >= 0L && r < fact(n)
       let p = @permutation_rank.unrank(n, r)

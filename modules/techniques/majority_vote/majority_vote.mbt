@@ -158,7 +158,7 @@ test "majority absent" {
 
 ///|
 test "majority empty" {
-  let empty : Array[Int] = []
+  let empty : Array[Int32] = []
   @debug.assert_eq(majority(empty), None)
 }
 
@@ -211,7 +211,7 @@ test "majority stable under permutation" {
 
 ///|
 test "majority by quick brute check" {
-  fn brute(arr : Array[Int]) -> Int? {
+  fn brute(arr : Array[Int32]) -> Int32? {
     let n = arr.length()
     for cand in arr {
       let mut c = 0

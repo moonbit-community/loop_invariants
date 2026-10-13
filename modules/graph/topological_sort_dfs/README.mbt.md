@@ -259,9 +259,9 @@ This is a small utility used in the examples below.
 ```mbt check
 ///|
 fn is_topological_order(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-  order : ArrayView[Int],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+  order : ArrayView[Int32],
 ) -> Bool {
   if order.length() != n {
     return false
@@ -307,7 +307,7 @@ Only one valid order exists: `[0, 1, 2, 3]`.
 ```mbt check
 ///|
 test "topological sort: chain" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3)]
   let result = @topological_sort_dfs.topological_sort(4, edges)
   match result {
     None => fail("expected a valid order")
@@ -341,7 +341,7 @@ Valid orders include:
 ```mbt check
 ///|
 test "topological sort: multiple valid orders" {
-  let edges : Array[(Int, Int)] = [(0, 2), (1, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 2), (1, 2)]
   let result = @topological_sort_dfs.topological_sort(3, edges)
   match result {
     None => fail("expected a valid order")
@@ -371,7 +371,7 @@ Topological sort still works; isolated nodes appear somewhere in the list.
 ```mbt check
 ///|
 test "topological sort: disconnected graph" {
-  let edges : Array[(Int, Int)] = [(0, 1), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (2, 3)]
   let result = @topological_sort_dfs.topological_sort(5, edges)
   match result {
     None => fail("expected a valid order")
@@ -401,7 +401,7 @@ No topological order exists.
 ```mbt check
 ///|
 test "topological sort: cycle" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0)]
   let result = @topological_sort_dfs.topological_sort(3, edges)
   debug_inspect(result is None, content="true")
 }

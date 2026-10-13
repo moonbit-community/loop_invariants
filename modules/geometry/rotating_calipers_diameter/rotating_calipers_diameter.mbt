@@ -34,8 +34,8 @@ pub(all) struct Point {
 ///
 /// Squared distance is returned to keep all arithmetic exact and integer-valued.
 pub(all) struct DiameterResult {
-  i : Int
-  j : Int
+  i : Int32
+  j : Int32
   dist2 : Int64
 } derive(Debug)
 

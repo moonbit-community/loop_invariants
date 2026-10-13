@@ -41,7 +41,7 @@
 ///|
 /// A directed weighted edge `u -> v` with non-negative cost `w`.
 pub(all) struct Edge {
-  to : Int
+  to : Int32
   w : Int64
 }
 
@@ -49,7 +49,7 @@ pub(all) struct Edge {
 priv struct HeapEntry {
   f : Int64 // priority = g + h
   g : Int64 // distance from source so far
-  v : Int
+  v : Int32
 }
 
 ///|
@@ -125,8 +125,8 @@ fn MinHeap::pop(self : MinHeap) -> HeapEntry? {
 ///                for comparing heuristics empirically.
 pub(all) struct AStarResult {
   dist : Int64?
-  path : Array[Int]
-  expanded : Int
+  path : Array[Int32]
+  expanded : Int32
 }
 
 ///|
@@ -154,11 +154,11 @@ pub(all) struct AStarResult {
 /// }
 /// ```
 pub fn a_star(
-  n : Int,
+  n : Int32,
   adj : Array[Array[Edge]],
-  source : Int,
-  target : Int,
-  heuristic : (Int) -> Int64,
+  source : Int32,
+  target : Int32,
+  heuristic : (Int32) -> Int64,
 ) -> AStarResult {
   let inf : Int64 = 9223372036854775807L
   let g = Array::make(n, inf)
@@ -215,8 +215,12 @@ fn not_reached(d : Int64, inf : Int64) -> Bool {
 }
 
 ///|
-fn reconstruct(parent : Array[Int], source : Int, target : Int) -> Array[Int] {
-  let path : Array[Int] = []
+fn reconstruct(
+  parent : Array[Int32],
+  source : Int32,
+  target : Int32,
+) -> Array[Int32] {
+  let path : Array[Int32] = []
   let mut v = target
   while v != -1 && v != source {
     path.push(v)
@@ -288,7 +292,7 @@ test "a_star grid with manhattan heuristic" {
   for w in walls {
     is_wall[w.0 * cols + w.1] = true
   }
-  fn id(r : Int, c : Int) -> Int {
+  fn id(r : Int32, c : Int32) -> Int32 {
     r * cols + c
   }
 
@@ -311,7 +315,7 @@ test "a_star grid with manhattan heuristic" {
     }
   }
   let target = id(4, 4)
-  fn h(v : Int) -> Int64 {
+  fn h(v : Int32) -> Int64 {
     let r = v / cols
     let c = v % cols
     let dr = if 4 > r { 4 - r } else { r - 4 }

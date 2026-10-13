@@ -1,7 +1,7 @@
 ///|
 /// Non-negative Int inputs: small values, perfect squares and their
 /// neighbours, overflow-prone boundaries, and uniform non-negative values.
-priv struct NonNeg(Int) derive(Debug)
+priv struct NonNeg(Int32) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for NonNeg with fn arbitrary(size, rs) {

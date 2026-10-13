@@ -3,7 +3,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -11,7 +11,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 ///|
 /// Mostly small Ints, sometimes full-range values (including the extrema);
 /// arithmetic wraps identically in the implementation and the model.
-fn gen_int(rs : @quickcheck.RandomState) -> Int {
+fn gen_int(rs : @quickcheck.RandomState) -> Int32 {
   match rint(rs, 0, 7) {
     0 => @quickcheck.Arbitrary::arbitrary(0, rs)
     1 => [2147483647, -2147483648][rint(rs, 0, 1)]
@@ -21,8 +21,8 @@ fn gen_int(rs : @quickcheck.RandomState) -> Int {
 
 ///|
 priv struct Case {
-  arr : Array[Int]
-  queries : Array[(Int, Int)]
+  arr : Array[Int32]
+  queries : Array[(Int32, Int32)]
 } derive(Debug)
 
 ///|

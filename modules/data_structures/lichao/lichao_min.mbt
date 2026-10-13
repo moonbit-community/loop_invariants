@@ -78,7 +78,7 @@ pub fn LiChaoTreeMin::LiChaoTreeMin(lo : Int64, hi : Int64) -> LiChaoTreeMin {
 ///
 /// Called internally whenever a loser line must be pushed into a child that
 /// has not yet been allocated.
-fn LiChaoTreeMin::new_node(self : LiChaoTreeMin) -> Int {
+fn LiChaoTreeMin::new_node(self : LiChaoTreeMin) -> Int32 {
   let idx = self.nodes.length()
   self.nodes.push({ line: undefined_line_min(), left: -1, right: -1, })
   idx
@@ -124,7 +124,7 @@ pub fn LiChaoTreeMin::insert(
 /// so that the line with the smaller value at mid wins.
 fn insert_line_min(
   tree : LiChaoTreeMin,
-  node_idx : Int,
+  node_idx : Int32,
   lo : Int64,
   hi : Int64,
   new_line : Line,
@@ -203,7 +203,7 @@ pub fn LiChaoTreeMin::query(self : LiChaoTreeMin, x : Int64) -> Int64 {
 /// (absent child), so that a missing child never contributes to the minimum.
 fn query_min_impl(
   tree : LiChaoTreeMin,
-  node_idx : Int,
+  node_idx : Int32,
   lo : Int64,
   hi : Int64,
   x : Int64,
@@ -249,6 +249,6 @@ fn query_min_impl(
 /// Useful for benchmarking and verifying the O(L log C) space bound: after
 /// inserting L lines over a range of size C the node count should be at most
 /// `1 + L * ceil(log2(C + 1))`.
-pub fn LiChaoTreeMin::node_count(self : LiChaoTreeMin) -> Int {
+pub fn LiChaoTreeMin::node_count(self : LiChaoTreeMin) -> Int32 {
   self.nodes.length()
 }

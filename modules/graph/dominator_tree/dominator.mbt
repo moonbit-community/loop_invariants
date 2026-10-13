@@ -52,7 +52,7 @@
 /// PARAMETERS:
 ///   - self: working data structures (populated by DFS)
 ///   - root_idx: DFS index of the root vertex
-fn DominatorWork::compute_idom(self : DominatorWork, root_idx : Int) -> Unit {
+fn DominatorWork::compute_idom(self : DominatorWork, root_idx : Int32) -> Unit {
   let n = self.time.val
 
   // Phase 1: Process vertices in reverse DFS order
@@ -163,9 +163,9 @@ fn DominatorWork::compute_idom(self : DominatorWork, root_idx : Int) -> Unit {
 ///     2   3
 /// ```
 pub fn build_dominator_tree(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
-  root : Int,
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+  root : Int32,
 ) -> DominatorTree? {
   // Validate input
   if n <= 0 || root < 0 || root >= n {
@@ -250,7 +250,11 @@ pub fn build_dominator_tree(
 ///
 /// RETURNS:
 ///   true if every path from root to v passes through u
-pub fn DominatorTree::dominates(self : DominatorTree, u : Int, v : Int) -> Bool {
+pub fn DominatorTree::dominates(
+  self : DominatorTree,
+  u : Int32,
+  v : Int32,
+) -> Bool {
   // Bounds check
   if u < 0 || v < 0 || u >= self.idom.length() || v >= self.idom.length() {
     return false

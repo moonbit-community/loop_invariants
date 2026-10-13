@@ -68,7 +68,7 @@ The key invariant:
 
 ```mbt check
 ///|
-fn two_sum_sorted(xs : ArrayView[Int], target : Int) -> (Int, Int)? {
+fn two_sum_sorted(xs : ArrayView[Int32], target : Int32) -> (Int32, Int32)? {
   let n = xs.length()
   if n < 2 {
     return None
@@ -91,7 +91,7 @@ fn two_sum_sorted(xs : ArrayView[Int], target : Int) -> (Int, Int)? {
 
 ///|
 test "two pointers: sorted two sum" {
-  let xs : ReadOnlyArray[Int] = [1, 2, 4, 7, 11, 15]
+  let xs : ReadOnlyArray[Int32] = [1, 2, 4, 7, 11, 15]
   debug_inspect(two_sum_sorted(xs, 9), content="Some((1, 3))")
 }
 ```
@@ -149,7 +149,7 @@ Slide: [1, 3, 2] sum = 6
 
 ```mbt check
 ///|
-fn max_sum_k(xs : ArrayView[Int], k : Int) -> Int? {
+fn max_sum_k(xs : ArrayView[Int32], k : Int32) -> Int32? {
   let n = xs.length()
   if k <= 0 || k > n {
     return None
@@ -170,7 +170,7 @@ fn max_sum_k(xs : ArrayView[Int], k : Int) -> Int? {
 
 ///|
 test "sliding window: max sum of size k" {
-  let xs : ReadOnlyArray[Int] = [2, 1, 5, 1, 3, 2]
+  let xs : ReadOnlyArray[Int32] = [2, 1, 5, 1, 3, 2]
   debug_inspect(max_sum_k(xs, 3), content="Some(9)")
 }
 ```
@@ -229,10 +229,10 @@ done -> result[3] stays -1
 
 ```mbt check
 ///|
-fn next_greater(xs : ArrayView[Int]) -> Array[Int] {
+fn next_greater(xs : ArrayView[Int32]) -> Array[Int32] {
   let n = xs.length()
   let result = Array::make(n, -1)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     let x = xs[i]
     for pop_next = stack.length() > 0; pop_next; {
@@ -252,7 +252,7 @@ fn next_greater(xs : ArrayView[Int]) -> Array[Int] {
 
 ///|
 test "monotonic stack: next greater" {
-  let xs : ReadOnlyArray[Int] = [4, 5, 2, 25]
+  let xs : ReadOnlyArray[Int32] = [4, 5, 2, 25]
   debug_inspect(next_greater(xs), content="[5, 25, 25, -1]")
 }
 ```
@@ -329,7 +329,7 @@ Feasibility check:
 
 ```mbt check
 ///|
-fn can_ship(weights : ArrayView[Int], days : Int, cap : Int) -> Bool {
+fn can_ship(weights : ArrayView[Int32], days : Int32, cap : Int32) -> Bool {
   if days <= 0 {
     return false
   }
@@ -352,7 +352,7 @@ fn can_ship(weights : ArrayView[Int], days : Int, cap : Int) -> Bool {
 }
 
 ///|
-fn max_and_sum(weights : ArrayView[Int]) -> (Int, Int) {
+fn max_and_sum(weights : ArrayView[Int32]) -> (Int32, Int32) {
   for w in weights; max_w = 0, sum = 0 {
     continue if w > max_w { w } else { max_w }, sum + w
   } nobreak {
@@ -361,7 +361,7 @@ fn max_and_sum(weights : ArrayView[Int]) -> (Int, Int) {
 }
 
 ///|
-fn min_capacity(weights : ArrayView[Int], days : Int) -> Int? {
+fn min_capacity(weights : ArrayView[Int32], days : Int32) -> Int32? {
   if weights.length() == 0 || days <= 0 {
     return None
   }
@@ -381,7 +381,7 @@ fn min_capacity(weights : ArrayView[Int], days : Int) -> Int? {
 
 ///|
 test "binary search on answer: shipping" {
-  let weights : ReadOnlyArray[Int] = [3, 2, 2, 4, 1, 4]
+  let weights : ReadOnlyArray[Int32] = [3, 2, 2, 4, 1, 4]
   debug_inspect(min_capacity(weights, 3), content="Some(6)")
 }
 ```
@@ -441,9 +441,9 @@ Target 10 can be made by:
 
 ```mbt check
 ///|
-fn subset_sums(xs : ArrayView[Int]) -> Array[Int] {
+fn subset_sums(xs : ArrayView[Int32]) -> Array[Int32] {
   let n = xs.length()
-  let sums : Array[Int] = []
+  let sums : Array[Int32] = []
   for mask in 0..<(1 << n) {
     let sum = for i in 0..<n; sum = 0 {
       continue if ((mask >> i) & 1) == 1 { sum + xs[i] } else { sum }
@@ -457,8 +457,8 @@ fn subset_sums(xs : ArrayView[Int]) -> Array[Int] {
 
 ///|
 test "meet in the middle: subset sum" {
-  let left : ReadOnlyArray[Int] = [1, 2, 3]
-  let right : ReadOnlyArray[Int] = [4, 5, 6]
+  let left : ReadOnlyArray[Int32] = [1, 2, 3]
+  let right : ReadOnlyArray[Int32] = [4, 5, 6]
   let target = 10
   let left_sums = subset_sums(left)
   let right_sums = subset_sums(right)

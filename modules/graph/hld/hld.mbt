@@ -54,15 +54,15 @@
 /// - `get_position(u)`      - position index for node `u`
 /// - `get_chain_head(u)`    - head of the chain that contains node `u`
 priv struct HLD {
-  n : Int
-  adj : Array[Array[Int]]
-  parent : Array[Int]
-  depth : Array[Int]
-  subtree_size : Array[Int]
-  heavy_child : Array[Int]
-  chain_head : Array[Int]
-  position : Array[Int] // Position in segment tree
-  mut timer : Int
+  n : Int32
+  adj : Array[Array[Int32]]
+  parent : Array[Int32]
+  depth : Array[Int32]
+  subtree_size : Array[Int32]
+  heavy_child : Array[Int32]
+  chain_head : Array[Int32]
+  position : Array[Int32] // Position in segment tree
+  mut timer : Int32
 }
 
 ///|
@@ -84,8 +84,8 @@ priv struct HLD {
 ///   debug_inspect(hld.path_length(0, 4), content="4")
 /// }
 /// ```
-fn HLD::HLD(n : Int) -> HLD {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+fn HLD::HLD(n : Int32) -> HLD {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,
@@ -116,7 +116,7 @@ fn HLD::HLD(n : Int) -> HLD {
 ///   debug_inspect(hld.path_length(0, 2), content="2")
 /// }
 /// ```
-fn HLD::add_edge(self : HLD, u : Int, v : Int) -> Unit {
+fn HLD::add_edge(self : HLD, u : Int32, v : Int32) -> Unit {
   self.adj[u].push(v)
   self.adj[v].push(u)
 }
@@ -133,7 +133,7 @@ fn HLD::add_edge(self : HLD, u : Int, v : Int) -> Unit {
 ///    `heavy_child[u]`.  Ties are broken by iteration order.
 ///
 /// This is the first of the two DFS passes that constitute `build`.
-fn HLD::dfs_size(self : HLD, u : Int, p : Int, d : Int) -> Unit {
+fn HLD::dfs_size(self : HLD, u : Int32, p : Int32, d : Int32) -> Unit {
   self.parent[u] = p
   self.depth[u] = d
   self.subtree_size[u] = 1
@@ -176,7 +176,7 @@ fn HLD::dfs_size(self : HLD, u : Int, p : Int, d : Int) -> Unit {
 ///    as the new `head`.
 ///
 /// This is the second of the two DFS passes that constitute `build`.
-fn HLD::dfs_hld(self : HLD, u : Int, head : Int) -> Unit {
+fn HLD::dfs_hld(self : HLD, u : Int32, head : Int32) -> Unit {
   self.chain_head[u] = head
   self.position[u] = self.timer
   self.timer = self.timer + 1
@@ -220,7 +220,7 @@ fn HLD::dfs_hld(self : HLD, u : Int, head : Int) -> Unit {
 ///   debug_inspect(hld.lca(2, 3), content="0")
 /// }
 /// ```
-fn HLD::build(self : HLD, root : Int) -> Unit {
+fn HLD::build(self : HLD, root : Int32) -> Unit {
   if self.n > 0 {
     self.dfs_size(root, -1, 0)
     self.dfs_hld(root, root)
@@ -255,7 +255,7 @@ fn HLD::build(self : HLD, root : Int) -> Unit {
 ///   debug_inspect(hld.lca(0, 4), content="0")
 /// }
 /// ```
-fn HLD::lca(self : HLD, u : Int, v : Int) -> Int {
+fn HLD::lca(self : HLD, u : Int32, v : Int32) -> Int32 {
   for a = u, b = v {
     if self.chain_head[a] == self.chain_head[b] {
       if self.depth[a] < self.depth[b] {
@@ -294,7 +294,7 @@ fn HLD::lca(self : HLD, u : Int, v : Int) -> Int {
 ///   debug_inspect(hld.path_length(2, 2), content="0")
 /// }
 /// ```
-fn HLD::path_length(self : HLD, u : Int, v : Int) -> Int {
+fn HLD::path_length(self : HLD, u : Int32, v : Int32) -> Int32 {
   let l = self.lca(u, v)
   self.depth[u] + self.depth[v] - 2 * self.depth[l]
 }
@@ -324,7 +324,7 @@ fn HLD::path_length(self : HLD, u : Int, v : Int) -> Int {
 ///   debug_inspect(hld.count_chains(0, 7), content="1")
 /// }
 /// ```
-fn HLD::count_chains(self : HLD, u : Int, v : Int) -> Int {
+fn HLD::count_chains(self : HLD, u : Int32, v : Int32) -> Int32 {
   for a = u, b = v, count = 0 {
     if self.chain_head[a] == self.chain_head[b] {
       break count + 1 // Include final chain
@@ -359,7 +359,7 @@ fn HLD::count_chains(self : HLD, u : Int, v : Int) -> Int {
 ///   debug_inspect(hld.get_position(2), content="2")
 /// }
 /// ```
-fn HLD::get_position(self : HLD, u : Int) -> Int {
+fn HLD::get_position(self : HLD, u : Int32) -> Int32 {
   self.position[u]
 }
 
@@ -385,7 +385,7 @@ fn HLD::get_position(self : HLD, u : Int) -> Int {
 ///   debug_inspect(hld.get_chain_head(2), content="0")
 /// }
 /// ```
-fn HLD::get_chain_head(self : HLD, u : Int) -> Int {
+fn HLD::get_chain_head(self : HLD, u : Int32) -> Int32 {
   self.chain_head[u]
 }
 

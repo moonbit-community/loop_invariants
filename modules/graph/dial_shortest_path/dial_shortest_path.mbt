@@ -22,7 +22,7 @@
 /// the source. The value 1,000,000,000 is large enough for practical graphs
 /// while remaining safely below `Int` overflow when incremented by a single
 /// edge weight.
-const DIAL_INF : Int = 1000000000
+const DIAL_INF : Int32 = 1000000000
 
 ///|
 /// A directed edge with a non-negative integer weight.
@@ -31,8 +31,8 @@ const DIAL_INF : Int = 1000000000
 /// `weight` must satisfy `0 <= weight <= max_weight` as declared in the
 /// enclosing `Graph`; larger values silently produce incorrect results.
 pub struct Edge {
-  to : Int
-  weight : Int
+  to : Int32
+  weight : Int32
 } derive(Debug)
 
 ///|
@@ -48,8 +48,8 @@ pub struct Edge {
 /// - `max_weight`: maximum allowed edge weight `C`
 /// - `adj`: `adj[u]` is the list of edges leaving vertex `u`
 pub struct Graph {
-  n : Int
-  max_weight : Int
+  n : Int32
+  max_weight : Int32
   adj : Array[Array[Edge]]
 }
 
@@ -74,7 +74,7 @@ pub struct Graph {
 /// ```
 /// let g = @dial_shortest_path.Graph(5, 3)  // 5 vertices, weights in [0, 3]
 /// ```
-pub fn Graph::Graph(n : Int, max_weight : Int) -> Graph {
+pub fn Graph::Graph(n : Int32, max_weight : Int32) -> Graph {
   let adj : Array[Array[Edge]] = [ for _ in 0..<n => [] ]
   { n, max_weight, adj, }
 }
@@ -98,7 +98,12 @@ pub fn Graph::Graph(n : Int, max_weight : Int) -> Graph {
 /// g.add_edge(0, 1, 1)
 /// g.add_edge(1, 2, 2)
 /// ```
-pub fn Graph::add_edge(self : Graph, u : Int, v : Int, weight : Int) -> Unit {
+pub fn Graph::add_edge(
+  self : Graph,
+  u : Int32,
+  v : Int32,
+  weight : Int32,
+) -> Unit {
   self.adj[u].push({ to: v, weight, })
 }
 
@@ -122,9 +127,9 @@ pub fn Graph::add_edge(self : Graph, u : Int, v : Int, weight : Int) -> Unit {
 /// ```
 pub fn Graph::add_undirected_edge(
   self : Graph,
-  u : Int,
-  v : Int,
-  weight : Int,
+  u : Int32,
+  v : Int32,
+  weight : Int32,
 ) -> Unit {
   self.add_edge(u, v, weight)
   self.add_edge(v, u, weight)
@@ -175,7 +180,7 @@ pub fn Graph::add_undirected_edge(
 /// let dist = @dial_shortest_path.dial_shortest_paths(g, 0)
 /// // dist == [0, 1, 3]
 /// ```
-pub fn dial_shortest_paths(graph : Graph, source : Int) -> Array[Int] {
+pub fn dial_shortest_paths(graph : Graph, source : Int32) -> Array[Int32] {
   let n = graph.n
   let dist = Array::make(n, DIAL_INF)
   if n == 0 {
@@ -186,7 +191,7 @@ pub fn dial_shortest_paths(graph : Graph, source : Int) -> Array[Int] {
   } else {
     graph.max_weight * (n - 1)
   }
-  let buckets : Array[Array[Int]] = [ for _ in 0..<(max_dist + 1) => [] ]
+  let buckets : Array[Array[Int32]] = [ for _ in 0..<(max_dist + 1) => [] ]
   dist[source] = 0
   buckets[0].push(source)
   for d in 0..<(max_dist + 1) {

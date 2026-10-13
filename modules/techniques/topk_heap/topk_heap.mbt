@@ -33,7 +33,7 @@
 ///|
 /// Streaming top-k accumulator.
 pub struct TopK {
-  k : Int
+  k : Int32
   data : Array[Int64]
 }
 
@@ -52,32 +52,32 @@ pub struct TopK {
 ///   @debug.assert_eq(t.top_k_sorted(), [9L, 7L, 5L])
 /// }
 /// ```
-pub fn new(k : Int) -> TopK {
+pub fn new(k : Int32) -> TopK {
   let kk = if k < 0 { 0 } else { k }
   { k: kk, data: [], }
 }
 
 ///|
 /// Capacity (the `k` parameter).
-pub fn TopK::capacity(self : TopK) -> Int {
+pub fn TopK::capacity(self : TopK) -> Int32 {
   self.k
 }
 
 ///|
 /// Number of elements currently retained.
-pub fn TopK::length(self : TopK) -> Int {
+pub fn TopK::length(self : TopK) -> Int32 {
   self.data.length()
 }
 
 ///|
-fn TopK::swap(self : TopK, i : Int, j : Int) -> Unit {
+fn TopK::swap(self : TopK, i : Int32, j : Int32) -> Unit {
   let t = self.data[i]
   self.data[i] = self.data[j]
   self.data[j] = t
 }
 
 ///|
-fn TopK::sift_up(self : TopK, idx : Int) -> Unit {
+fn TopK::sift_up(self : TopK, idx : Int32) -> Unit {
   let mut i = idx
   while i > 0 {
     let p = (i - 1) / 2
@@ -91,7 +91,7 @@ fn TopK::sift_up(self : TopK, idx : Int) -> Unit {
 }
 
 ///|
-fn TopK::sift_down(self : TopK, idx : Int) -> Unit {
+fn TopK::sift_down(self : TopK, idx : Int32) -> Unit {
   let n = self.data.length()
   let mut i = idx
   while true {
@@ -148,7 +148,7 @@ pub fn TopK::top_k_sorted(self : TopK) -> Array[Int64] {
 
 ///|
 /// One-shot top-k for an offline array.
-pub fn top_k(arr : Array[Int64], k : Int) -> Array[Int64] {
+pub fn top_k(arr : Array[Int64], k : Int32) -> Array[Int64] {
   let t = new(k)
   for x in arr {
     t.add(x)
@@ -200,7 +200,7 @@ test "topk monotone descending input" {
 
 ///|
 test "topk agrees with sort" {
-  fn naive(arr : Array[Int64], k : Int) -> Array[Int64] {
+  fn naive(arr : Array[Int64], k : Int32) -> Array[Int64] {
     let sorted = Array::makei(arr.length(), i => arr[i])
     for i in 1..<sorted.length() {
       let key = sorted[i]

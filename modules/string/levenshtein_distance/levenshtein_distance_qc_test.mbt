@@ -3,7 +3,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -11,7 +11,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 ///|
 /// A short sequence: usually over a 3-symbol alphabet, sometimes arbitrary
 /// integers (including extreme values).
-fn gen_seq(rs : @quickcheck.RandomState, max_len : Int) -> Array[Int] {
+fn gen_seq(rs : @quickcheck.RandomState, max_len : Int32) -> Array[Int32] {
   let len = rint(rs, 0, max_len)
   if rint(rs, 0, 4) == 0 {
     Array::makei(len, _ => @quickcheck.Arbitrary::arbitrary(max_len, rs))
@@ -22,7 +22,7 @@ fn gen_seq(rs : @quickcheck.RandomState, max_len : Int) -> Array[Int] {
 
 ///|
 /// `a` after a few random edits (insert / delete / substitute / swap).
-fn mutate(rs : @quickcheck.RandomState, a : Array[Int]) -> Array[Int] {
+fn mutate(rs : @quickcheck.RandomState, a : Array[Int32]) -> Array[Int32] {
   let b = a.copy()
   for _ in 0..<rint(rs, 0, 3) {
     let n = b.length()
@@ -44,8 +44,8 @@ fn mutate(rs : @quickcheck.RandomState, a : Array[Int]) -> Array[Int] {
 
 ///|
 priv struct Pair {
-  a : Array[Int]
-  b : Array[Int]
+  a : Array[Int32]
+  b : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -63,9 +63,9 @@ impl @quickcheck.Shrink for Pair with fn shrink(self) {
 
 ///|
 priv struct Triple {
-  a : Array[Int]
-  b : Array[Int]
-  c : Array[Int]
+  a : Array[Int32]
+  b : Array[Int32]
+  c : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -87,7 +87,7 @@ impl @quickcheck.Shrink for Triple with fn shrink(self) {
 }
 
 ///|
-fn abs(x : Int) -> Int {
+fn abs(x : Int32) -> Int32 {
   if x < 0 {
     -x
   } else {
@@ -96,7 +96,7 @@ fn abs(x : Int) -> Int {
 }
 
 ///|
-fn max(x : Int, y : Int) -> Int {
+fn max(x : Int32, y : Int32) -> Int32 {
   if x > y {
     x
   } else {
@@ -107,14 +107,14 @@ fn max(x : Int, y : Int) -> Int {
 ///|
 /// Reference: edit distance of the suffixes a[i..] and b[j..], memoised.
 fn naive_weighted(
-  a : Array[Int],
-  b : Array[Int],
-  ins : Int,
-  del : Int,
-  sub : Int,
-) -> Int {
-  let memo : Map[(Int, Int), Int] = Map([])
-  fn go(i : Int, j : Int) -> Int {
+  a : Array[Int32],
+  b : Array[Int32],
+  ins : Int32,
+  del : Int32,
+  sub : Int32,
+) -> Int32 {
+  let memo : Map[(Int32, Int32), Int32] = Map([])
+  fn go(i : Int32, j : Int32) -> Int32 {
     if i == a.length() {
       return (b.length() - j) * ins
     }
@@ -145,9 +145,9 @@ fn naive_weighted(
 ///|
 priv struct Costs {
   pair : Pair
-  ins : Int
-  del : Int
-  sub : Int
+  ins : Int32
+  del : Int32
+  sub : Int32
 } derive(Debug)
 
 ///|

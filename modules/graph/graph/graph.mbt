@@ -10,9 +10,9 @@
 
 ///|
 /// Compute in-degrees for all vertices.
-fn compute_in_degrees(graph : Array[Array[Int]]) -> Array[Int] {
+fn compute_in_degrees(graph : Array[Array[Int32]]) -> Array[Int32] {
   let n = graph.length()
-  let in_degree : Array[Int] = Array::make(n, 0)
+  let in_degree : Array[Int32] = Array::make(n, 0)
   for u in 0..<n {
     for neighbor in graph[u] {
       in_degree[neighbor] = in_degree[neighbor] + 1
@@ -25,13 +25,13 @@ fn compute_in_degrees(graph : Array[Array[Int]]) -> Array[Int] {
 /// Topological sort using Kahn's algorithm (BFS-based).
 /// Returns Some(ordering) if graph is DAG, None if cycle exists.
 #warnings("+missing_invariant+missing_reasoning")
-fn topological_sort(graph : Array[Array[Int]]) -> Array[Int]? {
+fn topological_sort(graph : Array[Array[Int32]]) -> Array[Int32]? {
   let n = graph.length()
   let in_degree = compute_in_degrees(graph)
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
 
   // Initialize queue with all vertices having in-degree 0
-  let queue : Array[Int] = [ for v in 0..<n if in_degree[v] == 0 => v ]
+  let queue : Array[Int32] = [ for v in 0..<n if in_degree[v] == 0 => v ]
 
   // Process vertices in topological order
   for head = 0 {
@@ -122,7 +122,7 @@ fn topological_sort(graph : Array[Array[Int]]) -> Array[Int]? {
 ///|
 test "topological_sort" {
   // DAG: 0 → 1 → 2, 0 → 2
-  let dag : Array[Array[Int]] = [
+  let dag : Array[Array[Int32]] = [
     [1, 2], // 0's neighbors
     [2], // 1's neighbors
     [],
@@ -131,7 +131,7 @@ test "topological_sort" {
     Some(order) => {
       @debug.assert_eq(order.length(), 3)
       // 0 must come before 1 and 2, 1 must come before 2
-      let pos : Array[Int] = Array::make(3, 0)
+      let pos : Array[Int32] = Array::make(3, 0)
       for i, v in order {
         pos[v] = i
       }
@@ -143,7 +143,7 @@ test "topological_sort" {
   }
 
   // Graph with cycle: 0 → 1 → 2 → 0
-  let cyclic : Array[Array[Int]] = [[1], [2], [0]]
+  let cyclic : Array[Array[Int32]] = [[1], [2], [0]]
   debug_inspect(topological_sort(cyclic), content="None")
 }
 
@@ -157,10 +157,13 @@ test "topological_sort" {
 /// graph[u] = list of (neighbor, weight) pairs
 /// Returns array of shortest distances from source to each vertex.
 #warnings("+missing_invariant+missing_reasoning")
-fn dijkstra(graph : Array[Array[(Int, Int)]], source : Int) -> Array[Int] {
+fn dijkstra(
+  graph : Array[Array[(Int32, Int32)]],
+  source : Int32,
+) -> Array[Int32] {
   let n = graph.length()
   let inf = 0x7FFFFFFF
-  let dist : Array[Int] = Array::make(n, inf)
+  let dist : Array[Int32] = Array::make(n, inf)
   let visited : Array[Bool] = Array::make(n, false)
   dist[source] = 0
 
@@ -278,7 +281,7 @@ test "dijkstra" {
   //  ↓     ↓
   //  2 ──→ 3
   //     1
-  let graph : Array[Array[(Int, Int)]] = [
+  let graph : Array[Array[(Int32, Int32)]] = [
     [(1, 1), (2, 4)], // 0 → 1 (weight 1), 0 → 2 (weight 4)
     [(3, 2)], // 1 → 3 (weight 2)
     [(3, 1)], // 2 → 3 (weight 1)
@@ -299,19 +302,19 @@ test "dijkstra" {
 ///|
 /// Union-Find structure: parent[i] = parent of i, rank[i] = upper bound on height
 priv struct UnionFind {
-  parent : Array[Int]
-  rank : Array[Int]
+  parent : Array[Int32]
+  rank : Array[Int32]
 }
 
 ///|
-fn make_union_find(n : Int) -> UnionFind {
-  let parent : Array[Int] = [ for i in 0..<n => i ]
+fn make_union_find(n : Int32) -> UnionFind {
+  let parent : Array[Int32] = [ for i in 0..<n => i ]
   { parent, rank: Array::make(n, 0), }
 }
 
 ///|
 /// Find with path compression: makes all nodes on path point to root.
-fn uf_find(uf : UnionFind, x : Int) -> Int {
+fn uf_find(uf : UnionFind, x : Int32) -> Int32 {
   if uf.parent[x] == x {
     x
   } else {
@@ -324,7 +327,7 @@ fn uf_find(uf : UnionFind, x : Int) -> Int {
 
 ///|
 /// Union by rank: attach smaller tree under root of larger tree.
-fn uf_union(uf : UnionFind, x : Int, y : Int) -> Unit {
+fn uf_union(uf : UnionFind, x : Int32, y : Int32) -> Unit {
   let root_x = uf_find(uf, x)
   let root_y = uf_find(uf, y)
   if root_x == root_y {
@@ -379,12 +382,12 @@ test "union_find" {
 /// Returns Some(distances) or None if negative cycle exists.
 #warnings("+missing_invariant+missing_reasoning")
 fn bellman_ford(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int)],
-  source : Int,
-) -> Array[Int]? {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int32)],
+  source : Int32,
+) -> Array[Int32]? {
   let inf = 0x7FFFFFFF
-  let dist : Array[Int] = Array::make(n, inf)
+  let dist : Array[Int32] = Array::make(n, inf)
   dist[source] = 0
 
   // Relax all edges n-1 times
@@ -453,7 +456,7 @@ fn bellman_ford(
 test "bellman_ford" {
   // Graph with negative edge (no cycle):
   // 0 --1--> 1 --(-2)--> 2
-  let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, -2)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, 1), (1, 2, -2)]
   match bellman_ford(3, edges, 0) {
     Some(dist) => {
       @debug.assert_eq(dist[0], 0)
@@ -464,7 +467,11 @@ test "bellman_ford" {
   }
 
   // Graph with negative cycle: 0 → 1 → 2 → 0 with total weight -1
-  let edges_cycle : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 1), (2, 0, -3)]
+  let edges_cycle : Array[(Int32, Int32, Int32)] = [
+    (0, 1, 1),
+    (1, 2, 1),
+    (2, 0, -3),
+  ]
   debug_inspect(bellman_ford(3, edges_cycle, 0), content="None")
 }
 
@@ -478,11 +485,11 @@ test "bellman_ford" {
 /// dist[i][j] = shortest path from i to j (0x7FFFFFFF = no path).
 #warnings("+missing_invariant+missing_reasoning")
 fn floyd_warshall(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int)],
-) -> Array[Array[Int]] {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int32)],
+) -> Array[Array[Int32]] {
   let inf = 0x7FFFFFFF
-  let dist : Array[Array[Int]] = [
+  let dist : Array[Array[Int32]] = [
     for i in 0..<n => {
       let row = Array::make(n, inf)
       row[i] = 0
@@ -582,7 +589,7 @@ fn floyd_warshall(
 ///|
 test "floyd_warshall" {
   // Triangle: 0 --1--> 1 --2--> 2, with shortcut 0 --4--> 2
-  let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 2), (0, 2, 4)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, 1), (1, 2, 2), (0, 2, 4)]
   let dist = floyd_warshall(3, edges)
   @debug.assert_eq(dist[0][0], 0)
   @debug.assert_eq(dist[0][1], 1)
@@ -597,7 +604,7 @@ test "floyd_warshall" {
 
 ///|
 /// Simple edge sorting (insertion sort for demonstration).
-fn sort_edge_tuples(edges : Array[(Int, Int, Int)]) -> Unit {
+fn sort_edge_tuples(edges : Array[(Int32, Int32, Int32)]) -> Unit {
   for i in 1..<edges.length() {
     let key = edges[i]
     let (_, _, key_weight) = key
@@ -651,12 +658,12 @@ fn sort_edge_tuples(edges : Array[(Int, Int, Int)]) -> Unit {
 /// Returns list of edges in MST and total weight.
 #warnings("+missing_invariant+missing_reasoning")
 fn kruskal(
-  n : Int,
-  edges : Array[(Int, Int, Int)],
-) -> (Array[(Int, Int, Int)], Int) {
+  n : Int32,
+  edges : Array[(Int32, Int32, Int32)],
+) -> (Array[(Int32, Int32, Int32)], Int32) {
   sort_edge_tuples(edges)
   let uf = make_union_find(n)
-  let mst : Array[(Int, Int, Int)] = []
+  let mst : Array[(Int32, Int32, Int32)] = []
   let total_weight = for i = 0, total_weight = 0 {
     if i >= edges.length() || mst.length() >= n - 1 {
       break total_weight
@@ -712,7 +719,7 @@ test "kruskal" {
   //   3       2
   //   |       |
   //   2 --4-- 3
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 1),
     (1, 3, 2),
     (0, 2, 3),

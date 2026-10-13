@@ -316,7 +316,7 @@ Sometimes you want the **index** so you can rotate other arrays the same way.
 
 ```mbt check
 ///|
-fn[T] rotate_array(xs : ArrayView[T], start : Int) -> Array[T] {
+fn[T] rotate_array(xs : ArrayView[T], start : Int32) -> Array[T] {
   let n = xs.length()
   if n == 0 {
     []
@@ -332,7 +332,7 @@ fn[T] rotate_array(xs : ArrayView[T], start : Int) -> Array[T] {
 test "rotate parallel data by min rotation index" {
   let s = "baca"
   let idx = @minimum_cyclic_rotation.min_cyclic_rotation_index(s)
-  let weights : Array[Int] = [10, 20, 30, 40]
+  let weights : Array[Int32] = [10, 20, 30, 40]
   let rotated = rotate_array(weights, idx)
   debug_inspect(rotated, content="[40, 10, 20, 30]")
 }

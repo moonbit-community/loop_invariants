@@ -32,10 +32,10 @@
 //    than p[0..i] (relative to the still-available element set)."
 
 ///|
-const MAX_N : Int = 20
+const MAX_N : Int32 = 20
 
 ///|
-fn factorial(n : Int) -> Int64 {
+fn factorial(n : Int32) -> Int64 {
   let mut r = 1L
   for i in 2..<=n {
     r = r * i.to_int64()
@@ -55,7 +55,7 @@ fn factorial(n : Int) -> Int64 {
 ///   @debug.assert_eq(@permutation_rank.rank([1, 0, 2]), 2L)
 /// }
 /// ```
-pub fn rank(p : Array[Int]) -> Int64 {
+pub fn rank(p : Array[Int32]) -> Int64 {
   let n = p.length()
   if n == 0 || n > MAX_N {
     return 0L
@@ -77,12 +77,12 @@ pub fn rank(p : Array[Int]) -> Int64 {
 /// Inverse of `rank`: produce the permutation of `{0, ..., n-1}` at the
 /// given rank. Returns an empty array when `n == 0` or `n > 20` or
 /// `rank < 0` or `rank >= n!`.
-pub fn unrank(n : Int, rank : Int64) -> Array[Int] {
+pub fn unrank(n : Int32, rank : Int64) -> Array[Int32] {
   if n <= 0 || n > MAX_N || rank < 0L || rank >= factorial(n) {
     return []
   }
-  let avail : Array[Int] = Array::makei(n, i => i)
-  let res : Array[Int] = []
+  let avail : Array[Int32] = Array::makei(n, i => i)
+  let res : Array[Int32] = []
   let mut r = rank
   for i in 0..<n {
     let f = factorial(n - 1 - i)

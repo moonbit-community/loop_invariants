@@ -147,6 +147,6 @@ pub fn Line::is_undefined_min(self : Line) -> Bool {
 /// usage at O(L * log C) for L inserted lines.
 pub(all) struct LCNode {
   mut line : Line
-  mut left : Int // index of left child, -1 if absent
-  mut right : Int // index of right child, -1 if absent
+  mut left : Int32 // index of left child, -1 if absent
+  mut right : Int32 // index of right child, -1 if absent
 }

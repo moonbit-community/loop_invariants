@@ -59,7 +59,7 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
 
     // Find edge starting with p[i]
     let edges = self.nodes[node].edges
-    let edge_idx : Int = for idx, edge in edges {
+    let edge_idx : Int32 = for idx, edge in edges {
       if self.text[edge.start] == p[i] {
         break idx
       }
@@ -152,7 +152,7 @@ pub fn SuffixTree::contains(self : SuffixTree, pattern : String) -> Bool {
 pub fn SuffixTree::count_occurrences(
   self : SuffixTree,
   pattern : String,
-) -> Int {
+) -> Int32 {
   let p = pattern.to_array()
 
   // Convention: empty pattern has 0 occurrences
@@ -164,7 +164,7 @@ pub fn SuffixTree::count_occurrences(
 
     // Find edge starting with p[i]
     let edges = self.nodes[node].edges
-    let edge_idx : Int = for idx, edge in edges {
+    let edge_idx : Int32 = for idx, edge in edges {
       if self.text[edge.start] == p[i] {
         break idx
       }

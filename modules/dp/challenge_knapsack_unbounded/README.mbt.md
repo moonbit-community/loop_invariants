@@ -56,8 +56,8 @@ If we iterated backward, we would only allow one copy (0/1 knapsack behavior).
 ```mbt check
 ///|
 test "knapsack unbounded basic" {
-  let weights : Array[Int] = [2, 3]
-  let values : Array[Int] = [4, 5]
+  let weights : Array[Int32] = [2, 3]
+  let values : Array[Int32] = [4, 5]
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 7,
   )
@@ -70,8 +70,8 @@ test "knapsack unbounded basic" {
 ```mbt check
 ///|
 test "knapsack unbounded single item" {
-  let weights : Array[Int] = [3]
-  let values : Array[Int] = [4]
+  let weights : Array[Int32] = [3]
+  let values : Array[Int32] = [4]
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 10,
   )
@@ -84,8 +84,8 @@ test "knapsack unbounded single item" {
 ```mbt check
 ///|
 test "knapsack unbounded ratio" {
-  let weights : Array[Int] = [4, 5]
-  let values : Array[Int] = [7, 9]
+  let weights : Array[Int32] = [4, 5]
+  let values : Array[Int32] = [7, 9]
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 20,
   )
@@ -98,8 +98,8 @@ test "knapsack unbounded ratio" {
 ```mbt check
 ///|
 test "knapsack unbounded too small" {
-  let weights : Array[Int] = [5, 6]
-  let values : Array[Int] = [10, 12]
+  let weights : Array[Int32] = [5, 6]
+  let values : Array[Int32] = [10, 12]
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 4,
   )
@@ -112,8 +112,8 @@ test "knapsack unbounded too small" {
 ```mbt check
 ///|
 test "knapsack unbounded mixed" {
-  let weights : Array[Int] = [2, 5, 7]
-  let values : Array[Int] = [3, 10, 12]
+  let weights : Array[Int32] = [2, 5, 7]
+  let values : Array[Int32] = [3, 10, 12]
   let best = @challenge_knapsack_unbounded.knapsack_unbounded(
     weights, values, 14,
   )

@@ -115,7 +115,7 @@ The implementation is in `challenge_mst_kruskal.mbt`.
 ///|
 test "kruskal basic" {
   let n = 4
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 1),
     (0, 2, 2),
     (1, 3, 3),
@@ -133,7 +133,7 @@ test "kruskal basic" {
 ///|
 test "kruskal disconnected" {
   let n = 4
-  let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (2, 3, 1)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, 1), (2, 3, 1)]
   let ans = @challenge_mst_kruskal.mst_weight(n, edges)
   debug_inspect(ans, content="None")
 }
@@ -145,7 +145,7 @@ test "kruskal disconnected" {
 ///|
 test "kruskal equal weights" {
   let n = 3
-  let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 1), (0, 2, 1)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, 1), (1, 2, 1), (0, 2, 1)]
   let ans = @challenge_mst_kruskal.mst_weight(n, edges)
   debug_inspect(ans, content="Some(2)")
 }
@@ -157,7 +157,7 @@ test "kruskal equal weights" {
 ///|
 test "kruskal single" {
   let n = 1
-  let edges : Array[(Int, Int, Int)] = []
+  let edges : Array[(Int32, Int32, Int32)] = []
   let ans = @challenge_mst_kruskal.mst_weight(n, edges)
   debug_inspect(ans, content="Some(0)")
 }
@@ -169,7 +169,7 @@ test "kruskal single" {
 ///|
 test "kruskal ignores invalid" {
   let n = 3
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 2),
     (1, 2, 1),
     (2, 3, 1),

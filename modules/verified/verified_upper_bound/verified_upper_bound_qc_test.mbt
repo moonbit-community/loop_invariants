@@ -1,8 +1,8 @@
 ///|
-priv struct SortedKey((Array[Int], Int)) derive(Debug)
+priv struct SortedKey((Array[Int32], Int32)) derive(Debug)
 
 ///|
-fn gen_elem() -> @quickcheck.Generator[Int] {
+fn gen_elem() -> @quickcheck.Generator[Int32] {
   @quickcheck.frequency([
     (4, @quickcheck.int_range(-5, 6)),
     (1, @quickcheck.elements([@int.MIN_VALUE, @int.MAX_VALUE])),

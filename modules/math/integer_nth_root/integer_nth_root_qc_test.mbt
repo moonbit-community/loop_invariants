@@ -4,12 +4,12 @@ fn big(x : Int64) -> @bigint.BigInt {
 }
 
 ///|
-fn big_pow(b : Int64, e : Int) -> @bigint.BigInt {
+fn big_pow(b : Int64, e : Int32) -> @bigint.BigInt {
   big_pow_n(big(b), e)
 }
 
 ///|
-fn big_pow_n(bb : @bigint.BigInt, e : Int) -> @bigint.BigInt {
+fn big_pow_n(bb : @bigint.BigInt, e : Int32) -> @bigint.BigInt {
   let mut acc = 1N
   for _ in 0..<e {
     acc = acc * bb
@@ -19,7 +19,7 @@ fn big_pow_n(bb : @bigint.BigInt, e : Int) -> @bigint.BigInt {
 
 ///|
 /// `r` is the floor `k`-th root of `x` iff `r^k <= x < (r + 1)^k`.
-fn is_floor_root(r : Int64, x : Int64, k : Int) -> Bool {
+fn is_floor_root(r : Int64, x : Int64, k : Int32) -> Bool {
   r >= 0L && big_pow(r, k) <= big(x) && big(x) < big_pow_n(big(r) + 1N, k)
 }
 
@@ -29,11 +29,11 @@ fn is_floor_root(r : Int64, x : Int64, k : Int) -> Bool {
 /// (including those next to Int64::MAX), and small values.
 priv struct RootCase {
   x : Int64
-  k : Int
+  k : Int32
 } derive(Debug)
 
 ///|
-fn gen_exponent(rs : @quickcheck.RandomState) -> Int {
+fn gen_exponent(rs : @quickcheck.RandomState) -> Int32 {
   match rs.next_uint(limit=10) {
     0 | 1 | 2 => 2
     3 | 4 => 3
@@ -44,7 +44,7 @@ fn gen_exponent(rs : @quickcheck.RandomState) -> Int {
 
 ///|
 /// Largest `r` with `r^k <= Int64::MAX`, by big-integer bisection.
-fn max_base(k : Int) -> Int64 {
+fn max_base(k : Int32) -> Int64 {
   let max = big(9223372036854775807L)
   let mut lo = 1L
   let mut hi = 3037000500L
@@ -143,7 +143,7 @@ test "qc: isqrt and icbrt return floor roots for every non-negative Int64" {
 ///|
 test "qc: negative radicand or exponent < 1 gives 0 and no perfect power" {
   @quickcheck.check(
-    (p : (Int64, Int)) => {
+    (p : (Int64, Int32)) => {
       let (x, k) = p
       if x < 0L || k < 1 {
         @integer_nth_root.nth_root(x, k) == 0L &&

@@ -42,7 +42,7 @@
 /// string (original with `#` sentinels interleaved).  `original` is the
 /// input string kept for index conversion and substring extraction.
 priv struct ManacherResult {
-  radii : Array[Int] // Palindrome radii in transformed string
+  radii : Array[Int32] // Palindrome radii in transformed string
   original : String
 }
 
@@ -122,7 +122,7 @@ fn manacher(s : String) -> ManacherResult {
 
 ///|
 /// Return the smaller of two integers.
-fn min(a : Int, b : Int) -> Int {
+fn min(a : Int32, b : Int32) -> Int32 {
   if a < b {
     a
   } else {
@@ -153,7 +153,7 @@ fn min(a : Int, b : Int) -> Int {
 /// // d1 = [1, 1, 1, 1]  -- every char is a trivial odd palindrome
 /// // d2 = [0, 0, 2, 0]  -- "bb" and "abba" are centered between index 1 and 2
 /// ```
-pub fn manacher_radii(s : String) -> (Array[Int], Array[Int]) {
+pub fn manacher_radii(s : String) -> (Array[Int32], Array[Int32]) {
   let n = s.length()
   if n == 0 {
     return ([], [])
@@ -322,9 +322,9 @@ fn ManacherResult::longest_palindrome(self : ManacherResult) -> String {
 /// Returns 0 if `i` is out of range.
 fn ManacherResult::palindrome_length_at(
   self : ManacherResult,
-  i : Int,
+  i : Int32,
   odd : Bool,
-) -> Int {
+) -> Int32 {
   if i < 0 || i >= self.original.length() {
     return 0
   }
@@ -347,8 +347,8 @@ fn ManacherResult::palindrome_length_at(
 /// `P[l+r] >= r - l`.  Returns `false` for invalid or empty intervals.
 fn ManacherResult::is_palindrome(
   self : ManacherResult,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Bool {
   if l < 0 || r > self.original.length() || l >= r {
     return false
@@ -368,7 +368,7 @@ fn ManacherResult::is_palindrome(
 /// palindromes to the original string: one for each odd or even length from
 /// the minimal palindrome up to the full radius.  The sum over all centers
 /// gives the total count in O(n).
-fn ManacherResult::count_palindromes(self : ManacherResult) -> Int {
+fn ManacherResult::count_palindromes(self : ManacherResult) -> Int32 {
   // Each center contributes (radius + 1) / 2 palindromes
   // For separator positions (even i), these are even-length palindromes
   // For character positions (odd i), these are odd-length palindromes
@@ -387,8 +387,8 @@ fn ManacherResult::count_palindromes(self : ManacherResult) -> Int {
 /// the longest palindrome for each center.
 fn ManacherResult::get_all_palindromes(
   self : ManacherResult,
-) -> Array[(Int, Int)] {
-  let result : Array[(Int, Int)] = []
+) -> Array[(Int32, Int32)] {
+  let result : Array[(Int32, Int32)] = []
   for i in 0..<self.radii.length() {
     if self.radii[i] > 0 {
       let start = (i - self.radii[i]) / 2
@@ -440,7 +440,7 @@ pub fn longest_palindrome(s : String) -> String {
 /// longest_palindrome_len("cbbd")    // 2
 /// longest_palindrome_len("abcdef")  // 1
 /// ```
-pub fn longest_palindrome_len(s : String) -> Int {
+pub fn longest_palindrome_len(s : String) -> Int32 {
   let (d1, d2) = manacher_radii(s)
   // Find max length by comparing odd and even palindromes at each center
   for i in 0..<d1.length(); best = 0 {
@@ -476,7 +476,7 @@ pub fn longest_palindrome_len(s : String) -> Int {
 /// count_palindromes("aaaa") // 10
 /// count_palindromes("abcd") // 4  (only single characters)
 /// ```
-pub fn count_palindromes(s : String) -> Int {
+pub fn count_palindromes(s : String) -> Int32 {
   manacher(s).count_palindromes()
 }
 

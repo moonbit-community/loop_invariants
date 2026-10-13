@@ -79,7 +79,7 @@ Returns `dp_T` as a new array of length `n`.
 test "dc dp 1-layer cumulative sum" {
   // cost(i, j) = sum of squares of weights in [i, j).
   let w : ReadOnlyArray[Int64] = [1L, 3L, 2L, 5L]
-  let cost = fn(i : Int, j : Int) -> Int64 {
+  let cost = fn(i : Int32, j : Int32) -> Int64 {
     let mut s = 0L
     let mut k = i
     while k < j {

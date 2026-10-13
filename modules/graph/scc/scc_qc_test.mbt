@@ -6,7 +6,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -16,8 +16,8 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// (edges follow a random vertex ranking); the rest are arbitrary and may
 /// contain self-loops and parallel edges.
 priv struct DG {
-  n : Int
-  edges : Array[(Int, Int)]
+  n : Int32
+  edges : Array[(Int32, Int32)]
 } derive(Debug)
 
 ///|
@@ -33,7 +33,7 @@ impl @quickcheck.Arbitrary for DG with fn arbitrary(size, rs) {
     rank[j] = t
   }
   let dag = rint(rs, 0, 1) == 0
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   for _ in 0..<m {
     let u = rint(rs, 0, n - 1)
     let v = rint(rs, 0, n - 1)
@@ -84,7 +84,7 @@ fn reach(g : DG) -> Array[Array[Bool]] {
 }
 
 ///|
-fn adjacency(g : DG) -> Array[Array[Int]] {
+fn adjacency(g : DG) -> Array[Array[Int32]] {
   let adj = Array::makei(g.n, _ => [])
   for e in g.edges {
     adj[e.0].push(e.1)
@@ -94,14 +94,14 @@ fn adjacency(g : DG) -> Array[Array[Int]] {
 
 ///|
 /// Reference SCC relation: `u` and `v` are mutually reachable.
-fn same_scc(r : Array[Array[Bool]], u : Int, v : Int) -> Bool {
+fn same_scc(r : Array[Array[Bool]], u : Int32, v : Int32) -> Bool {
   u == v || (r[u][v] && r[v][u])
 }
 
 ///|
 /// `comp` labels exactly the mutual-reachability classes of `g` using ids
 /// `0..k-1` (all used); returns `k`, or `-1` if the labelling is wrong.
-fn check_partition(g : DG, comp : Array[Int]) -> Int {
+fn check_partition(g : DG, comp : Array[Int32]) -> Int32 {
   if comp.length() != g.n {
     return -1
   }
@@ -140,7 +140,7 @@ fn check_result(g : DG, r : @scc.SCCResult) -> Bool {
     r.scc_adj
     .iter()
     .mapi((c, outs) => {
-      let expected : Array[Int] = []
+      let expected : Array[Int32] = []
       for e in g.edges {
         let (a, b) = (r.component[e.0], r.component[e.1])
         if a == c && b != c && !expected.contains(b) {
@@ -205,8 +205,8 @@ test "qc: find_sccs_kosaraju agrees with the reference" {
 /// A 2-SAT instance: `(a, neg_a, b, neg_b)` is the clause
 /// `(x_a XOR neg_a) OR (x_b XOR neg_b)`.
 priv struct Sat {
-  n : Int
-  clauses : Array[(Int, Bool, Int, Bool)]
+  n : Int32
+  clauses : Array[(Int32, Bool, Int32, Bool)]
 } derive(Debug)
 
 ///|

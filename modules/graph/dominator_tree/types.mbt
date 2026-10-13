@@ -15,12 +15,12 @@
 ///|
 /// Mutable counter for DFS timestamp assignment.
 priv struct Counter {
-  mut val : Int
+  mut val : Int32
 }
 
 ///|
 /// Build n separate empty lists for adjacency representation.
-fn build_adj_lists(n : Int) -> Array[Array[Int]] {
+fn build_adj_lists(n : Int32) -> Array[Array[Int32]] {
   [
     for _ in 0..<n => []
   ]
@@ -43,23 +43,23 @@ fn build_adj_lists(n : Int) -> Array[Array[Int]] {
 ///   - bucket: vertices grouped by semi-dominator
 ///   - time: DFS timestamp counter
 priv struct DominatorWork {
-  n : Int
-  adj : Array[Array[Int]]
-  pred : Array[Array[Int]]
-  arr : Array[Int]
-  rev : Array[Int]
-  parent : Array[Int]
-  sdom : Array[Int]
-  idom : Array[Int]
-  dsu : Array[Int]
-  label : Array[Int]
-  bucket : Array[Array[Int]]
+  n : Int32
+  adj : Array[Array[Int32]]
+  pred : Array[Array[Int32]]
+  arr : Array[Int32]
+  rev : Array[Int32]
+  parent : Array[Int32]
+  sdom : Array[Int32]
+  idom : Array[Int32]
+  dsu : Array[Int32]
+  label : Array[Int32]
+  bucket : Array[Array[Int32]]
   time : Counter
 }
 
 ///|
 /// Create working structures for dominator tree computation.
-fn DominatorWork::DominatorWork(n : Int) -> DominatorWork {
+fn DominatorWork::DominatorWork(n : Int32) -> DominatorWork {
   let adj = build_adj_lists(n)
   let pred = build_adj_lists(n + 1)
   {
@@ -80,7 +80,7 @@ fn DominatorWork::DominatorWork(n : Int) -> DominatorWork {
 
 ///|
 /// Add directed edge u → v to the graph.
-fn DominatorWork::add_edge(self : DominatorWork, u : Int, v : Int) -> Unit {
+fn DominatorWork::add_edge(self : DominatorWork, u : Int32, v : Int32) -> Unit {
   self.adj[u].push(v)
 }
 
@@ -106,7 +106,7 @@ fn DominatorWork::add_edge(self : DominatorWork, u : Int, v : Int) -> Unit {
 /// To query dominance between two arbitrary vertices use `dominates`.
 /// To build a dominator tree use `build_dominator_tree`.
 pub(all) struct DominatorTree {
-  root : Int
-  idom : Array[Int]
-  tree : Array[Array[Int]]
+  root : Int32
+  idom : Array[Int32]
+  tree : Array[Array[Int32]]
 } derive(Debug)

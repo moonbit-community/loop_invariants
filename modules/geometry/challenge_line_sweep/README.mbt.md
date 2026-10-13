@@ -153,7 +153,7 @@ The actual implementation is in `challenge_line_sweep.mbt`.
 ```mbt check
 ///|
 test "line sweep basic" {
-  let intervals : Array[(Int, Int)] = [(1, 3), (2, 5), (4, 6)]
+  let intervals : Array[(Int32, Int32)] = [(1, 3), (2, 5), (4, 6)]
   let best = @challenge_line_sweep.max_overlap(intervals)
   debug_inspect(best, content="2")
 }
@@ -164,7 +164,7 @@ test "line sweep basic" {
 ```mbt check
 ///|
 test "line sweep heavy overlap" {
-  let intervals : Array[(Int, Int)] = [(2, 2), (2, 4), (2, 5)]
+  let intervals : Array[(Int32, Int32)] = [(2, 2), (2, 4), (2, 5)]
   let best = @challenge_line_sweep.max_overlap(intervals)
   debug_inspect(best, content="3")
 }
@@ -175,7 +175,7 @@ test "line sweep heavy overlap" {
 ```mbt check
 ///|
 test "line sweep disjoint" {
-  let intervals : Array[(Int, Int)] = [(1, 2), (4, 5), (7, 9)]
+  let intervals : Array[(Int32, Int32)] = [(1, 2), (4, 5), (7, 9)]
   let best = @challenge_line_sweep.max_overlap(intervals)
   debug_inspect(best, content="1")
 }
@@ -186,7 +186,7 @@ test "line sweep disjoint" {
 ```mbt check
 ///|
 test "line sweep touching" {
-  let intervals : Array[(Int, Int)] = [(1, 1), (2, 2), (3, 3)]
+  let intervals : Array[(Int32, Int32)] = [(1, 1), (2, 2), (3, 3)]
   let best = @challenge_line_sweep.max_overlap(intervals)
   debug_inspect(best, content="1")
 }
@@ -197,7 +197,7 @@ test "line sweep touching" {
 ```mbt check
 ///|
 test "line sweep negatives" {
-  let intervals : Array[(Int, Int)] = [(-3, -1), (-2, 1), (0, 2)]
+  let intervals : Array[(Int32, Int32)] = [(-3, -1), (-2, 1), (0, 2)]
   let best = @challenge_line_sweep.max_overlap(intervals)
   debug_inspect(best, content="2")
 }
@@ -208,7 +208,7 @@ test "line sweep negatives" {
 ```mbt check
 ///|
 test "line sweep skip invalid" {
-  let intervals : Array[(Int, Int)] = [(5, 3), (1, 2), (2, 2)]
+  let intervals : Array[(Int32, Int32)] = [(5, 3), (1, 2), (2, 2)]
   let best = @challenge_line_sweep.max_overlap(intervals)
   debug_inspect(best, content="2")
 }

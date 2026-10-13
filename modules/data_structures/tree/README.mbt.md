@@ -43,8 +43,11 @@ Edges:
 
 ```mbt check
 ///|
-fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+fn build_adj(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Array[Int32]] {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
     if u < 0 || u >= n || v < 0 || v >= n {
@@ -68,14 +71,14 @@ We avoid recursion by using an explicit stack.
 ```mbt check
 ///|
 fn parent_and_depth(
-  n : Int,
-  adj : Array[Array[Int]],
-  root : Int,
-) -> (Array[Int], Array[Int]) {
+  n : Int32,
+  adj : Array[Array[Int32]],
+  root : Int32,
+) -> (Array[Int32], Array[Int32]) {
   let parent = Array::make(n, -1)
   let depth = Array::make(n, 0)
   parent[root] = root
-  let stack : Array[Int] = [root]
+  let stack : Array[Int32] = [root]
   for pop_next = stack.length() > 0; pop_next; {
     let v = stack[stack.length() - 1]
     ignore(stack.pop())
@@ -110,14 +113,14 @@ We store:
 ```mbt check
 ///|
 fn euler_tour(
-  n : Int,
-  adj : Array[Array[Int]],
-  root : Int,
-) -> (Array[Int], Array[Int], Array[Int]) {
+  n : Int32,
+  adj : Array[Array[Int32]],
+  root : Int32,
+) -> (Array[Int32], Array[Int32], Array[Int32]) {
   let tin = Array::make(n, -1)
   let tout = Array::make(n, -1)
-  let order : Array[Int] = []
-  let stack : Array[(Int, Int, Int)] = [(root, -1, 0)]
+  let order : Array[Int32] = []
+  let stack : Array[(Int32, Int32, Int32)] = [(root, -1, 0)]
   let _ = for timer = 0 {
     let frame = stack.pop()
     match frame {
@@ -199,7 +202,7 @@ If values are static (no updates), a prefix sum is enough.
 
 ```mbt check
 ///|
-fn prefix_sums(values : ArrayView[Int]) -> Array[Int] {
+fn prefix_sums(values : ArrayView[Int32]) -> Array[Int32] {
   let n = values.length()
   let pref = Array::make(n, 0)
   let _ = for i in 0..<n; acc = 0 {
@@ -213,13 +216,13 @@ fn prefix_sums(values : ArrayView[Int]) -> Array[Int] {
 ///|
 test "euler tour subtree sums" {
   let n = 6
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
-  let values : Array[Int] = [5, 1, 4, 2, 3, 6]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
+  let values : Array[Int32] = [5, 1, 4, 2, 3, 6]
   let adj = build_adj(n, edges)
   let (tin, tout, order) = euler_tour(n, adj, 0)
-  let euler_values : Array[Int] = [ for v in order => values[v] ]
+  let euler_values : Array[Int32] = [ for v in order => values[v] ]
   let pref = prefix_sums(euler_values)
-  let subtree_sum = (v : Int) => {
+  let subtree_sum = (v : Int32) => {
     let l = tin[v]
     let r = tout[v]
     let before = if l > 0 { pref[l - 1] } else { 0 }
@@ -344,7 +347,12 @@ This simple version is O(height), good for small trees.
 
 ```mbt check
 ///|
-fn lca_naive(u : Int, v : Int, parent : Array[Int], depth : Array[Int]) -> Int {
+fn lca_naive(
+  u : Int32,
+  v : Int32,
+  parent : Array[Int32],
+  depth : Array[Int32],
+) -> Int32 {
   let a = for a = u {
     if depth[a] > depth[v] {
       continue parent[a]
@@ -371,7 +379,7 @@ fn lca_naive(u : Int, v : Int, parent : Array[Int], depth : Array[Int]) -> Int {
 ///|
 test "lca by parent climbing" {
   let n = 6
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
   let adj = build_adj(n, edges)
   let (parent, depth) = parent_and_depth(n, adj, 0)
   debug_inspect(lca_naive(3, 4, parent, depth), content="1")

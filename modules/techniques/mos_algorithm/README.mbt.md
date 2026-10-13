@@ -270,18 +270,18 @@ of the workflow:
 ```mbt nocheck
 ///|
 struct Query {
-  l : Int
-  r : Int
-  idx : Int
+  l : Int32
+  r : Int32
+  idx : Int32
 }
 
 ///|
-fn block_of(i : Int, block_size : Int) -> Int {
+fn block_of(i : Int32, block_size : Int32) -> Int32 {
   i / block_size
 }
 
 ///|
-fn sort_mo(qs : Array[Query], block_size : Int) -> Unit {
+fn sort_mo(qs : Array[Query], block_size : Int32) -> Unit {
   qs.sort_by((a, b) => {
     let ba = block_of(a.l, block_size)
     let bb = block_of(b.l, block_size)
@@ -294,15 +294,15 @@ fn sort_mo(qs : Array[Query], block_size : Int) -> Unit {
 }
 
 ///|
-fn solve(a : ArrayView[Int], qs : Array[Query]) -> Array[Int] {
+fn solve(a : ArrayView[Int32], qs : Array[Query]) -> Array[Int32] {
   let n = a.length()
   let block_size = n.to_float().sqrt().to_int().max(1)
   sort_mo(qs, block_size)
 
-  let answers : Array[Int] = Array::make(qs.length(), 0)
-  let freq : Map[Int, Int] = {}
+  let answers : Array[Int32] = Array::make(qs.length(), 0)
+  let freq : Map[Int32, Int32] = {}
 
-  let add = (i : Int, distinct : Int) => {
+  let add = (i : Int32, distinct : Int32) => {
     let x = a[i]
     let c = freq.get(x).unwrap_or(0)
     freq[x] = c + 1
@@ -313,7 +313,7 @@ fn solve(a : ArrayView[Int], qs : Array[Query]) -> Array[Int] {
     }
   }
 
-  let remove = (i : Int, distinct : Int) => {
+  let remove = (i : Int32, distinct : Int32) => {
     let x = a[i]
     let c = freq[x]
     freq[x] = c - 1

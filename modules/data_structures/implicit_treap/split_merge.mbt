@@ -77,9 +77,9 @@
 /// ```
 pub fn ImplicitTreap::split(
   self : ImplicitTreap,
-  node : Int,
-  k : Int,
-) -> (Int, Int) {
+  node : Int32,
+  k : Int32,
+) -> (Int32, Int32) {
   if node < 0 {
     return (-1, -1)
   }
@@ -146,9 +146,9 @@ pub fn ImplicitTreap::split(
 /// ```
 pub fn ImplicitTreap::merge(
   self : ImplicitTreap,
-  left : Int,
-  right : Int,
-) -> Int {
+  left : Int32,
+  right : Int32,
+) -> Int32 {
   if left < 0 {
     return right
   }

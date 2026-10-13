@@ -17,7 +17,7 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-fn slice_rotation(s : String, start : Int, len : Int) -> String {
+fn slice_rotation(s : String, start : Int32, len : Int32) -> String {
   let sb = StringBuilder()
   for offset in 0..<len {
     let ch = s[start + offset].to_int()
@@ -60,7 +60,7 @@ fn slice_rotation(s : String, start : Int, len : Int) -> String {
 /// let idx2 = min_cyclic_rotation_index("abab")
 /// // idx2 == 0
 /// ```
-pub fn min_cyclic_rotation_index(s : String) -> Int {
+pub fn min_cyclic_rotation_index(s : String) -> Int32 {
   let n = s.length()
   if n == 0 {
     return 0

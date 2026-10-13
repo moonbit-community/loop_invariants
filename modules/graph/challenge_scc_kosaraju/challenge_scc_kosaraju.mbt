@@ -5,9 +5,12 @@
 
 ///|
 /// Compute strongly connected components using Kosaraju's algorithm.
-pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
-  let rev : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+pub fn scc_kosaraju(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Int32] {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
+  let rev : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
@@ -16,8 +19,8 @@ pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
   }
   let visited = Array::make(n, false)
-  let order : Array[Int] = []
-  fn dfs1(v : Int) -> Unit {
+  let order : Array[Int32] = []
+  fn dfs1(v : Int32) -> Unit {
     visited[v] = true
     let neighbors = adj[v]
     for to in neighbors {
@@ -34,7 +37,7 @@ pub fn scc_kosaraju(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
   }
   let comp = Array::make(n, -1)
-  fn dfs2(v : Int, id : Int) -> Unit {
+  fn dfs2(v : Int32, id : Int32) -> Unit {
     comp[v] = id
     let neighbors = rev[v]
     for to in neighbors {

@@ -66,7 +66,7 @@ pub fn[T] peek(s : Stack[T]) -> T? {
 
 ///|
 /// Return the number of elements in the stack.
-pub fn[T] size(s : Stack[T]) -> Int {
+pub fn[T] size(s : Stack[T]) -> Int32 {
   match s {
     Nil => 0
     Cons(head=_, tail~) => 1 + size(tail)

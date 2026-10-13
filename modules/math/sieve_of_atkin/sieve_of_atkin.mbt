@@ -46,7 +46,7 @@
 ///|
 /// Integer square root via Newton's method. Returns `floor(sqrt(n))`
 /// for `n >= 0`. Used to bound the inner loops of the sieve.
-fn atkin_isqrt(n : Int) -> Int {
+fn atkin_isqrt(n : Int32) -> Int32 {
   if n < 2 {
     return n
   }
@@ -95,11 +95,11 @@ fn atkin_isqrt(n : Int) -> Int {
 /// ## Complexity
 ///
 /// Time `O(N / log log N)`, space `O(N)` for the sieve bitmap.
-pub fn primes_up_to(n : Int) -> Array[Int] {
+pub fn primes_up_to(n : Int32) -> Array[Int32] {
   if n < 2 {
     return []
   }
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   if n >= 2 {
     result.push(2)
   }
@@ -199,7 +199,7 @@ pub fn primes_up_to(n : Int) -> Array[Int] {
 /// Convenience: is `n` prime, via the Atkin sieve. Sieves up to `n`
 /// itself; appropriate only for moderate `n` (say, up to `10^7`).
 /// For single-shot primality testing of large `n`, use `@pollard_rho.is_prime`.
-pub fn is_prime_atkin(n : Int) -> Bool {
+pub fn is_prime_atkin(n : Int32) -> Bool {
   if n < 2 {
     return false
   }
@@ -268,7 +268,7 @@ test "atkin agrees with eratosthenes hand-rolled" {
       }
     }
   }
-  let era_primes : Array[Int] = []
+  let era_primes : Array[Int32] = []
   for i in 2..<=n {
     if era[i] {
       era_primes.push(i)

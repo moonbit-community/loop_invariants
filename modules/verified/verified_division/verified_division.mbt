@@ -1,9 +1,9 @@
 ///|
 /// Formalized version of the repeated-subtraction division example.
 pub fn div_nonneg(
-  n : Int,
-  d : Int,
-) -> Int where {
+  n : Int32,
+  d : Int32,
+) -> Int32 where {
   proof_require: valid_division_args(n, d),
   proof_ensure: result => div_ok(n, d, result),
 } {
@@ -70,9 +70,9 @@ pub fn div_nonneg(
 /// }
 /// ```
 pub fn mod_nonneg(
-  n : Int,
-  d : Int,
-) -> Int where {
+  n : Int32,
+  d : Int32,
+) -> Int32 where {
   proof_require: valid_division_args(n, d),
   proof_ensure: result => mod_ok(n, d, result),
 } {
@@ -102,9 +102,9 @@ pub fn mod_nonneg(
 /// }
 /// ```
 pub fn div_mod_nonneg(
-  n : Int,
-  d : Int,
-) -> (Int, Int) where {
+  n : Int32,
+  d : Int32,
+) -> (Int32, Int32) where {
   proof_require: valid_division_args(n, d),
 } {
   let q = div_nonneg(n, d)

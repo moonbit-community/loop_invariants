@@ -40,14 +40,14 @@
 ///|
 /// A weighted directed edge `u -> to` with non-negative cost `w`.
 pub(all) struct Edge {
-  to : Int
+  to : Int32
   w : Int64
 }
 
 ///|
 priv struct HeapEntry {
   d : Int64
-  v : Int
+  v : Int32
 }
 
 ///|
@@ -127,7 +127,7 @@ pub const INF : Int64 = 4611686018427387903L
 
 ///|
 /// Build the reverse-edge adjacency list given a forward `adj`.
-fn reverse_adj(n : Int, adj : Array[Array[Edge]]) -> Array[Array[Edge]] {
+fn reverse_adj(n : Int32, adj : Array[Array[Edge]]) -> Array[Array[Edge]] {
   let rev = Array::makei(n, _ => ([] : Array[Edge]))
   for u in 0..<n {
     for e in adj[u] {
@@ -159,10 +159,10 @@ fn reverse_adj(n : Int, adj : Array[Array[Edge]]) -> Array[Array[Edge]] {
 /// }
 /// ```
 pub fn shortest_path(
-  n : Int,
+  n : Int32,
   adj : Array[Array[Edge]],
-  source : Int,
-  target : Int,
+  source : Int32,
+  target : Int32,
 ) -> Int64 {
   if source < 0 || source >= n || target < 0 || target >= n {
     return INF
@@ -287,7 +287,12 @@ test "bidir invalid endpoints" {
 ///|
 test "bidir agrees with Dijkstra" {
   // Compare with a naive Dijkstra on a slightly bigger graph.
-  fn dijkstra(n : Int, adj : Array[Array[Edge]], s : Int, t : Int) -> Int64 {
+  fn dijkstra(
+    n : Int32,
+    adj : Array[Array[Edge]],
+    s : Int32,
+    t : Int32,
+  ) -> Int64 {
     let dist = Array::make(n, INF)
     dist[s] = 0L
     let heap = MinHeap::new()

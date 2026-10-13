@@ -5,7 +5,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -25,7 +25,7 @@ let spicy_alpha : Array[Char] = [
 fn gen_str(
   rs : @quickcheck.RandomState,
   alpha : Array[Char],
-  max_len : Int,
+  max_len : Int32,
 ) -> String {
   let len = rint(rs, 0, max_len)
   let sb = StringBuilder()
@@ -36,7 +36,7 @@ fn gen_str(
 }
 
 ///|
-fn gen_text(rs : @quickcheck.RandomState, size : Int) -> String {
+fn gen_text(rs : @quickcheck.RandomState, size : Int32) -> String {
   let k = rint(rs, 0, 9)
   if k < 5 {
     gen_str(rs, small_alpha, size)
@@ -97,10 +97,10 @@ impl @quickcheck.Shrink for Search with fn shrink(self) {
 
 ///|
 /// Reference: all (overlapping) start indices; none for an empty pattern.
-fn naive_search(text : String, pattern : String) -> Array[Int] {
+fn naive_search(text : String, pattern : String) -> Array[Int32] {
   let n = text.length()
   let m = pattern.length()
-  let res : Array[Int] = []
+  let res : Array[Int32] = []
   if m == 0 || m > n {
     return res
   }
@@ -172,7 +172,7 @@ test "regression: rabin_karp chars below 'a' are found" {
 }
 
 ///|
-fn sorted_pairs(xs : Array[(Int, Int)]) -> Array[(Int, Int)] {
+fn sorted_pairs(xs : Array[(Int32, Int32)]) -> Array[(Int32, Int32)] {
   let ys = xs.copy()
   ys.sort()
   ys
@@ -204,7 +204,7 @@ test "qc: rabin_karp_search and rabin_karp_count agree with naive search" {
 test "qc: rabin_karp_multi reports exactly the naive (pattern, position) pairs" {
   @quickcheck.check(
     (c : Multi) => {
-      let expected : Array[(Int, Int)] = []
+      let expected : Array[(Int32, Int32)] = []
       for idx, p in c.patterns {
         for pos in naive_search(c.text, p) {
           expected.push((idx, pos))

@@ -11,7 +11,7 @@ const LMIN : Int64 = -9223372036854775808L
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -58,7 +58,7 @@ fn nonneg(xs : Array[Int64]) -> Array[Int64] {
 ///|
 priv struct Win {
   xs : Array[Int64]
-  k : Int
+  k : Int32
 } derive(Debug)
 
 ///|
@@ -83,7 +83,7 @@ impl @quickcheck.Shrink for Win with fn shrink(self) {
 /// the whole array (the documented behaviour of max / min).
 fn naive_windows(
   xs : Array[Int64],
-  k : Int,
+  k : Int32,
   f : (Int64, Int64) -> Int64,
 ) -> Array[Int64] {
   let n = xs.length()
@@ -160,7 +160,7 @@ test "qc: sliding_window_sum matches per-window (wrapping) sums" {
 ///|
 /// O(n^2) reference; sums are compared as `x > target - s` (with
 /// `0 <= s <= target`) so the reference itself never overflows.
-fn ref_longest_le(xs : Array[Int64], target : Int64) -> Int {
+fn ref_longest_le(xs : Array[Int64], target : Int64) -> Int32 {
   if target < 0L {
     return 0
   }
@@ -183,7 +183,7 @@ fn ref_longest_le(xs : Array[Int64], target : Int64) -> Int {
 ///|
 /// O(n^2) reference; `s < target` holds before each extension, so
 /// `target - s > 0` never overflows.
-fn ref_min_ge(xs : Array[Int64], target : Int64) -> Int {
+fn ref_min_ge(xs : Array[Int64], target : Int64) -> Int32 {
   let n = xs.length()
   if n > 0 && target <= 0L {
     return 1

@@ -71,7 +71,7 @@
 ///   @debug.assert_eq(@jacobi_symbol.jacobi(4L, 7L), 1)
 /// }
 /// ```
-pub fn jacobi(a : Int64, n : Int64) -> Int {
+pub fn jacobi(a : Int64, n : Int64) -> Int32 {
   // Precondition: n positive and odd.
   if n <= 0L || n.land(1L) == 0L {
     return 0
@@ -81,7 +81,7 @@ pub fn jacobi(a : Int64, n : Int64) -> Int {
     a_m = a_m + n
   }
   let mut n_m = n
-  let mut result : Int = 1
+  let mut result : Int32 = 1
   while a_m != 0L {
     // Pull out factors of 2 from a_m.
     while a_m.land(1L) == 0L {

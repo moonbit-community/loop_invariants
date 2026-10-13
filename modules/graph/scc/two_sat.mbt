@@ -78,8 +78,8 @@
 /// - `n`   : number of boolean variables.
 /// - `adj` : implication graph adjacency list (length `2 * n`).
 pub(all) struct TwoSAT {
-  n : Int
-  adj : Array[Array[Int]]
+  n : Int32
+  adj : Array[Array[Int32]]
 }
 
 ///|
@@ -91,9 +91,9 @@ pub(all) struct TwoSAT {
 ///
 /// Parameter:
 /// - `n` : number of boolean variables (must be >= 0).
-pub fn TwoSAT::TwoSAT(n : Int) -> TwoSAT {
+pub fn TwoSAT::TwoSAT(n : Int32) -> TwoSAT {
   // Use makei to create 2n adjacency lists (n vars + n negated vars)
-  let adj : Array[Array[Int]] = [ for _ in 0..<(2 * n) => [] ]
+  let adj : Array[Array[Int32]] = [ for _ in 0..<(2 * n) => [] ]
   { n, adj, }
 }
 
@@ -109,7 +109,7 @@ pub fn TwoSAT::TwoSAT(n : Int) -> TwoSAT {
 /// - `neg` : `true` if this is the negated literal (`NOT xₓ`).
 ///
 /// Returns the vertex index for use in the implication graph.
-fn var_to_vertex(n : Int, x : Int, neg : Bool) -> Int {
+fn var_to_vertex(n : Int32, x : Int32, neg : Bool) -> Int32 {
   if neg {
     x + n // Negated variables are in second half
   } else {
@@ -144,9 +144,9 @@ fn var_to_vertex(n : Int, x : Int, neg : Bool) -> Int {
 /// ```
 pub fn TwoSAT::add_clause(
   self : TwoSAT,
-  a : Int,
+  a : Int32,
   neg_a : Bool,
-  b : Int,
+  b : Int32,
   neg_b : Bool,
 ) -> Unit {
   // Implication 1: (NOT a) => b

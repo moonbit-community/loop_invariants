@@ -67,7 +67,7 @@
 ///   assert_eq(@quickselect_median_of_medians.select_kth(arr, 4), Some(5))
 /// }
 /// ```
-pub fn select_kth(arr : ArrayView[Int], k : Int) -> Int? {
+pub fn select_kth(arr : ArrayView[Int32], k : Int32) -> Int32? {
   let n = arr.length()
   if n == 0 || k < 0 || k >= n {
     return None
@@ -79,7 +79,7 @@ pub fn select_kth(arr : ArrayView[Int], k : Int) -> Int? {
 /// Convenience: the lower median of `arr`. Returns the element at
 /// rank `(n - 1) / 2`, which is the smaller of the two middle elements
 /// when `n` is even. `None` for an empty input.
-pub fn median(arr : ArrayView[Int]) -> Int? {
+pub fn median(arr : ArrayView[Int32]) -> Int32? {
   let n = arr.length()
   if n == 0 {
     return None
@@ -90,7 +90,7 @@ pub fn median(arr : ArrayView[Int]) -> Int? {
 ///|
 /// Recursive worker. Owns its input array `a` so it can rely on
 /// length-based indexing without worrying about aliasing with a caller.
-fn select_kth_inner(a : Array[Int], k : Int) -> Int {
+fn select_kth_inner(a : Array[Int32], k : Int32) -> Int32 {
   let n = a.length()
   if n <= 5 {
     // Base case: full sort plus indexing.
@@ -130,9 +130,9 @@ fn select_kth_inner(a : Array[Int], k : Int) -> Int {
   // Step 3: partition `a` around `pivot` into Less, Equal, Greater.
   // This is a three-way split (Dutch national flag) so we don't waste
   // work on equal elements.
-  let less : Array[Int] = []
-  let equal : Array[Int] = []
-  let greater : Array[Int] = []
+  let less : Array[Int32] = []
+  let equal : Array[Int32] = []
+  let greater : Array[Int32] = []
   for i in 0..<n {
     let v = a[i]
     if v < pivot {
@@ -219,7 +219,7 @@ test "select on all-equal array" {
 
 ///|
 test "select edge cases" {
-  let empty : ReadOnlyArray[Int] = []
+  let empty : ReadOnlyArray[Int32] = []
   @debug.assert_eq(select_kth(empty[:], 0), None)
   let one = [42][:]
   @debug.assert_eq(select_kth(one, 0), Some(42))

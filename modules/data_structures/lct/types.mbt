@@ -99,14 +99,14 @@
 ///   structural access). push_down applies the reversal and clears the flag.
 /// ```
 pub(all) struct LCTNode {
-  mut parent : Int // Parent in splay tree (-1 if root of splay tree)
-  mut left : Int // Left child in splay tree (-1 if none)
-  mut right : Int // Right child in splay tree (-1 if none)
-  mut path_parent : Int // Path-parent pointer (-1 if none)
+  mut parent : Int32 // Parent in splay tree (-1 if root of splay tree)
+  mut left : Int32 // Left child in splay tree (-1 if none)
+  mut right : Int32 // Right child in splay tree (-1 if none)
+  mut path_parent : Int32 // Path-parent pointer (-1 if none)
   mut reversed : Bool // Lazy propagation flag for subtree reversal
   // Data fields
-  mut value : Int // Node value
-  mut subtree_sum : Int // Aggregate for path queries
+  mut value : Int32 // Node value
+  mut subtree_sum : Int32 // Aggregate for path queries
 }
 
 ///|
@@ -117,7 +117,7 @@ pub(all) struct LCTNode {
 /// and no pending reversal (`reversed` = false).
 /// `subtree_sum` is initialised to `value` because a lone node's path
 /// aggregate is just its own value.
-pub fn LCTNode::LCTNode(value : Int) -> LCTNode {
+pub fn LCTNode::LCTNode(value : Int32) -> LCTNode {
   {
     parent: -1,
     left: -1,
@@ -171,7 +171,7 @@ pub(all) struct LinkCutTree {
 /// own splay-tree root and its own original-tree root.
 ///
 /// Time: O(n).
-pub fn LinkCutTree::LinkCutTree(n : Int) -> LinkCutTree {
+pub fn LinkCutTree::LinkCutTree(n : Int32) -> LinkCutTree {
   let nodes : Array[LCTNode] = []
   for _i in 0..<n {
     nodes.push(LCTNode(0))
@@ -203,7 +203,7 @@ pub fn LinkCutTree::LinkCutTree(n : Int) -> LinkCutTree {
 /// planned from the start.
 ///
 /// Time: O(n).
-pub fn LinkCutTree::with_values(values : Array[Int]) -> LinkCutTree {
+pub fn LinkCutTree::with_values(values : Array[Int32]) -> LinkCutTree {
   let nodes : Array[LCTNode] = [ for value in values => LCTNode(value) ]
   { nodes, }
 }

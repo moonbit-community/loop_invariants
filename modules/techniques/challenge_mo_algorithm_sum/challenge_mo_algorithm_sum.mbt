@@ -3,7 +3,7 @@
 // ============================================================================
 
 ///|
-fn sqrt_ceil(n : Int) -> Int {
+fn sqrt_ceil(n : Int32) -> Int32 {
   if n <= 0 {
     return 1
   }
@@ -29,17 +29,17 @@ fn sqrt_ceil(n : Int) -> Int {
 
 ///|
 priv struct Query {
-  l : Int
-  r : Int
-  idx : Int
+  l : Int32
+  r : Int32
+  idx : Int32
 }
 
 ///|
 /// Answer offline range sum queries using Mo's algorithm.
 pub fn mo_range_sum(
-  arr : ArrayView[Int],
-  queries : ArrayView[(Int, Int)],
-) -> Array[Int] {
+  arr : ArrayView[Int32],
+  queries : ArrayView[(Int32, Int32)],
+) -> Array[Int32] {
   let n = arr.length()
   let q = queries.length()
   if q == 0 {
@@ -101,7 +101,7 @@ pub fn mo_range_sum(
 
 ///|
 test "mo_range_sum_shrinks_right_boundary" {
-  let arr : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8]
-  let queries : Array[(Int, Int)] = [(0, 6), (3, 4)]
+  let arr : Array[Int32] = [1, 2, 3, 4, 5, 6, 7, 8]
+  let queries : Array[(Int32, Int32)] = [(0, 6), (3, 4)]
   @debug.assert_eq(mo_range_sum(arr, queries), [21, 4])
 }

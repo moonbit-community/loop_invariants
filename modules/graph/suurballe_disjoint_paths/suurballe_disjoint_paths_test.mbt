@@ -1,6 +1,6 @@
 ///|
-fn edges_of_path(path : Array[Int]) -> Array[(Int, Int)] {
-  let edges : Array[(Int, Int)] = []
+fn edges_of_path(path : Array[Int32]) -> Array[(Int32, Int32)] {
+  let edges : Array[(Int32, Int32)] = []
   for i in 0..<(path.length() - 1) {
     edges.push((path[i], path[i + 1]))
   } where {
@@ -18,7 +18,11 @@ fn edges_of_path(path : Array[Int]) -> Array[(Int, Int)] {
 }
 
 ///|
-fn edge_weight(edges : Array[(Int, Int, Int64)], u : Int, v : Int) -> Int64? {
+fn edge_weight(
+  edges : Array[(Int32, Int32, Int64)],
+  u : Int32,
+  v : Int32,
+) -> Int64? {
   for i in 0..<edges.length() {
     let (a, b, c) = edges[i]
     if a == u && b == v {
@@ -39,7 +43,10 @@ fn edge_weight(edges : Array[(Int, Int, Int64)], u : Int, v : Int) -> Int64? {
 }
 
 ///|
-fn path_cost(path : Array[Int], edges : Array[(Int, Int, Int64)]) -> Int64? {
+fn path_cost(
+  path : Array[Int32],
+  edges : Array[(Int32, Int32, Int64)],
+) -> Int64? {
   let total = for i = 0, total = 0L; i + 1 < path.length(); {
     let u = path[i]
     let v = path[i + 1]
@@ -65,7 +72,7 @@ fn path_cost(path : Array[Int], edges : Array[(Int, Int, Int64)]) -> Int64? {
 
 ///|
 test "suurballe disjoint paths basic" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (1, 4, 1L),
     (0, 2, 1L),
@@ -117,7 +124,11 @@ test "suurballe disjoint paths basic" {
 
 ///|
 test "suurballe no disjoint paths" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, 1L), (2, 3, 1L)]
+  let edges : Array[(Int32, Int32, Int64)] = [
+    (0, 1, 1L),
+    (1, 2, 1L),
+    (2, 3, 1L),
+  ]
   let result = @suurballe_disjoint_paths.suurballe_disjoint_paths(
     4, edges, 0, 3,
   )

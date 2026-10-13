@@ -30,7 +30,7 @@
 ///|
 struct Tree {
   key : Int64
-  order : Int
+  order : Int32
   children : Array[Tree] // strictly decreasing orders: [order-1, ..., 0]
 }
 
@@ -38,7 +38,7 @@ struct Tree {
 /// A binomial min-heap of `Int64` keys.
 pub struct BinomialHeap {
   trees : Array[Tree] // sorted by strictly increasing order
-  size : Int
+  size : Int32
 }
 
 ///|
@@ -193,7 +193,7 @@ pub fn BinomialHeap::merge(
 
 ///|
 /// Number of elements.
-pub fn BinomialHeap::length(self : BinomialHeap) -> Int {
+pub fn BinomialHeap::length(self : BinomialHeap) -> Int32 {
   self.size
 }
 

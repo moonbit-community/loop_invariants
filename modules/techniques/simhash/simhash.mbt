@@ -55,12 +55,12 @@
 /// feature set. Call `signature()` once all features have been added
 /// to extract the 64-bit fingerprint.
 pub struct SimHash {
-  counters : Array[Int]
+  counters : Array[Int32]
 }
 
 ///|
 /// Logical right shift on Int64.
-fn shr_logical(x : Int64, n : Int) -> Int64 {
+fn shr_logical(x : Int64, n : Int32) -> Int64 {
   (x.reinterpret_as_uint64() >> n).reinterpret_as_int64()
 }
 
@@ -112,7 +112,7 @@ pub fn SimHash::add(self : SimHash, item : Int64) -> Unit {
 pub fn SimHash::add_weighted(
   self : SimHash,
   item : Int64,
-  weight : Int,
+  weight : Int32,
 ) -> Unit {
   let h = sh_mix(item)
   for i in 0..<64 {
@@ -161,7 +161,7 @@ pub fn SimHash::signature(self : SimHash) -> Int64 {
 ///|
 /// Inspector: snapshot of the current counters. Useful for debugging
 /// and for streaming/distributed implementations that merge state.
-pub fn SimHash::counters_of(self : SimHash) -> Array[Int] {
+pub fn SimHash::counters_of(self : SimHash) -> Array[Int32] {
   let out = Array::make(64, 0)
   for i in 0..<64 {
     out[i] = self.counters[i]
@@ -186,7 +186,7 @@ pub fn SimHash::merge(self : SimHash, other : SimHash) -> Unit {
 ///
 /// Implementation uses the standard popcount idiom -- successively
 /// halve and accumulate.
-pub fn hamming_distance(a : Int64, b : Int64) -> Int {
+pub fn hamming_distance(a : Int64, b : Int64) -> Int32 {
   let mut x = a ^ b
   let mut count = 0
   for _ in 0..<64 {

@@ -4,8 +4,8 @@
 
 ///|
 fn scan_min_index(
-  arr : FixedArray[Int],
-) -> Int where {
+  arr : FixedArray[Int32],
+) -> Int32 where {
   proof_require: nonempty(arr),
   proof_ensure: result => is_min_index(arr, result),
 } {
@@ -33,7 +33,7 @@ fn scan_min_index(
 
 ///|
 /// Find index of minimum value in a unimodal array (decreasing then increasing).
-pub fn find_min_unimodal(arr : ArrayView[Int]) -> Int {
+pub fn find_min_unimodal(arr : ArrayView[Int32]) -> Int32 {
   let n = arr.length()
   guard n > 0 else { return -1 }
   let (lo, hi) = for _ in 0..<n; lo = 0, hi = n - 1 {
@@ -61,8 +61,8 @@ pub fn find_min_unimodal(arr : ArrayView[Int]) -> Int {
 
 ///|
 test "find_min_unimodal" {
-  let arr : Array[Int] = [9, 7, 5, 3, 4, 6, 8]
+  let arr : Array[Int32] = [9, 7, 5, 3, 4, 6, 8]
   @debug.assert_eq(find_min_unimodal(arr), 3)
-  let arr2 : Array[Int] = [5, 4, 3, 2, 1]
+  let arr2 : Array[Int32] = [5, 4, 3, 2, 1]
   @debug.assert_eq(find_min_unimodal(arr2), 4)
 }

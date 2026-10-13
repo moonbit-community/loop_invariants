@@ -168,7 +168,7 @@ fraction is *not* automatically reduced to lowest terms.
 ///|
 test "karp readme 2-cycle" {
   // 0 -> 1 (w = 5), 1 -> 0 (w = 3). Mean = 8 / 2 = 4.
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 5L), (1, 0, 3L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, 5L), (1, 0, 3L)]
   debug_inspect(
     @karp_minimum_mean_cycle.min_mean_cycle(2, edges, 0),
     content="Some((8, 2))",
@@ -182,7 +182,7 @@ test "karp readme 2-cycle" {
 ///|
 test "karp readme self-loop" {
   // Single self-loop of weight 7. The only cycle has mean 7 / 1.
-  let edges : Array[(Int, Int, Int64)] = [(0, 0, 7L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 0, 7L)]
   debug_inspect(
     @karp_minimum_mean_cycle.min_mean_cycle(1, edges, 0),
     content="Some((7, 1))",
@@ -198,7 +198,7 @@ test "karp readme two cycles" {
   // Cycle A: 0 -> 1 -> 0 with weights (1, 4) -> mean 5/2.
   // Cycle B: 0 -> 2 -> 0 with weights (3, 4) -> mean 7/2.
   // The algorithm picks cycle A.
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (1, 0, 4L),
     (0, 2, 3L),
@@ -217,7 +217,7 @@ test "karp readme two cycles" {
 ///|
 test "karp readme dag" {
   // 0 -> 1 -> 2 is a DAG; no cycle.
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, 1L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, 1L), (1, 2, 1L)]
   debug_inspect(
     @karp_minimum_mean_cycle.min_mean_cycle(3, edges, 0),
     content="None",

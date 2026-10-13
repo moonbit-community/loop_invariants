@@ -1,14 +1,14 @@
 ///|
 test "gomory-hu tree matches min cuts" {
   let n = 4
-  let undirected : Array[(Int, Int, Int64)] = [
+  let undirected : Array[(Int32, Int32, Int64)] = [
     (0, 1, 3L),
     (1, 2, 2L),
     (2, 3, 4L),
     (0, 3, 1L),
     (0, 2, 2L),
   ]
-  let directed : Array[(Int, Int, Int64)] = []
+  let directed : Array[(Int32, Int32, Int64)] = []
   for edge in undirected {
     let (u, v, cap) = edge
     directed.push((u, v, cap))

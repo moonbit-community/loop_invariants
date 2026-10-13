@@ -6,7 +6,7 @@
 ///|
 struct Tree[T] {
   value : T
-  rank : Int
+  rank : Int32
   children : Array[Tree[T]]
 } derive(Debug)
 
@@ -36,7 +36,7 @@ pub struct Heap[T] {
 } derive(Debug)
 
 ///|
-fn[T] tree_rank(t : Tree[T]) -> Int {
+fn[T] tree_rank(t : Tree[T]) -> Int32 {
   t.rank
 }
 
@@ -50,7 +50,7 @@ fn[T : Compare] link(a : Tree[T], b : Tree[T]) -> Tree[T] {
 }
 
 ///|
-fn[T] valid_prefix(arr : Array[Tree[T]?], i : Int) -> Bool {
+fn[T] valid_prefix(arr : Array[Tree[T]?], i : Int32) -> Bool {
   if i <= 0 {
     true
   } else {
@@ -135,7 +135,7 @@ pub fn[T : Compare] merge(a : Heap[T], b : Heap[T]) -> Heap[T] {
 }
 
 ///|
-fn max2(a : Int, b : Int) -> Int {
+fn max2(a : Int32, b : Int32) -> Int32 {
   if a > b {
     a
   } else {
@@ -175,7 +175,7 @@ pub fn[T : Compare] find_min(h : Heap[T]) -> T? {
 }
 
 ///|
-fn[T] heap_from_children(children : Array[Tree[T]], rank : Int) -> Heap[T] {
+fn[T] heap_from_children(children : Array[Tree[T]], rank : Int32) -> Heap[T] {
   let out : Array[Tree[T]?] = Array::make(rank, None)
   for child in children {
     out[child.rank] = Some(child)
@@ -186,7 +186,7 @@ fn[T] heap_from_children(children : Array[Tree[T]], rank : Int) -> Heap[T] {
 ///|
 /// Delete the minimum element and return the new heap.
 pub fn[T : Compare] delete_min(h : Heap[T]) -> Heap[T]? {
-  let min : (Int, T)? = for i, tree in h.trees; min = None {
+  let min : (Int32, T)? = for i, tree in h.trees; min = None {
     match tree {
       None => continue min
       Some(t) =>

@@ -60,16 +60,16 @@
 /// One cell in the dancing-links matrix. Every "1" in the original
 /// boolean matrix gets one of these nodes; column headers do too.
 struct Node {
-  mut left : Int
-  mut right : Int
-  mut up : Int
-  mut down : Int
+  mut left : Int32
+  mut right : Int32
+  mut up : Int32
+  mut down : Int32
   // For a data node: the column header's index.
   // For a column header: itself.
-  column : Int
+  column : Int32
   // For a column header: number of remaining 1s in this column.
   // For a data node: the row index this node represents.
-  mut data : Int
+  mut data : Int32
 }
 
 ///|
@@ -81,7 +81,7 @@ pub struct DLX {
   nodes : Array[Node]
   // For each column header index, a stable ID. column_ids[h] = c
   // means "this column header is for column c of the original matrix."
-  column_ids : Array[Int]
+  column_ids : Array[Int32]
 }
 
 ///|
@@ -99,7 +99,11 @@ pub struct DLX {
 /// ## Returns
 ///
 /// A `DLX` ready for `solve` calls.
-pub fn new(num_rows : Int, num_cols : Int, ones : ArrayView[(Int, Int)]) -> DLX {
+pub fn new(
+  num_rows : Int32,
+  num_cols : Int32,
+  ones : ArrayView[(Int32, Int32)],
+) -> DLX {
   if num_cols < 0 {
     return { nodes: [], column_ids: [], }
   }
@@ -131,7 +135,7 @@ pub fn new(num_rows : Int, num_cols : Int, ones : ArrayView[(Int, Int)]) -> DLX 
   }
   // Bucket the `ones` by row so that the row's nodes can be stitched
   // horizontally.
-  let by_row : Array[Array[(Int, Int)]] = Array::make(num_rows, [])
+  let by_row : Array[Array[(Int32, Int32)]] = Array::make(num_rows, [])
   for i in 0..<num_rows {
     by_row[i] = []
   }
@@ -188,7 +192,7 @@ pub fn new(num_rows : Int, num_cols : Int, ones : ArrayView[(Int, Int)]) -> DLX 
 /// Cover column `c` (an arena index of a column header). All data
 /// nodes in c's rows are detached vertically from their columns; the
 /// column header itself is detached from the header list.
-fn DLX::cover(self : DLX, c : Int) -> Unit {
+fn DLX::cover(self : DLX, c : Int32) -> Unit {
   // Unlink c from the header list.
   let cr = self.nodes[c].right
   let cl = self.nodes[c].left
@@ -214,7 +218,7 @@ fn DLX::cover(self : DLX, c : Int) -> Unit {
 ///|
 /// Reverse of `cover`. Re-attaches nodes in the exact reverse order
 /// (bottom-up, right-to-left).
-fn DLX::uncover(self : DLX, c : Int) -> Unit {
+fn DLX::uncover(self : DLX, c : Int32) -> Unit {
   let mut i = self.nodes[c].up
   while i != c {
     let mut j = self.nodes[i].left
@@ -260,9 +264,9 @@ fn DLX::uncover(self : DLX, c : Int) -> Unit {
 ///   assert_eq(solutions[0].length(), 2)
 /// }
 /// ```
-pub fn DLX::solve(self : DLX, limit : Int) -> Array[Array[Int]] {
-  let results : Array[Array[Int]] = []
-  let partial : Array[Int] = []
+pub fn DLX::solve(self : DLX, limit : Int32) -> Array[Array[Int32]] {
+  let results : Array[Array[Int32]] = []
+  let partial : Array[Int32] = []
   self.search(partial, results, limit)
   results
 }
@@ -270,9 +274,9 @@ pub fn DLX::solve(self : DLX, limit : Int) -> Array[Array[Int]] {
 ///|
 fn DLX::search(
   self : DLX,
-  partial : Array[Int],
-  results : Array[Array[Int]],
-  limit : Int,
+  partial : Array[Int32],
+  results : Array[Array[Int32]],
+  limit : Int32,
 ) -> Unit {
   if limit >= 0 && results.length() >= limit {
     return
@@ -406,7 +410,7 @@ test "dlx n-queens 4x4" {
   // by constructing the exact-cover instance manually.
   let n = 4
   let total_cols = n + n + (2 * n - 1) + (2 * n - 1)
-  let ones : Array[(Int, Int)] = []
+  let ones : Array[(Int32, Int32)] = []
   let mut row_id = 0
   for r in 0..<n {
     for c in 0..<n {

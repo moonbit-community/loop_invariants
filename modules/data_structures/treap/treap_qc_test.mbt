@@ -4,14 +4,14 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 /// Keys from a narrow range (many duplicates) with occasional Int extrema.
-fn gen_key(rs : @quickcheck.RandomState) -> Int {
+fn gen_key(rs : @quickcheck.RandomState) -> Int32 {
   match rint(rs, 0, 15) {
     0 => [2147483647, -2147483648][rint(rs, 0, 1)]
     _ => rint(rs, -8, 8)
@@ -20,11 +20,11 @@ fn gen_key(rs : @quickcheck.RandomState) -> Int {
 
 ///|
 priv enum Op {
-  Insert(Int)
-  Delete(Int)
-  Contains(Int)
-  Kth(Int)
-  CountLess(Int)
+  Insert(Int32)
+  Delete(Int32)
+  Contains(Int32)
+  Kth(Int32)
+  CountLess(Int32)
   MinMax
 } derive(Debug)
 
@@ -57,8 +57,8 @@ impl @quickcheck.Shrink for Ops with fn shrink(self) {
 
 ///|
 fn run_ops(ops : Ops) -> Bool {
-  let t : @treap.Treap[Int] = Treap()
-  let model : Array[Int] = []
+  let t : @treap.Treap[Int32] = Treap()
+  let model : Array[Int32] = []
   for op in ops.0 {
     match op {
       Insert(k) => {
@@ -115,7 +115,7 @@ fn run_ops(ops : Ops) -> Bool {
 ///|
 test "qc: treap agrees with sorted multiset model" {
   @quickcheck.check(run_ops, seed=0x7EA_0001, count=300, observe=ops => {
-    let model : Map[Int, Int] = Map([])
+    let model : Map[Int32, Int32] = Map([])
     let mut dup = false
     let mut del_hit = false
     for op in ops.0 {

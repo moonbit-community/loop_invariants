@@ -72,7 +72,7 @@ unique midpoint they cross at level k.
 ```mbt check
 ///|
 test "disjoint sparse example" {
-  let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
+  let arr : Array[Int32] = [5, 2, 4, 7, 1, 3, 6, 0]
   let dst = @challenge_disjoint_sparse_table.build_disjoint_sparse_table(arr)
   debug_inspect(
     @challenge_disjoint_sparse_table.range_min(dst, 1, 5),
@@ -94,7 +94,7 @@ test "disjoint sparse example" {
 ```mbt check
 ///|
 test "disjoint sparse edge ranges" {
-  let arr : Array[Int] = [5, 2, 4, 7, 1, 3, 6, 0]
+  let arr : Array[Int32] = [5, 2, 4, 7, 1, 3, 6, 0]
   let dst = @challenge_disjoint_sparse_table.build_disjoint_sparse_table(arr)
   debug_inspect(
     @challenge_disjoint_sparse_table.range_min(dst, 3, 4),
@@ -112,7 +112,7 @@ test "disjoint sparse edge ranges" {
 ```mbt check
 ///|
 test "disjoint sparse different array" {
-  let arr : Array[Int] = [9, 8, 7, 6, 5, 4]
+  let arr : Array[Int32] = [9, 8, 7, 6, 5, 4]
   let dst = @challenge_disjoint_sparse_table.build_disjoint_sparse_table(arr)
   debug_inspect(
     @challenge_disjoint_sparse_table.range_min(dst, 1, 4),

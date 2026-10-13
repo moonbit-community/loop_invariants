@@ -37,7 +37,7 @@
 //    actually differ."
 
 ///|
-fn half(p : (Int64, Int64)) -> Int {
+fn half(p : (Int64, Int64)) -> Int32 {
   // Upper half (CCW reference): 0
   // Lower half (-pi to 0):       1
   // Special: (0, 0) -> -1 so it sorts first.
@@ -72,7 +72,7 @@ pub fn cross(a : (Int64, Int64), b : (Int64, Int64)) -> Int64 {
 ///   @debug.assert_eq(@polar_sort.cmp_angle((1L, 0L), (0L, 1L)) < 0, true)
 /// }
 /// ```
-pub fn cmp_angle(a : (Int64, Int64), b : (Int64, Int64)) -> Int {
+pub fn cmp_angle(a : (Int64, Int64), b : (Int64, Int64)) -> Int32 {
   let ha = half(a)
   let hb = half(b)
   if ha != hb {
@@ -127,7 +127,7 @@ pub fn sort_around(
 }
 
 ///|
-fn merge_sort(arr : Array[(Int64, Int64)], lo : Int, hi : Int) -> Unit {
+fn merge_sort(arr : Array[(Int64, Int64)], lo : Int32, hi : Int32) -> Unit {
   if hi - lo <= 1 {
     return
   }
@@ -138,7 +138,12 @@ fn merge_sort(arr : Array[(Int64, Int64)], lo : Int, hi : Int) -> Unit {
 }
 
 ///|
-fn merge(arr : Array[(Int64, Int64)], lo : Int, mid : Int, hi : Int) -> Unit {
+fn merge(
+  arr : Array[(Int64, Int64)],
+  lo : Int32,
+  mid : Int32,
+  hi : Int32,
+) -> Unit {
   let buf = Array::makei(hi - lo, _ => (0L, 0L))
   let mut i = lo
   let mut j = mid

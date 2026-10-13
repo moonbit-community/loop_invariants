@@ -4,7 +4,7 @@ fn big(x : Int64) -> @bigint.BigInt {
 }
 
 ///|
-fn big_pow(b : Int64, e : Int) -> @bigint.BigInt {
+fn big_pow(b : Int64, e : Int32) -> @bigint.BigInt {
   let mut acc = 1N
   for _ in 0..<e {
     acc = acc * big(b)
@@ -47,7 +47,7 @@ fn ref_perfect_power(x : Int64) -> Bool {
 /// usually 2..16, sometimes huge or invalid (<= 1).
 priv struct LogCase {
   x : Int64
-  b : Int
+  b : Int32
 } derive(Debug)
 
 ///|

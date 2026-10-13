@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -24,7 +24,7 @@ let spicy_alpha : Array[Char] = [
 fn gen_str(
   rs : @quickcheck.RandomState,
   alpha : Array[Char],
-  max_len : Int,
+  max_len : Int32,
 ) -> String {
   let len = rint(rs, 0, max_len)
   let sb = StringBuilder()
@@ -35,7 +35,7 @@ fn gen_str(
 }
 
 ///|
-fn gen_text(rs : @quickcheck.RandomState, size : Int) -> String {
+fn gen_text(rs : @quickcheck.RandomState, size : Int32) -> String {
   let k = rint(rs, 0, 9)
   if k < 5 {
     gen_str(rs, small_alpha, size)
@@ -72,7 +72,7 @@ fn has_astral(s : String) -> Bool {
 
 ///|
 /// Code units of the rotation of `s` starting at `k`.
-fn rotation(s : String, k : Int) -> Array[UInt16] {
+fn rotation(s : String, k : Int32) -> Array[UInt16] {
   let n = s.length()
   Array::makei(n, i => s[(k + i) % n])
 }
@@ -134,7 +134,7 @@ test "qc: min_cyclic_rotation is the least rotation, index is the first one" {
 ///|
 test "qc: min_cyclic_rotation is invariant under rotating a (periodic) input" {
   @quickcheck.check(
-    (c : (Str, Int, Int)) => {
+    (c : (Str, Int32, Int32)) => {
       // repeat the base 1-3 times so periodic inputs are common
       let str = c.0.0.repeat((c.2 % 3).abs() + 1)
       let n = str.length()

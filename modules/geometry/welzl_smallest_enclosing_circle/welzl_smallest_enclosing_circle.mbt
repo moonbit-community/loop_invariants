@@ -177,7 +177,7 @@ fn circle_from_three(a : Point, b : Point, c : Point) -> Circle {
 /// `q` must be boundary points of the new candidate, so we restart from
 /// the diameter circle on `(p, q)` and run the third loop in
 /// `mec_with_two`.
-fn mec_with_one(points : ArrayView[Point], j_max : Int, p : Point) -> Circle {
+fn mec_with_one(points : ArrayView[Point], j_max : Int32, p : Point) -> Circle {
   let init : Circle = { center: p, radius: 0.0, }
   for j in 0..<j_max; circle = init {
     let q = points[j]
@@ -224,7 +224,7 @@ fn mec_with_one(points : ArrayView[Point], j_max : Int, p : Point) -> Circle {
 /// point escapes.
 fn mec_with_two(
   points : ArrayView[Point],
-  k_max : Int,
+  k_max : Int32,
   p : Point,
   q : Point,
 ) -> Circle {

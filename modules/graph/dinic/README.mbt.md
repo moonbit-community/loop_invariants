@@ -188,7 +188,7 @@ Total blocking flow: 4
 ```mbt check
 ///|
 test "dinic max flow example" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 3),
     (0, 2, 2),
     (1, 2, 1),
@@ -203,7 +203,7 @@ test "dinic max flow example" {
 ```mbt check
 ///|
 test "dinic no path" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 5), (2, 3, 7)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, 5), (2, 3, 7)]
   let flow = @dinic.max_flow(4, edges, 0, 3)
   debug_inspect(flow, content="0")
 }

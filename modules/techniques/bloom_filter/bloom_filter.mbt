@@ -50,13 +50,13 @@
 /// A standard (non-counting) Bloom filter.
 pub struct BloomFilter {
   bits : Array[Int64] // packed; each Int64 holds 64 bits
-  m : Int // total bit positions
-  k : Int // number of hash functions
+  m : Int32 // total bit positions
+  k : Int32 // number of hash functions
 }
 
 ///|
 /// Round `x` up to the next multiple of 64; used to size the bit array.
-fn round_up_64(x : Int) -> Int {
+fn round_up_64(x : Int32) -> Int32 {
   (x + 63) / 64 * 64
 }
 
@@ -73,7 +73,7 @@ fn round_up_64(x : Int) -> Int {
 ///   @debug.assert_eq(b.contains(42L), true)
 /// }
 /// ```
-pub fn new(expected~ : Int, fp_rate~ : Double) -> BloomFilter {
+pub fn new(expected~ : Int32, fp_rate~ : Double) -> BloomFilter {
   let n = if expected < 1 { 1 } else { expected }
   let p = if fp_rate <= 0.0 || fp_rate >= 1.0 { 0.01 } else { fp_rate }
   let ln2 = 0.6931471805599453
@@ -88,7 +88,7 @@ pub fn new(expected~ : Int, fp_rate~ : Double) -> BloomFilter {
 ///|
 /// Convenience: build with explicit `m` (bits) and `k` (hashes). `m` is
 /// rounded up to a multiple of 64. Both must be positive.
-pub fn from_params(m : Int, k : Int) -> BloomFilter {
+pub fn from_params(m : Int32, k : Int32) -> BloomFilter {
   let m1 = round_up_64(if m < 64 { 64 } else { m })
   let kk = if k < 1 { 1 } else { k }
   { bits: Array::make(m1 / 64, 0L), m: m1, k: kk, }
@@ -125,19 +125,19 @@ fn mathln(x : Double) -> Double {
 
 ///|
 /// Number of bit positions (the `m` parameter, possibly rounded up).
-pub fn BloomFilter::bit_size(self : BloomFilter) -> Int {
+pub fn BloomFilter::bit_size(self : BloomFilter) -> Int32 {
   self.m
 }
 
 ///|
 /// Number of hash functions used (the `k` parameter).
-pub fn BloomFilter::hash_count(self : BloomFilter) -> Int {
+pub fn BloomFilter::hash_count(self : BloomFilter) -> Int32 {
   self.k
 }
 
 ///|
 /// Logical (unsigned) right shift for Int64 -- replaces the deprecated `.lsr`.
-fn shr_logical(x : Int64, n : Int) -> Int64 {
+fn shr_logical(x : Int64, n : Int32) -> Int64 {
   (x.reinterpret_as_uint64() >> n).reinterpret_as_int64()
 }
 
@@ -166,8 +166,8 @@ fn BloomFilter::position(
   self : BloomFilter,
   h1 : Int64,
   h2 : Int64,
-  i : Int,
-) -> Int {
+  i : Int32,
+) -> Int32 {
   let raw = h1 + i.to_int64() * h2
   let m = self.m.to_int64()
   let mut r = raw % m
@@ -207,7 +207,7 @@ pub fn BloomFilter::contains(self : BloomFilter, x : Int64) -> Bool {
 
 ///|
 /// Number of set bits. Useful for estimating fill ratio.
-pub fn BloomFilter::popcount(self : BloomFilter) -> Int {
+pub fn BloomFilter::popcount(self : BloomFilter) -> Int32 {
   let mut total = 0
   for w in self.bits {
     let mut x = w

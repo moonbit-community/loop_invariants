@@ -35,7 +35,7 @@
 /// ```moonbit nocheck
 /// test {
 ///   let to_arr = fn(str : String) {
-///     let r : Array[Int] = []
+///     let r : Array[Int32] = []
 ///     for c in str {
 ///       r.push(c.to_int())
 ///     }
@@ -52,7 +52,7 @@
 ///   @debug.assert_eq(@word_break_count.count(s, dict), 2L)
 /// }
 /// ```
-pub fn count(s : Array[Int], dict : Array[Array[Int]]) -> Int64 {
+pub fn count(s : Array[Int32], dict : Array[Array[Int32]]) -> Int64 {
   let n = s.length()
   let m = 1000000007L
   let ways = Array::make(n + 1, 0L)
@@ -87,7 +87,7 @@ pub fn count(s : Array[Int], dict : Array[Array[Int]]) -> Int64 {
 ///|
 /// `true` iff at least one segmentation of `s` into dictionary words
 /// exists.
-pub fn can_break(s : Array[Int], dict : Array[Array[Int]]) -> Bool {
+pub fn can_break(s : Array[Int32], dict : Array[Array[Int32]]) -> Bool {
   let n = s.length()
   let ok = Array::make(n + 1, false)
   ok[n] = true
@@ -120,8 +120,8 @@ pub fn can_break(s : Array[Int], dict : Array[Array[Int]]) -> Bool {
 }
 
 ///|
-fn arr(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn arr(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }
@@ -184,7 +184,7 @@ test "can_break overlapping prefixes" {
 ///|
 test "word break empty dict" {
   let s = arr("abc")
-  let dict : Array[Array[Int]] = []
+  let dict : Array[Array[Int32]] = []
   @debug.assert_eq(count(s, dict), 0L)
   @debug.assert_eq(can_break(s, dict), false)
 }

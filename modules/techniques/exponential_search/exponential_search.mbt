@@ -51,7 +51,7 @@
 ///   @debug.assert_eq(@exponential_search.lower_bound([1, 3, 5, 7, 9, 11], 6), 3)
 /// }
 /// ```
-pub fn lower_bound(arr : Array[Int], target : Int) -> Int {
+pub fn lower_bound(arr : Array[Int32], target : Int32) -> Int32 {
   let n = arr.length()
   if n == 0 {
     return 0
@@ -84,7 +84,7 @@ pub fn lower_bound(arr : Array[Int], target : Int) -> Int {
 ///|
 /// Return `Some(i)` such that `arr[i] == target`, or `None` if absent.
 /// Uses exponential search to bound the binary search.
-pub fn find(arr : Array[Int], target : Int) -> Int? {
+pub fn find(arr : Array[Int32], target : Int32) -> Int32? {
   let n = arr.length()
   let i = lower_bound(arr, target)
   if i < n && arr[i] == target {
@@ -100,7 +100,7 @@ pub fn find(arr : Array[Int], target : Int) -> Int? {
 /// `arr[i] >= target`.
 ///
 /// Runs in `O(log (returned_index - start))`, which is the whole point.
-pub fn gallop(arr : Array[Int], start : Int, target : Int) -> Int {
+pub fn gallop(arr : Array[Int32], start : Int32, target : Int32) -> Int32 {
   let n = arr.length()
   if start >= n {
     return n
@@ -196,7 +196,7 @@ test "gallop from start" {
 
 ///|
 test "exponential_search agrees with naive" {
-  fn naive(arr : Array[Int], target : Int) -> Int {
+  fn naive(arr : Array[Int32], target : Int32) -> Int32 {
     let mut i = 0
     while i < arr.length() && arr[i] < target {
       i = i + 1

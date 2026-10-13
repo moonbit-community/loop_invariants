@@ -35,9 +35,9 @@
 /// - `right`  : index of the right child, or -1 if none
 priv struct AVLNode[T] {
   mut key : T
-  mut height : Int
-  mut left : Int
-  mut right : Int
+  mut height : Int32
+  mut left : Int32
+  mut right : Int32
 }
 
 ///|
@@ -63,8 +63,8 @@ fn[T] AVLNode::AVLNode(key : T) -> AVLNode[T] {
 ///                 the `left` field of each freed node), or -1 when empty
 priv struct AVLTree[T] {
   nodes : Array[AVLNode[T]]
-  mut root : Int
-  mut free_list : Int
+  mut root : Int32
+  mut free_list : Int32
 }
 
 ///|
@@ -77,7 +77,7 @@ fn[T] AVLTree::AVLTree() -> AVLTree[T] {
 /// Returns the cached height of the subtree rooted at `node`.
 /// Returns 0 for the nil sentinel (-1), matching the convention that an empty
 /// subtree has height 0.
-fn[T] AVLTree::height(self : AVLTree[T], node : Int) -> Int {
+fn[T] AVLTree::height(self : AVLTree[T], node : Int32) -> Int32 {
   if node < 0 {
     0
   } else {
@@ -89,7 +89,7 @@ fn[T] AVLTree::height(self : AVLTree[T], node : Int) -> Int {
 /// Recomputes and stores the height of `node` from its children's heights.
 /// Height is defined as `1 + max(height(left), height(right))`.
 /// Does nothing for the nil sentinel.
-fn[T] AVLTree::update_height(self : AVLTree[T], node : Int) -> Unit {
+fn[T] AVLTree::update_height(self : AVLTree[T], node : Int32) -> Unit {
   if node < 0 {
     return
   }
@@ -106,7 +106,7 @@ fn[T] AVLTree::update_height(self : AVLTree[T], node : Int) -> Unit {
 /// -2 means the left subtree is too tall; +2 means the right subtree is too
 /// tall. Both cases require a rotation.
 /// Returns 0 for the nil sentinel.
-fn[T] AVLTree::balance_factor(self : AVLTree[T], node : Int) -> Int {
+fn[T] AVLTree::balance_factor(self : AVLTree[T], node : Int32) -> Int32 {
   if node < 0 {
     return 0
   }
@@ -129,7 +129,7 @@ fn[T] AVLTree::balance_factor(self : AVLTree[T], node : Int) -> Int {
 /// ```
 ///
 /// In-order traversal is preserved: A, x, B, y, C.
-fn[T] AVLTree::rotate_right(self : AVLTree[T], y : Int) -> Int {
+fn[T] AVLTree::rotate_right(self : AVLTree[T], y : Int32) -> Int32 {
   let x = self.nodes[y].left
   let t2 = self.nodes[x].right
   self.nodes[x].right = y
@@ -155,7 +155,7 @@ fn[T] AVLTree::rotate_right(self : AVLTree[T], y : Int) -> Int {
 /// ```
 ///
 /// In-order traversal is preserved: A, x, B, y, C.
-fn[T] AVLTree::rotate_left(self : AVLTree[T], x : Int) -> Int {
+fn[T] AVLTree::rotate_left(self : AVLTree[T], x : Int32) -> Int32 {
   let y = self.nodes[x].right
   let t2 = self.nodes[y].left
   self.nodes[y].left = x
@@ -179,7 +179,7 @@ fn[T] AVLTree::rotate_left(self : AVLTree[T], x : Int) -> Int {
 ///                                              left rotation on node
 ///
 /// Returns `node` unchanged when the balance factor is already in {-1, 0, +1}.
-fn[T] AVLTree::balance(self : AVLTree[T], node : Int) -> Int {
+fn[T] AVLTree::balance(self : AVLTree[T], node : Int32) -> Int32 {
   if node < 0 {
     return node
   }
@@ -210,7 +210,7 @@ fn[T] AVLTree::balance(self : AVLTree[T], node : Int) -> Int {
 /// Allocates a new node for `key`, reusing a slot from the free list when one
 /// is available, or appending a fresh slot to the arena otherwise.
 /// Returns the index of the allocated node.
-fn[T] AVLTree::alloc_node(self : AVLTree[T], key : T) -> Int {
+fn[T] AVLTree::alloc_node(self : AVLTree[T], key : T) -> Int32 {
   if self.free_list >= 0 {
     let idx = self.free_list
     self.free_list = self.nodes[idx].left
@@ -233,9 +233,9 @@ fn[T] AVLTree::alloc_node(self : AVLTree[T], key : T) -> Int {
 /// into the right subtree.
 fn[T : Compare] AVLTree::insert_rec(
   self : AVLTree[T],
-  node : Int,
+  node : Int32,
   key : T,
-) -> Int {
+) -> Int32 {
   if node < 0 {
     return self.alloc_node(key)
   }
@@ -260,7 +260,7 @@ fn[T : Compare] AVLTree::insert(self : AVLTree[T], key : T) -> Unit {
 /// visit left, emit key, visit right.
 fn[T] AVLTree::inorder_collect(
   self : AVLTree[T],
-  node : Int,
+  node : Int32,
   out : Array[T],
 ) -> Unit {
   if node < 0 {
@@ -308,7 +308,7 @@ pub fn[T : Compare] avl_sorted(keys : ArrayView[T]) -> Array[T] {
 /// Returns the index of the node with the smallest key in the subtree rooted
 /// at `node`. Follows left children until reaching a node with no left child.
 /// Returns -1 if the subtree is empty.
-fn[T] AVLTree::find_min(self : AVLTree[T], node : Int) -> Int {
+fn[T] AVLTree::find_min(self : AVLTree[T], node : Int32) -> Int32 {
   if node < 0 {
     return -1
   }
@@ -340,9 +340,9 @@ fn[T] AVLTree::find_min(self : AVLTree[T], node : Int) -> Int {
 /// returned to the free list for future reuse.
 fn[T : Compare] AVLTree::delete_rec(
   self : AVLTree[T],
-  node : Int,
+  node : Int32,
   key : T,
-) -> (Int, Bool) {
+) -> (Int32, Bool) {
   if node < 0 {
     return (-1, false)
   }
@@ -467,7 +467,7 @@ fn[T] AVLTree::max(self : AVLTree[T]) -> T? {
 /// Returns `true` if every node in the tree has a balance factor in {-1, 0, +1}.
 /// Used in tests to verify that rotations maintain the AVL invariant.
 fn[T] AVLTree::is_balanced(self : AVLTree[T]) -> Bool {
-  fn check(node : Int, tree : AVLTree[T]) -> Bool {
+  fn check(node : Int32, tree : AVLTree[T]) -> Bool {
     if node < 0 {
       return true
     }
@@ -484,8 +484,8 @@ fn[T] AVLTree::is_balanced(self : AVLTree[T]) -> Bool {
 ///|
 /// Returns the number of keys currently stored in the tree.
 /// Counts nodes by a full recursive traversal in O(n) time.
-fn[T] AVLTree::size(self : AVLTree[T]) -> Int {
-  fn count(node : Int, tree : AVLTree[T]) -> Int {
+fn[T] AVLTree::size(self : AVLTree[T]) -> Int32 {
+  fn count(node : Int32, tree : AVLTree[T]) -> Int32 {
     if node < 0 {
       return 0
     }

@@ -217,7 +217,7 @@ Only edge `(1, 3)` is a bridge, and vertex `1` is the articulation point.
 ```mbt check
 ///|
 test "triangle with tail" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0), (1, 3)]
   let bridges = @bridges.find_bridges(4, edges)
   let normalized = bridges.map(e => if e.0 < e.1 { e } else { (e.1, e.0) })
   normalized.sort_by((a, b) => if a.0 == b.0 { a.1 - b.1 } else { a.0 - b.0 })
@@ -237,7 +237,7 @@ connected.
 ```mbt check
 ///|
 test "cycle has no bridges" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
   let bridges = @bridges.find_bridges(4, edges)
   let cuts = @bridges.articulation_points(4, edges)
   debug_inspect(bridges.length(), content="0")
@@ -267,7 +267,7 @@ satisfies `low[v] > disc[u]` (since `disc[v] = disc[u] + 1`).
 ```mbt check
 ///|
 test "line graph" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3)]
   let bridges = @bridges.find_bridges(4, edges)
   debug_inspect(bridges.length(), content="3")
   let cuts = @bridges.articulation_points(4, edges)
@@ -293,7 +293,7 @@ leaf is in its own subtree isolated from the others.
 ```mbt check
 ///|
 test "star graph" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
   let bridges = @bridges.find_bridges(5, edges)
   debug_inspect(bridges.length(), content="4")
   let cuts = @bridges.articulation_points(5, edges)

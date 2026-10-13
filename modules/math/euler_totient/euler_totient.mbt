@@ -152,7 +152,7 @@ pub fn phi(n : Int64) -> Int64 {
 ///   @debug.assert_eq(t[10], 4L)
 /// }
 /// ```
-pub fn sieve(n : Int) -> Array[Int64] {
+pub fn sieve(n : Int32) -> Array[Int64] {
   if n < 0 {
     return []
   }
@@ -163,7 +163,7 @@ pub fn sieve(n : Int) -> Array[Int64] {
   res[1] = 1L
   // smallest prime factor of i (0 means i is prime / not yet set)
   let spf = Array::make(n + 1, 0)
-  let primes : Array[Int] = []
+  let primes : Array[Int32] = []
   for i in 2..<=n {
     if spf[i] == 0 {
       spf[i] = i

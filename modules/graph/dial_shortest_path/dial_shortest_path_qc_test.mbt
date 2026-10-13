@@ -5,14 +5,14 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 /// `true` when `f(i, xs[i])` holds for every index.
-fn[T] all_i(xs : Array[T], f : (Int, T) -> Bool) -> Bool {
+fn[T] all_i(xs : Array[T], f : (Int32, T) -> Bool) -> Bool {
   for i, x in xs {
     if !f(i, x) {
       return false
@@ -25,10 +25,10 @@ fn[T] all_i(xs : Array[T], f : (Int, T) -> Bool) -> Bool {
 /// Directed multigraph with a source (`n >= 1`, `src` in `[0, n)`) and
 /// weights in `[0, max_w]`.
 priv struct IG {
-  n : Int
-  src : Int
-  max_w : Int
-  edges : Array[(Int, Int, Int)]
+  n : Int32
+  src : Int32
+  max_w : Int32
+  edges : Array[(Int32, Int32, Int32)]
 } derive(Debug)
 
 ///|
@@ -71,8 +71,8 @@ impl @quickcheck.Shrink for IG with fn shrink(g) {
 
 ///|
 /// Bellman-Ford reference: `Some(d)` for vertices reachable from `g.src`.
-fn ref_dist(g : IG) -> Array[Int?] {
-  let d : Array[Int?] = Array::make(g.n, None)
+fn ref_dist(g : IG) -> Array[Int32?] {
+  let d : Array[Int32?] = Array::make(g.n, None)
   d[g.src] = Some(0)
   for _ in 0..<g.n {
     for e in g.edges {
@@ -90,7 +90,7 @@ fn ref_dist(g : IG) -> Array[Int?] {
 
 ///|
 /// Documented sentinel for unreachable vertices (`DIAL_INF`).
-const UNREACHABLE : Int = 1000000000
+const UNREACHABLE : Int32 = 1000000000
 
 ///|
 test "qc: dial_shortest_paths matches the reference" {

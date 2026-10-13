@@ -46,9 +46,9 @@
 /// }
 /// ```
 pub fn gcd_euclid(
-  a : Int,
-  b : Int,
-) -> Int where {
+  a : Int32,
+  b : Int32,
+) -> Int32 where {
   proof_require: nonneg(a),
   proof_require: nonneg(b),
   proof_ensure: result => gcd_ok(a, b, result),
@@ -136,9 +136,9 @@ pub fn gcd_euclid(
 /// }
 /// ```
 pub fn gcd_binary(
-  a : Int,
-  b : Int,
-) -> Int where {
+  a : Int32,
+  b : Int32,
+) -> Int32 where {
   proof_require: nonneg(a),
   proof_require: nonneg(b),
   proof_ensure: result => gcd_ok(a, b, result),

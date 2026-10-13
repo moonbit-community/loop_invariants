@@ -49,7 +49,7 @@
 /// The public API is 0-indexed (elements at positions 0..n-1), while the
 /// internal storage is 1-indexed (indices 1..n) for easier bit manipulation.
 pub struct FenwickTree {
-  n : Int
+  n : Int32
   tree : Array[Int64]
 }
 
@@ -69,7 +69,7 @@ pub struct FenwickTree {
 /// ft.add(2, 7L)
 /// assert_eq!(ft.prefix_sum(2), 7L)
 /// ```
-pub fn FenwickTree::FenwickTree(n : Int) -> FenwickTree {
+pub fn FenwickTree::FenwickTree(n : Int32) -> FenwickTree {
   // 1-indexed, so we need n+1 elements
   { n, tree: Array::make(n + 1, 0L), }
 }
@@ -128,7 +128,7 @@ pub fn FenwickTree::from_array(arr : Array[Int64]) -> FenwickTree {
 /// - `lowbit(6)  = lowbit(0b110)  = 2`
 /// - `lowbit(12) = lowbit(0b1100) = 4`
 /// - `lowbit(8)  = lowbit(0b1000) = 8`
-fn lowbit(x : Int) -> Int {
+fn lowbit(x : Int32) -> Int32 {
   x & -x
 }
 
@@ -156,7 +156,7 @@ fn lowbit(x : Int) -> Int {
 /// ft.add(0, -2L) // net value at index 0 is now 3
 /// assert_eq!(ft.get(0), 3L)
 /// ```
-pub fn FenwickTree::add(self : FenwickTree, i : Int, delta : Int64) -> Unit {
+pub fn FenwickTree::add(self : FenwickTree, i : Int32, delta : Int64) -> Unit {
   if i < 0 || i >= self.n {
     return
   }
@@ -197,7 +197,7 @@ pub fn FenwickTree::add(self : FenwickTree, i : Int, delta : Int64) -> Unit {
 /// let ft = FenwickTree::from_array([1L, 2L, 3L, 4L, 5L])
 /// assert_eq!(ft.prefix_sum(3), 10L) // 1+2+3+4
 /// ```
-pub fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int64 {
+pub fn FenwickTree::prefix_sum(self : FenwickTree, i : Int32) -> Int64 {
   if i < 0 {
     return 0L
   }
@@ -230,7 +230,11 @@ pub fn FenwickTree::prefix_sum(self : FenwickTree, i : Int) -> Int64 {
 /// let ft = FenwickTree::from_array([1L, 2L, 3L, 4L, 5L])
 /// assert_eq!(ft.range_sum(1, 3), 9L) // 2+3+4
 /// ```
-pub fn FenwickTree::range_sum(self : FenwickTree, l : Int, r : Int) -> Int64 {
+pub fn FenwickTree::range_sum(
+  self : FenwickTree,
+  l : Int32,
+  r : Int32,
+) -> Int64 {
   if l > r || l < 0 || r >= self.n {
     return 0L
   }
@@ -258,7 +262,7 @@ pub fn FenwickTree::range_sum(self : FenwickTree, l : Int, r : Int) -> Int64 {
 /// let ft = FenwickTree::from_array([10L, 20L, 30L])
 /// assert_eq!(ft.get(1), 20L)
 /// ```
-pub fn FenwickTree::get(self : FenwickTree, i : Int) -> Int64 {
+pub fn FenwickTree::get(self : FenwickTree, i : Int32) -> Int64 {
   self.range_sum(i, i)
 }
 
@@ -281,7 +285,7 @@ pub fn FenwickTree::get(self : FenwickTree, i : Int) -> Int64 {
 /// assert_eq!(ft.get(1), 99L)
 /// assert_eq!(ft.prefix_sum(2), 103L) // 1 + 99 + 3
 /// ```
-pub fn FenwickTree::set(self : FenwickTree, i : Int, value : Int64) -> Unit {
+pub fn FenwickTree::set(self : FenwickTree, i : Int32, value : Int64) -> Unit {
   let current = self.get(i)
   self.add(i, value - current)
 }
@@ -299,7 +303,7 @@ pub fn FenwickTree::set(self : FenwickTree, i : Int, value : Int64) -> Unit {
 /// let ft = FenwickTree(10)
 /// assert_eq!(ft.length(), 10)
 /// ```
-pub fn FenwickTree::length(self : FenwickTree) -> Int {
+pub fn FenwickTree::length(self : FenwickTree) -> Int32 {
   self.n
 }
 
@@ -317,8 +321,8 @@ pub fn FenwickTree::length(self : FenwickTree) -> Int {
 ///
 /// The public API is 0-indexed; internally rows and columns are 1-indexed.
 priv struct FenwickTree2D {
-  rows : Int
-  cols : Int
+  rows : Int32
+  cols : Int32
   tree : Array[Array[Int64]]
 }
 
@@ -331,7 +335,7 @@ priv struct FenwickTree2D {
 /// - `cols`: number of columns (valid column indices: `0..cols-1`).
 ///
 /// Time complexity: O(rows * cols).
-fn FenwickTree2D::FenwickTree2D(rows : Int, cols : Int) -> FenwickTree2D {
+fn FenwickTree2D::FenwickTree2D(rows : Int32, cols : Int32) -> FenwickTree2D {
   let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
   ]
@@ -353,8 +357,8 @@ fn FenwickTree2D::FenwickTree2D(rows : Int, cols : Int) -> FenwickTree2D {
 /// Time complexity: O(log rows * log cols).
 fn FenwickTree2D::add(
   self : FenwickTree2D,
-  r : Int,
-  c : Int,
+  r : Int32,
+  c : Int32,
   delta : Int64,
 ) -> Unit {
   if r < 0 || r >= self.rows || c < 0 || c >= self.cols {
@@ -391,7 +395,11 @@ fn FenwickTree2D::add(
 /// Returns 0 if `r < 0` or `c < 0`.
 ///
 /// Time complexity: O(log rows * log cols).
-fn FenwickTree2D::prefix_sum(self : FenwickTree2D, r : Int, c : Int) -> Int64 {
+fn FenwickTree2D::prefix_sum(
+  self : FenwickTree2D,
+  r : Int32,
+  c : Int32,
+) -> Int64 {
   if r < 0 || c < 0 {
     return 0L
   }
@@ -428,10 +436,10 @@ fn FenwickTree2D::prefix_sum(self : FenwickTree2D, r : Int, c : Int) -> Int64 {
 /// Time complexity: O(log rows * log cols).
 fn FenwickTree2D::range_sum(
   self : FenwickTree2D,
-  r1 : Int,
-  c1 : Int,
-  r2 : Int,
-  c2 : Int,
+  r1 : Int32,
+  c1 : Int32,
+  r2 : Int32,
+  c2 : Int32,
 ) -> Int64 {
   if r1 > r2 || c1 > c2 {
     return 0L
@@ -460,7 +468,7 @@ fn FenwickTree2D::range_sum(
 /// - Standard: O(1) range queries, O(log n) point updates.
 /// - This:    O(log n) range updates, O(log n) point queries.
 priv struct FenwickTreeRangeUpdate {
-  n : Int
+  n : Int32
   tree : Array[Int64] // Stores differences
 }
 
@@ -472,7 +480,7 @@ priv struct FenwickTreeRangeUpdate {
 ///
 /// Time complexity: O(n).
 fn FenwickTreeRangeUpdate::FenwickTreeRangeUpdate(
-  n : Int,
+  n : Int32,
 ) -> FenwickTreeRangeUpdate {
   { n, tree: Array::make(n + 1, 0L), }
 }
@@ -491,7 +499,7 @@ fn FenwickTreeRangeUpdate::FenwickTreeRangeUpdate(
 /// Time complexity: O(log n).
 fn FenwickTreeRangeUpdate::point_add(
   self : FenwickTreeRangeUpdate,
-  i : Int,
+  i : Int32,
   delta : Int64,
 ) -> Unit {
   if i < 0 || i >= self.n {
@@ -521,8 +529,8 @@ fn FenwickTreeRangeUpdate::point_add(
 /// Time complexity: O(log n).
 fn FenwickTreeRangeUpdate::range_add(
   self : FenwickTreeRangeUpdate,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
   delta : Int64,
 ) -> Unit {
   if l > r || l < 0 {
@@ -550,7 +558,7 @@ fn FenwickTreeRangeUpdate::range_add(
 /// Time complexity: O(log n).
 fn FenwickTreeRangeUpdate::query(
   self : FenwickTreeRangeUpdate,
-  i : Int,
+  i : Int32,
 ) -> Int64 {
   if i < 0 || i >= self.n {
     return 0L
@@ -583,7 +591,7 @@ fn FenwickTreeRangeUpdate::query(
 /// `bit1` stores `b(k)` and `bit2` stores `b(k) * (k-1)`, so each prefix
 /// query is two BIT queries combined.
 priv struct FenwickTreeRangeRange {
-  n : Int
+  n : Int32
   bit1 : Array[Int64] // Coefficient for (i+1) term
   bit2 : Array[Int64] // Constant term
 }
@@ -596,7 +604,7 @@ priv struct FenwickTreeRangeRange {
 ///
 /// Time complexity: O(n).
 fn FenwickTreeRangeRange::FenwickTreeRangeRange(
-  n : Int,
+  n : Int32,
 ) -> FenwickTreeRangeRange {
   { n, bit1: Array::make(n + 1, 0L), bit2: Array::make(n + 1, 0L), }
 }
@@ -611,7 +619,12 @@ fn FenwickTreeRangeRange::FenwickTreeRangeRange(
 /// - `delta`: value to add.
 ///
 /// Time complexity: O(log n).
-fn add_internal(arr : Array[Int64], n : Int, i : Int, delta : Int64) -> Unit {
+fn add_internal(
+  arr : Array[Int64],
+  n : Int32,
+  i : Int32,
+  delta : Int64,
+) -> Unit {
   for idx = i {
     if idx > n {
       break
@@ -633,7 +646,7 @@ fn add_internal(arr : Array[Int64], n : Int, i : Int, delta : Int64) -> Unit {
 /// Returns the prefix sum from index 1 to `i`.
 ///
 /// Time complexity: O(log n).
-fn query_internal(arr : Array[Int64], i : Int) -> Int64 {
+fn query_internal(arr : Array[Int64], i : Int32) -> Int64 {
   for idx = i, sum = 0L {
     if idx <= 0 {
       break sum
@@ -659,8 +672,8 @@ fn query_internal(arr : Array[Int64], i : Int) -> Int64 {
 /// Time complexity: O(log n).
 fn FenwickTreeRangeRange::range_add(
   self : FenwickTreeRangeRange,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
   delta : Int64,
 ) -> Unit {
   if l > r || l < 0 {
@@ -689,7 +702,7 @@ fn FenwickTreeRangeRange::range_add(
 /// Time complexity: O(log n).
 fn FenwickTreeRangeRange::prefix_sum(
   self : FenwickTreeRangeRange,
-  i : Int,
+  i : Int32,
 ) -> Int64 {
   if i < 0 {
     return 0L
@@ -712,8 +725,8 @@ fn FenwickTreeRangeRange::prefix_sum(
 /// Time complexity: O(log n).
 fn FenwickTreeRangeRange::range_sum(
   self : FenwickTreeRangeRange,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if l > r || l < 0 {
     return 0L

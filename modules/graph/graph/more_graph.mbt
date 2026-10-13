@@ -13,10 +13,10 @@
 ///
 /// INVARIANT: After iteration i, dist[v] <= shortest path to v using at most i edges.
 fn bellman_ford_with_neg_cycle(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int)], // (from, to, weight)
-  source : Int,
-) -> (Array[Int], Bool) {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int32)], // (from, to, weight)
+  source : Int32,
+) -> (Array[Int32], Bool) {
   // Bool indicates if negative cycle exists
   let inf = 2147483647
   let dist = Array::make(n, inf)
@@ -74,7 +74,7 @@ fn bellman_ford_with_neg_cycle(
 ///|
 test "bellman ford" {
   // Graph: 0 -> 1 (4), 0 -> 2 (5), 1 -> 2 (-3), 2 -> 3 (4)
-  let edges : ReadOnlyArray[(Int, Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32, Int32)] = [
     (0, 1, 4),
     (0, 2, 5),
     (1, 2, -3),
@@ -91,7 +91,7 @@ test "bellman ford" {
 ///|
 test "bellman ford negative cycle" {
   // Graph with negative cycle: 0 -> 1 (1), 1 -> 2 (1), 2 -> 0 (-3)
-  let edges : ReadOnlyArray[(Int, Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32, Int32)] = [
     (0, 1, 1),
     (1, 2, 1),
     (2, 0, -3),
@@ -110,12 +110,12 @@ test "bellman ford negative cycle" {
 ///
 /// INVARIANT: After processing vertex k, dist[i][j] is the shortest path
 /// using only vertices {0, ..., k} as intermediate nodes.
-fn floyd_warshall_all_pairs(adj : Array[Array[Int]]) -> Array[Array[Int]] {
+fn floyd_warshall_all_pairs(adj : Array[Array[Int32]]) -> Array[Array[Int32]] {
   let n = adj.length()
   let inf = 2147483647 / 2 // Avoid overflow
 
   // Initialize distance matrix using makei
-  let dist : Array[Array[Int]] = [
+  let dist : Array[Array[Int32]] = [
     for i in 0..<n => {
       [
         for j in 0..<n => {
@@ -209,10 +209,13 @@ test "floyd warshall" {
 ///
 /// INVARIANT: Vertices with in-degree 0 have no remaining predecessors,
 /// so they can be safely added to the topological order.
-fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
+fn topological_sort_kahn(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Int32]? {
   // Calculate in-degrees
   let in_degree = Array::make(n, 0)
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
     adj[u].push(v)
@@ -220,8 +223,8 @@ fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? 
   }
 
   // Queue of vertices with in-degree 0
-  let queue : Array[Int] = [ for i in 0..<n if in_degree[i] == 0 => i ]
-  let result : Array[Int] = []
+  let queue : Array[Int32] = [ for i in 0..<n if in_degree[i] == 0 => i ]
+  let result : Array[Int32] = []
   let _ = for front = 0 {
     match queue.get(front) {
       None => break ()
@@ -249,7 +252,7 @@ fn topological_sort_kahn(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? 
 ///|
 test "topological sort kahn" {
   // DAG: 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
   let result = topological_sort_kahn(4, edges)
   assert_true(result is Some(_))
 }
@@ -259,14 +262,14 @@ test "topological sort kahn" {
 ///
 /// INVARIANT: Vertices at even BFS levels get color 0, odd levels get color 1.
 /// Graph is bipartite iff no edge connects same-colored vertices.
-fn is_bipartite(n : Int, adj : Array[Array[Int]]) -> Bool {
+fn is_bipartite(n : Int32, adj : Array[Array[Int32]]) -> Bool {
   let color = Array::make(n, -1) // -1 = unvisited
 
   // Check each component
   for start in 0..<n {
     if color[start] == -1 {
       // BFS from this vertex
-      let queue : Array[Int] = [start]
+      let queue : Array[Int32] = [start]
       color[start] = 0
       let _ = for front = 0 {
         match queue.get(front) {
@@ -316,7 +319,7 @@ test "bipartite" {
 ///
 /// Uses three states: WHITE (unvisited), GRAY (in current path), BLACK (finished)
 /// A cycle exists iff we encounter a GRAY vertex during DFS.
-fn has_cycle_directed(n : Int, adj : Array[Array[Int]]) -> Bool {
+fn has_cycle_directed(n : Int32, adj : Array[Array[Int32]]) -> Bool {
   let white = 0
   let gray = 1
   let black = 2
@@ -346,11 +349,11 @@ fn has_cycle_directed(n : Int, adj : Array[Array[Int]]) -> Bool {
 
 ///|
 fn dfs_has_cycle(
-  adj : Array[Array[Int]],
-  state : Array[Int],
-  u : Int,
-  gray : Int,
-  black : Int,
+  adj : Array[Array[Int32]],
+  state : Array[Int32],
+  u : Int32,
+  gray : Int32,
+  black : Int32,
 ) -> Bool {
   state[u] = gray // Mark as in-progress
   for v in adj[u] {
@@ -382,10 +385,10 @@ test "cycle detection directed" {
 /// Two DFS passes:
 /// 1. First DFS on original graph to get finish order
 /// 2. Second DFS on reverse graph in reverse finish order
-fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
+fn count_sccs(n : Int32, adj : Array[Array[Int32]]) -> Int32 {
   // First pass: get finish order
   let visited = Array::make(n, false)
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
   for i in 0..<n {
     if !visited[i] {
       dfs_order(adj, visited, order, i)
@@ -406,7 +409,7 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
   }
 
   // Build reverse graph using makei
-  let rev_adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+  let rev_adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for u in 0..<n {
     for v in adj[u] {
       rev_adj[v].push(u)
@@ -441,10 +444,10 @@ fn count_sccs(n : Int, adj : Array[Array[Int]]) -> Int {
 
 ///|
 fn dfs_order(
-  adj : Array[Array[Int]],
+  adj : Array[Array[Int32]],
   visited : Array[Bool],
-  order : Array[Int],
-  u : Int,
+  order : Array[Int32],
+  u : Int32,
 ) -> Unit {
   visited[u] = true
   for v in adj[u] {
@@ -456,7 +459,11 @@ fn dfs_order(
 }
 
 ///|
-fn dfs_mark(adj : Array[Array[Int]], visited : Array[Bool], u : Int) -> Unit {
+fn dfs_mark(
+  adj : Array[Array[Int32]],
+  visited : Array[Bool],
+  u : Int32,
+) -> Unit {
   visited[u] = true
   for v in adj[u] {
     if !visited[v] {
@@ -478,7 +485,7 @@ test "count sccs" {
 ///
 /// INVARIANT: At each step, we add the minimum-weight edge connecting
 /// the MST to a non-MST vertex.
-fn prim_mst(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
+fn prim_mst(n : Int32, adj : Array[Array[(Int32, Int32)]]) -> Int32 {
   // adj[u] contains (v, weight) pairs
   if n == 0 {
     return 0
@@ -552,7 +559,7 @@ test "prim mst" {
   //        2 -- 3 (7), 2 -- 8 (2), 2 -- 5 (4), 3 -- 4 (9)
   //        3 -- 5 (14), 4 -- 5 (10), 5 -- 6 (2), 6 -- 7 (1)
   //        6 -- 8 (6), 7 -- 8 (7)
-  let adj : Array[Array[(Int, Int)]] = [
+  let adj : Array[Array[(Int32, Int32)]] = [
     [(1, 4), (7, 8)], // 0
     [(0, 4), (2, 8), (7, 11)], // 1
     [(1, 8), (3, 7), (5, 4), (8, 2)], // 2
@@ -572,7 +579,7 @@ test "prim mst" {
 ///
 /// Sort edges by weight, add each edge if it doesn't create a cycle.
 /// Uses Union-Find for cycle detection.
-fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
+fn kruskal_mst(n : Int32, edges : Array[(Int32, Int32, Int32)]) -> Int32 {
   // Sort edges by weight - use insertion sort for simplicity
   let sorted_edges = edges.copy()
   // Simple bubble sort since sort_by_key may not work with tuples
@@ -658,7 +665,7 @@ fn kruskal_mst(n : Int, edges : Array[(Int, Int, Int)]) -> Int {
 }
 
 ///|
-fn find_root(parent : Array[Int], x : Int) -> Int {
+fn find_root(parent : Array[Int32], x : Int32) -> Int32 {
   for p = x; parent[p] != p; {
     // Path compression
     parent[p] = parent[parent[p]]

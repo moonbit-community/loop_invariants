@@ -21,13 +21,13 @@
 ///   true_sum[i] = sum[i] + lazy[i] * (r - l)
 /// where true_sum[i] is what the sum would be if all lazy values were pushed down.
 priv struct LazySegmentTree {
-  n : Int
+  n : Int32
   tree : Array[Int64] // sum values
   lazy_add : Array[Int64] // pending range-add values
 }
 
 ///|
-fn LazySegmentTree::LazySegmentTree(arr : ArrayView[Int]) -> LazySegmentTree {
+fn LazySegmentTree::LazySegmentTree(arr : ArrayView[Int32]) -> LazySegmentTree {
   let n = arr.length()
   let tree = Array::make(4 * n, 0L)
   let lazy_add = Array::make(4 * n, 0L)
@@ -44,10 +44,10 @@ fn LazySegmentTree::LazySegmentTree(arr : ArrayView[Int]) -> LazySegmentTree {
 /// INVARIANT: After build(arr, node, l, r), tree[node] = sum(arr[l..r])
 fn LazySegmentTree::build(
   self : LazySegmentTree,
-  arr : ArrayView[Int],
-  node : Int,
-  l : Int,
-  r : Int,
+  arr : ArrayView[Int32],
+  node : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Unit {
   if r - l == 1 {
     // Leaf node
@@ -69,9 +69,9 @@ fn LazySegmentTree::build(
 ///              Children have their lazy values updated
 fn LazySegmentTree::push_down(
   self : LazySegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Unit {
   if self.lazy_add[node] != 0L {
     let mid = (l + r) / 2
@@ -101,8 +101,8 @@ fn LazySegmentTree::push_down(
 /// CORRECTNESS: Each element in [ql, qr) receives exactly one update of `val`.
 fn LazySegmentTree::range_update(
   self : LazySegmentTree,
-  ql : Int,
-  qr : Int,
+  ql : Int32,
+  qr : Int32,
   val : Int64,
 ) -> Unit {
   self.update_helper(1, 0, self.n, ql, qr, val)
@@ -111,11 +111,11 @@ fn LazySegmentTree::range_update(
 ///|
 fn LazySegmentTree::update_helper(
   self : LazySegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
   val : Int64,
 ) -> Unit {
   if qr <= l || r <= ql {
@@ -143,8 +143,8 @@ fn LazySegmentTree::update_helper(
 /// INVARIANT: The returned sum accounts for all lazy updates along the path.
 fn LazySegmentTree::range_sum(
   self : LazySegmentTree,
-  ql : Int,
-  qr : Int,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   self.query_helper(1, 0, self.n, ql, qr)
 }
@@ -152,11 +152,11 @@ fn LazySegmentTree::range_sum(
 ///|
 fn LazySegmentTree::query_helper(
   self : LazySegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   if qr <= l || r <= ql {
     return 0L
@@ -172,7 +172,7 @@ fn LazySegmentTree::query_helper(
 
 ///|
 test "lazy segment tree basic" {
-  let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
+  let arr : ReadOnlyArray[Int32] = [1, 2, 3, 4, 5]
   let st = LazySegmentTree(arr)
 
   // Initial sums
@@ -199,7 +199,7 @@ test "lazy segment tree basic" {
 /// INVARIANT: If lazy[node] != sentinel, then all elements in the subtree
 /// should be set to lazy[node], overriding any previous values.
 priv struct SetSegmentTree {
-  n : Int
+  n : Int32
   tree : Array[Int64] // sum values
   lazy_set : Array[Int64] // pending "set" values (sentinel = no pending)
 }
@@ -208,7 +208,7 @@ priv struct SetSegmentTree {
 let set_sentinel : Int64 = -9223372036854775808L // Int64::min_value()
 
 ///|
-fn SetSegmentTree::SetSegmentTree(arr : ArrayView[Int]) -> SetSegmentTree {
+fn SetSegmentTree::SetSegmentTree(arr : ArrayView[Int32]) -> SetSegmentTree {
   let n = arr.length()
   let tree = Array::make(4 * n, 0L)
   let lazy_set = Array::make(4 * n, set_sentinel)
@@ -222,10 +222,10 @@ fn SetSegmentTree::SetSegmentTree(arr : ArrayView[Int]) -> SetSegmentTree {
 ///|
 fn SetSegmentTree::build(
   self : SetSegmentTree,
-  arr : ArrayView[Int],
-  node : Int,
-  l : Int,
-  r : Int,
+  arr : ArrayView[Int32],
+  node : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Unit {
   if r - l == 1 {
     self.tree[node] = arr[l].to_int64()
@@ -240,9 +240,9 @@ fn SetSegmentTree::build(
 ///|
 fn SetSegmentTree::push_down(
   self : SetSegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Unit {
   if self.lazy_set[node] != set_sentinel {
     let mid = (l + r) / 2
@@ -261,8 +261,8 @@ fn SetSegmentTree::push_down(
 /// Set all elements in [ql, qr) to val.
 fn SetSegmentTree::range_set(
   self : SetSegmentTree,
-  ql : Int,
-  qr : Int,
+  ql : Int32,
+  qr : Int32,
   val : Int64,
 ) -> Unit {
   self.set_helper(1, 0, self.n, ql, qr, val)
@@ -271,11 +271,11 @@ fn SetSegmentTree::range_set(
 ///|
 fn SetSegmentTree::set_helper(
   self : SetSegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
   val : Int64,
 ) -> Unit {
   if qr <= l || r <= ql {
@@ -296,8 +296,8 @@ fn SetSegmentTree::set_helper(
 ///|
 fn SetSegmentTree::range_sum(
   self : SetSegmentTree,
-  ql : Int,
-  qr : Int,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   self.query_helper(1, 0, self.n, ql, qr)
 }
@@ -305,11 +305,11 @@ fn SetSegmentTree::range_sum(
 ///|
 fn SetSegmentTree::query_helper(
   self : SetSegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   if qr <= l || r <= ql {
     return 0L
@@ -325,7 +325,7 @@ fn SetSegmentTree::query_helper(
 
 ///|
 test "set segment tree" {
-  let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
+  let arr : ReadOnlyArray[Int32] = [1, 2, 3, 4, 5]
   let st = SetSegmentTree(arr)
   @debug.assert_eq(st.range_sum(0, 5), 15L)
 
@@ -352,13 +352,13 @@ test "set segment tree" {
 ///
 /// INVARIANT: tree[node] = min(arr[l..r]) + (accumulated lazy additions)
 priv struct RMQSegmentTree {
-  n : Int
+  n : Int32
   tree : Array[Int64] // min values
   lazy_add : Array[Int64] // pending "add" values
 }
 
 ///|
-fn RMQSegmentTree::RMQSegmentTree(arr : ArrayView[Int]) -> RMQSegmentTree {
+fn RMQSegmentTree::RMQSegmentTree(arr : ArrayView[Int32]) -> RMQSegmentTree {
   let n = arr.length()
   let tree = Array::make(4 * n, 0L)
   let lazy_add = Array::make(4 * n, 0L)
@@ -372,10 +372,10 @@ fn RMQSegmentTree::RMQSegmentTree(arr : ArrayView[Int]) -> RMQSegmentTree {
 ///|
 fn RMQSegmentTree::build(
   self : RMQSegmentTree,
-  arr : ArrayView[Int],
-  node : Int,
-  l : Int,
-  r : Int,
+  arr : ArrayView[Int32],
+  node : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Unit {
   if r - l == 1 {
     self.tree[node] = arr[l].to_int64()
@@ -392,7 +392,7 @@ fn RMQSegmentTree::build(
 }
 
 ///|
-fn RMQSegmentTree::push_down(self : RMQSegmentTree, node : Int) -> Unit {
+fn RMQSegmentTree::push_down(self : RMQSegmentTree, node : Int32) -> Unit {
   if self.lazy_add[node] != 0L {
     // Propagate addition to children
     self.tree[2 * node] = self.tree[2 * node] + self.lazy_add[node]
@@ -408,8 +408,8 @@ fn RMQSegmentTree::push_down(self : RMQSegmentTree, node : Int) -> Unit {
 /// Add val to all elements in [ql, qr).
 fn RMQSegmentTree::range_add(
   self : RMQSegmentTree,
-  ql : Int,
-  qr : Int,
+  ql : Int32,
+  qr : Int32,
   val : Int64,
 ) -> Unit {
   self.add_helper(1, 0, self.n, ql, qr, val)
@@ -418,11 +418,11 @@ fn RMQSegmentTree::range_add(
 ///|
 fn RMQSegmentTree::add_helper(
   self : RMQSegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
   val : Int64,
 ) -> Unit {
   if qr <= l || r <= ql {
@@ -448,8 +448,8 @@ fn RMQSegmentTree::add_helper(
 /// Query minimum in [ql, qr).
 fn RMQSegmentTree::range_min(
   self : RMQSegmentTree,
-  ql : Int,
-  qr : Int,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   self.min_helper(1, 0, self.n, ql, qr)
 }
@@ -457,11 +457,11 @@ fn RMQSegmentTree::range_min(
 ///|
 fn RMQSegmentTree::min_helper(
   self : RMQSegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   if qr <= l || r <= ql {
     return 9223372036854775807L // Int64::max_value()
@@ -482,7 +482,7 @@ fn RMQSegmentTree::min_helper(
 
 ///|
 test "RMQ segment tree" {
-  let arr : ReadOnlyArray[Int] = [3, 1, 4, 1, 5, 9, 2, 6]
+  let arr : ReadOnlyArray[Int32] = [3, 1, 4, 1, 5, 9, 2, 6]
   let st = RMQSegmentTree(arr)
   @debug.assert_eq(st.range_min(0, 8), 1L) // min of all
   @debug.assert_eq(st.range_min(0, 4), 1L) // min of [3,1,4,1]
@@ -508,21 +508,21 @@ test "RMQ segment tree" {
 /// SPACE COMPLEXITY: O(n + q log n) for n elements and q updates.
 priv struct PersistentNode {
   sum : Int64
-  left : Int // index into node pool, 0 = null
-  right : Int // index into node pool, 0 = null
+  left : Int32 // index into node pool, 0 = null
+  right : Int32 // index into node pool, 0 = null
 }
 
 ///|
 priv struct PersistentSegmentTree {
-  n : Int
+  n : Int32
   nodes : Array[PersistentNode]
-  roots : Array[Int] // root index for each version
-  mut node_count : Int
+  roots : Array[Int32] // root index for each version
+  mut node_count : Int32
 }
 
 ///|
 fn PersistentSegmentTree::PersistentSegmentTree(
-  n : Int,
+  n : Int32,
 ) -> PersistentSegmentTree {
   // Pre-allocate space for nodes (initial tree + updates)
   let max_nodes = 4 * n + 1
@@ -538,9 +538,9 @@ fn PersistentSegmentTree::PersistentSegmentTree(
 fn PersistentSegmentTree::alloc_node(
   self : PersistentSegmentTree,
   sum : Int64,
-  left : Int,
-  right : Int,
-) -> Int {
+  left : Int32,
+  right : Int32,
+) -> Int32 {
   let idx = self.node_count
   self.node_count = self.node_count + 1
   self.nodes[idx] = { sum, left, right, }
@@ -550,9 +550,9 @@ fn PersistentSegmentTree::alloc_node(
 ///|
 fn PersistentSegmentTree::build_empty(
   self : PersistentSegmentTree,
-  l : Int,
-  r : Int,
-) -> Int {
+  l : Int32,
+  r : Int32,
+) -> Int32 {
   if r - l == 1 {
     self.alloc_node(0L, 0, 0)
   } else {
@@ -570,10 +570,10 @@ fn PersistentSegmentTree::build_empty(
 /// INVARIANT: The new tree shares all nodes except O(log n) on the path to pos.
 fn PersistentSegmentTree::update(
   self : PersistentSegmentTree,
-  version : Int,
-  pos : Int,
+  version : Int32,
+  pos : Int32,
   val : Int64,
-) -> Int {
+) -> Int32 {
   let new_root = self.update_helper(self.roots[version], 0, self.n, pos, val)
   let new_version = version + 1
   self.roots[new_version] = new_root
@@ -583,12 +583,12 @@ fn PersistentSegmentTree::update(
 ///|
 fn PersistentSegmentTree::update_helper(
   self : PersistentSegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
-  pos : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  pos : Int32,
   val : Int64,
-) -> Int {
+) -> Int32 {
   if r - l == 1 {
     // Leaf node - create new node with updated value
     self.alloc_node(val, 0, 0)
@@ -613,9 +613,9 @@ fn PersistentSegmentTree::update_helper(
 /// Query sum in [ql, qr) for a specific version.
 fn PersistentSegmentTree::range_sum(
   self : PersistentSegmentTree,
-  version : Int,
-  ql : Int,
-  qr : Int,
+  version : Int32,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   self.query_helper(self.roots[version], 0, self.n, ql, qr)
 }
@@ -623,11 +623,11 @@ fn PersistentSegmentTree::range_sum(
 ///|
 fn PersistentSegmentTree::query_helper(
   self : PersistentSegmentTree,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   if qr <= l || r <= ql {
     return 0L
@@ -670,7 +670,7 @@ test "persistent segment tree" {
 /// INVARIANT: tree[i] = tree[2i] op tree[2i+1] for all i in [1, n)
 /// where op is the combining operation (sum, min, max, etc.)
 priv struct IterativeSegmentTree {
-  n : Int
+  n : Int32
   tree : Array[Int64]
 }
 
@@ -681,7 +681,7 @@ priv struct IterativeSegmentTree {
 /// After processing position i:
 ///   - tree[n+j] = arr[j] for j in [0, i]
 ///   - tree[k] for k < n not yet valid
-fn iterative_segment_tree_build(arr : ArrayView[Int]) -> IterativeSegmentTree {
+fn iterative_segment_tree_build(arr : ArrayView[Int32]) -> IterativeSegmentTree {
   let n = arr.length()
   let tree = Array::make(2 * n, 0L)
 
@@ -705,7 +705,7 @@ fn iterative_segment_tree_build(arr : ArrayView[Int]) -> IterativeSegmentTree {
 /// After updating tree[i], we move to parent i/2.
 fn IterativeSegmentTree::update(
   self : IterativeSegmentTree,
-  pos : Int,
+  pos : Int32,
   val : Int64,
 ) -> Unit {
   let leaf_idx = pos + self.n
@@ -742,8 +742,8 @@ fn IterativeSegmentTree::update(
 /// that are in subtrees we won't visit again.
 fn IterativeSegmentTree::range_sum(
   self : IterativeSegmentTree,
-  ql : Int,
-  qr : Int,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   // Process level by level, handling boundary nodes
   for l = ql + self.n, r = qr + self.n, result = 0L; l < r; {
@@ -786,7 +786,7 @@ fn IterativeSegmentTree::range_sum(
 
 ///|
 test "iterative segment tree" {
-  let arr : ReadOnlyArray[Int] = [1, 2, 3, 4, 5]
+  let arr : ReadOnlyArray[Int32] = [1, 2, 3, 4, 5]
   let st = iterative_segment_tree_build(arr)
   @debug.assert_eq(st.range_sum(0, 5), 15L)
   @debug.assert_eq(st.range_sum(0, 3), 6L)
@@ -811,7 +811,7 @@ test "iterative segment tree" {
 ///   - count = |{i in [l,r) : arr[i] = max_val}|
 priv struct MaxCountNode {
   max_val : Int64
-  count : Int
+  count : Int32
 }
 
 ///|
@@ -828,12 +828,12 @@ fn max_count_combine(a : MaxCountNode, b : MaxCountNode) -> MaxCountNode {
 
 ///|
 priv struct MaxCountSegmentTree {
-  n : Int
+  n : Int32
   tree : Array[MaxCountNode]
 }
 
 ///|
-fn max_count_segment_tree_build(arr : ArrayView[Int]) -> MaxCountSegmentTree {
+fn max_count_segment_tree_build(arr : ArrayView[Int32]) -> MaxCountSegmentTree {
   let n = arr.length()
   let tree = Array::make(2 * n, { max_val: -9223372036854775808L, count: 0, })
 
@@ -852,8 +852,8 @@ fn max_count_segment_tree_build(arr : ArrayView[Int]) -> MaxCountSegmentTree {
 ///|
 fn MaxCountSegmentTree::range_query(
   self : MaxCountSegmentTree,
-  ql : Int,
-  qr : Int,
+  ql : Int32,
+  qr : Int32,
 ) -> MaxCountNode {
   let init_result : MaxCountNode = { max_val: -9223372036854775808L, count: 0, }
   for l = ql + self.n, r = qr + self.n, result = init_result; l < r; {
@@ -889,7 +889,7 @@ fn MaxCountSegmentTree::range_query(
 
 ///|
 test "max count segment tree" {
-  let arr : ReadOnlyArray[Int] = [3, 1, 4, 1, 5, 9, 2, 6]
+  let arr : ReadOnlyArray[Int32] = [3, 1, 4, 1, 5, 9, 2, 6]
   let st = max_count_segment_tree_build(arr)
   let result = st.range_query(0, 8)
   @debug.assert_eq(result.max_val, 9L)
@@ -901,7 +901,7 @@ test "max count segment tree" {
   @debug.assert_eq(result2.count, 1)
 
   // Test with duplicates
-  let arr2 : ReadOnlyArray[Int] = [3, 5, 5, 2, 5, 1]
+  let arr2 : ReadOnlyArray[Int32] = [3, 5, 5, 2, 5, 1]
   let st2 = max_count_segment_tree_build(arr2)
   let result3 = st2.range_query(0, 6)
   @debug.assert_eq(result3.max_val, 5L)
@@ -917,13 +917,13 @@ test "max count segment tree" {
 /// INVARIANT: For outer node covering rows [r1, r2):
 ///   inner[c] = sum of matrix[r][c] for r in [r1, r2)
 priv struct SegmentTree2D {
-  rows : Int
-  cols : Int
+  rows : Int32
+  cols : Int32
   tree : Array[Array[Int64]] // tree[outer][inner]
 }
 
 ///|
-fn SegmentTree2D::SegmentTree2D(matrix : Array[Array[Int]]) -> SegmentTree2D {
+fn SegmentTree2D::SegmentTree2D(matrix : Array[Array[Int32]]) -> SegmentTree2D {
   let rows = matrix.length()
   if rows == 0 {
     return { rows: 0, cols: 0, tree: [], }
@@ -961,8 +961,8 @@ fn SegmentTree2D::SegmentTree2D(matrix : Array[Array[Int]]) -> SegmentTree2D {
 /// Point update: set matrix[row][col] to val.
 fn SegmentTree2D::update(
   self : SegmentTree2D,
-  row : Int,
-  col : Int,
+  row : Int32,
+  col : Int32,
   val : Int64,
 ) -> Unit {
   let c = col + self.cols
@@ -1021,10 +1021,10 @@ fn SegmentTree2D::update(
 /// Range sum query for matrix[r1..r2)[c1..c2).
 fn SegmentTree2D::range_sum(
   self : SegmentTree2D,
-  r1 : Int,
-  r2 : Int,
-  c1 : Int,
-  c2 : Int,
+  r1 : Int32,
+  r2 : Int32,
+  c1 : Int32,
+  c2 : Int32,
 ) -> Int64 {
   for row_l = r1 + self.rows, row_r = r2 + self.rows, result = 0L; row_l < row_r; {
     // Handle left boundary
@@ -1060,9 +1060,9 @@ fn SegmentTree2D::range_sum(
 ///|
 fn SegmentTree2D::col_sum(
   self : SegmentTree2D,
-  row : Int,
-  c1 : Int,
-  c2 : Int,
+  row : Int32,
+  c1 : Int32,
+  c2 : Int32,
 ) -> Int64 {
   for l = c1 + self.cols, r = c2 + self.cols, result = 0L; l < r; {
     // Handle left boundary

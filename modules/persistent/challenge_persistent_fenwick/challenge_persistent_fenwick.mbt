@@ -5,7 +5,7 @@
 
 ///|
 enum Node {
-  Leaf(value~ : Int)
+  Leaf(value~ : Int32)
   Branch(left~ : Node, right~ : Node)
 } derive(Debug)
 
@@ -32,11 +32,11 @@ enum Node {
 /// ```
 pub struct Fenwick {
   root : Node
-  n : Int
+  n : Int32
 } derive(Debug)
 
 ///|
-fn build_zero(l : Int, r : Int) -> Node {
+fn build_zero(l : Int32, r : Int32) -> Node {
   if r - l == 1 {
     Leaf(value=0)
   } else {
@@ -48,7 +48,7 @@ fn build_zero(l : Int, r : Int) -> Node {
 }
 
 ///|
-fn array_get(node : Node, l : Int, r : Int, idx : Int) -> Int {
+fn array_get(node : Node, l : Int32, r : Int32, idx : Int32) -> Int32 {
   match node {
     Leaf(value~) => value
     Branch(left~, right~) => {
@@ -63,7 +63,13 @@ fn array_get(node : Node, l : Int, r : Int, idx : Int) -> Int {
 }
 
 ///|
-fn array_set(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
+fn array_set(
+  node : Node,
+  l : Int32,
+  r : Int32,
+  idx : Int32,
+  value : Int32,
+) -> Node {
   if r - l == 1 {
     Leaf(value~)
   } else {
@@ -81,7 +87,7 @@ fn array_set(node : Node, l : Int, r : Int, idx : Int, value : Int) -> Node {
 }
 
 ///|
-fn tree_shape(node : Node, len : Int) -> Bool {
+fn tree_shape(node : Node, len : Int32) -> Bool {
   match node {
     Leaf(value=_) => len == 1
     Branch(left~, right~) =>
@@ -96,20 +102,20 @@ fn tree_shape(node : Node, len : Int) -> Bool {
 
 ///|
 /// Create a persistent Fenwick tree with n zeroed elements.
-pub fn make(n : Int) -> Fenwick {
+pub fn make(n : Int32) -> Fenwick {
   let size = n + 1
   { root: build_zero(0, size), n, }
 }
 
 ///|
 /// Return the number of elements tracked by the tree.
-pub fn length(fw : Fenwick) -> Int {
+pub fn length(fw : Fenwick) -> Int32 {
   fw.n
 }
 
 ///|
 /// Add delta at index idx (0-based).
-pub fn add(fw : Fenwick, idx : Int, delta : Int) -> Fenwick {
+pub fn add(fw : Fenwick, idx : Int32, delta : Int32) -> Fenwick {
   if idx < 0 || idx >= fw.n {
     return fw
   }
@@ -138,7 +144,7 @@ pub fn add(fw : Fenwick, idx : Int, delta : Int) -> Fenwick {
 
 ///|
 /// Prefix sum for [0, idx] (0-based, inclusive).
-pub fn prefix_sum(fw : Fenwick, idx : Int) -> Int {
+pub fn prefix_sum(fw : Fenwick, idx : Int32) -> Int32 {
   if idx < 0 {
     return 0
   }
@@ -167,7 +173,7 @@ pub fn prefix_sum(fw : Fenwick, idx : Int) -> Int {
 
 ///|
 /// Query the sum over [l, r] (inclusive).
-pub fn range_sum(fw : Fenwick, l : Int, r : Int) -> Int {
+pub fn range_sum(fw : Fenwick, l : Int32, r : Int32) -> Int32 {
   if l > r {
     0
   } else {

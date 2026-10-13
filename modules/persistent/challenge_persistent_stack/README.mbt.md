@@ -64,7 +64,7 @@ You can query or pop from any version without affecting the others.
 ```mbt check
 ///|
 test "stack basic" {
-  let s0 : @challenge_persistent_stack.Stack[Int] = @challenge_persistent_stack.empty()
+  let s0 : @challenge_persistent_stack.Stack[Int32] = @challenge_persistent_stack.empty()
   let s1 = @challenge_persistent_stack.push(s0, 1)
   let s2 = @challenge_persistent_stack.push(s1, 2)
   debug_inspect(@challenge_persistent_stack.peek(s2), content="Some(2)")
@@ -83,7 +83,7 @@ test "stack basic" {
 ```mbt check
 ///|
 test "stack versions" {
-  let s0 : @challenge_persistent_stack.Stack[Int] = @challenge_persistent_stack.empty()
+  let s0 : @challenge_persistent_stack.Stack[Int32] = @challenge_persistent_stack.empty()
   let s1 = @challenge_persistent_stack.push(s0, 10)
   let s2 = @challenge_persistent_stack.push(s1, 20)
 

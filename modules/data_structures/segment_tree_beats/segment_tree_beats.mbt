@@ -60,10 +60,10 @@ fn max_i64(a : Int64, b : Int64) -> Int64 {
 /// All ranges passed to public methods use the **half-open** convention:
 /// `[l, r)` covers indices `l, l+1, ..., r-1`.
 pub struct SegmentTreeBeats {
-  n : Int
+  n : Int32
   max : Array[Int64]
   second_max : Array[Int64]
-  count_max : Array[Int]
+  count_max : Array[Int32]
   sum : Array[Int64]
 }
 
@@ -95,9 +95,9 @@ pub fn SegmentTreeBeats::SegmentTreeBeats(
 ///|
 fn SegmentTreeBeats::build(
   self : SegmentTreeBeats,
-  node : Int,
-  l : Int,
-  r : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
   values : ArrayView[Int64],
 ) -> Unit {
   if r - l == 1 {
@@ -126,7 +126,7 @@ fn SegmentTreeBeats::build(
 ///   child's own `second_max`.
 /// - When both children share the same max, add their `count_max` values and
 ///   take the larger of their `second_max` values.
-fn SegmentTreeBeats::pull(self : SegmentTreeBeats, node : Int) -> Unit {
+fn SegmentTreeBeats::pull(self : SegmentTreeBeats, node : Int32) -> Unit {
   let left = node * 2
   let right = left + 1
   let left_max = self.max[left]
@@ -171,7 +171,7 @@ fn SegmentTreeBeats::pull(self : SegmentTreeBeats, node : Int) -> Unit {
 /// propagate this tag to the children when needed.
 fn SegmentTreeBeats::apply_chmin(
   self : SegmentTreeBeats,
-  node : Int,
+  node : Int32,
   x : Int64,
 ) -> Unit {
   let max_val = self.max[node]
@@ -196,7 +196,7 @@ fn SegmentTreeBeats::apply_chmin(
 ///
 /// Must be called before descending into children during an update or query
 /// that cannot be served from the current node alone.
-fn SegmentTreeBeats::push(self : SegmentTreeBeats, node : Int) -> Unit {
+fn SegmentTreeBeats::push(self : SegmentTreeBeats, node : Int32) -> Unit {
   let max_val = self.max[node]
   let left = node * 2
   let right = left + 1
@@ -224,8 +224,8 @@ fn SegmentTreeBeats::push(self : SegmentTreeBeats, node : Int) -> Unit {
 /// Complexity: amortized O(log^2 n).
 pub fn SegmentTreeBeats::range_chmin(
   self : SegmentTreeBeats,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
   x : Int64,
 ) -> Unit {
   if self.n == 0 || l >= r {
@@ -248,11 +248,11 @@ pub fn SegmentTreeBeats::range_chmin(
 /// - Otherwise                                          ->  push, recurse, pull (Case C).
 fn SegmentTreeBeats::chmin_impl(
   self : SegmentTreeBeats,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
   x : Int64,
 ) -> Unit {
   if qr <= l || r <= ql || x >= self.max[node] {
@@ -283,8 +283,8 @@ fn SegmentTreeBeats::chmin_impl(
 /// Complexity: O(log n).
 pub fn SegmentTreeBeats::range_max(
   self : SegmentTreeBeats,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if self.n == 0 || l >= r {
     return NEG_INF
@@ -297,11 +297,11 @@ pub fn SegmentTreeBeats::range_max(
 /// `node` covering `[l, r)`, against query range `[ql, qr)`.
 fn SegmentTreeBeats::max_impl(
   self : SegmentTreeBeats,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   if qr <= l || r <= ql {
     return NEG_INF
@@ -328,8 +328,8 @@ fn SegmentTreeBeats::max_impl(
 /// Complexity: O(log n).
 pub fn SegmentTreeBeats::range_sum(
   self : SegmentTreeBeats,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if self.n == 0 || l >= r {
     return 0L
@@ -342,11 +342,11 @@ pub fn SegmentTreeBeats::range_sum(
 /// `node` covering `[l, r)`, against query range `[ql, qr)`.
 fn SegmentTreeBeats::sum_impl(
   self : SegmentTreeBeats,
-  node : Int,
-  l : Int,
-  r : Int,
-  ql : Int,
-  qr : Int,
+  node : Int32,
+  l : Int32,
+  r : Int32,
+  ql : Int32,
+  qr : Int32,
 ) -> Int64 {
   if qr <= l || r <= ql {
     return 0L

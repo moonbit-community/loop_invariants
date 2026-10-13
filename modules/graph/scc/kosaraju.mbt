@@ -74,7 +74,7 @@
 /// Returns an `SCCResult` with the same structure as `find_sccs`.
 ///
 /// Time: `O(V + E)`. Space: `O(V + E)` (transpose graph uses extra space).
-pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
+pub fn find_sccs_kosaraju(n : Int32, adj : Array[Array[Int32]]) -> SCCResult {
   if n == 0 {
     return { num_sccs: 0, component: [], scc_sizes: [], scc_adj: [], }
   }
@@ -83,7 +83,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // PASS 1: Compute finish order
   // =========================================================================
   let visited = Array::make(n, false)
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
   for v in 0..<n {
     if !visited[v] {
       dfs_order(v, adj, visited, order)
@@ -110,7 +110,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // =========================================================================
   // TRANSPOSE: Build reverse graph
   // =========================================================================
-  let radj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+  let radj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for u in 0..<n {
     for j in 0..<adj[u].length() {
       let v = adj[u][j]
@@ -146,7 +146,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // PASS 2: Assign SCCs in reverse finish order
   // =========================================================================
   let component = Array::make(n, -1)
-  let scc_sizes : Array[Int] = []
+  let scc_sizes : Array[Int32] = []
   let scc_count = for i in n>..0; scc_count = 0 {
     let v = order[i]
     if component[v] == -1 {
@@ -163,7 +163,7 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
   // =========================================================================
   // Build condensation graph
   // =========================================================================
-  let scc_adj : Array[Array[Int]] = [ for _ in 0..<scc_count => [] ]
+  let scc_adj : Array[Array[Int32]] = [ for _ in 0..<scc_count => [] ]
   for u in 0..<n {
     let comp_u = component[u]
     for j in 0..<adj[u].length() {
@@ -220,10 +220,10 @@ pub fn find_sccs_kosaraju(n : Int, adj : Array[Array[Int]]) -> SCCResult {
 /// - `visited` : boolean flags to skip already-visited vertices.
 /// - `order`   : accumulates vertices in post-order.
 fn dfs_order(
-  v : Int,
-  adj : Array[Array[Int]],
+  v : Int32,
+  adj : Array[Array[Int32]],
   visited : Array[Bool],
-  order : Array[Int],
+  order : Array[Int32],
 ) -> Unit {
   visited[v] = true
   for i in 0..<adj[v].length() {
@@ -266,10 +266,10 @@ fn dfs_order(
 /// - `scc_id`    : the SCC index to assign to `v` and its reachable set.
 /// - `size`      : mutable counter incremented for each assigned vertex.
 fn dfs_assign(
-  v : Int,
-  radj : Array[Array[Int]],
-  component : Array[Int],
-  scc_id : Int,
+  v : Int32,
+  radj : Array[Array[Int32]],
+  component : Array[Int32],
+  scc_id : Int32,
   size : Counter,
 ) -> Unit {
   component[v] = scc_id

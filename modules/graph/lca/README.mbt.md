@@ -199,7 +199,7 @@ dist(u, v) = dist_to_root[u] + dist_to_root[v]
 ```mbt check
 ///|
 test "lca basic" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5)]
   let lca = @lca.LCA(6, edges)
   debug_inspect(lca.query(4, 5), content="1")
   debug_inspect(lca.query(4, 2), content="0")
@@ -209,7 +209,7 @@ test "lca basic" {
 ```mbt check
 ///|
 test "lca distance via depths" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (1, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (1, 3)]
   let lca = @lca.LCA(4, edges)
   let l = lca.query(2, 3)
   let dist = lca.depth[2] + lca.depth[3] - 2 * lca.depth[l]

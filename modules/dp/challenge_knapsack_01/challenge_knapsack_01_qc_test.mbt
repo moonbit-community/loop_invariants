@@ -2,11 +2,11 @@
 // enumeration of every item subset (non-negative weights, capacity >= 0).
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -16,13 +16,13 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// `Int::MAX_VALUE` so an item never fits) and small or large values
 /// (negative values included), plus possibly mismatched array lengths.
 priv struct Sack {
-  weights : Array[Int]
-  values : Array[Int]
-  capacity : Int
+  weights : Array[Int32]
+  values : Array[Int32]
+  capacity : Int32
 } derive(Debug)
 
 ///|
-fn fix_weight(w : Int) -> Int {
+fn fix_weight(w : Int32) -> Int32 {
   if w < 0 {
     w.lnot()
   } else {

@@ -250,7 +250,7 @@ graph LR
 ```mbt check
 ///|
 test "min cut st balanced branches" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 3L),
     (0, 2, 2L),
     (1, 3, 2L),
@@ -308,7 +308,7 @@ Cut capacity = 1 + 1 = 2
 ```mbt check
 ///|
 test "min cut st bottleneck into sink" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 5L),
     (0, 2, 5L),
     (1, 3, 1L),
@@ -353,17 +353,17 @@ mutation for performance, which is appropriate when you have many edges.
 ```mbt check
 ///|
 fn cut_edges_fast(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
-  source_side : Array[Int],
-) -> Array[(Int, Int, Int64)] {
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
+  source_side : Array[Int32],
+) -> Array[(Int32, Int32, Int64)] {
   let in_source = Array::make(n, false)
   for v in source_side {
     if v >= 0 && v < n {
       in_source[v] = true
     }
   }
-  let cut : Array[(Int, Int, Int64)] = []
+  let cut : Array[(Int32, Int32, Int64)] = []
   for edge in edges {
     let (u, v, cap) = edge
     if in_source[u] && !in_source[v] {
@@ -374,14 +374,14 @@ fn cut_edges_fast(
 }
 
 ///|
-fn sum_cap(acc : Int64, edge : (Int, Int, Int64)) -> Int64 {
+fn sum_cap(acc : Int64, edge : (Int32, Int32, Int64)) -> Int64 {
   let (_, _, cap) = edge
   acc + cap
 }
 
 ///|
 test "cut edges sum to min cut value" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 3L),
     (0, 2, 2L),
     (1, 3, 2L),
@@ -408,7 +408,7 @@ If `t` is unreachable, the max flow (and min cut) is `0`.
 ```mbt check
 ///|
 test "min cut st no path" {
-  let edges : Array[(Int, Int, Int64)] = []
+  let edges : Array[(Int32, Int32, Int64)] = []
   let result = @min_cut_st.min_cut_st(3, edges, 0, 2).unwrap()
   debug_inspect(result.value, content="0")
 }

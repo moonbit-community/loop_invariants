@@ -130,7 +130,7 @@ fn is_strong_probable_prime(n : Int64, a : Int64) -> Bool {
 ///|
 /// Deterministic Miller-Rabin for 32-bit integers.
 /// Tests against witnesses known to work for n < 2^32.
-fn is_prime_32(n : Int) -> Bool {
+fn is_prime_32(n : Int32) -> Bool {
   if n < 2 {
     return false
   }
@@ -352,7 +352,7 @@ test "chinese_remainder" {
 ///   gcd(2a, b) = gcd(a, b) when b is odd
 ///   gcd(a, b) = gcd(|a-b|, min(a,b)) when both odd
 #warnings("+missing_invariant+missing_reasoning")
-fn binary_gcd(a : Int, b : Int) -> Int {
+fn binary_gcd(a : Int32, b : Int32) -> Int32 {
   guard a > 0 && b > 0 else { return if a > 0 { a } else { b } }
 
   // Count common factors of 2
@@ -470,7 +470,7 @@ fn binary_gcd(a : Int, b : Int) -> Int {
 
 ///|
 /// Specification for gcd (recursive definition).
-fn gcd_spec(a : Int, b : Int) -> Int {
+fn gcd_spec(a : Int32, b : Int32) -> Int32 {
   if b == 0 {
     a
   } else {
@@ -496,11 +496,11 @@ test "binary_gcd" {
 
 ///|
 /// de Bruijn sequence for 32-bit: maps each 5-bit suffix to unique position
-let de_bruijn_32 : Int = 0x077CB531
+let de_bruijn_32 : Int32 = 0x077CB531
 
 ///|
 /// Lookup table: de_bruijn_table[((x & -x) * de_bruijn_32) >> 27] = ctz(x & -x)
-let de_bruijn_table : Array[Int] = [
+let de_bruijn_table : Array[Int32] = [
   0, 1, 28, 2, 29, 14, 24, 3, 30, 22, 20, 15, 25, 17, 4, 8, 31, 27, 13, 23, 21, 19,
   16, 7, 26, 12, 18, 6, 11, 5, 10, 9,
 ]
@@ -509,7 +509,7 @@ let de_bruijn_table : Array[Int] = [
 /// Count trailing zeros using de Bruijn sequence.
 /// For n > 0, returns position of lowest set bit (0-indexed).
 #warnings("+missing_invariant+missing_reasoning")
-fn count_trailing_zeros(n : Int) -> Int {
+fn count_trailing_zeros(n : Int32) -> Int32 {
   guard n != 0 else { return 32 }
 
   // Isolate the lowest set bit: x & (-x) = x & (~x + 1)
@@ -544,7 +544,7 @@ test "count_trailing_zeros" {
 /// Compute floor(log2(n)) for n > 0.
 /// Uses binary search within the integer, doubling check range each step.
 #warnings("+missing_invariant+missing_reasoning")
-fn ilog2(n : Int) -> Int {
+fn ilog2(n : Int32) -> Int32 {
   guard n > 0 else { return -1 }
   for x = n, log = 0 {
     if x <= 1 {
@@ -641,7 +641,7 @@ test "mod_inverse" {
 ///|
 /// Check if n is a perfect power (n = a^b for integers a, b > 1).
 #warnings("+missing_invariant+missing_reasoning")
-fn is_perfect_power(n : Int) -> Bool {
+fn is_perfect_power(n : Int32) -> Bool {
   guard n > 1 else { return false }
 
   // Try each possible exponent b from 2 to log2(n)
@@ -682,7 +682,7 @@ fn is_perfect_power(n : Int) -> Bool {
 
 ///|
 /// Compute floor(n^(1/b)) using binary search.
-fn nth_root(n : Int, b : Int) -> Int {
+fn nth_root(n : Int32, b : Int32) -> Int32 {
   guard n > 0 && b > 0 else { return 0 }
   for lo = 1, hi = n {
     if lo >= hi {
@@ -713,7 +713,7 @@ fn nth_root(n : Int, b : Int) -> Int {
 
 ///|
 /// Compute a^b, with overflow check against max value.
-fn int_pow_checked(a : Int, b : Int, max_val : Int) -> Int {
+fn int_pow_checked(a : Int32, b : Int32, max_val : Int32) -> Int32 {
   for base = a, exp = b, acc = 1 {
     if exp == 0 {
       break acc
@@ -746,7 +746,7 @@ fn int_pow_checked(a : Int, b : Int, max_val : Int) -> Int {
 
 ///|
 /// Simple integer power.
-fn int_pow(a : Int, b : Int) -> Int {
+fn int_pow(a : Int32, b : Int32) -> Int32 {
   for base = a, exp = b, acc = 1 {
     if exp == 0 {
       break acc

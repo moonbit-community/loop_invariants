@@ -126,7 +126,7 @@ impl @quickcheck.Shrink for Candidate with fn shrink(self) {
 ///|
 test "qc: is_prime agrees with trial division on small inputs" {
   @quickcheck.check(
-    (x : Int) => {
+    (x : Int32) => {
       let n = (x % 2000000).to_int64()
       @miller_rabin.is_prime(n) == trial_is_prime(n)
     },

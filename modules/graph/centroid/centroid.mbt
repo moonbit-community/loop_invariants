@@ -40,17 +40,17 @@
 /// - `centroid_depth`: result array; `centroid_depth[v]` is the depth of `v`
 ///   in the centroid tree (root has depth 0)
 priv struct CentroidTree {
-  n : Int
-  adj : Array[Array[Int]]
+  n : Int32
+  adj : Array[Array[Int32]]
   removed : Array[Bool]
-  subtree_size : Array[Int]
-  centroid_parent : Array[Int] // Parent in centroid tree
-  centroid_depth : Array[Int] // Depth in centroid tree
+  subtree_size : Array[Int32]
+  centroid_parent : Array[Int32] // Parent in centroid tree
+  centroid_depth : Array[Int32] // Depth in centroid tree
 }
 
 ///|
 /// Allocate a fresh `CentroidTree` for `n` nodes with no edges.
-fn CentroidTree::CentroidTree(n : Int) -> CentroidTree {
+fn CentroidTree::CentroidTree(n : Int32) -> CentroidTree {
   let adj = [ for _ in 0..<n => [] ]
   {
     n,
@@ -67,7 +67,7 @@ fn CentroidTree::CentroidTree(n : Int) -> CentroidTree {
 ///
 /// Both endpoints must satisfy `0 <= u, v < n`; the caller is responsible for
 /// bounds checking before calling this function.
-fn CentroidTree::add_edge(self : CentroidTree, u : Int, v : Int) -> Unit {
+fn CentroidTree::add_edge(self : CentroidTree, u : Int32, v : Int32) -> Unit {
   self.adj[u].push(v)
   self.adj[v].push(u)
 }
@@ -83,9 +83,9 @@ fn CentroidTree::add_edge(self : CentroidTree, u : Int, v : Int) -> Unit {
 /// Returns `self.subtree_size[u]`.
 fn CentroidTree::compute_size(
   self : CentroidTree,
-  u : Int,
-  parent : Int,
-) -> Int {
+  u : Int32,
+  parent : Int32,
+) -> Int32 {
   self.subtree_size[u] = 1
   for v in self.adj[u] {
     if v != parent && !self.removed[v] {
@@ -108,10 +108,10 @@ fn CentroidTree::compute_size(
 /// before `find_centroid` so that `self.subtree_size` is up to date.
 fn CentroidTree::find_centroid(
   self : CentroidTree,
-  u : Int,
-  parent : Int,
-  tree_size : Int,
-) -> Int {
+  u : Int32,
+  parent : Int32,
+  tree_size : Int32,
+) -> Int32 {
   // Check if any child subtree has more than half the nodes
   for v in self.adj[u] {
     if v != parent && !self.removed[v] && self.subtree_size[v] > tree_size / 2 {
@@ -136,10 +136,10 @@ fn CentroidTree::find_centroid(
 /// needed.
 fn CentroidTree::decompose(
   self : CentroidTree,
-  u : Int,
-  parent : Int,
-  depth : Int,
-) -> Int {
+  u : Int32,
+  parent : Int32,
+  depth : Int32,
+) -> Int32 {
   let tree_size = self.compute_size(u, -1)
   let centroid = self.find_centroid(u, -1, tree_size)
   self.removed[centroid] = true
@@ -168,13 +168,13 @@ fn CentroidTree::build(self : CentroidTree) -> Unit {
 ///|
 /// Return the centroid parent of node `u` in the centroid tree, or `-1` if
 /// `u` is the centroid root.
-fn CentroidTree::get_parent(self : CentroidTree, u : Int) -> Int {
+fn CentroidTree::get_parent(self : CentroidTree, u : Int32) -> Int32 {
   self.centroid_parent[u]
 }
 
 ///|
 /// Return the depth of node `u` in the centroid tree (root has depth 0).
-fn CentroidTree::get_depth(self : CentroidTree, u : Int) -> Int {
+fn CentroidTree::get_depth(self : CentroidTree, u : Int32) -> Int32 {
   self.centroid_depth[u]
 }
 
@@ -185,8 +185,8 @@ fn CentroidTree::get_depth(self : CentroidTree, u : Int) -> Int {
 /// centroid tree. Use the `parent` and `depth` methods instead of accessing
 /// the arrays directly so that out-of-range indices are handled safely.
 pub struct CentroidDecomp {
-  parent : Array[Int]
-  depth : Array[Int]
+  parent : Array[Int32]
+  depth : Array[Int32]
 }
 
 ///|
@@ -201,7 +201,10 @@ pub struct CentroidDecomp {
 ///
 /// Time complexity: O(n log n).
 /// Space complexity: O(n).
-pub fn build_centroid(n : Int, edges : ArrayView[(Int, Int)]) -> CentroidDecomp {
+pub fn build_centroid(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> CentroidDecomp {
   let tree = CentroidTree(n)
   for edge in edges {
     let (u, v) = edge
@@ -223,7 +226,7 @@ pub fn build_centroid(n : Int, edges : ArrayView[(Int, Int)]) -> CentroidDecomp 
 /// assert_eq!(cd.parent(0), 1)
 /// assert_eq!(cd.parent(-1), -1) // out of range -> -1
 /// ```
-pub fn CentroidDecomp::parent(self : CentroidDecomp, v : Int) -> Int {
+pub fn CentroidDecomp::parent(self : CentroidDecomp, v : Int32) -> Int32 {
   if v < 0 || v >= self.parent.length() {
     -1
   } else {
@@ -241,7 +244,7 @@ pub fn CentroidDecomp::parent(self : CentroidDecomp, v : Int) -> Int {
 /// assert_eq!(cd.depth(0), 1)
 /// assert_eq!(cd.depth(10), -1) // out of range -> -1
 /// ```
-pub fn CentroidDecomp::depth(self : CentroidDecomp, v : Int) -> Int {
+pub fn CentroidDecomp::depth(self : CentroidDecomp, v : Int32) -> Int32 {
   if v < 0 || v >= self.depth.length() {
     -1
   } else {

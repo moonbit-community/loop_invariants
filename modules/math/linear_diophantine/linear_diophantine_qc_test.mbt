@@ -104,7 +104,7 @@ test "qc: solve finds a solution exactly when gcd(a, b) | c" {
 ///|
 test "qc: the period (b/g, -a/g) maps solutions to solutions" {
   @quickcheck.check(
-    (p : (Eqn, Int)) => {
+    (p : (Eqn, Int32)) => {
       let (e, t) = p
       let r = @linear_diophantine.solve(e.a, e.b, e.c)
       match r.solution {

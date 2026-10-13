@@ -3,7 +3,7 @@
 // ============================================================================
 
 ///|
-fn highest_bit(x : Int) -> Int {
+fn highest_bit(x : Int32) -> Int32 {
   for v = x, k = 0 {
     if v <= 1 {
       break k
@@ -24,7 +24,10 @@ fn highest_bit(x : Int) -> Int {
 }
 
 ///|
-fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
+fn build_adj(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Array[Int32]] {
   let adj = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
@@ -52,20 +55,24 @@ fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
 /// Example:
 /// ```moonbit nocheck
 /// test {
-///   let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
+///   let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
 ///   let tree = build_lca(5, edges[:], 0)
 ///   @debug.assert_eq(lca(tree, 3, 4), 1)
 ///   @debug.assert_eq(lca(tree, 3, 2), 0)
 /// }
 /// ```
 pub struct Lca {
-  up : Array[Array[Int]]
-  depth : Array[Int]
+  up : Array[Array[Int32]]
+  depth : Array[Int32]
 }
 
 ///|
 /// Precompute binary lifting tables for LCA queries.
-pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
+pub fn build_lca(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+  root : Int32,
+) -> Lca {
   if n == 0 {
     return { up: [], depth: [], }
   }
@@ -73,7 +80,7 @@ pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
   let up = [ for _ in 0..<log => Array::make(n, -1) ]
   let depth = Array::make(n, 0)
   let adj = build_adj(n, edges)
-  let queue : Array[Int] = []
+  let queue : Array[Int32] = []
   queue.push(root)
   up[0][root] = -1
   depth[root] = 0
@@ -114,7 +121,7 @@ pub fn build_lca(n : Int, edges : ArrayView[(Int, Int)], root : Int) -> Lca {
 
 ///|
 /// Return the lowest common ancestor of u and v.
-pub fn lca(tree : Lca, u : Int, v : Int) -> Int {
+pub fn lca(tree : Lca, u : Int32, v : Int32) -> Int32 {
   let log = tree.up.length()
   let (a0, b0) = if tree.depth[u] < tree.depth[v] { (v, u) } else { (u, v) }
   let diff = tree.depth[a0] - tree.depth[b0]

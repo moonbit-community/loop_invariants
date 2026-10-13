@@ -46,12 +46,12 @@
 /// values per slot. Value 0 conventionally represents "empty" and
 /// contributes nothing to the hash (since key[c, 0] is set to 0).
 pub struct Zobrist {
-  cells : Int
-  types : Int
+  cells : Int32
+  types : Int32
   // key[c * types + v] = random 64-bit key for (cell c, value v).
   key : Array[Int64]
   // current[c] = current value at cell c.
-  current : Array[Int]
+  current : Array[Int32]
   mut hash : Int64
 }
 
@@ -65,7 +65,7 @@ fn next_random(state : Int64) -> Int64 {
 }
 
 ///|
-fn shr_u(x : Int64, n : Int) -> Int64 {
+fn shr_u(x : Int64, n : Int32) -> Int64 {
   (x.reinterpret_as_uint64() >> n).reinterpret_as_int64()
 }
 
@@ -83,7 +83,7 @@ fn shr_u(x : Int64, n : Int) -> Int64 {
 ///   @debug.assert_eq(z.hash() != 0L, true)
 /// }
 /// ```
-pub fn with_seed(cells : Int, types : Int, seed : Int64) -> Zobrist {
+pub fn with_seed(cells : Int32, types : Int32, seed : Int64) -> Zobrist {
   let key = Array::make(cells * types, 0L)
   let mut s = seed
   for c in 0..<cells {
@@ -99,7 +99,7 @@ pub fn with_seed(cells : Int, types : Int, seed : Int64) -> Zobrist {
 ///|
 /// Set the value at `cell` to `value` and incrementally update the
 /// hash. Returns the new hash.
-pub fn Zobrist::set_cell(self : Zobrist, cell : Int, value : Int) -> Int64 {
+pub fn Zobrist::set_cell(self : Zobrist, cell : Int32, value : Int32) -> Int64 {
   if cell < 0 || cell >= self.cells || value < 0 || value >= self.types {
     return self.hash
   }
@@ -129,7 +129,7 @@ pub fn Zobrist::full_hash(self : Zobrist) -> Int64 {
 
 ///|
 /// Read the current value at a cell.
-pub fn Zobrist::get_cell(self : Zobrist, cell : Int) -> Int {
+pub fn Zobrist::get_cell(self : Zobrist, cell : Int32) -> Int32 {
   if cell < 0 || cell >= self.cells {
     -1
   } else {

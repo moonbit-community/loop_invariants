@@ -68,7 +68,7 @@ fn cross(o : Point, a : Point, b : Point) -> Int64 {
 /// Lexicographic comparator for `Point`: sorts by x first, then by y.
 ///
 /// Returns -1, 0, or 1 in the style expected by `Array::sort_by`.
-fn point_compare(a : Point, b : Point) -> Int {
+fn point_compare(a : Point, b : Point) -> Int32 {
   if a.x != b.x {
     if a.x < b.x {
       -1
@@ -418,7 +418,7 @@ pub fn polygon_area_2x(hull : Array[Point]) -> Int64 {
 /// The algorithm checks the sign of the cross product for every directed edge.
 /// A point outside will produce a negative cross product for at least one edge.
 /// Time: O(n).
-pub fn point_in_hull(hull : Array[Point], p : Point) -> Int {
+pub fn point_in_hull(hull : Array[Point], p : Point) -> Int32 {
   let n = hull.length()
   if n < 3 {
     return -1

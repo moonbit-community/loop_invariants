@@ -45,8 +45,8 @@
 /// ```
 pub enum Trie {
   Empty
-  Leaf(key~ : Int)
-  Branch(prefix~ : Int, mask~ : Int, left~ : Trie, right~ : Trie)
+  Leaf(key~ : Int32)
+  Branch(prefix~ : Int32, mask~ : Int32, left~ : Trie, right~ : Trie)
 } derive(Debug)
 
 ///|
@@ -69,7 +69,7 @@ pub fn empty() -> Trie {
 ///
 /// Patricia tries are full binary trees in which every interior `Branch`
 /// has exactly two non-empty subtrees, so this counts the leaves directly.
-pub fn size(t : Trie) -> Int {
+pub fn size(t : Trie) -> Int32 {
   match t {
     Empty => 0
     Leaf(key=_) => 1
@@ -80,7 +80,7 @@ pub fn size(t : Trie) -> Int {
 ///|
 /// Is the bit selected by `mask` zero in `key`? Used to decide which side
 /// of a `Branch` a key belongs on.
-fn zero_bit(key : Int, mask : Int) -> Bool {
+fn zero_bit(key : Int32, mask : Int32) -> Bool {
   (key & mask) == 0
 }
 
@@ -92,14 +92,14 @@ fn zero_bit(key : Int, mask : Int) -> Bool {
 /// branching bit; OR-ing in `mask` itself extends the cover to include the
 /// branching bit too. We then AND with the bitwise complement to strip
 /// those bits from `key`.
-fn mask_key(key : Int, mask : Int) -> Int {
+fn mask_key(key : Int32, mask : Int32) -> Int32 {
   key & ((mask - 1) | mask).lnot()
 }
 
 ///|
 /// Does `key` agree with `prefix` on all bits above the branching bit
 /// `mask`? When this fails we must `join` rather than recurse.
-fn match_prefix(key : Int, prefix : Int, mask : Int) -> Bool {
+fn match_prefix(key : Int32, prefix : Int32, mask : Int32) -> Bool {
   mask_key(key, mask) == prefix
 }
 
@@ -112,7 +112,7 @@ fn match_prefix(key : Int, prefix : Int, mask : Int) -> Bool {
 /// We scan bit positions `31 .. 0` from most significant to least and
 /// return the first position where the XOR has a `1`. The loop is bounded
 /// by 32 iterations.
-fn branching_bit(p1 : Int, p2 : Int) -> Int {
+fn branching_bit(p1 : Int32, p2 : Int32) -> Int32 {
   let x = p1 ^ p2
   for b = 31 {
     if b == 0 || (x & (1 << b)) != 0 {
@@ -149,7 +149,7 @@ fn branching_bit(p1 : Int, p2 : Int) -> Int {
 ///                                |             |
 ///                               t1            t2     (swapped otherwise)
 /// ```
-fn join(p1 : Int, t1 : Trie, p2 : Int, t2 : Trie) -> Trie {
+fn join(p1 : Int32, t1 : Trie, p2 : Int32, t2 : Trie) -> Trie {
   let m = branching_bit(p1, p2)
   let p = mask_key(p1, m)
   if zero_bit(p1, m) {
@@ -180,7 +180,7 @@ fn join(p1 : Int, t1 : Trie, p2 : Int, t2 : Trie) -> Trie {
 ///   @debug.assert_eq(@challenge_persistent_patricia_trie.contains(t, 4), true)
 /// }
 /// ```
-pub fn insert(t : Trie, key : Int) -> Trie {
+pub fn insert(t : Trie, key : Int32) -> Trie {
   match t {
     Empty => Leaf(key~)
     Leaf(key=k) =>
@@ -216,7 +216,7 @@ pub fn insert(t : Trie, key : Int) -> Trie {
 ///   @debug.assert_eq(@challenge_persistent_patricia_trie.contains(t, 9), false)
 /// }
 /// ```
-pub fn contains(t : Trie, key : Int) -> Bool {
+pub fn contains(t : Trie, key : Int32) -> Bool {
   match t {
     Empty => false
     Leaf(key=k) => k == key
@@ -244,7 +244,7 @@ pub fn contains(t : Trie, key : Int) -> Bool {
 ///   @debug.assert_eq(@challenge_persistent_patricia_trie.size(t), 4)
 /// }
 /// ```
-pub fn from_array(arr : ArrayView[Int]) -> Trie {
+pub fn from_array(arr : ArrayView[Int32]) -> Trie {
   let n = arr.length()
   for i in 0..<n; t = Empty {
     continue insert(t, arr[i])

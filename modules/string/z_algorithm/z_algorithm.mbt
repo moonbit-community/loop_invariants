@@ -58,7 +58,7 @@
 ///
 /// Time complexity: O(n), where n = s.length().
 /// Space complexity: O(n).
-pub fn compute_z(s : String) -> Array[Int] {
+pub fn compute_z(s : String) -> Array[Int32] {
   let n = s.length()
   if n == 0 {
     return []
@@ -147,7 +147,7 @@ pub fn compute_z(s : String) -> Array[Int] {
 /// Returns an `Array[Int]` of length `n` where entry `i` holds `Z[i]`.
 ///
 /// Time complexity: O(n), where n = s.length().
-pub fn z_function(s : String) -> Array[Int] {
+pub fn z_function(s : String) -> Array[Int32] {
   compute_z(s)
 }
 
@@ -170,8 +170,8 @@ pub fn z_function(s : String) -> Array[Int] {
 ///
 /// Time complexity: O(n + m), where n = text.length() and m = pattern.length().
 /// Space complexity: O(n + m).
-pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
-  let result : Array[Int] = []
+pub fn find_pattern(text : String, pattern : String) -> Array[Int32] {
+  let result : Array[Int32] = []
   let m = pattern.length()
   let n = text.length()
   if m == 0 || m > n {
@@ -222,7 +222,7 @@ pub fn find_pattern(text : String, pattern : String) -> Array[Int] {
 /// `pattern` occurs, in ascending order.
 ///
 /// Time complexity: O(n + m), where n = text.length() and m = pattern.length().
-pub fn z_search(text : String, pattern : String) -> Array[Int] {
+pub fn z_search(text : String, pattern : String) -> Array[Int32] {
   find_pattern(text, pattern)
 }
 
@@ -237,7 +237,7 @@ pub fn z_search(text : String, pattern : String) -> Array[Int] {
 /// Returns 0 when `pattern` is empty or longer than `text`.
 ///
 /// Time complexity: O(n + m), where n = text.length() and m = pattern.length().
-pub fn count_pattern(text : String, pattern : String) -> Int {
+pub fn count_pattern(text : String, pattern : String) -> Int32 {
   find_pattern(text, pattern).length()
 }
 
@@ -254,7 +254,7 @@ pub fn count_pattern(text : String, pattern : String) -> Int {
 /// Returns the length of the longest proper border, or 0 if none exists.
 ///
 /// Time complexity: O(n), where n = s.length().
-fn longest_prefix_suffix(s : String) -> Int {
+fn longest_prefix_suffix(s : String) -> Int32 {
   let n = s.length()
   if n <= 1 {
     return 0
@@ -286,13 +286,13 @@ fn longest_prefix_suffix(s : String) -> Int {
 /// Returns an empty array when `s` is empty or has no borders.
 ///
 /// Time complexity: O(n log n) due to sorting; the Z-array pass is O(n).
-fn all_borders(s : String) -> Array[Int] {
+fn all_borders(s : String) -> Array[Int32] {
   let n = s.length()
   if n == 0 {
     return []
   }
   let z = compute_z(s)
-  let borders : Array[Int] = []
+  let borders : Array[Int32] = []
 
   // A border of length k exists if some position i has Z[i] = n - i = k
   for i in 1..<n {
@@ -330,7 +330,7 @@ fn all_borders(s : String) -> Array[Int] {
 /// Returns an `Int` in the range `[1, n]`.  Returns 0 for an empty string.
 ///
 /// Time complexity: O(n), where n = s.length().
-fn string_period(s : String) -> Int {
+fn string_period(s : String) -> Int32 {
   let n = s.length()
   if n == 0 {
     return 0

@@ -141,7 +141,7 @@ The unique centroid is node 2.
 ```mbt check
 ///|
 test "path centroid" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
   let cd = @centroid.build_centroid(5, edges)
   debug_inspect(cd.depth(2), content="0")
   debug_inspect(cd.parent(2), content="-1")
@@ -163,7 +163,7 @@ The center is the centroid and becomes the root of the centroid tree.
 ```mbt check
 ///|
 test "star centroid" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (0, 3), (0, 4)]
   let cd = @centroid.build_centroid(5, edges)
   debug_inspect(cd.depth(0), content="0")
   debug_inspect(cd.parent(0), content="-1")
@@ -176,7 +176,7 @@ test "star centroid" {
 ```mbt check
 ///|
 test "invalid index" {
-  let edges : Array[(Int, Int)] = [(0, 1)]
+  let edges : Array[(Int32, Int32)] = [(0, 1)]
   let cd = @centroid.build_centroid(2, edges)
   debug_inspect(cd.parent(-1), content="-1")
   debug_inspect(cd.depth(10), content="-1")

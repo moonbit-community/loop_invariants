@@ -76,7 +76,7 @@ add 3: dp[1011][3] = min(dp[1011][3], dp[0011][1] + dist[1][3])
 ```mbt check
 ///|
 test "tsp example" {
-  let dist : Array[Array[Int]] = [
+  let dist : Array[Array[Int32]] = [
     [0, 10, 15, 20],
     [10, 0, 35, 25],
     [15, 35, 0, 30],
@@ -99,7 +99,7 @@ cost = 10 + 25 + 30 + 15 = 80
 ```mbt check
 ///|
 test "tsp triangle" {
-  let dist : Array[Array[Int]] = [[0, 2, 4], [2, 0, 1], [4, 1, 0]]
+  let dist : Array[Array[Int32]] = [[0, 2, 4], [2, 0, 1], [4, 1, 0]]
   let ans = @challenge_bitmask_tsp.tsp_min_cycle(dist)
   debug_inspect(ans, content="7")
 }
@@ -118,7 +118,7 @@ The best tour is the ring.
 ```mbt check
 ///|
 test "tsp ring" {
-  let dist : Array[Array[Int]] = [
+  let dist : Array[Array[Int32]] = [
     [0, 3, 8, 9, 2],
     [3, 0, 2, 8, 9],
     [8, 2, 0, 2, 8],
@@ -137,7 +137,7 @@ The DP works even when `dist[u][v] != dist[v][u]`.
 ```mbt check
 ///|
 test "tsp asymmetric" {
-  let dist : Array[Array[Int]] = [[0, 1, 10], [2, 0, 3], [4, 5, 0]]
+  let dist : Array[Array[Int32]] = [[0, 1, 10], [2, 0, 3], [4, 5, 0]]
   // Possible cycles:
   // 0->1->2->0 = 1 + 3 + 4 = 8
   // 0->2->1->0 = 10 + 5 + 2 = 17

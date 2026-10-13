@@ -61,8 +61,8 @@
 /// Side effects: resets and updates `dist`, `prev_v`, `prev_e`, `in_queue`.
 pub fn MinCostMaxFlow::spfa(
   self : MinCostMaxFlow,
-  source : Int,
-  sink : Int,
+  source : Int32,
+  sink : Int32,
 ) -> Bool {
   // Reset all arrays
   self.dist.fill(MCMF_INF)
@@ -72,7 +72,7 @@ pub fn MinCostMaxFlow::spfa(
 
   // Initialize source
   self.dist[source] = 0L
-  let queue : Array[Int] = [source]
+  let queue : Array[Int32] = [source]
   self.in_queue[source] = true
 
   // Main SPFA loop

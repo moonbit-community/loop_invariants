@@ -38,7 +38,7 @@ pub struct Deque[T] {
 } derive(Debug)
 
 ///|
-fn[T] size_stack(s : Stack[T]) -> Int {
+fn[T] size_stack(s : Stack[T]) -> Int32 {
   match s {
     Nil => 0
     Cons(head=_, tail~) => 1 + size_stack(tail)
@@ -47,7 +47,7 @@ fn[T] size_stack(s : Stack[T]) -> Int {
 
 ///|
 /// Return the number of elements in the deque.
-pub fn[T] size(d : Deque[T]) -> Int {
+pub fn[T] size(d : Deque[T]) -> Int32 {
   size_stack(d.front) + size_stack(d.back)
 }
 

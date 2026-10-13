@@ -1,5 +1,5 @@
 ///|
-fn trial_is_prime(n : Int) -> Bool {
+fn trial_is_prime(n : Int32) -> Bool {
   if n < 2 {
     return false
   }
@@ -12,7 +12,7 @@ fn trial_is_prime(n : Int) -> Bool {
 }
 
 ///|
-fn naive_spf(k : Int) -> Int {
+fn naive_spf(k : Int32) -> Int32 {
   for d = 2; d * d <= k; d = d + 1 {
     if k % d == 0 {
       return d
@@ -22,7 +22,7 @@ fn naive_spf(k : Int) -> Int {
 }
 
 ///|
-fn naive_gcd(a : Int, b : Int) -> Int {
+fn naive_gcd(a : Int32, b : Int32) -> Int32 {
   if b == 0 {
     a
   } else {
@@ -32,7 +32,7 @@ fn naive_gcd(a : Int, b : Int) -> Int {
 
 ///|
 /// phi(k) by counting 1 <= j <= k with gcd(j, k) == 1.
-fn naive_phi(k : Int) -> Int {
+fn naive_phi(k : Int32) -> Int32 {
   let mut c = 0
   for j in 1..<=k {
     if naive_gcd(j, k) == 1 {
@@ -44,7 +44,7 @@ fn naive_phi(k : Int) -> Int {
 
 ///|
 /// mu(k) from trial-division factorisation.
-fn naive_mu(k : Int) -> Int {
+fn naive_mu(k : Int32) -> Int32 {
   let mut m = k
   let mut sign = 1
   for d = 2; d * d <= m; d = d + 1 {
@@ -66,7 +66,7 @@ fn naive_mu(k : Int) -> Int {
 /// A sieve bound: mostly small (so the naive checks stay cheap), sometimes
 /// negative or zero.
 priv struct Bound {
-  n : Int
+  n : Int32
 } derive(Debug)
 
 ///|
@@ -89,7 +89,7 @@ test "qc: primes lists exactly the primes <= n, ascending" {
   @quickcheck.check(
     (b : Bound) => {
       let s = @linear_sieve.LinearSieve(b.n)
-      let expected : Array[Int] = []
+      let expected : Array[Int32] = []
       for k in 2..<=b.n {
         if trial_is_prime(k) {
           expected.push(k)
@@ -137,7 +137,7 @@ test "qc: spf, phi and mu tables agree with naive definitions" {
 ///|
 test "qc: is_prime matches trial division, false outside [2, n]" {
   @quickcheck.check(
-    (p : (Bound, Int)) => {
+    (p : (Bound, Int32)) => {
       let (b, y) = p
       let s = @linear_sieve.LinearSieve(b.n)
       let x = y % (b.n + 10)
@@ -151,7 +151,7 @@ test "qc: is_prime matches trial division, false outside [2, n]" {
 ///|
 test "qc: factorize multiplies back, primes strictly ascending" {
   @quickcheck.check(
-    (p : (Bound, Int)) => {
+    (p : (Bound, Int32)) => {
       let (b, y) = p
       let s = @linear_sieve.LinearSieve(b.n)
       let x = y % (b.n + 10)

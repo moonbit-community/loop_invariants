@@ -25,11 +25,11 @@
 /// ```
 pub enum Avl[T] {
   Empty
-  Node(key~ : T, height~ : Int, left~ : Avl[T], right~ : Avl[T])
+  Node(key~ : T, height~ : Int32, left~ : Avl[T], right~ : Avl[T])
 } derive(Debug)
 
 ///|
-fn max2(a : Int, b : Int) -> Int {
+fn max2(a : Int32, b : Int32) -> Int32 {
   if a > b {
     a
   } else {
@@ -38,7 +38,7 @@ fn max2(a : Int, b : Int) -> Int {
 }
 
 ///|
-fn[T] height(t : Avl[T]) -> Int {
+fn[T] height(t : Avl[T]) -> Int32 {
   match t {
     Empty => 0
     Node(key=_, height~, left=_, right=_) => height
@@ -47,7 +47,7 @@ fn[T] height(t : Avl[T]) -> Int {
 
 ///|
 /// Return the number of keys in the AVL set.
-pub fn[T] size(t : Avl[T]) -> Int {
+pub fn[T] size(t : Avl[T]) -> Int32 {
   match t {
     Empty => 0
     Node(key=_, height=_, left~, right~) => 1 + size(left) + size(right)
@@ -241,7 +241,7 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Avl[T] {
 ///|
 test "persistent avl invariants" {
   let tree = from_array([3, 1, 4, 2])
-  let none : Int? = None
+  let none : Int32? = None
   assert_true(avl_valid(tree, none, none))
   assert_true(contains(tree, 2))
 }

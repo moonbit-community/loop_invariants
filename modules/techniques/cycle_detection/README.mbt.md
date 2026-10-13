@@ -230,7 +230,7 @@ Both return `(mu, lam)` with `mu >= 0` and `lam >= 1`.
 ///|
 test "cycle quadratic mod 5 from x0 = 3" {
   // x_0=3, x_1=0, x_2=1, x_3=2, x_4=0, ...  mu=1, lam=3.
-  let f = fn(x : Int) { (x * x + 1) % 5 }
+  let f = fn(x : Int32) { (x * x + 1) % 5 }
   debug_inspect(@cycle_detection.floyd_cycle(f, 3), content="(1, 3)")
   debug_inspect(@cycle_detection.brent_cycle(f, 3), content="(1, 3)")
 }
@@ -242,7 +242,7 @@ test "cycle quadratic mod 5 from x0 = 3" {
 ///|
 test "cycle pure ring of length 4" {
   // f(x) = (x + 1) mod 4 is a single 4-cycle: 0 -> 1 -> 2 -> 3 -> 0.
-  let f = fn(x : Int) { (x + 1) % 4 }
+  let f = fn(x : Int32) { (x + 1) % 4 }
   debug_inspect(@cycle_detection.floyd_cycle(f, 0), content="(0, 4)")
 }
 ```
@@ -253,7 +253,7 @@ test "cycle pure ring of length 4" {
 ///|
 test "cycle fixed point" {
   // f(x) = x.  Every value is its own fixed point: mu=0, lam=1.
-  let f = fn(x : Int) { x }
+  let f = fn(x : Int32) { x }
   debug_inspect(@cycle_detection.brent_cycle(f, 42), content="(0, 1)")
 }
 ```
@@ -264,7 +264,7 @@ test "cycle fixed point" {
 ///|
 test "cycle long tail short cycle" {
   // Tail of length 100 followed by a self-loop at 100.
-  let f = fn(x : Int) { if x < 100 { x + 1 } else { 100 } }
+  let f = fn(x : Int32) { if x < 100 { x + 1 } else { 100 } }
   debug_inspect(@cycle_detection.floyd_cycle(f, 0), content="(100, 1)")
   debug_inspect(@cycle_detection.brent_cycle(f, 0), content="(100, 1)")
 }

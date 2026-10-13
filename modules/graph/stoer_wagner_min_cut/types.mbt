@@ -60,7 +60,7 @@ const INF64 : Int64 = 4611686018427387903L
 /// ```
 pub(all) struct MinCutResult {
   weight : Int64
-  cut : Array[Int]
+  cut : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -88,7 +88,7 @@ fn select_max_vertex(
   alive : Array[Bool],
   added : Array[Bool],
   w : Array[Int64],
-) -> Int {
+) -> Int32 {
   let (sel, _) = for v in 0..<w.length(); sel = -1, best = -1L {
     if alive[v] && !added[v] {
       if sel == -1 || w[v] > best {
@@ -111,7 +111,7 @@ fn select_max_vertex(
 ///
 /// After this call, `target` contains its original elements followed
 /// by all elements of `source`. `source` is not modified.
-fn append_members(target : Array[Int], source : Array[Int]) -> Unit {
+fn append_members(target : Array[Int32], source : Array[Int32]) -> Unit {
   for v in source {
     target.push(v)
   }

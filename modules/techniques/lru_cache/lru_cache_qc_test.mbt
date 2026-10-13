@@ -3,7 +3,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -30,7 +30,7 @@ impl @quickcheck.Shrink for Op
 
 ///|
 priv struct Script {
-  capacity : Int
+  capacity : Int32
   ops : Array[Op]
 } derive(Debug)
 
@@ -55,12 +55,12 @@ impl @quickcheck.Shrink for Script with fn shrink(self) {
 ///|
 /// Naive model: entries most-recent first.
 priv struct Model {
-  cap : Int
+  cap : Int32
   entries : Array[(Int64, Int64)]
 }
 
 ///|
-fn Model::find(self : Model, k : Int64) -> Int? {
+fn Model::find(self : Model, k : Int64) -> Int32? {
   for i, e in self.entries {
     if e.0 == k {
       return Some(i)

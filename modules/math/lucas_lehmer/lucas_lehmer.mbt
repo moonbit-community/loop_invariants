@@ -117,7 +117,7 @@ fn mul_mod(a : Int64, b : Int64, m : Int64) -> Int64 {
 ///   assert_eq(@lucas_lehmer.is_mersenne_prime(11), false) // M_11 = 23*89
 /// }
 /// ```
-pub fn is_mersenne_prime(p : Int) -> Bool {
+pub fn is_mersenne_prime(p : Int32) -> Bool {
   if p < 2 {
     return false
   }
@@ -168,8 +168,8 @@ pub fn is_mersenne_prime(p : Int) -> Bool {
 ///
 /// Useful for quickly populating a known-good list and for verifying
 /// the algorithm against the OEIS sequence A000043.
-pub fn mersenne_prime_exponents_up_to(n : Int) -> Array[Int] {
-  let result : Array[Int] = []
+pub fn mersenne_prime_exponents_up_to(n : Int32) -> Array[Int32] {
+  let result : Array[Int32] = []
   for p in 2..<=n {
     if is_mersenne_prime(p) {
       result.push(p)

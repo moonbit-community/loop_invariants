@@ -54,8 +54,8 @@
 /// - `right` -- index of the right child in the shared node array; `-1` for leaves.
 priv struct PNode {
   sum : Int64 // Sum of range
-  left : Int // Index of left child (-1 for none)
-  right : Int // Index of right child (-1 for none)
+  left : Int32 // Index of left child (-1 for none)
+  right : Int32 // Index of right child (-1 for none)
 }
 
 ///|
@@ -74,8 +74,8 @@ priv struct PNode {
 /// 4. Version 0 is the initial tree built from the input array.
 priv struct PersistentSegTree {
   nodes : Array[PNode] // All nodes ever created
-  roots : Array[Int] // Root index for each version
-  n : Int // Size of array
+  roots : Array[Int32] // Root index for each version
+  n : Int32 // Size of array
 }
 
 ///|
@@ -83,7 +83,12 @@ priv struct PersistentSegTree {
 ///
 /// This is the only place nodes are created. The returned index is stable
 /// for the lifetime of the tree because `nodes` is append-only.
-fn push_node(nodes : Array[PNode], sum : Int64, left : Int, right : Int) -> Int {
+fn push_node(
+  nodes : Array[PNode],
+  sum : Int64,
+  left : Int32,
+  right : Int32,
+) -> Int32 {
   let idx = nodes.length()
   nodes.push({ sum, left, right, })
   idx
@@ -104,7 +109,7 @@ fn PersistentSegTree::PersistentSegTree(
     return { nodes: [], roots: [], n: 0, }
   }
   let nodes : Array[PNode] = []
-  let roots : Array[Int] = []
+  let roots : Array[Int32] = []
 
   // Build initial tree recursively
   let root = build_tree(nodes, arr, 0, n - 1)
@@ -121,9 +126,9 @@ fn PersistentSegTree::PersistentSegTree(
 fn build_tree(
   nodes : Array[PNode],
   arr : Array[Int64],
-  lo : Int,
-  hi : Int,
-) -> Int {
+  lo : Int32,
+  hi : Int32,
+) -> Int32 {
   if lo == hi {
     // Leaf node
     return push_node(nodes, arr[lo], -1, -1)
@@ -159,10 +164,10 @@ fn build_tree(
 /// ```
 fn PersistentSegTree::update(
   self : PersistentSegTree,
-  version : Int,
-  pos : Int,
+  version : Int32,
+  pos : Int32,
   val : Int64,
-) -> Int {
+) -> Int32 {
   if version < 0 || version >= self.roots.length() || pos < 0 || pos >= self.n {
     return version
   }
@@ -190,12 +195,12 @@ fn PersistentSegTree::update(
 /// are created; all other subtrees are shared with the previous version.
 fn update_tree(
   nodes : Array[PNode],
-  node_idx : Int,
-  lo : Int,
-  hi : Int,
-  pos : Int,
+  node_idx : Int32,
+  lo : Int32,
+  hi : Int32,
+  pos : Int32,
   val : Int64,
-) -> Int {
+) -> Int32 {
   if lo == hi {
     // Create new leaf with updated value
     return push_node(nodes, val, -1, -1)
@@ -226,9 +231,9 @@ fn update_tree(
 /// Returns 0 for empty, invalid, or out-of-bounds inputs.
 fn PersistentSegTree::query(
   self : PersistentSegTree,
-  version : Int,
-  l : Int,
-  r : Int,
+  version : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if version < 0 ||
     version >= self.roots.length() ||
@@ -262,11 +267,11 @@ fn PersistentSegTree::query(
 /// - Partial overlap: recurse into both children and combine.
 fn query_tree(
   nodes : Array[PNode],
-  node_idx : Int,
-  lo : Int,
-  hi : Int,
-  l : Int,
-  r : Int,
+  node_idx : Int32,
+  lo : Int32,
+  hi : Int32,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if l > hi || r < lo {
     // No intersection
@@ -290,7 +295,7 @@ fn query_tree(
 ///
 /// Version 0 is the initial tree. After `q` calls to `update`, this returns
 /// `q + 1`. The valid version range is `[0, version_count() - 1]`.
-fn PersistentSegTree::version_count(self : PersistentSegTree) -> Int {
+fn PersistentSegTree::version_count(self : PersistentSegTree) -> Int32 {
   self.roots.length()
 }
 
@@ -300,7 +305,7 @@ fn PersistentSegTree::version_count(self : PersistentSegTree) -> Int {
 /// Useful for verifying the O(n + q log n) space bound. After building from
 /// an array of size `n` and performing `q` updates, this value is at most
 /// `2n - 1 + q * (floor(log2 n) + 1)`.
-fn PersistentSegTree::node_count(self : PersistentSegTree) -> Int {
+fn PersistentSegTree::node_count(self : PersistentSegTree) -> Int32 {
   self.nodes.length()
 }
 
@@ -310,8 +315,8 @@ fn PersistentSegTree::node_count(self : PersistentSegTree) -> Int {
 /// Convenience wrapper around `query(version, pos, pos)`.
 fn PersistentSegTree::get(
   self : PersistentSegTree,
-  version : Int,
-  pos : Int,
+  version : Int32,
+  pos : Int32,
 ) -> Int64 {
   self.query(version, pos, pos)
 }
@@ -324,10 +329,10 @@ fn PersistentSegTree::get(
 /// when building prefix-frequency trees for k-th smallest queries.
 fn PersistentSegTree::add(
   self : PersistentSegTree,
-  version : Int,
-  pos : Int,
+  version : Int32,
+  pos : Int32,
   delta : Int64,
-) -> Int {
+) -> Int32 {
   let old_val = self.get(version, pos)
   self.update(version, pos, old_val + delta)
 }
@@ -364,7 +369,7 @@ fn PersistentSegTree::add(
 /// - `sorted_vals` -- coordinate-compressed unique values in sorted order.
 priv struct KthSmallest {
   nodes : Array[PNode]
-  roots : Array[Int] // roots[i] = tree after inserting elements [0, i-1]
+  roots : Array[Int32] // roots[i] = tree after inserting elements [0, i-1]
   sorted_vals : Array[Int64] // Sorted unique values
 }
 
@@ -405,7 +410,7 @@ fn KthSmallest::KthSmallest(arr : Array[Int64]) -> KthSmallest {
 
   // Remove duplicates and build value -> index map
   let unique_vals : Array[Int64] = []
-  let val_to_idx : Map[Int64, Int] = Map([])
+  let val_to_idx : Map[Int64, Int32] = Map([])
   for i in 0..<sorted_vals.length() {
     if i == 0 || sorted_vals[i] != sorted_vals[i - 1] {
       val_to_idx[sorted_vals[i]] = unique_vals.length()
@@ -425,7 +430,7 @@ fn KthSmallest::KthSmallest(arr : Array[Int64]) -> KthSmallest {
   }
   let m = unique_vals.length()
   let nodes : Array[PNode] = []
-  let roots : Array[Int] = []
+  let roots : Array[Int32] = []
 
   // Build empty tree (version 0, represents prefix of length 0)
   let empty_root = build_empty_tree(nodes, 0, m - 1)
@@ -461,7 +466,7 @@ fn KthSmallest::KthSmallest(arr : Array[Int64]) -> KthSmallest {
 ///
 /// All counts are 0. This becomes `roots[0]` (the empty prefix) for the
 /// k-th smallest structure. Returns the index of the root node.
-fn build_empty_tree(nodes : Array[PNode], lo : Int, hi : Int) -> Int {
+fn build_empty_tree(nodes : Array[PNode], lo : Int32, hi : Int32) -> Int32 {
   if lo == hi {
     return push_node(nodes, 0L, -1, -1)
   }
@@ -480,11 +485,11 @@ fn build_empty_tree(nodes : Array[PNode], lo : Int, hi : Int) -> Int {
 /// Returns the index of the new root for this subtree.
 fn kth_insert_tree(
   nodes : Array[PNode],
-  node_idx : Int,
-  lo : Int,
-  hi : Int,
-  pos : Int,
-) -> Int {
+  node_idx : Int32,
+  lo : Int32,
+  hi : Int32,
+  pos : Int32,
+) -> Int32 {
   let old = nodes[node_idx]
   if lo == hi {
     return push_node(nodes, old.sum + 1L, -1, -1)
@@ -508,7 +513,12 @@ fn kth_insert_tree(
 /// these two trees simultaneously finds the k-th element in O(log n).
 ///
 /// Returns `None` if `k <= 0`, `k > r - l + 1`, or the range is invalid.
-fn KthSmallest::query(self : KthSmallest, l : Int, r : Int, k : Int) -> Int64? {
+fn KthSmallest::query(
+  self : KthSmallest,
+  l : Int32,
+  r : Int32,
+  k : Int32,
+) -> Int64? {
   if l < 0 ||
     r >= self.roots.length() - 1 ||
     l > r ||
@@ -545,12 +555,12 @@ fn KthSmallest::query(self : KthSmallest, l : Int, r : Int, k : Int) -> Int64? {
 /// restricted to value range `[lo, hi]` exists and is reachable.
 fn kth_query_tree(
   nodes : Array[PNode],
-  left_root : Int,
-  right_root : Int,
-  lo : Int,
-  hi : Int,
-  k : Int,
-) -> Int {
+  left_root : Int32,
+  right_root : Int32,
+  lo : Int32,
+  hi : Int32,
+  k : Int32,
+) -> Int32 {
   if lo == hi {
     return lo
   }
@@ -588,7 +598,7 @@ fn kth_query_tree(
 /// Return the number of elements in the original array.
 ///
 /// This is `roots.length() - 1` because `roots[0]` is the empty prefix.
-fn KthSmallest::size(self : KthSmallest) -> Int {
+fn KthSmallest::size(self : KthSmallest) -> Int32 {
   self.roots.length() - 1 // Subtract 1 for empty tree
 }
 

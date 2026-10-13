@@ -1,6 +1,6 @@
 ///|
 /// Non-empty arrays whose subarray sums fit in Int (|x| <= 10^6, len <= 60).
-priv struct NonEmpty(Array[Int]) derive(Debug)
+priv struct NonEmpty(Array[Int32]) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for NonEmpty with fn arbitrary(size, rs) {

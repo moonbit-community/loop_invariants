@@ -4,13 +4,13 @@
 // ============================================================================
 
 ///|
-const INF : Int = 0x3fffffff
+const INF : Int32 = 0x3fffffff
 
 ///|
 struct Edge {
-  to : Int
-  rev : Int
-  cap : Int
+  to : Int32
+  rev : Int32
+  cap : Int32
 } derive(Debug)
 
 ///|
@@ -43,13 +43,13 @@ pub struct FlowGraph {
 
 ///|
 /// Create a flow graph with n vertices.
-pub fn make(n : Int) -> FlowGraph {
+pub fn make(n : Int32) -> FlowGraph {
   { adj: [ for _ in 0..<n => [] ], }
 }
 
 ///|
 /// Add a directed edge (u -> v) with capacity cap.
-pub fn add_edge(g : FlowGraph, u : Int, v : Int, cap : Int) -> Unit {
+pub fn add_edge(g : FlowGraph, u : Int32, v : Int32, cap : Int32) -> Unit {
   let n = g.adj.length()
   if u < 0 || u >= n || v < 0 || v >= n || cap < 0 {
     return
@@ -61,7 +61,7 @@ pub fn add_edge(g : FlowGraph, u : Int, v : Int, cap : Int) -> Unit {
 }
 
 ///|
-fn min2(a : Int, b : Int) -> Int {
+fn min2(a : Int32, b : Int32) -> Int32 {
   if a < b {
     a
   } else {
@@ -71,7 +71,7 @@ fn min2(a : Int, b : Int) -> Int {
 
 ///|
 /// Compute max flow from s to t.
-pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
+pub fn max_flow(g : FlowGraph, s : Int32, t : Int32) -> Int32 {
   let n = g.adj.length()
   if s < 0 || s >= n || t < 0 || t >= n {
     return 0
@@ -83,8 +83,8 @@ pub fn max_flow(g : FlowGraph, s : Int, t : Int) -> Int {
   }
   let limit = n * edge_count + 1
   for iter = 0, flow = 0; iter < limit; {
-    let parent : Array[(Int, Int)] = Array::make(n, (-1, -1))
-    let queue : Array[Int] = []
+    let parent : Array[(Int32, Int32)] = Array::make(n, (-1, -1))
+    let queue : Array[Int32] = []
     queue.push(s)
     parent[s] = (s, -1)
     for head = 0; head < queue.length(); head = head + 1 {

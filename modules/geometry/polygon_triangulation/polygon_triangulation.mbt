@@ -54,7 +54,12 @@ fn dist2(a : Point, b : Point) -> Int64 {
 ///
 /// This is the local cost added to the DP when a triangulation splits interval
 /// `[i, j]` at vertex `k`.
-fn triangle_cost(points : Array[Point], i : Int, j : Int, k : Int) -> Int64 {
+fn triangle_cost(
+  points : Array[Point],
+  i : Int32,
+  j : Int32,
+  k : Int32,
+) -> Int64 {
   dist2(points[i], points[j]) +
   dist2(points[j], points[k]) +
   dist2(points[k], points[i])

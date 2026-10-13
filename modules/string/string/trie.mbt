@@ -15,8 +15,8 @@
 priv struct TrieNode {
   children : Array[TrieNode?]
   mut is_end : Bool
-  mut count : Int // number of words ending here
-  mut prefix_count : Int // number of words with this prefix
+  mut count : Int32 // number of words ending here
+  mut prefix_count : Int32 // number of words with this prefix
 }
 
 ///|
@@ -166,7 +166,7 @@ fn Trie::starts_with(self : Trie, prefix : String) -> Bool {
 ///
 /// # Parameters
 /// - `prefix` — the prefix to count matches for
-fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
+fn Trie::count_prefix(self : Trie, prefix : String) -> Int32 {
   let chars = prefix.to_array()
   let n = chars.length()
   for i in 0..<n; node = self.root {
@@ -207,10 +207,10 @@ fn Trie::count_prefix(self : Trie, prefix : String) -> Int {
 /// - `suffix_output` — index of the nearest ancestor (via failure links) that
 ///   has a non-empty output, used to enumerate all overlapping matches.
 priv struct ACNode {
-  children : Array[Int] // indices into nodes array, -1 = no child
-  mut fail : Int // failure link
-  mut output : Array[Int] // pattern indices that end here
-  mut suffix_output : Int // index of node with next pattern via suffix links
+  children : Array[Int32] // indices into nodes array, -1 = no child
+  mut fail : Int32 // failure link
+  mut output : Array[Int32] // pattern indices that end here
+  mut suffix_output : Int32 // index of node with next pattern via suffix links
 }
 
 ///|
@@ -233,7 +233,7 @@ fn ACNode::ACNode() -> ACNode {
 /// `ac.search(text)`.
 priv struct AhoCorasick {
   nodes : Array[ACNode]
-  mut node_count : Int
+  mut node_count : Int32
 }
 
 ///|
@@ -278,7 +278,7 @@ fn AhoCorasick::AhoCorasick(patterns : Array[String]) -> AhoCorasick {
 fn AhoCorasick::add_pattern(
   self : AhoCorasick,
   pattern : String,
-  pattern_idx : Int,
+  pattern_idx : Int32,
 ) -> Unit {
   let chars = pattern.to_array()
   let n = chars.length()
@@ -327,7 +327,7 @@ fn AhoCorasick::add_pattern(
 ///   a non-empty output array, enabling efficient collection of all matches.
 fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
   // Queue for BFS
-  let queue : Array[Int] = Array::make(self.node_count, 0)
+  let queue : Array[Int32] = Array::make(self.node_count, 0)
   // Initialize: all depth-1 nodes have fail link to root
   let back = for c in 0..<26; back = 0 {
     let child = self.nodes[0].children[c]
@@ -413,9 +413,9 @@ fn AhoCorasick::build_failure_links(self : AhoCorasick) -> Unit {
 /// node exists up to the root, returns the root (index `0`).
 fn AhoCorasick::find_fail_link(
   self : AhoCorasick,
-  parent : Int,
-  c : Int,
-) -> Int {
+  parent : Int32,
+  c : Int32,
+) -> Int32 {
   for fail = self.nodes[parent].fail {
     if self.nodes[fail].children[c] != -1 {
       break self.nodes[fail].children[c]
@@ -447,8 +447,8 @@ fn AhoCorasick::find_fail_link(
 /// - `pattern_idx` — the 0-based index into the `patterns` array supplied to
 ///   `AhoCorasick::new`.
 priv struct ACMatch {
-  position : Int // end position in text (exclusive)
-  pattern_idx : Int // index of matched pattern
+  position : Int32 // end position in text (exclusive)
+  pattern_idx : Int32 // index of matched pattern
 }
 
 ///|
@@ -510,7 +510,11 @@ fn AhoCorasick::search(self : AhoCorasick, text : String) -> Array[ACMatch] {
 ///
 /// # Returns
 /// The index of the next state.
-fn AhoCorasick::transition(self : AhoCorasick, state_in : Int, c : Int) -> Int {
+fn AhoCorasick::transition(
+  self : AhoCorasick,
+  state_in : Int32,
+  c : Int32,
+) -> Int32 {
   for state = state_in {
     if self.nodes[state].children[c] != -1 {
       break self.nodes[state].children[c]
@@ -546,8 +550,8 @@ fn AhoCorasick::transition(self : AhoCorasick, state_in : Int, c : Int) -> Int {
 /// - `matches` — accumulator to which `ACMatch` values are appended
 fn AhoCorasick::collect_matches(
   self : AhoCorasick,
-  state : Int,
-  end_pos : Int,
+  state : Int32,
+  end_pos : Int32,
   matches : Array[ACMatch],
 ) -> Unit {
   // Collect direct outputs
@@ -586,7 +590,7 @@ fn AhoCorasick::collect_matches(
 /// pass through this node, allowing prefix-count queries.
 priv struct XORTrieNode {
   mut children : (XORTrieNode?, XORTrieNode?) // (bit 0, bit 1)
-  mut count : Int
+  mut count : Int32
 }
 
 ///|
@@ -606,13 +610,13 @@ fn XORTrieNode::XORTrieNode() -> XORTrieNode {
 /// with `max_xor`.
 priv struct XORTrie {
   root : XORTrieNode
-  bits : Int // number of bits to consider
+  bits : Int32 // number of bits to consider
 }
 
 ///|
 /// Create an empty `XORTrie` that considers the `max_bits` most-significant
 /// bits of each inserted integer (bit `max_bits - 1` down to bit `0`).
-fn XORTrie::XORTrie(max_bits : Int) -> XORTrie {
+fn XORTrie::XORTrie(max_bits : Int32) -> XORTrie {
   { root: XORTrieNode(), bits: max_bits, }
 }
 
@@ -624,7 +628,7 @@ fn XORTrie::XORTrie(max_bits : Int) -> XORTrie {
 ///
 /// # Parameters
 /// - `num` — the non-negative integer to insert
-fn XORTrie::insert(self : XORTrie, num : Int) -> Unit {
+fn XORTrie::insert(self : XORTrie, num : Int32) -> Unit {
   for bit = self.bits - 1, node = self.root; bit >= 0; {
     node.count = node.count + 1
     let b = (num >> bit) & 1
@@ -684,7 +688,7 @@ fn XORTrie::insert(self : XORTrie, num : Int) -> Unit {
 /// // 6 XOR 3 = 5, 6 XOR 10 = 12, 6 XOR 5 = 3
 /// // max_xor(6) == 12
 /// ```
-fn XORTrie::max_xor(self : XORTrie, num : Int) -> Int {
+fn XORTrie::max_xor(self : XORTrie, num : Int32) -> Int32 {
   if self.root.count == 0 {
     return 0
   }
@@ -744,13 +748,15 @@ fn XORTrie::max_xor(self : XORTrie, num : Int) -> Int {
 priv struct PersistentTrieNode {
   children : Array[PersistentTrieNode?]
   is_end : Bool
-  version : Int
+  version : Int32
 }
 
 ///|
 /// Create a fresh `PersistentTrieNode` for `version` with no children and
 /// `is_end = false`.
-fn PersistentTrieNode::PersistentTrieNode(version : Int) -> PersistentTrieNode {
+fn PersistentTrieNode::PersistentTrieNode(
+  version : Int32,
+) -> PersistentTrieNode {
   { children: Array::make(26, None), is_end: false, version, }
 }
 
@@ -766,7 +772,7 @@ fn PersistentTrieNode::PersistentTrieNode(version : Int) -> PersistentTrieNode {
 /// (returns the new version number), and query with `search_version`.
 priv struct PersistentTrie {
   roots : Array[PersistentTrieNode?]
-  mut version : Int
+  mut version : Int32
 }
 
 ///|
@@ -776,7 +782,7 @@ priv struct PersistentTrie {
 /// # Parameters
 /// - `max_versions` — upper bound on the number of insert operations that
 ///   will be performed (must be at least 1)
-fn PersistentTrie::PersistentTrie(max_versions : Int) -> PersistentTrie {
+fn PersistentTrie::PersistentTrie(max_versions : Int32) -> PersistentTrie {
   let roots : Array[PersistentTrieNode?] = Array::make(max_versions, None)
   roots[0] = Some(PersistentTrieNode(0))
   { roots, version: 0, }
@@ -794,7 +800,7 @@ fn PersistentTrie::PersistentTrie(max_versions : Int) -> PersistentTrie {
 ///
 /// # Returns
 /// The new version number (monotonically increasing).
-fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
+fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int32 {
   let chars = word.to_array()
   let n = chars.length()
   let new_version = self.version + 1
@@ -872,7 +878,7 @@ fn PersistentTrie::insert(self : PersistentTrie, word : String) -> Int {
 fn PersistentTrie::search_version(
   self : PersistentTrie,
   word : String,
-  version : Int,
+  version : Int32,
 ) -> Bool {
   let chars = word.to_array()
   let n = chars.length()
@@ -952,7 +958,7 @@ fn RadixTree::RadixTree() -> RadixTree {
 ///
 /// Compares characters left-to-right and stops at the first mismatch or at
 /// the end of the shorter string.
-fn common_prefix_length(s1 : String, s2 : String) -> Int {
+fn common_prefix_length(s1 : String, s2 : String) -> Int32 {
   let chars1 = s1.to_array()
   let chars2 = s2.to_array()
   let n = if chars1.length() < chars2.length() {
@@ -983,7 +989,7 @@ fn common_prefix_length(s1 : String, s2 : String) -> Int {
 ///
 /// Returns `(index, Some(child))` if found, or `(-1, None)` if no such child
 /// exists.  The index can be used to replace the child in the parent's list.
-fn RadixNode::find_child(self : RadixNode, c : Char) -> (Int, RadixNode?) {
+fn RadixNode::find_child(self : RadixNode, c : Char) -> (Int32, RadixNode?) {
   for i in 0..<self.children.length() {
     let (first_char, child) = self.children[i]
     if first_char == c {
@@ -1034,7 +1040,7 @@ fn RadixTree::insert_helper(
   self : RadixTree,
   node : RadixNode,
   word : String,
-  pos : Int,
+  pos : Int32,
   chars : Array[Char],
 ) -> Unit {
   if pos >= chars.length() {
@@ -1094,7 +1100,7 @@ fn RadixTree::insert_helper(
 /// the corresponding slice of the query word.
 fn edge_matches(
   chars : Array[Char],
-  pos : Int,
+  pos : Int32,
   edge_chars : Array[Char],
 ) -> Bool {
   let edge_len = edge_chars.length()

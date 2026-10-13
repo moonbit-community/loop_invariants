@@ -7,11 +7,11 @@
 /// Apply range add updates to a base array and return the updated array.
 /// Each update is (l, r, delta) with inclusive bounds.
 pub fn apply_range_add(
-  base : ArrayView[Int],
-  updates : ArrayView[(Int, Int, Int)],
-) -> Array[Int] {
+  base : ArrayView[Int32],
+  updates : ArrayView[(Int32, Int32, Int32)],
+) -> Array[Int32] {
   let n = base.length()
-  let diff : Array[Int] = Array::make(n + 1, 0)
+  let diff : Array[Int32] = Array::make(n + 1, 0)
   // Mark range boundaries in the difference array.
   for update in updates {
     let (l, r, delta) = update
@@ -23,7 +23,7 @@ pub fn apply_range_add(
       diff[r + 1] = diff[r + 1] - delta
     }
   }
-  let result : Array[Int] = Array::make(n, 0)
+  let result : Array[Int32] = Array::make(n, 0)
   // Prefix-sum the difference array to reconstruct final values.
   for i in 0..<n; run = 0 {
     let new_run = run + diff[i]
@@ -35,8 +35,12 @@ pub fn apply_range_add(
 
 ///|
 test "difference_array" {
-  let base : Array[Int] = [1, 2, 3, 4, 5]
-  let updates : Array[(Int, Int, Int)] = [(1, 3, 2), (0, 0, -1), (2, 4, 1)]
+  let base : Array[Int32] = [1, 2, 3, 4, 5]
+  let updates : Array[(Int32, Int32, Int32)] = [
+    (1, 3, 2),
+    (0, 0, -1),
+    (2, 4, 1),
+  ]
   let updated = apply_range_add(base, updates)
   // base + updates = [0, 4, 6, 7, 6]
   @debug.assert_eq(updated, [0, 4, 6, 7, 6])

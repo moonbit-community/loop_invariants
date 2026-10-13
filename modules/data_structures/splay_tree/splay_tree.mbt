@@ -25,10 +25,10 @@
 ///|
 priv struct SplayNode[T] {
   mut key : T
-  mut left : Int
-  mut right : Int
-  mut parent : Int
-  mut size : Int // Subtree size for order statistics
+  mut left : Int32
+  mut right : Int32
+  mut parent : Int32
+  mut size : Int32 // Subtree size for order statistics
 }
 
 ///|
@@ -39,8 +39,8 @@ fn[T] SplayNode::SplayNode(key : T) -> SplayNode[T] {
 ///|
 priv struct SplayTree[T] {
   nodes : Array[SplayNode[T]]
-  mut root : Int
-  mut free_list : Int // Head of free list for deleted nodes
+  mut root : Int32
+  mut free_list : Int32 // Head of free list for deleted nodes
 }
 
 ///|
@@ -49,7 +49,7 @@ fn[T] SplayTree::SplayTree() -> SplayTree[T] {
 }
 
 ///|
-fn[T] SplayTree::alloc_node(self : SplayTree[T], key : T) -> Int {
+fn[T] SplayTree::alloc_node(self : SplayTree[T], key : T) -> Int32 {
   if self.free_list >= 0 {
     let idx = self.free_list
     self.free_list = self.nodes[idx].left
@@ -66,7 +66,7 @@ fn[T] SplayTree::alloc_node(self : SplayTree[T], key : T) -> Int {
 }
 
 ///|
-fn[T] SplayTree::update_size(self : SplayTree[T], x : Int) -> Unit {
+fn[T] SplayTree::update_size(self : SplayTree[T], x : Int32) -> Unit {
   if x < 0 {
     return
   }
@@ -85,7 +85,7 @@ fn[T] SplayTree::update_size(self : SplayTree[T], x : Int) -> Unit {
 
 ///|
 /// Right rotation: x becomes parent of its parent p
-fn[T] SplayTree::rotate_right(self : SplayTree[T], x : Int) -> Unit {
+fn[T] SplayTree::rotate_right(self : SplayTree[T], x : Int32) -> Unit {
   let p = self.nodes[x].parent
   if p < 0 {
     return
@@ -118,7 +118,7 @@ fn[T] SplayTree::rotate_right(self : SplayTree[T], x : Int) -> Unit {
 
 ///|
 /// Left rotation
-fn[T] SplayTree::rotate_left(self : SplayTree[T], x : Int) -> Unit {
+fn[T] SplayTree::rotate_left(self : SplayTree[T], x : Int32) -> Unit {
   let p = self.nodes[x].parent
   if p < 0 {
     return
@@ -145,7 +145,7 @@ fn[T] SplayTree::rotate_left(self : SplayTree[T], x : Int) -> Unit {
 
 ///|
 /// Splay node x to root
-fn[T] SplayTree::splay(self : SplayTree[T], x : Int) -> Unit {
+fn[T] SplayTree::splay(self : SplayTree[T], x : Int32) -> Unit {
   if x < 0 {
     return
   }
@@ -211,7 +211,7 @@ fn[T : Compare] SplayTree::insert(self : SplayTree[T], key : T) -> Unit {
 
 ///|
 /// Find node with given key (returns -1 if not found)
-fn[T : Compare] SplayTree::find_node(self : SplayTree[T], key : T) -> Int {
+fn[T : Compare] SplayTree::find_node(self : SplayTree[T], key : T) -> Int32 {
   for cur = self.root; cur >= 0; {
     if key == self.nodes[cur].key {
       self.splay(cur)
@@ -234,7 +234,7 @@ fn[T : Compare] SplayTree::contains(self : SplayTree[T], key : T) -> Bool {
 
 ///|
 /// Find minimum node in subtree
-fn[T] SplayTree::find_min(self : SplayTree[T], x : Int) -> Int {
+fn[T] SplayTree::find_min(self : SplayTree[T], x : Int32) -> Int32 {
   if x < 0 {
     return -1
   }
@@ -247,7 +247,7 @@ fn[T] SplayTree::find_min(self : SplayTree[T], x : Int) -> Int {
 
 ///|
 /// Find maximum node in subtree
-fn[T] SplayTree::find_max(self : SplayTree[T], x : Int) -> Int {
+fn[T] SplayTree::find_max(self : SplayTree[T], x : Int32) -> Int32 {
   if x < 0 {
     return -1
   }
@@ -300,7 +300,7 @@ fn[T : Compare] SplayTree::delete(self : SplayTree[T], key : T) -> Bool {
 
 ///|
 /// Get kth smallest element (1-indexed)
-fn[T] SplayTree::kth_element(self : SplayTree[T], k : Int) -> T? {
+fn[T] SplayTree::kth_element(self : SplayTree[T], k : Int32) -> T? {
   if self.root < 0 || k <= 0 {
     return None
   }
@@ -325,7 +325,7 @@ fn[T] SplayTree::kth_element(self : SplayTree[T], k : Int) -> T? {
 
 ///|
 /// Count elements less than key
-fn[T : Compare] SplayTree::count_less(self : SplayTree[T], key : T) -> Int {
+fn[T : Compare] SplayTree::count_less(self : SplayTree[T], key : T) -> Int32 {
   if self.root < 0 {
     return 0
   }
@@ -347,7 +347,7 @@ fn[T : Compare] SplayTree::count_less(self : SplayTree[T], key : T) -> Int {
 
 ///|
 /// Get tree size
-fn[T] SplayTree::size(self : SplayTree[T]) -> Int {
+fn[T] SplayTree::size(self : SplayTree[T]) -> Int32 {
   if self.root < 0 {
     0
   } else {

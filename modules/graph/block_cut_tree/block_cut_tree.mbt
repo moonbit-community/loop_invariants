@@ -43,11 +43,11 @@
 pub struct BlockCutTree {
   /// Number of original graph vertices. Vertex nodes use indices `0` to
   /// `original_vertices - 1` in `adj`.
-  original_vertices : Int
+  original_vertices : Int32
   /// Number of biconnected components found. Block nodes use indices
   /// `original_vertices` to `original_vertices + component_count - 1` in
   /// `adj`.
-  component_count : Int
+  component_count : Int32
   /// Adjacency list of the block-cut tree. Has length
   /// `original_vertices + component_count`.
   ///
@@ -55,7 +55,7 @@ pub struct BlockCutTree {
   /// - `adj[b]` for a block node `b` lists all vertex nodes in that block.
   ///
   /// The list is undirected: `b in adj[v]` if and only if `v in adj[b]`.
-  adj : Array[Array[Int]]
+  adj : Array[Array[Int32]]
 }
 
 ///|
@@ -94,8 +94,8 @@ pub struct BlockCutTree {
 /// - A disconnected graph returns one sub-forest per connected component;
 ///   `component_count` is the total number of blocks across all components.
 pub fn build_block_cut_tree(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
 ) -> BlockCutTree {
   if n <= 0 {
     return { original_vertices: 0, component_count: 0, adj: [], }
@@ -108,7 +108,7 @@ pub fn build_block_cut_tree(
   for ci in 0..<c {
     let comp_edges = comps[ci]
     let in_comp = Array::make(n, false)
-    let vertices : Array[Int] = []
+    let vertices : Array[Int32] = []
     for edge in comp_edges {
       let (u, v) = edge
       if !in_comp[u] {

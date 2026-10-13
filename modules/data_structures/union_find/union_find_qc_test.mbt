@@ -4,14 +4,14 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 /// Mostly valid indices, sometimes just outside `[0, n)`.
-fn gen_index(rs : @quickcheck.RandomState, n : Int) -> Int {
+fn gen_index(rs : @quickcheck.RandomState, n : Int32) -> Int32 {
   if n == 0 || rint(rs, 0, 7) == 0 {
     rint(rs, -2, n + 2)
   } else {
@@ -21,10 +21,10 @@ fn gen_index(rs : @quickcheck.RandomState, n : Int) -> Int {
 
 ///|
 priv enum Op {
-  Union(Int, Int)
-  Connected(Int, Int)
-  Find(Int)
-  SetSize(Int)
+  Union(Int32, Int32)
+  Connected(Int32, Int32)
+  Find(Int32)
+  SetSize(Int32)
   CountSets
 } derive(Debug)
 
@@ -33,7 +33,7 @@ impl @quickcheck.Shrink for Op
 
 ///|
 priv struct Case {
-  n : Int
+  n : Int32
   ops : Array[Op]
 } derive(Debug)
 
@@ -62,15 +62,15 @@ fn run_case(c : Case) -> Bool {
   let n = c.n
   let uf = @union_find.UnionFind(n)
   let label = Array::makei(n, i => i)
-  let valid = (i : Int) => i >= 0 && i < n
+  let valid = (i : Int32) => i >= 0 && i < n
   let components = () => {
-    let seen : Map[Int, Bool] = Map([])
+    let seen : Map[Int32, Bool] = Map([])
     for l in label {
       seen[l] = true
     }
     seen.length()
   }
-  let check_find = (x : Int) => {
+  let check_find = (x : Int32) => {
     let root = uf.find(x)
     if !valid(x) {
       root == -1

@@ -36,8 +36,8 @@
 /// Here `lowbit(k) = k & (-k)` isolates the lowest set bit of `k`.
 pub struct Fenwick2D {
   tree : Array[Array[Int64]]
-  rows : Int
-  cols : Int
+  rows : Int32
+  cols : Int32
 }
 
 ///|
@@ -51,7 +51,7 @@ pub struct Fenwick2D {
 /// assert_eq!(fw.get_rows(), 4)
 /// assert_eq!(fw.get_cols(), 6)
 /// ```
-pub fn Fenwick2D::Fenwick2D(rows : Int, cols : Int) -> Fenwick2D {
+pub fn Fenwick2D::Fenwick2D(rows : Int32, cols : Int32) -> Fenwick2D {
   // Use 1-indexed arrays (index 0 unused)
   let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
@@ -68,7 +68,7 @@ pub fn Fenwick2D::Fenwick2D(rows : Int, cols : Int) -> Fenwick2D {
 ///
 /// Examples: `lowbit(1)=1`, `lowbit(2)=2`, `lowbit(3)=1`, `lowbit(4)=4`,
 /// `lowbit(6)=2`, `lowbit(8)=8`.
-fn lowbit(x : Int) -> Int {
+fn lowbit(x : Int32) -> Int32 {
   x & -x
 }
 
@@ -89,8 +89,8 @@ fn lowbit(x : Int) -> Int {
 /// ```
 pub fn Fenwick2D::update(
   self : Fenwick2D,
-  x : Int,
-  y : Int,
+  x : Int32,
+  y : Int32,
   delta : Int64,
 ) -> Unit {
   if x <= 0 || x > self.rows || y <= 0 || y > self.cols {
@@ -130,7 +130,7 @@ pub fn Fenwick2D::update(
 /// assert_eq!(fw.prefix_sum(2, 2), 10L)
 /// assert_eq!(fw.prefix_sum(0, 2), 0L)
 /// ```
-pub fn Fenwick2D::prefix_sum(self : Fenwick2D, x : Int, y : Int) -> Int64 {
+pub fn Fenwick2D::prefix_sum(self : Fenwick2D, x : Int32, y : Int32) -> Int64 {
   if x <= 0 || y <= 0 {
     return 0L
   }
@@ -177,10 +177,10 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, x : Int, y : Int) -> Int64 {
 /// ```
 pub fn Fenwick2D::range_sum(
   self : Fenwick2D,
-  x1 : Int,
-  y1 : Int,
-  x2 : Int,
-  y2 : Int,
+  x1 : Int32,
+  y1 : Int32,
+  x2 : Int32,
+  y2 : Int32,
 ) -> Int64 {
   if x1 > x2 || y1 > y2 {
     return 0L
@@ -208,8 +208,8 @@ pub fn Fenwick2D::range_sum(
 /// ```
 pub fn Fenwick2D::set(
   self : Fenwick2D,
-  x : Int,
-  y : Int,
+  x : Int32,
+  y : Int32,
   old_val : Int64,
   new_val : Int64,
 ) -> Unit {
@@ -232,7 +232,7 @@ pub fn Fenwick2D::set(
 /// assert_eq!(fw.get(2, 3), 42L)
 /// assert_eq!(fw.get(1, 1), 0L)
 /// ```
-pub fn Fenwick2D::get(self : Fenwick2D, x : Int, y : Int) -> Int64 {
+pub fn Fenwick2D::get(self : Fenwick2D, x : Int32, y : Int32) -> Int64 {
   self.range_sum(x, y, x, y)
 }
 
@@ -240,7 +240,7 @@ pub fn Fenwick2D::get(self : Fenwick2D, x : Int, y : Int) -> Int64 {
 /// Return the number of rows in the grid (as passed to `Fenwick2D::new`).
 ///
 /// Valid row indices for all other methods are `1..get_rows()`.
-pub fn Fenwick2D::get_rows(self : Fenwick2D) -> Int {
+pub fn Fenwick2D::get_rows(self : Fenwick2D) -> Int32 {
   self.rows
 }
 
@@ -248,7 +248,7 @@ pub fn Fenwick2D::get_rows(self : Fenwick2D) -> Int {
 /// Return the number of columns in the grid (as passed to `Fenwick2D::new`).
 ///
 /// Valid column indices for all other methods are `1..get_cols()`.
-pub fn Fenwick2D::get_cols(self : Fenwick2D) -> Int {
+pub fn Fenwick2D::get_cols(self : Fenwick2D) -> Int32 {
   self.cols
 }
 
@@ -284,12 +284,12 @@ pub fn Fenwick2D::get_cols(self : Fenwick2D) -> Int {
 /// rectangle-add operations and occasional single-cell reads.
 priv struct Fenwick2DRange {
   tree : Array[Array[Int64]]
-  rows : Int
-  cols : Int
+  rows : Int32
+  cols : Int32
 }
 
 ///|
-fn Fenwick2DRange::Fenwick2DRange(rows : Int, cols : Int) -> Fenwick2DRange {
+fn Fenwick2DRange::Fenwick2DRange(rows : Int32, cols : Int32) -> Fenwick2DRange {
   let tree : Array[Array[Int64]] = [
     for _ in 0..<=rows => Array::make(cols + 1, 0L)
   ]
@@ -300,8 +300,8 @@ fn Fenwick2DRange::Fenwick2DRange(rows : Int, cols : Int) -> Fenwick2DRange {
 /// Internal update (same as Fenwick2D::update)
 fn Fenwick2DRange::internal_update(
   self : Fenwick2DRange,
-  x : Int,
-  y : Int,
+  x : Int32,
+  y : Int32,
   delta : Int64,
 ) -> Unit {
   if x <= 0 || x > self.rows || y <= 0 || y > self.cols {
@@ -328,8 +328,8 @@ fn Fenwick2DRange::internal_update(
 /// Internal prefix sum (same as Fenwick2D::prefix_sum)
 fn Fenwick2DRange::internal_prefix(
   self : Fenwick2DRange,
-  x : Int,
-  y : Int,
+  x : Int32,
+  y : Int32,
 ) -> Int64 {
   if x <= 0 || y <= 0 {
     return 0L
@@ -359,10 +359,10 @@ fn Fenwick2DRange::internal_prefix(
 /// update(x2+1, y1, -delta), update(x2+1, y2+1, +delta)
 fn Fenwick2DRange::range_add(
   self : Fenwick2DRange,
-  x1 : Int,
-  y1 : Int,
-  x2 : Int,
-  y2 : Int,
+  x1 : Int32,
+  y1 : Int32,
+  x2 : Int32,
+  y2 : Int32,
   delta : Int64,
 ) -> Unit {
   if x1 > x2 || y1 > y2 {
@@ -377,17 +377,17 @@ fn Fenwick2DRange::range_add(
 ///|
 /// Query value at position (x, y)
 /// The prefix sum of the difference array gives the actual value
-fn Fenwick2DRange::query(self : Fenwick2DRange, x : Int, y : Int) -> Int64 {
+fn Fenwick2DRange::query(self : Fenwick2DRange, x : Int32, y : Int32) -> Int64 {
   self.internal_prefix(x, y)
 }
 
 ///|
-fn Fenwick2DRange::get_rows(self : Fenwick2DRange) -> Int {
+fn Fenwick2DRange::get_rows(self : Fenwick2DRange) -> Int32 {
   self.rows
 }
 
 ///|
-fn Fenwick2DRange::get_cols(self : Fenwick2DRange) -> Int {
+fn Fenwick2DRange::get_cols(self : Fenwick2DRange) -> Int32 {
   self.cols
 }
 

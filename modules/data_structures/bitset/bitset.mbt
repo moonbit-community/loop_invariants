@@ -25,7 +25,7 @@
 /// A fixed-capacity bit array.
 pub struct BitSet {
   bits : Array[Int64]
-  cap : Int
+  cap : Int32
 }
 
 ///|
@@ -40,7 +40,7 @@ pub struct BitSet {
 ///   @debug.assert_eq(b.contains(7), true)
 /// }
 /// ```
-pub fn new(capacity : Int) -> BitSet {
+pub fn new(capacity : Int32) -> BitSet {
   let cap = if capacity < 0 { 0 } else { capacity }
   let words = (cap + 63) / 64
   { bits: Array::make(words, 0L), cap, }
@@ -48,18 +48,18 @@ pub fn new(capacity : Int) -> BitSet {
 
 ///|
 /// Capacity (highest valid bit index + 1).
-pub fn BitSet::capacity(self : BitSet) -> Int {
+pub fn BitSet::capacity(self : BitSet) -> Int32 {
   self.cap
 }
 
 ///|
-fn BitSet::in_range(self : BitSet, i : Int) -> Bool {
+fn BitSet::in_range(self : BitSet, i : Int32) -> Bool {
   i >= 0 && i < self.cap
 }
 
 ///|
 /// Set bit `i` to `1`.
-pub fn BitSet::set(self : BitSet, i : Int) -> Unit {
+pub fn BitSet::set(self : BitSet, i : Int32) -> Unit {
   if !self.in_range(i) {
     return
   }
@@ -68,7 +68,7 @@ pub fn BitSet::set(self : BitSet, i : Int) -> Unit {
 
 ///|
 /// Clear bit `i` to `0`.
-pub fn BitSet::unset(self : BitSet, i : Int) -> Unit {
+pub fn BitSet::unset(self : BitSet, i : Int32) -> Unit {
   if !self.in_range(i) {
     return
   }
@@ -78,7 +78,7 @@ pub fn BitSet::unset(self : BitSet, i : Int) -> Unit {
 
 ///|
 /// Toggle bit `i`.
-pub fn BitSet::flip(self : BitSet, i : Int) -> Unit {
+pub fn BitSet::flip(self : BitSet, i : Int32) -> Unit {
   if !self.in_range(i) {
     return
   }
@@ -87,7 +87,7 @@ pub fn BitSet::flip(self : BitSet, i : Int) -> Unit {
 
 ///|
 /// `true` iff bit `i` is set. Out-of-range queries return `false`.
-pub fn BitSet::contains(self : BitSet, i : Int) -> Bool {
+pub fn BitSet::contains(self : BitSet, i : Int32) -> Bool {
   if !self.in_range(i) {
     return false
   }
@@ -95,7 +95,7 @@ pub fn BitSet::contains(self : BitSet, i : Int) -> Bool {
 }
 
 ///|
-fn popcount64(x : Int64) -> Int {
+fn popcount64(x : Int64) -> Int32 {
   let mut y = x
   let mut c = 0
   while y != 0L {
@@ -107,7 +107,7 @@ fn popcount64(x : Int64) -> Int {
 
 ///|
 /// Number of set bits.
-pub fn BitSet::count_set(self : BitSet) -> Int {
+pub fn BitSet::count_set(self : BitSet) -> Int32 {
   let mut total = 0
   for w in self.bits {
     total = total + popcount64(w)
@@ -143,7 +143,7 @@ fn BitSet::clear_padding(self : BitSet) -> Unit {
 
 ///|
 /// Smallest index >= 0 that is set, or `-1` when none.
-pub fn BitSet::first_set(self : BitSet) -> Int {
+pub fn BitSet::first_set(self : BitSet) -> Int32 {
   let words = self.bits.length()
   for w in 0..<words {
     let v = if w + 1 == words { self.masked_last_word() } else { self.bits[w] }
@@ -163,7 +163,7 @@ pub fn BitSet::first_set(self : BitSet) -> Int {
 
 ///|
 /// Smallest index >= `start` that is set, or `-1` when none.
-pub fn BitSet::next_set(self : BitSet, start : Int) -> Int {
+pub fn BitSet::next_set(self : BitSet, start : Int32) -> Int32 {
   if start >= self.cap {
     return -1
   }

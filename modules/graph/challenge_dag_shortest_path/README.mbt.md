@@ -46,7 +46,7 @@ One valid topological order:
 ```mbt check
 ///|
 test "dag shortest path example" {
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 2),
     (0, 2, 5),
     (1, 2, 1),
@@ -64,7 +64,7 @@ test "dag shortest path example" {
 ```mbt check
 ///|
 test "dag shortest path negative edges" {
-  let edges : Array[(Int, Int, Int)] = [
+  let edges : Array[(Int32, Int32, Int32)] = [
     (0, 1, 2),
     (0, 2, 5),
     (1, 2, -4),
@@ -85,7 +85,7 @@ reachable nodes are correct.
 ```mbt check
 ///|
 test "dag shortest path unreachable" {
-  let edges : Array[(Int, Int, Int)] = [(0, 1, 1)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, 1)]
   let dist = @challenge_dag_shortest_path.dag_shortest_paths(4, edges, 0)
   guard dist is Some(d) else { fail("expected distances") }
   debug_inspect(d[0], content="0")
@@ -102,7 +102,7 @@ If there is a cycle, topological order does not exist, so the function returns
 ```mbt check
 ///|
 test "dag shortest path cycle" {
-  let edges : Array[(Int, Int, Int)] = [(0, 1, 1), (1, 2, 2), (2, 0, 3)]
+  let edges : Array[(Int32, Int32, Int32)] = [(0, 1, 1), (1, 2, 2), (2, 0, 3)]
   let dist = @challenge_dag_shortest_path.dag_shortest_paths(3, edges, 0)
   debug_inspect(dist is None, content="true")
 }

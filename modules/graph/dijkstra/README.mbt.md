@@ -104,7 +104,7 @@ test "basic shortest paths" {
 ```mbt check
 ///|
 test "dense dijkstra" {
-  let adj : Array[Array[(Int, Int)]] = [
+  let adj : Array[Array[(Int32, Int32)]] = [
     [(1, 2), (2, 5)],
     [(2, 1), (3, 2)],
     [(3, 3)],

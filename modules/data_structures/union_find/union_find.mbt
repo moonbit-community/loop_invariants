@@ -44,9 +44,9 @@
 ///
 /// Space complexity: O(n).
 pub struct UnionFind {
-  parent : Array[Int]
-  rank : Array[Int]
-  mut num_sets : Int
+  parent : Array[Int32]
+  rank : Array[Int32]
+  mut num_sets : Int32
 }
 
 ///|
@@ -60,7 +60,7 @@ pub struct UnionFind {
 /// Returns a new `UnionFind` value ready for use.
 ///
 /// Time complexity: O(n).
-pub fn UnionFind::UnionFind(n : Int) -> UnionFind {
+pub fn UnionFind::UnionFind(n : Int32) -> UnionFind {
   // Each element is its own parent (self-loop = root)
   let parent = [ for i in 0..<n => i ]
   let rank = Array::make(n, 0)
@@ -84,7 +84,7 @@ pub fn UnionFind::UnionFind(n : Int) -> UnionFind {
 ///
 /// INVARIANT: Following parent pointers leads to root.
 /// PATH COMPRESSION: Makes all nodes on path point directly to root.
-pub fn UnionFind::find(self : UnionFind, x : Int) -> Int {
+pub fn UnionFind::find(self : UnionFind, x : Int32) -> Int32 {
   if x < 0 || x >= self.parent.length() {
     return -1
   }
@@ -130,7 +130,7 @@ pub fn UnionFind::find(self : UnionFind, x : Int) -> Int {
 /// Time complexity: O(α(n)) amortized.
 ///
 /// INVARIANT: Smaller rank tree goes under larger rank tree.
-pub fn UnionFind::union(self : UnionFind, x : Int, y : Int) -> Bool {
+pub fn UnionFind::union(self : UnionFind, x : Int32, y : Int32) -> Bool {
   let root_x = self.find(x)
   let root_y = self.find(y)
   if root_x < 0 || root_y < 0 {
@@ -165,7 +165,7 @@ pub fn UnionFind::union(self : UnionFind, x : Int, y : Int) -> Bool {
 /// otherwise (including when either index is out of bounds).
 ///
 /// Time complexity: O(α(n)) amortized.
-pub fn UnionFind::connected(self : UnionFind, x : Int, y : Int) -> Bool {
+pub fn UnionFind::connected(self : UnionFind, x : Int32, y : Int32) -> Bool {
   let root_x = self.find(x)
   let root_y = self.find(y)
   root_x >= 0 && root_x == root_y
@@ -180,7 +180,7 @@ pub fn UnionFind::connected(self : UnionFind, x : Int, y : Int) -> Bool {
 /// Returns the count of disjoint sets remaining.
 ///
 /// Time complexity: O(1).
-pub fn UnionFind::count_sets(self : UnionFind) -> Int {
+pub fn UnionFind::count_sets(self : UnionFind) -> Int32 {
   self.num_sets
 }
 
@@ -196,7 +196,7 @@ pub fn UnionFind::count_sets(self : UnionFind) -> Int {
 /// so it is more expensive than the other operations.
 ///
 /// Time complexity: O(n · α(n)).
-pub fn UnionFind::set_size(self : UnionFind, x : Int) -> Int {
+pub fn UnionFind::set_size(self : UnionFind, x : Int32) -> Int32 {
   let root = self.find(x)
   if root < 0 {
     return 0
@@ -226,8 +226,8 @@ pub fn UnionFind::set_size(self : UnionFind, x : Int) -> Int {
 /// This type is private; use `WeightedUnionFind::new`, `union_with_weight`,
 /// and `diff` to interact with it.
 priv struct WeightedUnionFind {
-  parent : Array[Int]
-  rank : Array[Int]
+  parent : Array[Int32]
+  rank : Array[Int32]
   weight : Array[Int64] // weight[x] = weight of x relative to parent[x]
 }
 
@@ -241,7 +241,7 @@ priv struct WeightedUnionFind {
 /// `0`.
 ///
 /// Time complexity: O(n).
-fn WeightedUnionFind::WeightedUnionFind(n : Int) -> WeightedUnionFind {
+fn WeightedUnionFind::WeightedUnionFind(n : Int32) -> WeightedUnionFind {
   let parent = [ for i in 0..<n => i ]
   let rank = Array::make(n, 0)
   let weight = Array::make(n, 0L)
@@ -266,8 +266,8 @@ fn WeightedUnionFind::WeightedUnionFind(n : Int) -> WeightedUnionFind {
 /// Time complexity: O(α(n)) amortized.
 fn WeightedUnionFind::find_with_weight(
   self : WeightedUnionFind,
-  x : Int,
-) -> (Int, Int64) {
+  x : Int32,
+) -> (Int32, Int64) {
   if x < 0 || x >= self.parent.length() {
     return (-1, 0L)
   }
@@ -302,8 +302,8 @@ fn WeightedUnionFind::find_with_weight(
 /// Time complexity: O(α(n)) amortized.
 fn WeightedUnionFind::diff(
   self : WeightedUnionFind,
-  x : Int,
-  y : Int,
+  x : Int32,
+  y : Int32,
 ) -> Int64? {
   let (root_x, wx) = self.find_with_weight(x)
   let (root_y, wy) = self.find_with_weight(y)
@@ -335,8 +335,8 @@ fn WeightedUnionFind::diff(
 /// Time complexity: O(α(n)) amortized.
 fn WeightedUnionFind::union_with_weight(
   self : WeightedUnionFind,
-  x : Int,
-  y : Int,
+  x : Int32,
+  y : Int32,
   w : Int64,
 ) -> Bool {
   let (root_x, wx) = self.find_with_weight(x)

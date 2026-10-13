@@ -129,7 +129,7 @@ pub fn compute(
 ) -> Array[(Int64, Int64)] {
   let n = buildings.length()
   // Events: (x, +height for start, -height for end). Sort by x.
-  let events : Array[(Int64, Int, Int64, Int64)] = []
+  let events : Array[(Int64, Int32, Int64, Int64)] = []
   for b in buildings {
     let (l, r, h) = b
     // start: type 0, end: type 1.
@@ -163,9 +163,9 @@ pub fn compute(
 
 ///|
 fn sort_events(
-  arr : Array[(Int64, Int, Int64, Int64)],
-  lo : Int,
-  hi : Int,
+  arr : Array[(Int64, Int32, Int64, Int64)],
+  lo : Int32,
+  hi : Int32,
 ) -> Unit {
   if hi - lo <= 1 {
     return
@@ -204,9 +204,9 @@ fn sort_events(
 
 ///|
 fn cmp_event(
-  a : (Int64, Int, Int64, Int64),
-  b : (Int64, Int, Int64, Int64),
-) -> Int {
+  a : (Int64, Int32, Int64, Int64),
+  b : (Int64, Int32, Int64, Int64),
+) -> Int32 {
   if a.0 < b.0 {
     -1
   } else if a.0 > b.0 {

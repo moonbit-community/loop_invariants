@@ -3,7 +3,10 @@
 // ============================================================================
 
 ///|
-fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
+fn build_adj(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Array[Int32]] {
   let adj = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
@@ -14,10 +17,10 @@ fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
 }
 
 ///|
-fn bfs(adj : Array[Array[Int]], start : Int) -> (Int, Array[Int]) {
+fn bfs(adj : Array[Array[Int32]], start : Int32) -> (Int32, Array[Int32]) {
   let n = adj.length()
   let dist = Array::make(n, -1)
-  let queue : Array[Int] = []
+  let queue : Array[Int32] = []
   dist[start] = 0
   queue.push(start)
   for head = 0 {
@@ -61,7 +64,7 @@ fn bfs(adj : Array[Array[Int]], start : Int) -> (Int, Array[Int]) {
 
 ///|
 /// Return the length of the tree diameter.
-pub fn tree_diameter(n : Int, edges : ArrayView[(Int, Int)]) -> Int {
+pub fn tree_diameter(n : Int32, edges : ArrayView[(Int32, Int32)]) -> Int32 {
   if n == 0 {
     return 0
   }

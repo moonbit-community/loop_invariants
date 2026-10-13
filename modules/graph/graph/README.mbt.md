@@ -50,8 +50,11 @@ graph[2] = [0, 1]
 
 ```mbt check
 ///|
-fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+fn build_adj(
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
+) -> Array[Array[Int32]] {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
     if u < 0 || u >= n || v < 0 || v >= n {
@@ -66,7 +69,7 @@ fn build_adj(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Array[Int]] {
 
 ///|
 test "build adjacency list" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 0)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0)]
   let adj = build_adj(3, edges)
   let a0 = adj[0].copy()
   let a1 = adj[1].copy()
@@ -97,11 +100,11 @@ levels from 0:
 
 ```mbt check
 ///|
-fn bfs_levels(adj : Array[Array[Int]], source : Int) -> Array[Int] {
+fn bfs_levels(adj : Array[Array[Int32]], source : Int32) -> Array[Int32] {
   let n = adj.length()
   let dist = Array::make(n, -1)
   dist[source] = 0
-  let queue : Array[Int] = [source]
+  let queue : Array[Int32] = [source]
   let _ = for head = 0 {
     match queue.get(head) {
       None => break ()
@@ -121,7 +124,7 @@ fn bfs_levels(adj : Array[Array[Int]], source : Int) -> Array[Int] {
 
 ///|
 test "bfs levels" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (0, 3), (1, 4), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (0, 3), (1, 4), (3, 4)]
   let adj = build_adj(5, edges)
   let dist = bfs_levels(adj, 0)
   debug_inspect(dist, content="[0, 1, 2, 1, 2]")

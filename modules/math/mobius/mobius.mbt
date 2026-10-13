@@ -58,7 +58,7 @@ fn square_fits(p : Int64, m : Int64) -> Bool {
 ///   @debug.assert_eq(@mobius.mu(30L), -1) // 30 = 2*3*5, 3 distinct primes
 /// }
 /// ```
-pub fn mu(n : Int64) -> Int {
+pub fn mu(n : Int64) -> Int32 {
   if n <= 0L {
     return 0
   }
@@ -110,7 +110,7 @@ pub fn mu(n : Int64) -> Int {
 ///   @debug.assert_eq(m[6], 1)
 /// }
 /// ```
-pub fn sieve(n : Int) -> Array[Int] {
+pub fn sieve(n : Int32) -> Array[Int32] {
   if n < 0 {
     return []
   }
@@ -120,7 +120,7 @@ pub fn sieve(n : Int) -> Array[Int] {
   }
   res[1] = 1
   let spf = Array::make(n + 1, 0)
-  let primes : Array[Int] = []
+  let primes : Array[Int32] = []
   for i in 2..<=n {
     if spf[i] == 0 {
       spf[i] = i
@@ -148,7 +148,9 @@ pub fn sieve(n : Int) -> Array[Int] {
 ///|
 test "mu small values" {
   // mu(1..12) = 1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0
-  let expected : ReadOnlyArray[Int] = [1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0]
+  let expected : ReadOnlyArray[Int32] = [
+    1, -1, -1, 0, -1, 1, -1, 0, 0, 1, -1, 0,
+  ]
   for i in 1..<=12 {
     @debug.assert_eq(mu(i.to_int64()), expected[i - 1])
   }
@@ -189,7 +191,7 @@ test "mu product of distinct primes" {
 ///|
 test "mu agrees with definition by brute force" {
   // Brute force: factor n, return 0 if any prime appears > 1, else (-1)^omega.
-  fn brute(n : Int64) -> Int {
+  fn brute(n : Int64) -> Int32 {
     if n <= 0L {
       return 0
     }
@@ -224,7 +226,7 @@ test "mu agrees with definition by brute force" {
 ///|
 test "mobius identity sum over divisors" {
   // sum_{d | n} mu(d) = [n == 1].
-  fn sum_mu_div(n : Int64) -> Int {
+  fn sum_mu_div(n : Int64) -> Int32 {
     let mut total = 0
     let mut d = 1L
     while d * d <= n {
@@ -262,7 +264,7 @@ test "sieve matches single" {
 test "sieve small example" {
   // mu(1..10) = 1, -1, -1, 0, -1, 1, -1, 0, 0, 1
   let m = sieve(10)
-  let expected : ReadOnlyArray[Int] = [0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1]
+  let expected : ReadOnlyArray[Int32] = [0, 1, -1, -1, 0, -1, 1, -1, 0, 0, 1]
   for i in 0..<=10 {
     @debug.assert_eq(m[i], expected[i])
   }

@@ -1,5 +1,5 @@
 ///|
-fn fib(n : Int) -> Int {
+fn fib(n : Int32) -> Int32 {
   if n <= 1 {
     n
   } else {
@@ -9,7 +9,7 @@ fn fib(n : Int) -> Int {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn fib_loop(n : Int) -> Int {
+fn fib_loop(n : Int32) -> Int32 {
   for i = 0, a = 0, b = 1 {
     if i >= n {
       break a
@@ -54,7 +54,7 @@ test {
 ///|
 /// Binary search: find index of target in sorted array, or None
 #warnings("+missing_invariant+missing_reasoning")
-fn binary_search(arr : ArrayView[Int], target : Int) -> Int? {
+fn binary_search(arr : ArrayView[Int32], target : Int32) -> Int32? {
   for lo = 0, hi = arr.length() {
     if lo >= hi {
       break None
@@ -143,7 +143,7 @@ fn binary_search(arr : ArrayView[Int], target : Int) -> Int? {
 
 ///|
 test "binary_search" {
-  let arr : Array[Int] = [1, 3, 5, 7, 9, 11, 13]
+  let arr : Array[Int32] = [1, 3, 5, 7, 9, 11, 13]
   debug_inspect(binary_search(arr, 7), content="Some(3)")
   debug_inspect(binary_search(arr, 1), content="Some(0)")
   debug_inspect(binary_search(arr, 13), content="Some(6)")
@@ -156,7 +156,7 @@ test "binary_search" {
 // ============================================================================
 
 ///|
-fn gcd_rec(a : Int, b : Int) -> Int {
+fn gcd_rec(a : Int32, b : Int32) -> Int32 {
   if b == 0 {
     a
   } else {
@@ -166,7 +166,7 @@ fn gcd_rec(a : Int, b : Int) -> Int {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn gcd_loop(a : Int, b : Int) -> Int {
+fn gcd_loop(a : Int32, b : Int32) -> Int32 {
   for x = a, y = b {
     if y == 0 {
       break x
@@ -207,7 +207,7 @@ test "gcd" {
 // ============================================================================
 
 ///|
-fn pow_rec(base : Int, exp : Int) -> Int {
+fn pow_rec(base : Int32, exp : Int32) -> Int32 {
   if exp == 0 {
     1
   } else if exp % 2 == 0 {
@@ -219,7 +219,7 @@ fn pow_rec(base : Int, exp : Int) -> Int {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn pow_loop(base : Int, exp : Int) -> Int {
+fn pow_loop(base : Int32, exp : Int32) -> Int32 {
   for b = base, e = exp, acc = 1 {
     if e == 0 {
       break acc
@@ -265,7 +265,7 @@ test "pow" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn reverse_inplace(arr : Array[Int]) -> Unit {
+fn reverse_inplace(arr : Array[Int32]) -> Unit {
   for lo = 0, hi = arr.length() - 1 {
     if lo >= hi {
       break
@@ -304,13 +304,13 @@ fn reverse_inplace(arr : Array[Int]) -> Unit {
 
 ///|
 test "reverse" {
-  let arr1 : Array[Int] = [1, 2, 3, 4, 5]
+  let arr1 : Array[Int32] = [1, 2, 3, 4, 5]
   reverse_inplace(arr1)
   @debug.assert_eq(arr1, [5, 4, 3, 2, 1])
-  let arr2 : Array[Int] = [1, 2]
+  let arr2 : Array[Int32] = [1, 2]
   reverse_inplace(arr2)
   @debug.assert_eq(arr2, [2, 1])
-  let arr3 : Array[Int] = [42]
+  let arr3 : Array[Int32] = [42]
   reverse_inplace(arr3)
   @debug.assert_eq(arr3, [42])
 }
@@ -321,7 +321,7 @@ test "reverse" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn isqrt(n : Int) -> Int {
+fn isqrt(n : Int32) -> Int32 {
   // Returns floor(sqrt(n)) using binary search.
   // The search runs over Int64 so that `n + 1` and `mid * mid` cannot
   // overflow for large n (e.g. n = 100000 or n = Int max).
@@ -382,7 +382,7 @@ test "isqrt" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn dutch_flag(arr : Array[Int], pivot : Int) -> Unit {
+fn dutch_flag(arr : Array[Int32], pivot : Int32) -> Unit {
   // Partitions into: [< pivot | == pivot | unprocessed | > pivot]
   //                   0..lo     lo..mid    mid..hi       hi..n
   for lo = 0, mid = 0, hi = arr.length() {
@@ -462,7 +462,7 @@ fn dutch_flag(arr : Array[Int], pivot : Int) -> Unit {
 
 ///|
 test "dutch_flag" {
-  let arr1 : Array[Int] = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]
+  let arr1 : Array[Int32] = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]
   dutch_flag(arr1, 5)
   // All elements < 5, then == 5, then > 5
   let _ = arr1.fold(init=(false, false), (state, x) => {
@@ -483,7 +483,7 @@ test "dutch_flag" {
 // ============================================================================
 
 ///|
-fn max(a : Int, b : Int) -> Int {
+fn max(a : Int32, b : Int32) -> Int32 {
   if a > b {
     a
   } else {
@@ -493,7 +493,7 @@ fn max(a : Int, b : Int) -> Int {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn kadane(arr : ArrayView[Int]) -> Int {
+fn kadane(arr : ArrayView[Int32]) -> Int32 {
   // Returns maximum subarray sum (assumes non-empty array)
   guard arr.length() > 0 else { return 0 }
   for i = 1, max_ending_here = arr[0], max_so_far = arr[0] {
@@ -598,7 +598,7 @@ test "kadane" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn two_sum_sorted(arr : ArrayView[Int], target : Int) -> (Int, Int)? {
+fn two_sum_sorted(arr : ArrayView[Int32], target : Int32) -> (Int32, Int32)? {
   // Assumes arr is sorted. Returns indices of two elements summing to target.
   guard arr.length() >= 2 else { return None }
   for lo = 0, hi = arr.length() - 1 {
@@ -692,8 +692,8 @@ test "two_sum_sorted" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn merge(left : ArrayView[Int], right : ArrayView[Int]) -> Array[Int] {
-  let result : Array[Int] = []
+fn merge(left : ArrayView[Int32], right : ArrayView[Int32]) -> Array[Int32] {
+  let result : Array[Int32] = []
   for i = 0, j = 0 {
     if i >= left.length() && j >= right.length() {
       break result
@@ -760,7 +760,7 @@ test "merge" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn extended_gcd(a : Int, b : Int) -> (Int, Int, Int) {
+fn extended_gcd(a : Int32, b : Int32) -> (Int32, Int32, Int32) {
   // Returns (gcd, x, y) such that a*x + b*y = gcd
   for r0 = a, r1 = b, x0 = 1, x1 = 0, y0 = 0, y1 = 1 {
     if r1 == 0 {
@@ -843,7 +843,7 @@ test "extended_gcd" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn majority_element(arr : ArrayView[Int]) -> Int? {
+fn majority_element(arr : ArrayView[Int32]) -> Int32? {
   // Phase 1: Find candidate using voting
   guard arr.length() > 0 else { return None }
   let (candidate, _) = for i = 1, candidate = arr[0], count = 1 {
@@ -922,7 +922,7 @@ test "majority_element" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn isqrt_newton(n : Int) -> Int {
+fn isqrt_newton(n : Int32) -> Int32 {
   guard n > 0 else { return 0 }
   // Start with initial guess (n itself, or better heuristic)
   for x = n {
@@ -1001,7 +1001,7 @@ test "isqrt_newton" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn sieve(n : Int) -> Array[Int] {
+fn sieve(n : Int32) -> Array[Int32] {
   guard n >= 2 else { return [] }
   let is_prime : Array[Bool] = Array::make(n + 1, true)
   is_prime[0] = false
@@ -1116,13 +1116,13 @@ test "sieve" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn mod_pow(base : Int, exp : Int, m : Int) -> Int {
+fn mod_pow(base : Int32, exp : Int32, m : Int32) -> Int32 {
   guard m > 1 else { return 0 }
   // Normalize the base into [0, m) (base % m is negative for negative base),
   // and multiply in Int64 so that b * b cannot overflow for m > 46341.
   let r = base % m
   let m64 = m.to_int64()
-  fn mul_mod(x : Int, y : Int) -> Int {
+  fn mul_mod(x : Int32, y : Int32) -> Int32 {
     (x.to_int64() * y.to_int64() % m64).to_int()
   }
 
@@ -1197,7 +1197,7 @@ test "mod_pow" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn popcount(n : Int) -> Int {
+fn popcount(n : Int32) -> Int32 {
   for x = n & 0x7FFFFFFF, count = 0 {
     // Mask to ensure non-negative for the invariant
     if x == 0 {
@@ -1266,11 +1266,11 @@ test "popcount" {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn next_permutation(arr : Array[Int]) -> Bool {
+fn next_permutation(arr : Array[Int32]) -> Bool {
   // Returns false if already at last permutation
   guard arr.length() >= 2 else { return false }
   // Step 1: Find largest i such that arr[i] < arr[i+1]
-  let pivot : Int? = for i = arr.length() - 2 {
+  let pivot : Int32? = for i = arr.length() - 2 {
     if i < 0 {
       break None
     } else if arr[i] < arr[i + 1] {
@@ -1339,7 +1339,7 @@ fn next_permutation(arr : Array[Int]) -> Bool {
 }
 
 ///|
-fn reverse_range(arr : Array[Int], lo : Int, hi : Int) -> Unit {
+fn reverse_range(arr : Array[Int32], lo : Int32, hi : Int32) -> Unit {
   for l = lo, h = hi {
     if l >= h {
       break
@@ -1377,12 +1377,12 @@ fn reverse_range(arr : Array[Int], lo : Int, hi : Int) -> Unit {
 
 ///|
 test "next_permutation" {
-  let arr1 : Array[Int] = [1, 2, 3]
+  let arr1 : Array[Int32] = [1, 2, 3]
   assert_true(next_permutation(arr1))
   @debug.assert_eq(arr1, [1, 3, 2])
   assert_true(next_permutation(arr1))
   @debug.assert_eq(arr1, [2, 1, 3])
-  let arr2 : Array[Int] = [3, 2, 1]
+  let arr2 : Array[Int32] = [3, 2, 1]
   assert_true(!next_permutation(arr2)) // wraps around
   @debug.assert_eq(arr2, [1, 2, 3])
 }
@@ -1393,7 +1393,7 @@ test "next_permutation" {
 // ============================================================================
 
 ///|
-fn lower_bound(arr : Array[Int], len : Int, target : Int) -> Int {
+fn lower_bound(arr : Array[Int32], len : Int32, target : Int32) -> Int32 {
   // Find first index where arr[i] >= target in arr[0..len)
   for lo = 0, hi = len {
     if lo >= hi {
@@ -1442,10 +1442,10 @@ fn lower_bound(arr : Array[Int], len : Int, target : Int) -> Int {
 
 ///|
 #warnings("+missing_invariant+missing_reasoning")
-fn lis_length(arr : ArrayView[Int]) -> Int {
+fn lis_length(arr : ArrayView[Int32]) -> Int32 {
   guard arr.length() > 0 else { return 0 }
   // tails[i] = smallest ending element of any increasing subsequence of length i+1
-  let tails : Array[Int] = Array::make(arr.length(), 0)
+  let tails : Array[Int32] = Array::make(arr.length(), 0)
   for i = 0, len = 0 {
     if i >= arr.length() {
       break len

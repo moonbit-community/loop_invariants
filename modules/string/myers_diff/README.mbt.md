@@ -125,7 +125,7 @@ test "myers all different" {
 ///|
 test "myers diff reconstructs target" {
   let ops = @myers_diff.diff([1, 2, 3, 4, 5], [2, 4, 5, 6])
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   for op in ops {
     match op {
       Equal(v) => result.push(v)

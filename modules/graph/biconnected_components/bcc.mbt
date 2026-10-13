@@ -52,8 +52,8 @@
 ///     articulation_points: [1]
 /// ```
 pub fn biconnected_components(
-  n : Int,
-  edges : ArrayView[(Int, Int)],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
 ) -> BiconnectedResult {
   if n <= 0 {
     return { components: [], articulation_points: [], }

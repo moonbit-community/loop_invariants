@@ -21,9 +21,9 @@
 /// whose bit path passes through this node; it is incremented on `insert` and
 /// decremented on `remove`.
 pub struct Node {
-  mut next0 : Int
-  mut next1 : Int
-  mut count : Int
+  mut next0 : Int32
+  mut next1 : Int32
+  mut count : Int32
 }
 
 ///|
@@ -39,7 +39,7 @@ pub struct Node {
 /// Duplicate values are supported via reference counts. `remove` decrements
 /// counts without freeing nodes, so allocated memory grows monotonically.
 pub struct BinaryTrie {
-  max_bits : Int
+  max_bits : Int32
   nodes : Array[Node]
 }
 
@@ -56,7 +56,7 @@ pub struct BinaryTrie {
 /// - values in [0, 255]    -> `max_bits = 7`
 /// - values up to ~1e9     -> `max_bits = 29`
 /// - full non-negative Int64 -> `max_bits = 62`
-pub fn BinaryTrie::BinaryTrie(max_bits : Int) -> BinaryTrie {
+pub fn BinaryTrie::BinaryTrie(max_bits : Int32) -> BinaryTrie {
   let root : Node = { next0: -1, next1: -1, count: 0, }
   { max_bits, nodes: [root], }
 }
@@ -66,7 +66,7 @@ pub fn BinaryTrie::BinaryTrie(max_bits : Int) -> BinaryTrie {
 /// duplicates.
 ///
 /// This is O(1): the root node's `count` equals the number of live insertions.
-pub fn BinaryTrie::size(self : BinaryTrie) -> Int {
+pub fn BinaryTrie::size(self : BinaryTrie) -> Int32 {
   self.nodes[0].count
 }
 
@@ -121,7 +121,7 @@ pub fn BinaryTrie::remove(self : BinaryTrie, x : Int64) -> Bool {
   if self.nodes[0].count == 0 {
     return false
   }
-  let path : Array[Int] = [0]
+  let path : Array[Int32] = [0]
   let node = for bit in self.max_bits>=..0; node = 0 {
     let b = if ((x >> bit) & 1L) == 0L { 0 } else { 1 }
     let next = if b == 0 {

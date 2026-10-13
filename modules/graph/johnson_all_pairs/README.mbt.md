@@ -272,7 +272,7 @@ The negative entry `dist[0][2] = -1` is the true shortest path cost
 ```mbt check
 ///|
 test "johnson basic" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 1L),
     (0, 2, 4L),
     (1, 2, -2L),
@@ -287,7 +287,7 @@ test "johnson basic" {
 ```mbt check
 ///|
 test "johnson unreachable" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 2L), (1, 2, 3L)]
+  let edges : Array[(Int32, Int32, Int64)] = [(0, 1, 2L), (1, 2, 3L)]
   let dist = @johnson_all_pairs.johnson_all_pairs(4, edges).unwrap()
   // Node 3 is unreachable from 0
   debug_inspect(dist[0][3], content="4611686018427387903")
@@ -297,7 +297,11 @@ test "johnson unreachable" {
 ```mbt check
 ///|
 test "johnson negative cycle" {
-  let edges : Array[(Int, Int, Int64)] = [(0, 1, 1L), (1, 2, -2L), (2, 1, -2L)]
+  let edges : Array[(Int32, Int32, Int64)] = [
+    (0, 1, 1L),
+    (1, 2, -2L),
+    (2, 1, -2L),
+  ]
   debug_inspect(@johnson_all_pairs.johnson_all_pairs(3, edges), content="None")
 }
 ```

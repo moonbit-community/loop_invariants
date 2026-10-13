@@ -4,21 +4,21 @@
 ///|
 /// Edge in a flow network
 priv struct FlowEdge {
-  to : Int
-  capacity : Int
-  mut flow : Int
-  rev_idx : Int // Index of reverse edge in adj[to]
+  to : Int32
+  capacity : Int32
+  mut flow : Int32
+  rev_idx : Int32 // Index of reverse edge in adj[to]
 }
 
 ///|
 /// Flow Network using adjacency list
 priv struct FlowNetwork {
   adj : Array[Array[FlowEdge]]
-  n : Int
+  n : Int32
 }
 
 ///|
-fn FlowNetwork::FlowNetwork(n : Int) -> FlowNetwork {
+fn FlowNetwork::FlowNetwork(n : Int32) -> FlowNetwork {
   // Use makei to create adjacency list with independent empty arrays
   let adj : Array[Array[FlowEdge]] = [ for _ in 0..<n => [] ]
   { adj, n, }
@@ -27,9 +27,9 @@ fn FlowNetwork::FlowNetwork(n : Int) -> FlowNetwork {
 ///|
 fn FlowNetwork::add_edge(
   self : FlowNetwork,
-  from : Int,
-  to : Int,
-  capacity : Int,
+  from : Int32,
+  to : Int32,
+  capacity : Int32,
 ) -> Unit {
   let forward_idx = self.adj[from].length()
   let backward_idx = self.adj[to].length()
@@ -45,12 +45,12 @@ fn FlowNetwork::add_edge(
 /// BFS to find augmenting path
 fn FlowNetwork::bfs_find_path(
   self : FlowNetwork,
-  source : Int,
-  sink : Int,
-) -> (Bool, Array[(Int, Int)?]) {
-  let parent : Array[(Int, Int)?] = Array::make(self.n, None)
+  source : Int32,
+  sink : Int32,
+) -> (Bool, Array[(Int32, Int32)?]) {
+  let parent : Array[(Int32, Int32)?] = Array::make(self.n, None)
   let visited : Array[Bool] = Array::make(self.n, false)
-  let queue : Array[Int] = []
+  let queue : Array[Int32] = []
   queue.push(source)
   visited[source] = true
   let _ = for front = 0 {
@@ -85,9 +85,9 @@ fn FlowNetwork::bfs_find_path(
 /// TIME: O(VE²) - each BFS finds shortest path, at most O(VE) iterations
 fn FlowNetwork::edmonds_karp(
   self : FlowNetwork,
-  source : Int,
-  sink : Int,
-) -> Int {
+  source : Int32,
+  sink : Int32,
+) -> Int32 {
   for max_flow = 0 {
     let (has_path, parent) = self.bfs_find_path(source, sink)
     if !has_path {
@@ -186,13 +186,13 @@ test "edmonds karp basic" {
 /// TIME: O(V²E) - at most V phases, each phase is O(VE)
 priv struct DinicNetwork {
   adj : Array[Array[FlowEdge]]
-  level : Array[Int]
-  iter : Array[Int]
-  n : Int
+  level : Array[Int32]
+  iter : Array[Int32]
+  n : Int32
 }
 
 ///|
-fn DinicNetwork::DinicNetwork(n : Int) -> DinicNetwork {
+fn DinicNetwork::DinicNetwork(n : Int32) -> DinicNetwork {
   // Use makei to create adjacency list with independent empty arrays
   let adj : Array[Array[FlowEdge]] = [ for _ in 0..<n => [] ]
   { adj, level: Array::make(n, -1), iter: Array::make(n, 0), n, }
@@ -201,9 +201,9 @@ fn DinicNetwork::DinicNetwork(n : Int) -> DinicNetwork {
 ///|
 fn DinicNetwork::add_edge_dinic(
   self : DinicNetwork,
-  from : Int,
-  to : Int,
-  capacity : Int,
+  from : Int32,
+  to : Int32,
+  capacity : Int32,
 ) -> Unit {
   let forward_idx = self.adj[from].length()
   let backward_idx = self.adj[to].length()
@@ -214,12 +214,12 @@ fn DinicNetwork::add_edge_dinic(
 ///|
 fn DinicNetwork::bfs_dinic(
   self : DinicNetwork,
-  source : Int,
-  sink : Int,
+  source : Int32,
+  sink : Int32,
 ) -> Bool {
   self.level.fill(-1)
   self.level[source] = 0
-  let queue : Array[Int] = []
+  let queue : Array[Int32] = []
   queue.push(source)
   let _ = for front = 0 {
     match queue.get(front) {
@@ -242,10 +242,10 @@ fn DinicNetwork::bfs_dinic(
 ///|
 fn DinicNetwork::dfs_dinic(
   self : DinicNetwork,
-  u : Int,
-  sink : Int,
-  flow_in : Int,
-) -> Int {
+  u : Int32,
+  sink : Int32,
+  flow_in : Int32,
+) -> Int32 {
   if u == sink {
     return flow_in
   }
@@ -288,9 +288,9 @@ fn DinicNetwork::dfs_dinic(
 ///|
 fn DinicNetwork::dinic_max_flow(
   self : DinicNetwork,
-  source : Int,
-  sink : Int,
-) -> Int {
+  source : Int32,
+  sink : Int32,
+) -> Int32 {
   for max_flow = 0 {
     if !self.bfs_dinic(source, sink) {
       break max_flow
@@ -348,21 +348,21 @@ test "dinic basic" {
 ///|
 /// Minimum Cost Maximum Flow
 priv struct MCMFEdge {
-  to : Int
-  capacity : Int
-  cost : Int
-  mut flow : Int
-  rev_idx : Int
+  to : Int32
+  capacity : Int32
+  cost : Int32
+  mut flow : Int32
+  rev_idx : Int32
 }
 
 ///|
 priv struct MCMFNetwork {
   adj : Array[Array[MCMFEdge]]
-  n : Int
+  n : Int32
 }
 
 ///|
-fn MCMFNetwork::MCMFNetwork(n : Int) -> MCMFNetwork {
+fn MCMFNetwork::MCMFNetwork(n : Int32) -> MCMFNetwork {
   // Use makei to create adjacency list with independent empty arrays
   let adj : Array[Array[MCMFEdge]] = [ for _ in 0..<n => [] ]
   { adj, n, }
@@ -371,10 +371,10 @@ fn MCMFNetwork::MCMFNetwork(n : Int) -> MCMFNetwork {
 ///|
 fn MCMFNetwork::add_edge_mcmf(
   self : MCMFNetwork,
-  from : Int,
-  to : Int,
-  capacity : Int,
-  cost : Int,
+  from : Int32,
+  to : Int32,
+  capacity : Int32,
+  cost : Int32,
 ) -> Unit {
   let forward_idx = self.adj[from].length()
   let backward_idx = self.adj[to].length()
@@ -391,17 +391,17 @@ fn MCMFNetwork::add_edge_mcmf(
 ///|
 fn MCMFNetwork::spfa_mcmf(
   self : MCMFNetwork,
-  source : Int,
-  sink : Int,
-  dist : Array[Int],
-  parent : Array[(Int, Int)?],
+  source : Int32,
+  sink : Int32,
+  dist : Array[Int32],
+  parent : Array[(Int32, Int32)?],
 ) -> Bool {
   let inf = 2147483647
   dist.fill(inf)
   parent.fill(None)
   dist[source] = 0
   let in_queue : Array[Bool] = Array::make(self.n, false)
-  let queue : Array[Int] = []
+  let queue : Array[Int32] = []
   queue.push(source)
   in_queue[source] = true
   let _ = for front = 0 {
@@ -430,11 +430,11 @@ fn MCMFNetwork::spfa_mcmf(
 ///|
 fn MCMFNetwork::min_cost_max_flow(
   self : MCMFNetwork,
-  source : Int,
-  sink : Int,
-) -> (Int, Int) {
-  let dist : Array[Int] = Array::make(self.n, 0)
-  let parent : Array[(Int, Int)?] = Array::make(self.n, None)
+  source : Int32,
+  sink : Int32,
+) -> (Int32, Int32) {
+  let dist : Array[Int32] = Array::make(self.n, 0)
+  let parent : Array[(Int32, Int32)?] = Array::make(self.n, None)
   for max_flow = 0, min_cost = 0 {
     if !self.spfa_mcmf(source, sink, dist, parent) {
       break (max_flow, min_cost)
@@ -518,10 +518,10 @@ test "min cost max flow" {
 ///|
 /// Bipartite Matching using Maximum Flow
 fn bipartite_matching(
-  left_size : Int,
-  right_size : Int,
-  edges : Array[(Int, Int)],
-) -> Int {
+  left_size : Int32,
+  right_size : Int32,
+  edges : Array[(Int32, Int32)],
+) -> Int32 {
   let n = left_size + right_size + 2
   let source = 0
   let sink = n - 1
@@ -551,7 +551,7 @@ test "bipartite matching" {
 ///
 /// Find minimum cost assignment in bipartite graph.
 /// TIME: O(n³)
-fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
+fn hungarian_algorithm(cost : Array[Array[Int32]]) -> Int32 {
   let n = cost.length()
   if n == 0 {
     return 0
@@ -560,13 +560,13 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
   let inf = 2147483647
 
   // Potentials for rows and columns
-  let u : Array[Int] = Array::make(n + 1, 0)
-  let v : Array[Int] = Array::make(m + 1, 0)
-  let p : Array[Int] = Array::make(m + 1, 0) // p[j] = row assigned to column j
-  let way : Array[Int] = Array::make(m + 1, 0)
+  let u : Array[Int32] = Array::make(n + 1, 0)
+  let v : Array[Int32] = Array::make(m + 1, 0)
+  let p : Array[Int32] = Array::make(m + 1, 0) // p[j] = row assigned to column j
+  let way : Array[Int32] = Array::make(m + 1, 0)
   for i in 1..<=n {
     p[0] = i
-    let minv : Array[Int] = Array::make(m + 1, inf)
+    let minv : Array[Int32] = Array::make(m + 1, inf)
     let used : Array[Bool] = Array::make(m + 1, false)
 
     // Find augmenting path
@@ -710,7 +710,7 @@ fn hungarian_algorithm(cost : Array[Array[Int]]) -> Int {
 ///|
 test "hungarian algorithm" {
   // Assignment cost matrix
-  let cost : Array[Array[Int]] = [
+  let cost : Array[Array[Int32]] = [
     [4, 1, 3], // Worker 0 costs for jobs 0, 1, 2
     [2, 0, 5], // Worker 1
     [3, 2, 2],
@@ -724,7 +724,7 @@ test "hungarian algorithm" {
 
 ///|
 test "hungarian simple" {
-  let cost : Array[Array[Int]] = [[1, 2], [3, 4]]
+  let cost : Array[Array[Int32]] = [[1, 2], [3, 4]]
   let min_cost = hungarian_algorithm(cost)
   // Optimal: 0->0 (1), 1->1 (4) = 5
   // or: 0->1 (2), 1->0 (3) = 5

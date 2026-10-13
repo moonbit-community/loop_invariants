@@ -43,9 +43,9 @@
 /// two salts; together they hold up to about `m` keys efficiently
 /// (load factor <= 0.5).
 pub struct CuckooHash {
-  m : Int
-  mut count : Int
-  max_kicks : Int
+  m : Int32
+  mut count : Int32
+  max_kicks : Int32
   table_1 : Array[Int64?]
   table_2 : Array[Int64?]
   salt_1 : Int64
@@ -54,7 +54,7 @@ pub struct CuckooHash {
 
 ///|
 /// Logical right shift on Int64 (built-in `>>` is arithmetic).
-fn shr_logical(x : Int64, n : Int) -> Int64 {
+fn shr_logical(x : Int64, n : Int32) -> Int64 {
   (x.reinterpret_as_uint64() >> n).reinterpret_as_int64()
 }
 
@@ -70,7 +70,7 @@ fn cuckoo_mix(x : Int64, salt : Int64) -> Int64 {
 
 ///|
 /// Map a 64-bit hash into a slot index `[0, m)`.
-fn bucket_of(h : Int64, m : Int) -> Int {
+fn bucket_of(h : Int64, m : Int32) -> Int32 {
   let abs_h = if h < 0L { -h } else { h }
   (abs_h % m.to_int64()).to_int()
 }
@@ -97,7 +97,7 @@ fn bucket_of(h : Int64, m : Int) -> Int {
 ///   assert_eq(s.contains(999L), false)
 /// }
 /// ```
-pub fn new(m~ : Int, seed~ : Int64) -> CuckooHash {
+pub fn new(m~ : Int32, seed~ : Int64) -> CuckooHash {
   let size = if m < 4 { 4 } else { m }
   let t1 : Array[Int64?] = Array::make(size, None)
   let t2 : Array[Int64?] = Array::make(size, None)
@@ -121,7 +121,7 @@ pub fn new(m~ : Int, seed~ : Int64) -> CuckooHash {
 
 ///|
 /// Ceiling of `log2(n)`, returning at least 1.
-fn log2_ceil(n : Int) -> Int {
+fn log2_ceil(n : Int32) -> Int32 {
   for r = 0, v = 1; v < n; {
     continue r + 1, v * 2
   } nobreak {
@@ -234,13 +234,13 @@ pub fn CuckooHash::insert(self : CuckooHash, key : Int64) -> Bool {
 
 ///|
 /// Number of keys currently stored.
-pub fn CuckooHash::count_of(self : CuckooHash) -> Int {
+pub fn CuckooHash::count_of(self : CuckooHash) -> Int32 {
   self.count
 }
 
 ///|
 /// Per-table size `m` (total slots are `2 * m`).
-pub fn CuckooHash::capacity(self : CuckooHash) -> Int {
+pub fn CuckooHash::capacity(self : CuckooHash) -> Int32 {
   self.m
 }
 

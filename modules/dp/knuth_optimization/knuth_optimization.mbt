@@ -56,7 +56,7 @@ const INF : Int64 = 4611686018427387903L
 ///   // standard formulation; here we wrap it in the appropriate cost.
 /// }
 /// ```
-pub fn solve(n : Int, w : (Int, Int) -> Int64) -> Int64 {
+pub fn solve(n : Int32, w : (Int32, Int32) -> Int64) -> Int64 {
   if n <= 0 {
     return 0L
   }
@@ -91,7 +91,10 @@ pub fn solve(n : Int, w : (Int, Int) -> Int64) -> Int64 {
 
 ///|
 /// Solve and also return the full DP table.
-pub fn solve_table(n : Int, w : (Int, Int) -> Int64) -> Array[Array[Int64]] {
+pub fn solve_table(
+  n : Int32,
+  w : (Int32, Int32) -> Int64,
+) -> Array[Array[Int64]] {
   if n <= 0 {
     return []
   }
@@ -129,7 +132,7 @@ test "knuth matrix chain" {
   // For dims = [40, 20, 30, 10, 30]:
   //   A: 40x20, B: 20x30, C: 30x10, D: 10x30
   // Optimal parenthesisation cost (with the standard MCM recurrence) is 26000.
-  let dims : ReadOnlyArray[Int] = [40, 20, 30, 10, 30]
+  let dims : ReadOnlyArray[Int32] = [40, 20, 30, 10, 30]
   let m = dims.length()
   // dp[i][j] = min cost to compute A_i...A_j.
   // Recurrence: dp[i][j] = min_{k in [i, j-1]} dp[i][k] + dp[k+1][j] +
@@ -165,7 +168,7 @@ test "knuth solve simple cost" {
   // dp[i][j] is then the minimum of any partition's split plus this.
   // For 4 elements: the minimum will be reached at the balanced split.
   let n = 4
-  let w = fn(i : Int, j : Int) -> Int64 { (j - i + 1).to_int64() }
+  let w = fn(i : Int32, j : Int32) -> Int64 { (j - i + 1).to_int64() }
   let ans = solve(n, w)
   // Hand-compute: dp[0][3] = min over k of dp[0][k] + dp[k+1][3] + 4.
   // dp[i][i] = 0; dp[i][i+1] = 0 + 0 + 2 = 2; dp[i][i+2] = best k
@@ -188,7 +191,7 @@ test "knuth small n" {
 
 ///|
 test "knuth matches naive on small cases" {
-  fn naive(n : Int, w : (Int, Int) -> Int64) -> Int64 {
+  fn naive(n : Int32, w : (Int32, Int32) -> Int64) -> Int64 {
     if n <= 0 {
       return 0L
     }
@@ -210,12 +213,12 @@ test "knuth matches naive on small cases" {
   }
 
   // Costs that satisfy the QI: any constant function works.
-  let w1 = fn(i : Int, j : Int) -> Int64 { (j - i + 1).to_int64() }
+  let w1 = fn(i : Int32, j : Int32) -> Int64 { (j - i + 1).to_int64() }
   for n in 1..<10 {
     @debug.assert_eq(solve(n, w1), naive(n, w1))
   }
   // A different cost satisfying the QI: w(i, j) = (i + j).
-  let w2 = fn(i : Int, j : Int) -> Int64 { (i + j).to_int64() }
+  let w2 = fn(i : Int32, j : Int32) -> Int64 { (i + j).to_int64() }
   for n in 1..<10 {
     @debug.assert_eq(solve(n, w2), naive(n, w2))
   }

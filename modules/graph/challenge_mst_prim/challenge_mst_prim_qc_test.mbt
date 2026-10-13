@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -13,8 +13,8 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// Undirected weighted multigraph on `[0, n)`; self-loops, parallel edges
 /// and negative weights allowed, weights often tied.
 priv struct UG {
-  n : Int
-  edges : Array[(Int, Int, Int)]
+  n : Int32
+  edges : Array[(Int32, Int32, Int32)]
 } derive(Debug)
 
 ///|
@@ -24,7 +24,7 @@ impl @quickcheck.Arbitrary for UG with fn arbitrary(size, rs) {
   let m = if n == 0 { 0 } else { rint(rs, 0, max_m) }
   // A quarter of the graphs use weights in {0, 1} to force many ties.
   let (lo, hi) = if rint(rs, 0, 3) == 0 { (0, 1) } else { (-3, 9) }
-  let edges : Array[(Int, Int, Int)] = []
+  let edges : Array[(Int32, Int32, Int32)] = []
   // Half of the graphs start from a random spanning tree (connected).
   if rint(rs, 0, 1) == 0 {
     for i in 1..<n {
@@ -62,7 +62,7 @@ impl @quickcheck.Shrink for UG with fn shrink(g) {
 }
 
 ///|
-fn find_root(parent : Array[Int], x : Int) -> Int {
+fn find_root(parent : Array[Int32], x : Int32) -> Int32 {
   if parent[x] == x {
     x
   } else {
@@ -72,7 +72,7 @@ fn find_root(parent : Array[Int], x : Int) -> Int {
 
 ///|
 /// Number of connected components.
-fn components(g : UG) -> Int {
+fn components(g : UG) -> Int32 {
   let parent = Array::makei(g.n, i => i)
   for e in g.edges {
     let (a, b) = (find_root(parent, e.0), find_root(parent, e.1))
@@ -86,9 +86,9 @@ fn components(g : UG) -> Int {
 ///|
 /// Brute force: minimum weight over all spanning forests (maximal acyclic
 /// edge subsets), by exhaustive include/exclude enumeration.
-fn brute_forest_weight(g : UG) -> Int {
+fn brute_forest_weight(g : UG) -> Int32 {
   let target = g.n - components(g)
-  fn go(i : Int, parent : Array[Int], used : Int, w : Int) -> Int? {
+  fn go(i : Int32, parent : Array[Int32], used : Int32, w : Int32) -> Int32? {
     if used == target {
       return Some(w)
     }
@@ -116,7 +116,7 @@ fn brute_forest_weight(g : UG) -> Int {
 
 ///|
 /// Documented contract: `Some(MST weight)` when connected, else `None`.
-fn expected_mst(g : UG) -> Int? {
+fn expected_mst(g : UG) -> Int32? {
   if g.n <= 1 {
     Some(0)
   } else if components(g) == 1 {

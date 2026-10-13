@@ -63,7 +63,7 @@ length is 2.
 ```mbt check
 ///|
 test "tree diameter chain" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
   debug_inspect(@challenge_tree_diameter.tree_diameter(5, edges), content="4")
 }
 ```
@@ -75,7 +75,7 @@ test "tree diameter chain" {
 ```mbt check
 ///|
 test "tree diameter star" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (0, 3)]
   debug_inspect(@challenge_tree_diameter.tree_diameter(4, edges), content="2")
 }
 ```
@@ -87,7 +87,7 @@ test "tree diameter star" {
 ```mbt check
 ///|
 test "tree diameter single" {
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   debug_inspect(@challenge_tree_diameter.tree_diameter(1, edges), content="0")
 }
 ```

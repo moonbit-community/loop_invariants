@@ -47,7 +47,7 @@
 //    rows in the last column reflect short-range structure in s."
 
 ///|
-const SENTINEL : Int = -1
+const SENTINEL : Int32 = -1
 
 ///|
 /// Forward BWT. Returns the transformed array. Marker `-1` is used as
@@ -66,7 +66,7 @@ const SENTINEL : Int = -1
 ///   @debug.assert_eq(bwt.length(), s.length() + 1)
 /// }
 /// ```
-pub fn transform(text : Array[Int]) -> Array[Int] {
+pub fn transform(text : Array[Int32]) -> Array[Int32] {
   let n = text.length() + 1
   // Build extended text with sentinel at the end.
   let ext = Array::make(n, 0)
@@ -88,7 +88,7 @@ pub fn transform(text : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn cmp_rotations(ext : Array[Int], a : Int, b : Int) -> Int {
+fn cmp_rotations(ext : Array[Int32], a : Int32, b : Int32) -> Int32 {
   let n = ext.length()
   let mut k = 0
   while k < n {
@@ -107,10 +107,10 @@ fn cmp_rotations(ext : Array[Int], a : Int, b : Int) -> Int {
 
 ///|
 fn sort_rotations(
-  rot : Array[Int],
-  ext : Array[Int],
-  lo : Int,
-  hi : Int,
+  rot : Array[Int32],
+  ext : Array[Int32],
+  lo : Int32,
+  hi : Int32,
 ) -> Unit {
   if hi - lo <= 1 {
     return
@@ -123,11 +123,11 @@ fn sort_rotations(
 
 ///|
 fn merge_rot(
-  rot : Array[Int],
-  ext : Array[Int],
-  lo : Int,
-  mid : Int,
-  hi : Int,
+  rot : Array[Int32],
+  ext : Array[Int32],
+  lo : Int32,
+  mid : Int32,
+  hi : Int32,
 ) -> Unit {
   let buf = Array::make(hi - lo, 0)
   let mut i = lo
@@ -164,7 +164,7 @@ fn merge_rot(
 ///
 /// Uses the LF-mapping: for each character, the k-th occurrence in
 /// the last column equals the k-th occurrence in the first column.
-pub fn inverse_transform(bwt : Array[Int]) -> Array[Int] {
+pub fn inverse_transform(bwt : Array[Int32]) -> Array[Int32] {
   let n = bwt.length()
   // First column = sorted bwt.
   let first = Array::makei(n, i => bwt[i])
@@ -173,14 +173,14 @@ pub fn inverse_transform(bwt : Array[Int]) -> Array[Int] {
   // character matches bwt[i] and has the same rank.
   // Compute by counting occurrences.
   // Build rank-of-last for each position.
-  let count : Map[Int, Int] = Map([], capacity=n)
+  let count : Map[Int32, Int32] = Map([], capacity=n)
   let lf = Array::make(n, 0)
   // Build a mapping: for each (char, k), record the first-column index.
   // Strategy: for each i in [0, n), let r be the rank-among-equals of
   // bwt[i] (i.e. how many bwt[j] for j < i equal bwt[i]). Then lf[i] =
   // first[c] + r, where first[c] = index of the first row whose first
   // char is c. Since first is sorted, we can derive these on the fly.
-  let first_pos : Map[Int, Int] = Map([], capacity=n)
+  let first_pos : Map[Int32, Int32] = Map([], capacity=n)
   for i in 0..<n {
     if !first_pos.contains(first[i]) {
       first_pos[first[i]] = i
@@ -206,7 +206,7 @@ pub fn inverse_transform(bwt : Array[Int]) -> Array[Int] {
     }
   }
   // Build the text in reverse: start at the sentinel row, follow lf.
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   let mut idx = sentinel_row
   for _ in 0..<(n - 1) {
     idx = lf[idx]
@@ -226,7 +226,7 @@ pub fn inverse_transform(bwt : Array[Int]) -> Array[Int] {
 }
 
 ///|
-fn sort_ints(arr : Array[Int], lo : Int, hi : Int) -> Unit {
+fn sort_ints(arr : Array[Int32], lo : Int32, hi : Int32) -> Unit {
   if hi - lo <= 1 {
     return
   }
@@ -263,8 +263,8 @@ fn sort_ints(arr : Array[Int], lo : Int, hi : Int) -> Unit {
 }
 
 ///|
-fn s(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn s(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }

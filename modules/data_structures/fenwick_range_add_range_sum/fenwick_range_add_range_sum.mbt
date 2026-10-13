@@ -17,7 +17,7 @@
 /// that node `x` is responsible for equals `lowbit(x)`.
 ///
 /// Examples: `lowbit(1)=1`, `lowbit(2)=2`, `lowbit(3)=1`, `lowbit(4)=4`.
-fn lowbit(x : Int) -> Int {
+fn lowbit(x : Int32) -> Int32 {
   x & -x
 }
 
@@ -46,7 +46,7 @@ fn lowbit(x : Int) -> Int {
 /// - `prefix_sum(i) = sum(bit1, i+1) * (i+1) - sum(bit2, i+1)` equals the
 ///   true prefix sum of the logical array at position `i`.
 pub struct FenwickRangeAddRangeSum {
-  n : Int
+  n : Int32
   bit1 : Array[Int64]
   bit2 : Array[Int64]
 }
@@ -70,7 +70,7 @@ pub struct FenwickRangeAddRangeSum {
 /// }
 /// ```
 pub fn FenwickRangeAddRangeSum::FenwickRangeAddRangeSum(
-  n : Int,
+  n : Int32,
 ) -> FenwickRangeAddRangeSum {
   let n0 = if n < 0 { 0 } else { n }
   let size = n0 + 2
@@ -129,7 +129,7 @@ pub fn FenwickRangeAddRangeSum::from_array(
 fn FenwickRangeAddRangeSum::add_bit(
   self : FenwickRangeAddRangeSum,
   bit : Array[Int64],
-  idx : Int,
+  idx : Int32,
   delta : Int64,
 ) -> Unit {
   let limit = self.n + 1
@@ -160,7 +160,7 @@ fn FenwickRangeAddRangeSum::add_bit(
 ///
 /// INVARIANT: `i` strictly decreases each iteration (lowbit >= 1), so the
 /// loop terminates when `i <= 0`.
-fn sum_bit(bit : Array[Int64], idx : Int) -> Int64 {
+fn sum_bit(bit : Array[Int64], idx : Int32) -> Int64 {
   for i = idx, acc = 0L {
     if i <= 0 {
       break acc
@@ -206,8 +206,8 @@ fn sum_bit(bit : Array[Int64], idx : Int) -> Int64 {
 /// ```
 pub fn FenwickRangeAddRangeSum::range_add(
   self : FenwickRangeAddRangeSum,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
   delta : Int64,
 ) -> Unit {
   if self.n <= 0 || l > r || l < 0 || r >= self.n {
@@ -237,7 +237,7 @@ pub fn FenwickRangeAddRangeSum::range_add(
 /// Time complexity: O(log n).
 fn FenwickRangeAddRangeSum::prefix_sum(
   self : FenwickRangeAddRangeSum,
-  idx : Int,
+  idx : Int32,
 ) -> Int64 {
   if idx < 0 {
     return 0L
@@ -279,8 +279,8 @@ fn FenwickRangeAddRangeSum::prefix_sum(
 /// ```
 pub fn FenwickRangeAddRangeSum::range_sum(
   self : FenwickRangeAddRangeSum,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64 {
   if self.n <= 0 || l > r {
     return 0L

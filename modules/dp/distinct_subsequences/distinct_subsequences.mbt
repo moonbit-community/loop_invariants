@@ -54,7 +54,7 @@ const MOD : Int64 = 1000000007L
 ///   @debug.assert_eq(@distinct_subsequences.count_equal_target(s, t), 3L)
 /// }
 /// ```
-pub fn count_equal_target(s : Array[Int], t : Array[Int]) -> Int64 {
+pub fn count_equal_target(s : Array[Int32], t : Array[Int32]) -> Int64 {
   let n = s.length()
   let m = t.length()
   if m == 0 {
@@ -81,12 +81,12 @@ pub fn count_equal_target(s : Array[Int], t : Array[Int]) -> Int64 {
 /// Number of distinct **non-empty** subsequences of `s`. Result mod
 /// `1e9 + 7`. The unique empty subsequence is excluded; add 1 to
 /// include it.
-pub fn count_all_subseq(s : Array[Int]) -> Int64 {
+pub fn count_all_subseq(s : Array[Int32]) -> Int64 {
   let n = s.length()
   // dp[i] = #distinct subsequences (including empty) of s[0..i].
   // dp[0] = 1.
   // dp[i] = 2 * dp[i-1] - (last[s[i-1]] != -1 ? dp[last - 1] : 0)
-  let last : Map[Int, Int] = Map([], capacity=n)
+  let last : Map[Int32, Int32] = Map([], capacity=n)
   let dp = Array::make(n + 1, 0L)
   dp[0] = 1L
   for i in 1..<=n {
@@ -109,8 +109,8 @@ pub fn count_all_subseq(s : Array[Int]) -> Int64 {
 }
 
 ///|
-fn arr(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn arr(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }

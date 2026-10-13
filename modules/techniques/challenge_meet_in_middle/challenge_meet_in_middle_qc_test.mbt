@@ -4,14 +4,14 @@
 // >= Int::MIN_VALUE) and use `target >= 0`, the documented assumption.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -21,7 +21,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix of
 /// small values and `Int` extrema.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 }
 
 ///|
@@ -44,7 +44,7 @@ impl @quickcheck.Arbitrary for Ints with fn arbitrary(size, rs) {
 }
 
 ///|
-fn pos_neg_sums(xs : Array[Int]) -> (Int64, Int64) {
+fn pos_neg_sums(xs : Array[Int32]) -> (Int64, Int64) {
   let mut pos = 0L
   let mut neg = 0L
   for x in xs {
@@ -59,14 +59,14 @@ fn pos_neg_sums(xs : Array[Int]) -> (Int64, Int64) {
 
 ///|
 /// All subset sums fit in `Int`.
-fn sums_fit(xs : Array[Int]) -> Bool {
+fn sums_fit(xs : Array[Int32]) -> Bool {
   let (pos, neg) = pos_neg_sums(xs)
   pos <= IMAX.to_int64() && neg >= IMIN.to_int64()
 }
 
 ///|
 /// Brute force over all 2^n subsets, with 64-bit sums.
-fn brute(xs : Array[Int], target : Int) -> Int64 {
+fn brute(xs : Array[Int32], target : Int32) -> Int64 {
   let n = xs.length()
   let mut best = 0L
   for mask in 0..<(1 << n) {
@@ -85,8 +85,8 @@ fn brute(xs : Array[Int], target : Int) -> Int64 {
 
 ///|
 priv struct Case {
-  xs : Array[Int]
-  target : Int
+  xs : Array[Int32]
+  target : Int32
 } derive(Debug)
 
 ///|
@@ -126,7 +126,7 @@ impl @quickcheck.Arbitrary for Case with fn arbitrary(size, rs) {
       }
     }
     _ => {
-      let t : Int = @quickcheck.Arbitrary::arbitrary(size, rs)
+      let t : Int32 = @quickcheck.Arbitrary::arbitrary(size, rs)
       if t < 0 {
         t.lnot()
       } else {

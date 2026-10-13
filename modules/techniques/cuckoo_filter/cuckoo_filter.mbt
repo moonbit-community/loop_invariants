@@ -66,11 +66,11 @@
 /// fingerprints. Use 0 to indicate an empty slot (so fingerprints
 /// are values in [1, 2^16 - 1]).
 pub struct CuckooFilter {
-  m : Int
-  b : Int
+  m : Int32
+  b : Int32
   // Flat array of m * b slots; slot (bucket=i, position=p) is at i*b+p.
-  table : Array[Int]
-  mut count : Int
+  table : Array[Int32]
+  mut count : Int32
   mut rng_state : Int64
 }
 
@@ -82,7 +82,7 @@ fn cf_lcg(state : Int64) -> Int64 {
 
 ///|
 /// Logical right shift on Int64.
-fn cf_shr_logical(x : Int64, n : Int) -> Int64 {
+fn cf_shr_logical(x : Int64, n : Int32) -> Int64 {
   (x.reinterpret_as_uint64() >> n).reinterpret_as_int64()
 }
 
@@ -114,7 +114,7 @@ fn cf_hash(x : Int64) -> Int64 {
 ///   assert_eq(cf.contains(42L), true)
 /// }
 /// ```
-pub fn new(m~ : Int, b~ : Int, seed~ : Int64) -> CuckooFilter {
+pub fn new(m~ : Int32, b~ : Int32, seed~ : Int64) -> CuckooFilter {
   let mc = if m < 4 { 4 } else { m }
   let bc = if b < 1 { 1 } else { b }
   {
@@ -133,7 +133,7 @@ pub fn new(m~ : Int, b~ : Int, seed~ : Int64) -> CuckooFilter {
 /// Hashes `x` via a different mix than the bucket index, so that two
 /// inputs with the same `h(x) mod m` are not forced to share the same
 /// fingerprint.
-fn fingerprint(x : Int64) -> Int {
+fn fingerprint(x : Int64) -> Int32 {
   let h = cf_hash(x ^ 0xa5a5a5a5a5a5a5a5L)
   let f = cf_shr_logical(h, 32).land(65535L).to_int()
   if f == 0 {
@@ -145,13 +145,16 @@ fn fingerprint(x : Int64) -> Int {
 
 ///|
 /// Convert a fingerprint to an Int64 hash for the XOR trick.
-fn fp_hash(f : Int) -> Int64 {
+fn fp_hash(f : Int32) -> Int64 {
   cf_hash(f.to_int64() * 2654435761L)
 }
 
 ///|
 /// Buckets containing `x`'s fingerprint, in order: (bucket_1, bucket_2).
-fn CuckooFilter::buckets_of(self : CuckooFilter, x : Int64) -> (Int, Int, Int) {
+fn CuckooFilter::buckets_of(
+  self : CuckooFilter,
+  x : Int64,
+) -> (Int32, Int32, Int32) {
   let f = fingerprint(x)
   let h1 = cf_hash(x)
   let b1 = (h1.land(2147483647L) % self.m.to_int64()).to_int()
@@ -163,14 +166,22 @@ fn CuckooFilter::buckets_of(self : CuckooFilter, x : Int64) -> (Int, Int, Int) {
 ///|
 /// `i XOR h(f)` -- the alternate bucket given a bucket index and a
 /// fingerprint, regardless of which "side" we were on.
-fn CuckooFilter::other_bucket(self : CuckooFilter, i : Int, f : Int) -> Int {
+fn CuckooFilter::other_bucket(
+  self : CuckooFilter,
+  i : Int32,
+  f : Int32,
+) -> Int32 {
   let b = (i.to_int64() ^ fp_hash(f)).land(2147483647L)
   (b % self.m.to_int64()).to_int()
 }
 
 ///|
 /// Try to insert `f` into bucket `b`. Returns true if a slot was found.
-fn CuckooFilter::try_insert(self : CuckooFilter, bucket : Int, f : Int) -> Bool {
+fn CuckooFilter::try_insert(
+  self : CuckooFilter,
+  bucket : Int32,
+  f : Int32,
+) -> Bool {
   for p in 0..<self.b {
     if self.table[bucket * self.b + p] == 0 {
       self.table[bucket * self.b + p] = f
@@ -253,13 +264,13 @@ pub fn CuckooFilter::delete(self : CuckooFilter, key : Int64) -> Bool {
 
 ///|
 /// Current item count.
-pub fn CuckooFilter::count_of(self : CuckooFilter) -> Int {
+pub fn CuckooFilter::count_of(self : CuckooFilter) -> Int32 {
   self.count
 }
 
 ///|
 /// Total capacity (m * b).
-pub fn CuckooFilter::capacity(self : CuckooFilter) -> Int {
+pub fn CuckooFilter::capacity(self : CuckooFilter) -> Int32 {
   self.m * self.b
 }
 

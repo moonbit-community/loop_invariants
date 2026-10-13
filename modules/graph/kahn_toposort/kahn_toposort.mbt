@@ -47,7 +47,7 @@
 /// - `has_cycle` : `true` iff a cycle was detected (in which case
 ///                 `order.length() < n` and the contents are partial).
 pub(all) struct KahnResult {
-  order : Array[Int]
+  order : Array[Int32]
   has_cycle : Bool
 }
 
@@ -66,7 +66,7 @@ pub(all) struct KahnResult {
 ///   @debug.assert_eq(r.has_cycle, false)
 /// }
 /// ```
-pub fn toposort(n : Int, adj : Array[Array[Int]]) -> KahnResult {
+pub fn toposort(n : Int32, adj : Array[Array[Int32]]) -> KahnResult {
   let in_deg = Array::make(n, 0)
   for u in 0..<n {
     for v in adj[u] {
@@ -75,13 +75,13 @@ pub fn toposort(n : Int, adj : Array[Array[Int]]) -> KahnResult {
       }
     }
   }
-  let queue : Array[Int] = []
+  let queue : Array[Int32] = []
   for v in 0..<n {
     if in_deg[v] == 0 {
       queue.push(v)
     }
   }
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
   let mut head = 0
   while head < queue.length() {
     let u = queue[head]
@@ -105,7 +105,7 @@ pub fn toposort(n : Int, adj : Array[Array[Int]]) -> KahnResult {
 /// vertices have in-degree 0, prefer the one with the smaller index.
 ///
 /// Uses a binary min-heap; `O((V + E) log V)`.
-pub fn lex_toposort(n : Int, adj : Array[Array[Int]]) -> KahnResult {
+pub fn lex_toposort(n : Int32, adj : Array[Array[Int32]]) -> KahnResult {
   let in_deg = Array::make(n, 0)
   for u in 0..<n {
     for v in adj[u] {
@@ -120,7 +120,7 @@ pub fn lex_toposort(n : Int, adj : Array[Array[Int]]) -> KahnResult {
       heap.push(v)
     }
   }
-  let order : Array[Int] = []
+  let order : Array[Int32] = []
   while !heap.is_empty() {
     let u = heap.pop().unwrap()
     order.push(u)
@@ -139,7 +139,7 @@ pub fn lex_toposort(n : Int, adj : Array[Array[Int]]) -> KahnResult {
 
 ///|
 priv struct HeapInt {
-  data : Array[Int]
+  data : Array[Int32]
 }
 
 ///|
@@ -153,7 +153,7 @@ fn HeapInt::is_empty(self : HeapInt) -> Bool {
 }
 
 ///|
-fn HeapInt::push(self : HeapInt, x : Int) -> Unit {
+fn HeapInt::push(self : HeapInt, x : Int32) -> Unit {
   self.data.push(x)
   let mut i = self.data.length() - 1
   while i > 0 {
@@ -170,7 +170,7 @@ fn HeapInt::push(self : HeapInt, x : Int) -> Unit {
 }
 
 ///|
-fn HeapInt::pop(self : HeapInt) -> Int? {
+fn HeapInt::pop(self : HeapInt) -> Int32? {
   let n = self.data.length()
   if n == 0 {
     return None
@@ -207,7 +207,7 @@ fn HeapInt::pop(self : HeapInt) -> Int? {
 ///|
 /// Verify a candidate ordering is topological: every edge `u -> v`
 /// must have `position(u) < position(v)`.
-fn is_topological(order : Array[Int], adj : Array[Array[Int]]) -> Bool {
+fn is_topological(order : Array[Int32], adj : Array[Array[Int32]]) -> Bool {
   let n = adj.length()
   if order.length() != n {
     return false
@@ -234,7 +234,7 @@ fn is_topological(order : Array[Int], adj : Array[Array[Int]]) -> Bool {
 
 ///|
 test "kahn basic dag" {
-  let adj : Array[Array[Int]] = [[1, 2], [3], [3], []]
+  let adj : Array[Array[Int32]] = [[1, 2], [3], [3], []]
   let r = toposort(4, adj)
   @debug.assert_eq(r.has_cycle, false)
   @debug.assert_eq(is_topological(r.order, adj), true)
@@ -243,7 +243,7 @@ test "kahn basic dag" {
 ///|
 test "kahn detects cycle" {
   // 0 -> 1 -> 2 -> 0
-  let adj : Array[Array[Int]] = [[1], [2], [0]]
+  let adj : Array[Array[Int32]] = [[1], [2], [0]]
   let r = toposort(3, adj)
   @debug.assert_eq(r.has_cycle, true)
   @debug.assert_eq(r.order.length(), 0)
@@ -266,7 +266,7 @@ test "kahn isolated vertices" {
 ///|
 test "kahn lex_toposort smallest first" {
   // Multiple valid orderings; expect lexicographic smallest.
-  let adj : Array[Array[Int]] = [[2], [2], [3, 4], [], []]
+  let adj : Array[Array[Int32]] = [[2], [2], [3, 4], [], []]
   let r = lex_toposort(5, adj)
   // 0 and 1 are roots; lex picks 0 first, then 1, then 2, then 3 < 4.
   @debug.assert_eq(r.order, [0, 1, 2, 3, 4])
@@ -275,7 +275,7 @@ test "kahn lex_toposort smallest first" {
 ///|
 test "kahn longer dag" {
   // 0 -> 1, 0 -> 2, 1 -> 3, 2 -> 3, 3 -> 4, 3 -> 5
-  let adj : Array[Array[Int]] = [[1, 2], [3], [3], [4, 5], [], []]
+  let adj : Array[Array[Int32]] = [[1, 2], [3], [3], [4, 5], [], []]
   let r = toposort(6, adj)
   @debug.assert_eq(r.has_cycle, false)
   @debug.assert_eq(is_topological(r.order, adj), true)
@@ -292,7 +292,7 @@ test "kahn longer dag" {
 ///|
 test "kahn partial cycle still detects" {
   // {0 -> 1} acyclic chain, {2 -> 3 -> 2} cycle.
-  let adj : Array[Array[Int]] = [[1], [], [3], [2]]
+  let adj : Array[Array[Int32]] = [[1], [], [3], [2]]
   let r = toposort(4, adj)
   @debug.assert_eq(r.has_cycle, true)
   // Only 0 and 1 should make it out.

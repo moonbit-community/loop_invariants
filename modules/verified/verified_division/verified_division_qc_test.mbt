@@ -2,7 +2,7 @@
 /// Division arguments with `n >= 0`, `d > 0`, and a quotient small enough
 /// (<= 10^5) for the repeated-subtraction loop to stay fast. Boundary values
 /// such as `n = Int max` are included.
-priv struct DivArgs((Int, Int)) derive(Debug)
+priv struct DivArgs((Int32, Int32)) derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for DivArgs with fn arbitrary(size, rs) {

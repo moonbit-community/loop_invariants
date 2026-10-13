@@ -4,7 +4,7 @@
 
 ///|
 /// Build binary lifting table up[k][v] = 2^k-th ancestor of v.
-pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
+pub fn build_lift(parent : ArrayView[Int32]) -> Array[Array[Int32]] {
   let n = parent.length()
   if n == 0 {
     return []
@@ -26,7 +26,7 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
       #|When pow >= n, k is the number of levels needed.
     ),
   }
-  let up : Array[Array[Int]] = [ for _ in 0..<log => Array::make(n, -1) ]
+  let up : Array[Array[Int32]] = [ for _ in 0..<log => Array::make(n, -1) ]
   for v in 0..<n {
     up[0][v] = parent[v]
   }
@@ -43,7 +43,7 @@ pub fn build_lift(parent : ArrayView[Int]) -> Array[Array[Int]] {
 
 ///|
 /// Lift node v by dist steps using the lifting table.
-pub fn lift(up : Array[Array[Int]], v : Int, dist : Int) -> Int {
+pub fn lift(up : Array[Array[Int32]], v : Int32, dist : Int32) -> Int32 {
   let levels = up.length()
   for k in 0..<levels; cur = v, d = dist {
     if (d & 1) == 1 {
@@ -72,7 +72,7 @@ pub fn lift(up : Array[Array[Int]], v : Int, dist : Int) -> Int {
 
 ///|
 test "binary_lifting" {
-  let parent : Array[Int] = [-1, 0, 0, 1, 1, 2]
+  let parent : Array[Int32] = [-1, 0, 0, 1, 1, 2]
   let up = build_lift(parent)
   @debug.assert_eq(lift(up, 4, 1), 1)
   @debug.assert_eq(lift(up, 4, 2), 0)

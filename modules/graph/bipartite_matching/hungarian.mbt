@@ -37,8 +37,8 @@
 /// Space complexity: O(V + E).
 struct Hungarian {
   graph : BipartiteGraph
-  match_left : Array[Int]
-  match_right : Array[Int]
+  match_left : Array[Int32]
+  match_right : Array[Int32]
   visited : Array[Bool]
 }
 
@@ -63,7 +63,7 @@ fn Hungarian::Hungarian(graph : BipartiteGraph) -> Hungarian {
 ///
 /// Returns `true` if an augmenting path was found and the matching updated.
 /// The `visited` array must be reset to `false` before each top-level call.
-fn Hungarian::dfs(self : Hungarian, u : Int) -> Bool {
+fn Hungarian::dfs(self : Hungarian, u : Int32) -> Bool {
   for v in self.graph.adj[u] {
     if self.visited[v] {
       continue
@@ -99,7 +99,7 @@ fn Hungarian::dfs(self : Hungarian, u : Int) -> Bool {
 /// let matcher = graph.hungarian()
 /// let size = matcher.max_matching() // 3
 /// ```
-pub fn Hungarian::max_matching(self : Hungarian) -> Int {
+pub fn Hungarian::max_matching(self : Hungarian) -> Int32 {
   for u in 0..<self.graph.n_left; matching = 0 {
     // Reset visited for each left vertex
     self.visited.fill(false)
@@ -139,8 +139,8 @@ pub fn Hungarian::max_matching(self : Hungarian) -> Int {
 /// let _ = matcher.max_matching()
 /// let pairs = matcher.get_matching() // [(0, 0), (1, 1)]
 /// ```
-pub fn Hungarian::get_matching(self : Hungarian) -> Array[(Int, Int)] {
-  let result : Array[(Int, Int)] = [
+pub fn Hungarian::get_matching(self : Hungarian) -> Array[(Int32, Int32)] {
+  let result : Array[(Int32, Int32)] = [
     for u in 0..<self.graph.n_left if self.match_left[u] >= 0 => {
       (u, self.match_left[u])
     }

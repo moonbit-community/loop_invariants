@@ -3,15 +3,15 @@
 // ============================================================================
 
 ///|
-const INF : Int = 0x3fffffff
+const INF : Int32 = 0x3fffffff
 
 ///|
 /// Build an undirected adjacency list from edge list (u, v, w).
 pub fn build_adj(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int)],
-) -> Array[Array[(Int, Int)]] {
-  let adj : Array[Array[(Int, Int)]] = [ for _ in 0..<n => [] ]
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int32)],
+) -> Array[Array[(Int32, Int32)]] {
+  let adj : Array[Array[(Int32, Int32)]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v, w) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
@@ -24,7 +24,7 @@ pub fn build_adj(
 
 ///|
 /// Return the MST total weight if connected; otherwise None.
-pub fn mst_weight(adj : Array[Array[(Int, Int)]]) -> Int? {
+pub fn mst_weight(adj : Array[Array[(Int32, Int32)]]) -> Int32? {
   let n = adj.length()
   if n <= 1 {
     return Some(0)

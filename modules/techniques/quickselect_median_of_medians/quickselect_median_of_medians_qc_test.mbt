@@ -2,14 +2,14 @@
 // the documented `None` cases for out-of-range ranks, and non-mutation.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -19,7 +19,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix of
 /// small values and `Int` extrema.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -47,7 +47,7 @@ impl @quickcheck.Shrink for Ints with fn shrink(self) {
 }
 
 ///|
-fn sorted_copy(xs : Array[Int]) -> Array[Int] {
+fn sorted_copy(xs : Array[Int32]) -> Array[Int32] {
   let s = xs.copy()
   s.sort()
   s
@@ -83,7 +83,7 @@ test "qc: select_kth(a, k) == sorted(a)[k] for every rank" {
 ///|
 test "qc: select_kth returns None exactly for k outside [0, n)" {
   @quickcheck.check(
-    (input : (Ints, Int)) => {
+    (input : (Ints, Int32)) => {
       let (a, k) = input
       let n = a.xs.length()
       let r = @quickselect_median_of_medians.select_kth(a.xs[:], k)
@@ -100,7 +100,7 @@ test "qc: select_kth returns None exactly for k outside [0, n)" {
 ///|
 test "qc: select_kth on a sub-view ignores elements outside the view" {
   @quickcheck.check(
-    (input : (Ints, Int, Int)) => {
+    (input : (Ints, Int32, Int32)) => {
       let (a, i, j) = input
       let n = a.xs.length()
       if n == 0 {
@@ -143,7 +143,7 @@ test "qc: median is the lower median sorted[(n - 1) / 2]" {
 ///|
 test "qc: select_kth does not mutate its input" {
   @quickcheck.check(
-    (input : (Ints, Int)) => {
+    (input : (Ints, Int32)) => {
       let (a, k) = input
       let before = a.xs.copy()
       let _ = @quickselect_median_of_medians.select_kth(a.xs[:], k)

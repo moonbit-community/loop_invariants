@@ -7,7 +7,7 @@ const MOD : Int64 = 1000000007L
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -16,13 +16,13 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// Distinct positive coins (possibly one far larger than any amount) and an
 /// amount in `[-2, 30]`.
 priv struct Change {
-  coins : Array[Int]
-  amount : Int
+  coins : Array[Int32]
+  amount : Int32
 } derive(Debug)
 
 ///|
-fn distinct_positive(xs : Array[Int]) -> Array[Int] {
-  let out : Array[Int] = []
+fn distinct_positive(xs : Array[Int32]) -> Array[Int32] {
+  let out : Array[Int32] = []
   for x in xs {
     let x = if x <= 0 { 1 - x } else { x }
     if !out.contains(x) {
@@ -55,13 +55,13 @@ impl @quickcheck.Shrink for Change with fn shrink(self) {
 ///|
 /// Enumerates multisets by choosing a count for each coin; returns
 /// `(number of multisets, fewest coins or -1)`.
-fn enumerate(coins : Array[Int], amount : Int) -> (Int64, Int) {
+fn enumerate(coins : Array[Int32], amount : Int32) -> (Int64, Int32) {
   if amount < 0 {
     return (0L, -1)
   }
   let mut ways = 0L
   let mut best = -1
-  fn go(i : Int, remaining : Int, used : Int) -> Unit {
+  fn go(i : Int32, remaining : Int32, used : Int32) -> Unit {
     if i == coins.length() {
       if remaining == 0 {
         ways = ways + 1L
@@ -86,12 +86,12 @@ fn enumerate(coins : Array[Int], amount : Int) -> (Int64, Int) {
 
 ///|
 /// Ordered sequences: `f(0) = 1`, `f(a) = sum_{c <= a} f(a - c)`, memoised.
-fn ref_ordered(coins : Array[Int], amount : Int) -> Int64 {
+fn ref_ordered(coins : Array[Int32], amount : Int32) -> Int64 {
   if amount < 0 {
     return 0L
   }
-  let memo : Map[Int, Int64] = Map([])
-  fn f(a : Int) -> Int64 {
+  let memo : Map[Int32, Int64] = Map([])
+  fn f(a : Int32) -> Int64 {
     if a == 0 {
       return 1L
     }

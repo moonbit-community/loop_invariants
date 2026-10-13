@@ -41,10 +41,10 @@
 /// arr    = [4, 5, 2, 10, 8]
 /// result = [1, 3, 3, -1, -1]   // indices of the next greater element
 /// ```
-fn next_greater_element(arr : Array[Int64]) -> Array[Int] {
+fn next_greater_element(arr : Array[Int64]) -> Array[Int32] {
   let n = arr.length()
   let result = Array::make(n, -1)
-  let stack : Array[Int] = [] // Stack of indices
+  let stack : Array[Int32] = [] // Stack of indices
   for i in 0..<n {
     // Pop elements smaller than current
     for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]; pop_next; {
@@ -89,10 +89,10 @@ fn next_greater_element(arr : Array[Int64]) -> Array[Int] {
 /// arr    = [4, 5, 2, 10, 8]
 /// result = [2, 2, -1,  4, -1]  // indices of the next smaller element
 /// ```
-fn next_smaller_element(arr : Array[Int64]) -> Array[Int] {
+fn next_smaller_element(arr : Array[Int64]) -> Array[Int32] {
   let n = arr.length()
   let result = Array::make(n, -1)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] > arr[i]; pop_next; {
       let top = stack[stack.length() - 1]
@@ -119,10 +119,10 @@ fn next_smaller_element(arr : Array[Int64]) -> Array[Int] {
 
 ///|
 /// Find previous greater element for each position
-fn previous_greater_element(arr : Array[Int64]) -> Array[Int] {
+fn previous_greater_element(arr : Array[Int64]) -> Array[Int32] {
   let n = arr.length()
   let result = Array::make(n, -1)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     // Pop elements smaller than or equal to current
     for pop_next = stack.length() > 0 &&
@@ -153,10 +153,10 @@ fn previous_greater_element(arr : Array[Int64]) -> Array[Int] {
 
 ///|
 /// Find previous smaller element for each position
-fn previous_smaller_element(arr : Array[Int64]) -> Array[Int] {
+fn previous_smaller_element(arr : Array[Int64]) -> Array[Int32] {
   let n = arr.length()
   let result = Array::make(n, -1)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     for pop_next = stack.length() > 0 &&
           arr[stack[stack.length() - 1]] >= arr[i]; pop_next; {
@@ -201,7 +201,7 @@ fn largest_rectangle_in_histogram(heights : Array[Int64]) -> Int64 {
   let next_smaller = Array::make(n, n) // Default to n (past the end)
 
   // Compute previous smaller
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     for pop_next = stack.length() > 0 &&
           heights[stack[stack.length() - 1]] >= heights[i]; pop_next; {
@@ -276,7 +276,7 @@ fn trap_rain_water(heights : Array[Int64]) -> Int64 {
   }
 
   // Method 1: Using monotonic stack
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   let water = for i in 0..<n; water = 0L {
     let water = for water = water; stack.length() > 0 &&
                    heights[stack[stack.length() - 1]] < heights[i]; {
@@ -324,10 +324,10 @@ fn trap_rain_water(heights : Array[Int64]) -> Int64 {
 ///|
 /// Calculate span for each day
 /// Span = number of consecutive days before (including current) with price <= current price
-fn stock_span(prices : Array[Int64]) -> Array[Int] {
+fn stock_span(prices : Array[Int64]) -> Array[Int32] {
   let n = prices.length()
   let span = Array::make(n, 0)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     // Pop days with price <= current
     for pop_next = stack.length() > 0 &&
@@ -377,7 +377,7 @@ fn sum_subarray_mins(arr : Array[Int64]) -> Int64 {
   // right[i] = distance to next smaller or equal element
   let left = Array::make(n, 0)
   let right = Array::make(n, 0)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
 
   // Previous smaller (strictly less)
   for i in 0..<n {

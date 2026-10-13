@@ -24,11 +24,11 @@
 /// ```
 pub enum Aa[T] {
   Empty
-  Node(key~ : T, level~ : Int, left~ : Aa[T], right~ : Aa[T])
+  Node(key~ : T, level~ : Int32, left~ : Aa[T], right~ : Aa[T])
 } derive(Debug)
 
 ///|
-fn[T] level(t : Aa[T]) -> Int {
+fn[T] level(t : Aa[T]) -> Int32 {
   match t {
     Empty => 0
     Node(key=_, level~, left=_, right=_) => level
@@ -37,7 +37,7 @@ fn[T] level(t : Aa[T]) -> Int {
 
 ///|
 /// Return the number of keys in the AA tree.
-pub fn[T] size(t : Aa[T]) -> Int {
+pub fn[T] size(t : Aa[T]) -> Int32 {
   match t {
     Empty => 0
     Node(key=_, level=_, left~, right~) => 1 + size(left) + size(right)
@@ -79,7 +79,7 @@ fn[T : Compare] aa_valid(t : Aa[T], lo : T?, hi : T?) -> Bool {
 }
 
 ///|
-fn[T] make_node(key : T, lv : Int, left : Aa[T], right : Aa[T]) -> Aa[T] {
+fn[T] make_node(key : T, lv : Int32, left : Aa[T], right : Aa[T]) -> Aa[T] {
   Node(key~, level=lv, left~, right~)
 }
 
@@ -217,7 +217,7 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> Aa[T] {
 ///|
 test "persistent aa tree invariants" {
   let tree = from_array([3, 1, 4, 2])
-  let none : Int? = None
+  let none : Int32? = None
   assert_true(aa_valid(tree, none, none))
   assert_true(contains(tree, 1))
 }

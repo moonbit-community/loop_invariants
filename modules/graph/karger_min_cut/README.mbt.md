@@ -106,7 +106,7 @@ trials, the minimum is 3 with high probability.
 ///|
 test "karger 4-cycle" {
   // 4-cycle: every vertex has degree 2, so min cut = 2.
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 0)]
   debug_inspect(
     @karger_min_cut.karger_min_cut(4, edges[:], 50, seed=1L),
     content="2",
@@ -118,7 +118,7 @@ test "karger 4-cycle" {
 ///|
 test "karger bridge" {
   // Two triangles joined by one bridge: min cut = 1.
-  let edges : ReadOnlyArray[(Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32)] = [
     (0, 1),
     (1, 2),
     (2, 0),
@@ -137,7 +137,7 @@ test "karger bridge" {
 ```mbt check
 ///|
 test "karger K4" {
-  let edges : ReadOnlyArray[(Int, Int)] = [
+  let edges : ReadOnlyArray[(Int32, Int32)] = [
     (0, 1),
     (0, 2),
     (0, 3),
@@ -155,7 +155,7 @@ test "karger K4" {
 ```mbt check
 ///|
 test "karger deterministic same seed" {
-  let edges : ReadOnlyArray[(Int, Int)] = [(0, 1), (1, 2), (2, 0), (0, 3)]
+  let edges : ReadOnlyArray[(Int32, Int32)] = [(0, 1), (1, 2), (2, 0), (0, 3)]
   let a = @karger_min_cut.karger_min_cut(4, edges[:], 20, seed=1234L)
   let b = @karger_min_cut.karger_min_cut(4, edges[:], 20, seed=1234L)
   debug_inspect(a == b, content="true")

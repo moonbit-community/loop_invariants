@@ -42,8 +42,8 @@
 /// - `n`: number of elements in the original array.
 pub struct SparseTableMin {
   table : Array[Array[Int64]]
-  log_table : Array[Int]
-  n : Int
+  log_table : Array[Int32]
+  n : Int32
 }
 
 ///|
@@ -104,7 +104,11 @@ pub fn SparseTableMin::SparseTableMin(arr : Array[Int64]) -> SparseTableMin {
 /// (`9223372036854775807`) if the range is empty or out of bounds.
 ///
 /// Time complexity: O(1).
-pub fn SparseTableMin::query(self : SparseTableMin, l : Int, r : Int) -> Int64 {
+pub fn SparseTableMin::query(
+  self : SparseTableMin,
+  l : Int32,
+  r : Int32,
+) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return 9223372036854775807L // INT64_MAX
   }
@@ -136,8 +140,8 @@ pub fn SparseTableMin::query(self : SparseTableMin, l : Int, r : Int) -> Int64 {
 /// - `n`: number of elements in the original array.
 priv struct SparseTableMax {
   table : Array[Array[Int64]]
-  log_table : Array[Int]
-  n : Int
+  log_table : Array[Int32]
+  n : Int32
 }
 
 ///|
@@ -190,7 +194,7 @@ fn SparseTableMax::SparseTableMax(arr : Array[Int64]) -> SparseTableMax {
 /// (`-9223372036854775808`) if the range is empty or out of bounds.
 ///
 /// Time complexity: O(1).
-fn SparseTableMax::query(self : SparseTableMax, l : Int, r : Int) -> Int64 {
+fn SparseTableMax::query(self : SparseTableMax, l : Int32, r : Int32) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return -9223372036854775808L // INT64_MIN
   }
@@ -243,8 +247,8 @@ fn gcd(a : Int64, b : Int64) -> Int64 {
 /// - `n`: number of elements in the original array.
 priv struct SparseTableGCD {
   table : Array[Array[Int64]]
-  log_table : Array[Int]
-  n : Int
+  log_table : Array[Int32]
+  n : Int32
 }
 
 ///|
@@ -295,7 +299,7 @@ fn SparseTableGCD::SparseTableGCD(arr : Array[Int64]) -> SparseTableGCD {
 /// empty or out of bounds.
 ///
 /// Time complexity: O(1).
-fn SparseTableGCD::query(self : SparseTableGCD, l : Int, r : Int) -> Int64 {
+fn SparseTableGCD::query(self : SparseTableGCD, l : Int32, r : Int32) -> Int64 {
   if l < 0 || r >= self.n || l > r {
     return 0L
   }

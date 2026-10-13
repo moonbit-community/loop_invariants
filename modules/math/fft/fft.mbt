@@ -79,7 +79,7 @@ fn mod_pow(base : Int64, exp : Int64, m : Int64) -> Int64 {
 /// Used by the Cooley-Tukey NTT to compute the bit-reversal permutation that
 /// reorders input coefficients so that iterative butterfly stages produce the
 /// correct DFT output.
-fn bit_reverse(x : Int, bits : Int) -> Int {
+fn bit_reverse(x : Int32, bits : Int32) -> Int32 {
   for i = 0, result = 0, v = x; i < bits; {
     continue i + 1, (result << 1) | (v & 1), v >> 1
   } nobreak {
@@ -112,8 +112,8 @@ fn bit_reverse(x : Int, bits : Int) -> Int {
 /// - `root_inv`: modular inverse of `root` (inverse transform)
 /// - `mod_val`: the prime modulus (998244353)
 priv struct NTT {
-  n : Int // Must be power of 2
-  log_n : Int
+  n : Int32 // Must be power of 2
+  log_n : Int32
   root : Int64
   root_inv : Int64
   mod_val : Int64
@@ -125,7 +125,7 @@ priv struct NTT {
 /// The actual transform size `n` is rounded up to the next power of two.
 /// The primitive n-th root of unity and its inverse are precomputed so that
 /// `transform` can be called cheaply on multiple arrays of this size.
-fn NTT::NTT(size : Int) -> NTT {
+fn NTT::NTT(size : Int32) -> NTT {
   // Find smallest power of 2 >= size
   let (n, log_n) = for n = 1, log_n = 0; n < size; {
     continue n * 2, log_n + 1

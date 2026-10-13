@@ -85,10 +85,10 @@ pub const DINIC_INF : Int64 = 4611686018427387903L
 /// - `flow` : flow currently assigned to the edge (mutable)
 /// - `rev`  : index of the paired reverse edge in `adj[to]`
 pub(all) struct DinicEdge {
-  to : Int
+  to : Int32
   cap : Int64
   mut flow : Int64
-  rev : Int // Index of reverse edge
+  rev : Int32 // Index of reverse edge
 }
 
 ///|
@@ -115,10 +115,10 @@ pub(all) struct DinicEdge {
 ///     adj[v][rev].flow -= f   (negative ⟹ residual on the reverse arc)
 /// ```
 pub(all) struct Dinic {
-  n : Int
+  n : Int32
   adj : Array[Array[DinicEdge]]
-  level : Array[Int]
-  iter : Array[Int] // Current edge pointer for each vertex
+  level : Array[Int32]
+  iter : Array[Int32] // Current edge pointer for each vertex
 }
 
 ///|
@@ -126,7 +126,7 @@ pub(all) struct Dinic {
 ///
 /// Vertices are numbered `0` to `n-1`.  No edges are added; use
 /// `add_edge` to build the network before calling `max_flow`.
-pub fn Dinic::Dinic(n : Int) -> Dinic {
+pub fn Dinic::Dinic(n : Int32) -> Dinic {
   let adj = [ for _ in 0..<n => [] ]
   { n, adj, level: Array::make(n, 0), iter: Array::make(n, 0), }
 }
@@ -147,7 +147,12 @@ pub fn Dinic::Dinic(n : Int) -> Dinic {
 ///   2. Append forward edge to adj[from]: (to, cap, flow=0, rev=j)
 ///   3. Append reverse edge to adj[to]:   (from, 0,  flow=0, rev=i)
 /// ```
-pub fn Dinic::add_edge(self : Dinic, from : Int, to : Int, cap : Int64) -> Unit {
+pub fn Dinic::add_edge(
+  self : Dinic,
+  from : Int32,
+  to : Int32,
+  cap : Int64,
+) -> Unit {
   let rev_from = self.adj[to].length()
   let rev_to = self.adj[from].length()
   self.adj[from].push({ to, cap, flow: 0L, rev: rev_from, })

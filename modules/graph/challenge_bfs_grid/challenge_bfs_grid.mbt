@@ -7,12 +7,12 @@
 /// grid cells: 0 = open, 1 = blocked.
 #warnings("+missing_invariant+missing_reasoning")
 pub fn shortest_path_grid(
-  grid : Array[Array[Int]],
-  sx : Int,
-  sy : Int,
-  tx : Int,
-  ty : Int,
-) -> Int? {
+  grid : Array[Array[Int32]],
+  sx : Int32,
+  sy : Int32,
+  tx : Int32,
+  ty : Int32,
+) -> Int32? {
   let n = grid.length()
   guard n > 0 else { return None }
   let m = grid[0].length()
@@ -21,12 +21,12 @@ pub fn shortest_path_grid(
   if grid[sx][sy] != 0 || grid[tx][ty] != 0 {
     return None
   }
-  let dist : Array[Array[Int]] = [ for _ in 0..<n => Array::make(m, -1) ]
-  let queue : Array[(Int, Int)] = []
+  let dist : Array[Array[Int32]] = [ for _ in 0..<n => Array::make(m, -1) ]
+  let queue : Array[(Int32, Int32)] = []
   dist[sx][sy] = 0
   queue.push((sx, sy))
-  let dx : Array[Int] = [1, -1, 0, 0]
-  let dy : Array[Int] = [0, 0, 1, -1]
+  let dx : Array[Int32] = [1, -1, 0, 0]
+  let dy : Array[Int32] = [0, 0, 1, -1]
   for head = 0 {
     if head >= queue.length() {
       break
@@ -64,7 +64,7 @@ pub fn shortest_path_grid(
 
 ///|
 test "shortest_path_grid" {
-  let grid : Array[Array[Int]] = [[0, 0, 0], [1, 1, 0], [0, 0, 0]]
+  let grid : Array[Array[Int32]] = [[0, 0, 0], [1, 1, 0], [0, 0, 0]]
   debug_inspect(shortest_path_grid(grid, 0, 0, 2, 2), content="Some(4)")
   debug_inspect(shortest_path_grid(grid, 0, 0, 1, 0), content="None")
 }

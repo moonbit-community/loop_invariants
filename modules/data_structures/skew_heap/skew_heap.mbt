@@ -42,7 +42,7 @@ enum Tree {
 /// A persistent skew min-heap of `Int64` keys.
 pub struct SkewHeap {
   root : Tree
-  size : Int
+  size : Int32
 }
 
 ///|
@@ -112,7 +112,7 @@ pub fn SkewHeap::merge(self : SkewHeap, other : SkewHeap) -> SkewHeap {
 
 ///|
 /// Number of elements.
-pub fn SkewHeap::length(self : SkewHeap) -> Int {
+pub fn SkewHeap::length(self : SkewHeap) -> Int32 {
   self.size
 }
 

@@ -37,9 +37,9 @@ const INF64 : Int64 = 4611686018427387903L
 /// ```
 pub(all) struct Edge {
   /// Source vertex of the edge (0-indexed).
-  from : Int
+  from : Int32
   /// Destination vertex of the edge (0-indexed).
-  to : Int
+  to : Int32
   /// Cost of traversing this edge.
   weight : Int64
 } derive(Debug)
@@ -85,5 +85,5 @@ pub(all) struct Arborescence {
   /// Total weight of the chosen arborescence edges.
   cost : Int64
   /// `parent[v]` = predecessor of `v`; `-1` for the root.
-  parent : Array[Int]
+  parent : Array[Int32]
 } derive(Debug)

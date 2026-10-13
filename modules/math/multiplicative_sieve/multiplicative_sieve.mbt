@@ -30,7 +30,7 @@
 //   O(n) time, O(n) space.
 
 ///|
-fn ipow(p : Int, e : Int) -> Int {
+fn ipow(p : Int32, e : Int32) -> Int32 {
   let mut r = 1
   for _ in 0..<e {
     r = r * p
@@ -65,9 +65,9 @@ fn ipow(p : Int, e : Int) -> Int {
 /// }
 /// ```
 pub fn sieve(
-  n : Int,
-  f_prime : (Int) -> Int64,
-  f_prime_power : (Int, Int) -> Int64,
+  n : Int32,
+  f_prime : (Int32) -> Int64,
+  f_prime_power : (Int32, Int32) -> Int64,
 ) -> Array[Int64] {
   if n < 0 {
     return [0L]
@@ -81,7 +81,7 @@ pub fn sieve(
   let spf = Array::make(n + 1, 0)
   let spe = Array::make(n + 1, 0)
   let coprime = Array::make(n + 1, 1) // index into res for the coprime part
-  let primes : Array[Int] = []
+  let primes : Array[Int32] = []
   for i in 2..<=n {
     if spf[i] == 0 {
       spf[i] = i
@@ -122,7 +122,7 @@ pub fn sieve(
 
 ///|
 /// Specialised: Euler's totient via the generic framework.
-pub fn totient(n : Int) -> Array[Int64] {
+pub fn totient(n : Int32) -> Array[Int64] {
   sieve(n, p => (p - 1).to_int64(), (p, k) => {
     let mut r = (p - 1).to_int64()
     for _ in 1..<k {
@@ -134,13 +134,13 @@ pub fn totient(n : Int) -> Array[Int64] {
 
 ///|
 /// Specialised: Mobius function via the generic framework.
-pub fn mobius(n : Int) -> Array[Int64] {
+pub fn mobius(n : Int32) -> Array[Int64] {
   sieve(n, _p => -1L, (_p, k) => if k == 1 { -1L } else { 0L })
 }
 
 ///|
 /// Specialised: number-of-divisors function `d(n)`.
-pub fn divisor_count(n : Int) -> Array[Int64] {
+pub fn divisor_count(n : Int32) -> Array[Int64] {
   sieve(n, _p => 2L, (_p, k) => (k + 1).to_int64())
 }
 
@@ -214,7 +214,7 @@ test "sieve mobius larger n" {
 
 ///|
 test "sieve totient agrees with brute force" {
-  fn gcd(a : Int, b : Int) -> Int {
+  fn gcd(a : Int32, b : Int32) -> Int32 {
     let mut x = a
     let mut y = b
     while y != 0 {
@@ -225,7 +225,7 @@ test "sieve totient agrees with brute force" {
     x
   }
 
-  fn brute_phi(n : Int) -> Int {
+  fn brute_phi(n : Int32) -> Int32 {
     if n == 1 {
       return 1
     }

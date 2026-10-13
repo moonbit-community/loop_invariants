@@ -30,8 +30,8 @@ pub enum Treap[T] {
   Empty
   Node(
     key~ : T,
-    priority~ : Int,
-    size~ : Int,
+    priority~ : Int32,
+    size~ : Int32,
     left~ : Treap[T],
     right~ : Treap[T]
   )
@@ -39,7 +39,7 @@ pub enum Treap[T] {
 
 ///|
 /// Return the number of keys in the treap.
-pub fn[T] size(t : Treap[T]) -> Int {
+pub fn[T] size(t : Treap[T]) -> Int32 {
   match t {
     Empty => 0
     Node(key=_, priority=_, size~, left=_, right=_) => size
@@ -49,14 +49,14 @@ pub fn[T] size(t : Treap[T]) -> Int {
 ///|
 
 ///|
-fn[T : Hash] priority_for(key : T) -> Int {
+fn[T : Hash] priority_for(key : T) -> Int32 {
   key.hash()
 }
 
 ///|
 fn[T] make_node(
   key : T,
-  priority : Int,
+  priority : Int32,
   left : Treap[T],
   right : Treap[T],
 ) -> Treap[T] {

@@ -48,7 +48,7 @@
 //    j' <= j."
 
 ///|
-fn min3(a : Int, b : Int, c : Int) -> Int {
+fn min3(a : Int32, b : Int32, c : Int32) -> Int32 {
   let ab = if a < b { a } else { b }
   if ab < c {
     ab
@@ -71,7 +71,7 @@ fn min3(a : Int, b : Int, c : Int) -> Int {
 ///   @debug.assert_eq(@damerau_levenshtein.distance(a, b), 1)
 /// }
 /// ```
-pub fn distance(a : Array[Int], b : Array[Int]) -> Int {
+pub fn distance(a : Array[Int32], b : Array[Int32]) -> Int32 {
   let n = a.length()
   let m = b.length()
   if n == 0 {
@@ -104,8 +104,8 @@ pub fn distance(a : Array[Int], b : Array[Int]) -> Int {
 }
 
 ///|
-fn s(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn s(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }

@@ -23,7 +23,7 @@
 /// encountered while scanning `a` left to right is returned.
 pub(all) struct LCSResult {
   substring : String
-  length : Int
+  length : Int32
 }
 
 ///|
@@ -32,7 +32,7 @@ pub(all) struct LCSResult {
 /// Uses a `StringBuilder` so the result is always a new allocation
 /// independent of the source string.  This helper exists because MoonBit
 /// `String` does not expose a direct slice constructor.
-fn slice_string(s : String, start : Int, end : Int) -> String {
+fn slice_string(s : String, start : Int32, end : Int32) -> String {
   let sb = StringBuilder()
   for idx in start..<end {
     let ch = s[idx].to_int()

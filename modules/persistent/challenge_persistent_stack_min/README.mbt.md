@@ -63,7 +63,7 @@ After push(5):
 ```mbt check
 ///|
 test "min-stack basic" {
-  let s0 : @challenge_persistent_stack_min.MinStack[Int] = @challenge_persistent_stack_min.empty()
+  let s0 : @challenge_persistent_stack_min.MinStack[Int32] = @challenge_persistent_stack_min.empty()
   let s1 = @challenge_persistent_stack_min.push(s0, 5)
   let s2 = @challenge_persistent_stack_min.push(s1, 2)
   let s3 = @challenge_persistent_stack_min.push(s2, 7)
@@ -83,7 +83,7 @@ Even after pushing `7`, the minimum stays `2`.
 ```mbt check
 ///|
 test "min-stack pop" {
-  let s0 : @challenge_persistent_stack_min.MinStack[Int] = @challenge_persistent_stack_min.empty()
+  let s0 : @challenge_persistent_stack_min.MinStack[Int32] = @challenge_persistent_stack_min.empty()
   let s1 = @challenge_persistent_stack_min.push(s0, 5)
   let s2 = @challenge_persistent_stack_min.push(s1, 2)
   let s3 = @challenge_persistent_stack_min.push(s2, 7)
@@ -128,7 +128,7 @@ test "min-stack from array" {
 ```mbt check
 ///|
 test "min-stack versions" {
-  let s0 : @challenge_persistent_stack_min.MinStack[Int] = @challenge_persistent_stack_min.empty()
+  let s0 : @challenge_persistent_stack_min.MinStack[Int32] = @challenge_persistent_stack_min.empty()
   let s1 = @challenge_persistent_stack_min.push(s0, 10)
   let s2 = @challenge_persistent_stack_min.push(s1, 3)
   let s3 = @challenge_persistent_stack_min.push(s2, 8)

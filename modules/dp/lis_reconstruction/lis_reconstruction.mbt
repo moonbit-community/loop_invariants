@@ -36,7 +36,7 @@
 
 ///|
 /// Smallest index `i` in `arr[0..len)` with `arr[i] >= target`.
-fn lower_bound_int(arr : Array[Int], len : Int, target : Int) -> Int {
+fn lower_bound_int(arr : Array[Int32], len : Int32, target : Int32) -> Int32 {
   let mut lo = 0
   let mut hi = len
   while lo < hi {
@@ -52,12 +52,12 @@ fn lower_bound_int(arr : Array[Int], len : Int, target : Int) -> Int {
 
 ///|
 /// Length of the LIS of `arr` (strictly increasing).
-pub fn length(arr : Array[Int]) -> Int {
+pub fn length(arr : Array[Int32]) -> Int32 {
   let n = arr.length()
   if n == 0 {
     return 0
   }
-  let tails : Array[Int] = []
+  let tails : Array[Int32] = []
   for x in arr {
     let pos = lower_bound_int(tails, tails.length(), x)
     if pos == tails.length() {
@@ -83,13 +83,13 @@ pub fn length(arr : Array[Int]) -> Int {
 ///   // One valid sequence: [2, 3, 7, 18] or [2, 5, 7, 101].
 /// }
 /// ```
-pub fn length_and_path(arr : Array[Int]) -> (Int, Array[Int]) {
+pub fn length_and_path(arr : Array[Int32]) -> (Int32, Array[Int32]) {
   let n = arr.length()
   if n == 0 {
     return (0, [])
   }
   // tails[k] = index in arr giving the smallest LIS-ending value of length k+1.
-  let tails_idx : Array[Int] = []
+  let tails_idx : Array[Int32] = []
   // parent[i] = previous index in arr in the LIS ending at i, or -1.
   let parent = Array::make(n, -1)
   for i in 0..<n {
@@ -114,7 +114,7 @@ pub fn length_and_path(arr : Array[Int]) -> (Int, Array[Int]) {
     }
   }
   // Walk parent chain from the last tail.
-  let path : Array[Int] = []
+  let path : Array[Int32] = []
   let mut idx = tails_idx[tails_idx.length() - 1]
   while idx != -1 {
     path.push(arr[idx])

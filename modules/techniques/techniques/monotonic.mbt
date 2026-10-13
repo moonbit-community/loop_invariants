@@ -12,11 +12,11 @@
 /// Find next greater element for each position.
 /// Returns array where result[i] = index of next greater element, or -1 if none.
 #warnings("+missing_invariant+missing_reasoning")
-fn next_greater_element(arr : ArrayView[Int]) -> Array[Int] {
+fn next_greater_element(arr : ArrayView[Int32]) -> Array[Int32] {
   let n = arr.length()
   guard n > 0 else { return [] }
-  let result : Array[Int] = Array::make(n, -1)
-  let stack : Array[Int] = [] // Indices of elements waiting for their NGE
+  let result : Array[Int32] = Array::make(n, -1)
+  let stack : Array[Int32] = [] // Indices of elements waiting for their NGE
   for i in 0..<n {
     // Pop elements smaller than current - current is their NGE
     for pop_next = stack.length() > 0 && arr[stack[stack.length() - 1]] < arr[i]; pop_next; {
@@ -66,7 +66,7 @@ fn next_greater_element(arr : ArrayView[Int]) -> Array[Int] {
 
 ///|
 test "next_greater_element" {
-  let arr : Array[Int] = [4, 5, 2, 10, 8]
+  let arr : Array[Int32] = [4, 5, 2, 10, 8]
   let nge = next_greater_element(arr)
   @debug.assert_eq(nge[0], 1) // 4 -> 5 at index 1
   @debug.assert_eq(nge[1], 3) // 5 -> 10 at index 3
@@ -84,12 +84,12 @@ test "next_greater_element" {
 /// Find maximum in each sliding window of size k.
 /// Returns array of (n-k+1) maximums.
 #warnings("+missing_invariant+missing_reasoning")
-fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
+fn sliding_window_maximum(arr : ArrayView[Int32], k : Int32) -> Array[Int32] {
   let n = arr.length()
   guard n >= k && k > 0 else { return [] }
-  let result : Array[Int] = []
+  let result : Array[Int32] = []
   // Deque stores indices; values at these indices are monotonic decreasing
-  let deque : @deque.Deque[Int] = Deque([])
+  let deque : @deque.Deque[Int32] = Deque([])
   for i in 0..<n {
     // Remove elements outside current window from front
     for pop_front = deque.front() is Some(front) && front <= i - k; pop_front; {
@@ -174,7 +174,7 @@ fn sliding_window_maximum(arr : ArrayView[Int], k : Int) -> Array[Int] {
 
 ///|
 test "sliding_window_maximum" {
-  let arr : Array[Int] = [1, 3, -1, -3, 5, 3, 6, 7]
+  let arr : Array[Int32] = [1, 3, -1, -3, 5, 3, 6, 7]
   let result = sliding_window_maximum(arr, 3)
   // Windows: [1,3,-1]=3, [3,-1,-3]=3, [-1,-3,5]=5, [-3,5,3]=5, [5,3,6]=6, [3,6,7]=7
   @debug.assert_eq(result, [3, 3, 5, 5, 6, 7])
@@ -189,12 +189,12 @@ test "sliding_window_maximum" {
 /// Find largest rectangle area in histogram.
 /// Heights array represents bar heights; each bar has width 1.
 #warnings("+missing_invariant+missing_reasoning")
-fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
+fn largest_rectangle_histogram(heights : ArrayView[Int32]) -> Int32 {
   let n = heights.length()
   guard n > 0 else { return 0 }
 
   // Stack stores indices of bars in increasing height order
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
 
   // Process all bars, plus one "sentinel" bar of height 0
   for i in 0..<=n; max_area = 0 {
@@ -326,11 +326,11 @@ fn largest_rectangle_histogram(heights : ArrayView[Int]) -> Int {
 
 ///|
 test "largest_rectangle_histogram" {
-  let heights : Array[Int] = [2, 1, 5, 6, 2, 3]
+  let heights : Array[Int32] = [2, 1, 5, 6, 2, 3]
   @debug.assert_eq(largest_rectangle_histogram(heights), 10) // 5*2 = 10 (bars 5,6)
-  let heights2 : Array[Int] = [2, 4]
+  let heights2 : Array[Int32] = [2, 4]
   @debug.assert_eq(largest_rectangle_histogram(heights2), 4) // 2*2 or 4*1
-  let heights3 : Array[Int] = [6, 2, 5, 4, 5, 1, 6]
+  let heights3 : Array[Int32] = [6, 2, 5, 4, 5, 1, 6]
   @debug.assert_eq(largest_rectangle_histogram(heights3), 12) // 4*3 = 12
 }
 
@@ -342,7 +342,7 @@ test "largest_rectangle_histogram" {
 ///|
 /// Calculate total water trapped between histogram bars.
 #warnings("+missing_invariant+missing_reasoning")
-fn trap_rain_water(heights : ArrayView[Int]) -> Int {
+fn trap_rain_water(heights : ArrayView[Int32]) -> Int32 {
   let n = heights.length()
   guard n >= 3 else { return 0 }
 
@@ -427,9 +427,9 @@ fn trap_rain_water(heights : ArrayView[Int]) -> Int {
 
 ///|
 test "trap_rain_water" {
-  let heights : Array[Int] = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
+  let heights : Array[Int32] = [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]
   @debug.assert_eq(trap_rain_water(heights), 6)
-  let heights2 : Array[Int] = [4, 2, 0, 3, 2, 5]
+  let heights2 : Array[Int32] = [4, 2, 0, 3, 2, 5]
   @debug.assert_eq(trap_rain_water(heights2), 9)
 }
 
@@ -442,7 +442,7 @@ test "trap_rain_water" {
 /// Compute sum of minimum values of all contiguous subarrays.
 /// For array of length n, there are n(n+1)/2 subarrays.
 #warnings("+missing_invariant+missing_reasoning")
-fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
+fn sum_subarray_minimums(arr : ArrayView[Int32]) -> Int32 {
   let n = arr.length()
   guard n > 0 else { return 0 }
   let modulus = 1000000007
@@ -451,11 +451,11 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
   // left[i] = distance to previous smaller element (or to start)
   // right[i] = distance to next smaller or equal element (or to end)
 
-  let left : Array[Int] = Array::make(n, 0)
-  let right : Array[Int] = Array::make(n, 0)
+  let left : Array[Int32] = Array::make(n, 0)
+  let right : Array[Int32] = Array::make(n, 0)
 
   // Compute left distances using monotonic stack
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   for i in 0..<n {
     for pop_next = stack.length() > 0 &&
           arr[stack[stack.length() - 1]] >= arr[i]; pop_next; {
@@ -600,7 +600,7 @@ fn sum_subarray_minimums(arr : ArrayView[Int]) -> Int {
 
 ///|
 test "sum_subarray_minimums" {
-  let arr : Array[Int] = [3, 1, 2, 4]
+  let arr : Array[Int32] = [3, 1, 2, 4]
   // Subarrays: [3]=3, [1]=1, [2]=2, [4]=4, [3,1]=1, [1,2]=1, [2,4]=2, [3,1,2]=1, [1,2,4]=1, [3,1,2,4]=1
   // Sum = 3+1+2+4+1+1+2+1+1+1 = 17
   @debug.assert_eq(sum_subarray_minimums(arr), 17)
@@ -615,11 +615,11 @@ test "sum_subarray_minimums" {
 /// Compute stock span for each day.
 /// Span[i] = number of consecutive days ending at i where price <= prices[i].
 #warnings("+missing_invariant+missing_reasoning")
-fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
+fn stock_span(prices : ArrayView[Int32]) -> Array[Int32] {
   let n = prices.length()
   guard n > 0 else { return [] }
-  let spans : Array[Int] = Array::make(n, 0)
-  let stack : Array[Int] = [] // Indices of "dominant" prices
+  let spans : Array[Int32] = Array::make(n, 0)
+  let stack : Array[Int32] = [] // Indices of "dominant" prices
   for i in 0..<n {
     // Pop prices smaller than current
     for pop_next = stack.length() > 0 &&
@@ -676,7 +676,7 @@ fn stock_span(prices : ArrayView[Int]) -> Array[Int] {
 
 ///|
 test "stock_span" {
-  let prices : Array[Int] = [100, 80, 60, 70, 60, 75, 85]
+  let prices : Array[Int32] = [100, 80, 60, 70, 60, 75, 85]
   let spans = stock_span(prices)
   @debug.assert_eq(spans, [1, 1, 1, 2, 1, 4, 6])
   // Day 0 (100): span 1 (just today)

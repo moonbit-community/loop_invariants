@@ -53,7 +53,7 @@ impl @quickcheck.Shrink for Factors with fn shrink(self) {
 ///|
 test "qc: phi agrees with counting coprimes" {
   @quickcheck.check(
-    (x : Int) => {
+    (x : Int32) => {
       let n = (x % 3000).to_int64()
       if n <= 0L {
         @euler_totient.phi(n) == 0L
@@ -69,7 +69,7 @@ test "qc: phi agrees with counting coprimes" {
 ///|
 test "qc: sieve(n)[k] == phi(k) for every k <= n" {
   @quickcheck.check(
-    (x : Int) => {
+    (x : Int32) => {
       let n = x % 2500
       let t = @euler_totient.sieve(n)
       if n < 0 {

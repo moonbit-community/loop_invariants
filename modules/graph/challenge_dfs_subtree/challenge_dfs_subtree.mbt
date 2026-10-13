@@ -4,14 +4,14 @@
 
 ///|
 /// Compute subtree sizes rooted at 'root' for a tree graph.
-pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
+pub fn subtree_sizes(adj : Array[Array[Int32]], root : Int32) -> Array[Int32] {
   let n = adj.length()
   if n == 0 || root < 0 || root >= n {
     return []
   }
-  let parent : Array[Int] = Array::make(n, -1)
-  let order : Array[Int] = []
-  let stack : Array[Int] = []
+  let parent : Array[Int32] = Array::make(n, -1)
+  let order : Array[Int32] = []
+  let stack : Array[Int32] = []
   parent[root] = root
   stack.push(root)
   for idx = 0 {
@@ -40,7 +40,7 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
       #|When idx reaches stack.length(), all reachable nodes are discovered.
     ),
   }
-  let size : Array[Int] = Array::make(n, 0)
+  let size : Array[Int32] = Array::make(n, 0)
   for i in order.length()>..0 {
     let u = order[i]
     size[u] = 1
@@ -56,7 +56,7 @@ pub fn subtree_sizes(adj : Array[Array[Int]], root : Int) -> Array[Int] {
 ///|
 test "subtree_sizes" {
   // Tree: 0-1, 0-2, 2-3
-  let adj : Array[Array[Int]] = [[1, 2], [0], [0, 3], [2]]
+  let adj : Array[Array[Int32]] = [[1, 2], [0], [0, 3], [2]]
   let size = subtree_sizes(adj, 0)
   @debug.assert_eq(size[0], 4)
   @debug.assert_eq(size[1], 1)

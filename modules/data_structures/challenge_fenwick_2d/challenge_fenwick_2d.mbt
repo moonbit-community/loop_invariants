@@ -3,7 +3,7 @@
 // ============================================================================
 
 ///|
-fn lowbit(x : Int) -> Int {
+fn lowbit(x : Int32) -> Int32 {
   x & -x
 }
 
@@ -30,21 +30,26 @@ fn lowbit(x : Int) -> Int {
 /// }
 /// ```
 pub struct Fenwick2D {
-  rows : Int
-  cols : Int
-  tree : Array[Array[Int]]
+  rows : Int32
+  cols : Int32
+  tree : Array[Array[Int32]]
 }
 
 ///|
 /// Create a 2D Fenwick tree with given rows and cols.
-pub fn Fenwick2D::Fenwick2D(rows : Int, cols : Int) -> Fenwick2D {
+pub fn Fenwick2D::Fenwick2D(rows : Int32, cols : Int32) -> Fenwick2D {
   let tree = [ for _ in 0..<(rows + 1) => Array::make(cols + 1, 0) ]
   { rows, cols, tree, }
 }
 
 ///|
 /// Add delta at position (r, c).
-pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
+pub fn Fenwick2D::add(
+  self : Fenwick2D,
+  r : Int32,
+  c : Int32,
+  delta : Int32,
+) -> Unit {
   let x = r + 1
   let y = c + 1
   for i = x {
@@ -86,7 +91,7 @@ pub fn Fenwick2D::add(self : Fenwick2D, r : Int, c : Int, delta : Int) -> Unit {
 
 ///|
 /// Return prefix sum over rectangle [0, r) x [0, c).
-pub fn Fenwick2D::prefix_sum(self : Fenwick2D, r : Int, c : Int) -> Int {
+pub fn Fenwick2D::prefix_sum(self : Fenwick2D, r : Int32, c : Int32) -> Int32 {
   for i = r, sum = 0 {
     if i <= 0 {
       break sum
@@ -126,11 +131,11 @@ pub fn Fenwick2D::prefix_sum(self : Fenwick2D, r : Int, c : Int) -> Int {
 /// Query sum over rectangle [r1, r2) x [c1, c2).
 pub fn Fenwick2D::range_sum(
   self : Fenwick2D,
-  r1 : Int,
-  c1 : Int,
-  r2 : Int,
-  c2 : Int,
-) -> Int {
+  r1 : Int32,
+  c1 : Int32,
+  r2 : Int32,
+  c2 : Int32,
+) -> Int32 {
   self.prefix_sum(r2, c2) -
   self.prefix_sum(r1, c2) -
   self.prefix_sum(r2, c1) +

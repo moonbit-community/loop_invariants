@@ -197,7 +197,7 @@ The implementation is in `challenge_matrix_chain.mbt` and uses the DP above.
 ```mbt check
 ///|
 test "matrix chain example" {
-  let dims : Array[Int] = [10, 30, 5, 60]
+  let dims : Array[Int32] = [10, 30, 5, 60]
   let cost = @challenge_matrix_chain.matrix_chain_min_cost(dims)
   debug_inspect(cost, content="4500")
 }
@@ -208,7 +208,7 @@ test "matrix chain example" {
 ```mbt check
 ///|
 test "matrix chain classic" {
-  let dims : Array[Int] = [40, 20, 30, 10, 30]
+  let dims : Array[Int32] = [40, 20, 30, 10, 30]
   let cost = @challenge_matrix_chain.matrix_chain_min_cost(dims)
   debug_inspect(cost, content="26000")
 }
@@ -219,7 +219,7 @@ test "matrix chain classic" {
 ```mbt check
 ///|
 test "matrix chain single" {
-  let dims : Array[Int] = [7, 9]
+  let dims : Array[Int32] = [7, 9]
   let cost = @challenge_matrix_chain.matrix_chain_min_cost(dims)
   debug_inspect(cost, content="0")
 }
@@ -230,7 +230,7 @@ test "matrix chain single" {
 ```mbt check
 ///|
 test "matrix chain two" {
-  let dims : Array[Int] = [5, 10, 3]
+  let dims : Array[Int32] = [5, 10, 3]
   let cost = @challenge_matrix_chain.matrix_chain_min_cost(dims)
   debug_inspect(cost, content="150")
 }
@@ -241,7 +241,7 @@ test "matrix chain two" {
 ```mbt check
 ///|
 test "matrix chain small" {
-  let dims : Array[Int] = [5, 4, 6, 2]
+  let dims : Array[Int32] = [5, 4, 6, 2]
   let cost = @challenge_matrix_chain.matrix_chain_min_cost(dims)
   debug_inspect(cost, content="88")
 }

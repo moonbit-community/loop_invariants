@@ -4,9 +4,9 @@
 
 ///|
 /// Return a topological ordering, or None if the graph has a cycle.
-pub fn topo_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
-  let indeg : Array[Int] = Array::make(n, 0)
+pub fn topo_sort(n : Int32, edges : ArrayView[(Int32, Int32)]) -> Array[Int32]? {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
+  let indeg : Array[Int32] = Array::make(n, 0)
   for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
@@ -14,8 +14,8 @@ pub fn topo_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
       indeg[v] = indeg[v] + 1
     }
   }
-  let queue : Array[Int] = [ for i in 0..<n if indeg[i] == 0 => i ]
-  let order : Array[Int] = []
+  let queue : Array[Int32] = [ for i in 0..<n if indeg[i] == 0 => i ]
+  let order : Array[Int32] = []
   for head = 0 {
     if head >= queue.length() {
       break
@@ -52,9 +52,9 @@ pub fn topo_sort(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int]? {
 ///|
 /// Check whether `order` is a valid topological ordering for the graph.
 pub fn is_topo(
-  order : Array[Int],
-  n : Int,
-  edges : ArrayView[(Int, Int)],
+  order : Array[Int32],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32)],
 ) -> Bool {
   if order.length() != n {
     return false

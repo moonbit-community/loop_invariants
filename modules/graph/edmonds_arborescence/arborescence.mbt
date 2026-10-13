@@ -122,9 +122,9 @@
 /// // Result: parent = [-1, 0, 1, 2], cost = 3
 /// ```
 pub fn min_arborescence(
-  n : Int,
+  n : Int32,
   edges : ArrayView[Edge],
-  root : Int,
+  root : Int32,
 ) -> Arborescence? {
   // Input validation
   if n <= 0 || root < 0 || root >= n {

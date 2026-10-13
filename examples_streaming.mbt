@@ -4,7 +4,7 @@
 
 ///|
 /// Minimum of prices[0..end). end is expected >= 1.
-fn min_prefix(prices : ArrayView[Int], end : Int) -> Int {
+fn min_prefix(prices : ArrayView[Int32], end : Int32) -> Int32 {
   guard end > 0 else { return 0 }
   if end == 1 {
     prices[0]
@@ -21,7 +21,7 @@ fn min_prefix(prices : ArrayView[Int], end : Int) -> Int {
 
 ///|
 /// Max profit from one buy/sell within prices[0..end).
-fn max_profit_prefix(prices : ArrayView[Int], end : Int) -> Int {
+fn max_profit_prefix(prices : ArrayView[Int32], end : Int32) -> Int32 {
   if end <= 1 {
     0
   } else {
@@ -39,7 +39,7 @@ fn max_profit_prefix(prices : ArrayView[Int], end : Int) -> Int {
 ///|
 /// Compute maximum profit from a single buy/sell.
 #warnings("+missing_invariant+missing_reasoning")
-fn max_profit_single(prices : ArrayView[Int]) -> Int {
+fn max_profit_single(prices : ArrayView[Int32]) -> Int32 {
   guard prices.length() > 0 else { return 0 }
   for i = 1, min_price = prices[0], best = 0 {
     if i >= prices.length() {
@@ -96,7 +96,7 @@ test "max_profit_single" {
 
 ///|
 /// Count balance of '(' minus ')' in chars[0..end).
-fn balance_prefix(chars : ArrayView[Char], end : Int) -> Int {
+fn balance_prefix(chars : ArrayView[Char], end : Int32) -> Int32 {
   if end <= 0 {
     0
   } else {

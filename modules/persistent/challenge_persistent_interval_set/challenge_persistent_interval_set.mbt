@@ -29,11 +29,11 @@
 /// ```
 pub enum Tree {
   Empty
-  Node(start~ : Int, end~ : Int, left~ : Tree, right~ : Tree)
+  Node(start~ : Int32, end~ : Int32, left~ : Tree, right~ : Tree)
 } derive(Debug)
 
 ///|
-fn inorder(t : Tree) -> Array[(Int, Int)] {
+fn inorder(t : Tree) -> Array[(Int32, Int32)] {
   match t {
     Empty => []
     Node(start=s, end=e, left=l, right=r) => inorder(l) + [(s, e)] + inorder(r)
@@ -41,7 +41,7 @@ fn inorder(t : Tree) -> Array[(Int, Int)] {
 }
 
 ///|
-fn build(arr : ArrayView[(Int, Int)], l : Int, r : Int) -> Tree {
+fn build(arr : ArrayView[(Int32, Int32)], l : Int32, r : Int32) -> Tree {
   if l >= r {
     Empty
   } else {
@@ -53,9 +53,9 @@ fn build(arr : ArrayView[(Int, Int)], l : Int, r : Int) -> Tree {
 
 ///|
 fn insert_sorted(
-  arr : ArrayView[(Int, Int)],
-  interval : (Int, Int),
-) -> Array[(Int, Int)] {
+  arr : ArrayView[(Int32, Int32)],
+  interval : (Int32, Int32),
+) -> Array[(Int32, Int32)] {
   let (s0, e0) = interval
   let s = if s0 <= e0 { s0 } else { e0 }
   let e = if s0 <= e0 { e0 } else { s0 }
@@ -79,7 +79,7 @@ fn insert_sorted(
 }
 
 ///|
-fn merge_sorted(arr : ArrayView[(Int, Int)]) -> Array[(Int, Int)] {
+fn merge_sorted(arr : ArrayView[(Int32, Int32)]) -> Array[(Int32, Int32)] {
   let out = []
   for pair in arr {
     let (s, e) = pair
@@ -107,13 +107,13 @@ pub fn empty() -> Tree {
 
 ///|
 /// Return all intervals in sorted order.
-pub fn to_array(t : Tree) -> Array[(Int, Int)] {
+pub fn to_array(t : Tree) -> Array[(Int32, Int32)] {
   inorder(t)
 }
 
 ///|
 /// Insert an interval [start, end] and return the merged set.
-pub fn insert_interval(t : Tree, start : Int, end : Int) -> Tree {
+pub fn insert_interval(t : Tree, start : Int32, end : Int32) -> Tree {
   let list = inorder(t)
   let with_new = insert_sorted(list, (start, end))
   let merged = merge_sorted(with_new)
@@ -122,7 +122,7 @@ pub fn insert_interval(t : Tree, start : Int, end : Int) -> Tree {
 
 ///|
 /// Check whether point x is contained in any interval.
-pub fn contains_point(t : Tree, x : Int) -> Bool {
+pub fn contains_point(t : Tree, x : Int32) -> Bool {
   match t {
     Empty => false
     Node(start=s, end=e, left=l, right=r) =>

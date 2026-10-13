@@ -62,7 +62,7 @@ So lifting 6 by 3 steps uses 2 + 1: 6 -> 1 -> 0.
 ```mbt check
 ///|
 test "lca example" {
-  let edges : Array[(Int, Int)] = [
+  let edges : Array[(Int32, Int32)] = [
     (0, 1),
     (0, 2),
     (1, 3),
@@ -81,7 +81,7 @@ test "lca example" {
 ```mbt check
 ///|
 test "lca same node" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3)]
   let tree = @challenge_lca_binary_lift.build_lca(4, edges, 0)
   debug_inspect(@challenge_lca_binary_lift.lca(tree, 2, 2), content="2")
 }
@@ -92,7 +92,7 @@ test "lca same node" {
 ```mbt check
 ///|
 test "lca ancestor" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3)]
   let tree = @challenge_lca_binary_lift.build_lca(4, edges, 0)
   debug_inspect(@challenge_lca_binary_lift.lca(tree, 1, 3), content="1")
 }
@@ -103,7 +103,7 @@ test "lca ancestor" {
 ```mbt check
 ///|
 test "lca across subtrees" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (1, 4), (2, 5)]
   let tree = @challenge_lca_binary_lift.build_lca(6, edges, 0)
   debug_inspect(@challenge_lca_binary_lift.lca(tree, 4, 5), content="0")
 }

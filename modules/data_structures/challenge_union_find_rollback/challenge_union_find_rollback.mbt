@@ -28,16 +28,16 @@
 /// }
 /// ```
 pub struct RollbackDSU {
-  parent : Array[Int]
-  size : Array[Int]
-  history : Array[(Int, Int)] // (child, parent_size_before)
+  parent : Array[Int32]
+  size : Array[Int32]
+  history : Array[(Int32, Int32)] // (child, parent_size_before)
 }
 
 ///|
 /// Create a rollback-capable DSU with n singleton sets.
-pub fn RollbackDSU::RollbackDSU(n : Int) -> RollbackDSU {
-  let parent : Array[Int] = Array::make(n, 0)
-  let size : Array[Int] = Array::make(n, 1)
+pub fn RollbackDSU::RollbackDSU(n : Int32) -> RollbackDSU {
+  let parent : Array[Int32] = Array::make(n, 0)
+  let size : Array[Int32] = Array::make(n, 1)
   for i in 0..<n {
     parent[i] = i
   }
@@ -46,7 +46,7 @@ pub fn RollbackDSU::RollbackDSU(n : Int) -> RollbackDSU {
 
 ///|
 /// Find the representative of x (no path compression).
-pub fn RollbackDSU::find(self : RollbackDSU, x : Int) -> Int {
+pub fn RollbackDSU::find(self : RollbackDSU, x : Int32) -> Int32 {
   for cur = x {
     if self.parent[cur] == cur {
       break cur
@@ -58,7 +58,7 @@ pub fn RollbackDSU::find(self : RollbackDSU, x : Int) -> Int {
 
 ///|
 /// Union the sets of a and b; returns true if merged.
-pub fn RollbackDSU::union(self : RollbackDSU, a : Int, b : Int) -> Bool {
+pub fn RollbackDSU::union(self : RollbackDSU, a : Int32, b : Int32) -> Bool {
   let ra0 = self.find(a)
   let rb0 = self.find(b)
   let (ra, rb) = if self.size[ra0] < self.size[rb0] {
@@ -78,13 +78,13 @@ pub fn RollbackDSU::union(self : RollbackDSU, a : Int, b : Int) -> Bool {
 
 ///|
 /// Capture the current history size for later rollback.
-pub fn RollbackDSU::snapshot(self : RollbackDSU) -> Int {
+pub fn RollbackDSU::snapshot(self : RollbackDSU) -> Int32 {
   self.history.length()
 }
 
 ///|
 /// Roll back all unions after the given snapshot.
-pub fn RollbackDSU::rollback(self : RollbackDSU, snap : Int) -> Unit {
+pub fn RollbackDSU::rollback(self : RollbackDSU, snap : Int32) -> Unit {
   for rollback_next = self.history.length() > snap {
     if !rollback_next {
       break
@@ -105,7 +105,7 @@ pub fn RollbackDSU::rollback(self : RollbackDSU, snap : Int) -> Unit {
 
 ///|
 /// Check whether a and b are currently in the same set.
-pub fn RollbackDSU::same(self : RollbackDSU, a : Int, b : Int) -> Bool {
+pub fn RollbackDSU::same(self : RollbackDSU, a : Int32, b : Int32) -> Bool {
   self.find(a) == self.find(b)
 }
 

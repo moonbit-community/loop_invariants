@@ -36,10 +36,10 @@
 //    pattern p."
 
 ///|
-const ALPHABET_SIZE : Int = 65536
+const ALPHABET_SIZE : Int32 = 65536
 
 ///|
-fn build_shift(p : Array[Int]) -> Array[Int] {
+fn build_shift(p : Array[Int32]) -> Array[Int32] {
   let m = p.length()
   let t = Array::make(ALPHABET_SIZE, m + 1)
   for i in 0..<m {
@@ -57,7 +57,7 @@ fn build_shift(p : Array[Int]) -> Array[Int] {
 /// ```moonbit nocheck
 /// test {
 ///   let arr = fn(s : String) {
-///     let r : Array[Int] = []
+///     let r : Array[Int32] = []
 ///     for c in s {
 ///       r.push(c.to_int())
 ///     }
@@ -66,10 +66,10 @@ fn build_shift(p : Array[Int]) -> Array[Int] {
 ///   @debug.assert_eq(@sunday_search.find_all(arr("ababab"), arr("ab")), [0, 2, 4])
 /// }
 /// ```
-pub fn find_all(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
+pub fn find_all(text : Array[Int32], pattern : Array[Int32]) -> Array[Int32] {
   let n = text.length()
   let m = pattern.length()
-  let res : Array[Int] = []
+  let res : Array[Int32] = []
   if m == 0 || m > n {
     return res
   }
@@ -98,7 +98,7 @@ pub fn find_all(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
 
 ///|
 /// Return the first match index, or `None`.
-pub fn find_first(text : Array[Int], pattern : Array[Int]) -> Int? {
+pub fn find_first(text : Array[Int32], pattern : Array[Int32]) -> Int32? {
   let n = text.length()
   let m = pattern.length()
   if m == 0 || m > n {
@@ -124,8 +124,8 @@ pub fn find_first(text : Array[Int], pattern : Array[Int]) -> Int? {
 }
 
 ///|
-fn s(str : String) -> Array[Int] {
-  let r : Array[Int] = []
+fn s(str : String) -> Array[Int32] {
+  let r : Array[Int32] = []
   for c in str {
     r.push(c.to_int())
   }
@@ -169,8 +169,8 @@ test "sunday overlapping" {
 
 ///|
 test "sunday agrees with naive" {
-  fn naive(t : Array[Int], p : Array[Int]) -> Array[Int] {
-    let res : Array[Int] = []
+  fn naive(t : Array[Int32], p : Array[Int32]) -> Array[Int32] {
+    let res : Array[Int32] = []
     let n = t.length()
     let m = p.length()
     if m == 0 || m > n {

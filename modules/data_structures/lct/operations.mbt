@@ -32,7 +32,7 @@
 ///   After access(v), the splay tree contains the path from v to root.
 ///   The tree root has minimum depth, so it's the leftmost node.
 /// ```
-pub fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
+pub fn LinkCutTree::find_root(self : LinkCutTree, v : Int32) -> Int32 {
   self.access(v)
 
   // Find leftmost node (minimum depth = tree root)
@@ -79,7 +79,7 @@ pub fn LinkCutTree::find_root(self : LinkCutTree, v : Int) -> Int {
 /// ```
 ///
 /// PRECONDITION: v has a parent (is not already a tree root)
-pub fn LinkCutTree::cut(self : LinkCutTree, v : Int) -> Unit {
+pub fn LinkCutTree::cut(self : LinkCutTree, v : Int32) -> Unit {
   self.access(v)
 
   // After access, v's ancestors are in left subtree
@@ -104,7 +104,7 @@ pub fn LinkCutTree::cut(self : LinkCutTree, v : Int) -> Unit {
 ///
 /// PRECONDITION: v is root of its tree (no parent)
 /// PRECONDITION: v and w are in different trees
-pub fn LinkCutTree::link(self : LinkCutTree, v : Int, w : Int) -> Unit {
+pub fn LinkCutTree::link(self : LinkCutTree, v : Int32, w : Int32) -> Unit {
   self.access(v)
   self.access(w)
 
@@ -139,7 +139,7 @@ pub fn LinkCutTree::link(self : LinkCutTree, v : Int, w : Int) -> Unit {
 ///   - v's access doesn't affect u's tree
 ///   - u remains isolated (parent = path_parent = -1)
 /// ```
-pub fn LinkCutTree::connected(self : LinkCutTree, u : Int, v : Int) -> Bool {
+pub fn LinkCutTree::connected(self : LinkCutTree, u : Int32, v : Int32) -> Bool {
   if u == v {
     return true
   }
@@ -157,7 +157,7 @@ pub fn LinkCutTree::connected(self : LinkCutTree, u : Int, v : Int) -> Bool {
 ///   1. access(v): Path from v to root is one splay tree
 ///   2. Return v's subtree_sum (includes entire path)
 /// ```
-pub fn LinkCutTree::path_sum(self : LinkCutTree, v : Int) -> Int {
+pub fn LinkCutTree::path_sum(self : LinkCutTree, v : Int32) -> Int32 {
   self.access(v)
   self.nodes[v].subtree_sum
 }
@@ -166,8 +166,8 @@ pub fn LinkCutTree::path_sum(self : LinkCutTree, v : Int) -> Int {
 /// Update value at node v.
 pub fn LinkCutTree::update_value(
   self : LinkCutTree,
-  v : Int,
-  value : Int,
+  v : Int32,
+  value : Int32,
 ) -> Unit {
   self.access(v)
   self.nodes[v].value = value
@@ -202,7 +202,7 @@ pub fn LinkCutTree::update_value(
 /// ```
 ///
 /// RETURNS: LCA node index, or -1 if u and v are in different trees
-pub fn LinkCutTree::lca(self : LinkCutTree, u : Int, v : Int) -> Int {
+pub fn LinkCutTree::lca(self : LinkCutTree, u : Int32, v : Int32) -> Int32 {
   if u == v {
     return u
   }
@@ -248,7 +248,7 @@ pub fn LinkCutTree::lca(self : LinkCutTree, u : Int, v : Int) -> Int {
 ///   - Old parent-child edges on path are reversed
 ///   - v becomes new root, old root becomes descendant
 /// ```
-pub fn LinkCutTree::make_root(self : LinkCutTree, v : Int) -> Unit {
+pub fn LinkCutTree::make_root(self : LinkCutTree, v : Int32) -> Unit {
   self.access(v)
   // Toggle reversal flag (will flip the path orientation)
   self.nodes[v].reversed = !self.nodes[v].reversed
@@ -265,7 +265,7 @@ pub fn LinkCutTree::make_root(self : LinkCutTree, v : Int) -> Unit {
 ///   2. access(w): w is on preferred path
 ///   3. link v under w
 /// ```
-fn LinkCutTree::link_as_root(self : LinkCutTree, v : Int, w : Int) -> Unit {
+fn LinkCutTree::link_as_root(self : LinkCutTree, v : Int32, w : Int32) -> Unit {
   self.make_root(v)
   self.access(w)
   self.nodes[v].left = w
@@ -282,7 +282,7 @@ fn LinkCutTree::link_as_root(self : LinkCutTree, v : Int, w : Int) -> Unit {
 ///   2. access(v): v is on path from v to u (which is now root)
 ///   3. If v.left == u, there was an edge; cut it
 /// ```
-fn LinkCutTree::cut_edge(self : LinkCutTree, u : Int, v : Int) -> Unit {
+fn LinkCutTree::cut_edge(self : LinkCutTree, u : Int32, v : Int32) -> Unit {
   self.make_root(u)
   self.access(v)
   if self.nodes[v].left == u {

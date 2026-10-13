@@ -16,7 +16,7 @@ fn small(rs : @quickcheck.RandomState, bound : Int64) -> Int64 {
 }
 
 ///|
-fn operand(size : Int, rs : @quickcheck.RandomState) -> Int64 {
+fn operand(size : Int32, rs : @quickcheck.RandomState) -> Int64 {
   match rs.next_uint(limit=4) {
     0 | 1 => @quickcheck.Arbitrary::arbitrary(size, rs)
     2 => small(rs, 1000L)
@@ -84,7 +84,7 @@ fn representable(p : Pair) -> Bool {
 ///|
 test "qc: gcd agrees with naive divisor search on small inputs" {
   @quickcheck.check(
-    (p : (Int, Int)) => {
+    (p : (Int32, Int32)) => {
       let a = (p.0 % 600).to_int64()
       let b = (p.1 % 600).to_int64()
       let abs_a = if a < 0L { -a } else { a }

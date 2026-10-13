@@ -6,22 +6,22 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
 
 ///|
 priv struct EG {
-  n : Int
-  edges : Array[(Int, Int)]
+  n : Int32
+  edges : Array[(Int32, Int32)]
 } derive(Debug)
 
 ///|
 impl @quickcheck.Arbitrary for EG with fn arbitrary(size, rs) {
   let n = rint(rs, 1, 6)
   let m = rint(rs, 0, if size < 8 { size } else { 8 })
-  let edges : Array[(Int, Int)] = []
+  let edges : Array[(Int32, Int32)] = []
   if rint(rs, 0, 1) == 0 {
     // A random walk: its edges always admit an Eulerian trail.
     let _ = for k = 0, u = rint(rs, 0, n - 1); k < m; {
@@ -56,7 +56,7 @@ impl @quickcheck.Shrink for EG with fn shrink(g) {
 /// Exhaustive search for a trail using every edge exactly once.
 fn brute_exists(g : EG, directed : Bool) -> Bool {
   let used = Array::make(g.edges.length(), false)
-  fn go(u : Int, left : Int) -> Bool {
+  fn go(u : Int32, left : Int32) -> Bool {
     if left == 0 {
       return true
     }
@@ -86,7 +86,7 @@ fn brute_exists(g : EG, directed : Bool) -> Bool {
 
 ///|
 /// `path` walks every edge of `g` exactly once.
-fn is_euler_path(g : EG, path : Array[Int], directed : Bool) -> Bool {
+fn is_euler_path(g : EG, path : Array[Int32], directed : Bool) -> Bool {
   if g.edges.is_empty() {
     return path.is_empty()
   }

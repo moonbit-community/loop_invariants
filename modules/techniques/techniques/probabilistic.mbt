@@ -21,7 +21,7 @@ fn make_rng(seed : Int64) -> RNG {
 }
 
 ///|
-fn next_int(rng : RNG, bound : Int) -> Int {
+fn next_int(rng : RNG, bound : Int32) -> Int32 {
   // LCG parameters (same as java.util.Random)
   rng.seed = (rng.seed * 0x5DEECE66DL + 0xBL) & ((1L << 48) - 1L)
   let value = (rng.seed >> 17).to_int()
@@ -33,11 +33,15 @@ fn next_int(rng : RNG, bound : Int) -> Int {
 /// Reservoir sampling: select exactly k items uniformly at random
 /// from a stream of n items (where n may be unknown ahead of time).
 #warnings("+missing_invariant+missing_reasoning")
-fn reservoir_sample(stream : ArrayView[Int], k : Int, rng : RNG) -> Array[Int] {
+fn reservoir_sample(
+  stream : ArrayView[Int32],
+  k : Int32,
+  rng : RNG,
+) -> Array[Int32] {
   guard k > 0 && k <= stream.length() else { return [] }
 
   // Initialize reservoir with first k elements
-  let reservoir : Array[Int] = [ for i in 0..<k => stream[i] ]
+  let reservoir : Array[Int32] = [ for i in 0..<k => stream[i] ]
 
   // Process remaining elements
   for i = k {
@@ -102,7 +106,7 @@ fn reservoir_sample(stream : ArrayView[Int], k : Int, rng : RNG) -> Array[Int] {
 
 ///|
 test "reservoir_sample" {
-  let stream : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  let stream : Array[Int32] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   let rng = make_rng(42L)
   let sample = reservoir_sample(stream, 3, rng)
   @debug.assert_eq(sample.length(), 3)
@@ -117,7 +121,7 @@ test "reservoir_sample" {
 ///|
 /// Fisher-Yates shuffle: generate uniformly random permutation in-place.
 #warnings("+missing_invariant+missing_reasoning")
-fn fisher_yates_shuffle(arr : Array[Int], rng : RNG) -> Unit {
+fn fisher_yates_shuffle(arr : Array[Int32], rng : RNG) -> Unit {
   let n = arr.length()
   guard n > 1 else { return }
   for i = n - 1 {
@@ -181,7 +185,7 @@ fn fisher_yates_shuffle(arr : Array[Int], rng : RNG) -> Unit {
 
 ///|
 test "fisher_yates_shuffle" {
-  let arr : Array[Int] = [1, 2, 3, 4, 5]
+  let arr : Array[Int32] = [1, 2, 3, 4, 5]
   let rng = make_rng(12345L)
   fisher_yates_shuffle(arr, rng)
   // Verify it's still a permutation (contains same elements)
@@ -198,11 +202,11 @@ test "fisher_yates_shuffle" {
 /// Select index with probability proportional to weights.
 /// Uses prefix sum + binary search for O(log n) selection.
 #warnings("+missing_invariant+missing_reasoning")
-fn weighted_select(weights : ArrayView[Int], rng : RNG) -> Int {
+fn weighted_select(weights : ArrayView[Int32], rng : RNG) -> Int32 {
   guard weights.length() > 0 else { return -1 }
 
   // Build prefix sums
-  let prefix_sum : Array[Int] = Array::make(weights.length(), 0)
+  let prefix_sum : Array[Int32] = Array::make(weights.length(), 0)
   for i = 0, sum = 0 {
     if i >= weights.length() {
       break
@@ -274,7 +278,7 @@ fn weighted_select(weights : ArrayView[Int], rng : RNG) -> Int {
 ///|
 test "weighted_select" {
   // Weights: [1, 3, 2] → probabilities [1/6, 3/6, 2/6]
-  let weights : Array[Int] = [1, 3, 2]
+  let weights : Array[Int32] = [1, 3, 2]
   let rng = make_rng(99L)
   let result = weighted_select(weights, rng)
   assert_true(result >= 0 && result < 3)
@@ -289,7 +293,7 @@ test "weighted_select" {
 /// Morris counter: approximate counting with probabilistic increments.
 /// Uses O(log log n) bits to approximately count up to n.
 priv struct MorrisCounter {
-  mut exponent : Int
+  mut exponent : Int32
   rng : RNG
 }
 
@@ -311,7 +315,7 @@ fn morris_increment(counter : MorrisCounter) -> Unit {
 
 ///|
 /// Get approximate count: returns 2^exponent - 1.
-fn morris_estimate(counter : MorrisCounter) -> Int {
+fn morris_estimate(counter : MorrisCounter) -> Int32 {
   (1 << counter.exponent) - 1
 }
 
@@ -338,7 +342,7 @@ test "morris_counter" {
 
 ///|
 /// Simple hash functions for Bloom filter simulation.
-fn hash1(x : Int, size : Int) -> Int {
+fn hash1(x : Int32, size : Int32) -> Int32 {
   // Simple multiplicative hash
   let h = x * 31337 + 12345
   let result = if h < 0 { -h } else { h }
@@ -350,14 +354,14 @@ fn hash1(x : Int, size : Int) -> Int {
 }
 
 ///|
-fn hash2(x : Int, size : Int) -> Int {
+fn hash2(x : Int32, size : Int32) -> Int32 {
   let h = (x ^ (x >> 8)) * 65537
   let result = if h < 0 { -h } else { h }
   result % size
 }
 
 ///|
-fn hash3(x : Int, size : Int) -> Int {
+fn hash3(x : Int32, size : Int32) -> Int32 {
   let h = x * 31 + 17
   let result = if h < 0 { -h } else { h }
   result % size
@@ -367,16 +371,16 @@ fn hash3(x : Int, size : Int) -> Int {
 /// Bloom filter: probabilistic set membership.
 priv struct BloomFilter {
   bits : Array[Bool]
-  size : Int
+  size : Int32
 }
 
 ///|
-fn make_bloom_filter(size : Int) -> BloomFilter {
+fn make_bloom_filter(size : Int32) -> BloomFilter {
   { bits: Array::make(size, false), size, }
 }
 
 ///|
-fn bloom_add(bf : BloomFilter, x : Int) -> Unit {
+fn bloom_add(bf : BloomFilter, x : Int32) -> Unit {
   bf.bits[hash1(x, bf.size)] = true
   bf.bits[hash2(x, bf.size)] = true
   bf.bits[hash3(x, bf.size)] = true
@@ -387,7 +391,7 @@ fn bloom_add(bf : BloomFilter, x : Int) -> Unit {
 /// Returns true if possibly present (may be false positive).
 /// Returns false if definitely absent (no false negatives).
 #warnings("+missing_invariant+missing_reasoning")
-fn bloom_maybe_contains(bf : BloomFilter, x : Int) -> Bool {
+fn bloom_maybe_contains(bf : BloomFilter, x : Int32) -> Bool {
   bf.bits[hash1(x, bf.size)] &&
   bf.bits[hash2(x, bf.size)] &&
   bf.bits[hash3(x, bf.size)]
@@ -418,7 +422,7 @@ test "bloom_filter" {
 
 ///|
 /// Count leading zeros in a hash value.
-fn count_leading_zeros(x : Int) -> Int {
+fn count_leading_zeros(x : Int32) -> Int32 {
   if x == 0 {
     32
   } else {
@@ -452,7 +456,7 @@ fn count_leading_zeros(x : Int) -> Int {
 /// Simplified HyperLogLog: track maximum leading zeros seen.
 /// True cardinality ≈ 2^(max_zeros).
 priv struct SimpleHLL {
-  mut max_zeros : Int
+  mut max_zeros : Int32
 }
 
 ///|
@@ -461,7 +465,7 @@ fn make_simple_hll() -> SimpleHLL {
 }
 
 ///|
-fn hll_add(hll : SimpleHLL, x : Int) -> Unit {
+fn hll_add(hll : SimpleHLL, x : Int32) -> Unit {
   let h = hash1(x, 0x7FFFFFFF)
   let zeros = count_leading_zeros(h)
   if zeros > hll.max_zeros {
@@ -470,7 +474,7 @@ fn hll_add(hll : SimpleHLL, x : Int) -> Unit {
 }
 
 ///|
-fn hll_estimate(hll : SimpleHLL) -> Int {
+fn hll_estimate(hll : SimpleHLL) -> Int32 {
   1 << hll.max_zeros
 }
 
@@ -497,23 +501,23 @@ test "simple_hll" {
 ///|
 /// Skip list node with multiple forward pointers.
 priv struct SkipNode {
-  value : Int
-  forward : Array[Int] // Indices of next nodes at each level (-1 = null)
+  value : Int32
+  forward : Array[Int32] // Indices of next nodes at each level (-1 = null)
 }
 
 ///|
 /// Skip list structure.
 priv struct SkipList {
   nodes : Array[SkipNode]
-  head : Int // Index of sentinel head node
-  max_level : Int
+  head : Int32 // Index of sentinel head node
+  max_level : Int32
 }
 
 ///|
 /// Search for value in skip list.
 /// Returns index of node containing value, or -1 if not found.
 #warnings("+missing_invariant+missing_reasoning")
-fn skip_list_search(list : SkipList, target : Int) -> Int {
+fn skip_list_search(list : SkipList, target : Int32) -> Int32 {
   guard list.nodes.length() > 0 else { return -1 }
   for level = list.max_level - 1, current = list.head {
     if level < 0 {

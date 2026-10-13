@@ -72,7 +72,7 @@
 ///
 /// O(mu + lam) calls to `f` and O(1) extra space (besides what the
 /// equality check on `T` may allocate).
-pub fn[T : Eq] floyd_cycle(f : (T) -> T, x0 : T) -> (Int, Int) {
+pub fn[T : Eq] floyd_cycle(f : (T) -> T, x0 : T) -> (Int32, Int32) {
   // Phase 1: find a meeting point inside the cycle.
   //
   // We start the tortoise one step in and the hare two steps in, then
@@ -178,7 +178,7 @@ pub fn[T : Eq] floyd_cycle(f : (T) -> T, x0 : T) -> (Int, Int) {
 /// ## Complexity
 ///
 /// O(mu + lam) calls to `f` and O(1) extra space.
-pub fn[T : Eq] brent_cycle(f : (T) -> T, x0 : T) -> (Int, Int) {
+pub fn[T : Eq] brent_cycle(f : (T) -> T, x0 : T) -> (Int32, Int32) {
   // Phase 1: power-of-two doubling search for lam.
   //
   // `tortoise` is the snapshot of the orbit at index `start_of_window`,
@@ -289,7 +289,7 @@ test "floyd quadratic mod 7 starting at 1" {
   // f(x) = (x*x + 1) mod 7
   //   f(0)=1, f(1)=2, f(2)=5, f(5)=26 mod 7 = 5  (fixed point).
   // Orbit from x0 = 1: 1, 2, 5, 5, 5, ...   so mu = 2, lam = 1.
-  let f = fn(x : Int) { (x * x + 1) % 7 }
+  let f = fn(x : Int32) { (x * x + 1) % 7 }
   let (mu, lam) = floyd_cycle(f, 1)
   @debug.assert_eq(mu, 2)
   @debug.assert_eq(lam, 1)
@@ -297,7 +297,7 @@ test "floyd quadratic mod 7 starting at 1" {
 
 ///|
 test "brent quadratic mod 7 starting at 1" {
-  let f = fn(x : Int) { (x * x + 1) % 7 }
+  let f = fn(x : Int32) { (x * x + 1) % 7 }
   let (mu, lam) = brent_cycle(f, 1)
   @debug.assert_eq(mu, 2)
   @debug.assert_eq(lam, 1)
@@ -308,7 +308,7 @@ test "floyd quadratic mod 5 starting at 1 (cycle from index 0)" {
   // f(x) = (x*x + 1) mod 5
   //   f(0)=1, f(1)=2, f(2)=0, f(3)=0, f(4)=2.
   // Orbit from 1: 1 -> 2 -> 0 -> 1 -> 2 -> 0 -> ...  mu=0, lam=3.
-  let f = fn(x : Int) { (x * x + 1) % 5 }
+  let f = fn(x : Int32) { (x * x + 1) % 5 }
   let (mu, lam) = floyd_cycle(f, 1)
   @debug.assert_eq(mu, 0)
   @debug.assert_eq(lam, 3)
@@ -316,7 +316,7 @@ test "floyd quadratic mod 5 starting at 1 (cycle from index 0)" {
 
 ///|
 test "brent quadratic mod 5 starting at 1 (cycle from index 0)" {
-  let f = fn(x : Int) { (x * x + 1) % 5 }
+  let f = fn(x : Int32) { (x * x + 1) % 5 }
   let (mu, lam) = brent_cycle(f, 1)
   @debug.assert_eq(mu, 0)
   @debug.assert_eq(lam, 3)
@@ -325,7 +325,7 @@ test "brent quadratic mod 5 starting at 1 (cycle from index 0)" {
 ///|
 test "floyd quadratic mod 5 starting at 3 (tail of length 1)" {
   // From 3:  3 -> 0 -> 1 -> 2 -> 0 -> 1 -> 2 -> ...   mu=1, lam=3.
-  let f = fn(x : Int) { (x * x + 1) % 5 }
+  let f = fn(x : Int32) { (x * x + 1) % 5 }
   let (mu, lam) = floyd_cycle(f, 3)
   @debug.assert_eq(mu, 1)
   @debug.assert_eq(lam, 3)
@@ -333,7 +333,7 @@ test "floyd quadratic mod 5 starting at 3 (tail of length 1)" {
 
 ///|
 test "brent quadratic mod 5 starting at 3 (tail of length 1)" {
-  let f = fn(x : Int) { (x * x + 1) % 5 }
+  let f = fn(x : Int32) { (x * x + 1) % 5 }
   let (mu, lam) = brent_cycle(f, 3)
   @debug.assert_eq(mu, 1)
   @debug.assert_eq(lam, 3)
@@ -342,7 +342,7 @@ test "brent quadratic mod 5 starting at 3 (tail of length 1)" {
 ///|
 test "floyd pure ring of length 4" {
   // f(x) = (x + 1) mod 4 -- a perfect cycle of length 4.
-  let f = fn(x : Int) { (x + 1) % 4 }
+  let f = fn(x : Int32) { (x + 1) % 4 }
   let (mu, lam) = floyd_cycle(f, 0)
   @debug.assert_eq(mu, 0)
   @debug.assert_eq(lam, 4)
@@ -350,7 +350,7 @@ test "floyd pure ring of length 4" {
 
 ///|
 test "brent pure ring of length 4" {
-  let f = fn(x : Int) { (x + 1) % 4 }
+  let f = fn(x : Int32) { (x + 1) % 4 }
   let (mu, lam) = brent_cycle(f, 0)
   @debug.assert_eq(mu, 0)
   @debug.assert_eq(lam, 4)
@@ -360,7 +360,7 @@ test "brent pure ring of length 4" {
 test "floyd fixed point" {
   // f(x) = x.  The starting value is itself a fixed point, so mu = 0
   // and lam = 1.
-  let f = fn(x : Int) { x }
+  let f = fn(x : Int32) { x }
   let (mu, lam) = floyd_cycle(f, 42)
   @debug.assert_eq(mu, 0)
   @debug.assert_eq(lam, 1)
@@ -368,7 +368,7 @@ test "floyd fixed point" {
 
 ///|
 test "brent fixed point" {
-  let f = fn(x : Int) { x }
+  let f = fn(x : Int32) { x }
   let (mu, lam) = brent_cycle(f, 42)
   @debug.assert_eq(mu, 0)
   @debug.assert_eq(lam, 1)
@@ -378,7 +378,7 @@ test "brent fixed point" {
 test "floyd long tail short cycle" {
   // f(x) = x + 1 if x < 100 else 100.  Long tail 0,1,...,99 then a
   // self-loop at 100.  Starting at 0 we expect mu = 100, lam = 1.
-  let f = fn(x : Int) { if x < 100 { x + 1 } else { 100 } }
+  let f = fn(x : Int32) { if x < 100 { x + 1 } else { 100 } }
   let (mu, lam) = floyd_cycle(f, 0)
   @debug.assert_eq(mu, 100)
   @debug.assert_eq(lam, 1)
@@ -386,7 +386,7 @@ test "floyd long tail short cycle" {
 
 ///|
 test "brent long tail short cycle" {
-  let f = fn(x : Int) { if x < 100 { x + 1 } else { 100 } }
+  let f = fn(x : Int32) { if x < 100 { x + 1 } else { 100 } }
   let (mu, lam) = brent_cycle(f, 0)
   @debug.assert_eq(mu, 100)
   @debug.assert_eq(lam, 1)
@@ -396,9 +396,9 @@ test "brent long tail short cycle" {
 test "floyd and brent agree on a sweep" {
   // Cross-check the two implementations on every quadratic-mod-m
   // starting point for several small m.
-  let ms : ReadOnlyArray[Int] = [3, 4, 5, 7, 11, 13]
+  let ms : ReadOnlyArray[Int32] = [3, 4, 5, 7, 11, 13]
   for m in ms {
-    let f = fn(x : Int) { (x * x + 1) % m }
+    let f = fn(x : Int32) { (x * x + 1) % m }
     for x0 in 0..<m {
       let (mu_f, lam_f) = floyd_cycle(f, x0)
       let (mu_b, lam_b) = brent_cycle(f, x0)
@@ -427,7 +427,7 @@ test "floyd and brent agree on a sweep" {
 ///|
 test "floyd cycle entered immediately" {
   // f(x) = (x + 1) mod 3 starting from 1: 1 -> 2 -> 0 -> 1.  mu=0, lam=3.
-  let f = fn(x : Int) { (x + 1) % 3 }
+  let f = fn(x : Int32) { (x + 1) % 3 }
   let (mu, lam) = floyd_cycle(f, 1)
   @debug.assert_eq(mu, 0)
   @debug.assert_eq(lam, 3)
@@ -435,7 +435,7 @@ test "floyd cycle entered immediately" {
 
 ///|
 test "brent cycle entered immediately" {
-  let f = fn(x : Int) { (x + 1) % 3 }
+  let f = fn(x : Int32) { (x + 1) % 3 }
   let (mu, lam) = brent_cycle(f, 1)
   @debug.assert_eq(mu, 0)
   @debug.assert_eq(lam, 3)

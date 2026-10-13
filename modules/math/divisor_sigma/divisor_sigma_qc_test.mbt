@@ -1,6 +1,6 @@
 ///|
 /// sigma_k(n) on big integers by enumerating divisor pairs (d, n / d).
-fn big_sigma(n : Int64, k : Int) -> @bigint.BigInt {
+fn big_sigma(n : Int64, k : Int32) -> @bigint.BigInt {
   let mut s = 0N
   let mut d = 1L
   while d * d <= n {
@@ -21,7 +21,7 @@ fn big_sigma(n : Int64, k : Int) -> @bigint.BigInt {
 /// prime power / smooth number whose sigma_k is close to Int64::MAX.
 priv struct SigmaCase {
   n : Int64
-  k : Int
+  k : Int32
 } derive(Debug)
 
 ///|
@@ -83,7 +83,7 @@ fn smooth_or_small(n : Int64) -> Bool {
 ///|
 /// sigma_k(n) for 13-smooth-times-small n via the prime-power formula on
 /// big integers (avoids enumerating divisors of huge n).
-fn big_sigma_fast(n : Int64, k : Int) -> @bigint.BigInt {
+fn big_sigma_fast(n : Int64, k : Int32) -> @bigint.BigInt {
   if n <= 10000000000L {
     return big_sigma(n, k)
   }
@@ -149,7 +149,7 @@ test "qc: divisor_count and divisor_sum are sigma_0 and sigma_1" {
 ///|
 test "qc: divisor_count agrees with enumeration" {
   @quickcheck.check(
-    (x : Int) => {
+    (x : Int32) => {
       let n = (x % 100000).to_int64()
       let mut c = 0L
       for d in 1L..<=n {
@@ -167,7 +167,7 @@ test "qc: divisor_count agrees with enumeration" {
 ///|
 test "qc: divisor_count_sieve(n)[k] == divisor_count(k)" {
   @quickcheck.check(
-    (x : Int) => {
+    (x : Int32) => {
       let n = x % 3000
       let t = @divisor_sigma.divisor_count_sieve(n)
       if n < 0 {

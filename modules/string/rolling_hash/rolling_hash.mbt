@@ -74,7 +74,7 @@ const HASH_MOD : Int64 = 1000000007L
 /// - `prefix_hash` : `prefix_hash[i]` = hash of `s[0..i-1]` (1-indexed end)
 /// - `pow_base`    : `pow_base[i]` = `HASH_BASE^i mod HASH_MOD`
 priv struct RollingHash {
-  n : Int
+  n : Int32
   prefix_hash : Array[Int64] // prefix_hash[i] = hash of s[0..i-1]
   pow_base : Array[Int64] // pow_base[i] = base^i mod p
 }
@@ -143,7 +143,7 @@ fn RollingHash::RollingHash(s : String) -> RollingHash {
 /// ```
 /// Adding `HASH_MOD` before the final `mod` avoids negative results from
 /// the subtraction.
-fn RollingHash::get_hash(self : RollingHash, l : Int, r : Int) -> Int64? {
+fn RollingHash::get_hash(self : RollingHash, l : Int32, r : Int32) -> Int64? {
   if l < 0 || r >= self.n || l > r {
     return None
   }
@@ -166,10 +166,10 @@ fn RollingHash::get_hash(self : RollingHash, l : Int, r : Int) -> Int64? {
 /// equal strings under a single modulus.
 fn RollingHash::substrings_equal(
   self : RollingHash,
-  l1 : Int,
-  r1 : Int,
-  l2 : Int,
-  r2 : Int,
+  l1 : Int32,
+  r1 : Int32,
+  l2 : Int32,
+  r2 : Int32,
 ) -> Bool {
   if r1 - l1 != r2 - l2 {
     return false
@@ -182,7 +182,7 @@ fn RollingHash::substrings_equal(
 
 ///|
 /// Return the length of the string this `RollingHash` was built from.
-fn RollingHash::length(self : RollingHash) -> Int {
+fn RollingHash::length(self : RollingHash) -> Int32 {
   self.n
 }
 
@@ -217,7 +217,7 @@ const HASH_MOD2 : Int64 = 1000000009L
 /// - `prefix_hash1 / pow_base1` : scheme (HASH_BASE,  HASH_MOD)
 /// - `prefix_hash2 / pow_base2` : scheme (HASH_BASE2, HASH_MOD2)
 priv struct DoubleRollingHash {
-  n : Int
+  n : Int32
   prefix_hash1 : Array[Int64]
   prefix_hash2 : Array[Int64]
   pow_base1 : Array[Int64]
@@ -279,8 +279,8 @@ fn DoubleRollingHash::DoubleRollingHash(s : String) -> DoubleRollingHash {
 /// formula as `RollingHash::get_hash` but with their own base and modulus.
 fn DoubleRollingHash::get_hash(
   self : DoubleRollingHash,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> (Int64, Int64)? {
   if l < 0 || r >= self.n || l > r {
     return None
@@ -309,10 +309,10 @@ fn DoubleRollingHash::get_hash(
 /// making false positives extremely rare in practice.
 fn DoubleRollingHash::substrings_equal(
   self : DoubleRollingHash,
-  l1 : Int,
-  r1 : Int,
-  l2 : Int,
-  r2 : Int,
+  l1 : Int32,
+  r1 : Int32,
+  l2 : Int32,
+  r2 : Int32,
 ) -> Bool {
   if r1 - l1 != r2 - l2 {
     return false
@@ -325,7 +325,7 @@ fn DoubleRollingHash::substrings_equal(
 
 ///|
 /// Return the length of the string this `DoubleRollingHash` was built from.
-fn DoubleRollingHash::length(self : DoubleRollingHash) -> Int {
+fn DoubleRollingHash::length(self : DoubleRollingHash) -> Int32 {
   self.n
 }
 
@@ -349,8 +349,8 @@ fn DoubleRollingHash::length(self : DoubleRollingHash) -> Int {
 /// find_pattern_rabin_karp("aabcaabxaab", "aab")
 /// // => [0, 4, 8]
 /// ```
-pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int] {
-  let result : Array[Int] = []
+pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int32] {
+  let result : Array[Int32] = []
   let n = text.length()
   let m = pattern.length()
   if m == 0 || m > n {
@@ -424,7 +424,7 @@ pub fn find_pattern_rabin_karp(text : String, pattern : String) -> Array[Int] {
 /// count_pattern_rabin_karp("mississippi", "issi")
 /// // => 2
 /// ```
-pub fn count_pattern_rabin_karp(text : String, pattern : String) -> Int {
+pub fn count_pattern_rabin_karp(text : String, pattern : String) -> Int32 {
   find_pattern_rabin_karp(text, pattern).length()
 }
 
@@ -443,7 +443,7 @@ pub fn count_pattern_rabin_karp(text : String, pattern : String) -> Int {
 /// longest_common_substring("abcdef", "bcfghi")
 /// // => 2  ("bc")
 /// ```
-fn longest_common_substring(s1 : String, s2 : String) -> Int {
+fn longest_common_substring(s1 : String, s2 : String) -> Int32 {
   let n1 = s1.length()
   let n2 = s2.length()
   if n1 == 0 || n2 == 0 {
@@ -455,11 +455,11 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
   // Binary search on length
   // INVARIANT: if length L works, so does any length < L
   fn check_length(
-    len : Int,
+    len : Int32,
     hash1 : DoubleRollingHash,
     hash2 : DoubleRollingHash,
-    n1 : Int,
-    n2 : Int,
+    n1 : Int32,
+    n2 : Int32,
   ) -> Bool {
     // Collect all hashes of length `len` from s1
     let hashes : Array[(Int64, Int64)] = []
@@ -586,7 +586,7 @@ fn longest_common_substring(s1 : String, s2 : String) -> Int {
 /// count_distinct_substrings("abc")
 /// // => 6  ("a", "b", "c", "ab", "bc", "abc")
 /// ```
-fn count_distinct_substrings(s : String) -> Int {
+fn count_distinct_substrings(s : String) -> Int32 {
   let n = s.length()
   if n == 0 {
     return 0

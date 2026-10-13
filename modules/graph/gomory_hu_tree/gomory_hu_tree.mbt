@@ -38,10 +38,10 @@ const GH_INF : Int64 = 4611686018427387903L
 /// - `adj`    : adjacency list of the tree, stored as `(neighbour, weight)`
 ///              pairs, used for BFS path queries.
 pub struct GomoryHuTree {
-  n : Int
-  parent : Array[Int]
+  n : Int32
+  parent : Array[Int32]
   value : Array[Int64]
-  adj : Array[Array[(Int, Int64)]]
+  adj : Array[Array[(Int32, Int64)]]
 }
 
 ///|
@@ -64,8 +64,8 @@ pub struct GomoryHuTree {
 ///                   s-t max-flow on the input graph.
 /// Space complexity: O(n + m).
 pub fn gomory_hu_tree(
-  n : Int,
-  edges : ArrayView[(Int, Int, Int64)],
+  n : Int32,
+  edges : ArrayView[(Int32, Int32, Int64)],
 ) -> GomoryHuTree {
   if n <= 0 {
     return { n: 0, parent: [], value: [], adj: [], }
@@ -75,7 +75,7 @@ pub fn gomory_hu_tree(
   let value = Array::make(n, 0L)
 
   // Build directed edge list for min_cut_st.
-  let directed : Array[(Int, Int, Int64)] = []
+  let directed : Array[(Int32, Int32, Int64)] = []
   for edge in edges {
     let (u, v, cap) = edge
     if u >= 0 && u < n && v >= 0 && v < n && u != v && cap > 0L {
@@ -105,7 +105,7 @@ pub fn gomory_hu_tree(
       value[p] = tmp
     }
   }
-  let adj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
+  let adj : Array[Array[(Int32, Int64)]] = [ for _ in 0..<n => [] ]
   for i in 0..<n {
     let p = parent[i]
     if p >= 0 {
@@ -131,13 +131,17 @@ pub fn gomory_hu_tree(
 ///   original graph (their tree subtrees are disconnected).
 ///
 /// Time complexity: O(n).
-pub fn GomoryHuTree::min_cut(self : GomoryHuTree, u : Int, v : Int) -> Int64 {
+pub fn GomoryHuTree::min_cut(
+  self : GomoryHuTree,
+  u : Int32,
+  v : Int32,
+) -> Int64 {
   if u == v {
     return 0L
   }
   let parent = Array::make(self.n, -1)
   let parent_w = Array::make(self.n, 0L)
-  let queue : Array[Int] = [u]
+  let queue : Array[Int32] = [u]
   parent[u] = u
   let found = for front = 0 {
     match queue.get(front) {

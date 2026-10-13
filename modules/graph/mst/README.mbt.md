@@ -299,13 +299,13 @@ These are **illustrations** (not part of the public API).
 ```mbt nocheck
 ///|
 struct Edge {
-  u : Int
-  v : Int
-  w : Int
+  u : Int32
+  v : Int32
+  w : Int32
 }
 
 ///|
-fn kruskal(n : Int, edges : Array[Edge]) -> (Array[Edge], Int) {
+fn kruskal(n : Int32, edges : Array[Edge]) -> (Array[Edge], Int32) {
   edges.sort_by((a, b) => a.w - b.w)
   let uf = UF(n)
   let mst : Array[Edge] = []
@@ -330,7 +330,7 @@ fn kruskal(n : Int, edges : Array[Edge]) -> (Array[Edge], Int) {
 
 ```mbt nocheck
 ///|
-fn prim(n : Int, adj : Array[Array[(Int, Int)]]) -> Int {
+fn prim(n : Int32, adj : Array[Array[(Int32, Int32)]]) -> Int32 {
   let in_tree = Array::make(n, false)
   let pq = MinHeap() // (weight, vertex)
   pq.push((0, 0))

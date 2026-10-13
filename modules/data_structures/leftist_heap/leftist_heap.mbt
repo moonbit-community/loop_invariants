@@ -43,18 +43,18 @@
 ///|
 enum Tree {
   Empty
-  Node(Int, Int64, Tree, Tree) // rank, key, left, right
+  Node(Int32, Int64, Tree, Tree) // rank, key, left, right
 }
 
 ///|
 /// A persistent leftist min-heap of `Int64` keys.
 pub struct LeftistHeap {
   root : Tree
-  size : Int
+  size : Int32
 }
 
 ///|
-fn rank(t : Tree) -> Int {
+fn rank(t : Tree) -> Int32 {
   match t {
     Empty => 0
     Node(r, _, _, _) => r
@@ -143,7 +143,7 @@ pub fn LeftistHeap::merge(
 
 ///|
 /// Number of elements.
-pub fn LeftistHeap::length(self : LeftistHeap) -> Int {
+pub fn LeftistHeap::length(self : LeftistHeap) -> Int32 {
   self.size
 }
 

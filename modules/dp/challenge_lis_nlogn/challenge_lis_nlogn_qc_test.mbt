@@ -1,14 +1,14 @@
 // Property-based tests for the O(n log n) LIS length against the O(n^2) DP.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -18,7 +18,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix of
 /// small values and `Int` extrema.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -47,7 +47,7 @@ impl @quickcheck.Shrink for Ints with fn shrink(self) {
 
 ///|
 /// O(n^2) strictly-increasing LIS length.
-fn ref_lis(xs : Array[Int]) -> Int {
+fn ref_lis(xs : Array[Int32]) -> Int32 {
   let n = xs.length()
   let best = Array::make(n, 1)
   let mut ans = 0
@@ -91,7 +91,7 @@ test "qc: lis_length matches the O(n^2) DP" {
 ///|
 test "qc: lis_length on a sub-view equals lis of the copied slice" {
   @quickcheck.check(
-    (input : (Ints, Int, Int)) => {
+    (input : (Ints, Int32, Int32)) => {
       let (a, i, j) = input
       let n = a.xs.length()
       let lo = if n == 0 { 0 } else { (i % (n + 1)).abs() }

@@ -225,7 +225,7 @@ Total insertions: n * O(log n) = O(n log n).
 ```mbt check
 ///|
 test "dsu on tree example" {
-  let adj : Array[Array[Int]] = [ for _ in 0..<5 => [] ]
+  let adj : Array[Array[Int32]] = [ for _ in 0..<5 => [] ]
   adj[0].push(1)
   adj[1].push(0)
   adj[0].push(2)
@@ -234,7 +234,7 @@ test "dsu on tree example" {
   adj[3].push(1)
   adj[1].push(4)
   adj[4].push(1)
-  let colors : Array[Int] = [1, 2, 1, 2, 3]
+  let colors : Array[Int32] = [1, 2, 1, 2, 3]
   let result = @dsu_on_tree.subtree_color_mode_sum(adj, colors)
   debug_inspect(result, content="[3, 2, 1, 2, 3]")
 }
@@ -243,12 +243,12 @@ test "dsu on tree example" {
 ```mbt check
 ///|
 test "dsu on tree tie" {
-  let adj : Array[Array[Int]] = [ for _ in 0..<3 => [] ]
+  let adj : Array[Array[Int32]] = [ for _ in 0..<3 => [] ]
   adj[0].push(1)
   adj[1].push(0)
   adj[1].push(2)
   adj[2].push(1)
-  let colors : Array[Int] = [5, 5, 7]
+  let colors : Array[Int32] = [5, 5, 7]
   let result = @dsu_on_tree.subtree_color_mode_sum(adj, colors)
   // Node 1's subtree has colors {5,7} so max frequency is 1, sum = 12
   // Node 0's subtree includes all nodes, max frequency is 2 for color 5

@@ -46,7 +46,7 @@
 ///   )
 /// }
 /// ```
-pub fn length(arr : Array[Int64]) -> Int {
+pub fn length(arr : Array[Int64]) -> Int32 {
   let n = arr.length()
   if n == 0 {
     return 0
@@ -82,7 +82,7 @@ pub fn length(arr : Array[Int64]) -> Int {
 ///|
 /// Length plus the inc/dec lengths at the peak index, useful for
 /// path reconstruction or analysis.
-pub fn length_with_split(arr : Array[Int64]) -> (Int, Int, Int) {
+pub fn length_with_split(arr : Array[Int64]) -> (Int32, Int32, Int32) {
   let n = arr.length()
   if n == 0 {
     return (0, 0, 0)
@@ -163,7 +163,7 @@ test "bitonic with split parts" {
 
 ///|
 test "bitonic agrees with brute force" {
-  fn brute(arr : Array[Int64]) -> Int {
+  fn brute(arr : Array[Int64]) -> Int32 {
     let n = arr.length()
     if n == 0 {
       return 0

@@ -67,7 +67,7 @@ fn[T] color_of(t : RB[T]) -> Color {
 
 ///|
 /// Return the number of keys stored in the set.
-pub fn[T] size(t : RB[T]) -> Int {
+pub fn[T] size(t : RB[T]) -> Int32 {
   match t {
     Empty => 0
     Node(color=_, key=_, left~, right~) => 1 + size(left) + size(right)
@@ -91,7 +91,7 @@ fn[T : Compare] within_bounds(value : T, lo : T?, hi : T?) -> Bool {
 /// Number of black nodes on any root-to-leaf path of `t`, counting the
 /// implicit black `Empty` leaves. Returns `-1` when the tree violates the
 /// uniform black-height invariant; otherwise returns the common count.
-fn[T] black_height(t : RB[T]) -> Int {
+fn[T] black_height(t : RB[T]) -> Int32 {
   match t {
     Empty => 1
     Node(color~, key=_, left~, right~) => {
@@ -248,7 +248,7 @@ fn[T : Compare] ins(t : RB[T], key : T) -> RB[T] {
 ///
 /// ```moonbit nocheck
 /// test {
-///   let s : @challenge_persistent_red_black_tree.RB[Int] = @challenge_persistent_red_black_tree.empty()
+///   let s : @challenge_persistent_red_black_tree.RB[Int32] = @challenge_persistent_red_black_tree.empty()
 ///   @debug.assert_eq(@challenge_persistent_red_black_tree.size(s), 0)
 /// }
 /// ```
@@ -394,7 +394,7 @@ pub fn[T : Compare] from_array(arr : ArrayView[T]) -> RB[T] {
 ///|
 test "persistent rb invariants and contains" {
   let tree = from_array([7, 3, 18, 10, 22, 8, 11, 26, 15])
-  let none : Int? = None
+  let none : Int32? = None
   assert_true(rb_valid(tree, none, none))
   assert_true(contains(tree, 15))
   assert_true(contains(tree, 26))
@@ -437,8 +437,8 @@ test "persistent rb versions are independent" {
 
 ///|
 test "persistent rb sequential inserts preserve invariants" {
-  let none : Int? = None
-  for k in 0..<20; tree = (Empty : RB[Int]) {
+  let none : Int32? = None
+  for k in 0..<20; tree = (Empty : RB[Int32]) {
     let new_tree = insert(tree, k)
     assert_true(rb_valid(new_tree, none, none))
     continue new_tree

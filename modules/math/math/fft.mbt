@@ -46,7 +46,7 @@ fn Complex::mul(self : Complex, other : Complex) -> Complex {
 
 ///|
 /// Compute the bit-reversed index for n bits
-fn bit_reverse(x_in : Int, bits : Int) -> Int {
+fn bit_reverse(x_in : Int32, bits : Int32) -> Int32 {
   for i = 0, x = x_in, result = 0; i < bits; {
     // Extract LSB of x, shift result left and add it
     let new_result = (result << 1) | (x & 1)
@@ -77,7 +77,7 @@ fn bit_reverse(x_in : Int, bits : Int) -> Int {
 
 ///|
 /// Reorder array elements using bit reversal permutation
-fn bit_reverse_permute(arr : Array[Complex], n : Int, log_n : Int) -> Unit {
+fn bit_reverse_permute(arr : Array[Complex], n : Int32, log_n : Int32) -> Unit {
   for i in 0..<n {
     let j = bit_reverse(i, log_n)
     if i < j {
@@ -215,7 +215,7 @@ fn fft_cos(x_in : Double) -> Double {
 ///|
 /// In-place FFT using Cooley-Tukey algorithm
 ///  inverse = false for forward FFT, true for inverse FFT
-fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
+fn fft_in_place(arr : Array[Complex], n : Int32, inverse : Bool) -> Unit {
   // Compute log2(n)
   let log_n = for i = 0, temp = n; temp > 1; i = i + 1, temp = temp >> 1 {
 
@@ -334,7 +334,7 @@ fn fft_in_place(arr : Array[Complex], n : Int, inverse : Bool) -> Unit {
 
 ///|
 /// Multiply two polynomials using FFT
-fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
+fn polynomial_multiply_fft(a : Array[Int32], b : Array[Int32]) -> Array[Int32] {
   let n1 = a.length()
   let n2 = b.length()
   if n1 == 0 || n2 == 0 {
@@ -411,7 +411,7 @@ fn polynomial_multiply_fft(a : Array[Int], b : Array[Int]) -> Array[Int] {
   // Inverse FFT
   fft_in_place(fa, n, true)
   // Extract result and round to integers
-  let result : Array[Int] = Array::make(result_len, 0)
+  let result : Array[Int32] = Array::make(result_len, 0)
   for i in 0..<result_len {
     // Round to nearest integer (FFT introduces floating-point errors)
     result[i] = (fa[i].re + 0.5).to_int()
@@ -477,7 +477,7 @@ let ntt_g : Int64 = 3L // primitive root
 
 ///|
 /// In-place NTT
-fn ntt_in_place(arr : Array[Int64], n : Int, inverse : Bool) -> Unit {
+fn ntt_in_place(arr : Array[Int64], n : Int32, inverse : Bool) -> Unit {
   // Compute log2(n)
   let log_n = for i = 0, temp = n; temp > 1; i = i + 1, temp = temp >> 1 {
 
@@ -705,11 +705,14 @@ fn polynomial_multiply_ntt(a : Array[Int64], b : Array[Int64]) -> Array[Int64] {
 ///|
 /// Count the number of ways to make change for amount using coins
 ///  (using generating functions and polynomial multiplication)
-fn count_change_polynomial(coins : Array[Int], max_amount : Int) -> Array[Int] {
+fn count_change_polynomial(
+  coins : Array[Int32],
+  max_amount : Int32,
+) -> Array[Int32] {
   // For each coin value c, the generating function is:
   // 1 + x^c + x^(2c) + x^(3c) + ... = 1/(1-x^c)
   // We approximate by computing product up to x^max_amount
-  let result : Array[Int] = Array::make(max_amount + 1, 0)
+  let result : Array[Int32] = Array::make(max_amount + 1, 0)
   result[0] = 1 // Base case: 1 way to make 0
   // For each coin, update the DP array (standard knapsack approach)
   // This is equivalent to polynomial multiplication with truncation
@@ -753,7 +756,10 @@ fn count_change_polynomial(coins : Array[Int], max_amount : Int) -> Array[Int] {
 ///|
 /// Compute string pattern matching counts using FFT-based convolution
 ///  Returns array where result[i] = number of matching positions at offset i
-fn pattern_match_fft(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
+fn pattern_match_fft(
+  text : Array[Int32],
+  pattern : Array[Int32],
+) -> Array[Int32] {
   let n = text.length()
   let m = pattern.length()
   if m > n || m == 0 {
@@ -766,7 +772,7 @@ fn pattern_match_fft(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
   // f(i) = sum_j text[i+j]^2 - 2*sum_j text[i+j]*pattern[j] + sum_j pattern[j]^2
   // The middle term is a convolution (with reversed pattern)
   // Reverse pattern
-  let pattern_rev : Array[Int] = Array::make(m, 0)
+  let pattern_rev : Array[Int32] = Array::make(m, 0)
   for i in 0..<m {
     pattern_rev[i] = pattern[m - 1 - i]
   } where {
@@ -786,7 +792,7 @@ fn pattern_match_fft(text : Array[Int], pattern : Array[Int]) -> Array[Int] {
   // For simplicity, return the convolution values directly
   // (full implementation would compute f(i) and check for zeros)
   let result_len = n - m + 1
-  let result : Array[Int] = Array::make(result_len, 0)
+  let result : Array[Int32] = Array::make(result_len, 0)
   for i in 0..<result_len {
     // The convolution at position i+m-1 gives sum_j text[i+j]*pattern[m-1-j]
     // which equals sum_j text[i+j]*pattern_rev[j]
@@ -928,8 +934,8 @@ test "pattern_match_fft" {
 ///|
 test "polynomial_multiply_with_zeros" {
   // Test edge cases
-  let a : Array[Int] = [0, 1, 0, 1]
-  let b : Array[Int] = [1, 0, 1]
+  let a : Array[Int32] = [0, 1, 0, 1]
+  let b : Array[Int32] = [1, 0, 1]
   let result = polynomial_multiply_fft(a, b)
   // (x + x^3) * (1 + x^2) = x + x^3 + x^3 + x^5 = x + 2x^3 + x^5
   debug_inspect(result.length(), content="6")
@@ -943,7 +949,7 @@ test "polynomial_multiply_with_zeros" {
 
 ///|
 test "empty_polynomial" {
-  let empty : Array[Int] = []
+  let empty : Array[Int32] = []
   let non_empty = [1, 2, 3]
   debug_inspect(polynomial_multiply_fft(empty, non_empty).length(), content="0")
   debug_inspect(polynomial_multiply_fft(non_empty, empty).length(), content="0")
@@ -962,8 +968,8 @@ test "single_element_polynomial" {
 test "large_polynomial_multiply" {
   // Test with larger polynomials to exercise FFT properly
   let n = 16
-  let a : Array[Int] = Array::make(n, 1)
-  let b : Array[Int] = Array::make(n, 1)
+  let a : Array[Int32] = Array::make(n, 1)
+  let b : Array[Int32] = Array::make(n, 1)
   let result = polynomial_multiply_fft(a, b)
   // (1 + x + x^2 + ... + x^15)^2
   // coefficient of x^k is min(k+1, 2n-1-k) for k < 2n-1

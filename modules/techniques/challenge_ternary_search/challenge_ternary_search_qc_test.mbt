@@ -3,14 +3,14 @@
 // two-element flat bottom), built from arbitrary `Int` values.
 
 ///|
-const IMAX : Int = 2147483647
+const IMAX : Int32 = 2147483647
 
 ///|
-const IMIN : Int = -2147483648
+const IMIN : Int32 = -2147483648
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -20,7 +20,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 /// duplicates), full-range `Int` (hits the extrema), or a per-element mix of
 /// small values and `Int` extrema.
 priv struct Ints {
-  xs : Array[Int]
+  xs : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -53,10 +53,10 @@ impl @quickcheck.Shrink for Ints with fn shrink(self) {
 /// distinct values of `right`. Values equal to the valley are dropped from
 /// the slopes so the valley is the strict minimum of each side.
 fn build(
-  left : Array[Int],
-  right : Array[Int],
+  left : Array[Int32],
+  right : Array[Int32],
   flat_bottom : Bool,
-) -> Array[Int] {
+) -> Array[Int32] {
   let mut valley = IMAX
   for x in left {
     if x < valley {

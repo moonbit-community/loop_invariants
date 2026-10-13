@@ -34,7 +34,7 @@
 ///   - 4 is dominated by 3 (only path through 3)
 ///   - 5 is dominated by 1 (paths through 2 or 4, but both need 1)
 test "dominator tree basic" {
-  let edges : Array[(Int, Int)] = [
+  let edges : Array[(Int32, Int32)] = [
     (0, 1),
     (1, 2),
     (2, 3),
@@ -69,7 +69,7 @@ test "dominator tree basic" {
 ///   Component 2: 2 → 3  (unreachable from root 0)
 /// ```
 test "dominator tree unreachable" {
-  let edges : Array[(Int, Int)] = [(0, 1), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (2, 3)]
   let dom = @dominator_tree.build_dominator_tree(4, edges, 0).unwrap()
 
   // Reachable vertices
@@ -97,7 +97,7 @@ test "dominator tree unreachable" {
 ///       3
 /// ```
 test "dominator tree diamond" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (2, 3)]
   let dom = @dominator_tree.build_dominator_tree(4, edges, 0).unwrap()
   debug_inspect(dom.idom[0], content="0")
   debug_inspect(dom.idom[1], content="0")
@@ -118,7 +118,7 @@ test "dominator tree diamond" {
 ///   0 → 1 → 2 → 3 → 4
 /// ```
 test "dominator tree linear" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
   let dom = @dominator_tree.build_dominator_tree(5, edges, 0).unwrap()
 
   // In a linear chain, each vertex dominates all successors
@@ -139,7 +139,7 @@ test "dominator tree linear" {
 ///|
 /// Test with invalid inputs.
 test "dominator tree invalid" {
-  let edges : Array[(Int, Int)] = [(0, 1)]
+  let edges : Array[(Int32, Int32)] = [(0, 1)]
 
   // Invalid root
   debug_inspect(
@@ -165,7 +165,7 @@ test "dominator tree invalid" {
 ///|
 /// Test dominator tree children structure.
 test "dominator tree children" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (2, 3), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (2, 3), (3, 4)]
   let dom = @dominator_tree.build_dominator_tree(5, edges, 0).unwrap()
 
   // Check tree structure

@@ -14,7 +14,7 @@
 // SPACE COMPLEXITY: O(n)
 
 ///|
-fn slice_string(s : String, start : Int, end : Int) -> String {
+fn slice_string(s : String, start : Int32, end : Int32) -> String {
   let sb = StringBuilder()
   for idx in start..<end {
     let ch = s[idx].to_int()

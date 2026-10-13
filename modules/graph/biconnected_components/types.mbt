@@ -59,8 +59,8 @@
 ///   // res.articulation_points = [1]
 /// ```
 pub(all) struct BiconnectedResult {
-  components : Array[Array[(Int, Int)]]
-  articulation_points : Array[Int]
+  components : Array[Array[(Int32, Int32)]]
+  articulation_points : Array[Int32]
 } derive(Debug)
 
 ///|
@@ -100,15 +100,15 @@ pub(all) struct BiconnectedResult {
 ///   Removing u would therefore disconnect v's subtree.
 /// ```
 priv struct BiconnectedFinder {
-  n : Int
-  adj : Array[Array[(Int, Int)]]
-  disc : Array[Int]
-  low : Array[Int]
-  parent_edge : Array[Int]
-  edge_stack : Array[(Int, Int)]
+  n : Int32
+  adj : Array[Array[(Int32, Int32)]]
+  disc : Array[Int32]
+  low : Array[Int32]
+  parent_edge : Array[Int32]
+  edge_stack : Array[(Int32, Int32)]
   articulation : Array[Bool]
-  components : Array[Array[(Int, Int)]]
-  mut timer : Int
+  components : Array[Array[(Int32, Int32)]]
+  mut timer : Int32
 }
 
 ///|
@@ -117,8 +117,8 @@ priv struct BiconnectedFinder {
 /// All discovery times are initialised to `-1` (unvisited). The adjacency
 /// list, edge stack, and component array are empty. The timer starts at `0`.
 /// Call `add_edge` to populate the graph before calling `run`.
-fn BiconnectedFinder::BiconnectedFinder(n : Int) -> BiconnectedFinder {
-  let adj : Array[Array[(Int, Int)]] = [ for _ in 0..<n => [] ]
+fn BiconnectedFinder::BiconnectedFinder(n : Int32) -> BiconnectedFinder {
+  let adj : Array[Array[(Int32, Int32)]] = [ for _ in 0..<n => [] ]
   {
     n,
     adj,
@@ -143,16 +143,16 @@ fn BiconnectedFinder::BiconnectedFinder(n : Int) -> BiconnectedFinder {
 /// each parallel edge receives a distinct `id`.
 fn BiconnectedFinder::add_edge(
   self : BiconnectedFinder,
-  u : Int,
-  v : Int,
-  id : Int,
+  u : Int32,
+  v : Int32,
+  id : Int32,
 ) -> Unit {
   self.adj[u].push((v, id))
   self.adj[v].push((u, id))
 }
 
 ///|
-fn min(a : Int, b : Int) -> Int {
+fn min(a : Int32, b : Int32) -> Int32 {
   if a < b {
     a
   } else {

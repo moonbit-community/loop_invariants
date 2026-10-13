@@ -4,7 +4,7 @@
 
 ///|
 /// Uniform integer in the inclusive range `[lo, hi]`.
-fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
+fn rint(rs : @quickcheck.RandomState, lo : Int32, hi : Int32) -> Int32 {
   lo +
   rs.next_uint(limit=(hi - lo + 1).reinterpret_as_uint()).reinterpret_as_int()
 }
@@ -12,7 +12,7 @@ fn rint(rs : @quickcheck.RandomState, lo : Int, hi : Int) -> Int {
 ///|
 /// Mostly small Ints, sometimes full-range values (including the extrema);
 /// arithmetic wraps identically in the implementation and the model.
-fn gen_int(rs : @quickcheck.RandomState) -> Int {
+fn gen_int(rs : @quickcheck.RandomState) -> Int32 {
   match rint(rs, 0, 7) {
     0 => @quickcheck.Arbitrary::arbitrary(0, rs)
     1 => [2147483647, -2147483648][rint(rs, 0, 1)]
@@ -22,8 +22,8 @@ fn gen_int(rs : @quickcheck.RandomState) -> Int {
 
 ///|
 priv enum Op {
-  Add(Int, Int, Int)
-  Rect(Int, Int, Int, Int)
+  Add(Int32, Int32, Int32)
+  Rect(Int32, Int32, Int32, Int32)
 } derive(Debug)
 
 ///|
@@ -31,8 +31,8 @@ impl @quickcheck.Shrink for Op
 
 ///|
 priv struct Case {
-  rows : Int
-  cols : Int
+  rows : Int32
+  cols : Int32
   ops : Array[Op]
 } derive(Debug)
 
@@ -82,7 +82,7 @@ impl @quickcheck.Shrink for Case with fn shrink(self) {
 fn run_case(c : Case) -> Bool {
   let fw = @challenge_fenwick_2d.Fenwick2D(c.rows, c.cols)
   let model = Array::makei(c.rows, _ => Array::make(c.cols, 0))
-  let rect = (r1 : Int, c1 : Int, r2 : Int, c2 : Int) => {
+  let rect = (r1 : Int32, c1 : Int32, r2 : Int32, c2 : Int32) => {
     let mut s = 0
     for r in r1..<r2 {
       for col in c1..<c2 {

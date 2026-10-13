@@ -68,7 +68,7 @@
 pub struct DisjointSparseSum {
   table : Array[Array[Int64]] // table[level][i]
   arr : Array[Int64]
-  n : Int
+  n : Int32
 }
 
 ///|
@@ -83,7 +83,7 @@ pub struct DisjointSparseSum {
 /// highest_bit(4) = 2   (binary: 100)
 /// highest_bit(7) = 2   (binary: 111 -- highest set bit is bit 2)
 /// ```
-fn highest_bit(x : Int) -> Int {
+fn highest_bit(x : Int32) -> Int32 {
   if x <= 0 {
     return 0
   }
@@ -203,8 +203,8 @@ pub fn DisjointSparseSum::DisjointSparseSum(
 /// `table[k][l] + table[k][r]`.
 pub fn DisjointSparseSum::query(
   self : DisjointSparseSum,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None
@@ -221,7 +221,7 @@ pub fn DisjointSparseSum::query(
 
 ///|
 /// Return the number of elements in the original array.
-fn DisjointSparseSum::length(self : DisjointSparseSum) -> Int {
+fn DisjointSparseSum::length(self : DisjointSparseSum) -> Int32 {
   self.n
 }
 
@@ -242,7 +242,7 @@ fn DisjointSparseSum::length(self : DisjointSparseSum) -> Int {
 priv struct DisjointSparseXor {
   table : Array[Array[Int64]]
   arr : Array[Int64]
-  n : Int
+  n : Int32
 }
 
 ///|
@@ -327,8 +327,8 @@ fn DisjointSparseXor::DisjointSparseXor(
 /// range is invalid (see `DisjointSparseSum::query` for the validity conditions).
 fn DisjointSparseXor::query(
   self : DisjointSparseXor,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None
@@ -342,7 +342,7 @@ fn DisjointSparseXor::query(
 
 ///|
 /// Return the number of elements in the original array.
-fn DisjointSparseXor::length(self : DisjointSparseXor) -> Int {
+fn DisjointSparseXor::length(self : DisjointSparseXor) -> Int32 {
   self.n
 }
 
@@ -368,7 +368,7 @@ fn DisjointSparseXor::length(self : DisjointSparseXor) -> Int {
 priv struct DisjointSparseProd {
   table : Array[Array[Int64]]
   arr : Array[Int64]
-  n : Int
+  n : Int32
   modulo : Int64
 }
 
@@ -458,8 +458,8 @@ fn DisjointSparseProd::DisjointSparseProd(
 /// When `l == r` the result is `arr[l] mod modulo`.
 fn DisjointSparseProd::query(
   self : DisjointSparseProd,
-  l : Int,
-  r : Int,
+  l : Int32,
+  r : Int32,
 ) -> Int64? {
   if l < 0 || r >= self.n || l > r || self.n == 0 {
     return None
@@ -473,7 +473,7 @@ fn DisjointSparseProd::query(
 
 ///|
 /// Return the number of elements in the original array.
-fn DisjointSparseProd::length(self : DisjointSparseProd) -> Int {
+fn DisjointSparseProd::length(self : DisjointSparseProd) -> Int32 {
   self.n
 }
 

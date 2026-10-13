@@ -41,7 +41,7 @@
 /// # Returns
 /// An `Array[Int]` of length `s.length()` containing the sorted suffix
 /// starting indices.  Returns an empty array for the empty string.
-fn build_suffix_array_simple(s : String) -> Array[Int] {
+fn build_suffix_array_simple(s : String) -> Array[Int32] {
   let chars = s.to_array()
   let n = chars.length()
   if n == 0 {
@@ -99,7 +99,7 @@ fn build_suffix_array_simple(s : String) -> Array[Int] {
 /// - `chars` — the character array holding both suffixes
 /// - `i`     — starting index of the first suffix
 /// - `j`     — starting index of the second suffix
-fn compare_suffixes(chars : Array[Char], i : Int, j : Int) -> Int {
+fn compare_suffixes(chars : Array[Char], i : Int32, j : Int32) -> Int32 {
   let n = chars.length()
   let len = if n - i < n - j { n - i } else { n - j }
   for k in 0..<len {
@@ -166,7 +166,7 @@ test "suffix array simple" {
 /// # Returns
 /// An `Array[Int]` of length `s.length()` containing the LCP values.
 /// Returns an empty array for the empty string.
-fn build_lcp_array(s : String, sa : ArrayView[Int]) -> Array[Int] {
+fn build_lcp_array(s : String, sa : ArrayView[Int32]) -> Array[Int32] {
   let chars = s.to_array()
   let n = chars.length()
   if n == 0 {
@@ -271,7 +271,7 @@ test "lcp array" {
 ///
 /// # Returns
 /// The count of distinct non-empty substrings as an `Int`.
-fn count_distinct_substrings(s : String) -> Int {
+fn count_distinct_substrings(s : String) -> Int32 {
   let n = s.to_array().length()
   if n == 0 {
     return 0
@@ -405,7 +405,7 @@ test "longest repeated substring" {
 /// // search_pattern("banana", "ana") -> [1, 3]  (two occurrences)
 /// // search_pattern("banana", "ban") -> [0]
 /// ```
-fn search_pattern(s : String, pattern : String) -> Array[Int] {
+fn search_pattern(s : String, pattern : String) -> Array[Int32] {
   let s_chars = s.to_array()
   let p_chars = pattern.to_array()
   let n = s_chars.length()
@@ -433,9 +433,9 @@ fn search_pattern(s : String, pattern : String) -> Array[Int] {
 /// less than `p`; all indices `>= hi` are greater than or equal to `p`.
 fn search_lower_bound(
   s : Array[Char],
-  sa : ArrayView[Int],
+  sa : ArrayView[Int32],
   p : Array[Char],
-) -> Int {
+) -> Int32 {
   let n = sa.length()
   for lo = 0, hi = n; lo < hi; {
     let mid = (lo + hi) / 2
@@ -468,9 +468,9 @@ fn search_lower_bound(
 /// `p` as a prefix.
 fn search_upper_bound(
   s : Array[Char],
-  sa : ArrayView[Int],
+  sa : ArrayView[Int32],
   p : Array[Char],
-) -> Int {
+) -> Int32 {
   let n = sa.length()
   for lo = 0, hi = n; lo < hi; {
     let mid = (lo + hi) / 2
@@ -502,7 +502,11 @@ fn search_upper_bound(
 /// positive integer if the suffix is greater than `p`.
 ///
 /// A suffix shorter than `p` is treated as less than `p`.
-fn compare_with_pattern(s : Array[Char], start : Int, p : Array[Char]) -> Int {
+fn compare_with_pattern(
+  s : Array[Char],
+  start : Int32,
+  p : Array[Char],
+) -> Int32 {
   let n = s.length()
   let m = p.length()
   let len = if m < n - start { m } else { n - start }
@@ -653,7 +657,7 @@ test "longest common substring sa" {
 /// // 'b': "b", "bc"         -> 2
 /// // 'c': "c"               -> 1
 /// ```
-fn count_substrings_by_char(s : String) -> Array[Int] {
+fn count_substrings_by_char(s : String) -> Array[Int32] {
   let chars = s.to_array()
   let n = chars.length()
 

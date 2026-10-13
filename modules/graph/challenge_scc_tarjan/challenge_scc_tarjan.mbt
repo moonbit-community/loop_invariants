@@ -5,8 +5,8 @@
 
 ///|
 /// Compute strongly connected components using Tarjan's algorithm.
-pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+pub fn scc_tarjan(n : Int32, edges : ArrayView[(Int32, Int32)]) -> Array[Int32] {
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
@@ -16,9 +16,9 @@ pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
   let index = Array::make(n, -1)
   let low = Array::make(n, 0)
   let onstack = Array::make(n, false)
-  let stack : Array[Int] = []
+  let stack : Array[Int32] = []
   let comp = Array::make(n, -1)
-  fn pop_component(root : Int, id : Int) -> Unit {
+  fn pop_component(root : Int32, id : Int32) -> Unit {
     match stack.pop() {
       Some(w) => {
         onstack[w] = false
@@ -31,7 +31,7 @@ pub fn scc_tarjan(n : Int, edges : ArrayView[(Int, Int)]) -> Array[Int] {
     }
   }
 
-  fn dfs(v : Int, time : Int, comp_id : Int) -> (Int, Int) {
+  fn dfs(v : Int32, time : Int32, comp_id : Int32) -> (Int32, Int32) {
     index[v] = time
     low[v] = time
     stack.push(v)

@@ -78,7 +78,7 @@ return low
 ```mbt check
 ///|
 test "capacity for 1..10" {
-  let weights : Array[Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  let weights : Array[Int32] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
   let ans = @challenge_binary_search_answer.min_capacity(weights, 5)
   debug_inspect(ans, content="15")
 }
@@ -99,7 +99,7 @@ Day 5: 10
 ```mbt check
 ///|
 test "feasibility check" {
-  let weights : Array[Int] = [3, 2, 2, 4, 1, 4]
+  let weights : Array[Int32] = [3, 2, 2, 4, 1, 4]
   debug_inspect(
     @challenge_binary_search_answer.can_ship(weights, 3, 6),
     content="true",
@@ -119,7 +119,7 @@ If you have at least as many days as packages, the minimum capacity is just
 ```mbt check
 ///|
 test "days equals packages" {
-  let weights : Array[Int] = [2, 8, 3]
+  let weights : Array[Int32] = [2, 8, 3]
   let ans = @challenge_binary_search_answer.min_capacity(weights, 3)
   debug_inspect(ans, content="8")
 }
@@ -132,7 +132,7 @@ If you have only one day, the capacity must be the sum.
 ```mbt check
 ///|
 test "one day" {
-  let weights : Array[Int] = [2, 8, 3]
+  let weights : Array[Int32] = [2, 8, 3]
   let ans = @challenge_binary_search_answer.min_capacity(weights, 1)
   debug_inspect(ans, content="13")
 }

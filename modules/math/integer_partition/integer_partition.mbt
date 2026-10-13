@@ -48,7 +48,7 @@
 ///   @debug.assert_eq(p[10], 42L)
 /// }
 /// ```
-pub fn partition_table_mod(n : Int, modulus : Int64) -> Array[Int64] {
+pub fn partition_table_mod(n : Int32, modulus : Int64) -> Array[Int64] {
   if n < 0 {
     return []
   }
@@ -85,7 +85,7 @@ pub fn partition_table_mod(n : Int, modulus : Int64) -> Array[Int64] {
 ///|
 /// Plain `p(n)` for small `n` (fits in `Int64` only up to `n ≈ 416`).
 /// Returns `0` for `n < 0`.
-pub fn partition(n : Int) -> Int64 {
+pub fn partition(n : Int32) -> Int64 {
   if n < 0 {
     return 0L
   }
@@ -111,7 +111,7 @@ pub fn partition(n : Int) -> Int64 {
 ///   dp[i][n] = dp[i-1][n] + dp[i-1][n-i]
 ///
 /// for `i = 1..n`. With rolling rows, space is O(n).
-pub fn distinct_partition_table(n : Int) -> Array[Int64] {
+pub fn distinct_partition_table(n : Int32) -> Array[Int64] {
   if n < 0 {
     return []
   }

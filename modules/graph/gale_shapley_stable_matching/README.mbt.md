@@ -133,8 +133,8 @@ pub fn is_stable(
 ```mbt check
 ///|
 test "gale-shapley three-person" {
-  let pp : Array[Array[Int]] = [[0, 1, 2], [0, 2, 1], [1, 0, 2]]
-  let rp : Array[Array[Int]] = [[1, 0, 2], [0, 1, 2], [2, 1, 0]]
+  let pp : Array[Array[Int32]] = [[0, 1, 2], [0, 2, 1], [1, 0, 2]]
+  let rp : Array[Array[Int32]] = [[1, 0, 2], [0, 1, 2], [2, 1, 0]]
   let m = @gale_shapley_stable_matching.stable_match(pp[:], rp[:])
   debug_inspect(m, content="[1, 0, 2]")
 }
@@ -143,13 +143,13 @@ test "gale-shapley three-person" {
 ```mbt check
 ///|
 test "gale-shapley produces stable matching" {
-  let pp : Array[Array[Int]] = [
+  let pp : Array[Array[Int32]] = [
     [2, 0, 1, 3],
     [3, 2, 0, 1],
     [1, 3, 0, 2],
     [0, 1, 2, 3],
   ]
-  let rp : Array[Array[Int]] = [
+  let rp : Array[Array[Int32]] = [
     [1, 0, 3, 2],
     [3, 1, 2, 0],
     [2, 0, 1, 3],
@@ -166,13 +166,13 @@ test "gale-shapley produces stable matching" {
 ```mbt check
 ///|
 test "gale-shapley mutual top match" {
-  let pp : Array[Array[Int]] = [
+  let pp : Array[Array[Int32]] = [
     [2, 0, 1, 3],
     [0, 1, 2, 3],
     [1, 0, 2, 3],
     [3, 2, 1, 0],
   ]
-  let rp : Array[Array[Int]] = [
+  let rp : Array[Array[Int32]] = [
     [1, 0, 2, 3],
     [2, 0, 1, 3],
     [0, 1, 2, 3],
@@ -187,8 +187,8 @@ test "gale-shapley mutual top match" {
 ```mbt check
 ///|
 test "gale-shapley single pair" {
-  let pp : Array[Array[Int]] = [[0]]
-  let rp : Array[Array[Int]] = [[0]]
+  let pp : Array[Array[Int32]] = [[0]]
+  let rp : Array[Array[Int32]] = [[0]]
   debug_inspect(
     @gale_shapley_stable_matching.stable_match(pp[:], rp[:]),
     content="[0]",

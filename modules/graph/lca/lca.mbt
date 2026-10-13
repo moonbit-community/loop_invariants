@@ -50,10 +50,10 @@
 /// - `depth`  : `depth[v]` is the distance (number of edges) from the root
 ///              to node `v`
 pub struct LCA {
-  n : Int
-  log_n : Int
-  up : Array[Array[Int]] // up[v][k] = 2^k-th ancestor
-  depth : Array[Int]
+  n : Int32
+  log_n : Int32
+  up : Array[Array[Int32]] // up[v][k] = 2^k-th ancestor
+  depth : Array[Int32]
 }
 
 ///|
@@ -61,7 +61,7 @@ pub struct LCA {
 ///
 /// Used to determine the height of the binary lifting table so that every
 /// ancestor reachable within the tree can be represented.
-fn compute_log(n : Int) -> Int {
+fn compute_log(n : Int32) -> Int32 {
   for val = 1, log = 0; val < n; {
     continue val * 2, log + 1
   } nobreak {
@@ -95,13 +95,13 @@ fn compute_log(n : Int) -> Int {
 /// let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3)]
 /// let lca = LCA(4, edges)
 /// ```
-pub fn LCA::LCA(n : Int, edges : Array[(Int, Int)]) -> LCA {
+pub fn LCA::LCA(n : Int32, edges : Array[(Int32, Int32)]) -> LCA {
   if n == 0 {
     return { n: 0, log_n: 0, up: [], depth: [], }
   }
   let log_n = compute_log(n)
   // Use makei to create adjacency list - each element is an independent empty array
-  let adj : Array[Array[Int]] = [ for _ in 0..<n => [] ]
+  let adj : Array[Array[Int32]] = [ for _ in 0..<n => [] ]
 
   // Build adjacency list
   for edge in edges {
@@ -114,7 +114,7 @@ pub fn LCA::LCA(n : Int, edges : Array[(Int, Int)]) -> LCA {
 
   // Initialize arrays using makei
   let depth = Array::make(n, 0)
-  let up : Array[Array[Int]] = [ for _ in 0..<n => Array::make(log_n, -1) ]
+  let up : Array[Array[Int32]] = [ for _ in 0..<n => Array::make(log_n, -1) ]
 
   // DFS to compute depth and immediate parent
   let visited = Array::make(n, false)
@@ -169,12 +169,12 @@ pub fn LCA::LCA(n : Int, edges : Array[(Int, Int)]) -> LCA {
 /// Marking nodes in `visited` ensures each node is processed exactly once even
 /// if the adjacency list contains back-edges.
 fn dfs_build(
-  v : Int,
-  parent : Int,
-  d : Int,
-  adj : Array[Array[Int]],
-  depth : Array[Int],
-  up : Array[Array[Int]],
+  v : Int32,
+  parent : Int32,
+  d : Int32,
+  adj : Array[Array[Int32]],
+  depth : Array[Int32],
+  up : Array[Array[Int32]],
   visited : Array[Bool],
 ) -> Unit {
   visited[v] = true
@@ -211,7 +211,7 @@ fn dfs_build(
 /// lca.query(2, 3) // returns 1
 /// lca.query(0, 2) // returns 0
 /// ```
-pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
+pub fn LCA::query(self : LCA, u : Int32, v : Int32) -> Int32 {
   if u < 0 || u >= self.n || v < 0 || v >= self.n {
     return -1
   }
@@ -273,7 +273,7 @@ pub fn LCA::query(self : LCA, u : Int, v : Int) -> Int {
 /// Return the depth (distance from root) of node `v`.
 ///
 /// Returns -1 if `v` is outside `[0, n-1]`.
-fn LCA::get_depth(self : LCA, v : Int) -> Int {
+fn LCA::get_depth(self : LCA, v : Int32) -> Int32 {
   if v < 0 || v >= self.n {
     return -1
   }
@@ -287,7 +287,7 @@ fn LCA::get_depth(self : LCA, v : Int) -> Int {
 ///   `dist(u, v) = depth[u] + depth[v] - 2 * depth[LCA(u, v)]`
 ///
 /// Returns -1 if either node is outside `[0, n-1]`.
-fn LCA::distance(self : LCA, u : Int, v : Int) -> Int {
+fn LCA::distance(self : LCA, u : Int32, v : Int32) -> Int32 {
   let lca = self.query(u, v)
   if lca == -1 {
     return -1
@@ -303,7 +303,7 @@ fn LCA::distance(self : LCA, u : Int, v : Int) -> Int {
 ///
 /// Returns -1 if `v` is outside `[0, n-1]`, `k` is negative, or `v` has
 /// fewer than `k` ancestors (i.e., the root is reached before k jumps).
-fn LCA::kth_ancestor(self : LCA, v : Int, k : Int) -> Int {
+fn LCA::kth_ancestor(self : LCA, v : Int32, k : Int32) -> Int32 {
   if v < 0 || v >= self.n || k < 0 {
     return -1
   }
@@ -335,7 +335,7 @@ fn LCA::kth_ancestor(self : LCA, v : Int, k : Int) -> Int {
 /// Return `true` if `u` is an ancestor of `v` (including `u == v`).
 ///
 /// Equivalent to checking whether `LCA(u, v) == u`.
-fn LCA::is_ancestor(self : LCA, u : Int, v : Int) -> Bool {
+fn LCA::is_ancestor(self : LCA, u : Int32, v : Int32) -> Bool {
   self.query(u, v) == u
 }
 
@@ -346,13 +346,13 @@ fn LCA::is_ancestor(self : LCA, u : Int, v : Int) -> Bool {
 /// `LCA(u, v)`, and ending at `v`. The LCA node appears exactly once.
 ///
 /// Returns an empty array if either node is outside `[0, n-1]`.
-fn LCA::get_path(self : LCA, u : Int, v : Int) -> Array[Int] {
+fn LCA::get_path(self : LCA, u : Int32, v : Int32) -> Array[Int32] {
   if u < 0 || u >= self.n || v < 0 || v >= self.n {
     return []
   }
   let lca = self.query(u, v)
-  let path_u : Array[Int] = []
-  let path_v : Array[Int] = []
+  let path_u : Array[Int32] = []
+  let path_v : Array[Int32] = []
 
   // Path from u to LCA
   for curr = u; curr != lca; {
@@ -419,8 +419,8 @@ priv struct WeightedLCA {
 /// are ignored. The topology is handed to `LCA::new`; a separate DFS
 /// accumulates weighted distances from the root.
 fn WeightedLCA::WeightedLCA(
-  n : Int,
-  edges : Array[(Int, Int, Int64)],
+  n : Int32,
+  edges : Array[(Int32, Int32, Int64)],
 ) -> WeightedLCA {
   if n == 0 {
     return { lca: LCA(0, []), dist_to_root: [], }
@@ -431,7 +431,7 @@ fn WeightedLCA::WeightedLCA(
   let lca = LCA(n, unweighted_edges)
 
   // Build weighted adjacency list
-  let wadj : Array[Array[(Int, Int64)]] = [ for _ in 0..<n => [] ]
+  let wadj : Array[Array[(Int32, Int64)]] = [ for _ in 0..<n => [] ]
   for edge in edges {
     let (u, v, w) = edge
     if u >= 0 && u < n && v >= 0 && v < n {
@@ -453,9 +453,9 @@ fn WeightedLCA::WeightedLCA(
 /// `d` carries the accumulated weight from the root to the current node `v`.
 /// Each unvisited neighbour is recursed into with its edge weight added.
 fn dfs_dist(
-  v : Int,
+  v : Int32,
   d : Int64,
-  wadj : Array[Array[(Int, Int64)]],
+  wadj : Array[Array[(Int32, Int64)]],
   dist : Array[Int64],
   visited : Array[Bool],
 ) -> Unit {
@@ -474,7 +474,7 @@ fn dfs_dist(
 ///
 /// Computes `dist_to_root[u] + dist_to_root[v] - 2 * dist_to_root[LCA(u, v)]`.
 /// Returns -1L if the underlying LCA query is invalid.
-fn WeightedLCA::query_dist(self : WeightedLCA, u : Int, v : Int) -> Int64 {
+fn WeightedLCA::query_dist(self : WeightedLCA, u : Int32, v : Int32) -> Int64 {
   let lca = self.lca.query(u, v)
   if lca == -1 {
     return -1L
@@ -487,7 +487,7 @@ fn WeightedLCA::query_dist(self : WeightedLCA, u : Int, v : Int) -> Int64 {
 ///
 /// Delegates directly to `LCA::query`; the edge weights have no effect on
 /// which node is the LCA.
-fn WeightedLCA::query_lca(self : WeightedLCA, u : Int, v : Int) -> Int {
+fn WeightedLCA::query_lca(self : WeightedLCA, u : Int32, v : Int32) -> Int32 {
   self.lca.query(u, v)
 }
 
@@ -503,7 +503,7 @@ test "lca basic" {
   //     1 2 3
   //    /\
   //   4  5
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (0, 3), (1, 4), (1, 5)]
   let lca = LCA(6, edges)
   debug_inspect(lca.query(4, 5), content="1")
   debug_inspect(lca.query(4, 2), content="0")
@@ -513,7 +513,7 @@ test "lca basic" {
 
 ///|
 test "lca same node" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2)]
   let lca = LCA(3, edges)
   debug_inspect(lca.query(1, 1), content="1")
   debug_inspect(lca.query(0, 0), content="0")
@@ -521,7 +521,7 @@ test "lca same node" {
 
 ///|
 test "lca depth" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3)]
   let lca = LCA(4, edges)
   debug_inspect(lca.get_depth(0), content="0")
   debug_inspect(lca.get_depth(1), content="1")
@@ -531,7 +531,7 @@ test "lca depth" {
 
 ///|
 test "lca distance" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
   let lca = LCA(5, edges)
   debug_inspect(lca.distance(3, 4), content="2")
   debug_inspect(lca.distance(3, 2), content="3")
@@ -540,7 +540,7 @@ test "lca distance" {
 
 ///|
 test "lca kth ancestor" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
   let lca = LCA(5, edges)
   debug_inspect(lca.kth_ancestor(4, 0), content="4")
   debug_inspect(lca.kth_ancestor(4, 1), content="3")
@@ -551,7 +551,7 @@ test "lca kth ancestor" {
 
 ///|
 test "lca is ancestor" {
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (0, 3)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (0, 3)]
   let lca = LCA(4, edges)
   debug_inspect(lca.is_ancestor(0, 2), content="true")
   debug_inspect(lca.is_ancestor(1, 2), content="true")
@@ -561,7 +561,7 @@ test "lca is ancestor" {
 
 ///|
 test "lca get path" {
-  let edges : Array[(Int, Int)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (0, 2), (1, 3), (1, 4)]
   let lca = LCA(5, edges)
   let path = lca.get_path(3, 4)
   debug_inspect(path.length(), content="3") // 3 -> 1 -> 4
@@ -570,7 +570,7 @@ test "lca get path" {
 ///|
 test "lca linear tree" {
   // Linear tree: 0 - 1 - 2 - 3 - 4
-  let edges : Array[(Int, Int)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+  let edges : Array[(Int32, Int32)] = [(0, 1), (1, 2), (2, 3), (3, 4)]
   let lca = LCA(5, edges)
   debug_inspect(lca.query(2, 4), content="2")
   debug_inspect(lca.query(1, 4), content="1")
@@ -585,7 +585,7 @@ test "lca binary tree" {
   //      1   2
   //     /|   |\
   //    3 4  5 6
-  let edges : Array[(Int, Int)] = [
+  let edges : Array[(Int32, Int32)] = [
     (0, 1),
     (0, 2),
     (1, 3),
@@ -602,7 +602,7 @@ test "lca binary tree" {
 
 ///|
 test "weighted lca" {
-  let edges : Array[(Int, Int, Int64)] = [
+  let edges : Array[(Int32, Int32, Int64)] = [
     (0, 1, 10L),
     (0, 2, 20L),
     (1, 3, 5L),
@@ -629,7 +629,7 @@ test "lca single node" {
 
 ///|
 test "lca invalid queries" {
-  let edges : Array[(Int, Int)] = [(0, 1)]
+  let edges : Array[(Int32, Int32)] = [(0, 1)]
   let lca = LCA(2, edges)
   debug_inspect(lca.query(-1, 0), content="-1")
   debug_inspect(lca.query(0, 10), content="-1")

@@ -47,13 +47,13 @@
 ///
 /// Returns `true` if `sink` is reachable from `source` in the residual graph,
 /// meaning another blocking-flow phase is possible.
-pub fn Dinic::bfs(self : Dinic, source : Int, sink : Int) -> Bool {
+pub fn Dinic::bfs(self : Dinic, source : Int32, sink : Int32) -> Bool {
   // Reset levels
   self.level.fill(-1)
 
   // Initialize BFS from source
   self.level[source] = 0
-  let queue : Array[Int] = [source]
+  let queue : Array[Int32] = [source]
 
   // BFS loop
   for front = 0; queue.get(front) is Some(u); {
