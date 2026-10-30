@@ -13,4 +13,3 @@ pub fn evaluate(Array[(Double, Double)], Double) -> Double
 // Type aliases
 
 // Traits
-

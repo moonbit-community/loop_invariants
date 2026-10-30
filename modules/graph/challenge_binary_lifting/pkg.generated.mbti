@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_graph/challenge_binary_lifting"
 
 // Values
-pub fn build_lift(ArrayView[Int]) -> Array[Array[Int]]
+pub fn build_lift(ArrayView[Int32]) -> Array[Array[Int32]]
 
-pub fn lift(Array[Array[Int]], Int, Int) -> Int
+pub fn lift(Array[Array[Int32]], Int32, Int32) -> Int32
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn lift(Array[Array[Int]], Int, Int) -> Int
 // Type aliases
 
 // Traits
-

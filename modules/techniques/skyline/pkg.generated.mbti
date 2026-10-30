@@ -11,4 +11,3 @@ pub fn compute(Array[(Int64, Int64, Int64)]) -> Array[(Int64, Int64)]
 // Type aliases
 
 // Traits
-

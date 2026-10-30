@@ -11,4 +11,3 @@ pub fn linear_recurrence_nth(ArrayView[Int64], ArrayView[Int64], Int64, Int64) -
 // Type aliases
 
 // Traits
-

@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/topological_sort_dfs"
 
 // Values
-pub fn topological_sort(Int, ArrayView[(Int, Int)]) -> Array[Int]?
+pub fn topological_sort(Int32, ArrayView[(Int32, Int32)]) -> Array[Int32]?
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn topological_sort(Int, ArrayView[(Int, Int)]) -> Array[Int]?
 // Type aliases
 
 // Traits
-

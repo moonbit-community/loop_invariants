@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_string/eertree"
 
 // Values
-pub fn distinct_count(String) -> Int
+pub fn distinct_count(String) -> Int32
 
-pub fn longest_length(String) -> Int
+pub fn longest_length(String) -> Int32
 
 pub fn palindromes(String) -> Array[String]
 
@@ -15,4 +15,3 @@ pub fn palindromes(String) -> Array[String]
 // Type aliases
 
 // Traits
-

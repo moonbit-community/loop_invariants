@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/articulation_points"
 
 // Values
-pub fn find(Int, Array[Array[Int]]) -> Array[Int]
+pub fn find(Int32, Array[Array[Int32]]) -> Array[Int32]
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn find(Int, Array[Array[Int]]) -> Array[Int]
 // Type aliases
 
 // Traits
-

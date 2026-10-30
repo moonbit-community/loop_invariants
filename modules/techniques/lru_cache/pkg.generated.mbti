@@ -2,25 +2,25 @@
 package "bobzhang/loop_invariants_techniques/lru_cache"
 
 // Values
-pub fn new(Int) -> LruCache
+pub fn new(Int32) -> LruCache
 
 // Errors
 
 // Types and methods
 pub struct LruCache {
-  capacity : Int
+  capacity : Int32
   slots : Array[Slot]
-  mut head : Int
-  mut tail : Int
-  mut size : Int
-  map : Map[Int64, Int]
-  free : Array[Int]
+  mut head : Int32
+  mut tail : Int32
+  mut size : Int32
+  map : Map[Int64, Int32]
+  free : Array[Int32]
 }
-pub fn LruCache::cap(Self) -> Int
+pub fn LruCache::cap(Self) -> Int32
 pub fn LruCache::contains(Self, Int64) -> Bool
 pub fn LruCache::get(Self, Int64) -> Int64?
 pub fn LruCache::keys_mru(Self) -> Array[Int64]
-pub fn LruCache::length(Self) -> Int
+pub fn LruCache::length(Self) -> Int32
 pub fn LruCache::put(Self, Int64, Int64) -> Unit
 
 type Slot
@@ -28,4 +28,3 @@ type Slot
 // Type aliases
 
 // Traits
-

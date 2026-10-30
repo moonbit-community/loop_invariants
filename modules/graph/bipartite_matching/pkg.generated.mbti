@@ -7,21 +7,20 @@ package "bobzhang/loop_invariants_graph/bipartite_matching"
 
 // Types and methods
 type BipartiteGraph
-pub fn BipartiteGraph::BipartiteGraph(Int, Int) -> Self
-pub fn BipartiteGraph::add_edge(Self, Int, Int) -> Unit
+pub fn BipartiteGraph::BipartiteGraph(Int32, Int32) -> Self
+pub fn BipartiteGraph::add_edge(Self, Int32, Int32) -> Unit
 pub fn BipartiteGraph::hopcroft_karp(Self) -> HopcroftKarp
 pub fn BipartiteGraph::hungarian(Self) -> Hungarian
 
 type HopcroftKarp
-pub fn HopcroftKarp::get_matching(Self) -> Array[(Int, Int)]
-pub fn HopcroftKarp::max_matching(Self) -> Int
-pub fn HopcroftKarp::min_vertex_cover(Self) -> (Array[Int], Array[Int])
+pub fn HopcroftKarp::get_matching(Self) -> Array[(Int32, Int32)]
+pub fn HopcroftKarp::max_matching(Self) -> Int32
+pub fn HopcroftKarp::min_vertex_cover(Self) -> (Array[Int32], Array[Int32])
 
 type Hungarian
-pub fn Hungarian::get_matching(Self) -> Array[(Int, Int)]
-pub fn Hungarian::max_matching(Self) -> Int
+pub fn Hungarian::get_matching(Self) -> Array[(Int32, Int32)]
+pub fn Hungarian::max_matching(Self) -> Int32
 
 // Type aliases
 
 // Traits
-

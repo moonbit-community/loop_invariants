@@ -10,7 +10,7 @@ pub struct MinMaxHeap {
   data : Array[Int64]
 }
 pub fn MinMaxHeap::is_empty(Self) -> Bool
-pub fn MinMaxHeap::length(Self) -> Int
+pub fn MinMaxHeap::length(Self) -> Int32
 pub fn MinMaxHeap::new() -> Self
 pub fn MinMaxHeap::peek_max(Self) -> Int64?
 pub fn MinMaxHeap::peek_min(Self) -> Int64?
@@ -21,4 +21,3 @@ pub fn MinMaxHeap::push(Self, Int64) -> Unit
 // Type aliases
 
 // Traits
-

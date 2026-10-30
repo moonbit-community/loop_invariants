@@ -6,25 +6,24 @@ import {
 }
 
 // Values
-pub fn apply_updates(Node, Int, ArrayView[(Int, Int, Int)]) -> Node
+pub fn apply_updates(Node, Int32, ArrayView[(Int32, Int32, Int32)]) -> Node
 
-pub fn build(ArrayView[Int], Int, Int) -> Node
+pub fn build(ArrayView[Int32], Int32, Int32) -> Node
 
-pub fn max_value(Node) -> Int
+pub fn max_value(Node) -> Int32
 
-pub fn range_add(Node, Int, Int, Int, Int, Int) -> Node
+pub fn range_add(Node, Int32, Int32, Int32, Int32, Int32) -> Node
 
-pub fn range_max(Node, Int, Int, Int, Int) -> Int
+pub fn range_max(Node, Int32, Int32, Int32, Int32) -> Int32
 
 // Errors
 
 // Types and methods
 pub enum Node {
-  Leaf(max~ : Int, tag~ : Int)
-  Branch(max~ : Int, tag~ : Int, left~ : Node, right~ : Node)
+  Leaf(max~ : Int32, tag~ : Int32)
+  Branch(max~ : Int32, tag~ : Int32, left~ : Node, right~ : Node)
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

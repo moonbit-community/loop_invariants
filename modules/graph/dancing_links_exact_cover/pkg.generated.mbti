@@ -2,20 +2,19 @@
 package "bobzhang/loop_invariants_graph/dancing_links_exact_cover"
 
 // Values
-pub fn new(Int, Int, ArrayView[(Int, Int)]) -> DLX
+pub fn new(Int32, Int32, ArrayView[(Int32, Int32)]) -> DLX
 
 // Errors
 
 // Types and methods
 pub struct DLX {
   nodes : Array[Node]
-  column_ids : Array[Int]
+  column_ids : Array[Int32]
 }
-pub fn DLX::solve(Self, Int) -> Array[Array[Int]]
+pub fn DLX::solve(Self, Int32) -> Array[Array[Int32]]
 
 type Node
 
 // Type aliases
 
 // Traits
-

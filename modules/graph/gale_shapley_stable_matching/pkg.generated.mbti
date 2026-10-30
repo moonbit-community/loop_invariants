@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_graph/gale_shapley_stable_matching"
 
 // Values
-pub fn is_stable(ArrayView[Array[Int]], ArrayView[Array[Int]], ArrayView[Int]) -> Bool
+pub fn is_stable(ArrayView[Array[Int32]], ArrayView[Array[Int32]], ArrayView[Int32]) -> Bool
 
-pub fn stable_match(ArrayView[Array[Int]], ArrayView[Array[Int]]) -> Array[Int]
+pub fn stable_match(ArrayView[Array[Int32]], ArrayView[Array[Int32]]) -> Array[Int32]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn stable_match(ArrayView[Array[Int]], ArrayView[Array[Int]]) -> Array[Int]
 // Type aliases
 
 // Traits
-

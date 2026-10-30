@@ -4,11 +4,11 @@ package "bobzhang/loop_invariants_graph/transitive_closure"
 // Values
 pub fn closure(Array[Array[Bool]]) -> Array[Array[Bool]]
 
-pub fn closure_bitpacked(Int, Array[Array[Int64]]) -> Array[Array[Int64]]
+pub fn closure_bitpacked(Int32, Array[Array[Int64]]) -> Array[Array[Int64]]
 
 pub fn pack_rows(Array[Array[Bool]]) -> Array[Array[Int64]]
 
-pub fn unpack_rows(Int, Array[Array[Int64]]) -> Array[Array[Bool]]
+pub fn unpack_rows(Int32, Array[Array[Int64]]) -> Array[Array[Bool]]
 
 // Errors
 
@@ -17,4 +17,3 @@ pub fn unpack_rows(Int, Array[Array[Int64]]) -> Array[Array[Bool]]
 // Type aliases
 
 // Traits
-

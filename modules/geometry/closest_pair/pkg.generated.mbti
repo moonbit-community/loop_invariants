@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_geometry/closest_pair"
 
 // Values
-pub fn closest_pair(Array[(Double, Double)]) -> (Double, Int, Int)
+pub fn closest_pair(Array[(Double, Double)]) -> (Double, Int32, Int32)
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn closest_pair(Array[(Double, Double)]) -> (Double, Int, Int)
 // Type aliases
 
 // Traits
-

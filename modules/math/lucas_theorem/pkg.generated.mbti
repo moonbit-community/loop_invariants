@@ -11,4 +11,3 @@ pub fn nck_mod_prime_lucas(Int64, Int64, Int64) -> Int64
 // Type aliases
 
 // Traits
-

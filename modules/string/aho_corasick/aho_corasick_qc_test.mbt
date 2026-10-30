@@ -47,7 +47,7 @@ fn gen_nonempty_pattern(rs : @quickcheck.RandomState, text : String) -> String {
   if n > 0 && rint(rs, 0, 1) == 0 {
     let i = rint(rs, 0, n - 1)
     let j = rint(rs, i + 1, if n - i > 5 { i + 5 } else { n })
-    text.view(start_offset=i, end_offset=j).to_owned()
+    text[i:j].to_owned()
   } else {
     let s = gen_str(rs, ['a', 'b', 'c'], 3)
     if s.length() == 0 {

@@ -6,17 +6,17 @@ import {
 }
 
 // Values
-pub fn apply_updates(RangeFenwick, ArrayView[(Int, Int, Int)]) -> RangeFenwick
+pub fn apply_updates(RangeFenwick, ArrayView[(Int32, Int32, Int32)]) -> RangeFenwick
 
-pub fn length(RangeFenwick) -> Int
+pub fn length(RangeFenwick) -> Int32
 
-pub fn make(Int) -> RangeFenwick
+pub fn make(Int32) -> RangeFenwick
 
-pub fn prefix_sum_range(RangeFenwick, Int) -> Int
+pub fn prefix_sum_range(RangeFenwick, Int32) -> Int32
 
-pub fn range_add(RangeFenwick, Int, Int, Int) -> RangeFenwick
+pub fn range_add(RangeFenwick, Int32, Int32, Int32) -> RangeFenwick
 
-pub fn range_sum(RangeFenwick, Int, Int) -> Int
+pub fn range_sum(RangeFenwick, Int32, Int32) -> Int32
 
 // Errors
 
@@ -28,10 +28,9 @@ type Node derive(@debug.Debug)
 pub struct RangeFenwick {
   bit1 : Fenwick
   bit2 : Fenwick
-  n : Int
+  n : Int32
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

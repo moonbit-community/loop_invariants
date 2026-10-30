@@ -8,17 +8,16 @@ pub fn new(base~ : Double, seed~ : Int64) -> MorrisCounter
 
 // Types and methods
 pub struct MorrisCounter {
-  mut c : Int
+  mut c : Int32
   base : Double
   mut rng_state : Int64
 }
 pub fn MorrisCounter::base_of(Self) -> Double
 pub fn MorrisCounter::estimate(Self) -> Int64
 pub fn MorrisCounter::increment(Self) -> Unit
-pub fn MorrisCounter::increment_n(Self, Int) -> Unit
-pub fn MorrisCounter::raw(Self) -> Int
+pub fn MorrisCounter::increment_n(Self, Int32) -> Unit
+pub fn MorrisCounter::raw(Self) -> Int32
 
 // Type aliases
 
 // Traits
-

@@ -11,4 +11,3 @@ pub fn max_coins(Array[Int64]) -> Int64
 // Type aliases
 
 // Traits
-

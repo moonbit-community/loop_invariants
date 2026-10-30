@@ -13,4 +13,3 @@ pub fn wilson_quotient(Int64) -> Int64?
 // Type aliases
 
 // Traits
-

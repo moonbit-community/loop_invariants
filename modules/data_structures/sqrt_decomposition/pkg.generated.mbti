@@ -9,14 +9,13 @@ package "bobzhang/loop_invariants_data_structures/sqrt_decomposition"
 pub struct SqrtSum {
   arr : Array[Int64]
   blocks : Array[Int64]
-  block_size : Int
-  n : Int
+  block_size : Int32
+  n : Int32
 }
 pub fn SqrtSum::SqrtSum(Array[Int64]) -> Self
-pub fn SqrtSum::query(Self, Int, Int) -> Int64
-pub fn SqrtSum::update(Self, Int, Int64) -> Unit
+pub fn SqrtSum::query(Self, Int32, Int32) -> Int64
+pub fn SqrtSum::update(Self, Int32, Int64) -> Unit
 
 // Type aliases
 
 // Traits
-

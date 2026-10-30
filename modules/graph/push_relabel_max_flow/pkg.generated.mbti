@@ -7,26 +7,25 @@ package "bobzhang/loop_invariants_graph/push_relabel_max_flow"
 
 // Types and methods
 pub struct Edge {
-  to : Int
+  to : Int32
   cap : Int64
   mut flow : Int64
-  rev : Int
+  rev : Int32
 }
 
 pub struct PushRelabel {
-  n : Int
+  n : Int32
   adj : Array[Array[Edge]]
-  height : Array[Int]
+  height : Array[Int32]
   excess : Array[Int64]
-  next_edge : Array[Int]
+  next_edge : Array[Int32]
   in_active : Array[Bool]
 }
-pub fn PushRelabel::PushRelabel(Int) -> Self
-pub fn PushRelabel::add_edge(Self, Int, Int, Int64) -> Unit
-pub fn PushRelabel::add_undirected_edge(Self, Int, Int, Int64) -> Unit
-pub fn PushRelabel::max_flow(Self, Int, Int) -> Int64
+pub fn PushRelabel::PushRelabel(Int32) -> Self
+pub fn PushRelabel::add_edge(Self, Int32, Int32, Int64) -> Unit
+pub fn PushRelabel::add_undirected_edge(Self, Int32, Int32, Int64) -> Unit
+pub fn PushRelabel::max_flow(Self, Int32, Int32) -> Int64
 
 // Type aliases
 
 // Traits
-

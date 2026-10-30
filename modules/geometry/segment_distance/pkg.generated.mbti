@@ -17,4 +17,3 @@ pub fn segments_intersect((Double, Double), (Double, Double), (Double, Double), 
 // Type aliases
 
 // Traits
-

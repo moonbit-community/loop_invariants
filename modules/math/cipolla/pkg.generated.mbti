@@ -11,4 +11,3 @@ pub fn cipolla_sqrt(Int64, Int64) -> Int64?
 // Type aliases
 
 // Traits
-

@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_graph/challenge_toposort_kahn"
 
 // Values
-pub fn is_topo(Array[Int], Int, ArrayView[(Int, Int)]) -> Bool
+pub fn is_topo(Array[Int32], Int32, ArrayView[(Int32, Int32)]) -> Bool
 
-pub fn topo_sort(Int, ArrayView[(Int, Int)]) -> Array[Int]?
+pub fn topo_sort(Int32, ArrayView[(Int32, Int32)]) -> Array[Int32]?
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn topo_sort(Int, ArrayView[(Int, Int)]) -> Array[Int]?
 // Type aliases
 
 // Traits
-

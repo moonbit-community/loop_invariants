@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_dp/distinct_subsequences"
 
 // Values
-pub fn count_all_subseq(Array[Int]) -> Int64
+pub fn count_all_subseq(Array[Int32]) -> Int64
 
-pub fn count_equal_target(Array[Int], Array[Int]) -> Int64
+pub fn count_equal_target(Array[Int32], Array[Int32]) -> Int64
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn count_equal_target(Array[Int], Array[Int]) -> Int64
 // Type aliases
 
 // Traits
-

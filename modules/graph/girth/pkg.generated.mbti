@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/girth"
 
 // Values
-pub fn girth(Int, Array[Array[Int]]) -> Int
+pub fn girth(Int32, Array[Array[Int32]]) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn girth(Int, Array[Array[Int]]) -> Int
 // Type aliases
 
 // Traits
-

@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_dp/challenge_knapsack_01"
 
 // Values
-pub fn knapsack_01(ArrayView[Int], ArrayView[Int], Int) -> Int
+pub fn knapsack_01(ArrayView[Int32], ArrayView[Int32], Int32) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn knapsack_01(ArrayView[Int], ArrayView[Int], Int) -> Int
 // Type aliases
 
 // Traits
-

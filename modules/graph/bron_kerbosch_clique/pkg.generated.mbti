@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/bron_kerbosch_clique"
 
 // Values
-pub fn maximal_cliques(Int, ArrayView[(Int, Int)]) -> Array[Array[Int]]
+pub fn maximal_cliques(Int32, ArrayView[(Int32, Int32)]) -> Array[Array[Int32]]
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn maximal_cliques(Int, ArrayView[(Int, Int)]) -> Array[Array[Int]]
 // Type aliases
 
 // Traits
-

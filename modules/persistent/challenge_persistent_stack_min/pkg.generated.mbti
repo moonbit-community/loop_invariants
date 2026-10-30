@@ -16,7 +16,7 @@ pub fn[T] pop(MinStack[T]) -> (T, MinStack[T])?
 
 pub fn[T : Compare] push(MinStack[T], T) -> MinStack[T]
 
-pub fn[T] size(MinStack[T]) -> Int
+pub fn[T] size(MinStack[T]) -> Int32
 
 // Errors
 
@@ -29,4 +29,3 @@ pub enum MinStack[T] {
 // Type aliases
 
 // Traits
-

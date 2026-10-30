@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_graph/prufer_code"
 
 // Values
-pub fn prufer_decode(ArrayView[Int]) -> Array[(Int, Int)]?
+pub fn prufer_decode(ArrayView[Int32]) -> Array[(Int32, Int32)]?
 
-pub fn prufer_encode(Int, ArrayView[(Int, Int)]) -> Array[Int]?
+pub fn prufer_encode(Int32, ArrayView[(Int32, Int32)]) -> Array[Int32]?
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn prufer_encode(Int, ArrayView[(Int, Int)]) -> Array[Int]?
 // Type aliases
 
 // Traits
-

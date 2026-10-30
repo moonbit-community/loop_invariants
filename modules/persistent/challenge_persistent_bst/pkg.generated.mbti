@@ -16,7 +16,7 @@ pub fn[T] inorder(Tree[T]) -> Array[T]
 
 pub fn[T : Compare] insert(Tree[T], T) -> Tree[T]
 
-pub fn[T] size(Tree[T]) -> Int
+pub fn[T] size(Tree[T]) -> Int32
 
 // Errors
 
@@ -29,4 +29,3 @@ pub enum Tree[T] {
 // Type aliases
 
 // Traits
-

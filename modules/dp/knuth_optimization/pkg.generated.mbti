@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_dp/knuth_optimization"
 
 // Values
-pub fn solve(Int, (Int, Int) -> Int64) -> Int64
+pub fn solve(Int32, (Int32, Int32) -> Int64) -> Int64
 
-pub fn solve_table(Int, (Int, Int) -> Int64) -> Array[Array[Int64]]
+pub fn solve_table(Int32, (Int32, Int32) -> Int64) -> Array[Array[Int64]]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn solve_table(Int, (Int, Int) -> Int64) -> Array[Array[Int64]]
 // Type aliases
 
 // Traits
-

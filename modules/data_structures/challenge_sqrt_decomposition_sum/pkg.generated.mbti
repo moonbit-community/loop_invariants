@@ -2,23 +2,22 @@
 package "bobzhang/loop_invariants_data_structures/challenge_sqrt_decomposition_sum"
 
 // Values
-pub fn build_sqrt_decomp(ArrayView[Int]) -> SqrtDecomp
+pub fn build_sqrt_decomp(ArrayView[Int32]) -> SqrtDecomp
 
-pub fn range_sum(SqrtDecomp, Int, Int) -> Int
+pub fn range_sum(SqrtDecomp, Int32, Int32) -> Int32
 
-pub fn update(SqrtDecomp, Int, Int) -> Unit
+pub fn update(SqrtDecomp, Int32, Int32) -> Unit
 
 // Errors
 
 // Types and methods
 pub struct SqrtDecomp {
-  n : Int
-  block_size : Int
-  arr : Array[Int]
-  block_sum : Array[Int]
+  n : Int32
+  block_size : Int32
+  arr : Array[Int32]
+  block_sum : Array[Int32]
 }
 
 // Type aliases
 
 // Traits
-

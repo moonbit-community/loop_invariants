@@ -2,27 +2,26 @@
 package "bobzhang/loop_invariants_string/suffix_array"
 
 // Values
-pub fn lcp_array(String, ArrayView[Int]) -> Array[Int]
+pub fn lcp_array(String, ArrayView[Int32]) -> Array[Int32]
 
-pub fn suffix_array(String) -> Array[Int]
+pub fn suffix_array(String) -> Array[Int32]
 
 // Errors
 
 // Types and methods
 pub struct SuffixArray {
-  sa : Array[Int]
-  lcp : Array[Int]
+  sa : Array[Int32]
+  lcp : Array[Int32]
   text : String
 }
 pub fn SuffixArray::SuffixArray(String) -> Self
-pub fn SuffixArray::count(Self, String) -> Int
+pub fn SuffixArray::count(Self, String) -> Int32
 pub fn SuffixArray::count_distinct_substrings(Self) -> Int64
-pub fn SuffixArray::find_all(Self, String) -> Array[Int]
-pub fn SuffixArray::get_suffix(Self, Int) -> String
+pub fn SuffixArray::find_all(Self, String) -> Array[Int32]
+pub fn SuffixArray::get_suffix(Self, Int32) -> String
 pub fn SuffixArray::longest_repeated_substring(Self) -> String
-pub fn SuffixArray::search(Self, String) -> (Int, Int)?
+pub fn SuffixArray::search(Self, String) -> (Int32, Int32)?
 
 // Type aliases
 
 // Traits
-

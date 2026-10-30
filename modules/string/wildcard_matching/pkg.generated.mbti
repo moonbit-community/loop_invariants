@@ -11,4 +11,3 @@ pub fn wildcard_match(String, String) -> Bool
 // Type aliases
 
 // Traits
-

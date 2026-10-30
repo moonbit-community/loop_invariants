@@ -7,15 +7,14 @@ package "bobzhang/loop_invariants_graph/lca"
 
 // Types and methods
 pub struct LCA {
-  n : Int
-  log_n : Int
-  up : Array[Array[Int]]
-  depth : Array[Int]
+  n : Int32
+  log_n : Int32
+  up : Array[Array[Int32]]
+  depth : Array[Int32]
 }
-pub fn LCA::LCA(Int, Array[(Int, Int)]) -> Self
-pub fn LCA::query(Self, Int, Int) -> Int
+pub fn LCA::LCA(Int32, Array[(Int32, Int32)]) -> Self
+pub fn LCA::query(Self, Int32, Int32) -> Int32
 
 // Type aliases
 
 // Traits
-

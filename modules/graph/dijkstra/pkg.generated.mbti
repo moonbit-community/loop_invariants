@@ -6,38 +6,37 @@ import {
 }
 
 // Values
-pub fn bidirectional_dijkstra(Graph, Graph, Int, Int) -> Int64?
+pub fn bidirectional_dijkstra(Graph, Graph, Int32, Int32) -> Int64?
 
-pub fn dijkstra(Graph, Int) -> DijkstraResult
+pub fn dijkstra(Graph, Int32) -> DijkstraResult
 
-pub fn dijkstra_dense(Array[Array[(Int, Int)]], Int) -> Array[Int]
+pub fn dijkstra_dense(Array[Array[(Int32, Int32)]], Int32) -> Array[Int32]
 
-pub fn reconstruct_path(DijkstraResult, Int) -> Array[Int]
+pub fn reconstruct_path(DijkstraResult, Int32) -> Array[Int32]
 
-pub fn shortest_distance(Graph, Int, Int) -> Int64?
+pub fn shortest_distance(Graph, Int32, Int32) -> Int64?
 
 // Errors
 
 // Types and methods
 pub(all) struct DijkstraResult {
   dist : Array[Int64]
-  parent : Array[Int]
+  parent : Array[Int32]
 }
 
 pub(all) struct Edge {
-  to : Int
+  to : Int32
   weight : Int64
 } derive(@debug.Debug)
 
 pub(all) struct Graph {
-  n : Int
+  n : Int32
   adj : Array[Array[Edge]]
 }
-pub fn Graph::Graph(Int) -> Self
-pub fn Graph::add_edge(Self, Int, Int, Int64) -> Unit
-pub fn Graph::add_undirected_edge(Self, Int, Int, Int64) -> Unit
+pub fn Graph::Graph(Int32) -> Self
+pub fn Graph::add_edge(Self, Int32, Int32, Int64) -> Unit
+pub fn Graph::add_undirected_edge(Self, Int32, Int32, Int64) -> Unit
 
 // Type aliases
 
 // Traits
-

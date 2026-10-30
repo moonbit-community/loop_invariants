@@ -6,26 +6,25 @@ import {
 }
 
 // Values
-pub fn dial_shortest_paths(Graph, Int) -> Array[Int]
+pub fn dial_shortest_paths(Graph, Int32) -> Array[Int32]
 
 // Errors
 
 // Types and methods
 pub struct Edge {
-  to : Int
-  weight : Int
+  to : Int32
+  weight : Int32
 } derive(@debug.Debug)
 
 pub struct Graph {
-  n : Int
-  max_weight : Int
+  n : Int32
+  max_weight : Int32
   adj : Array[Array[Edge]]
 }
-pub fn Graph::Graph(Int, Int) -> Self
-pub fn Graph::add_edge(Self, Int, Int, Int) -> Unit
-pub fn Graph::add_undirected_edge(Self, Int, Int, Int) -> Unit
+pub fn Graph::Graph(Int32, Int32) -> Self
+pub fn Graph::add_edge(Self, Int32, Int32, Int32) -> Unit
+pub fn Graph::add_undirected_edge(Self, Int32, Int32, Int32) -> Unit
 
 // Type aliases
 
 // Traits
-

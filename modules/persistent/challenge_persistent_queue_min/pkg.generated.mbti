@@ -16,7 +16,7 @@ pub fn[T : Compare] min_queue(MinQueue[T]) -> T?
 
 pub fn[T : Compare] peek(MinQueue[T]) -> T?
 
-pub fn[T] size(MinQueue[T]) -> Int
+pub fn[T] size(MinQueue[T]) -> Int32
 
 // Errors
 
@@ -31,4 +31,3 @@ type MinStack[T] derive(@debug.Debug)
 // Type aliases
 
 // Traits
-

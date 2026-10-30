@@ -2,18 +2,17 @@
 package "bobzhang/loop_invariants_graph/block_cut_tree"
 
 // Values
-pub fn build_block_cut_tree(Int, ArrayView[(Int, Int)]) -> BlockCutTree
+pub fn build_block_cut_tree(Int32, ArrayView[(Int32, Int32)]) -> BlockCutTree
 
 // Errors
 
 // Types and methods
 pub struct BlockCutTree {
-  original_vertices : Int
-  component_count : Int
-  adj : Array[Array[Int]]
+  original_vertices : Int32
+  component_count : Int32
+  adj : Array[Array[Int32]]
 }
 
 // Type aliases
 
 // Traits
-

@@ -2,17 +2,16 @@
 package "bobzhang/loop_invariants_graph/virtual_tree"
 
 // Values
-pub fn build_virtual_tree(Array[Array[Int]], Array[Int], root? : Int) -> VirtualTree
+pub fn build_virtual_tree(Array[Array[Int32]], Array[Int32], root? : Int32) -> VirtualTree
 
 // Errors
 
 // Types and methods
 pub struct VirtualTree {
-  nodes : Array[Int]
-  adj : Array[Array[Int]]
+  nodes : Array[Int32]
+  adj : Array[Array[Int32]]
 }
 
 // Type aliases
 
 // Traits
-

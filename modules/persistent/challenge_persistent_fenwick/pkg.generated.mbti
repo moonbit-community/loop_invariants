@@ -6,22 +6,22 @@ import {
 }
 
 // Values
-pub fn add(Fenwick, Int, Int) -> Fenwick
+pub fn add(Fenwick, Int32, Int32) -> Fenwick
 
-pub fn length(Fenwick) -> Int
+pub fn length(Fenwick) -> Int32
 
-pub fn make(Int) -> Fenwick
+pub fn make(Int32) -> Fenwick
 
-pub fn prefix_sum(Fenwick, Int) -> Int
+pub fn prefix_sum(Fenwick, Int32) -> Int32
 
-pub fn range_sum(Fenwick, Int, Int) -> Int
+pub fn range_sum(Fenwick, Int32, Int32) -> Int32
 
 // Errors
 
 // Types and methods
 pub struct Fenwick {
   root : Node
-  n : Int
+  n : Int32
 } derive(@debug.Debug)
 
 type Node derive(@debug.Debug)
@@ -29,4 +29,3 @@ type Node derive(@debug.Debug)
 // Type aliases
 
 // Traits
-

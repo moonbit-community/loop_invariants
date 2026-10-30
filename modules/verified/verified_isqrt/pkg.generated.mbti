@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_verified/verified_isqrt"
 
 // Values
-pub fn isqrt(Int) -> Int
+pub fn isqrt(Int32) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn isqrt(Int) -> Int
 // Type aliases
 
 // Traits
-

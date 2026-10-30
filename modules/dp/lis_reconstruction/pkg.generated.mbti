@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_dp/lis_reconstruction"
 
 // Values
-pub fn length(Array[Int]) -> Int
+pub fn length(Array[Int32]) -> Int32
 
-pub fn length_and_path(Array[Int]) -> (Int, Array[Int])
+pub fn length_and_path(Array[Int32]) -> (Int32, Array[Int32])
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn length_and_path(Array[Int]) -> (Int, Array[Int])
 // Type aliases
 
 // Traits
-

@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_verified/verified_gcd"
 
 // Values
-pub fn gcd_binary(Int, Int) -> Int
+pub fn gcd_binary(Int32, Int32) -> Int32
 
-pub fn gcd_euclid(Int, Int) -> Int
+pub fn gcd_euclid(Int32, Int32) -> Int32
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn gcd_euclid(Int, Int) -> Int
 // Type aliases
 
 // Traits
-

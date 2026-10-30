@@ -2,15 +2,15 @@
 package "bobzhang/loop_invariants_string/z_algorithm"
 
 // Values
-pub fn compute_z(String) -> Array[Int]
+pub fn compute_z(String) -> Array[Int32]
 
-pub fn count_pattern(String, String) -> Int
+pub fn count_pattern(String, String) -> Int32
 
-pub fn find_pattern(String, String) -> Array[Int]
+pub fn find_pattern(String, String) -> Array[Int32]
 
-pub fn z_function(String) -> Array[Int]
+pub fn z_function(String) -> Array[Int32]
 
-pub fn z_search(String, String) -> Array[Int]
+pub fn z_search(String, String) -> Array[Int32]
 
 // Errors
 
@@ -19,4 +19,3 @@ pub fn z_search(String, String) -> Array[Int]
 // Type aliases
 
 // Traits
-

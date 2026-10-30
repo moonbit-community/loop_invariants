@@ -6,13 +6,13 @@ import {
 }
 
 // Values
-pub fn add(OrderStat, Int) -> OrderStat
+pub fn add(OrderStat, Int32) -> OrderStat
 
-pub fn kth(OrderStat, Int) -> Int?
+pub fn kth(OrderStat, Int32) -> Int32?
 
-pub fn make(Int, Int) -> OrderStat
+pub fn make(Int32, Int32) -> OrderStat
 
-pub fn size(OrderStat) -> Int
+pub fn size(OrderStat) -> Int32
 
 // Errors
 
@@ -21,11 +21,10 @@ type Node derive(@debug.Debug)
 
 pub struct OrderStat {
   root : Node
-  lo : Int
-  hi : Int
+  lo : Int32
+  hi : Int32
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

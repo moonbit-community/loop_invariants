@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_dp/challenge_coin_change_min"
 
 // Values
-pub fn min_coins(ArrayView[Int], Int) -> Int?
+pub fn min_coins(ArrayView[Int32], Int32) -> Int32?
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn min_coins(ArrayView[Int], Int) -> Int?
 // Type aliases
 
 // Traits
-

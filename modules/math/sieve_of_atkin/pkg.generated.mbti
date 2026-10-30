@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_math/sieve_of_atkin"
 
 // Values
-pub fn is_prime_atkin(Int) -> Bool
+pub fn is_prime_atkin(Int32) -> Bool
 
-pub fn primes_up_to(Int) -> Array[Int]
+pub fn primes_up_to(Int32) -> Array[Int32]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn primes_up_to(Int) -> Array[Int]
 // Type aliases
 
 // Traits
-

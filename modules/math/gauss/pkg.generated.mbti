@@ -9,7 +9,7 @@ pub fn gauss_solve(Array[Array[Double]], Array[Double]) -> GaussResult
 // Types and methods
 pub struct GaussResult {
   solution : Array[Double]
-  rank : Int
+  rank : Int32
   has_solution : Bool
   has_unique_solution : Bool
 }
@@ -17,4 +17,3 @@ pub struct GaussResult {
 // Type aliases
 
 // Traits
-

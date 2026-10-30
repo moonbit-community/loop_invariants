@@ -2,19 +2,18 @@
 package "bobzhang/loop_invariants_graph/centroid"
 
 // Values
-pub fn build_centroid(Int, ArrayView[(Int, Int)]) -> CentroidDecomp
+pub fn build_centroid(Int32, ArrayView[(Int32, Int32)]) -> CentroidDecomp
 
 // Errors
 
 // Types and methods
 pub struct CentroidDecomp {
-  parent : Array[Int]
-  depth : Array[Int]
+  parent : Array[Int32]
+  depth : Array[Int32]
 }
-pub fn CentroidDecomp::depth(Self, Int) -> Int
-pub fn CentroidDecomp::parent(Self, Int) -> Int
+pub fn CentroidDecomp::depth(Self, Int32) -> Int32
+pub fn CentroidDecomp::parent(Self, Int32) -> Int32
 
 // Type aliases
 
 // Traits
-

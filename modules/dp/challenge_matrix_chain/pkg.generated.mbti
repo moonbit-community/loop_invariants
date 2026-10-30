@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_dp/challenge_matrix_chain"
 
 // Values
-pub fn matrix_chain_min_cost(ArrayView[Int]) -> Int
+pub fn matrix_chain_min_cost(ArrayView[Int32]) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn matrix_chain_min_cost(ArrayView[Int]) -> Int
 // Type aliases
 
 // Traits
-

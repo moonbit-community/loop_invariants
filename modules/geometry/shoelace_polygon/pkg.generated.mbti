@@ -6,7 +6,7 @@ pub fn area(Array[(Double, Double)]) -> Double
 
 pub fn centroid(Array[(Double, Double)]) -> (Double, Double)?
 
-pub fn orientation(Array[(Double, Double)]) -> Int
+pub fn orientation(Array[(Double, Double)]) -> Int32
 
 pub fn perimeter(Array[(Double, Double)]) -> Double
 
@@ -19,4 +19,3 @@ pub fn signed_area(Array[(Double, Double)]) -> Double
 // Type aliases
 
 // Traits
-

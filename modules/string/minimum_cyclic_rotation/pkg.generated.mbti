@@ -4,7 +4,7 @@ package "bobzhang/loop_invariants_string/minimum_cyclic_rotation"
 // Values
 pub fn min_cyclic_rotation(String) -> String
 
-pub fn min_cyclic_rotation_index(String) -> Int
+pub fn min_cyclic_rotation_index(String) -> Int32
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn min_cyclic_rotation_index(String) -> Int
 // Type aliases
 
 // Traits
-

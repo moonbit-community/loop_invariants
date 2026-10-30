@@ -2,18 +2,17 @@
 package "bobzhang/loop_invariants_graph/bipartite_check"
 
 // Values
-pub fn is_bipartite(Int, Array[Array[Int]]) -> BipartiteResult
+pub fn is_bipartite(Int32, Array[Array[Int32]]) -> BipartiteResult
 
 // Errors
 
 // Types and methods
 pub(all) struct BipartiteResult {
   is_bipartite : Bool
-  color : Array[Int]
-  odd_cycle_edge : (Int, Int)?
+  color : Array[Int32]
+  odd_cycle_edge : (Int32, Int32)?
 }
 
 // Type aliases
 
 // Traits
-

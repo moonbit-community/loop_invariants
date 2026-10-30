@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_graph/bridges"
 
 // Values
-pub fn articulation_points(Int, ArrayView[(Int, Int)]) -> Array[Int]
+pub fn articulation_points(Int32, ArrayView[(Int32, Int32)]) -> Array[Int32]
 
-pub fn find_bridges(Int, ArrayView[(Int, Int)]) -> Array[(Int, Int)]
+pub fn find_bridges(Int32, ArrayView[(Int32, Int32)]) -> Array[(Int32, Int32)]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn find_bridges(Int, ArrayView[(Int, Int)]) -> Array[(Int, Int)]
 // Type aliases
 
 // Traits
-

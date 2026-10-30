@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_verified/verified_kadane"
 
 // Values
-pub fn max_subarray_sum(ArrayView[Int]) -> Int
+pub fn max_subarray_sum(ArrayView[Int32]) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn max_subarray_sum(ArrayView[Int]) -> Int
 // Type aliases
 
 // Traits
-

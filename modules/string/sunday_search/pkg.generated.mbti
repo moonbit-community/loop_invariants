@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_string/sunday_search"
 
 // Values
-pub fn find_all(Array[Int], Array[Int]) -> Array[Int]
+pub fn find_all(Array[Int32], Array[Int32]) -> Array[Int32]
 
-pub fn find_first(Array[Int], Array[Int]) -> Int?
+pub fn find_first(Array[Int32], Array[Int32]) -> Int32?
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn find_first(Array[Int], Array[Int]) -> Int?
 // Type aliases
 
 // Traits
-

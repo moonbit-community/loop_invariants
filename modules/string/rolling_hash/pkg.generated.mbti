@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_string/rolling_hash"
 
 // Values
-pub fn count_pattern_rabin_karp(String, String) -> Int
+pub fn count_pattern_rabin_karp(String, String) -> Int32
 
-pub fn find_pattern_rabin_karp(String, String) -> Array[Int]
+pub fn find_pattern_rabin_karp(String, String) -> Array[Int32]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn find_pattern_rabin_karp(String, String) -> Array[Int]
 // Type aliases
 
 // Traits
-

@@ -49,8 +49,8 @@ impl @quickcheck.Shrink for Nat with fn shrink(self) {
   let n = self.digits.length()
   let out = []
   if n > 1 {
-    out.push({ digits: self.digits.view(end_offset=n / 2).to_owned(), })
-    out.push({ digits: self.digits.view(end_offset=n - 1).to_owned(), })
+    out.push({ digits: self.digits[:n / 2].to_owned(), })
+    out.push({ digits: self.digits[:n - 1].to_owned(), })
   }
   out.iter()
 }

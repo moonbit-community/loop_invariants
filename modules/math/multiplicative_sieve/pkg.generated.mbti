@@ -2,13 +2,13 @@
 package "bobzhang/loop_invariants_math/multiplicative_sieve"
 
 // Values
-pub fn divisor_count(Int) -> Array[Int64]
+pub fn divisor_count(Int32) -> Array[Int64]
 
-pub fn mobius(Int) -> Array[Int64]
+pub fn mobius(Int32) -> Array[Int64]
 
-pub fn sieve(Int, (Int) -> Int64, (Int, Int) -> Int64) -> Array[Int64]
+pub fn sieve(Int32, (Int32) -> Int64, (Int32, Int32) -> Int64) -> Array[Int64]
 
-pub fn totient(Int) -> Array[Int64]
+pub fn totient(Int32) -> Array[Int64]
 
 // Errors
 
@@ -17,4 +17,3 @@ pub fn totient(Int) -> Array[Int64]
 // Type aliases
 
 // Traits
-

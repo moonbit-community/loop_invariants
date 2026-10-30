@@ -6,13 +6,13 @@ import {
 }
 
 // Values
-pub fn find(DSU, Int) -> Int
+pub fn find(DSU, Int32) -> Int32
 
-pub fn make(Int) -> DSU
+pub fn make(Int32) -> DSU
 
-pub fn same(DSU, Int, Int) -> Bool
+pub fn same(DSU, Int32, Int32) -> Bool
 
-pub fn union(DSU, Int, Int) -> DSU
+pub fn union(DSU, Int32, Int32) -> DSU
 
 // Errors
 
@@ -29,4 +29,3 @@ type PArray derive(@debug.Debug)
 // Type aliases
 
 // Traits
-

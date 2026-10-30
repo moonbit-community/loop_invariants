@@ -2,26 +2,25 @@
 package "bobzhang/loop_invariants_graph/bellman_ford"
 
 // Values
-pub fn bellman_ford(Int, ArrayView[(Int, Int, Int)], Int) -> (Array[Int], Bool)
+pub fn bellman_ford(Int32, ArrayView[(Int32, Int32, Int32)], Int32) -> (Array[Int32], Bool)
 
 // Errors
 
 // Types and methods
 pub struct BellmanFord {
-  n : Int
-  edges : Array[(Int, Int, Int64)]
+  n : Int32
+  edges : Array[(Int32, Int32, Int64)]
   dist : Array[Int64]
-  parent : Array[Int]
+  parent : Array[Int32]
   has_negative_cycle : Bool
 }
-pub fn BellmanFord::BellmanFord(Int) -> Self
-pub fn BellmanFord::add_edge(Self, Int, Int, Int64) -> Unit
-pub fn BellmanFord::compute(Self, Int) -> Self
-pub fn BellmanFord::get_distance(Self, Int) -> Int64?
-pub fn BellmanFord::get_path(Self, Int) -> Array[Int]?
+pub fn BellmanFord::BellmanFord(Int32) -> Self
+pub fn BellmanFord::add_edge(Self, Int32, Int32, Int64) -> Unit
+pub fn BellmanFord::compute(Self, Int32) -> Self
+pub fn BellmanFord::get_distance(Self, Int32) -> Int64?
+pub fn BellmanFord::get_path(Self, Int32) -> Array[Int32]?
 pub fn BellmanFord::has_negative_cycle(Self) -> Bool
 
 // Type aliases
 
 // Traits
-

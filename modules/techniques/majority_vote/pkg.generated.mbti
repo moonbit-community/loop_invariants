@@ -13,4 +13,3 @@ pub fn[T : Eq] majority(Array[T]) -> T?
 // Type aliases
 
 // Traits
-

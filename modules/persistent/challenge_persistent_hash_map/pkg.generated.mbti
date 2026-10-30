@@ -6,15 +6,15 @@ import {
 }
 
 // Values
-pub fn[K, V] capacity(HashMap[K, V]) -> Int
+pub fn[K, V] capacity(HashMap[K, V]) -> Int32
 
 pub fn[K : Hash + Eq, V] get(HashMap[K, V], K) -> V?
 
-pub fn[K, V] make(Int) -> HashMap[K, V]
+pub fn[K, V] make(Int32) -> HashMap[K, V]
 
 pub fn[K : Hash + Eq, V] put(HashMap[K, V], K, V) -> HashMap[K, V]
 
-pub fn[K, V] size(HashMap[K, V]) -> Int
+pub fn[K, V] size(HashMap[K, V]) -> Int32
 
 // Errors
 
@@ -23,10 +23,9 @@ type Bucket[K, V] derive(@debug.Debug)
 
 pub struct HashMap[K, V] {
   buckets : Array[Bucket[K, V]]
-  size : Int
+  size : Int32
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

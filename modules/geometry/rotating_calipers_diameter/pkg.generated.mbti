@@ -12,8 +12,8 @@ pub fn convex_diameter(Array[Point]) -> DiameterResult?
 
 // Types and methods
 pub(all) struct DiameterResult {
-  i : Int
-  j : Int
+  i : Int32
+  j : Int32
   dist2 : Int64
 } derive(@debug.Debug)
 

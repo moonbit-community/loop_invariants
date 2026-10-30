@@ -2,19 +2,18 @@
 package "bobzhang/loop_invariants_data_structures/challenge_disjoint_sparse_table"
 
 // Values
-pub fn build_disjoint_sparse_table(ArrayView[Int]) -> DisjointSparseTable
+pub fn build_disjoint_sparse_table(ArrayView[Int32]) -> DisjointSparseTable
 
-pub fn range_min(DisjointSparseTable, Int, Int) -> Int
+pub fn range_min(DisjointSparseTable, Int32, Int32) -> Int32
 
 // Errors
 
 // Types and methods
 pub struct DisjointSparseTable {
-  n : Int
-  table : Array[Array[Int]]
+  n : Int32
+  table : Array[Array[Int32]]
 }
 
 // Type aliases
 
 // Traits
-

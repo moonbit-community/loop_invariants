@@ -9,37 +9,36 @@ package "bobzhang/loop_invariants_data_structures/lct"
 pub(all) struct DynamicForest {
   lct : LinkCutTree
 }
-pub fn DynamicForest::DynamicForest(Int) -> Self
-pub fn DynamicForest::connected(Self, Int, Int) -> Bool
-pub fn DynamicForest::cut(Self, Int, Int) -> Bool
-pub fn DynamicForest::link(Self, Int, Int) -> Bool
+pub fn DynamicForest::DynamicForest(Int32) -> Self
+pub fn DynamicForest::connected(Self, Int32, Int32) -> Bool
+pub fn DynamicForest::cut(Self, Int32, Int32) -> Bool
+pub fn DynamicForest::link(Self, Int32, Int32) -> Bool
 
 pub(all) struct LCTNode {
-  mut parent : Int
-  mut left : Int
-  mut right : Int
-  mut path_parent : Int
+  mut parent : Int32
+  mut left : Int32
+  mut right : Int32
+  mut path_parent : Int32
   mut reversed : Bool
-  mut value : Int
-  mut subtree_sum : Int
+  mut value : Int32
+  mut subtree_sum : Int32
 }
-pub fn LCTNode::LCTNode(Int) -> Self
+pub fn LCTNode::LCTNode(Int32) -> Self
 
 pub(all) struct LinkCutTree {
   nodes : Array[LCTNode]
 }
-pub fn LinkCutTree::LinkCutTree(Int) -> Self
-pub fn LinkCutTree::connected(Self, Int, Int) -> Bool
-pub fn LinkCutTree::cut(Self, Int) -> Unit
-pub fn LinkCutTree::find_root(Self, Int) -> Int
-pub fn LinkCutTree::lca(Self, Int, Int) -> Int
-pub fn LinkCutTree::link(Self, Int, Int) -> Unit
-pub fn LinkCutTree::make_root(Self, Int) -> Unit
-pub fn LinkCutTree::path_sum(Self, Int) -> Int
-pub fn LinkCutTree::update_value(Self, Int, Int) -> Unit
-pub fn LinkCutTree::with_values(Array[Int]) -> Self
+pub fn LinkCutTree::LinkCutTree(Int32) -> Self
+pub fn LinkCutTree::connected(Self, Int32, Int32) -> Bool
+pub fn LinkCutTree::cut(Self, Int32) -> Unit
+pub fn LinkCutTree::find_root(Self, Int32) -> Int32
+pub fn LinkCutTree::lca(Self, Int32, Int32) -> Int32
+pub fn LinkCutTree::link(Self, Int32, Int32) -> Unit
+pub fn LinkCutTree::make_root(Self, Int32) -> Unit
+pub fn LinkCutTree::path_sum(Self, Int32) -> Int32
+pub fn LinkCutTree::update_value(Self, Int32, Int32) -> Unit
+pub fn LinkCutTree::with_values(Array[Int32]) -> Self
 
 // Type aliases
 
 // Traits
-

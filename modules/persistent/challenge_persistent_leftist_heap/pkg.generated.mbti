@@ -18,17 +18,16 @@ pub fn[T : Compare] insert(Heap[T], T) -> Heap[T]
 
 pub fn[T : Compare] merge(Heap[T], Heap[T]) -> Heap[T]
 
-pub fn[T] size(Heap[T]) -> Int
+pub fn[T] size(Heap[T]) -> Int32
 
 // Errors
 
 // Types and methods
 pub enum Heap[T] {
   Empty
-  Node(value~ : T, rank~ : Int, left~ : Heap[T], right~ : Heap[T])
+  Node(value~ : T, rank~ : Int32, left~ : Heap[T], right~ : Heap[T])
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

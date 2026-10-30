@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/tarjan_offline_lca"
 
 // Values
-pub fn tarjan_offline_lca(Int, ArrayView[Array[Int]], Int, ArrayView[(Int, Int)]) -> Array[Int]
+pub fn tarjan_offline_lca(Int32, ArrayView[Array[Int32]], Int32, ArrayView[(Int32, Int32)]) -> Array[Int32]
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn tarjan_offline_lca(Int, ArrayView[Array[Int]], Int, ArrayView[(Int, Int)]
 // Type aliases
 
 // Traits
-

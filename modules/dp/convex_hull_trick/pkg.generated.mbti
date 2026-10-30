@@ -8,7 +8,7 @@ package "bobzhang/loop_invariants_dp/convex_hull_trick"
 // Types and methods
 pub struct ConvexHullTrick {
   lines : Array[Line]
-  mut head : Int
+  mut head : Int32
 }
 pub fn ConvexHullTrick::ConvexHullTrick() -> Self
 pub fn ConvexHullTrick::add_line(Self, Int64, Int64) -> Unit
@@ -22,4 +22,3 @@ pub struct Line {
 // Type aliases
 
 // Traits
-

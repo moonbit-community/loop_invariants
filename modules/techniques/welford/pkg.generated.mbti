@@ -23,4 +23,3 @@ pub fn Welford::variance_sample(Self) -> Double
 // Type aliases
 
 // Traits
-

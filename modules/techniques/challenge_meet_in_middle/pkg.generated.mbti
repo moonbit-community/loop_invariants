@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_techniques/challenge_meet_in_middle"
 
 // Values
-pub fn best_subset_sum_leq(ArrayView[Int], Int) -> Int
+pub fn best_subset_sum_leq(ArrayView[Int32], Int32) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn best_subset_sum_leq(ArrayView[Int], Int) -> Int
 // Type aliases
 
 // Traits
-

@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_dp/challenge_bitmask_dp"
 
 // Values
-pub fn tsp_min_cycle(Array[Array[Int]], Int) -> Int
+pub fn tsp_min_cycle(Array[Array[Int32]], Int32) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn tsp_min_cycle(Array[Array[Int]], Int) -> Int
 // Type aliases
 
 // Traits
-

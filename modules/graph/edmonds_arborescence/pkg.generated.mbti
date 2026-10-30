@@ -6,23 +6,22 @@ import {
 }
 
 // Values
-pub fn min_arborescence(Int, ArrayView[Edge], Int) -> Arborescence?
+pub fn min_arborescence(Int32, ArrayView[Edge], Int32) -> Arborescence?
 
 // Errors
 
 // Types and methods
 pub(all) struct Arborescence {
   cost : Int64
-  parent : Array[Int]
+  parent : Array[Int32]
 } derive(@debug.Debug)
 
 pub(all) struct Edge {
-  from : Int
-  to : Int
+  from : Int32
+  to : Int32
   weight : Int64
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

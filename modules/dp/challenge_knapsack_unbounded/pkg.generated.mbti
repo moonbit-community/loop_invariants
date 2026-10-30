@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_dp/challenge_knapsack_unbounded"
 
 // Values
-pub fn knapsack_unbounded(ArrayView[Int], ArrayView[Int], Int) -> Int
+pub fn knapsack_unbounded(ArrayView[Int32], ArrayView[Int32], Int32) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn knapsack_unbounded(ArrayView[Int], ArrayView[Int], Int) -> Int
 // Type aliases
 
 // Traits
-

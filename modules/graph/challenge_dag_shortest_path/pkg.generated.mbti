@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/challenge_dag_shortest_path"
 
 // Values
-pub fn dag_shortest_paths(Int, ArrayView[(Int, Int, Int)], Int) -> Array[Int]?
+pub fn dag_shortest_paths(Int32, ArrayView[(Int32, Int32, Int32)], Int32) -> Array[Int32]?
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn dag_shortest_paths(Int, ArrayView[(Int, Int, Int)], Int) -> Array[Int]?
 // Type aliases
 
 // Traits
-

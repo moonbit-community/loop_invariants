@@ -4,34 +4,33 @@ package "bobzhang/loop_invariants_graph/dinic"
 // Values
 pub const DINIC_INF : Int64 = 4611686018427387903
 
-pub fn max_flow(Int, ArrayView[(Int, Int, Int64)], Int, Int) -> Int64
+pub fn max_flow(Int32, ArrayView[(Int32, Int32, Int64)], Int32, Int32) -> Int64
 
 // Errors
 
 // Types and methods
 pub(all) struct Dinic {
-  n : Int
+  n : Int32
   adj : Array[Array[DinicEdge]]
-  level : Array[Int]
-  iter : Array[Int]
+  level : Array[Int32]
+  iter : Array[Int32]
 }
-pub fn Dinic::Dinic(Int) -> Self
-pub fn Dinic::add_edge(Self, Int, Int, Int64) -> Unit
-pub fn Dinic::bfs(Self, Int, Int) -> Bool
-pub fn Dinic::dfs(Self, Int, Int, Int64) -> Int64
-pub fn Dinic::get_flow(Self, Int, Int) -> Int64
-pub fn Dinic::max_flow(Self, Int, Int) -> Int64
-pub fn Dinic::min_cut_source_side(Self, Int) -> Array[Int]
+pub fn Dinic::Dinic(Int32) -> Self
+pub fn Dinic::add_edge(Self, Int32, Int32, Int64) -> Unit
+pub fn Dinic::bfs(Self, Int32, Int32) -> Bool
+pub fn Dinic::dfs(Self, Int32, Int32, Int64) -> Int64
+pub fn Dinic::get_flow(Self, Int32, Int32) -> Int64
+pub fn Dinic::max_flow(Self, Int32, Int32) -> Int64
+pub fn Dinic::min_cut_source_side(Self, Int32) -> Array[Int32]
 pub fn Dinic::reset(Self) -> Unit
 
 pub(all) struct DinicEdge {
-  to : Int
+  to : Int32
   cap : Int64
   mut flow : Int64
-  rev : Int
+  rev : Int32
 }
 
 // Type aliases
 
 // Traits
-

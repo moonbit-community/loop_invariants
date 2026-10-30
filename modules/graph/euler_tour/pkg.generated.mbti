@@ -2,28 +2,27 @@
 package "bobzhang/loop_invariants_graph/euler_tour"
 
 // Values
-pub fn build_euler_tour(Int, ArrayView[(Int, Int)], Int) -> EulerTourInfo
+pub fn build_euler_tour(Int32, ArrayView[(Int32, Int32)], Int32) -> EulerTourInfo
 
-pub fn euler_tour(Int, ArrayView[(Int, Int)], Int) -> (Array[Int], Array[Int], Array[Int])
+pub fn euler_tour(Int32, ArrayView[(Int32, Int32)], Int32) -> (Array[Int32], Array[Int32], Array[Int32])
 
 // Errors
 
 // Types and methods
 pub struct EulerTourInfo {
-  entry : Array[Int]
-  exit : Array[Int]
-  tour : Array[Int]
-  depth : Array[Int]
-  parent : Array[Int]
+  entry : Array[Int32]
+  exit : Array[Int32]
+  tour : Array[Int32]
+  depth : Array[Int32]
+  parent : Array[Int32]
 }
-pub fn EulerTourInfo::entry(Self, Int) -> Int
-pub fn EulerTourInfo::exit(Self, Int) -> Int
-pub fn EulerTourInfo::is_ancestor(Self, Int, Int) -> Bool
-pub fn EulerTourInfo::subtree_nodes(Self, Int) -> Array[Int]
-pub fn EulerTourInfo::subtree_size(Self, Int) -> Int
-pub fn EulerTourInfo::tour(Self) -> Array[Int]
+pub fn EulerTourInfo::entry(Self, Int32) -> Int32
+pub fn EulerTourInfo::exit(Self, Int32) -> Int32
+pub fn EulerTourInfo::is_ancestor(Self, Int32, Int32) -> Bool
+pub fn EulerTourInfo::subtree_nodes(Self, Int32) -> Array[Int32]
+pub fn EulerTourInfo::subtree_size(Self, Int32) -> Int32
+pub fn EulerTourInfo::tour(Self) -> Array[Int32]
 
 // Type aliases
 
 // Traits
-

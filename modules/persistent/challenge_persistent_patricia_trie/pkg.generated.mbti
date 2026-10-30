@@ -6,26 +6,25 @@ import {
 }
 
 // Values
-pub fn contains(Trie, Int) -> Bool
+pub fn contains(Trie, Int32) -> Bool
 
 pub fn empty() -> Trie
 
-pub fn from_array(ArrayView[Int]) -> Trie
+pub fn from_array(ArrayView[Int32]) -> Trie
 
-pub fn insert(Trie, Int) -> Trie
+pub fn insert(Trie, Int32) -> Trie
 
-pub fn size(Trie) -> Int
+pub fn size(Trie) -> Int32
 
 // Errors
 
 // Types and methods
 pub enum Trie {
   Empty
-  Leaf(key~ : Int)
-  Branch(prefix~ : Int, mask~ : Int, left~ : Trie, right~ : Trie)
+  Leaf(key~ : Int32)
+  Branch(prefix~ : Int32, mask~ : Int32, left~ : Trie, right~ : Trie)
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

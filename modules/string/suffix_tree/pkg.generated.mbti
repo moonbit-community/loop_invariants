@@ -8,14 +8,14 @@ pub const SENTINEL : Char = '\x00'
 
 // Types and methods
 pub(all) struct Edge {
-  start : Int
-  end : Int
-  child : Int
+  start : Int32
+  end : Int32
+  child : Int32
 }
 
 pub(all) struct Node {
   edges : Array[Edge]
-  mut leaf_count : Int
+  mut leaf_count : Int32
 }
 pub fn Node::Node() -> Self
 
@@ -25,9 +25,8 @@ pub struct SuffixTree {
 }
 pub fn SuffixTree::SuffixTree(String) -> Self
 pub fn SuffixTree::contains(Self, String) -> Bool
-pub fn SuffixTree::count_occurrences(Self, String) -> Int
+pub fn SuffixTree::count_occurrences(Self, String) -> Int32
 
 // Type aliases
 
 // Traits
-

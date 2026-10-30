@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_graph/challenge_mst_prim"
 
 // Values
-pub fn build_adj(Int, ArrayView[(Int, Int, Int)]) -> Array[Array[(Int, Int)]]
+pub fn build_adj(Int32, ArrayView[(Int32, Int32, Int32)]) -> Array[Array[(Int32, Int32)]]
 
-pub fn mst_weight(Array[Array[(Int, Int)]]) -> Int?
+pub fn mst_weight(Array[Array[(Int32, Int32)]]) -> Int32?
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn mst_weight(Array[Array[(Int, Int)]]) -> Int?
 // Type aliases
 
 // Traits
-

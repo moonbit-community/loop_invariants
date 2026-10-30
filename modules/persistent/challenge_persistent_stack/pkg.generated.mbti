@@ -18,7 +18,7 @@ pub fn[T] pop(Stack[T]) -> (T, Stack[T])?
 
 pub fn[T] push(Stack[T], T) -> Stack[T]
 
-pub fn[T] size(Stack[T]) -> Int
+pub fn[T] size(Stack[T]) -> Int32
 
 pub fn[T] to_array(Stack[T]) -> Array[T]
 
@@ -33,4 +33,3 @@ pub enum Stack[T] {
 // Type aliases
 
 // Traits
-

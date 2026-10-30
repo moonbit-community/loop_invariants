@@ -7,14 +7,13 @@ package "bobzhang/loop_invariants_data_structures/segment_tree"
 
 // Types and methods
 pub struct SegmentTree {
-  n : Int
+  n : Int32
   tree : Array[Int64]
 }
 pub fn SegmentTree::SegmentTree(Array[Int64]) -> Self
-pub fn SegmentTree::query(Self, Int, Int) -> Int64
-pub fn SegmentTree::update(Self, Int, Int64) -> Unit
+pub fn SegmentTree::query(Self, Int32, Int32) -> Int64
+pub fn SegmentTree::update(Self, Int32, Int64) -> Unit
 
 // Type aliases
 
 // Traits
-
