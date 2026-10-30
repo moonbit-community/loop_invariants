@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_math/lucas_lehmer"
 
 // Values
-pub fn is_mersenne_prime(Int) -> Bool
+pub fn is_mersenne_prime(Int32) -> Bool
 
-pub fn mersenne_prime_exponents_up_to(Int) -> Array[Int]
+pub fn mersenne_prime_exponents_up_to(Int32) -> Array[Int32]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn mersenne_prime_exponents_up_to(Int) -> Array[Int]
 // Type aliases
 
 // Traits
-

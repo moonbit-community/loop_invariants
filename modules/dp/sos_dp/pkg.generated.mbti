@@ -17,4 +17,3 @@ pub fn sum_over_supersets(Array[Int64]) -> Bool
 // Type aliases
 
 // Traits
-

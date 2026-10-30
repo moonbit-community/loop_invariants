@@ -7,26 +7,25 @@ package "bobzhang/loop_invariants_graph/min_cost_flow_potentials"
 
 // Types and methods
 pub struct Edge {
-  to : Int
+  to : Int32
   cap : Int64
   cost : Int64
   mut flow : Int64
-  rev : Int
+  rev : Int32
 }
 
 pub struct MinCostFlowPotentials {
-  n : Int
+  n : Int32
   adj : Array[Array[Edge]]
   dist : Array[Int64]
-  prev_v : Array[Int]
-  prev_e : Array[Int]
+  prev_v : Array[Int32]
+  prev_e : Array[Int32]
 }
-pub fn MinCostFlowPotentials::MinCostFlowPotentials(Int) -> Self
-pub fn MinCostFlowPotentials::add_edge(Self, Int, Int, Int64, Int64) -> Unit
-pub fn MinCostFlowPotentials::compute(Self, Int, Int) -> (Int64, Int64)
-pub fn MinCostFlowPotentials::compute_with_limit(Self, Int, Int, Int64) -> (Int64, Int64)
+pub fn MinCostFlowPotentials::MinCostFlowPotentials(Int32) -> Self
+pub fn MinCostFlowPotentials::add_edge(Self, Int32, Int32, Int64, Int64) -> Unit
+pub fn MinCostFlowPotentials::compute(Self, Int32, Int32) -> (Int64, Int64)
+pub fn MinCostFlowPotentials::compute_with_limit(Self, Int32, Int32, Int64) -> (Int64, Int64)
 
 // Type aliases
 
 // Traits
-

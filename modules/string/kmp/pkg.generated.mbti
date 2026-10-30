@@ -2,19 +2,19 @@
 package "bobzhang/loop_invariants_string/kmp"
 
 // Values
-pub fn compute_failure(String) -> Array[Int]
+pub fn compute_failure(String) -> Array[Int32]
 
-pub fn compute_z_function(String) -> Array[Int]
+pub fn compute_z_function(String) -> Array[Int32]
 
-pub fn kmp_count(String, String) -> Int
+pub fn kmp_count(String, String) -> Int32
 
-pub fn kmp_find_first(String, String) -> Int
+pub fn kmp_find_first(String, String) -> Int32
 
-pub fn kmp_search(String, String) -> Array[Int]
+pub fn kmp_search(String, String) -> Array[Int32]
 
-pub fn prefix_function(String) -> Array[Int]
+pub fn prefix_function(String) -> Array[Int32]
 
-pub fn z_search(String, String) -> Array[Int]
+pub fn z_search(String, String) -> Array[Int32]
 
 // Errors
 
@@ -23,4 +23,3 @@ pub fn z_search(String, String) -> Array[Int]
 // Type aliases
 
 // Traits
-

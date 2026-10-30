@@ -11,4 +11,3 @@ pub fn duval_factorization(String) -> Array[String]
 // Type aliases
 
 // Traits
-

@@ -6,7 +6,7 @@ import {
 }
 
 // Values
-pub fn mst_weight(Int, ArrayView[(Int, Int, Int)]) -> Int?
+pub fn mst_weight(Int32, ArrayView[(Int32, Int32, Int32)]) -> Int32?
 
 // Errors
 
@@ -16,4 +16,3 @@ type DSU derive(@debug.Debug)
 // Type aliases
 
 // Traits
-

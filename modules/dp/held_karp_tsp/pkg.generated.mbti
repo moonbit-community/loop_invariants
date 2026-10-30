@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_dp/held_karp_tsp"
 
 // Values
-pub fn shortest_tour(Int, ArrayView[Array[Int64]]) -> Int64?
+pub fn shortest_tour(Int32, ArrayView[Array[Int64]]) -> Int64?
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn shortest_tour(Int, ArrayView[Array[Int64]]) -> Int64?
 // Type aliases
 
 // Traits
-

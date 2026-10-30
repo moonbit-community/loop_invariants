@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_string/burrows_wheeler"
 
 // Values
-pub fn inverse_transform(Array[Int]) -> Array[Int]
+pub fn inverse_transform(Array[Int32]) -> Array[Int32]
 
-pub fn transform(Array[Int]) -> Array[Int]
+pub fn transform(Array[Int32]) -> Array[Int32]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn transform(Array[Int]) -> Array[Int]
 // Type aliases
 
 // Traits
-

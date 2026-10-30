@@ -8,10 +8,10 @@ package "bobzhang/loop_invariants_data_structures/leftist_heap"
 // Types and methods
 pub struct LeftistHeap {
   root : Tree
-  size : Int
+  size : Int32
 }
 pub fn LeftistHeap::is_empty(Self) -> Bool
-pub fn LeftistHeap::length(Self) -> Int
+pub fn LeftistHeap::length(Self) -> Int32
 pub fn LeftistHeap::merge(Self, Self) -> Self
 pub fn LeftistHeap::new() -> Self
 pub fn LeftistHeap::peek_min(Self) -> Int64?
@@ -23,4 +23,3 @@ type Tree
 // Type aliases
 
 // Traits
-

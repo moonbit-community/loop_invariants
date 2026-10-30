@@ -6,17 +6,16 @@ import {
 }
 
 // Values
-pub fn biconnected_components(Int, ArrayView[(Int, Int)]) -> BiconnectedResult
+pub fn biconnected_components(Int32, ArrayView[(Int32, Int32)]) -> BiconnectedResult
 
 // Errors
 
 // Types and methods
 pub(all) struct BiconnectedResult {
-  components : Array[Array[(Int, Int)]]
-  articulation_points : Array[Int]
+  components : Array[Array[(Int32, Int32)]]
+  articulation_points : Array[Int32]
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

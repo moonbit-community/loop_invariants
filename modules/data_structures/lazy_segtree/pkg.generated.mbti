@@ -7,18 +7,17 @@ package "bobzhang/loop_invariants_data_structures/lazy_segtree"
 
 // Types and methods
 pub struct LazySegTreeSum {
-  n : Int
+  n : Int32
   tree : Array[Int64]
   pending : Array[Int64]
 }
 pub fn LazySegTreeSum::LazySegTreeSum(Array[Int64]) -> Self
-pub fn LazySegTreeSum::length(Self) -> Int
-pub fn LazySegTreeSum::point_query(Self, Int) -> Int64?
-pub fn LazySegTreeSum::point_set(Self, Int, Int64) -> Unit
-pub fn LazySegTreeSum::range_add(Self, Int, Int, Int64) -> Unit
-pub fn LazySegTreeSum::range_sum(Self, Int, Int) -> Int64?
+pub fn LazySegTreeSum::length(Self) -> Int32
+pub fn LazySegTreeSum::point_query(Self, Int32) -> Int64?
+pub fn LazySegTreeSum::point_set(Self, Int32, Int64) -> Unit
+pub fn LazySegTreeSum::range_add(Self, Int32, Int32, Int64) -> Unit
+pub fn LazySegTreeSum::range_sum(Self, Int32, Int32) -> Int64?
 
 // Type aliases
 
 // Traits
-

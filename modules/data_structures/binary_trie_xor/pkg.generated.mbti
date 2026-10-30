@@ -7,23 +7,22 @@ package "bobzhang/loop_invariants_data_structures/binary_trie_xor"
 
 // Types and methods
 pub struct BinaryTrie {
-  max_bits : Int
+  max_bits : Int32
   nodes : Array[Node]
 }
-pub fn BinaryTrie::BinaryTrie(Int) -> Self
+pub fn BinaryTrie::BinaryTrie(Int32) -> Self
 pub fn BinaryTrie::insert(Self, Int64) -> Unit
 pub fn BinaryTrie::max_xor(Self, Int64) -> Int64
 pub fn BinaryTrie::min_xor(Self, Int64) -> Int64
 pub fn BinaryTrie::remove(Self, Int64) -> Bool
-pub fn BinaryTrie::size(Self) -> Int
+pub fn BinaryTrie::size(Self) -> Int32
 
 pub struct Node {
-  mut next0 : Int
-  mut next1 : Int
-  mut count : Int
+  mut next0 : Int32
+  mut next1 : Int32
+  mut count : Int32
 }
 
 // Type aliases
 
 // Traits
-

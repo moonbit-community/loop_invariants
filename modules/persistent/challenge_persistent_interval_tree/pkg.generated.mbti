@@ -8,23 +8,22 @@ import {
 // Values
 pub fn empty() -> Tree
 
-pub fn find_overlap(Tree, Int, Int) -> (Int, Int)?
+pub fn find_overlap(Tree, Int32, Int32) -> (Int32, Int32)?
 
-pub fn from_array(ArrayView[(Int, Int)]) -> Tree
+pub fn from_array(ArrayView[(Int32, Int32)]) -> Tree
 
-pub fn insert(Tree, Int, Int) -> Tree
+pub fn insert(Tree, Int32, Int32) -> Tree
 
-pub fn size(Tree) -> Int
+pub fn size(Tree) -> Int32
 
 // Errors
 
 // Types and methods
 pub enum Tree {
   Empty
-  Node(start~ : Int, end~ : Int, max_end~ : Int, left~ : Tree, right~ : Tree)
+  Node(start~ : Int32, end~ : Int32, max_end~ : Int32, left~ : Tree, right~ : Tree)
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

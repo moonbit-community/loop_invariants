@@ -11,4 +11,3 @@ pub fn tonelli_shanks(Int64, Int64) -> Int64?
 // Type aliases
 
 // Traits
-

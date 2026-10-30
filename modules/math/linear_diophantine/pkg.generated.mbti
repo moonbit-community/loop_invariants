@@ -17,4 +17,3 @@ pub(all) struct DiophantineResult {
 // Type aliases
 
 // Traits
-

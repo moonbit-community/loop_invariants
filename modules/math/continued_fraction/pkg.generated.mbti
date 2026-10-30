@@ -15,4 +15,3 @@ pub fn to_cf(Int64, Int64) -> Array[Int64]
 // Type aliases
 
 // Traits
-

@@ -18,7 +18,7 @@ pub fn[K : Compare + Hash, V] insert_or_update(TreapMap[K, V], K, V) -> TreapMap
 
 pub fn[K, V] merge(TreapMap[K, V], TreapMap[K, V]) -> TreapMap[K, V]
 
-pub fn[K, V] size(TreapMap[K, V]) -> Int
+pub fn[K, V] size(TreapMap[K, V]) -> Int32
 
 pub fn[K : Compare, V] split(TreapMap[K, V], K) -> (TreapMap[K, V], TreapMap[K, V])
 
@@ -27,10 +27,9 @@ pub fn[K : Compare, V] split(TreapMap[K, V], K) -> (TreapMap[K, V], TreapMap[K, 
 // Types and methods
 pub enum TreapMap[K, V] {
   Empty
-  Node(key~ : K, value~ : V, priority~ : Int, size~ : Int, left~ : TreapMap[K, V], right~ : TreapMap[K, V])
+  Node(key~ : K, value~ : V, priority~ : Int32, size~ : Int32, left~ : TreapMap[K, V], right~ : TreapMap[K, V])
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

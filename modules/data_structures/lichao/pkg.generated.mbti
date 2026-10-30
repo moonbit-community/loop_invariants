@@ -11,8 +11,8 @@ pub fn undefined_line_min() -> Line
 // Types and methods
 pub(all) struct LCNode {
   mut line : Line
-  mut left : Int
-  mut right : Int
+  mut left : Int32
+  mut right : Int32
 }
 
 pub(all) struct LiChaoTree {
@@ -22,7 +22,7 @@ pub(all) struct LiChaoTree {
 }
 pub fn LiChaoTree::LiChaoTree(Int64, Int64) -> Self
 pub fn LiChaoTree::insert(Self, Int64, Int64) -> Unit
-pub fn LiChaoTree::node_count(Self) -> Int
+pub fn LiChaoTree::node_count(Self) -> Int32
 pub fn LiChaoTree::query(Self, Int64) -> Int64
 
 pub(all) struct LiChaoTreeMin {
@@ -32,7 +32,7 @@ pub(all) struct LiChaoTreeMin {
 }
 pub fn LiChaoTreeMin::LiChaoTreeMin(Int64, Int64) -> Self
 pub fn LiChaoTreeMin::insert(Self, Int64, Int64) -> Unit
-pub fn LiChaoTreeMin::node_count(Self) -> Int
+pub fn LiChaoTreeMin::node_count(Self) -> Int32
 pub fn LiChaoTreeMin::query(Self, Int64) -> Int64
 
 pub(all) struct Line {
@@ -46,4 +46,3 @@ pub fn Line::is_undefined_min(Self) -> Bool
 // Type aliases
 
 // Traits
-

@@ -2,11 +2,11 @@
 package "bobzhang/loop_invariants_string/rabin_karp"
 
 // Values
-pub fn rabin_karp_count(String, String) -> Int
+pub fn rabin_karp_count(String, String) -> Int32
 
-pub fn rabin_karp_multi(String, Array[String]) -> Array[(Int, Int)]
+pub fn rabin_karp_multi(String, Array[String]) -> Array[(Int32, Int32)]
 
-pub fn rabin_karp_search(String, String) -> Array[Int]
+pub fn rabin_karp_search(String, String) -> Array[Int32]
 
 // Errors
 
@@ -15,4 +15,3 @@ pub fn rabin_karp_search(String, String) -> Array[Int]
 // Type aliases
 
 // Traits
-

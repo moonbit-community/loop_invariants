@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_string/aho_corasick"
 
 // Values
-pub fn count_all_matches(ArrayView[String], String) -> Int
+pub fn count_all_matches(ArrayView[String], String) -> Int32
 
-pub fn find_all_matches(ArrayView[String], String) -> Array[(Int, Int, String)]
+pub fn find_all_matches(ArrayView[String], String) -> Array[(Int32, Int32, String)]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn find_all_matches(ArrayView[String], String) -> Array[(Int, Int, String)]
 // Type aliases
 
 // Traits
-

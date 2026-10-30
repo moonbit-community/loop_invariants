@@ -6,25 +6,24 @@ import {
 }
 
 // Values
-pub fn zero_one_bfs(Graph, Int) -> Array[Int]
+pub fn zero_one_bfs(Graph, Int32) -> Array[Int32]
 
 // Errors
 
 // Types and methods
 pub struct Edge {
-  to : Int
-  weight : Int
+  to : Int32
+  weight : Int32
 } derive(@debug.Debug)
 
 pub struct Graph {
-  n : Int
+  n : Int32
   adj : Array[Array[Edge]]
 }
-pub fn Graph::Graph(Int) -> Self
-pub fn Graph::add_edge(Self, Int, Int, Int) -> Unit
-pub fn Graph::add_undirected_edge(Self, Int, Int, Int) -> Unit
+pub fn Graph::Graph(Int32) -> Self
+pub fn Graph::add_edge(Self, Int32, Int32, Int32) -> Unit
+pub fn Graph::add_undirected_edge(Self, Int32, Int32, Int32) -> Unit
 
 // Type aliases
 
 // Traits
-

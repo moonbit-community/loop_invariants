@@ -2,25 +2,24 @@
 package "bobzhang/loop_invariants_techniques/bloom_filter"
 
 // Values
-pub fn from_params(Int, Int) -> BloomFilter
+pub fn from_params(Int32, Int32) -> BloomFilter
 
-pub fn new(expected~ : Int, fp_rate~ : Double) -> BloomFilter
+pub fn new(expected~ : Int32, fp_rate~ : Double) -> BloomFilter
 
 // Errors
 
 // Types and methods
 pub struct BloomFilter {
   bits : Array[Int64]
-  m : Int
-  k : Int
+  m : Int32
+  k : Int32
 }
-pub fn BloomFilter::bit_size(Self) -> Int
+pub fn BloomFilter::bit_size(Self) -> Int32
 pub fn BloomFilter::contains(Self, Int64) -> Bool
-pub fn BloomFilter::hash_count(Self) -> Int
+pub fn BloomFilter::hash_count(Self) -> Int32
 pub fn BloomFilter::insert(Self, Int64) -> Unit
-pub fn BloomFilter::popcount(Self) -> Int
+pub fn BloomFilter::popcount(Self) -> Int32
 
 // Type aliases
 
 // Traits
-

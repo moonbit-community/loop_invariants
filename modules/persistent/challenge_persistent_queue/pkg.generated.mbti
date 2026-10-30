@@ -14,7 +14,7 @@ pub fn[T] enqueue(Queue[T], T) -> Queue[T]
 
 pub fn[T] peek(Queue[T]) -> T?
 
-pub fn[T] size(Queue[T]) -> Int
+pub fn[T] size(Queue[T]) -> Int32
 
 // Errors
 
@@ -29,4 +29,3 @@ type Stack[T] derive(@debug.Debug)
 // Type aliases
 
 // Traits
-

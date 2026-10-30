@@ -4,11 +4,11 @@ package "bobzhang/loop_invariants_math/integer_nth_root"
 // Values
 pub fn icbrt(Int64) -> Int64
 
-pub fn is_perfect_nth_power(Int64, Int) -> Bool
+pub fn is_perfect_nth_power(Int64, Int32) -> Bool
 
 pub fn isqrt(Int64) -> Int64
 
-pub fn nth_root(Int64, Int) -> Int64
+pub fn nth_root(Int64, Int32) -> Int64
 
 // Errors
 
@@ -17,4 +17,3 @@ pub fn nth_root(Int64, Int) -> Int64
 // Type aliases
 
 // Traits
-

@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_string/damerau_levenshtein"
 
 // Values
-pub fn distance(Array[Int], Array[Int]) -> Int
+pub fn distance(Array[Int32], Array[Int32]) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn distance(Array[Int], Array[Int]) -> Int
 // Type aliases
 
 // Traits
-

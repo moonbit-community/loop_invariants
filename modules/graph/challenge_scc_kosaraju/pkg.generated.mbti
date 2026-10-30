@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/challenge_scc_kosaraju"
 
 // Values
-pub fn scc_kosaraju(Int, ArrayView[(Int, Int)]) -> Array[Int]
+pub fn scc_kosaraju(Int32, ArrayView[(Int32, Int32)]) -> Array[Int32]
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn scc_kosaraju(Int, ArrayView[(Int, Int)]) -> Array[Int]
 // Type aliases
 
 // Traits
-

@@ -7,18 +7,17 @@ package "bobzhang/loop_invariants_data_structures/challenge_union_find_rollback"
 
 // Types and methods
 pub struct RollbackDSU {
-  parent : Array[Int]
-  size : Array[Int]
-  history : Array[(Int, Int)]
+  parent : Array[Int32]
+  size : Array[Int32]
+  history : Array[(Int32, Int32)]
 }
-pub fn RollbackDSU::RollbackDSU(Int) -> Self
-pub fn RollbackDSU::find(Self, Int) -> Int
-pub fn RollbackDSU::rollback(Self, Int) -> Unit
-pub fn RollbackDSU::same(Self, Int, Int) -> Bool
-pub fn RollbackDSU::snapshot(Self) -> Int
-pub fn RollbackDSU::union(Self, Int, Int) -> Bool
+pub fn RollbackDSU::RollbackDSU(Int32) -> Self
+pub fn RollbackDSU::find(Self, Int32) -> Int32
+pub fn RollbackDSU::rollback(Self, Int32) -> Unit
+pub fn RollbackDSU::same(Self, Int32, Int32) -> Bool
+pub fn RollbackDSU::snapshot(Self) -> Int32
+pub fn RollbackDSU::union(Self, Int32, Int32) -> Bool
 
 // Type aliases
 
 // Traits
-

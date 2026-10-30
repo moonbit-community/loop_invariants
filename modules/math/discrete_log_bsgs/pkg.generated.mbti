@@ -11,4 +11,3 @@ pub fn discrete_log_bsgs(Int64, Int64, Int64) -> Int64?
 // Type aliases
 
 // Traits
-

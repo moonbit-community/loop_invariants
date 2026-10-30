@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_verified/verified_upper_bound"
 
 // Values
-pub fn upper_bound(FixedArray[Int], Int) -> Int
+pub fn upper_bound(FixedArray[Int32], Int32) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn upper_bound(FixedArray[Int], Int) -> Int
 // Type aliases
 
 // Traits
-

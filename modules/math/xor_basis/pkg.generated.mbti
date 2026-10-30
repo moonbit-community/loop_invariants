@@ -8,15 +8,14 @@ package "bobzhang/loop_invariants_math/xor_basis"
 // Types and methods
 pub struct XorBasis {
   basis : Array[Int64]
-  mut size : Int
+  mut size : Int32
 }
 pub fn XorBasis::XorBasis() -> Self
 pub fn XorBasis::can_represent(Self, Int64) -> Bool
 pub fn XorBasis::insert(Self, Int64) -> Bool
 pub fn XorBasis::max_xor(Self, Int64) -> Int64
-pub fn XorBasis::rank(Self) -> Int
+pub fn XorBasis::rank(Self) -> Int32
 
 // Type aliases
 
 // Traits
-

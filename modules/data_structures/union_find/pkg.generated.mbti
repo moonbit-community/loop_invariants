@@ -7,18 +7,17 @@ package "bobzhang/loop_invariants_data_structures/union_find"
 
 // Types and methods
 pub struct UnionFind {
-  parent : Array[Int]
-  rank : Array[Int]
-  mut num_sets : Int
+  parent : Array[Int32]
+  rank : Array[Int32]
+  mut num_sets : Int32
 }
-pub fn UnionFind::UnionFind(Int) -> Self
-pub fn UnionFind::connected(Self, Int, Int) -> Bool
-pub fn UnionFind::count_sets(Self) -> Int
-pub fn UnionFind::find(Self, Int) -> Int
-pub fn UnionFind::set_size(Self, Int) -> Int
-pub fn UnionFind::union(Self, Int, Int) -> Bool
+pub fn UnionFind::UnionFind(Int32) -> Self
+pub fn UnionFind::connected(Self, Int32, Int32) -> Bool
+pub fn UnionFind::count_sets(Self) -> Int32
+pub fn UnionFind::find(Self, Int32) -> Int32
+pub fn UnionFind::set_size(Self, Int32) -> Int32
+pub fn UnionFind::union(Self, Int32, Int32) -> Bool
 
 // Type aliases
 
 // Traits
-

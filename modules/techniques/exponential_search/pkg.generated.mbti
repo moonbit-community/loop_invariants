@@ -2,11 +2,11 @@
 package "bobzhang/loop_invariants_techniques/exponential_search"
 
 // Values
-pub fn find(Array[Int], Int) -> Int?
+pub fn find(Array[Int32], Int32) -> Int32?
 
-pub fn gallop(Array[Int], Int, Int) -> Int
+pub fn gallop(Array[Int32], Int32, Int32) -> Int32
 
-pub fn lower_bound(Array[Int], Int) -> Int
+pub fn lower_bound(Array[Int32], Int32) -> Int32
 
 // Errors
 
@@ -15,4 +15,3 @@ pub fn lower_bound(Array[Int], Int) -> Int
 // Type aliases
 
 // Traits
-

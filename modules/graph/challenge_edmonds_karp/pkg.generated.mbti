@@ -6,11 +6,11 @@ import {
 }
 
 // Values
-pub fn add_edge(FlowGraph, Int, Int, Int) -> Unit
+pub fn add_edge(FlowGraph, Int32, Int32, Int32) -> Unit
 
-pub fn make(Int) -> FlowGraph
+pub fn make(Int32) -> FlowGraph
 
-pub fn max_flow(FlowGraph, Int, Int) -> Int
+pub fn max_flow(FlowGraph, Int32, Int32) -> Int32
 
 // Errors
 
@@ -24,4 +24,3 @@ pub struct FlowGraph {
 // Type aliases
 
 // Traits
-

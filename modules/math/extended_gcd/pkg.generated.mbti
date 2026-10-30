@@ -15,4 +15,3 @@ pub fn mod_inverse(Int64, Int64) -> Int64?
 // Type aliases
 
 // Traits
-

@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_verified/verified_count_nonneg"
 
 // Values
-pub fn count_bounded(FixedArray[Int], Int) -> Bool
+pub fn count_bounded(FixedArray[Int32], Int32) -> Bool
 
-pub fn count_nonneg(FixedArray[Int]) -> Int
+pub fn count_nonneg(FixedArray[Int32]) -> Int32
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn count_nonneg(FixedArray[Int]) -> Int
 // Type aliases
 
 // Traits
-

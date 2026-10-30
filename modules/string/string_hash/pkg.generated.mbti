@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_string/string_hash"
 
 // Values
-pub fn hash_pattern_match(String, String) -> Array[Int]
+pub fn hash_pattern_match(String, String) -> Array[Int32]
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn hash_pattern_match(String, String) -> Array[Int]
 // Type aliases
 
 // Traits
-

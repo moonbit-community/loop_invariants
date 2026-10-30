@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_graph/challenge_bipartite_matching_kuhn"
 
 // Values
-pub fn build_adj(Int, Int, ArrayView[(Int, Int)]) -> Array[Array[Int]]
+pub fn build_adj(Int32, Int32, ArrayView[(Int32, Int32)]) -> Array[Array[Int32]]
 
-pub fn max_matching(Array[Array[Int]], Int) -> Int
+pub fn max_matching(Array[Array[Int32]], Int32) -> Int32
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn max_matching(Array[Array[Int]], Int) -> Int
 // Type aliases
 
 // Traits
-

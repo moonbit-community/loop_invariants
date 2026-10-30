@@ -2,20 +2,19 @@
 package "bobzhang/loop_invariants_graph/gomory_hu_tree"
 
 // Values
-pub fn gomory_hu_tree(Int, ArrayView[(Int, Int, Int64)]) -> GomoryHuTree
+pub fn gomory_hu_tree(Int32, ArrayView[(Int32, Int32, Int64)]) -> GomoryHuTree
 
 // Errors
 
 // Types and methods
 pub struct GomoryHuTree {
-  n : Int
-  parent : Array[Int]
+  n : Int32
+  parent : Array[Int32]
   value : Array[Int64]
-  adj : Array[Array[(Int, Int64)]]
+  adj : Array[Array[(Int32, Int64)]]
 }
-pub fn GomoryHuTree::min_cut(Self, Int, Int) -> Int64
+pub fn GomoryHuTree::min_cut(Self, Int32, Int32) -> Int64
 
 // Type aliases
 
 // Traits
-

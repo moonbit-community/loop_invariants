@@ -6,19 +6,18 @@ import {
 }
 
 // Values
-pub fn build_dominator_tree(Int, ArrayView[(Int, Int)], Int) -> DominatorTree?
+pub fn build_dominator_tree(Int32, ArrayView[(Int32, Int32)], Int32) -> DominatorTree?
 
 // Errors
 
 // Types and methods
 pub(all) struct DominatorTree {
-  root : Int
-  idom : Array[Int]
-  tree : Array[Array[Int]]
+  root : Int32
+  idom : Array[Int32]
+  tree : Array[Array[Int32]]
 } derive(@debug.Debug)
-pub fn DominatorTree::dominates(Self, Int, Int) -> Bool
+pub fn DominatorTree::dominates(Self, Int32, Int32) -> Bool
 
 // Type aliases
 
 // Traits
-

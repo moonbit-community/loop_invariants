@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_dp/longest_arithmetic_subseq"
 
 // Values
-pub fn length(Array[Int64]) -> Int
+pub fn length(Array[Int64]) -> Int32
 
-pub fn length_fixed_diff(Array[Int64], Int64) -> Int
+pub fn length_fixed_diff(Array[Int64], Int64) -> Int32
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn length_fixed_diff(Array[Int64], Int64) -> Int
 // Type aliases
 
 // Traits
-

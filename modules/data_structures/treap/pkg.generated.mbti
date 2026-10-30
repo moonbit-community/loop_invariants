@@ -8,28 +8,27 @@ package "bobzhang/loop_invariants_data_structures/treap"
 // Types and methods
 pub struct Treap[T] {
   mut root : TreapNode[T]?
-  mut rng_state : Int
+  mut rng_state : Int32
 }
 pub fn[T] Treap::Treap() -> Self[T]
 pub fn[T : Compare] Treap::contains(Self[T], T) -> Bool
-pub fn[T : Compare] Treap::count_less_than(Self[T], T) -> Int
+pub fn[T : Compare] Treap::count_less_than(Self[T], T) -> Int32
 pub fn[T : Compare] Treap::delete(Self[T], T) -> Bool
 pub fn[T : Compare] Treap::insert(Self[T], T) -> Unit
-pub fn[T] Treap::kth_element(Self[T], Int) -> T?
+pub fn[T] Treap::kth_element(Self[T], Int32) -> T?
 pub fn[T] Treap::max(Self[T]) -> T?
 pub fn[T] Treap::min(Self[T]) -> T?
-pub fn[T] Treap::size(Self[T]) -> Int
+pub fn[T] Treap::size(Self[T]) -> Int32
 pub fn[T] Treap::to_array(Self[T]) -> Array[T]
 
 pub struct TreapNode[T] {
   key : T
-  priority : Int
+  priority : Int32
   mut left : TreapNode[T]?
   mut right : TreapNode[T]?
-  mut size : Int
+  mut size : Int32
 }
 
 // Type aliases
 
 // Traits
-

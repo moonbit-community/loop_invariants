@@ -6,29 +6,28 @@ import {
 }
 
 // Values
-pub fn find_sccs(Int, Array[Array[Int]]) -> SCCResult
+pub fn find_sccs(Int32, Array[Array[Int32]]) -> SCCResult
 
-pub fn find_sccs_kosaraju(Int, Array[Array[Int]]) -> SCCResult
+pub fn find_sccs_kosaraju(Int32, Array[Array[Int32]]) -> SCCResult
 
 // Errors
 
 // Types and methods
 pub(all) struct SCCResult {
-  num_sccs : Int
-  component : Array[Int]
-  scc_sizes : Array[Int]
-  scc_adj : Array[Array[Int]]
+  num_sccs : Int32
+  component : Array[Int32]
+  scc_sizes : Array[Int32]
+  scc_adj : Array[Array[Int32]]
 } derive(@debug.Debug)
 
 pub(all) struct TwoSAT {
-  n : Int
-  adj : Array[Array[Int]]
+  n : Int32
+  adj : Array[Array[Int32]]
 }
-pub fn TwoSAT::TwoSAT(Int) -> Self
-pub fn TwoSAT::add_clause(Self, Int, Bool, Int, Bool) -> Unit
+pub fn TwoSAT::TwoSAT(Int32) -> Self
+pub fn TwoSAT::add_clause(Self, Int32, Bool, Int32, Bool) -> Unit
 pub fn TwoSAT::solve(Self) -> Array[Bool]?
 
 // Type aliases
 
 // Traits
-

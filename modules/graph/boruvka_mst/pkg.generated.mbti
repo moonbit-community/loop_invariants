@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_graph/boruvka_mst"
 
 // Values
-pub fn mst(Int, Array[(Int, Int, Int)]) -> Array[Int]
+pub fn mst(Int32, Array[(Int32, Int32, Int32)]) -> Array[Int32]
 
-pub fn mst_weight(Int, Array[(Int, Int, Int)]) -> Int
+pub fn mst_weight(Int32, Array[(Int32, Int32, Int32)]) -> Int32
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn mst_weight(Int, Array[(Int, Int, Int)]) -> Int
 // Type aliases
 
 // Traits
-

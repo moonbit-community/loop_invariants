@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_techniques/permutation_rank"
 
 // Values
-pub fn rank(Array[Int]) -> Int64
+pub fn rank(Array[Int32]) -> Int64
 
-pub fn unrank(Int, Int64) -> Array[Int]
+pub fn unrank(Int32, Int64) -> Array[Int32]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn unrank(Int, Int64) -> Array[Int]
 // Type aliases
 
 // Traits
-

@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_geometry/challenge_line_sweep"
 
 // Values
-pub fn max_overlap(ArrayView[(Int, Int)]) -> Int
+pub fn max_overlap(ArrayView[(Int32, Int32)]) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn max_overlap(ArrayView[(Int, Int)]) -> Int
 // Type aliases
 
 // Traits
-

@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_dp/challenge_lis_nlogn"
 
 // Values
-pub fn lis_length(ArrayView[Int]) -> Int
+pub fn lis_length(ArrayView[Int32]) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn lis_length(ArrayView[Int]) -> Int
 // Type aliases
 
 // Traits
-

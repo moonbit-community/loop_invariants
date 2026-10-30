@@ -6,25 +6,24 @@ import {
 }
 
 // Values
-pub fn apply_updates(Node, Int, ArrayView[(Int, Int)]) -> Node
+pub fn apply_updates(Node, Int32, ArrayView[(Int32, Int32)]) -> Node
 
-pub fn build(ArrayView[Int], Int, Int) -> Node
+pub fn build(ArrayView[Int32], Int32, Int32) -> Node
 
-pub fn range_xor(Node, Int, Int, Int, Int) -> Int
+pub fn range_xor(Node, Int32, Int32, Int32, Int32) -> Int32
 
-pub fn set_value(Node, Int, Int, Int, Int) -> Node
+pub fn set_value(Node, Int32, Int32, Int32, Int32) -> Node
 
-pub fn xor_value(Node) -> Int
+pub fn xor_value(Node) -> Int32
 
 // Errors
 
 // Types and methods
 pub enum Node {
-  Leaf(xor~ : Int)
-  Branch(xor~ : Int, left~ : Node, right~ : Node)
+  Leaf(xor~ : Int32)
+  Branch(xor~ : Int32, left~ : Node, right~ : Node)
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

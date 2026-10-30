@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_techniques/challenge_ternary_search"
 
 // Values
-pub fn find_min_unimodal(ArrayView[Int]) -> Int
+pub fn find_min_unimodal(ArrayView[Int32]) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn find_min_unimodal(ArrayView[Int]) -> Int
 // Type aliases
 
 // Traits
-

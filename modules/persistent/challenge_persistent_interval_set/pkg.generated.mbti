@@ -6,23 +6,22 @@ import {
 }
 
 // Values
-pub fn contains_point(Tree, Int) -> Bool
+pub fn contains_point(Tree, Int32) -> Bool
 
 pub fn empty() -> Tree
 
-pub fn insert_interval(Tree, Int, Int) -> Tree
+pub fn insert_interval(Tree, Int32, Int32) -> Tree
 
-pub fn to_array(Tree) -> Array[(Int, Int)]
+pub fn to_array(Tree) -> Array[(Int32, Int32)]
 
 // Errors
 
 // Types and methods
 pub enum Tree {
   Empty
-  Node(start~ : Int, end~ : Int, left~ : Tree, right~ : Tree)
+  Node(start~ : Int32, end~ : Int32, left~ : Tree, right~ : Tree)
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

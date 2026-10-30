@@ -16,7 +16,7 @@ pub fn[T : Compare + Hash] insert(Treap[T], T) -> Treap[T]
 
 pub fn[T] merge(Treap[T], Treap[T]) -> Treap[T]
 
-pub fn[T] size(Treap[T]) -> Int
+pub fn[T] size(Treap[T]) -> Int32
 
 pub fn[T : Compare] split(Treap[T], T) -> (Treap[T], Treap[T])
 
@@ -25,10 +25,9 @@ pub fn[T : Compare] split(Treap[T], T) -> (Treap[T], Treap[T])
 // Types and methods
 pub enum Treap[T] {
   Empty
-  Node(key~ : T, priority~ : Int, size~ : Int, left~ : Treap[T], right~ : Treap[T])
+  Node(key~ : T, priority~ : Int32, size~ : Int32, left~ : Treap[T], right~ : Treap[T])
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

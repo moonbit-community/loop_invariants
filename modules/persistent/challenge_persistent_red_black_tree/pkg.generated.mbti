@@ -16,7 +16,7 @@ pub fn[T] inorder(RB[T]) -> Array[T]
 
 pub fn[T : Compare] insert(RB[T], T) -> RB[T]
 
-pub fn[T] size(RB[T]) -> Int
+pub fn[T] size(RB[T]) -> Int32
 
 // Errors
 

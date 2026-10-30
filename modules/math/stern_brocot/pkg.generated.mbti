@@ -13,4 +13,3 @@ pub fn stern_brocot_path(Int64, Int64) -> Array[Char]
 // Type aliases
 
 // Traits
-

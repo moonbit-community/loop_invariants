@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/karger_min_cut"
 
 // Values
-pub fn karger_min_cut(Int, ArrayView[(Int, Int)], Int, seed~ : Int64) -> Int
+pub fn karger_min_cut(Int32, ArrayView[(Int32, Int32)], Int32, seed~ : Int64) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn karger_min_cut(Int, ArrayView[(Int, Int)], Int, seed~ : Int64) -> Int
 // Type aliases
 
 // Traits
-

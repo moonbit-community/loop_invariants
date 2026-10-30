@@ -20,7 +20,7 @@ pub fn[T] push_back(Deque[T], T) -> Deque[T]
 
 pub fn[T] push_front(Deque[T], T) -> Deque[T]
 
-pub fn[T] size(Deque[T]) -> Int
+pub fn[T] size(Deque[T]) -> Int32
 
 // Errors
 
@@ -35,4 +35,3 @@ type Stack[T] derive(@debug.Debug)
 // Type aliases
 
 // Traits
-

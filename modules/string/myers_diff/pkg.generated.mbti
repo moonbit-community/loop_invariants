@@ -2,17 +2,17 @@
 package "bobzhang/loop_invariants_string/myers_diff"
 
 // Values
-pub fn diff(Array[Int], Array[Int]) -> Array[Edit]
+pub fn diff(Array[Int32], Array[Int32]) -> Array[Edit]
 
-pub fn shortest_edit_distance(Array[Int], Array[Int]) -> Int
+pub fn shortest_edit_distance(Array[Int32], Array[Int32]) -> Int32
 
 // Errors
 
 // Types and methods
 pub enum Edit {
-  Equal(Int)
-  Insert(Int)
-  Delete(Int)
+  Equal(Int32)
+  Insert(Int32)
+  Delete(Int32)
 } derive(Eq)
 pub fn Edit::equal(Self, Self) -> Bool
 

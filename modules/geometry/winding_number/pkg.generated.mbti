@@ -6,7 +6,7 @@ pub fn inside_evenodd(Array[(Double, Double)], (Double, Double)) -> Bool
 
 pub fn inside_nonzero(Array[(Double, Double)], (Double, Double)) -> Bool
 
-pub fn winding_number(Array[(Double, Double)], (Double, Double)) -> Int
+pub fn winding_number(Array[(Double, Double)], (Double, Double)) -> Int32
 
 // Errors
 
@@ -15,4 +15,3 @@ pub fn winding_number(Array[(Double, Double)], (Double, Double)) -> Int
 // Type aliases
 
 // Traits
-

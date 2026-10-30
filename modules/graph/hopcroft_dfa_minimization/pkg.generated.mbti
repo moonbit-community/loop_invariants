@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_graph/hopcroft_dfa_minimization"
 
 // Values
-pub fn block_count_of(Array[Int]) -> Int
+pub fn block_count_of(Array[Int32]) -> Int32
 
-pub fn minimize(Int, Int, Array[Array[Int]], Array[Bool]) -> Array[Int]
+pub fn minimize(Int32, Int32, Array[Array[Int32]], Array[Bool]) -> Array[Int32]
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn minimize(Int, Int, Array[Array[Int]], Array[Bool]) -> Array[Int]
 // Type aliases
 
 // Traits
-

@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/dsu_on_tree"
 
 // Values
-pub fn subtree_color_mode_sum(Array[Array[Int]], Array[Int], root? : Int) -> Array[Int64]
+pub fn subtree_color_mode_sum(Array[Array[Int32]], Array[Int32], root? : Int32) -> Array[Int64]
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn subtree_color_mode_sum(Array[Array[Int]], Array[Int], root? : Int) -> Arr
 // Type aliases
 
 // Traits
-

@@ -14,12 +14,11 @@ pub struct TDigest {
   mut total_weight : Double
 }
 pub fn TDigest::add(Self, Double) -> Unit
-pub fn TDigest::centroid_count(Self) -> Int
+pub fn TDigest::centroid_count(Self) -> Int32
 pub fn TDigest::compress(Self) -> Unit
-pub fn TDigest::count(Self) -> Int
+pub fn TDigest::count(Self) -> Int32
 pub fn TDigest::quantile(Self, Double) -> Double
 
 // Type aliases
 
 // Traits
-

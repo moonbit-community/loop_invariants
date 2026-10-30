@@ -13,4 +13,3 @@ pub fn xor_convolution(ArrayView[Int64], ArrayView[Int64]) -> Array[Int64]
 // Type aliases
 
 // Traits
-

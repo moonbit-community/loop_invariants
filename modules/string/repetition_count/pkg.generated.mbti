@@ -2,13 +2,13 @@
 package "bobzhang/loop_invariants_string/repetition_count"
 
 // Values
-pub fn count_occurrences(Array[Int], Array[Int]) -> Int
+pub fn count_occurrences(Array[Int32], Array[Int32]) -> Int32
 
-pub fn is_periodic(Array[Int]) -> Bool
+pub fn is_periodic(Array[Int32]) -> Bool
 
-pub fn repetition_count(Array[Int]) -> Int
+pub fn repetition_count(Array[Int32]) -> Int32
 
-pub fn smallest_period(Array[Int]) -> Int
+pub fn smallest_period(Array[Int32]) -> Int32
 
 // Errors
 
@@ -17,4 +17,3 @@ pub fn smallest_period(Array[Int]) -> Int
 // Type aliases
 
 // Traits
-

@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_geometry/polar_sort"
 
 // Values
-pub fn cmp_angle((Int64, Int64), (Int64, Int64)) -> Int
+pub fn cmp_angle((Int64, Int64), (Int64, Int64)) -> Int32
 
 pub fn cross((Int64, Int64), (Int64, Int64)) -> Int64
 
@@ -17,4 +17,3 @@ pub fn sort_around_origin(Array[(Int64, Int64)]) -> Array[(Int64, Int64)]
 // Type aliases
 
 // Traits
-

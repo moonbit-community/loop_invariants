@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_dp/divide_conquer_dp"
 
 // Values
-pub fn solve(Array[Int64], Int, (Int, Int) -> Int64) -> Array[Int64]
+pub fn solve(Array[Int64], Int32, (Int32, Int32) -> Int64) -> Array[Int64]
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn solve(Array[Int64], Int, (Int, Int) -> Int64) -> Array[Int64]
 // Type aliases
 
 // Traits
-

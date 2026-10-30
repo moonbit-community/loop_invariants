@@ -2,11 +2,11 @@
 package "bobzhang/loop_invariants_graph/tree_isomorphism"
 
 // Values
-pub fn canonical_string(Int, Int, Array[Array[Int]]) -> String
+pub fn canonical_string(Int32, Int32, Array[Array[Int32]]) -> String
 
-pub fn is_isomorphic(Int, Array[Array[Int]], Int, Array[Array[Int]]) -> Bool
+pub fn is_isomorphic(Int32, Array[Array[Int32]], Int32, Array[Array[Int32]]) -> Bool
 
-pub fn unrooted_canonical(Int, Array[Array[Int]]) -> String
+pub fn unrooted_canonical(Int32, Array[Array[Int32]]) -> String
 
 // Errors
 
@@ -15,4 +15,3 @@ pub fn unrooted_canonical(Int, Array[Array[Int]]) -> String
 // Type aliases
 
 // Traits
-

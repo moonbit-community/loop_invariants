@@ -16,19 +16,19 @@ pub fn from_array(ArrayView[Point]) -> Kd
 
 pub fn insert(Kd, Point) -> Kd
 
-pub fn size(Kd) -> Int
+pub fn size(Kd) -> Int32
 
 // Errors
 
 // Types and methods
 pub enum Kd {
   Empty
-  Node(point~ : Point, axis~ : Int, left~ : Kd, right~ : Kd)
+  Node(point~ : Point, axis~ : Int32, left~ : Kd, right~ : Kd)
 } derive(@debug.Debug)
 
 pub(all) struct Point {
-  x : Int
-  y : Int
+  x : Int32
+  y : Int32
 } derive(Eq, @debug.Debug)
 pub fn Point::equal(Self, Self) -> Bool
 

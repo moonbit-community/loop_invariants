@@ -2,21 +2,21 @@
 package "bobzhang/loop_invariants_math/digit_sum"
 
 // Values
-pub fn digit_at(Int64, Int, Int) -> Int
+pub fn digit_at(Int64, Int32, Int32) -> Int32
 
-pub fn digit_count(Int64, Int) -> Int
+pub fn digit_count(Int64, Int32) -> Int32
 
-pub fn digit_sum(Int64, Int) -> Int
+pub fn digit_sum(Int64, Int32) -> Int32
 
-pub fn digital_root(Int64, Int) -> Int
+pub fn digital_root(Int64, Int32) -> Int32
 
-pub fn from_digits(Array[Int], Int) -> Int64
+pub fn from_digits(Array[Int32], Int32) -> Int64
 
-pub fn is_palindrome(Int64, Int) -> Bool
+pub fn is_palindrome(Int64, Int32) -> Bool
 
-pub fn reverse_digits(Int64, Int) -> Int64
+pub fn reverse_digits(Int64, Int32) -> Int64
 
-pub fn to_digits(Int64, Int) -> Array[Int]
+pub fn to_digits(Int64, Int32) -> Array[Int32]
 
 // Errors
 
@@ -25,4 +25,3 @@ pub fn to_digits(Int64, Int) -> Array[Int]
 // Type aliases
 
 // Traits
-

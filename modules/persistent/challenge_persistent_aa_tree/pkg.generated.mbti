@@ -16,17 +16,16 @@ pub fn[T] inorder(Aa[T]) -> Array[T]
 
 pub fn[T : Compare] insert(Aa[T], T) -> Aa[T]
 
-pub fn[T] size(Aa[T]) -> Int
+pub fn[T] size(Aa[T]) -> Int32
 
 // Errors
 
 // Types and methods
 pub enum Aa[T] {
   Empty
-  Node(key~ : T, level~ : Int, left~ : Aa[T], right~ : Aa[T])
+  Node(key~ : T, level~ : Int32, left~ : Aa[T], right~ : Aa[T])
 } derive(@debug.Debug)
 
 // Type aliases
 
 // Traits
-

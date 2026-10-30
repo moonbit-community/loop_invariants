@@ -2,13 +2,13 @@
 package "bobzhang/loop_invariants_string/manacher"
 
 // Values
-pub fn count_palindromes(String) -> Int
+pub fn count_palindromes(String) -> Int32
 
 pub fn longest_palindrome(String) -> String
 
-pub fn longest_palindrome_len(String) -> Int
+pub fn longest_palindrome_len(String) -> Int32
 
-pub fn manacher_radii(String) -> (Array[Int], Array[Int])
+pub fn manacher_radii(String) -> (Array[Int32], Array[Int32])
 
 // Errors
 
@@ -17,4 +17,3 @@ pub fn manacher_radii(String) -> (Array[Int], Array[Int])
 // Type aliases
 
 // Traits
-

@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/challenge_tree_diameter"
 
 // Values
-pub fn tree_diameter(Int, ArrayView[(Int, Int)]) -> Int
+pub fn tree_diameter(Int32, ArrayView[(Int32, Int32)]) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn tree_diameter(Int, ArrayView[(Int, Int)]) -> Int
 // Type aliases
 
 // Traits
-

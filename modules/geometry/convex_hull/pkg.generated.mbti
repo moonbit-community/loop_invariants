@@ -16,7 +16,7 @@ pub fn convex_hull_monotone(Array[Point]) -> Array[Point]
 
 pub fn hull_diameter_squared(Array[Point]) -> Int64
 
-pub fn point_in_hull(Array[Point], Point) -> Int
+pub fn point_in_hull(Array[Point], Point) -> Int32
 
 pub fn polygon_area_2x(Array[Point]) -> Int64
 

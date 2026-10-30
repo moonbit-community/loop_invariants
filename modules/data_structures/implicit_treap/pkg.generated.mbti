@@ -8,42 +8,41 @@ package "bobzhang/loop_invariants_data_structures/implicit_treap"
 // Types and methods
 pub(all) struct ImplicitNode {
   mut val : Int64
-  priority : Int
-  mut size : Int
+  priority : Int32
+  mut size : Int32
   mut sum : Int64
   mut min_val : Int64
   mut max_val : Int64
   mut rev : Bool
-  mut left : Int
-  mut right : Int
+  mut left : Int32
+  mut right : Int32
 }
 
 pub(all) struct ImplicitTreap {
   nodes : Array[ImplicitNode]
-  mut root : Int
-  mut rand_state : Int
-  free_list : Array[Int]
+  mut root : Int32
+  mut rand_state : Int32
+  free_list : Array[Int32]
 }
 pub fn ImplicitTreap::ImplicitTreap() -> Self
-pub fn ImplicitTreap::delete(Self, Int) -> Int64?
+pub fn ImplicitTreap::delete(Self, Int32) -> Int64?
 pub fn ImplicitTreap::from_array(Array[Int64]) -> Self
-pub fn ImplicitTreap::get(Self, Int) -> Int64?
-pub fn ImplicitTreap::insert(Self, Int, Int64) -> Unit
-pub fn ImplicitTreap::merge(Self, Int, Int) -> Int
+pub fn ImplicitTreap::get(Self, Int32) -> Int64?
+pub fn ImplicitTreap::insert(Self, Int32, Int64) -> Unit
+pub fn ImplicitTreap::merge(Self, Int32, Int32) -> Int32
 pub fn ImplicitTreap::pop_back(Self) -> Int64?
 pub fn ImplicitTreap::pop_front(Self) -> Int64?
 pub fn ImplicitTreap::push_back(Self, Int64) -> Unit
 pub fn ImplicitTreap::push_front(Self, Int64) -> Unit
-pub fn ImplicitTreap::range_max(Self, Int, Int) -> Int64?
-pub fn ImplicitTreap::range_min(Self, Int, Int) -> Int64?
-pub fn ImplicitTreap::range_sum(Self, Int, Int) -> Int64
-pub fn ImplicitTreap::reverse(Self, Int, Int) -> Unit
-pub fn ImplicitTreap::set(Self, Int, Int64) -> Unit
-pub fn ImplicitTreap::size(Self) -> Int
-pub fn ImplicitTreap::split(Self, Int, Int) -> (Int, Int)
+pub fn ImplicitTreap::range_max(Self, Int32, Int32) -> Int64?
+pub fn ImplicitTreap::range_min(Self, Int32, Int32) -> Int64?
+pub fn ImplicitTreap::range_sum(Self, Int32, Int32) -> Int64
+pub fn ImplicitTreap::reverse(Self, Int32, Int32) -> Unit
+pub fn ImplicitTreap::set(Self, Int32, Int64) -> Unit
+pub fn ImplicitTreap::size(Self) -> Int32
+pub fn ImplicitTreap::split(Self, Int32, Int32) -> (Int32, Int32)
 pub fn ImplicitTreap::to_array(Self) -> Array[Int64]
 
 // Type aliases
 
 // Traits
-

@@ -2,9 +2,9 @@
 package "bobzhang/loop_invariants_techniques/cycle_detection"
 
 // Values
-pub fn[T : Eq] brent_cycle((T) -> T, T) -> (Int, Int)
+pub fn[T : Eq] brent_cycle((T) -> T, T) -> (Int32, Int32)
 
-pub fn[T : Eq] floyd_cycle((T) -> T, T) -> (Int, Int)
+pub fn[T : Eq] floyd_cycle((T) -> T, T) -> (Int32, Int32)
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn[T : Eq] floyd_cycle((T) -> T, T) -> (Int, Int)
 // Type aliases
 
 // Traits
-

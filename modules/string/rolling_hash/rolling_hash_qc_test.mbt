@@ -175,10 +175,7 @@ impl @quickcheck.Arbitrary for MixedCase with fn arbitrary(size, rs) {
   }
   let i = rint(rs, 0, n - 1)
   let j = rint(rs, i + 1, n)
-  MixedCase({
-    text,
-    pattern: text.view(start_offset=i, end_offset=j).to_owned(),
-  })
+  MixedCase({ text, pattern: text[i:j].to_owned(), })
 }
 
 ///|

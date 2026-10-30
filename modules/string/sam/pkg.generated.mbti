@@ -4,7 +4,7 @@ package "bobzhang/loop_invariants_string/sam"
 // Values
 pub fn contains_substring(String, String) -> Bool
 
-pub fn distinct_substrings_count(String) -> Int
+pub fn distinct_substrings_count(String) -> Int32
 
 // Errors
 
@@ -13,4 +13,3 @@ pub fn distinct_substrings_count(String) -> Int
 // Type aliases
 
 // Traits
-

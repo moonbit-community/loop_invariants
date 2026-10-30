@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_data_structures/challenge_coordinate_compress"
 
 // Values
-pub fn coordinate_compress(ArrayView[Int]) -> (Array[Int], Array[Int])
+pub fn coordinate_compress(ArrayView[Int32]) -> (Array[Int32], Array[Int32])
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn coordinate_compress(ArrayView[Int]) -> (Array[Int], Array[Int])
 // Type aliases
 
 // Traits
-

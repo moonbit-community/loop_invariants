@@ -2,19 +2,18 @@
 package "bobzhang/loop_invariants_graph/kahn_toposort"
 
 // Values
-pub fn lex_toposort(Int, Array[Array[Int]]) -> KahnResult
+pub fn lex_toposort(Int32, Array[Array[Int32]]) -> KahnResult
 
-pub fn toposort(Int, Array[Array[Int]]) -> KahnResult
+pub fn toposort(Int32, Array[Array[Int32]]) -> KahnResult
 
 // Errors
 
 // Types and methods
 pub(all) struct KahnResult {
-  order : Array[Int]
+  order : Array[Int32]
   has_cycle : Bool
 }
 
 // Type aliases
 
 // Traits
-

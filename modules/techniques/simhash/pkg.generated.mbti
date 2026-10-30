@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_techniques/simhash"
 
 // Values
-pub fn hamming_distance(Int64, Int64) -> Int
+pub fn hamming_distance(Int64, Int64) -> Int32
 
 pub fn new() -> SimHash
 
@@ -10,15 +10,14 @@ pub fn new() -> SimHash
 
 // Types and methods
 pub struct SimHash {
-  counters : Array[Int]
+  counters : Array[Int32]
 }
 pub fn SimHash::add(Self, Int64) -> Unit
-pub fn SimHash::add_weighted(Self, Int64, Int) -> Unit
-pub fn SimHash::counters_of(Self) -> Array[Int]
+pub fn SimHash::add_weighted(Self, Int64, Int32) -> Unit
+pub fn SimHash::counters_of(Self) -> Array[Int32]
 pub fn SimHash::merge(Self, Self) -> Unit
 pub fn SimHash::signature(Self) -> Int64
 
 // Type aliases
 
 // Traits
-

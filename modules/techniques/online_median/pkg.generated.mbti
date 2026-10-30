@@ -12,16 +12,15 @@ pub fn new() -> OnlineMedian
 
 // Types and methods
 pub struct OnlineMedian {
-  lo : @priority_queue.PriorityQueue[Int]
-  hi : @priority_queue.PriorityQueue[Int]
+  lo : @priority_queue.PriorityQueue[Int32]
+  hi : @priority_queue.PriorityQueue[Int32]
 }
-pub fn OnlineMedian::add(Self, Int) -> Unit
-pub fn OnlineMedian::lower_median(Self) -> Int?
+pub fn OnlineMedian::add(Self, Int32) -> Unit
+pub fn OnlineMedian::lower_median(Self) -> Int32?
 pub fn OnlineMedian::median(Self) -> Double?
-pub fn OnlineMedian::size(Self) -> Int
-pub fn OnlineMedian::upper_median(Self) -> Int?
+pub fn OnlineMedian::size(Self) -> Int32
+pub fn OnlineMedian::upper_median(Self) -> Int32?
 
 // Type aliases
 
 // Traits
-

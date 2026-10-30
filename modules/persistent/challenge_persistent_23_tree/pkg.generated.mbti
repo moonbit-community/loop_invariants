@@ -14,7 +14,7 @@ pub fn[T : Compare] from_array(ArrayView[T]) -> Tree[T]
 
 pub fn[T : Compare] insert(Tree[T], T) -> Tree[T]
 
-pub fn[T] size(Tree[T]) -> Int
+pub fn[T] size(Tree[T]) -> Int32
 
 // Errors
 
@@ -30,4 +30,3 @@ pub enum Tree[T] {
 // Type aliases
 
 // Traits
-

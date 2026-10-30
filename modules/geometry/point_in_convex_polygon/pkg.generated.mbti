@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_geometry/point_in_convex_polygon"
 
 // Values
-pub fn locate(Array[(Int64, Int64)], (Int64, Int64)) -> Int
+pub fn locate(Array[(Int64, Int64)], (Int64, Int64)) -> Int32
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn locate(Array[(Int64, Int64)], (Int64, Int64)) -> Int
 // Type aliases
 
 // Traits
-

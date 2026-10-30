@@ -13,4 +13,3 @@ pub fn solve(Array[Int64], Array[Int64]) -> (Int64, Int64)?
 // Type aliases
 
 // Traits
-

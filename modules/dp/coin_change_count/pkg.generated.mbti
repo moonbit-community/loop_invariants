@@ -2,11 +2,11 @@
 package "bobzhang/loop_invariants_dp/coin_change_count"
 
 // Values
-pub fn count_ordered(Array[Int], Int) -> Int64
+pub fn count_ordered(Array[Int32], Int32) -> Int64
 
-pub fn count_unordered(Array[Int], Int) -> Int64
+pub fn count_unordered(Array[Int32], Int32) -> Int64
 
-pub fn min_coins(Array[Int], Int) -> Int
+pub fn min_coins(Array[Int32], Int32) -> Int32
 
 // Errors
 
@@ -15,4 +15,3 @@ pub fn min_coins(Array[Int], Int) -> Int
 // Type aliases
 
 // Traits
-

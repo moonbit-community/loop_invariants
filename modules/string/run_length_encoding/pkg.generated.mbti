@@ -2,15 +2,15 @@
 package "bobzhang/loop_invariants_string/run_length_encoding"
 
 // Values
-pub fn decode(Array[(Int, Int)]) -> Array[Int]
+pub fn decode(Array[(Int32, Int32)]) -> Array[Int32]
 
-pub fn decode_flat(Array[Int64]) -> Array[Int]
+pub fn decode_flat(Array[Int64]) -> Array[Int32]
 
-pub fn decoded_length(Array[(Int, Int)]) -> Int
+pub fn decoded_length(Array[(Int32, Int32)]) -> Int32
 
-pub fn encode(Array[Int]) -> Array[(Int, Int)]
+pub fn encode(Array[Int32]) -> Array[(Int32, Int32)]
 
-pub fn encode_flat(Array[Int]) -> Array[Int64]
+pub fn encode_flat(Array[Int32]) -> Array[Int64]
 
 // Errors
 
@@ -19,4 +19,3 @@ pub fn encode_flat(Array[Int]) -> Array[Int64]
 // Type aliases
 
 // Traits
-

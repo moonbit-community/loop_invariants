@@ -2,11 +2,11 @@
 package "bobzhang/loop_invariants_verified/verified_division"
 
 // Values
-pub fn div_mod_nonneg(Int, Int) -> (Int, Int)
+pub fn div_mod_nonneg(Int32, Int32) -> (Int32, Int32)
 
-pub fn div_nonneg(Int, Int) -> Int
+pub fn div_nonneg(Int32, Int32) -> Int32
 
-pub fn mod_nonneg(Int, Int) -> Int
+pub fn mod_nonneg(Int32, Int32) -> Int32
 
 // Errors
 
@@ -15,4 +15,3 @@ pub fn mod_nonneg(Int, Int) -> Int
 // Type aliases
 
 // Traits
-

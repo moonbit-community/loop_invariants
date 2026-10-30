@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_math/binomial_mod"
 
 // Values
-pub fn build(Int, Int64) -> BinomTable
+pub fn build(Int32, Int64) -> BinomTable
 
 pub fn lucas(Int64, Int64, Int64) -> Int64
 
@@ -14,10 +14,9 @@ pub struct BinomTable {
   inv_fact : Array[Int64]
   modulus : Int64
 }
-pub fn BinomTable::choose(Self, Int, Int) -> Int64
-pub fn BinomTable::factorial(Self, Int) -> Int64
+pub fn BinomTable::choose(Self, Int32, Int32) -> Int64
+pub fn BinomTable::factorial(Self, Int32) -> Int64
 
 // Type aliases
 
 // Traits
-

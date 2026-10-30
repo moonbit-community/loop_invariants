@@ -16,7 +16,7 @@ pub fn[T : Compare] insert(Heap[T], T) -> Heap[T]
 
 pub fn[T : Compare] merge(Heap[T], Heap[T]) -> Heap[T]
 
-pub fn[T] size(Heap[T]) -> Int
+pub fn[T] size(Heap[T]) -> Int32
 
 // Errors
 
@@ -31,4 +31,3 @@ pub enum Heap[T] {
 // Type aliases
 
 // Traits
-

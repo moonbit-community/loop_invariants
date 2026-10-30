@@ -11,4 +11,3 @@ pub fn[T : Compare] avl_sorted(ArrayView[T]) -> Array[T]
 // Type aliases
 
 // Traits
-

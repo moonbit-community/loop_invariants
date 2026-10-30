@@ -141,9 +141,7 @@ test "qc: min_cyclic_rotation is invariant under rotating a (periodic) input" {
       guard n > 0 else { return true }
       let k = (c.1 % n).abs()
       // rotate by code units through the doubled string
-      let rotated = (str + str)
-        .view(start_offset=k, end_offset=k + n)
-        .to_owned()
+      let rotated = (str + str).unsafe_view(start=k, end=k + n).to_owned()
       let expected = @minimum_cyclic_rotation.min_cyclic_rotation(str)
       units(@minimum_cyclic_rotation.min_cyclic_rotation(rotated)) ==
       units(expected) &&

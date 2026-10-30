@@ -2,7 +2,7 @@
 package "bobzhang/loop_invariants_graph/johnson_all_pairs"
 
 // Values
-pub fn johnson_all_pairs(Int, ArrayView[(Int, Int, Int64)]) -> Array[Array[Int64]]?
+pub fn johnson_all_pairs(Int32, ArrayView[(Int32, Int32, Int64)]) -> Array[Array[Int64]]?
 
 // Errors
 
@@ -11,4 +11,3 @@ pub fn johnson_all_pairs(Int, ArrayView[(Int, Int, Int64)]) -> Array[Array[Int64
 // Type aliases
 
 // Traits
-
